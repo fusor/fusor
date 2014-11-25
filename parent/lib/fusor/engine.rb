@@ -1,5 +1,3 @@
-require 'deface'
-
 module Fusor
   class Engine < ::Rails::Engine
 
