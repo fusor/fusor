@@ -1,5 +1,5 @@
 # Tasks
-namespace :welder do
+namespace :fusor do
   namespace :example do
     desc 'Example Task'
     task :task => :environment do
@@ -10,8 +10,8 @@ end
 
 # Tests
 namespace :test do
-  desc "Test Welder"
-  Rake::TestTask.new(:welder) do |t|
+  desc "Test Fusor"
+  Rake::TestTask.new(:fusor) do |t|
     test_dir = File.join(File.dirname(__FILE__), '../..', 'test')
     t.libs << ["test",test_dir]
     t.pattern = "#{test_dir}/**/*_test.rb"
@@ -20,12 +20,12 @@ namespace :test do
 end
 
 Rake::Task[:test].enhance do
-  Rake::Task['test:welder'].invoke
+  Rake::Task['test:fusor'].invoke
 end
 
 load 'tasks/jenkins.rake'
 if Rake::Task.task_defined?(:'jenkins:unit')
   Rake::Task["jenkins:unit"].enhance do
-    Rake::Task['test:welder'].invoke
+    Rake::Task['test:fusor'].invoke
   end
 end
