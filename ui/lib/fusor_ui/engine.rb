@@ -34,11 +34,11 @@ module FusorUi
       SETTINGS[:fusor_ui] = {:assets => {}} if SETTINGS[:fusor_ui].nil?
 
       SETTINGS[:fusor_ui][:assets][:precompile] = [
-        'fusor-demo.css',
-        'vendor-fusor.css',
-        'bootstrap.css.map',
-        'fusor-demo.js',
-        'vendor-fusor.js'
+        'fusor_ui/fusor-demo.css',
+        'fusor_ui/vendor-fusor.css',
+        'fusor_ui/bootstrap.css.map',
+        'fusor_ui/fusor-demo.js',
+        'fusor_ui/vendor-fusor.js'
       ]
     end
 
