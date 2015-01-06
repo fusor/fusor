@@ -619,7 +619,7 @@ select{padding: initial;}
 .form-group.condensed textarea {
   border-color: #f5f5f5;
   background-color: #f5f5f5;
-  @include box-shadow(none);
+  box-shadow: none;
   resize: none;
   cursor: text;
 }
@@ -716,7 +716,7 @@ table tr td:last-child {
   min-width: 720px;
   min-height: 400px;
   border: solid #222222 1px;
-  @include box-shadow(5px 5px 5px rgba(0, 0, 0, 0.2));
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
   border-radius: 10px;
