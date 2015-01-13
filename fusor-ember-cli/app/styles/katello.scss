@@ -1,0 +1,183 @@
+/*@import "katello/activation_keys";
+@import "katello/content_search";
+@import "katello/contents";
+@import "katello/custom_info";
+@import "katello/dashboard";
+@import "katello/dashboard";
+@import "katello/distributors";
+@import "katello/fancyqueries";
+@import "katello/generic";
+@import "katello/header";
+@import "katello/ie";
+@import "katello/katello";
+
+*/
+/* katello */
+
+.path-selector {
+  margin-top: 10px;
+}
+.path-selector .path-list {
+  list-style: none;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 10px;
+  display: inline-block;
+  border: 1px solid #d7d7d7;
+}
+.path-selector .path-list .path-list-item {
+  float: left;
+  margin-left: 0;
+  white-space: nowrap;
+}
+.path-selector .path-list .path-list-item:first-child label {
+  padding-left: 12px;
+}
+.path-selector .path-list .path-list-item:last-child label {
+  padding-right: 16px;
+}
+.path-selector .path-list .path-list-item:last-child label:after {
+  border: 0;
+  border-left: 0px solid #e9e9e9;
+}
+.path-selector .path-list .path-list-item label {
+  color: black;
+  font-size: 12px;
+  font-weight: normal;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  line-height: 20px;
+  margin: 0;
+  padding: 12px 10px 12px 30px;
+  position: relative;
+  background: #ffffff;
+}
+.path-selector .path-list .path-list-item label.active {
+  background: #005870;
+  color: white;
+  text-shadow: 1px 1px #000;
+}
+.path-selector .path-list .path-list-item label.active:after {
+  border-left-color: #005870;
+}
+.path-selector .path-list .path-list-item label:after {
+  content: " ";
+  display: block;
+  width: 0;
+  height: 0;
+  border-top: 30px solid transparent;
+  border-bottom: 30px solid transparent;
+  border-left: 15px solid #ffffff;
+  position: absolute;
+  top: 50%;
+  margin-top: -30px;
+  left: 100%;
+  z-index: 102;
+}
+.path-selector .path-list .path-list-item label:before {
+  content: " ";
+  display: block;
+  width: 0;
+  height: 0;
+  border-top: 30px solid transparent;
+  border-bottom: 30px solid transparent;
+  border-left: 15px solid #d7d7d7;
+  position: absolute;
+  top: 50%;
+  margin-top: -30px;
+  margin-left: 1px;
+  left: 100%;
+  z-index: 101;
+}
+.path-selector .path-list .path-list-item label input[type="checkbox"] {
+  margin: 0;
+  vertical-align: middle;
+  margin-right: 2px;
+  margin-bottom: 1px;
+}
+.path-selector .path-list .path-list-item.disabled-item input[type="checkbox"] {
+  display: none;
+}
+.path-selector {
+  margin-top: 20px;
+}
+.path-selector .path-list {
+  list-style: none;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 10px;
+  display: inline-block;
+  border: 1px solid #d7d7d7;
+}
+.path-selector .path-list .path-list-item {
+  float: left;
+  margin-left: 0;
+  white-space: nowrap;
+}
+.path-selector .path-list .path-list-item:first-child label {
+  padding-left: 12px;
+}
+.path-selector .path-list .path-list-item:last-child label {
+  padding-right: 16px;
+}
+.path-selector .path-list .path-list-item:last-child label:after {
+  border: 0;
+  border-left: 0px solid #e9e9e9;
+}
+.path-selector .path-list .path-list-item label {
+  color: black;
+  font-size: 12px;
+  font-weight: normal;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  line-height: 20px;
+  margin: 0;
+  padding: 12px 10px 12px 30px;
+  position: relative;
+  background: #ffffff;
+}
+.path-selector .path-list .path-list-item label.active {
+  background: #005870;
+  color: white;
+  text-shadow: 1px 1px #000;
+}
+.path-selector .path-list .path-list-item label.active:after {
+  border-left-color: #005870;
+}
+
+.path-selector .path-list .path-list-item label:after {
+  content: " ";
+  display: block;
+  width: 0;
+  height: 0;
+  border-top: 30px solid transparent;
+  border-bottom: 30px solid transparent;
+  border-left: 15px solid #ffffff;
+  position: absolute;
+  top: 50%;
+  margin-top: -30px;
+  left: 100%;
+  z-index: 102;
+}
+.path-selector .path-list .path-list-item label:before {
+  content: " ";
+  display: block;
+  width: 0;
+  height: 0;
+  border-top: 30px solid transparent;
+  border-bottom: 30px solid transparent;
+  border-left: 15px solid #eee; /* JM changed this from #d7d7d7 to make lines */
+  position: absolute;
+  top: 50%;
+  margin-top: -30px;
+  margin-left: 1px;
+  left: 100%;
+  z-index: 101;
+}
+.path-selector .path-list .path-list-item label input[type="checkbox"] {
+  margin: 0;
+  vertical-align: middle;
+  margin-right: 2px;
+  margin-bottom: 1px;
+}
+.path-selector .path-list .path-list-item.disabled-item input[type="checkbox"] {
+  display: none;
+}

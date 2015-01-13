@@ -1,0 +1,47 @@
+
+<form class="form-horizontal" role="form">
+
+  <div class='row'>
+    <div class='col-md-12'>
+
+      <h3>Neutron Service Configuration</h3>
+
+      {{#base-f label='Tenant Network Type *' labelSize='col-md-3' inputSize='col-md-9'}}
+        {{radio-button-f checked=tenantType value="vxlan" label='VXLAN Segmentation'}}
+        {{radio-button-f checked=tenantType value="gre" label='GRE Segmentation'}}
+        {{radio-button-f checked=tenantType value="vlan" label='VLAN Segmentation'}}
+        {{radio-button-f checked=tenantType value="flat" label='Flat'}}
+      {{/base-f}}
+
+      {{#base-f label='Core Plugin Type *' labelSize='col-md-3' inputSize='col-md-9'}}
+        {{radio-button-f checked=corePlugin value="ml2" label='ML2 Core Plugin'}}
+        <div style='margin-left:20px'>
+          <span style='font-size:90%'>ML2 Mechanism Drivers</span>
+          <br />
+          {{input type='checkbox'}} Open vSwitch
+          <br />
+          {{input type='checkbox'}} L2 Population
+          <br />
+          {{input type='checkbox'}} Cisco Nexus
+        </div>
+        {{radio-button-f checked=corePlugin value="n1kv" label='N1KV Core Plugin'}}
+      {{/base-f}}
+
+
+      <h3>Glance Service Configuration</h3>
+
+      {{#base-f label='Choose Driver Backend *' labelSize='col-md-3' inputSize='col-md-9'}}
+        {{radio-button-f checked=glanceBackend value="local" label='Local File'}}
+        {{radio-button-f checked=glanceBackend value="ceph" label='Ceph'}}
+      {{/base-f}}
+
+    <h3>Cinder Service Configuration</h3>
+
+      {{#base-f label='Choose Driver Backend *' labelSize='col-md-3' inputSize='col-md-9'}}
+        {{radio-button-f checked=cinderBackend value="NFS" label='NFS'}}
+        {{radio-button-f checked=cinderBackend value="LVM" label='LVM'}}
+        {{radio-button-f checked=cinderBackend value="Ceph" label='Ceph'}}
+        {{radio-button-f checked=cinderBackend value="EqualLogic" label='EqualLogic'}}
+      {{/base-f}}
+    </div>
+  </div>

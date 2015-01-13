@@ -1,0 +1,34 @@
+{{!partial 'hypervisor/discovered-host'}}
+
+<!-- NOTE: This will assign the <strong>Self Hosted Engine</strong> hostgroup to the selected hosts.
+ -->
+<strong>{{avialableHosts.length}}</strong> hosts found
+{{bs-button title="Refresh Discovered Hosts" type='default'}}
+<br />
+<br />
+<strong>{{cntSelectedHosts}}</strong> {{hostInflection}} selected
+<br />
+<br />
+<table class="table table-bordered table-striped small">
+  <thead>
+    <tr>
+      <th> {{input type="checkbox" checked=allChecked}}</th>
+      <th> MAC </th>
+      <th> Vendor </th>
+      <th> CPU </th>
+      <th> Memory </th>
+    </tr>
+  </thead>
+
+  <tbody>
+  {{#each host in avialableHosts itemController="host"}}
+    <tr>
+      <td> {{input type="checkbox" name="isSelectedAsEngine" checked=host.isSelectedAsEngine}}</td>
+      <td> {{host.mac}} </td>
+      <td> {{host.vendor}} </td>
+      <td> {{host.cpu}} </td>
+      <td> {{host.memory}} </td>
+    </tr>
+  {{/each}}
+  </tbody>
+</table>

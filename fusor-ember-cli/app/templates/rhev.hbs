@@ -1,0 +1,38 @@
+<div class="row tabbed_side_nav_form">
+
+  <ul class="nav nav-pills nav-stacked col-md-3">
+
+      {{!#link-to 'rhev-setup' tagName='li'}}
+<!--         <a>Setup Architecture</a> -->
+      {{!/link-to}}
+
+      {{#link-to 'hypervisor' tagName='li'}}
+        <a>{{hypervisorTabName}}</a>
+      {{/link-to}}
+
+      {{#unless isSelfHost}}
+      {{#link-to 'engine' tagName='li'}}
+        <a>Engine</a>
+      {{/link-to}}
+      {{/unless}}
+
+      {{#link-to 'rhev-options' tagName='li'}}
+        <a>Configuration</a>
+      {{/link-to}}
+
+      {{#link-to 'storage' tagName='li'}}
+        <a>Storage</a>
+      {{/link-to}}
+
+      {{!#link-to 'networking' tagName='li'}}
+<!--         <a>Networking</a> -->
+      {{!/link-to}}
+
+  </ul>
+
+  <div class="tab-content col-md-9">
+      {{outlet}}
+  </div>
+
+</div>
+

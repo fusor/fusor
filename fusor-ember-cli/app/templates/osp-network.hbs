@@ -1,0 +1,35 @@
+<div class='row'>
+  <div class='col-md-12'>
+    <h4>Available Network Traffic Types</h4>
+    <br />
+      {{!unusedTrafficTypes.length}}
+      {{#draggable-object-target action="removeTrafficTypeFromSubnet"}}
+        {{subnet-drop-area trafficTypes=unusedTrafficTypes hidePanelHeading=true hideEmptyZone=true}}
+      {{/draggable-object-target}}
+    <br />
+    <div class='pull-right'>
+      {{#link-to '' class="btn btn-success"}}New Subnet{{/link-to}}
+    </div>
+
+    <br />
+    <br />
+
+    <br />
+    <h4>Subnets</h4>
+    {{#each subnet in model}}
+      {{!subnet.trafficTypes.length}}
+      {{#draggable-object-target action="assignTrafficTypeToSubnet" subnet=subnet}}
+        {{subnet-drop-area subnet=subnet trafficTypes=subnet.trafficTypes}} <br />
+      {{/draggable-object-target}}
+    {{/each}}
+
+
+    <br />
+    <br />
+
+
+
+
+    </form>
+  </div>
+</div>

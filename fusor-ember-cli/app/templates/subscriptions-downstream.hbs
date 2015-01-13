@@ -1,0 +1,62 @@
+
+<br />
+{{#if attachingInProgress}}
+  Attaching subscriptions ({{prog}}% complete)
+  {{bs-progress progressBinding="prog" type="success" stripped=true animated=true}}
+{{/if}}
+
+{{#if showAttachedSuccessMessage}}
+  <div class='alert alert-success'>
+   Yeah! Successfully attached subscriptions! Attach more if you want.
+  </div>
+{{/if}}
+
+{{input type="checkbox" name="isOnlyShowSubscriptions" checked=isOnlyShowSubscriptions}} Only show subscriptions that match this Subscription Asset Manager Organization
+<br />
+<br />
+<table class="table table-bordered table-striped small">
+  <thead>
+    <tr>
+      <th> {{input type="checkbox" name="allChecked" checked=allChecked}}</th>
+      <th> Subscription Name </th>
+      <th> Contract Number </th>
+      <th> Available </th>
+      <th> Type </th>
+      <th> Start Date </th>
+      <th> End Date </th>
+      <th> Quantity </th>
+    </tr>
+    </thead>
+
+  <tbody>
+  {{#each controller.model itemController="satellite/subscription"}}
+    <tr>
+      <td> {{input type="checkbox" checked=isChecked}}</td>
+      <td> {{name}} </td>
+      <td> {{contract_number}} </td>
+      <td> {{available}} </td>
+      <td> {{subscription_type}} </td>
+      <td> {{start_date}} </td>
+      <td> {{end_date}} </td>
+      <td> {{input type='text' value=quantity size=4}} </td>
+    </tr>
+  {{/each}}
+  </tbody>
+</table>
+
+{{#unless attachingInProgress}}
+<div class='alert alert-info'>
+{{totalSelectedCount}} of {{totalCountSubscriptions}} subscriptions selected
+</div>
+{{/unless}}
+
+<button class='btn btn-success' {{bind-attr disabled=disableAttachButton}} {{action 'attachSubscriptions'}}>Attach Selected</button>
+
+<br />
+<br />
+
+
+<div style='text-align:right'>
+  <button {{action 'showModal' 'cancel-modal'}} class='btn btn-default'>Cancel</button>
+  {{#link-to 'review.installation' class='btn btn-primary' disabled=disableNext}}Next{{/link-to}}
+</div>

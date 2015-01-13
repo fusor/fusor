@@ -1,0 +1,33 @@
+    <table class="table table-bordered" style='table-layout:fixed;'>
+      <thead>
+        <tr>
+          <th>Title</th>
+          {{#unless onShowPage}}
+          <th>Subnet</th>
+          <th>Domain</th>
+          <th></th>
+          {{/unless}}
+        </tr>
+        </thead>
+
+      <tbody>
+      {{#each itemController="hostgroup"}}
+        <tr>
+          <td style='word-wrap:break-word;' width='100'>
+            {{#link-to 'hostgroup.edit' this}}
+             {{name}}
+            {{/link-to}}
+          </td>
+          {{#unless onShowPage}}
+          <td> {{!subnet.name}} </td>
+          <td> {{!domain.name}} </td>
+          <td> {{#link-to 'hostgroup.edit' this class='btn btn-default'}}Edit{{/link-to}}</td>
+          {{/unless}}
+        </tr>
+      {{else}}
+        <li>No hostgroups found.</li>
+      {{/each}}
+      </tbody>
+    </table>
+
+{{outlet}}

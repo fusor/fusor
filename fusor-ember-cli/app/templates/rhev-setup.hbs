@@ -1,0 +1,29 @@
+<div class='row'>
+  <div class='col-md-8 col-md-offset-1'>
+
+    <div class='row'>
+      <h3>{{radio-button-f checked=rhevSetup value="rhevhost" label='Host + Engine'}}</h3>
+      <div class='col-md-offset-1'>
+          Installation flow using separate machines for the Engine and the Hypervisor(s).
+      </div>
+    </div>
+
+    <div class='row'>
+      <h3>{{radio-button-f checked=rhevSetup value="selfhost" label='Self Hosted'}}</h3>
+      <div class='col-md-offset-1'>
+          Installation flow using separate machines for the Engine and the Hypervisor(s).
+      </div>
+    </div>
+
+
+
+    <div class='pull-right'>
+      <br />
+      <button {{action 'showModal' 'cancelDeploymentModal'}} class='btn btn-default'>Cancel</button>
+      {{#link-to 'hypervisor.discovered-host' class='btn btn-primary'}}Next{{/link-to}}
+    </div>
+
+  </div>
+</div>
+
+{{!rhevSetup}}

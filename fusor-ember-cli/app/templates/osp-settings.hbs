@@ -1,0 +1,33 @@
+<br />
+<form class="form-horizontal" role="form">
+
+  <div class='row'>
+    <div class='col-md-12'>
+      {{#base-f label='High Availability *' labelSize='col-md-3' inputSize='col-md-9'}}
+        {{radio-button-f checked=ha value="compute" label='Controller / Compute'}}
+        {{radio-button-f checked=ha value="high_availability" label='High Availability Controllers / Compute'}}
+      {{/base-f}}
+
+      {{#base-f label='Networking *' labelSize='col-md-3' inputSize='col-md-9'}}
+        {{radio-button-f checked=networking value="neutron" label='Neutron Networking'}}
+        {{radio-button-f checked=networking value="nova" label='Nova Network'}}
+      {{/base-f}}
+
+      {{#base-f label='Messaging Provider *' labelSize='col-md-3' inputSize='col-md-9'}}
+        {{radio-button-f checked=messaging value="rabbitmq" label='RabbitMQ'}}
+        {{radio-button-f checked=messaging value="qpid" label='Qpid'}}
+      {{/base-f}}
+
+      {{#base-f label='Platform *' labelSize='col-md-3' inputSize='col-md-9'}}
+        {{radio-button-f checked=platform value="rhel7" label='Red Hat Enterprise Linux OpenStack Platform 5 with RHEL 7'}}
+      {{/base-f}}
+
+      {{#base-f label='Service Password *' labelSize='col-md-3' inputSize='col-md-9'}}
+        {{radio-button-f checked=password value="random" label='Generate random password for each service'}}
+        {{radio-button-f checked=password value="single" label='Use single password for all services'}}
+      {{/base-f}}
+
+      {{textarea-f label='Custom repos' value=customRepos labelSize='col-md-3' inputSize='col-md-5' rows=5 help-inline='If you need to add custom repositories on provisioned hosts you can specify base urls here, one per line. These repositories will have highest priority (50)'}}
+
+    </div>
+  </div>

@@ -1,0 +1,44 @@
+{{#if syncingInProgress}}
+  Syncronizing content ({{prog}}% complete)
+  {{bs-progress progressBinding="prog" type="success" stripped=true animated=true}}
+{{/if}}
+
+{{#if showSuccessMessage}}
+  <div class='alert alert-success'>
+   Yeah! You successfully synced content!
+  </div>
+{{/if}}
+
+
+
+
+<br />
+<table class="table table-bordered table-striped small">
+  <thead>
+    <tr>
+      <th> </th>
+      <th> Product </th>
+      <th> Start Time </th>
+      <th> Duration </th>
+      <th> Size </th>
+      <th> Result </th>
+    </tr>
+    </thead>
+
+  <tbody>
+  {{#each controller.model itemController="satellite/product"}}
+    <tr>
+      <td> + </td>
+      <td> {{name}} </td>
+      <td> {{start_time}} </td>
+      <td> {{duration}} </td>
+      <td> {{size}} </td>
+      <td> {{result}} </td>
+    </tr>
+  {{/each}}
+  </tbody>
+</table>
+
+<br />
+<button class='btn btn-success' {{bind-attr disabled=disableSyncButton}} {{action 'syncProducts'}}>Sync Products</button>
+

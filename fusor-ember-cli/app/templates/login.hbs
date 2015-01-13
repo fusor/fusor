@@ -1,0 +1,50 @@
+<div class="login-page" >
+
+<div id="login" class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <div id="brand">
+        <img alt="Foreman_white" src="assets/foreman_white.png" />
+      </div><!--/#brand-->
+    </div>
+    <div class="col-sm-7 col-md-6 col-lg-5 login">
+
+      <form accept-charset="UTF-8" action="/users/login" class="form-horizontal" id="login-form" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="1f770GegsrWb4ZJIC0UkSEkvBVG9MnRJ7jypTsrjeLU=" /></div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="login_login">Username</label>
+            <div class="col-sm-10">
+              {{input type="text" value=identification size="30" class="form-control"}}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="login_password">Password</label>
+            <div class="col-sm-10">
+              {{input type="password" value=password size="30" class="form-control"}}
+            </div>
+          </div>
+
+          {{#if errorMessage}}
+            <div class="alert alert-danger col-md-offset-2" role="alert">
+              <p>
+                <strong>Login failed:</strong> <code>{{errorMessage}}</code>
+              </p>
+            </div>
+          {{/if}}
+
+          <div class="form-group">
+            <div class="col-xs-offset-8 col-xs-4 submit">
+            <button class="btn btn-primary" {{action "authenticate"}} >Login</button>
+            </div>
+          </div>
+
+          {{!partial "devonly"}}
+      </form>
+    </div>
+    <div class="col-sm-5 col-md-6 col-lg-7 details">
+      <p><strong>Welcome to Foreman</strong>
+      <p>Version 1.7.0-develop</p>
+    </div><!--/.col-*-->
+  </div>
+</div>
+  </div>
+

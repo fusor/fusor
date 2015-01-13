@@ -1,0 +1,14 @@
+<div {{bind-attr class=":updown isUpstream:active_upstream:nonactive_upstream"}}>
+    <a {{action 'showUpstream'}}>
+    <i class="fa fa-arrow-up"></i>
+    Upstream
+    </a>
+</div>
+
+<div {{bind-attr class=":updown isUpstream:nonactive_downstream:active_downstream"}}>
+    <a {{action 'showDownstream'}}>
+    <i class="fa fa-arrow-down"></i>
+    Downstream
+    </a>
+</div>
+

@@ -1,0 +1,28 @@
+
+#ember-app {
+  padding-top: 0px;  /*change to 40px when deploying */
+}
+
+.pager{
+    position:absolute;
+    left:-50px;
+}
+
+/*if upstream */
+/*
+*//*else*/
+
+@import "bootstrap_and_overrides";
+@import "foreman";
+
+@import "katello";
+@import "staypuft_overrides";
+@import "staypuft";
+
+
+/*@import "patternfly";*/
+/*@import "foreman_downstream";*/
+
+@import "custom";
+
+/*@import "other";*/

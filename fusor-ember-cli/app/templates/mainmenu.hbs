@@ -1,0 +1,115 @@
+<div {{bind-attr class=":navbar :navbar-default :navbar-inner :navbar-fixed-top :persist-header isUpstream:navbar-inner-upstream"}} style="position: static; top: 0px;">
+
+  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-menu">
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+  </button>
+  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-admin">
+    <span class="glyphicon glyphicon-cog"></span>
+  </button>
+
+  <div {{bind-attr class="isUpstream:container:container-fluid"}}>
+    <!-- menu -->
+    <ul class="nav navbar-nav navbar-menu navbar-collapse collapse" id="menu">
+      <li class="dropdown org-switcher menu_tab_dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Any Context<span class="caret"></span></a>
+
+        <ul class="dropdown-menu">
+          <li class="nav-header">Organization</li>
+          <li class="dropdown-submenu org-menu">
+            <a {{action "notImplemented"}} class="dropdown-toggle" data-id="aid_not_defined" data-toggle="dropdown">Any Organization</a>
+            <ul class="dropdown-menu org-submenu" style="display: none;">
+                <li><a {{action "notImplemented"}} data-id="aid_organizations_clear">Any Organization</a></li>
+                <li class="divider"></li>
+            </ul>
+          </li>
+          <li><a {{action "notImplemented"}} class="manage-menu" data-id="aid_organizations">Manage Organizations</a></li>
+              <li class="divider"></li>
+            <li class="nav-header">Location</li>
+          <li><a {{action "notImplemented"}} class="manage-menu" data-id="aid_locations">Manage Locations</a></li>
+        </ul>
+      </li>
+
+      <li class="dropdown menu_tab_dropdown">
+        <a href="#" class="dropdown-toggle" data-id="aid_not_defined" data-toggle="dropdown" id="monitor_menu">Monitor<span class="caret"></span></a>
+        <ul class="dropdown-menu">
+              <li class="menu_tab_dashboard_index"><a {{action "notImplemented"}} data-id="aid_dashboard" id="menu_item_dashboard">Dashboard</a></li>
+              <li class="menu_tab_/reports_index"><a {{action "notImplemented"}} data-id="aid_reports" id="menu_item_reports">Reports</a></li>
+              <li class="menu_tab_fact_values_index"><a {{action "notImplemented"}} id="menu_item_fact_values">Facts</a></li>
+              <li class="menu_tab_statistics_index"><a {{action "notImplemented"}} id="menu_item_statistics">Statistics</a></li>
+              <li class="menu_tab_trends_index"><a {{action "notImplemented"}} data-id="aid_trends" id="menu_item_trends">Trends</a></li>
+              <li class="menu_tab_audits_index"><a {{action "notImplemented"}} data-id="aid_audits" id="menu_item_audits">Audits</a></li>
+        </ul>
+      </li>
+
+
+      <li class="dropdown menu_tab_dropdown">
+        <a href="#" class="dropdown-toggle" data-id="aid_not_defined" data-toggle="dropdown" id="hosts_menu">Hosts<span class="caret"></span></a>
+        <ul class="dropdown-menu">
+                <li class="menu_tab_hosts_index"><a {{action "notImplemented"}} data-id="aid_hosts" id="menu_item_hosts">All hosts</a></li>
+                <li class="menu_tab_/hosts_new"><a {{action "notImplemented"}} data-id="aid_hosts_new" id="menu_item_newhost">New host</a></li>
+              <li class="divider"></li>
+              <li class="nav-header">Provisioning Setup</li>
+                <li class="menu_tab_operatingsystems_index"><a {{action "notImplemented"}} data-id="aid_operatingsystems" id="menu_item_operatingsystems">Operating systems</a></li>
+                <li class="menu_tab_config_templates_index"><a {{action "notImplemented"}} data-id="aid_config_templates" id="menu_item_config_templates">Provisioning templates</a></li>
+                <li class="menu_tab_ptables_index"><a {{action "notImplemented"}} data-id="aid_ptables" id="menu_item_ptables">Partition tables</a></li>
+                <li class="menu_tab_media_index"><a {{action "notImplemented"}} data-id="aid_media" id="menu_item_media">Installation media</a></li>
+                <li class="menu_tab_models_index"><a {{action "notImplemented"}} data-id="aid_models" id="menu_item_models">Hardware models</a></li>
+                <li class="menu_tab_architectures_index"><a {{action "notImplemented"}} data-id="aid_architectures" id="menu_item_architectures">Architectures</a></li>
+        </ul>
+      </li>
+
+      <li class="dropdown menu_tab_dropdown">
+        <a href="#" class="dropdown-toggle" data-id="aid_not_defined" data-toggle="dropdown" id="configure_menu">Configure<span class="caret"></span></a>
+        <ul class="dropdown-menu">
+                <li class="menu_tab_common_parameters_index"><a {{action "notImplemented"}} data-id="aid_common_parameters" id="menu_item_common_parameters">Host groups</a></li>
+                <li class="menu_tab_common_parameters_index"><a {{action "notImplemented"}} data-id="aid_common_parameters" id="menu_item_common_parameters">Global parameters</a></li>
+                <li class="divider"></li>
+                <li class="nav-header">Puppet</li>
+                <li class="menu_tab_environments_index"><a {{action "notImplemented"}} data-id="aid_environments" id="menu_item_environments">Environments</a></li>
+                <li class="menu_tab_puppetclasses_index"><a {{action "notImplemented"}} data-id="aid_puppetclasses" id="menu_item_puppetclasses">Puppet classes</a></li>
+                <li class="menu_tab_config_groups_index"><a {{action "notImplemented"}} data-id="aid_config_groups" id="menu_item_config_groups">Config groups</a></li>
+                <li class="menu_tab_lookup_keys_index"><a {{action "notImplemented"}} data-id="aid_lookup_keys" id="menu_item_lookup_keys">Smart variables</a></li>
+        </ul>
+      </li>
+
+      <li class="dropdown menu_tab_dropdown">
+        <a href="#" class="dropdown-toggle" data-id="aid_not_defined" data-toggle="dropdown" id="infrastructure_menu">Infrastructure<span class="caret"></span></a>
+        <ul class="dropdown-menu">
+                <li class="menu_tab_smart_proxies_index"><a {{action "notImplemented"}}data-id="aid_smart_proxies" id="menu_item_smart_proxies">Smart proxies</a></li>
+                <li class="menu_tab_compute_resources_index"><a {{action "notImplemented"}} data-id="aid_compute_resources" id="menu_item_compute_resources">Compute resources</a></li>
+                <li class="menu_tab_compute_profiles_index"><a {{action "notImplemented"}} data-id="aid_compute_profiles" id="menu_item_compute_profiles">Compute profiles</a></li>
+                <li class="menu_tab_compute_profiles_index"><a {{action "notImplemented"}} data-id="aid_compute_profiles" id="menu_item_compute_profiles">Subnets</a></li>
+                <li class="menu_tab_compute_profiles_index"><a {{action "notImplemented"}} data-id="aid_compute_profiles" id="menu_item_compute_profiles">Domains</a></li>
+                <li class="menu_tab_domains_index"><a {{action "notImplemented"}} data-id="aid_domains" id="menu_item_domains">Domains</a></li>
+                <li class="menu_tab_realms_index"><a {{action "notImplemented"}} data-id="aid_realms" id="menu_item_realms">Realms</a></li>
+        </ul>
+      </li>
+
+      {{sub-menu nameRHCI=nameRHCI}}
+    </ul>
+
+    <ul class="nav navbar-nav navbar-admin navbar-right navbar-collapse collapse" id="menu2">
+      <li class="dropdown menu_tab_dropdown">
+        <a href="#" class="dropdown-toggle" data-id="aid_not_defined" data-toggle="dropdown" id="administer_menu">Administer<span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li class="menu_tab_locations_index"><a {{action "notImplemented"}} data-id="aid_locations" id="menu_item_locations">Locations</a></li>
+          <li class="menu_tab_organizations_index"><a {{action "notImplemented"}} data-id="aid_organizations" id="menu_item_organizations">Organizations</a></li>
+          <li class="divider"></li>
+
+          <li class="menu_tab_auth_source_ldaps_index"><a {{action "notImplemented"}} data-id="aid_auth_source_ldaps" id="menu_item_auth_source_ldaps">LDAP authentication</a></li>
+          <li class="menu_tab_users_index"><a {{action "notImplemented"}} data-id="aid_users" id="menu_item_users">Users</a></li>
+          <li class="menu_tab_usergroups_index"><a {{action "notImplemented"}} data-id="aid_usergroups" id="menu_item_usergroups">User groups</a></li>
+          <li class="menu_tab_roles_index"><a {{action "notImplemented"}} data-id="aid_roles" id="menu_item_roles">Roles</a></li>
+          <li class="divider"></li>
+
+          <li class="menu_tab_bookmarks_index"><a {{action "notImplemented"}} data-id="aid_bookmarks" id="menu_item_bookmarks">Bookmarks</a></li>
+          <li class="menu_tab_settings_index"><a {{action "notImplemented"}} data-id="aid_settings" id="menu_item_settings">Settings</a></li>
+          <li class="menu_tab_about_index"><a {{action "notImplemented"}} data-id="aid_about" id="menu_item_about_index">About</a></li>
+        </ul>
+      </li>
+
+    </ul>
+  </div>
+</div>

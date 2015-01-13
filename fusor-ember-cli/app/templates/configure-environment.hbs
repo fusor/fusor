@@ -1,0 +1,54 @@
+<div class="row">
+  <div class='col-md-9'>
+
+    <div style='text-align:right;margin-top:15px;'>
+      <button class='btn btn-success' {{action 'showModal' 'newEnvironmentModal'}}>Add Environment</button>
+    </div>
+
+    <div class="path-selector">
+        <ul class="path-list">
+          {{#each env in environments itemController="environment"}}
+            {{env-path-list-item env=env selectedEnvironment=selectedEnvironment}}
+          {{/each}}
+          <li class="path-list-item">
+            <label class="path-list-item-label" style='color:gray;'>
+              &nbsp;
+            </label>
+          </li>
+        </ul>
+    </div>
+
+    {{#if hasNewEnvs}}
+      {{#each env in newenvs itemController="environment"}}
+      <div class="path-selector">
+        <ul class="path-list">
+          <li class="path-list-item">
+            <label class="path-list-item-label">
+              Library
+            </label>
+          </li>
+          {{env-path-list-item env=env selectedEnvironment=selectedEnvironment}}
+          <li class="path-list-item">
+            <label class="path-list-item-label" style='color:gray;'>
+              &nbsp;
+            </label>
+          </li>
+        </ul>
+      </div>
+      {{/each}}
+    {{/if}}
+
+
+    <br />
+    <br />
+    <div style='float:right'>
+      {{#link-to 'configure-organization' class='btn btn-default'}}Back{{/link-to}}
+      {{#link-to 'rhev-setup' class='btn btn-primary'}}Next{{/link-to}}
+    </div>
+
+  </div>
+</div>
+
+{{#bs-modal name="newEnvironmentModal" fade=true footerButtonsBinding="rhciNewEnvButtons" title="Create New Environment"}}
+  {{partial 'new-environment'}}
+{{/bs-modal}}

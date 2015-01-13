@@ -1,0 +1,222 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the top of the
+ * compiled file, but it's generally better to create a new file per style scope.
+ *
+ *= require_self
+ */
+
+/*@import "bootstrap_and_overrides";
+@import "bootstrap/buttons";
+@import "bootstrap/forms";
+*/
+ul.inner-nav {
+  border: 0 !important;
+}
+
+li.inner-nav a {
+  border: 0 !important;
+}
+
+li.inner-nav.active a {
+  text-decoration:underline;
+}
+.deployment-wizard .wizard {
+  width: 100%;
+  float: left;
+  padding-left: 0;
+}
+
+.deployment-wizard label {
+  text-align: left !important;
+  float: left;
+  margin-left: 10px;
+}
+
+.deployment-wizard form {
+  min-height: 705px;
+  position: relative;
+  padding-bottom: 60px;
+}
+
+.deployment-wizard .form_actions {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+.top_actions {
+  //same margin as h1 (title)
+  margin: 20px 0 10px;
+}
+
+.title h1 {
+  word-wrap: break-word;
+}
+
+span.editable, span.editable:hover {
+  background-color: transparent;
+  .spinner-placeholder{
+    margin:0;
+    background-repeat: no-repeat;
+    background-position: center center;
+    float: left;
+    padding: 0 150px;
+  }
+  form {
+    float: left;
+    @extend .form-inline;
+  }
+  input {
+    @extend .form-control;
+    width: auto !important;
+    margin-right: 10px;
+  }
+  button {
+    @extend .btn;
+    @extend .btn-default;
+    margin-right: 10px;
+    &:not(:last-child) {
+      @extend .btn-primary;
+    }
+  }
+}
+
+.deployment_summary_pane {
+  padding-top: 60px;
+}
+
+.service-box {
+  width: 200px;
+  display: block;
+  float: left;
+  height: 300px;
+  min-height: 200px;
+  margin-right: 10px;
+  overflow: auto;
+}
+
+
+.nav > li > a.roles_list {
+  padding: 0;
+  border: 1px solid #ddd;
+  & > div {
+    padding: 10px;
+    &:not(:first-child) {
+      border-left: 1px solid #ddd;
+    }
+  }
+}
+
+.association.well {
+  min-height: 500px;
+  margin-top: 50px;
+  h4{
+    margin: 6px 0 6px 0;
+    &.pull-left {
+      margin-left: 10px;
+    }
+  }
+}
+
+// subnet and nics drag 'n drop association
+.subnet-type-pull, .subnet-pull {
+  @extend .btn;
+  @extend .btn-default;
+  background: $well-bg;
+  margin: 3px 0;
+  &:active, &.active {
+    box-shadow: none;
+    z-index: 1;
+  }
+}
+
+.subnet-pull {
+  text-align: left;
+  .virtual {
+    background-color: #d7f5f5;
+  }
+}
+
+.empty-zone {
+  border: 1px dashed #999;
+  display: inline-block;
+  width:100px;
+  background: transparent;
+  min-width: 100px;
+  &:hover, &:active {
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+.subnet-drop-zone.panel-droppable,
+#subnet_types.panel-droppable,
+.interface.panel-droppable,
+#subnets.panel-droppable {
+  border: 1px solid $panel-success-text;
+  .empty-zone {
+    border: 1px dashed $panel-success-text;
+  }
+}
+
+#configure_networks_modal {
+  .modal-dialog {
+    width: 90%;
+  }
+
+  .modal-body{
+    overflow-y: auto;
+  }
+}
+
+#all_details_modal {
+  .modal-dialog {
+    width: 60%;
+    min-width: 500px;
+  }
+
+  .modal-body{
+    overflow-y: auto;
+  }
+}
+
+h3[data-toggle="collapse"] {
+  cursor: pointer;
+  span.glyphicon:before {
+    transition: all .3s ease 0s;
+    display: inline-block;
+  }
+  &.active span.glyphicon:before {
+    color: $brand-primary;
+    -ms-transform: rotate(180deg); /* IE 9 */
+    -webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
+    transform: rotate(180deg);
+  }
+}
+
+.inset_form {
+  font-size: 85%;
+  .form-group {
+    margin-bottom: 0;
+    .control-label {
+      text-align: left;
+    }
+    .help-block {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.single_password.inset_form {
+  margin-left: 192px;
+}
+
+.ui-draggable-dragging {
+  z-index: 1000;
+}

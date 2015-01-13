@@ -1,0 +1,65 @@
+<form class="form form-horizontal">
+
+  {{text-f label="Name" value=name }}
+
+  {{select-f label='Organization'
+              content=organizations
+              optionLabelPath="content.name"
+              optionValuePath="content.id"
+              value=selectedOrganization.id
+              selection=selectedOrganization
+              }}
+
+  {{select-f label='Location'
+              content=locations
+              optionLabelPath="content.name"
+              optionValuePath="content.id"
+              value=selectedLocation.id
+              selection=selectedLocation
+              }}
+
+  {{select-f label='Hostgroup'
+              content=hostgroups
+              optionLabelPath="content.name"
+              optionValuePath="content.id"
+              value=selectedHostgroup.id
+              selection=selectedHostgroup
+              prompt="Select Host group"
+              }}
+
+  {{select-f label='Environment'
+              content=environments
+              optionLabelPath="content.name"
+              optionValuePath="content.id"
+              value=selectedEnvironment.id
+              selection=selectedEnvironment
+              prompt="Select Environment"
+              }}
+
+  {{select-f label='Deploy on'
+              content=null
+              prompt="Select Compute Resource"
+              }}
+
+  {{select-f label='Subnet'
+              content=null
+              prompt="Select Subnet"
+              }}
+
+  {{select-f label='Domain'
+              content=null
+              prompt="Select Domain"
+              }}
+
+  {{text-f label="MAC address" value=mac }}
+
+  <div class='col-md-offset-1' style='padding-top:15px;'>
+    NOTE: THIS IS FOR DEMO PURPOSES AND IS NOT THE FULL NEW HOST FORM
+  </div>
+
+</form>
+
+
+<div style='float:right;padding:25px 0px;'>
+  <button {{action 'goNext'}} class='btn btn-primary btn-sm'>Next</button>
+</div>

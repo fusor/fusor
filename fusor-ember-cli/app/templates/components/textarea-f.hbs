@@ -1,0 +1,11 @@
+{{#base-f label=label labelSize=labelSize inputSize=inputSize help-inline=help-inline}}
+
+  {{! DRY THIS UP. HOW TO DO CONDITIONAL WITHIN HANDLEBARS HELPER}}
+  {{#if rowsPassed}}
+    {{textarea class='form-control' value=value placeholder=placeholder rows=numRows}}
+  {{else}}
+    {{textarea class='form-control' value=value placeholder=placeholder}}
+  {{/if}}
+  {{yield}}
+
+{{/base-f}}

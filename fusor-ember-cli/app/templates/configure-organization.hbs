@@ -1,0 +1,36 @@
+<div class="row">
+  <div class='col-md-9'>
+    <div style='text-align:right;margin-top:15px;margin-bottom:15px;'>
+     <button class='btn btn-success' {{action 'showModal' 'newOrganizationModal'}}>Add Organization</button>
+    </div>
+
+    <table class="table table-bordered small">
+      <thead>
+        <tr>
+          <th class="col-md-1"></th>
+          <th class="col-md-4"> Organization Name</th>
+          <th class="col-md-4"> Description </th>
+        </tr>
+      </thead>
+
+      <tbody>
+      {{#each org in organizations itemController="organization"}}
+        {{tr-organization org=org selectedOrganzation=selectedOrganzation}}
+      {{/each}}
+      </tbody>
+    </table>
+
+    <br />
+    <br />
+    <div style='float:right'>
+        {{#link-to 'satellite' class='btn btn-default'}}Back{{/link-to}}
+        {{#link-to 'configure-environment' class='btn btn-primary'}}Next{{/link-to}}
+    </div>
+
+  </div>
+</div>
+
+
+{{#bs-modal name="newOrganizationModal" fade=true footerButtonsBinding="rhciModalButtons" title="Create New Organization"}}
+  {{partial 'new-organization'}}
+{{/bs-modal}}

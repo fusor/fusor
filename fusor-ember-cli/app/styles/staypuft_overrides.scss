@@ -1,0 +1,184 @@
+@import "bootstrap/variables";
+@import "bootstrap/mixins";
+
+// BEGIN Override non functioning table row backgrounds with table-stripped, remove
+// when Bootstrap is updated to 3.1 and higher
+@mixin table-row-variant($state, $background) {
+  // Exact selectors below required to override `.table-striped` and prevent
+  // inheritance to nested tables.
+  .table > thead > tr,
+  .table > tbody > tr,
+  .table > tfoot > tr {
+    > td.#{$state},
+    > th.#{$state},
+    &.#{$state} > td,
+    &.#{$state} > th {
+      background-color: $background;
+    }
+  }
+
+  // Hover states for `.table-hover`
+  // Note: this is not available for cells or rows within `thead` or `tfoot`.
+  .table-hover > tbody > tr {
+    > td.#{$state}:hover,
+    > th.#{$state}:hover,
+    &.#{$state}:hover > td,
+    &:hover > .#{$state},
+    &.#{$state}:hover > th {
+      background-color: darken($background, 5%);
+    }
+  }
+}
+// Table backgrounds
+//
+// Exact selectors below required to override `.table-striped` and prevent
+// inheritance to nested tables.
+
+// Generate the contextual variants
+@include table-row-variant('active', $table-bg-active);
+@include table-row-variant('info', $state-info-bg);
+@include table-row-variant('success', $state-success-bg);
+@include table-row-variant('danger', $state-danger-bg);
+@include table-row-variant('warning', $state-warning-bg);
+// END of the table-stripped backgrounds fix
+
+.well {
+  padding: 19px 36px;
+  background-color: #f5f5f5;
+  @include center-block;
+
+  table tbody td {
+    background-color: #fff;
+  }
+}
+
+.tabbed_side_nav_form{
+  .nav.nav-pills.nav-stacked {
+    padding-right: 0;
+    & > li > a {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    & > li.active {
+      z-index: 1;
+      & > a:after {
+        content: "";
+        position: absolute;
+        top: 0px;
+        right:-15px;
+        width: 0px;
+        height: 0px;
+        border-style: solid;
+        border-width: 20px 0 20px 15px;
+        border-color: transparent transparent transparent rgb(66, 139, 202);
+        -webkit-transform:rotate(360deg);
+      }
+    }
+
+    & > li.tab-error > a.tab-error span {
+      visibility: visible !important;
+      padding-left: 6px;
+    }
+
+    & > li.tab-error.active {
+      a {
+        background-color: $state-danger-text;
+        color: white !important;
+      }
+
+      a:after {
+        border-color: transparent transparent transparent $state-danger-text;
+      }
+    }
+  }
+  .tab-content {
+    min-height: 520px;
+    border-left: 1px solid #999;
+    background: #eee;
+    box-shadow: -3px 0px 4px -3px rgba(50, 50, 50, 0.75);
+  }
+}
+
+.wizard {
+  width: 900px;
+  display: block;
+  @include center-block;
+}
+
+.tabbed_side_nav_table{
+  .nav {
+    padding: 5px 4px 0px 15px;
+    & > li.activated {
+      z-index: 1;
+      &:after, &:before {
+        content: "";
+        position: absolute;
+        top: 0px;
+        right:-10px;
+        width: 0px;
+        height: 0px;
+        border-style: solid;
+        border-width: 20px 15px 20px 0;
+        border-color: rgba(238, 238, 238, 0) rgb(238, 238, 238) rgba(238, 238, 238, 0) rgba(238, 238, 238, 0);
+        -webkit-transform:rotate(360deg);
+      }
+      &:before {
+        border-width: 21px 16px 21px 0;
+        top: -1px;
+        right: -9px;
+        border-right-color: rgb(217, 217, 217);
+      }
+    }
+    li {
+      border: 1px solid rgb(227, 227, 227);
+      height: 42px;
+      margin-bottom: 3px;
+      border-radius: 4px;
+      line-height: 40px;
+      box-sizing: border-box;
+      padding: 0;
+      text-align: center;
+      &:hover, &.activated {
+        background: rgb(238, 238, 238);
+      }
+      & > div {
+        padding: 0;
+        div.group_name {
+          text-align: left;
+          padding: 0 8px;
+        }
+        &:not(:first-child) {
+          border-left: 1px solid rgb(227, 227, 227);
+        }
+        &:last-child > a {
+          border-top-right-radius: 4px;
+          border-bottom-right-radius: 4px;
+        }
+        & > a {
+          box-sizing: border-box;
+          display: block;
+          &.activated {
+            background: $brand-primary;
+            color: white;
+          }
+          &.disabled {
+            color: $btn-link-disabled-color;
+          }
+        }
+      }
+    }
+  }
+  .tab-content {
+    padding-left: 4px;
+    .well {
+      background: #eee;
+      padding: 10px 19px;
+    }
+  }
+}
+
+.panel-body {
+  ul {
+    padding-left: 1em;
+  }
+}
