@@ -1,0 +1,21 @@
+<div class=" ui-droppable">
+
+  {{#unless hidePanelHeading}}
+  <div class="panel-heading">
+    <h3 class="panel-title"> {{subnet.name}} <small> - {{subnet.network}}</small></h3>
+  </div>
+  {{/unless}}
+
+  <div class="panel-body subnet-types">
+    {{#each trafficType in trafficTypes}}
+      {{#draggable-object content=trafficType}}
+        {{traffic-type trafficType=trafficType}}
+        {{!trafficType.name}}
+      {{/draggable-object}}
+    {{/each}}
+    {{#unless hideEmptyZone}}
+      <div class="empty-zone">&nbsp;</div>
+    {{/unless}}
+  </div>
+
+</div>

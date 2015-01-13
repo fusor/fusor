@@ -1,0 +1,27 @@
+<div class="row tabbed_side_nav_form">
+
+  <ul class="nav nav-pills nav-stacked col-md-3">
+
+      {{#link-to 'osp-settings' tagName='li'}}
+        <a>Settings</a>
+      {{/link-to}}
+
+      {{#link-to 'osp-network' tagName='li'}}
+        <a>Network Configuration</a>
+      {{/link-to}}
+
+      {{#link-to 'osp-overview' tagName='li'}}
+        <a>Services Overview</a>
+      {{/link-to}}
+
+      {{#link-to 'osp-configuration' tagName='li'}}
+        <a>Services Configuration</a>
+      {{/link-to}}
+  </ul>
+
+  <div class="tab-content col-md-9">
+      {{outlet}}
+  </div>
+
+</div>
+

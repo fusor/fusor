@@ -1,0 +1,19 @@
+<div class="clearfix">
+   <div class="form-group">
+
+      <label {{bind-attr class=":control-label labelClassSize class"}}>
+        {{label}}
+      </label>
+
+      <div {{bind-attr class="inputClassSize"}}>
+        {{yield}}
+      </div>
+
+      <span class='help-block'>
+      {{help-inline}}
+      </span>
+
+
+
+   </div>
+</div>

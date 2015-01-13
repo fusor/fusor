@@ -1,0 +1,21 @@
+<div class='row'>
+  <div class='col-md-12'>
+    <br />
+    <form class="form form-horizontal">
+
+      {{#base-f label="Storage Type"}}
+        {{radio-button label="NFS" checked=storageType value="NFS"}}NFS
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        {{radio-button label="Gluster" checked=storageType value="Gluster"}}Gluster
+      {{/base-f}}
+
+      {{text-f label="Storage Address" value=storageAddress}}
+      {{text-f label="Share Path" value=sharePath}}
+
+
+      {{#if isNFS}}
+
+      {{/if}}
+    </form>
+  </div>
+</div>

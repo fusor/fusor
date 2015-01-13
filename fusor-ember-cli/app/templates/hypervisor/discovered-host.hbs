@@ -1,0 +1,34 @@
+<!-- NOTE: This will assign the <strong>Self Hosted Engine</strong> hostgroup to the selected hosts.
+ -->
+ TODO - LIMIT SELCTION TO ONE ONLY<BR />
+
+<strong>{{model.length}}</strong> hosts found
+{{bs-button title="Refresh Discovered Hosts" type='default'}}
+<br />
+<br />
+<strong>{{cntSelectedHosts}}</strong> {{hostInflection}} selected
+<br />
+<br />
+<table class="table table-bordered table-striped small">
+  <thead>
+    <tr>
+      <th> {{input type="checkbox" checked=allChecked}}</th>
+      <th> FQDN </th>
+      <th> Vendor </th>
+      <th> CPU </th>
+      <th> Memory </th>
+    </tr>
+  </thead>
+
+  <tbody>
+  {{#each host in controller.model itemController="host"}}
+    <tr>
+      <td> {{input type="checkbox" name="isSelectedAsHypervisor" checked=host.isSelectedAsHypervisor}}</td>
+      <td> {{host.name}} </td>
+      <td> {{host.vendor}} </td>
+      <td> {{host.cpu}} </td>
+      <td> {{host.memory}} </td>
+    </tr>
+  {{/each}}
+  </tbody>
+</table>

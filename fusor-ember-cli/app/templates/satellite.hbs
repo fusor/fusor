@@ -1,0 +1,22 @@
+<div class="row tabbed_side_nav_form">
+
+  <ul class="nav nav-pills nav-stacked col-md-3">
+      {{#link-to 'satellite.index' tagName='li'}}
+        <a>Deployment Name</a>
+      {{/link-to}}
+
+      {{#link-to 'configure-organization' tagName='li'}}
+        <a>Configure Organization</a>
+      {{/link-to}}
+
+      {{#link-to 'configure-environment' tagName='li'}}
+        <a>Configure Lifecycle Environment</a>
+      {{/link-to}}
+
+  </ul>
+
+  <div class="tab-content col-md-9">
+      {{outlet}}
+  </div>
+
+</div>

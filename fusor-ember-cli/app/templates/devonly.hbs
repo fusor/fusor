@@ -1,0 +1,20 @@
+<div class="row">
+  <div class="col-md-7 col col-md-offset-2">
+    {{#if session.isAuthenticated}}
+      <div class="alert alert-danger" role="alert">
+        You are already logged in and shouldn't be here.<br />
+        You can
+        <a {{ action 'invalidateSession' }}>logout</a>
+        or go to {{#link-to 'rhci'}}new deployment{{/link-to}}
+      </div>
+    {{else}}
+      or Login using credentials from
+      <a {{ action 'authenticateWithFacebook'}}>Facebook</a>
+      |
+      <a {{ action 'authenticateSession' 'google'}}>Google</a>
+      |
+      <a {{ action 'authenticateSession' 'github'}}>Github</a>
+      |
+    {{/if}}
+  </div>
+</div>

@@ -1,0 +1,33 @@
+<h4> Engine Configuration </h4>
+
+<div class='row'>
+  <div class='col-md-12'>
+    <br />
+    <form class="form form-horizontal">
+
+      {{text-f label="Engine admin password"}}
+      {{text-f label="Confirm admin password"}}
+
+      {{text-f label="Datacenter Name" value=datacenterName}}
+      {{text-f label="Cluster Name" value=clusterName}}
+      {{text-f label="Storage name" value=storageName}}
+
+      {{text-f label="CPU Type" value=cpuType help-inline='TODO selection list'}}
+
+      {{!select-simple-f label="Application Mode" content=applicationModes}}
+
+
+      {{!select-simple-f label="Engine database location" content=engineLocation}}
+
+      {{!select-simple-f label="Automatically configure postgresql and create Engine database" content=dbSetup}}
+
+
+      {{!select-simple-f label="Set the application as the default page of the web server" content=yesNo}}
+
+      {{!select-simple-f label="Configure apache to use SSL using a certificate issued from the internal CA" content=dbSetup}}
+
+
+    </form>
+  </div>
+</div>
+

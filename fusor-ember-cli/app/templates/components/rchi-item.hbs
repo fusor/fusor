@@ -1,0 +1,35 @@
+
+<img {{bind-attr src=srcImage}} class="img-responsive">
+
+  <div {{bind-attr class=":rhci-footer-box"}}>
+       {{#if showMsgToSelect}}
+         {{#rhci-hover-text}}
+           Click to select {{name}} to Install
+         {{/rhci-hover-text}}
+       {{else}}
+         {{#if showMsgToDeselect}}
+           {{#rhci-hover-text}}
+             Click to deselect {{name}}
+           {{/rhci-hover-text}}
+         {{else}}
+          <div class='rhci-item-text'>
+            {{yield}}
+          </div>
+         {{/if}}
+       {{/if}}
+  </div>
+
+</div>
+
+<div {{bind-attr class=":rhci-footer isChecked:rhci-footer-selected:rhci-footer-unselected"}}>
+     <i {{bind-attr class=":fa :fa-5x isChecked:fa-check:fa-remove"}}></i>
+     <span class='rhci-install-footer'>
+       {{#if isChecked}}
+         Install
+       {{else}}
+         Do not install
+       {{/if}}
+       {{name}}
+     </span>
+</div>
+

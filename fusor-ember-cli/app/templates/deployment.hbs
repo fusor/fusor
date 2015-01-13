@@ -1,0 +1,18 @@
+<br />
+<h1>New {{nameRHCI}} Deployment: {{deploymentName}}</h1>
+
+<ul class="wizard">
+  {{#link-to 'satellite' tagName='li'}}{{step-number value=1}}{{nameSatellite}}{{/link-to}}
+  {{#if isRhev}}
+    {{#link-to 'rhev' tagName='li'}}{{step-number value=stepNumberRhev}}{{nameRhev}}{{/link-to}}
+  {{/if}}
+  {{#if isOpenStack}}
+    {{#link-to 'openstack' tagName='li'}}{{step-number value=stepNumberOpenstack}}{{nameOpenStack}}{{/link-to}}
+  {{/if}}
+  {{#if isCloudForms}}
+    {{#link-to 'cloudforms' tagName='li'}}{{step-number value=stepNumberCloudForms}}{{nameCloudForms}}{{/link-to}}
+  {{/if}}
+  {{#link-to 'review' tagName='li' disabled=disableReview}}{{step-number value=stepNumberReview}}Review{{/link-to}}
+</ul>
+
+{{outlet}}

@@ -1,0 +1,11 @@
+<div class='row'>
+  <div {{bind-attr class=":col-md-12 showSideMenu:nav-expanded"}}>
+    <nav>
+      <button {{action 'toggleSideMenu'}} class='btn btn-default btn-block'>
+          Close Etherpad
+          <span style='float:right'>X&nbsp;&nbsp;</span>
+      </button>
+<!--       <iframe class='notepad' {{!bind-attr src=etherpadUrl}}></iframe>
+ -->    </nav>
+  </div>
+</div>

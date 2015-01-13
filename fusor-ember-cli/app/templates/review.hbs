@@ -1,0 +1,23 @@
+<div class="row tabbed_side_nav_form">
+
+  <ul class="nav nav-pills nav-stacked col-md-3">
+      {{#unless isUpstream}}
+        {{#link-to 'subscriptions' tagName='li'}}
+          <a>{{nameSelectSubscriptions}}</a>
+        {{/link-to}}
+      {{/unless}}
+
+      {{#link-to 'review.installation' tagName='li' disabled=disableTabInstallation}}
+        <a>Review Installation</a>
+      {{/link-to}}
+
+      {{#link-to 'review.progress' tagName='li' disabled=disableTabProgress}}
+        <a>Installation Progress</a>
+      {{/link-to}}
+  </ul>
+
+  <div class="tab-content col-md-9">
+      {{outlet}}
+  </div>
+
+</div>

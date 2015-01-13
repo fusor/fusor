@@ -1,0 +1,22 @@
+<div class="row">
+  <div class='col-md-9'>
+    <br />
+    <form class="form-horizontal" role="form">
+
+      {{text-f label="Name" value=name inputSize='col-md-5' }}
+
+      {{textarea-f label="Description" value=description inputSize='col-md-5' }}
+
+      <div class='pull-right'>
+        <br />
+        <button {{action 'showModal' 'cancelDeploymentModal'}} class='btn btn-default'>Cancel</button>
+        {{#link-to 'configure-organization' class='btn btn-primary'}}Next{{/link-to}}
+      </div>
+
+    </form>
+  </div>
+</div>
+
+{{#bs-modal name="cancelDeploymentModal" fade=true footerButtonsBinding="rhciModalButtons" title="Cancel Deployment"}}
+  Are you sure you want to cancel?
+{{/bs-modal}}

@@ -1,0 +1,31 @@
+<strong>Select from the hypervisors selected in previous step</strong>
+
+<br />
+<br />
+<table class="table table-bordered table-striped small">
+  <thead>
+    <tr>
+      <th> {{input type="checkbox"}}</th>
+      <th> MAC </th>
+      <th> Vendor </th>
+      <th> CPU </th>
+      <th> Memory </th>
+    </tr>
+  </thead>
+
+  <tbody>
+  {{#each controller.model itemController="host"}}
+    <tr>
+      <td> {{input type="checkbox" checked=isChecked}}</td>
+      <td> {{mac}} </td>
+      <td> {{vendor}} </td>
+      <td> {{cpu}} </td>
+      <td> {{memory}} </td>
+    </tr>
+  {{/each}}
+  </tbody>
+</table>
+
+<div style='float:right;padding:25px 0px;'>
+  <button {{action 'goNext'}} class='btn btn-primary btn-sm'>Next</button>
+</div>

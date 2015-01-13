@@ -1,0 +1,27 @@
+<br />
+<h1>Deployments <span style='float:right;'>{{#link-to 'rhci' class='btn btn-success'}}New Deployment{{/link-to}}</span>
+</h1>
+
+<br />
+
+<table class="table table-bordered table-striped small">
+  <thead>
+    <tr>
+      <th> Name </th>
+      <th> Environment </th>
+      <th> Organization </th>
+    </tr>
+    </thead>
+
+  <tbody>
+  {{#each controller.model itemController="deployment"}}
+    <tr>
+      <td> {{name}} </td>
+      <td> {{environment}} </td>
+      <td> {{organization}} </td>
+    </tr>
+  {{/each}}
+  </tbody>
+</table>
+
+

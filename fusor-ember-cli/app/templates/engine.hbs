@@ -1,0 +1,20 @@
+<div class="row">
+  </div class='col-md-12'>
+
+    <h4 style='padding-left:15px;'>Select Target Machine to Install Engine</h4>
+
+    <ul class="nav nav-tabs col-md-12" data-tabs="pills">
+        {{#link-to 'engine.discovered-host' tagName='li'}}
+          <a>Discovered Hosts</a>
+        {{/link-to}}
+
+        {{#link-to 'engine.new-host' tagName='li'}}
+          <a>New VM</a>
+        {{/link-to}}
+    </ul>
+    <div class="col-md-12">
+          {{outlet}}
+    </div>
+  </div>
+</div>
+

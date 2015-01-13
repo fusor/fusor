@@ -1,0 +1,45 @@
+<div {{bind-attr class=":navbar :navbar-default :navbar-outer isUpstream:navbar-outer-upstream"}}>
+  <div class="navbar-header">
+    <div {{bind-attr class="isUpstream:container:container-fluid"}}>
+
+      <div class="navbar-brand">
+        {{#if isUpstream}}
+          <img alt="Foreman" src="assets/foreman.png">
+          <a href="/">Foreman</a>
+        {{else}}
+          <a href="/">RED HAT SATELLITE</a>
+        {{/if}}
+      </div>
+
+      <ul class="nav navbar-nav navbar-right navbar-header-menu navbar-collapse collapse">
+
+        <li class="dropdown menu_tab_dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            {{session.content.authorizationCode.length}}
+            {{session.content.provider}}
+            <img alt="Change your avatar at gravatar.com" class="avatar small" src="assets/user.jpg">{{loginUsername}} <span class="caret"></span>
+          </a>
+
+          <ul class="dropdown-menu pull-right">
+
+            {{#if session.isAuthenticated}}
+            <li class="menu_tab_/users_edit">
+              <a {{action "notImplemented"}}>My account</a>
+            </li>
+
+            <li class="divider">
+            </li>
+
+            <li class="menu_tab_/users_logout">
+              <a {{action "invalidateSession"}}>Log out</a>
+            </li>
+            {{/if}}
+
+          </ul>
+
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</div>

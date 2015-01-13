@@ -1,0 +1,23 @@
+{{#if isEmberCliMode}}
+  {{#if isLoggedIn}}
+    {{partial "topbar"}}
+  {{/if}}
+
+  {{#if showMainMenu}}
+    {{partial "mainmenu"}}
+  {{/if}}
+{{/if}}
+
+{{upstream-downstream isUpstream=isUpstream}}
+
+<div class="pull-right">
+      <a {{action 'toggleSideMenu'}} class="uxnotes">
+      UX Notes &nbsp;<i class="fa fa-bars fa-lg white"></i>
+      </a>
+</div>
+
+{{render 'side-menu'}}
+
+<div {{bind-attr class="isContainer:container:container-fluid"}}>
+  {{outlet}}
+</div>

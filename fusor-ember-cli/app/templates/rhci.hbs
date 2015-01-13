@@ -1,0 +1,46 @@
+<div class='row'>
+  <div class='col-md-12'>
+    <h1>New Deployment: Select Cloud Infrastructure Products</h1>
+
+    Choose the products to deploy. The installer guides you through creating a new {{nameRHCI}} Cloud Infrastructure deployment.
+    <br />
+    You may click anywhere in a box to select or de-select.
+    <br />
+    <br />
+  </div>
+</div>
+
+<div class='row' style='height:370px;'>
+
+  <div class='col-md-4'>
+    {{#rchi-item srcImage=imgRhev isChecked=isRhev name=nameRhev}}
+        Complete virtualization management bacon ipsum dolor sit amet kevin incididunt enim minim. Id
+        officia aliqua, mollit short ribs cillum consectetur spare ribs magna commodo.
+    {{/rchi-item}}
+  </div>
+
+  <div class='col-md-4'>
+    {{#rchi-item srcImage=imgOpenStack isChecked=isOpenStack name=nameOpenStack}}
+        OpenStack gives you a flexible, secure foundation to build a
+        massively scalable private or public cloud ... lorem ipsum
+    {{/rchi-item}}
+  </div>
+
+  <div class='col-md-4'>
+    {{#rchi-item srcImage=imgCloudForms isChecked=isCloudForms name=nameCloudForms}}
+        Manage your virtual, private, and hybrid cloud infrastructures. bacon ipsum dolor sit amet kevin incididunt enim minim. Id
+        officia aliqua, mollit short ribs cillum consectetur spare ribs.
+    {{/rchi-item}}
+  </div>
+
+</div>
+
+<br />
+<div class='row'>
+  <div class='col-md-12'>
+    <div style='float:right;'>
+      {{#link-to 'deployments' class="btn btn-default"}}Cancel{{/link-to}}
+      {{#link-to 'deployment' class="btn btn-primary" disabled=disableNext }}Next{{/link-to}}
+    </div>
+  </div>
+</div>

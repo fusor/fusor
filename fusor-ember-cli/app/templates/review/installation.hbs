@@ -1,0 +1,149 @@
+<div class='row'>
+  <div class='col-md-11 col-md-offset-1'>
+
+    {{#accordion-item name=nameSatellite isOpen=true}}
+      Name: {{#link-to 'satellite'}}{{nameDeployment}}{{/link-to}} <br />
+
+      Organization: {{#link-to 'configure-organization'}}{{selectedOrganization}}{{/link-to}} <br />
+
+      Environment: {{#link-to 'configure-environment'}}{{selectedEnvironment}}{{/link-to}}  <br />
+
+    {{/accordion-item}}
+
+    {{#accordion-item name=nameRhev isOpen=false}}
+      Setup Type: {{#link-to 'rhev-setup'}} {{oVirtHostedtype}} {{/link-to}}
+      <br />
+      <br />
+      {{#if isSelfHosted}}
+        Hypervisor/Engine: <br />
+        {{#each host in hypervisorSelectedHosts}}
+          {{#link-to 'hypervisor.discovered-host'}} {{host.mac}} {{/link-to}}<br />
+        {{/each}}
+      {{else}}
+        Hypervisor: <br />
+        {{#each host in hypervisorSelectedHosts}}
+          {{#link-to 'hypervisor.discovered-host'}} {{host.mac}} {{/link-to}}<br />
+        {{/each}}
+        <br />
+        Engine: <br />
+        {{#each host in engineSelectedHosts}}
+          {{#link-to 'engine.discovered-host'}} {{host.mac}} {{/link-to}}<br />
+        {{/each}}
+      {{/if}}
+      <br />
+      Storage Type:
+        {{#link-to 'storage'}}
+          {{controllers.storage.storageType}}
+        {{/link-to}} <br />
+        {{#if controllers.storage.isNFS}}
+          Local ISO domain path:
+           {{#link-to 'storage'}}
+          {{controllers.storage.isoDomainPath}}
+          {{/link-to}} <br />
+          Local ISO domain ACL:
+           {{#link-to 'storage'}}
+          {{controllers.storage.isoDomainAcl}}
+          {{/link-to}} <br />
+          Local ISO domain name:
+           {{#link-to 'storage'}}
+          {{controllers.storage.isoDomainName}}
+          {{/link-to}} <br />
+        {{/if}}
+
+      <br />
+      DNS Name:
+        {{#link-to 'networking'}}
+          {{controllers.networking.dnsName}}
+        {{/link-to}} <br />
+
+      <br />
+      Datacenter Name:
+        {{#link-to 'rhev-options'}}
+          {{controllers.rhev-options.datacenterName}}
+        {{/link-to}} <br />
+      Cluster Name:
+        {{#link-to 'rhev-options'}}
+          {{controllers.rhev-options.clusterName}}
+        {{/link-to}} <br />
+      Host Name:
+        {{#link-to 'rhev-options'}}
+          {{controllers.rhev-options.hostName}}
+        {{/link-to}} <br />
+      Host Address:
+        {{#link-to 'rhev-options'}}
+          {{controllers.rhev-options.hostAddress}}
+        {{/link-to}} <br />
+      Storage Name:
+        {{#link-to 'rhev-options'}}
+          {{controllers.rhev-options.storageName}}
+        {{/link-to}} <br />
+
+      <br />
+    {{/accordion-item}}
+
+    {{#accordion-item name=nameOpenStack isOpen=false}}
+      High Availability:
+        {{#link-to 'osp-settings'}}
+          {{controllers.osp-settings.ha}}
+        {{/link-to}} <br />
+      Networking:
+        {{#link-to 'osp-settings'}}
+          {{controllers.osp-settings.networking}}
+        {{/link-to}} <br />
+      Messaging Provider:
+        {{#link-to 'osp-settings'}}
+          {{controllers.osp-settings.messaging}}
+        {{/link-to}} <br />
+      Platform:
+        {{#link-to 'osp-settings'}}
+          {{controllers.osp-settings.platform}}
+        {{/link-to}} <br />
+      Service Password:
+        {{#link-to 'osp-settings'}}
+          {{controllers.osp-settings.password}}
+        {{/link-to}} <br />
+      Custom Repos:
+        {{#link-to 'osp-settings'}}
+          {{showdown-addon controllers.osp-settings.customRepos}}
+        {{/link-to}}<br />
+        <br />
+
+      Tenant Network Type
+        {{#link-to 'osp-configuration'}}
+          {{controllers.osp-configuration.tenantType}}
+        {{/link-to}} <br />
+      Core Plugin Type
+        {{#link-to 'osp-configuration'}}
+          {{controllers.osp-configuration.corePlugin}}
+        {{/link-to}} <br />
+      Glance Driver Backend
+        {{#link-to 'osp-configuration'}}
+          {{controllers.osp-configuration.glanceBackend}}
+        {{/link-to}} <br />
+      Cinder Driver Backend
+        {{#link-to 'osp-configuration'}}
+          {{controllers.osp-configuration.cinderBackend}}
+        {{/link-to}} <br />
+    {{/accordion-item}}
+
+    {{#accordion-item name=nameCloudForms isOpen=false}}
+      Where to Install?
+        {{#link-to 'where-install'}}
+          {{controllers.where-install.whereInstallCf}}
+        {{/link-to}} <br />
+    {{/accordion-item}}
+
+    <br />
+    <br />
+
+    <div class='pull-right'>
+      <br />
+      <button {{action 'showModal' 'cancelDeploymentModal'}} class='btn btn-default'>Cancel</button>
+      {{#link-to 'review.progress' class='btn btn-primary'}}Install{{/link-to}}
+    </div>
+
+
+  </div>
+</div>
+
+{{outlet}}

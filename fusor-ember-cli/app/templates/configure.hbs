@@ -1,0 +1,91 @@
+<div class="row">
+  <div class='col-md-9'>
+        <form class="form form-horizontal">
+
+<h4 style='text-align:right;'>
+ <button class='btn btn-success' {{action 'showModal' 'newOrganizationModal'}}>Add Organization</button>
+</h4>
+
+<table class="table table-bordered small">
+  <thead>
+    <tr>
+      <th class="col-md-1"></th>
+      <th class="col-md-4"> Organization Name</th>
+      <th class="col-md-4"> Description </th>
+    </tr>
+  </thead>
+
+  <tbody>
+  {{#each org in organizations itemController="organization"}}
+    {{tr-organization org=org selectedOrganzation=selectedOrganzation}}
+  {{/each}}
+  </tbody>
+</table>
+
+        <br />
+        <br />
+<div class='col-md-offset-0 col-md-5'>
+  <strong>Lifecycle Environment</strong>
+</div>
+ <div style='text-align:right;'>
+ <button class='btn btn-success' {{action 'showModal' 'newEnvironmentModal'}}>Add Environment</button>
+ </div>
+
+    <div class="path-selector">
+        <ul class="path-list">
+          <li class="path-list-item">
+          </li>
+          {{#each env in environments itemController="environment"}}
+            {{env-path-list-item env=env selectedEnvironment=selectedEnvironment}}
+          {{/each}}
+          <li class="path-list-item">
+            <label class="path-list-item-label" style='color:gray;'>
+              &nbsp;
+            </label>
+          </li>
+        </ul>
+    </div>
+
+    {{#if hasNewEnvs}}
+      {{#each env in newenvs itemController="environment"}}
+      <div class="path-selector">
+        <ul class="path-list">
+          <li class="path-list-item">
+            <label class="path-list-item-label" style='color:gray;'>
+              Library
+            </label>
+          </li>
+          {{env-path-list-item env=env selectedEnvironment=selectedEnvironment}}
+          <li class="path-list-item">
+            <label class="path-list-item-label" style='color:gray;'>
+              &nbsp;
+            </label>
+          </li>
+        </ul>
+      </div>
+      {{/each}}
+    {{/if}}
+
+
+         <br />
+         <br />
+          <div style='float:right'>
+              {{#link-to 'satellite' class='btn btn-default'}}Back{{/link-to}}
+              {{#link-to 'satellite.subscriptions' class='btn btn-primary'}}Next{{/link-to}}
+          </div>
+
+        </form>
+  </div>
+
+
+</div>
+
+
+{{#bs-modal name="newOrganizationModal" fade=true footerButtonsBinding="rhciModalButtons" title="Create New Organization"}}
+  {{partial 'new-organization'}}
+{{/bs-modal}}
+
+<!-- if use RENDER here, I get binding in new-environment controller -->
+{{#bs-modal name="newEnvironmentModal" fade=true footerButtonsBinding="rhciNewEnvButtons" title="Create New Environment"}}
+  {{partial 'new-environment'}}
+{{/bs-modal}}

@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>FUSOR EMBER CLI</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="/fdddavicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+
+    {{content-for 'head'}}
+
+    <link rel="stylesheet" href="assets/vendor.css">
+    <link rel="stylesheet" href="assets/fusor-ember-cli.css">
+
+    {{content-for 'head-footer'}}
+
+  </head>
+
+  <body>
+    <div id='ember-app'>
+    </div>
+    {{content-for 'body'}}
+
+    <script src="assets/vendor.js"></script>
+    <script src="assets/fusor-ember-cli.js"></script>
+
+    {{content-for 'body-footer'}}
+  </body>
+</html>
