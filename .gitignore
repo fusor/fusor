@@ -1,1 +1,17 @@
 .idea
+
+# compiled output
+/fusor-ember-cli/dist
+/fusor-ember-cli/tmp
+
+# dependencies
+/fusor-ember-cli/node_modules
+/fusor-ember-cli/bower_components
+
+# misc
+/fusor-ember-cli/.sass-cache
+/fusor-ember-cli/connect.lock
+/fusor-ember-cli/coverage/*
+/fusor-ember-cli/libpeerconnection.log
+/fusor-ember-cli/npm-debug.log
+/fusor-ember-cli/testem.log
