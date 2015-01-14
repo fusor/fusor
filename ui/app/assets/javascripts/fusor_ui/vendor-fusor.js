@@ -63493,9 +63493,9 @@ define("ember/load-initializers",
         var fixture = lookupFixture(settings.url);
         if (fixture) {
           if (fixture.textStatus === 'success' || fixture.textStatus == null) {
-            return Ember.run(null, resolve, fixture);
+            return Ember.run.later(null, resolve, fixture);
           } else {
-            return Ember.run(null, reject, fixture);
+            return Ember.run.later(null, reject, fixture);
           }
         }
         settings.success = makeSuccess(resolve);
@@ -63543,13 +63543,29 @@ define("ember/load-initializers",
     }
   });
 ;(function(global){
-var define, requireModule, require, requirejs;
+var enifed, requireModule, eriuqer, requirejs;
 
 (function() {
+
+  var _isArray;
+  if (!Array.isArray) {
+    _isArray = function (x) {
+      return Object.prototype.toString.call(x) === "[object Array]";
+    };
+  } else {
+    _isArray = Array.isArray;
+  }
+  
   var registry = {}, seen = {}, state = {};
   var FAILED = false;
 
-  define = function(name, deps, callback) {
+  enifed = function(name, deps, callback) {
+  
+    if (!_isArray(deps)) {
+      callback = deps;
+      deps     =  [];
+    }
+  
     registry[name] = {
       deps: deps,
       callback: callback
@@ -63567,7 +63583,7 @@ var define, requireModule, require, requirejs;
       if (dep === 'exports') {
         exports = reified[i] = seen;
       } else {
-        reified[i] = require(resolve(dep, name));
+        reified[i] = eriuqer(resolve(dep, name));
       }
     }
 
@@ -63577,7 +63593,7 @@ var define, requireModule, require, requirejs;
     };
   }
 
-  requirejs = require = requireModule = function(name) {
+  requirejs = eriuqer = requireModule = function(name) {
     if (state[name] !== FAILED &&
         seen.hasOwnProperty(name)) {
       return seen[name];
@@ -63638,7 +63654,7 @@ var define, requireModule, require, requirejs;
   };
 })();
 
-define("activemodel-adapter",
+enifed("activemodel-adapter",
   ["activemodel-adapter/system","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -63648,7 +63664,7 @@ define("activemodel-adapter",
     __exports__.ActiveModelAdapter = ActiveModelAdapter;
     __exports__.ActiveModelSerializer = ActiveModelSerializer;
   });
-define("activemodel-adapter/setup-container",
+enifed("activemodel-adapter/setup-container",
   ["ember-data/system/container_proxy","activemodel-adapter/system/active_model_serializer","activemodel-adapter/system/active_model_adapter","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
     "use strict";
@@ -63667,7 +63683,7 @@ define("activemodel-adapter/setup-container",
       container.register('adapter:-active-model', ActiveModelAdapter);
     };
   });
-define("activemodel-adapter/system",
+enifed("activemodel-adapter/system",
   ["activemodel-adapter/system/active_model_adapter","activemodel-adapter/system/active_model_serializer","exports"],
   function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
@@ -63677,7 +63693,7 @@ define("activemodel-adapter/system",
     __exports__.ActiveModelAdapter = ActiveModelAdapter;
     __exports__.ActiveModelSerializer = ActiveModelSerializer;
   });
-define("activemodel-adapter/system/active_model_adapter",
+enifed("activemodel-adapter/system/active_model_adapter",
   ["ember-data/adapters","ember-data/system/adapter","ember-inflector","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
     "use strict";
@@ -63689,7 +63705,6 @@ define("activemodel-adapter/system/active_model_adapter",
       @module ember-data
     */
 
-    var forEach = Ember.EnumerableUtils.forEach;
     var decamelize = Ember.String.decamelize,
         underscore = Ember.String.underscore;
 
@@ -63699,7 +63714,7 @@ define("activemodel-adapter/system/active_model_adapter",
       It has been designed to work out of the box with the
       [active_model_serializers](http://github.com/rails-api/active_model_serializers)
       Ruby gem. This Adapter expects specific settings using ActiveModel::Serializers,
-      `embed :ids, include: true` which sideloads the records.
+      `embed :ids, embed_in_root: true` which sideloads the records.
 
       This adapter extends the DS.RESTAdapter by making consistent use of the camelization,
       decamelization and pluralization methods to normalize the serialized JSON into a
@@ -63818,25 +63833,14 @@ define("activemodel-adapter/system/active_model_adapter",
         https://tools.ietf.org/html/rfc4918#section-11.2
 
         @method ajaxError
-        @param jqXHR
+        @param {Object} jqXHR
         @return error
       */
       ajaxError: function(jqXHR) {
         var error = this._super(jqXHR);
 
         if (jqXHR && jqXHR.status === 422) {
-          var response = Ember.$.parseJSON(jqXHR.responseText),
-              errors = {};
-
-          if (response.errors !== undefined) {
-            var jsonErrors = response.errors;
-
-            forEach(Ember.keys(jsonErrors), function(key) {
-              errors[Ember.String.camelize(key)] = jsonErrors[key];
-            });
-          }
-
-          return new InvalidError(errors);
+          return new InvalidError(Ember.$.parseJSON(jqXHR.responseText));
         } else {
           return error;
         }
@@ -63845,7 +63849,7 @@ define("activemodel-adapter/system/active_model_adapter",
 
     __exports__["default"] = ActiveModelAdapter;
   });
-define("activemodel-adapter/system/active_model_serializer",
+enifed("activemodel-adapter/system/active_model_serializer",
   ["ember-inflector","ember-data/serializers/rest_serializer","exports"],
   function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
@@ -63867,7 +63871,7 @@ define("activemodel-adapter/system/active_model_serializer",
       It has been designed to work out of the box with the
       [active_model_serializers](http://github.com/rails-api/active_model_serializers)
       Ruby gem. This Serializer expects specific settings using ActiveModel::Serializers,
-      `embed :ids, include: true` which sideloads the records.
+      `embed :ids, embed_in_root: true` which sideloads the records.
 
       This serializer extends the DS.RESTSerializer by making consistent
       use of the camelization, decamelization and pluralization methods to
@@ -64007,7 +64011,7 @@ define("activemodel-adapter/system/active_model_serializer",
         @method serializePolymorphicType
         @param {DS.Model} record
         @param {Object} json
-        @param relationship
+        @param {Object} relationship
       */
       serializePolymorphicType: function(record, json, relationship) {
         var key = relationship.key;
@@ -64141,9 +64145,9 @@ define("activemodel-adapter/system/active_model_serializer",
 
     __exports__["default"] = ActiveModelSerializer;
   });
-define("ember-data",
-  ["ember-data/core","ember-data/ext/date","ember-data/system/promise_proxies","ember-data/system/store","ember-data/system/model","ember-data/system/adapter","ember-data/system/debug","ember-data/system/record_arrays","ember-data/system/record_array_manager","ember-data/adapters","ember-data/serializers/json_serializer","ember-data/serializers/rest_serializer","ember-inflector","ember-data/serializers/embedded_records_mixin","activemodel-adapter","ember-data/transforms","ember-data/system/relationships","ember-data/ember-initializer","ember-data/setup-container","ember-data/system/container_proxy","ember-data/system/relationships/relationship","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __dependency9__, __dependency10__, __dependency11__, __dependency12__, __dependency13__, __dependency14__, __dependency15__, __dependency16__, __dependency17__, __dependency18__, __dependency19__, __dependency20__, __dependency21__, __exports__) {
+enifed("ember-data",
+  ["ember-data/system/create","ember-data/core","ember-data/ext/date","ember-data/system/promise_proxies","ember-data/system/store","ember-data/system/model","ember-data/system/adapter","ember-data/system/debug","ember-data/system/record_arrays","ember-data/system/record_array_manager","ember-data/adapters","ember-data/serializers/json_serializer","ember-data/serializers/rest_serializer","ember-inflector","ember-data/serializers/embedded_records_mixin","activemodel-adapter","ember-data/transforms","ember-data/system/relationships","ember-data/ember-initializer","ember-data/setup-container","ember-data/system/container_proxy","ember-data/system/relationships/relationship","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __dependency9__, __dependency10__, __dependency11__, __dependency12__, __dependency13__, __dependency14__, __dependency15__, __dependency16__, __dependency17__, __dependency18__, __dependency19__, __dependency20__, __dependency21__, __dependency22__, __exports__) {
     "use strict";
     /**
       Ember Data
@@ -64155,43 +64159,43 @@ define("ember-data",
     // support RSVP 2.x via resolve,  but prefer RSVP 3.x's Promise.cast
     Ember.RSVP.Promise.cast = Ember.RSVP.Promise.cast || Ember.RSVP.resolve;
 
-    var DS = __dependency1__["default"];
+    var DS = __dependency2__["default"];
 
-    var PromiseArray = __dependency3__.PromiseArray;
-    var PromiseObject = __dependency3__.PromiseObject;
-    var Store = __dependency4__.Store;
-    var Model = __dependency5__.Model;
-    var Errors = __dependency5__.Errors;
-    var RootState = __dependency5__.RootState;
-    var attr = __dependency5__.attr;
-    var InvalidError = __dependency6__.InvalidError;
-    var Adapter = __dependency6__.Adapter;
-    var DebugAdapter = __dependency7__["default"];
-    var RecordArray = __dependency8__.RecordArray;
-    var FilteredRecordArray = __dependency8__.FilteredRecordArray;
-    var AdapterPopulatedRecordArray = __dependency8__.AdapterPopulatedRecordArray;
-    var ManyArray = __dependency8__.ManyArray;
-    var RecordArrayManager = __dependency9__["default"];
-    var RESTAdapter = __dependency10__.RESTAdapter;
-    var FixtureAdapter = __dependency10__.FixtureAdapter;
-    var JSONSerializer = __dependency11__["default"];
-    var RESTSerializer = __dependency12__["default"];
-    var EmbeddedRecordsMixin = __dependency14__["default"];
-    var ActiveModelAdapter = __dependency15__.ActiveModelAdapter;
-    var ActiveModelSerializer = __dependency15__.ActiveModelSerializer;
+    var PromiseArray = __dependency4__.PromiseArray;
+    var PromiseObject = __dependency4__.PromiseObject;
+    var Store = __dependency5__.Store;
+    var Model = __dependency6__.Model;
+    var Errors = __dependency6__.Errors;
+    var RootState = __dependency6__.RootState;
+    var attr = __dependency6__.attr;
+    var InvalidError = __dependency7__.InvalidError;
+    var Adapter = __dependency7__.Adapter;
+    var DebugAdapter = __dependency8__["default"];
+    var RecordArray = __dependency9__.RecordArray;
+    var FilteredRecordArray = __dependency9__.FilteredRecordArray;
+    var AdapterPopulatedRecordArray = __dependency9__.AdapterPopulatedRecordArray;
+    var ManyArray = __dependency9__.ManyArray;
+    var RecordArrayManager = __dependency10__["default"];
+    var RESTAdapter = __dependency11__.RESTAdapter;
+    var FixtureAdapter = __dependency11__.FixtureAdapter;
+    var JSONSerializer = __dependency12__["default"];
+    var RESTSerializer = __dependency13__["default"];
+    var EmbeddedRecordsMixin = __dependency15__["default"];
+    var ActiveModelAdapter = __dependency16__.ActiveModelAdapter;
+    var ActiveModelSerializer = __dependency16__.ActiveModelSerializer;
 
-    var Transform = __dependency16__.Transform;
-    var DateTransform = __dependency16__.DateTransform;
-    var NumberTransform = __dependency16__.NumberTransform;
-    var StringTransform = __dependency16__.StringTransform;
-    var BooleanTransform = __dependency16__.BooleanTransform;
+    var Transform = __dependency17__.Transform;
+    var DateTransform = __dependency17__.DateTransform;
+    var NumberTransform = __dependency17__.NumberTransform;
+    var StringTransform = __dependency17__.StringTransform;
+    var BooleanTransform = __dependency17__.BooleanTransform;
 
-    var hasMany = __dependency17__.hasMany;
-    var belongsTo = __dependency17__.belongsTo;
-    var setupContainer = __dependency19__["default"];
+    var hasMany = __dependency18__.hasMany;
+    var belongsTo = __dependency18__.belongsTo;
+    var setupContainer = __dependency20__["default"];
 
-    var ContainerProxy = __dependency20__["default"];
-    var Relationship = __dependency21__.Relationship;
+    var ContainerProxy = __dependency21__["default"];
+    var Relationship = __dependency22__.Relationship;
 
     DS.Store         = Store;
     DS.PromiseArray  = PromiseArray;
@@ -64243,7 +64247,7 @@ define("ember-data",
 
     __exports__["default"] = DS;
   });
-define("ember-data/adapters",
+enifed("ember-data/adapters",
   ["ember-data/adapters/fixture_adapter","ember-data/adapters/rest_adapter","exports"],
   function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
@@ -64257,7 +64261,7 @@ define("ember-data/adapters",
     __exports__.RESTAdapter = RESTAdapter;
     __exports__.FixtureAdapter = FixtureAdapter;
   });
-define("ember-data/adapters/fixture_adapter",
+enifed("ember-data/adapters/fixture_adapter",
   ["ember-data/system/adapter","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -64602,9 +64606,9 @@ define("ember-data/adapters/fixture_adapter",
       }
     });
   });
-define("ember-data/adapters/rest_adapter",
-  ["ember-data/system/adapter","exports"],
-  function(__dependency1__, __exports__) {
+enifed("ember-data/adapters/rest_adapter",
+  ["ember-data/system/adapter","ember-data/system/map","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
     /**
       @module ember-data
@@ -64612,6 +64616,7 @@ define("ember-data/adapters/rest_adapter",
 
     var Adapter = __dependency1__.Adapter;
     var InvalidError = __dependency1__.InvalidError;
+    var MapWithDefault = __dependency2__.MapWithDefault;
     var get = Ember.get;
     var forEach = Ember.ArrayPolyfills.forEach;
 
@@ -64810,6 +64815,9 @@ define("ember-data/adapters/rest_adapter",
         ```
 
         will also send a request to: `GET /comments?ids[]=1&ids[]=2`
+
+        Note: Requests coalescing rely on URL building strategy. So if you override `buildUrl` in your app
+        `groupRecordsForFindMany` more likely should be overriden as well in order for coalescing to work.
 
         @property coalesceFindRequests
         @type {boolean}
@@ -65139,7 +65147,7 @@ define("ember-data/adapters/rest_adapter",
         //We might get passed in an array of ids from findMany
         //in which case we don't want to modify the url, as the
         //ids will be passed in through a query param
-        if (id && !Ember.isArray(id)) { url.push(id); }
+        if (id && !Ember.isArray(id)) { url.push(encodeURIComponent(id)); }
 
         if (prefix) { url.unshift(prefix); }
 
@@ -65185,7 +65193,7 @@ define("ember-data/adapters/rest_adapter",
       },
 
       _stripIDFromURL: function(store, record) {
-        var type = store.modelFor(record);
+        var type = record.constructor;
         var url = this.buildURL(type.typeKey, record.get('id'), record);
 
         var expandedURL = url.split('/');
@@ -65201,6 +65209,11 @@ define("ember-data/adapters/rest_adapter",
 
         return expandedURL.join('/');
       },
+
+      /**
+        http://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
+      */
+      maxUrlLength: 2048,
 
       /**
         Organize records into groups, each of which is to be passed to separate
@@ -65219,26 +65232,28 @@ define("ember-data/adapters/rest_adapter",
         and `/posts/2/comments/3`
 
         @method groupRecordsForFindMany
+        @param {DS.Store} store
         @param {Array} records
         @return {Array}  an array of arrays of records, each of which is to be
                           loaded separately by `findMany`.
       */
       groupRecordsForFindMany: function (store, records) {
-        var groups = Ember.MapWithDefault.create({defaultValue: function(){return [];}});
+        var groups = MapWithDefault.create({defaultValue: function(){return [];}});
         var adapter = this;
+        var maxUrlLength = this.maxUrlLength;
 
         forEach.call(records, function(record){
           var baseUrl = adapter._stripIDFromURL(store, record);
           groups.get(baseUrl).push(record);
         });
 
-        function splitGroupToFitInUrl(group, maxUrlLength) {
+        function splitGroupToFitInUrl(group, maxUrlLength, paramNameLength) {
           var baseUrl = adapter._stripIDFromURL(store, group[0]);
           var idsSize = 0;
           var splitGroups = [[]];
 
           forEach.call(group, function(record) {
-            var additionalLength = '&ids[]='.length + record.get('id.length');
+            var additionalLength = encodeURIComponent(record.get('id')).length + paramNameLength;
             if (baseUrl.length + idsSize + additionalLength >= maxUrlLength) {
               idsSize = 0;
               splitGroups.push([]);
@@ -65254,10 +65269,9 @@ define("ember-data/adapters/rest_adapter",
         }
 
         var groupsArray = [];
-        groups.forEach(function(key, group){
-          // http://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
-          var maxUrlLength = 2048;
-          var splitGroups = splitGroupToFitInUrl(group, maxUrlLength);
+        groups.forEach(function(group, key){
+          var paramNameLength = '&ids%5B%5D='.length;
+          var splitGroups = splitGroupToFitInUrl(group, maxUrlLength, paramNameLength);
 
           forEach.call(splitGroups, function(splitGroup) {
             groupsArray.push(splitGroup);
@@ -65297,11 +65311,17 @@ define("ember-data/adapters/rest_adapter",
       },
 
       /**
-        Takes an ajax response, and returns a relevant error.
+        Takes an ajax response, and returns an error payload.
 
         Returning a `DS.InvalidError` from this method will cause the
         record to transition into the `invalid` state and make the
         `errors` object available on the record.
+
+        This function should return the entire payload as received from the
+        server.  Error object extraction and normalization of model errors
+        should be performed by `extractErrors` on the serializer.
+
+        Example
 
         ```javascript
         App.ApplicationAdapter = DS.RESTAdapter.extend({
@@ -65309,7 +65329,7 @@ define("ember-data/adapters/rest_adapter",
             var error = this._super(jqXHR);
 
             if (jqXHR && jqXHR.status === 422) {
-              var jsonErrors = Ember.$.parseJSON(jqXHR.responseText)["errors"];
+              var jsonErrors = Ember.$.parseJSON(jqXHR.responseText);
 
               return new DS.InvalidError(jsonErrors);
             } else {
@@ -65353,12 +65373,12 @@ define("ember-data/adapters/rest_adapter",
         2. Your API might return errors as successful responses with status code
         200 and an Errors text or object. You can return a DS.InvalidError from
         this hook and it will automatically reject the promise and put your record
-        into the invald state.
+        into the invalid state.
 
-        @method ajaxError
+        @method ajaxSuccess
         @param  {Object} jqXHR
         @param  {Object} jsonPayload
-        @return {Object} jqXHR
+        @return {Object} jsonPayload
       */
 
       ajaxSuccess: function(jqXHR, jsonPayload) {
@@ -65454,7 +65474,7 @@ define("ember-data/adapters/rest_adapter",
       }
     }
   });
-define("ember-data/core",
+enifed("ember-data/core",
   ["exports"],
   function(__exports__) {
     "use strict";
@@ -65473,11 +65493,11 @@ define("ember-data/core",
       /**
         @property VERSION
         @type String
-        @default '1.0.0-beta.10'
+        @default '1.0.0-beta.12'
         @static
       */
       DS = Ember.Namespace.create({
-        VERSION: '1.0.0-beta.10'
+        VERSION: '1.0.0-beta.12'
       });
 
       if (Ember.libraries) {
@@ -65487,7 +65507,7 @@ define("ember-data/core",
 
     __exports__["default"] = DS;
   });
-define("ember-data/ember-initializer",
+enifed("ember-data/ember-initializer",
   ["ember-data/setup-container"],
   function(__dependency1__) {
     "use strict";
@@ -65571,7 +65591,7 @@ define("ember-data/ember-initializer",
       });
     });
   });
-define("ember-data/ext/date",
+enifed("ember-data/ext/date",
   [],
   function() {
     "use strict";
@@ -65596,7 +65616,8 @@ define("ember-data/ext/date",
 
     /**
       @method parse
-      @param date
+      @param {Date} date
+      @return {Number} timestamp
     */
     Ember.Date.parse = function (date) {
         var timestamp, struct, minutesOffset = 0;
@@ -65636,7 +65657,7 @@ define("ember-data/ext/date",
       Date.parse = Ember.Date.parse;
     }
   });
-define("ember-data/initializers/data_adapter",
+enifed("ember-data/initializers/data_adapter",
   ["ember-data/system/debug/debug_adapter","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -65653,7 +65674,7 @@ define("ember-data/initializers/data_adapter",
       container.register('data-adapter:main', DebugAdapter);
     };
   });
-define("ember-data/initializers/store",
+enifed("ember-data/initializers/store",
   ["ember-data/serializers","ember-data/adapters","ember-data/system/container_proxy","ember-data/system/store","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
     "use strict";
@@ -65696,7 +65717,7 @@ define("ember-data/initializers/store",
       container.lookup('store:main');
     };
   });
-define("ember-data/initializers/store_injections",
+enifed("ember-data/initializers/store_injections",
   ["exports"],
   function(__exports__) {
     "use strict";
@@ -65714,7 +65735,7 @@ define("ember-data/initializers/store_injections",
       container.injection('data-adapter', 'store', 'store:main');
     };
   });
-define("ember-data/initializers/transforms",
+enifed("ember-data/initializers/transforms",
   ["ember-data/transforms","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -65737,7 +65758,7 @@ define("ember-data/initializers/transforms",
       container.register('transform:string',  StringTransform);
     };
   });
-define("ember-data/serializers",
+enifed("ember-data/serializers",
   ["ember-data/serializers/json_serializer","ember-data/serializers/rest_serializer","exports"],
   function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
@@ -65747,7 +65768,7 @@ define("ember-data/serializers",
     __exports__.JSONSerializer = JSONSerializer;
     __exports__.RESTSerializer = RESTSerializer;
   });
-define("ember-data/serializers/embedded_records_mixin",
+enifed("ember-data/serializers/embedded_records_mixin",
   ["exports"],
   function(__exports__) {
     "use strict";
@@ -65768,21 +65789,24 @@ define("ember-data/serializers/embedded_records_mixin",
       ```js
       App.PostSerializer = DS.RESTSerializer.extend(DS.EmbeddedRecordsMixin, {
         attrs: {
-          author: {embedded: 'always'},
-          comments: {serialize: 'ids'}
+          author: { embedded: 'always' },
+          comments: { serialize: 'ids' }
         }
-      })
+      });
       ```
-      Note that this use of `{embedded: 'always'}` is unrelated to
-      the `{embedded: 'always'}` that is defined as an option on `DS.attr` as part of
+      Note that this use of `{ embedded: 'always' }` is unrelated to
+      the `{ embedded: 'always' }` that is defined as an option on `DS.attr` as part of
       defining a model while working with the ActiveModelSerializer.  Nevertheless,
-      using `{embedded: 'always'}` as an option to DS.attr is not a valid way to setup
+      using `{ embedded: 'always' }` as an option to DS.attr is not a valid way to setup
       embedded records.
 
-      The `attrs` option for a resource `{embedded: 'always'}` is shorthand for:
+      The `attrs` option for a resource `{ embedded: 'always' }` is shorthand for:
 
       ```js
-      {serialize: 'records', deserialize: 'records'}
+      { 
+        serialize: 'records',
+        deserialize: 'records'
+      }
       ```
 
       ### Configuring Attrs
@@ -65806,8 +65830,8 @@ define("ember-data/serializers/embedded_records_mixin",
       If you do not overwrite `attrs` for a specific relationship, the `EmbeddedRecordsMixin`
       will behave in the following way:
 
-      BelongsTo: `{serialize:'id', deserialize:'id'}`
-      HasMany:   `{serialize:false,  deserialize:'ids'}`
+      BelongsTo: `{ serialize: 'id', deserialize: 'id' }`  
+      HasMany:   `{ serialize: false, deserialize: 'ids' }`
 
       ### Model Relationships
 
@@ -66214,7 +66238,7 @@ define("ember-data/serializers/embedded_records_mixin",
 
     __exports__["default"] = EmbeddedRecordsMixin;
   });
-define("ember-data/serializers/json_serializer",
+enifed("ember-data/serializers/json_serializer",
   ["exports"],
   function(__exports__) {
     "use strict";
@@ -66478,6 +66502,16 @@ define("ember-data/serializers/json_serializer",
 
         hash.id = hash[primaryKey];
         delete hash[primaryKey];
+      },
+
+      /**
+        @method normalizeErrors
+        @private
+      */
+      normalizeErrors: function(type, hash) {
+        this.normalizeId(hash);
+        this.normalizeAttributes(type, hash);
+        this.normalizeRelationships(type, hash);
       },
 
       /**
@@ -66803,8 +66837,9 @@ define("ember-data/serializers/json_serializer",
             payloadKey = this.keyForRelationship(key, "belongsTo");
           }
 
-          if (isNone(belongsTo)) {
-            json[payloadKey] = belongsTo;
+          //Need to check whether the id is there for new&async records
+          if (isNone(belongsTo) || isNone(get(belongsTo, 'id'))) {
+            json[payloadKey] = null;
           } else {
             json[payloadKey] = get(belongsTo, 'id');
           }
@@ -67190,6 +67225,41 @@ define("ember-data/serializers/json_serializer",
       },
 
       /**
+        `extractErrors` is used to extract model errors when a call is made
+        to `DS.Model#save` which fails with an InvalidError`. By default
+        Ember Data expects error information to be located on the `errors`
+        property of the payload object.
+
+        Example
+
+        ```javascript
+        App.PostSerializer = DS.JSONSerializer.extend({
+          extractErrors: function(store, type, payload, id) {
+            if (payload && typeof payload === 'object' && payload._problems) {
+              payload = payload._problems;
+              this.normalizeErrors(type, payload);
+            }
+            return payload;
+          }
+        });
+        ```
+
+        @method extractErrors
+        @param {DS.Store} store
+        @param {subclass of DS.Model} type
+        @param {Object} payload
+        @param {String or Number} id
+        @return {Object} json The deserialized errors
+      */
+      extractErrors: function(store, type, payload, id) {
+        if (payload && typeof payload === 'object' && payload.errors) {
+          payload = payload.errors;
+          this.normalizeErrors(type, payload);
+        }
+        return payload;
+      },
+
+      /**
        `keyForAttribute` can be used to define rules for how to convert an
        attribute name in your model to a key in your JSON.
 
@@ -67252,7 +67322,7 @@ define("ember-data/serializers/json_serializer",
       }
     });
   });
-define("ember-data/serializers/rest_serializer",
+enifed("ember-data/serializers/rest_serializer",
   ["ember-data/serializers/json_serializer","ember-inflector/system/string","exports"],
   function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
@@ -67312,7 +67382,7 @@ define("ember-data/serializers/rest_serializer",
       @namespace DS
       @extends DS.JSONSerializer
     */
-    __exports__["default"] = JSONSerializer.extend({
+    var RESTSerializer = JSONSerializer.extend({
       /**
         If you want to do normalizations specific to some part of the payload, you
         can specify those under `normalizeHash`.
@@ -67525,9 +67595,18 @@ define("ember-data/serializers/rest_serializer",
 
         for (var prop in payload) {
           var typeName  = this.typeForRoot(prop);
+
+          if (!store.modelFactoryFor(typeName)){
+            Ember.warn(this.warnMessageNoModelForKey(prop, typeName), false);
+            continue;
+          }
           var type = store.modelFor(typeName);
           var isPrimary = type.typeKey === primaryTypeName;
           var value = payload[prop];
+
+          if (value === null) {
+            continue;
+          }
 
           // legacy support for singular resources
           if (isPrimary && Ember.typeOf(value) !== "array" ) {
@@ -67678,6 +67757,10 @@ define("ember-data/serializers/rest_serializer",
           }
 
           var typeName = this.typeForRoot(typeKey);
+          if (!store.modelFactoryFor(typeName)) {
+            Ember.warn(this.warnMessageNoModelForKey(prop, typeName), false);
+            continue;
+          }
           var type = store.modelFor(typeName);
           var typeSerializer = store.serializerFor(type);
           var isPrimary = (!forcedSecondary && (type.typeKey === primaryTypeName));
@@ -67733,6 +67816,10 @@ define("ember-data/serializers/rest_serializer",
 
         for (var prop in payload) {
           var typeName = this.typeForRoot(prop);
+          if (!store.modelFactoryFor(typeName, prop)){
+            Ember.warn(this.warnMessageNoModelForKey(prop, typeName), false);
+            continue;
+          }
           var type = store.modelFor(typeName);
           var typeSerializer = store.serializerFor(type);
 
@@ -67933,8 +68020,9 @@ define("ember-data/serializers/rest_serializer",
         ```
 
         @method serialize
-        @param record
-        @param options
+        @param {subclass of DS.Model} record
+        @param {Object} options
+        @return {Object} json
       */
       serialize: function(record, options) {
         return this._super.apply(this, arguments);
@@ -67987,8 +68075,18 @@ define("ember-data/serializers/rest_serializer",
         }
       }
     });
+
+    Ember.runInDebug(function(){
+      RESTSerializer.reopen({
+        warnMessageNoModelForKey: function(prop, typeKey){
+          return 'Encountered "' + prop + '" in payload, but no model was found for model name "' + typeKey + '" (resolved model name using ' + this.constructor.toString() + '.typeForRoot("' + prop + '"))';
+        }
+      });
+    });
+
+    __exports__["default"] = RESTSerializer;
   });
-define("ember-data/setup-container",
+enifed("ember-data/setup-container",
   ["ember-data/initializers/store","ember-data/initializers/transforms","ember-data/initializers/store_injections","ember-data/initializers/data_adapter","activemodel-adapter/setup-container","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __exports__) {
     "use strict";
@@ -68010,7 +68108,7 @@ define("ember-data/setup-container",
       setupActiveModelContainer(container, application);
     };
   });
-define("ember-data/system/adapter",
+enifed("ember-data/system/adapter",
   ["exports"],
   function(__exports__) {
     "use strict";
@@ -68039,6 +68137,10 @@ define("ember-data/system/adapter",
       transition to the `invalid` state and the errors will be set to the
       `errors` property on the record.
 
+      This function should return the entire payload as received from the
+      server.  Error object extraction and normalization of model errors
+      should be performed by `extractErrors` on the serializer.
+
       Example
 
       ```javascript
@@ -68047,7 +68149,7 @@ define("ember-data/system/adapter",
           var error = this._super(jqXHR);
 
           if (jqXHR && jqXHR.status === 422) {
-            var jsonErrors = Ember.$.parseJSON(jqXHR.responseText)["errors"];
+            var jsonErrors = Ember.$.parseJSON(jqXHR.responseText);
             return new DS.InvalidError(jsonErrors);
           } else {
             return error;
@@ -68063,7 +68165,7 @@ define("ember-data/system/adapter",
       ```javascript
       return new DS.InvalidError({
         length: 'Must be less than 15',
-        name: 'Must not be blank
+        name: 'Must not be blank'
       });
       ```
 
@@ -68462,6 +68564,7 @@ define("ember-data/system/adapter",
         The default implementation returns the records as a single group.
 
         @method groupRecordsForFindMany
+        @param {DS.Store} store
         @param {Array} records
         @return {Array}  an array of arrays of records, each of which is to be
                           loaded separately by `findMany`.
@@ -68475,7 +68578,7 @@ define("ember-data/system/adapter",
     __exports__.Adapter = Adapter;
     __exports__["default"] = Adapter;
   });
-define("ember-data/system/container_proxy",
+enifed("ember-data/system/container_proxy",
   ["exports"],
   function(__exports__) {
     "use strict";
@@ -68530,7 +68633,21 @@ define("ember-data/system/container_proxy",
 
     __exports__["default"] = ContainerProxy;
   });
-define("ember-data/system/debug",
+enifed("ember-data/system/create",
+  [],
+  function() {
+    "use strict";
+    /*
+      Detect if the user has a correct Object.create shim.
+      Ember has provided this for a long time but has had an incorrect shim before 1.8
+      TODO: Remove for Ember Data 1.0.
+    */
+    var object = Ember.create(null);
+    if (object.toString !== undefined && Ember.keys(Ember.create({}))[0] === '__proto__'){
+      throw new Error("Ember Data requires a correct Object.create shim. You should upgrade to Ember >= 1.8 which provides one for you. If you are using ES5-shim, you should try removing that after upgrading Ember.");
+    }
+  });
+enifed("ember-data/system/debug",
   ["ember-data/system/debug/debug_info","ember-data/system/debug/debug_adapter","exports"],
   function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
@@ -68542,7 +68659,7 @@ define("ember-data/system/debug",
 
     __exports__["default"] = DebugAdapter;
   });
-define("ember-data/system/debug/debug_adapter",
+enifed("ember-data/system/debug/debug_adapter",
   ["ember-data/system/model","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -68582,7 +68699,7 @@ define("ember-data/system/debug/debug_adapter",
         }];
         var count = 0;
         var self = this;
-        get(type, 'attributes').forEach(function(name, meta) {
+        get(type, 'attributes').forEach(function(meta, name) {
             if (count++ > self.attributeLimit) { return false; }
             var desc = capitalize(underscore(name).replace('_', ' '));
             columns.push({ name: name, desc: desc });
@@ -68665,7 +68782,7 @@ define("ember-data/system/debug/debug_adapter",
 
     });
   });
-define("ember-data/system/debug/debug_info",
+enifed("ember-data/system/debug/debug_info",
   ["ember-data/system/model","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -68739,7 +68856,102 @@ define("ember-data/system/debug/debug_info",
 
     __exports__["default"] = Model;
   });
-define("ember-data/system/model",
+enifed("ember-data/system/map",
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    /**
+     * Polyfill Ember.Map behavior for Ember <= 1.7
+     * This can probably be removed before 1.0 final
+    */
+    var mapForEach, deleteFn;
+
+    function OrderedSet(){
+      Ember.OrderedSet.apply(this, arguments);
+    }
+
+    function Map() {
+      Ember.Map.apply(this, arguments);
+    }
+
+    function MapWithDefault(){
+      Ember.MapWithDefault.apply(this, arguments);
+    }
+
+    var testMap = Ember.Map.create();
+    testMap.set('key', 'value');
+
+    var usesOldBehavior = false;
+
+    testMap.forEach(function(value, key){
+      usesOldBehavior = value === 'key' && key === 'value';
+    });
+
+    Map.prototype            = Ember.create(Ember.Map.prototype);
+    MapWithDefault.prototype = Ember.create(Ember.MapWithDefault.prototype);
+    OrderedSet.prototype     = Ember.create(Ember.OrderedSet.prototype);
+
+    OrderedSet.create = function(){
+      return new OrderedSet();
+    };
+
+    /**
+     * returns a function that calls the original
+     * callback function in the correct order.
+     * if we are in pre-Ember.1.8 land, Map/MapWithDefault
+     * forEach calls with key, value, in that order.
+     * >= 1.8 forEach is called with the order value, key as per
+     * the ES6 spec.
+    */
+    function translate(valueKeyOrderedCallback){
+      return function(key, value){
+        valueKeyOrderedCallback.call(this, value, key);
+      };
+    }
+
+    // old, non ES6 compliant behavior
+    if (usesOldBehavior){
+      mapForEach = function(callback, thisArg){
+        this.__super$forEach(translate(callback), thisArg);
+      };
+
+      /* alias to remove */
+      deleteFn = function(thing){
+        this.remove(thing);
+      };
+
+      Map.prototype.__super$forEach = Ember.Map.prototype.forEach;
+      Map.prototype.forEach = mapForEach;
+      Map.prototype["delete"] = deleteFn;
+
+      MapWithDefault.prototype.forEach = mapForEach;
+      MapWithDefault.prototype.__super$forEach = Ember.MapWithDefault.prototype.forEach;
+      MapWithDefault.prototype["delete"] = deleteFn;
+
+      OrderedSet.prototype["delete"] = deleteFn;
+    }
+
+    MapWithDefault.constructor = MapWithDefault;
+    Map.constructor = Map;
+
+    MapWithDefault.create = function(options){
+      if (options) {
+        return new MapWithDefault(options);
+      } else {
+        return new Map();
+      }
+    };
+
+    Map.create = function(){
+      return new this.constructor();
+    };
+
+    __exports__["default"] = Map;
+    __exports__.Map = Map;
+    __exports__.MapWithDefault = MapWithDefault;
+    __exports__.OrderedSet = OrderedSet;
+  });
+enifed("ember-data/system/model",
   ["ember-data/system/model/model","ember-data/system/model/attributes","ember-data/system/model/states","ember-data/system/model/errors","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
     "use strict";
@@ -68757,11 +68969,12 @@ define("ember-data/system/model",
     __exports__.attr = attr;
     __exports__.Errors = Errors;
   });
-define("ember-data/system/model/attributes",
-  ["ember-data/system/model/model","exports"],
-  function(__dependency1__, __exports__) {
+enifed("ember-data/system/model/attributes",
+  ["ember-data/system/model/model","ember-data/system/map","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
     var Model = __dependency1__["default"];
+    var Map = __dependency2__.Map;
 
     /**
       @module ember-data
@@ -68807,7 +69020,7 @@ define("ember-data/system/model/attributes",
         @readOnly
       */
       attributes: Ember.computed(function() {
-        var map = Ember.Map.create();
+        var map = Map.create();
 
         this.eachComputedProperty(function(name, meta) {
           if (meta.isAttribute) {
@@ -68853,7 +69066,7 @@ define("ember-data/system/model/attributes",
         @readOnly
       */
       transformedAttributes: Ember.computed(function() {
-        var map = Ember.Map.create();
+        var map = Map.create();
 
         this.eachAttribute(function(key, meta) {
           if (meta.type) {
@@ -68906,7 +69119,7 @@ define("ember-data/system/model/attributes",
         @static
       */
       eachAttribute: function(callback, binding) {
-        get(this, 'attributes').forEach(function(name, meta) {
+        get(this, 'attributes').forEach(function(meta, name) {
           callback.call(binding, name, meta);
         }, binding);
       },
@@ -68954,7 +69167,7 @@ define("ember-data/system/model/attributes",
         @static
       */
       eachTransformedAttribute: function(callback, binding) {
-        get(this, 'transformedAttributes').forEach(function(name, type) {
+        get(this, 'transformedAttributes').forEach(function(type, name) {
           callback.call(binding, name, type);
         });
       }
@@ -69036,7 +69249,7 @@ define("ember-data/system/model/attributes",
         options: options
       };
 
-      return Ember.computed('data', function(key, value) {
+      return Ember.computed(function(key, value) {
         if (arguments.length > 1) {
           Ember.assert("You may not set `id` as an attribute on your model. Please remove any lines that look like: `id: DS.attr('<type>')` from " + this.constructor.toString(), key !== 'id');
           var oldValue = getValue(this, key);
@@ -69067,13 +69280,15 @@ define("ember-data/system/model/attributes",
       }).meta(meta);
     };
   });
-define("ember-data/system/model/errors",
-  ["exports"],
-  function(__exports__) {
+enifed("ember-data/system/model/errors",
+  ["ember-data/system/map","exports"],
+  function(__dependency1__, __exports__) {
     "use strict";
     var get = Ember.get;
     var isEmpty = Ember.isEmpty;
     var map = Ember.EnumerableUtils.map;
+
+    var MapWithDefault = __dependency1__.MapWithDefault;
 
     /**
     @module ember-data
@@ -69086,7 +69301,7 @@ define("ember-data/system/model/errors",
       `DS.Errors`. This can be used to display validation error
       messages returned from the server when a `record.save()` rejects.
       This works automatically with `DS.ActiveModelAdapter`, but you
-      can implement [ajaxError](api/data/classes/DS.RESTAdapter.html#method_ajaxError)
+      can implement [ajaxError](/api/data/classes/DS.RESTAdapter.html#method_ajaxError)
       in other adapters as well.
 
       For Example, if you had an `User` model that looked like this:
@@ -69171,7 +69386,7 @@ define("ember-data/system/model/errors",
       */
       errorsByAttributeName: Ember.reduceComputed("content", {
         initialValue: function() {
-          return Ember.MapWithDefault.create({
+          return MapWithDefault.create({
             defaultValue: function() {
               return Ember.A();
             }
@@ -69412,7 +69627,7 @@ define("ember-data/system/model/errors",
       }
     });
   });
-define("ember-data/system/model/model",
+enifed("ember-data/system/model/model",
   ["ember-data/system/model/states","ember-data/system/model/errors","ember-data/system/promise_proxies","ember-data/system/relationships/relationship","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
     "use strict";
@@ -69437,8 +69652,8 @@ define("ember-data/system/model/model",
       return get(get(this, 'currentState'), key);
     }).readOnly();
 
-    var _extractPivotNameCache = Object.create(null);
-    var _splitOnDotCache = Object.create(null);
+    var _extractPivotNameCache = Ember.create(null);
+    var _splitOnDotCache = Ember.create(null);
 
     function splitOnDot(name) {
       return _splitOnDotCache[name] || (
@@ -69863,6 +70078,27 @@ define("ember-data/system/model/model",
         this._attributes = {};
         this._inFlightAttributes = {};
         this._relationships = {};
+        /*
+          implicit relationships are relationship which have not been declared but the inverse side exists on
+          another record somewhere
+          For example if there was
+          ```
+            App.Comment = DS.Model.extend({
+              name: DS.attr()
+            })
+          ```
+          but there is also
+          ```
+            App.Post = DS.Model.extend({
+              name: DS.attr(),
+              comments: DS.hasMany('comment')
+            })
+          ```
+
+          would have a implicit post relationship in order to be do things like remove ourselves from the post
+          when we are deleted
+        */
+        this._implicitRelationships = Ember.create(null);
         var model = this;
         //TODO Move into a getter for better perf
         this.constructor.eachRelationship(function(key, descriptor) {
@@ -70060,6 +70296,27 @@ define("ember-data/system/model/model",
         }, this);
       },
 
+      disconnectRelationships: function() {
+        this.eachRelationship(function(name, relationship) {
+          this._relationships[name].disconnect();
+        }, this);
+        var model = this;
+        forEach.call(Ember.keys(this._implicitRelationships), function(key) {
+          model._implicitRelationships[key].disconnect();
+        });
+      },
+
+      reconnectRelationships: function() {
+        this.eachRelationship(function(name, relationship) {
+          this._relationships[name].reconnect();
+        }, this);
+        var model = this;
+        forEach.call(Ember.keys(this._implicitRelationships), function(key) {
+          model._implicitRelationships[key].reconnect();
+        });
+      },
+
+
       /**
         @method updateRecordArrays
         @private
@@ -70136,6 +70393,20 @@ define("ember-data/system/model/model",
       },
 
       /**
+        @method _notifyProperties
+        @private
+      */
+      _notifyProperties: function(keys) {
+        Ember.beginPropertyChanges();
+        var key;
+        for (var i = 0, length = keys.length; i < length; i++){
+          key = keys[i];
+          this.notifyPropertyChange(key);
+        }
+        Ember.endPropertyChanges();
+      },
+
+      /**
         Returns an object, whose keys are changed properties, and value is
         an [oldProp, newProp] array.
 
@@ -70200,7 +70471,7 @@ define("ember-data/system/model/model",
 
         if (!data) { return; }
 
-        this.notifyPropertyChange('data');
+        this._notifyProperties(Ember.keys(data));
       },
 
       /**
@@ -70233,15 +70504,17 @@ define("ember-data/system/model/model",
           the existing data, not replace it.
       */
       setupData: function(data, partial) {
+        Ember.assert("Expected an object as `data` in `setupData`", Ember.typeOf(data) === 'object');
+
         if (partial) {
           Ember.merge(this._data, data);
         } else {
           this._data = data;
         }
 
-        if (data) { this.pushedData(); }
+        this.pushedData();
 
-        this.notifyPropertyChange('data');
+        this._notifyProperties(Ember.keys(data));
       },
 
       materializeId: function(id) {
@@ -70281,13 +70554,25 @@ define("ember-data/system/model/model",
           set(this, 'isError', false);
         }
 
+        //Eventually rollback will always work for relationships
+        //For now we support it only out of deleted state, because we
+        //have an explicit way of knowing when the server acked the relationship change
+        if (get(this, 'isDeleted')) {
+          this.reconnectRelationships();
+        }
+
+        if (get(this, 'isNew')) {
+          this.clearRelationships();
+        }
+
         if (!get(this, 'isValid')) {
           this._inFlightAttributes = {};
         }
 
         this.send('rolledBack');
 
-        this.notifyPropertyChange('data');
+        this._notifyProperties(Ember.keys(this._data));
+
       },
 
       toStringExtension: function() {
@@ -70296,7 +70581,7 @@ define("ember-data/system/model/model",
 
       /**
         Save the record and persist any changes to the record to an
-        extenal source via the adapter.
+        external source via the adapter.
 
         Example
 
@@ -70338,7 +70623,9 @@ define("ember-data/system/model/model",
         App.ModelViewRoute = Ember.Route.extend({
           actions: {
             reload: function() {
-              this.controller.get('model').reload();
+              this.controller.get('model').reload().then(function(model) {
+                // do something with the reloaded model
+              });
             }
           }
         });
@@ -70363,7 +70650,9 @@ define("ember-data/system/model/model",
         }, function(reason) {
           record.set('isError', true);
           throw reason;
-        }, "DS: Model#reload complete, update flags");
+        }, "DS: Model#reload complete, update flags")['finally'](function () {
+          record.updateRecordArrays();
+        });
 
         return PromiseObject.create({
           promise: promise
@@ -70419,15 +70708,32 @@ define("ember-data/system/model/model",
 
         @method trigger
         @private
-        @param name
+        @param {String} name
       */
-      trigger: function(name) {
-        Ember.tryInvoke(this, name, [].slice.call(arguments, 1));
+      trigger: function() {
+        var length = arguments.length;
+        var args = new Array(length - 1);
+        var name = arguments[0];
+
+        for (var i = 1; i < length; i++ ){
+          args[i - 1] = arguments[i];
+        }
+
+        Ember.tryInvoke(this, name, args);
         this._super.apply(this, arguments);
       },
 
       triggerLater: function() {
-        if (this._deferredTriggers.push(arguments) !== 1) { return; }
+        var length = arguments.length;
+        var args = new Array(length);
+
+        for (var i = 0; i < length; i++ ){
+          args[i] = arguments[i];
+        }
+
+        if (this._deferredTriggers.push(args) !== 1) {
+          return;
+        }
         Ember.run.schedule('actions', this, '_triggerDeferredTriggers');
       },
 
@@ -70481,7 +70787,7 @@ define("ember-data/system/model/model",
 
     __exports__["default"] = Model;
   });
-define("ember-data/system/model/states",
+enifed("ember-data/system/model/states",
   ["exports"],
   function(__exports__) {
     "use strict";
@@ -70811,7 +71117,7 @@ define("ember-data/system/model/states",
         // EVENTS
         deleteRecord: function(record) {
           record.transitionTo('deleted.uncommitted');
-          record.clearRelationships();
+          record.disconnectRelationships();
         },
 
         didSetProperty: function(record, context) {
@@ -70892,7 +71198,7 @@ define("ember-data/system/model/states",
     });
 
     createdState.uncommitted.deleteRecord = function(record) {
-      record.clearRelationships();
+      record.disconnectRelationships();
       record.transitionTo('deleted.saved');
     };
 
@@ -70911,7 +71217,7 @@ define("ember-data/system/model/states",
 
     updatedState.uncommitted.deleteRecord = function(record) {
       record.transitionTo('deleted.uncommitted');
-      record.clearRelationships();
+      record.disconnectRelationships();
     };
 
     var RootState = {
@@ -71052,7 +71358,7 @@ define("ember-data/system/model/states",
 
           deleteRecord: function(record) {
             record.transitionTo('deleted.uncommitted');
-            record.clearRelationships();
+            record.disconnectRelationships();
           },
 
           unloadRecord: function(record) {
@@ -71204,11 +71510,12 @@ define("ember-data/system/model/states",
 
     __exports__["default"] = RootState;
   });
-define("ember-data/system/promise_proxies",
+enifed("ember-data/system/promise_proxies",
   ["exports"],
   function(__exports__) {
     "use strict";
     var Promise = Ember.RSVP.Promise;
+    var get = Ember.get;
 
     /**
       A `PromiseArray` is an object that acts like both an `Ember.Array`
@@ -71284,14 +71591,63 @@ define("ember-data/system/promise_proxies",
       });
     };
 
+    /**
+      A PromiseManyArray is a PromiseArray that also proxies certain method calls
+      to the underlying manyArray.
+      Right now we proxy:
+        `reload()`
+        `createRecord()`
+        `on()`
+        `one()`
+        `trigger()`
+        `off()`
+        `has()`
+    */
+
+    function proxyToContent(method) {
+      return function() {
+        var content = get(this, 'content');
+        return content[method].apply(content, arguments);
+      };
+    }
+
+    var PromiseManyArray = PromiseArray.extend({
+      reload: function() {
+        //I don't think this should ever happen right now, but worth guarding if we refactor the async relationships
+        Ember.assert('You are trying to reload an async manyArray before it has been created', get(this, 'content'));
+        return get(this, 'content').reload();
+      },
+
+      createRecord: proxyToContent('createRecord'),
+
+      on: proxyToContent('on'),
+
+      one: proxyToContent('one'),
+
+      trigger: proxyToContent('trigger'),
+
+      off: proxyToContent('off'),
+
+      has: proxyToContent('has')
+    });
+
+    var promiseManyArray = function(promise, label) {
+      return PromiseManyArray.create({
+        promise: Promise.resolve(promise, label)
+      });
+    };
+
+
     __exports__.PromiseArray = PromiseArray;
     __exports__.PromiseObject = PromiseObject;
+    __exports__.PromiseManyArray = PromiseManyArray;
     __exports__.promiseArray = promiseArray;
     __exports__.promiseObject = promiseObject;
+    __exports__.promiseManyArray = promiseManyArray;
   });
-define("ember-data/system/record_array_manager",
-  ["ember-data/system/record_arrays","exports"],
-  function(__dependency1__, __exports__) {
+enifed("ember-data/system/record_array_manager",
+  ["ember-data/system/record_arrays","ember-data/system/map","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
     /**
       @module ember-data
@@ -71301,8 +71657,11 @@ define("ember-data/system/record_array_manager",
     var FilteredRecordArray = __dependency1__.FilteredRecordArray;
     var AdapterPopulatedRecordArray = __dependency1__.AdapterPopulatedRecordArray;
     var ManyArray = __dependency1__.ManyArray;
+    var MapWithDefault = __dependency2__.MapWithDefault;
+    var OrderedSet = __dependency2__.OrderedSet;
     var get = Ember.get;
     var forEach = Ember.EnumerableUtils.forEach;
+    var indexOf = Ember.EnumerableUtils.indexOf;
 
     /**
       @class RecordArrayManager
@@ -71312,7 +71671,7 @@ define("ember-data/system/record_array_manager",
     */
     __exports__["default"] = Ember.Object.extend({
       init: function() {
-        this.filteredRecordArrays = Ember.MapWithDefault.create({
+        this.filteredRecordArrays = MapWithDefault.create({
           defaultValue: function() { return []; }
         });
 
@@ -71327,7 +71686,7 @@ define("ember-data/system/record_array_manager",
       },
 
       recordArraysForRecord: function(record) {
-        record._recordArrays = record._recordArrays || Ember.OrderedSet.create();
+        record._recordArrays = record._recordArrays || OrderedSet.create();
         return record._recordArrays;
       },
 
@@ -71360,9 +71719,11 @@ define("ember-data/system/record_array_manager",
 
         if (!recordArrays) { return; }
 
-        forEach(recordArrays, function(array) {
+        recordArrays.forEach(function(array){
           array.removeRecord(record);
         });
+
+        record._recordArrays = null;
       },
 
       _recordWasChanged: function (record) {
@@ -71414,7 +71775,7 @@ define("ember-data/system/record_array_manager",
             recordArrays.add(array);
           }
         } else if (!shouldBeInArray) {
-          recordArrays.remove(array);
+          recordArrays["delete"](array);
           array.removeRecord(record);
         }
       },
@@ -71427,9 +71788,9 @@ define("ember-data/system/record_array_manager",
         method is invoked when the filter is created in th first place.
 
         @method updateFilter
-        @param array
-        @param type
-        @param filter
+        @param {Array} array
+        @param {String} type
+        @param {Function} filter
       */
       updateFilter: function(array, type, filter) {
         var typeMap = this.store.typeMapFor(type);
@@ -71553,6 +71914,19 @@ define("ember-data/system/record_array_manager",
         this.updateFilter(array, type, filter);
       },
 
+      /**
+        Unregister a FilteredRecordArray.
+        So manager will not update this array.
+
+        @method unregisterFilteredRecordArray
+        @param {DS.RecordArray} array
+      */
+      unregisterFilteredRecordArray: function(array) {
+        var recordArrays = this.filteredRecordArrays.get(array.type);
+        var index = indexOf(recordArrays, array);
+        recordArrays.splice(index, 1);
+      },
+
       // Internally, we maintain a map of all unloaded IDs requested by
       // a ManyArray. As the adapter loads data into the store, the
       // store notifies any interested ManyArrays. When the ManyArray's
@@ -71598,7 +71972,7 @@ define("ember-data/system/record_array_manager",
       return result;
     }
   });
-define("ember-data/system/record_arrays",
+enifed("ember-data/system/record_arrays",
   ["ember-data/system/record_arrays/record_array","ember-data/system/record_arrays/filtered_record_array","ember-data/system/record_arrays/adapter_populated_record_array","ember-data/system/record_arrays/many_array","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
     "use strict";
@@ -71616,7 +71990,7 @@ define("ember-data/system/record_arrays",
     __exports__.AdapterPopulatedRecordArray = AdapterPopulatedRecordArray;
     __exports__.ManyArray = ManyArray;
   });
-define("ember-data/system/record_arrays/adapter_populated_record_array",
+enifed("ember-data/system/record_arrays/adapter_populated_record_array",
   ["ember-data/system/record_arrays/record_array","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -71628,7 +72002,7 @@ define("ember-data/system/record_arrays/adapter_populated_record_array",
     var get = Ember.get;
 
     function cloneNull(source) {
-      var clone = Object.create(null);
+      var clone = Ember.create(null);
       for (var key in source) {
         clone[key] = source[key];
       }
@@ -71679,7 +72053,7 @@ define("ember-data/system/record_arrays/adapter_populated_record_array",
       }
     });
   });
-define("ember-data/system/record_arrays/filtered_record_array",
+enifed("ember-data/system/record_arrays/filtered_record_array",
   ["ember-data/system/record_arrays/record_array","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -71747,10 +72121,23 @@ define("ember-data/system/record_arrays/filtered_record_array",
 
       updateFilter: Ember.observer(function() {
         Ember.run.once(this, this._updateFilter);
-      }, 'filterFunction')
+      }, 'filterFunction'),
+
+      /**
+        @method _unregisterFromManager
+        @private
+      */
+      _unregisterFromManager: function(){
+        this.manager.unregisterFilteredRecordArray(this);
+      },
+
+      willDestroy: function(){
+        this._unregisterFromManager();
+        this._super();
+      }
     });
   });
-define("ember-data/system/record_arrays/many_array",
+enifed("ember-data/system/record_arrays/many_array",
   ["ember-data/system/record_arrays/record_array","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -71804,22 +72191,6 @@ define("ember-data/system/record_arrays/many_array",
       },
 
       /**
-        The property name of the relationship
-
-        @property {String} name
-        @private
-      */
-      name: null,
-
-      /**
-        The record to which this relationship belongs.
-
-        @property {DS.Model} owner
-        @private
-      */
-      owner: null,
-
-      /**
         `true` if the relationship is polymorphic, `false` otherwise.
 
         @property {Boolean} isPolymorphic
@@ -71827,17 +72198,19 @@ define("ember-data/system/record_arrays/many_array",
       */
       isPolymorphic: false,
 
-      // LOADING STATE
+      /**
+        The loading state of this array
 
+        @property {Boolean} isLoaded
+      */
       isLoaded: false,
 
        /**
          The relationship which manages this array.
 
-         @property {DS.Model} owner
+         @property {ManyRelationship} relationship
          @private
        */
-
       relationship: null,
 
 
@@ -71881,6 +72254,13 @@ define("ember-data/system/record_arrays/many_array",
           this.get('relationship').addRecords(objects, idx);
         }
       },
+      /**
+        @method reload
+        @public
+      */
+      reload: function() {
+        return this.relationship.reload();
+      },
 
       /**
         Create a child record within the owner
@@ -71897,14 +72277,14 @@ define("ember-data/system/record_arrays/many_array",
 
         Ember.assert("You cannot add '" + type.typeKey + "' records to this polymorphic relationship.", !get(this, 'isPolymorphic'));
 
-        record = store.createRecord.call(store, type, hash);
+        record = store.createRecord(type, hash);
         this.pushObject(record);
 
         return record;
       }
     });
   });
-define("ember-data/system/record_arrays/record_array",
+enifed("ember-data/system/record_arrays/record_array",
   ["ember-data/system/promise_proxies","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -72101,7 +72481,7 @@ define("ember-data/system/record_arrays/record_array",
           var recordArrays = record._recordArrays;
 
           if (recordArrays) {
-            recordArrays.remove(array);
+            recordArrays["delete"](array);
           }
         });
       },
@@ -72112,7 +72492,7 @@ define("ember-data/system/record_arrays/record_array",
       }
     });
   });
-define("ember-data/system/relationship-meta",
+enifed("ember-data/system/relationship-meta",
   ["ember-inflector/system","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -72147,7 +72527,7 @@ define("ember-data/system/relationship-meta",
 
     __exports__.relationshipFromMeta = relationshipFromMeta;
   });
-define("ember-data/system/relationships",
+enifed("ember-data/system/relationships",
   ["./relationships/belongs_to","./relationships/has_many","ember-data/system/relationships/ext","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
     "use strict";
@@ -72162,7 +72542,7 @@ define("ember-data/system/relationships",
     __exports__.belongsTo = belongsTo;
     __exports__.hasMany = hasMany;
   });
-define("ember-data/system/relationships/belongs_to",
+enifed("ember-data/system/relationships/belongs_to",
   ["ember-data/system/model","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -72239,7 +72619,11 @@ define("ember-data/system/relationships/belongs_to",
           if ( value === undefined ) {
             value = null;
           }
-          this._relationships[key].setRecord(value);
+          if (value && value.then) {
+            this._relationships[key].setRecordPromise(value);
+          } else {
+            this._relationships[key].setRecord(value);
+          }
         }
 
         return this._relationships[key].getRecord();
@@ -72265,15 +72649,18 @@ define("ember-data/system/relationships/belongs_to",
 
     __exports__["default"] = belongsTo;
   });
-define("ember-data/system/relationships/ext",
-  ["ember-data/system/relationship-meta","ember-data/system/model"],
-  function(__dependency1__, __dependency2__) {
+enifed("ember-data/system/relationships/ext",
+  ["ember-data/system/relationship-meta","ember-data/system/model","ember-data/system/map"],
+  function(__dependency1__, __dependency2__, __dependency3__) {
     "use strict";
     var typeForRelationshipMeta = __dependency1__.typeForRelationshipMeta;
     var relationshipFromMeta = __dependency1__.relationshipFromMeta;
     var Model = __dependency2__.Model;
+    var Map = __dependency3__.Map;
+    var MapWithDefault = __dependency3__.MapWithDefault;
 
     var get = Ember.get;
+    var filter = Ember.ArrayPolyfills.filter;
 
     /**
       @module ember-data
@@ -72312,9 +72699,9 @@ define("ember-data/system/relationships/ext",
         property returned by `DS.belongsTo` as the value.
 
         @method didDefineProperty
-        @param proto
-        @param key
-        @param value
+        @param {Object} proto
+        @param {String} key
+        @param {Ember.ComputedProperty} value
       */
       didDefineProperty: function(proto, key, value) {
         // Check if the value being set is a computed property.
@@ -72348,6 +72735,7 @@ define("ember-data/system/relationships/ext",
     */
 
     Model.reopenClass({
+
       /**
         For a given relationship name, returns the model type of the relationship.
 
@@ -72371,17 +72759,59 @@ define("ember-data/system/relationships/ext",
         return relationship && relationship.type;
       },
 
+      inverseMap: Ember.computed(function() {
+        return Ember.create(null);
+      }),
+
+      /**
+        Find the relationship which is the inverse of the one asked for.
+
+        For example, if you define models like this:
+
+       ```javascript
+          App.Post = DS.Model.extend({
+            comments: DS.hasMany('message')
+          });
+
+          App.Message = DS.Model.extend({
+            owner: DS.belongsTo('post')
+          });
+        ```
+
+        App.Post.inverseFor('comments') -> {type: App.Message, name:'owner', kind:'belongsTo'}
+        App.Message.inverseFor('owner') -> {type: App.Post, name:'comments', kind:'hasMany'}
+
+        @method inverseFor
+        @static
+        @param {String} name the name of the relationship
+        @return {Object} the inverse relationship, or null
+      */
       inverseFor: function(name) {
+        var inverseMap = get(this, 'inverseMap');
+        if (inverseMap[name]) {
+          return inverseMap[name];
+        } else {
+          var inverse = this._findInverseFor(name);
+          inverseMap[name] = inverse;
+          return inverse;
+        }
+      },
+
+      //Calculate the inverse, ignoring the cache
+      _findInverseFor: function(name) {
+
         var inverseType = this.typeForRelationship(name);
+        if (!inverseType) {
+          return null;
+        }
 
-        if (!inverseType) { return null; }
-
+        //If inverse is manually specified to be null, like  `comments: DS.hasMany('message', {inverse: null})`
         var options = this.metaForProperty(name).options;
-
         if (options.inverse === null) { return null; }
 
         var inverseName, inverseKind, inverse;
 
+        //If inverse is specified manually, return the inverse
         if (options.inverse) {
           inverseName = options.inverse;
           inverse = Ember.get(inverseType, 'relationshipsByName').get(inverseName);
@@ -72391,9 +72821,23 @@ define("ember-data/system/relationships/ext",
 
           inverseKind = inverse.kind;
         } else {
+          //No inverse was specified manually, we need to use a heuristic to guess one
           var possibleRelationships = findPossibleInverses(this, inverseType);
 
           if (possibleRelationships.length === 0) { return null; }
+
+          var filteredRelationships = filter.call(possibleRelationships, function(possibleRelationship) {
+            var optionsForRelationship = inverseType.metaForProperty(possibleRelationship.name).options;
+            return name === optionsForRelationship.inverse;
+          });
+
+          Ember.assert("You defined the '" + name + "' relationship on " + this + ", but you defined the inverse relationships of type " +
+            inverseType.toString() + " multiple times. Look at http://emberjs.com/guides/models/defining-models/#toc_explicit-inverses for how to explicitly specify inverses",
+            filteredRelationships.length < 2);
+
+          if (filteredRelationships.length === 1 ) {
+            possibleRelationships = filteredRelationships;
+          }
 
           Ember.assert("You defined the '" + name + "' relationship on " + this + ", but multiple possible inverse relationships of type " +
             this + " were found on " + inverseType + ". Look at http://emberjs.com/guides/models/defining-models/#toc_explicit-inverses for how to explicitly specify inverses",
@@ -72403,17 +72847,29 @@ define("ember-data/system/relationships/ext",
           inverseKind = possibleRelationships[0].kind;
         }
 
-        function findPossibleInverses(type, inverseType, possibleRelationships) {
-          possibleRelationships = possibleRelationships || [];
+        function findPossibleInverses(type, inverseType, relationshipsSoFar) {
+          var possibleRelationships = relationshipsSoFar || [];
 
           var relationshipMap = get(inverseType, 'relationships');
           if (!relationshipMap) { return; }
 
           var relationships = relationshipMap.get(type);
+
+          relationships = filter.call(relationships, function(relationship) {
+            var optionsForRelationship = inverseType.metaForProperty(relationship.name).options;
+
+            if (!optionsForRelationship.inverse){
+              return true;
+            }
+
+            return name === optionsForRelationship.inverse;
+          });
+
           if (relationships) {
-            possibleRelationships.push.apply(possibleRelationships, relationshipMap.get(type));
+            possibleRelationships.push.apply(possibleRelationships, relationships);
           }
 
+          //Recurse to support polymorphism
           if (type.superclass) {
             findPossibleInverses(type.superclass, inverseType, possibleRelationships);
           }
@@ -72462,7 +72918,7 @@ define("ember-data/system/relationships/ext",
         @readOnly
       */
       relationships: Ember.computed(function() {
-        var map = new Ember.MapWithDefault({
+        var map = new MapWithDefault({
           defaultValue: function() { return []; }
         });
 
@@ -72612,7 +73068,7 @@ define("ember-data/system/relationships/ext",
         @readOnly
       */
       relationshipsByName: Ember.computed(function() {
-        var map = Ember.Map.create();
+        var map = Map.create();
 
         this.eachComputedProperty(function(name, meta) {
           if (meta.isRelationship) {
@@ -72645,7 +73101,7 @@ define("ember-data/system/relationships/ext",
         });
 
         var fields = Ember.get(App.Blog, 'fields');
-        fields.forEach(function(field, kind) {
+        fields.forEach(function(kind, field) {
           console.log(field, kind);
         });
 
@@ -72662,7 +73118,7 @@ define("ember-data/system/relationships/ext",
         @readOnly
       */
       fields: Ember.computed(function() {
-        var map = Ember.Map.create();
+        var map = Map.create();
 
         this.eachComputedProperty(function(name, meta) {
           if (meta.isRelationship) {
@@ -72686,7 +73142,7 @@ define("ember-data/system/relationships/ext",
         @param {any} binding the value to which the callback's `this` should be bound
       */
       eachRelationship: function(callback, binding) {
-        get(this, 'relationshipsByName').forEach(function(name, relationship) {
+        get(this, 'relationshipsByName').forEach(function(relationship, name) {
           callback.call(binding, name, relationship);
         });
       },
@@ -72754,7 +73210,7 @@ define("ember-data/system/relationships/ext",
 
     });
   });
-define("ember-data/system/relationships/has_many",
+enifed("ember-data/system/relationships/has_many",
   ["ember-data/system/model","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -72889,27 +73345,31 @@ define("ember-data/system/relationships/has_many",
 
     __exports__["default"] = hasMany;
   });
-define("ember-data/system/relationships/relationship",
-  ["ember-data/system/promise_proxies","exports"],
-  function(__dependency1__, __exports__) {
+enifed("ember-data/system/relationships/relationship",
+  ["ember-data/system/promise_proxies","ember-data/system/map","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
-    var PromiseArray = __dependency1__.PromiseArray;
+    var PromiseManyArray = __dependency1__.PromiseManyArray;
     var PromiseObject = __dependency1__.PromiseObject;
+    var OrderedSet = __dependency2__.OrderedSet;
 
     var Relationship = function(store, record, inverseKey, relationshipMeta) {
-      this.members = new Ember.OrderedSet();
+      this.members = new OrderedSet();
       this.store = store;
       this.key = relationshipMeta.key;
       this.inverseKey = inverseKey;
       this.record = record;
-      this.key = relationshipMeta.key;
       this.isAsync = relationshipMeta.options.async;
       this.relationshipMeta = relationshipMeta;
+      //This probably breaks for polymorphic relationship in complex scenarios, due to
+      //multiple possible typeKeys
+      this.inverseKeyForImplicit = this.store.modelFor(this.record.constructor).typeKey + this.key;
+      //Cached promise when fetching the relationship from a link
+      this.linkPromise = null;
     };
 
     Relationship.prototype = {
       constructor: Relationship,
-      hasFetchedLink: false,
 
       destroy: Ember.K,
 
@@ -72919,23 +73379,38 @@ define("ember-data/system/relationships/relationship",
         }, this);
       },
 
+      disconnect: function(){
+        this.members.forEach(function(member) {
+          this.removeRecordFromInverse(member);
+        }, this);
+      },
+
+      reconnect: function(){
+        this.members.forEach(function(member) {
+          this.addRecordToInverse(member);
+        }, this);
+      },
+
       removeRecords: function(records){
-        var that = this;
-        records.forEach(function(record){
-          that.removeRecord(record);
-        });
+        var length = Ember.get(records, 'length');
+        var record;
+        for (var i = 0; i < length; i++){
+          record = records[i];
+          this.removeRecord(record);
+        }
       },
 
       addRecords: function(records, idx){
-        var that = this;
-        records.forEach(function(record){
-          that.addRecord(record, idx);
+        var length = Ember.get(records, 'length');
+        var record;
+        for (var i = 0; i < length; i++){
+          record = records[i];
+          this.addRecord(record, idx);
           if (idx !== undefined) {
             idx++;
           }
-        });
+        }
       },
-
 
       addRecord: function(record, idx) {
         if (!this.members.has(record)) {
@@ -72943,6 +73418,11 @@ define("ember-data/system/relationships/relationship",
           this.notifyRecordRelationshipAdded(record, idx);
           if (this.inverseKey) {
             record._relationships[this.inverseKey].addRecord(this.record);
+          } else {
+            if (!record._implicitRelationships[this.inverseKeyForImplicit]) {
+              record._implicitRelationships[this.inverseKeyForImplicit] = new Relationship(this.store, record, this.key,  {options:{}});
+            }
+            record._implicitRelationships[this.inverseKeyForImplicit].addRecord(this.record);
           }
           this.record.updateRecordArrays();
         }
@@ -72950,31 +73430,65 @@ define("ember-data/system/relationships/relationship",
 
       removeRecord: function(record) {
         if (this.members.has(record)) {
-          this.members.remove(record);
-          this.notifyRecordRelationshipRemoved(record);
+          this.removeRecordFromOwn(record);
           if (this.inverseKey) {
-            var inverseRelationship = record._relationships[this.inverseKey];
-            //Need to check for existence, as the record might unloading at the moment
-            if (inverseRelationship) {
-              inverseRelationship.removeRecord(this.record);
+            this.removeRecordFromInverse(record);
+          } else {
+            if (record._implicitRelationships[this.inverseKeyForImplicit]) {
+              record._implicitRelationships[this.inverseKeyForImplicit].removeRecord(this.record);
             }
           }
-          this.record.updateRecordArrays();
         }
       },
 
+      addRecordToInverse: function(record) {
+        if (this.inverseKey) {
+          record._relationships[this.inverseKey].addRecord(this.record);
+        }
+      },
+
+      removeRecordFromInverse: function(record) {
+        var inverseRelationship = record._relationships[this.inverseKey];
+        //Need to check for existence, as the record might unloading at the moment
+        if (inverseRelationship) {
+          inverseRelationship.removeRecordFromOwn(this.record);
+        }
+      },
+
+      removeRecordFromOwn: function(record) {
+        this.members["delete"](record);
+        this.notifyRecordRelationshipRemoved(record);
+        this.record.updateRecordArrays();
+      },
+
       updateLink: function(link) {
+        Ember.assert("You have pushed a record of type '" + this.record.constructor.typeKey + "' with '" + this.key + "' as a link, but the value of that link is not a string.", typeof link === 'string' || link === null);
         if (link !== this.link) {
           this.link = link;
-          this.hasFetchedLink = false;
+          this.linkPromise = null;
           this.record.notifyPropertyChange(this.key);
+        }
+      },
+
+      findLink: function() {
+        if (this.linkPromise) {
+          return this.linkPromise;
+        } else {
+          var promise = this.fetchLink();
+          this.linkPromise = promise;
+          return promise.then(function(result) {
+            return result;
+          });
         }
       },
 
       updateRecordsFromAdapter: function(records) {
         //TODO Once we have adapter support, we need to handle updated and canonical changes
         this.computeChanges(records);
-      }
+      },
+
+      notifyRecordRelationshipAdded: Ember.K,
+      notifyRecordRelationshipRemoved: Ember.K
     };
 
     var ManyRelationship = function(store, record, inverseKey, relationshipMeta) {
@@ -72986,7 +73500,7 @@ define("ember-data/system/relationships/relationship",
       this.manyArray.isPolymorphic = this.isPolymorphic;
     };
 
-    ManyRelationship.prototype = Object.create(Relationship.prototype);
+    ManyRelationship.prototype = Ember.create(Relationship.prototype);
     ManyRelationship.prototype.constructor = ManyRelationship;
     ManyRelationship.prototype._super$constructor = Relationship;
 
@@ -73003,69 +73517,104 @@ define("ember-data/system/relationships/relationship",
       this.record.notifyHasManyRemoved(this.key, record);
     };
 
+    ManyRelationship.prototype.reload = function() {
+      var self = this;
+      if (this.link) {
+        return this.fetchLink();
+      } else {
+        return this.store.scheduleFetchMany(this.manyArray.toArray()).then(function() {
+          //Goes away after the manyArray refactor
+          self.manyArray.set('isLoaded', true);
+          return self.manyArray;
+        });
+      }
+    };
+
     ManyRelationship.prototype.computeChanges = function(records) {
       var members = this.members;
+      var recordsToRemove = [];
+      var length;
+      var record;
+      var i;
 
       records = setForArray(records);
 
       members.forEach(function(member) {
         if (records.has(member)) return;
 
-        this.removeRecord(member);
-      }, this);
+        recordsToRemove.push(member);
+      });
+      this.removeRecords(recordsToRemove);
 
       var hasManyArray = this.manyArray;
 
-      records.forEach(function(record, index) {
+      // Using records.toArray() since currently using
+      // removeRecord can modify length, messing stuff up
+      // forEach since it directly looks at "length" each
+      // iteration
+      records = records.toArray();
+      length = records.length;
+      for (i = 0; i < length; i++){
+        record = records[i];
         //Need to preserve the order of incoming records
-        if (hasManyArray.objectAt(index) === record ) return;
-
+        if (hasManyArray.objectAt(i) === record ) {
+          continue;
+        }
         this.removeRecord(record);
-        this.addRecord(record, index);
-      }, this);
+        this.addRecord(record, i);
+      }
     };
 
+    ManyRelationship.prototype.fetchLink = function() {
+      var self = this;
+      return this.store.findHasMany(this.record, this.link, this.relationshipMeta).then(function(records){
+        self.updateRecordsFromAdapter(records);
+        return self.manyArray;
+      });
+    };
+
+    ManyRelationship.prototype.findRecords = function() {
+      var manyArray = this.manyArray;
+      return this.store.findMany(manyArray.toArray()).then(function(){
+        //Goes away after the manyArray refactor
+        manyArray.set('isLoaded', true);
+        return manyArray;
+      });
+    };
 
     ManyRelationship.prototype.getRecords = function() {
       if (this.isAsync) {
         var self = this;
         var promise;
-        if (this.link && !this.hasFetchedLink) {
-          promise = this.store.findHasMany(this.record, this.link, this.relationshipMeta).then(function(records){
-            self.updateRecordsFromAdapter(records);
-            self.hasFetchedLink = true;
-            //TODO(Igor) try to abstract the isLoaded part
-            self.manyArray.set('isLoaded', true);
-            return self.manyArray;
+        if (this.link) {
+          promise = this.findLink().then(function() {
+            return self.findRecords();
           });
         } else {
-          var manyArray = this.manyArray;
-          promise = this.store.findMany(manyArray.toArray()).then(function(){
-            self.manyArray.set('isLoaded', true);
-            return manyArray;
-          });
+          promise = this.findRecords();
         }
-        return PromiseArray.create({
+        return PromiseManyArray.create({
+          content: this.manyArray,
           promise: promise
         });
       } else {
           Ember.assert("You looked up the '" + this.key + "' relationship on a '" + this.record.constructor.typeKey + "' with id " + this.record.get('id') +  " but some of the associated records were not loaded. Either make sure they are all loaded together with the parent record, or specify that the relationship is async (`DS.hasMany({ async: true })`)", this.manyArray.isEvery('isEmpty', false));
 
-        this.manyArray.set('isLoaded', true);
+        if (!this.manyArray.get('isDestroyed')) {
+          this.manyArray.set('isLoaded', true);
+        }
         return this.manyArray;
      }
     };
 
     var BelongsToRelationship = function(store, record, inverseKey, relationshipMeta) {
       this._super$constructor(store, record, inverseKey, relationshipMeta);
-      this.members.add(record);
       this.record = record;
       this.key = relationshipMeta.key;
-      this.inverseKey = inverseKey;
       this.inverseRecord = null;
     };
 
-    BelongsToRelationship.prototype = Object.create(Relationship.prototype);
+    BelongsToRelationship.prototype = Ember.create(Relationship.prototype);
     BelongsToRelationship.prototype.constructor = BelongsToRelationship;
     BelongsToRelationship.prototype._super$constructor = Relationship;
 
@@ -73083,12 +73632,18 @@ define("ember-data/system/relationships/relationship",
       var type = this.relationshipMeta.type;
       Ember.assert("You can only add a '" + type.typeKey + "' record to this relationship", newRecord instanceof type);
 
-      if (this.inverseRecord && this.inverseKey) {
+      if (this.inverseRecord) {
         this.removeRecord(this.inverseRecord);
       }
 
       this.inverseRecord = newRecord;
       this._super$addRecord(newRecord);
+    };
+
+    BelongsToRelationship.prototype.setRecordPromise = function(newPromise) {
+      var content = newPromise.get && newPromise.get('content');
+      Ember.assert("You passed in a promise that did not originate from an EmberData relationship. You can only pass promises that come from a belongsTo or hasMany relationship to the get call.", content !== undefined);
+      this.setRecord(content);
     };
 
     BelongsToRelationship.prototype.notifyRecordRelationshipAdded = function(newRecord) {
@@ -73099,36 +73654,46 @@ define("ember-data/system/relationships/relationship",
       this.record.notifyBelongsToRemoved(this.key, this);
     };
 
-    BelongsToRelationship.prototype._super$removeRecord = Relationship.prototype.removeRecord;
-    BelongsToRelationship.prototype.removeRecord = function(record) {
-      if (!this.members.has(record)){ return;}
-      this._super$removeRecord(record);
+    BelongsToRelationship.prototype._super$removeRecordFromOwn = Relationship.prototype.removeRecordFromOwn;
+    BelongsToRelationship.prototype.removeRecordFromOwn = function(record) {
+      if (!this.members.has(record)) { return; }
       this.inverseRecord = null;
+      this._super$removeRecordFromOwn(record);
     };
 
-    BelongsToRelationship.prototype.currentOtherSideFor = function() {
-      return this.inverseRecord;
+    BelongsToRelationship.prototype.findRecord = function() {
+      if (this.inverseRecord) {
+        return this.store._findByRecord(this.inverseRecord);
+      } else {
+        return Ember.RSVP.Promise.resolve(null);
+      }
+    };
+
+    BelongsToRelationship.prototype.fetchLink = function() {
+      var self = this;
+      return this.store.findBelongsTo(this.record, this.link, this.relationshipMeta).then(function(record){
+        if (record) {
+          self.addRecord(record);
+        }
+        return record;
+      });
     };
 
     BelongsToRelationship.prototype.getRecord = function() {
       if (this.isAsync) {
         var promise;
-
-        if (this.link && !this.hasFetchedLink){
+        if (this.link){
           var self = this;
-          promise = this.store.findBelongsTo(this.record, this.link, this.relationshipMeta).then(function(record){
-            self.addRecord(record);
-            self.hasFetchedLink = true;
-            return record;
+          promise = this.findLink().then(function() {
+            return self.findRecord();
           });
-        } else if (this.inverseRecord) {
-          promise = this.store._findByRecord(this.inverseRecord);
         } else {
-          promise = Ember.RSVP.Promise.resolve(null);
+          promise = this.findRecord();
         }
 
         return PromiseObject.create({
-          promise: promise
+          promise: promise,
+          content: this.inverseRecord
         });
       } else {
         Ember.assert("You looked up the '" + this.key + "' relationship on a '" + this.record.constructor.typeKey + "' with id " + this.record.get('id') +  " but some of the associated records were not loaded. Either make sure they are all loaded together with the parent record, or specify that the relationship is async (`DS.belongsTo({ async: true })`)", this.inverseRecord === null || !this.inverseRecord.get('isEmpty'));
@@ -73137,7 +73702,7 @@ define("ember-data/system/relationships/relationship",
     };
 
     function setForArray(array) {
-      var set = new Ember.OrderedSet();
+      var set = new OrderedSet();
 
       if (array) {
         for (var i=0, l=array.length; i<l; i++) {
@@ -73170,9 +73735,9 @@ define("ember-data/system/relationships/relationship",
     __exports__.BelongsToRelationship = BelongsToRelationship;
     __exports__.createRelationshipFor = createRelationshipFor;
   });
-define("ember-data/system/store",
-  ["ember-data/system/adapter","ember-inflector/system/string","ember-data/system/promise_proxies","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
+enifed("ember-data/system/store",
+  ["ember-data/system/adapter","ember-inflector/system/string","ember-data/system/map","ember-data/system/promise_proxies","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
     "use strict";
     /*globals Ember*/
     /*jshint eqnull:true*/
@@ -73184,9 +73749,10 @@ define("ember-data/system/store",
     var InvalidError = __dependency1__.InvalidError;
     var Adapter = __dependency1__.Adapter;
     var singularize = __dependency2__.singularize;
+    var Map = __dependency3__.Map;
 
-    var promiseArray = __dependency3__.promiseArray;
-    var promiseObject = __dependency3__.promiseObject;
+    var promiseArray = __dependency4__.promiseArray;
+    var promiseObject = __dependency4__.promiseObject;
 
 
     var get = Ember.get;
@@ -73244,14 +73810,6 @@ define("ember-data/system/store",
 
       You can retrieve models from the store in several ways. To retrieve a record
       for a specific id, use `DS.Store`'s `find()` method:
-
-      ```javascript
-      store.find('person', 123).then(function (person) {
-      });
-      ```
-
-      If your application has multiple `DS.Store` instances (an unusual case), you can
-      specify which store should be used:
 
       ```javascript
       store.find('person', 123).then(function (person) {
@@ -73321,7 +73879,7 @@ define("ember-data/system/store",
         });
         this._pendingSave = [];
         //Used to keep track of all the find requests that need to be coalesced
-        this._pendingFetch = Ember.Map.create();
+        this._pendingFetch = Map.create();
       },
 
       /**
@@ -73601,6 +74159,25 @@ define("ember-data/system/store",
       },
 
       /**
+        This method returns a fresh record for a given type and id combination.
+
+        If a record is available for the given type/id combination, then it will fetch this record from the store then reload it. If there's no record corresponding in the store it will simply call store.find.
+
+        @method fetch
+        @param {String or subclass of DS.Model} type
+        @param {Object|String|Integer|null} id
+        @param {Object} preload - optional set of attributes and relationships passed in either as IDs or as actual models
+        @return {Promise} promise
+      */
+      fetch: function(type, id, preload) {
+        if (this.hasRecordForId(type, id)) {
+          return this.getById(type, id).reload();
+        } else {
+          return this.find(type, id, preload);
+        }
+      },
+
+      /**
         This method returns a record for a given type and id combination.
 
         @method findById
@@ -73669,14 +74246,14 @@ define("ember-data/system/store",
         var adapter = this.adapterFor(type);
 
         Ember.assert("You tried to find a record but you have no adapter (for " + type + ")", adapter);
-        Ember.assert("You tried to find a record but your adapter (for " + type + ") does not implement 'find'", adapter.find);
+        Ember.assert("You tried to find a record but your adapter (for " + type + ") does not implement 'find'", typeof adapter.find === 'function');
 
         var promise = _find(adapter, this, type, id, record);
         return promise;
       },
 
       scheduleFetchMany: function(records) {
-        return Ember.RSVP.all(map(records, this.scheduleFetch, this));
+        return Promise.all(map(records, this.scheduleFetch, this));
       },
 
       scheduleFetch: function(record) {
@@ -73709,10 +74286,10 @@ define("ember-data/system/store",
         }
 
         this._pendingFetch.forEach(this._flushPendingFetchForType, this);
-        this._pendingFetch = Ember.Map.create();
+        this._pendingFetch = Map.create();
       },
 
-      _flushPendingFetchForType: function (type, recordResolverPairs) {
+      _flushPendingFetchForType: function (recordResolverPairs, type) {
         var store = this;
         var adapter = store.adapterFor(type);
         var shouldCoalesce = !!adapter.findMany && adapter.coalesceFindRequests;
@@ -73826,7 +74403,7 @@ define("ember-data/system/store",
 
         Ember.assert("You cannot reload a record without an ID", id);
         Ember.assert("You tried to reload a record but you have no adapter (for " + type + ")", adapter);
-        Ember.assert("You tried to reload a record but your adapter does not implement `find`", adapter.find);
+        Ember.assert("You tried to reload a record but your adapter does not implement `find`", typeof adapter.find === 'function');
 
         return this.scheduleFetch(record);
       },
@@ -73879,7 +74456,7 @@ define("ember-data/system/store",
       */
       findMany: function(records) {
         var store = this;
-        return Promise.all( map(records, function(record) {
+        return Promise.all(map(records, function(record) {
           return store._findByRecord(record);
         }));
       },
@@ -73907,7 +74484,7 @@ define("ember-data/system/store",
         var adapter = this.adapterFor(owner.constructor);
 
         Ember.assert("You tried to load a hasMany relationship but you have no adapter (for " + owner.constructor + ")", adapter);
-        Ember.assert("You tried to load a hasMany relationship from a specified `link` in the original payload but your adapter does not implement `findHasMany`", adapter.findHasMany);
+        Ember.assert("You tried to load a hasMany relationship from a specified `link` in the original payload but your adapter does not implement `findHasMany`", typeof adapter.findHasMany === 'function');
 
         return _findHasMany(adapter, this, owner, link, type);
       },
@@ -73924,7 +74501,7 @@ define("ember-data/system/store",
         var adapter = this.adapterFor(owner.constructor);
 
         Ember.assert("You tried to load a belongsTo relationship but you have no adapter (for " + owner.constructor + ")", adapter);
-        Ember.assert("You tried to load a belongsTo relationship from a specified `link` in the original payload but your adapter does not implement `findBelongsTo`", adapter.findBelongsTo);
+        Ember.assert("You tried to load a belongsTo relationship from a specified `link` in the original payload but your adapter does not implement `findBelongsTo`", typeof adapter.findBelongsTo === 'function');
 
         return _findBelongsTo(adapter, this, owner, link, relationship);
       },
@@ -73954,7 +74531,7 @@ define("ember-data/system/store",
         var adapter = this.adapterFor(type);
 
         Ember.assert("You tried to load a query but you have no adapter (for " + type + ")", adapter);
-        Ember.assert("You tried to load a query but your adapter does not implement `findQuery`", adapter.findQuery);
+        Ember.assert("You tried to load a query but your adapter does not implement `findQuery`", typeof adapter.findQuery === 'function');
 
         return promiseArray(_findQuery(adapter, this, type, query, array));
       },
@@ -73989,7 +74566,7 @@ define("ember-data/system/store",
         set(array, 'isUpdating', true);
 
         Ember.assert("You tried to load all records but you have no adapter (for " + type + ")", adapter);
-        Ember.assert("You tried to load all records but your adapter does not implement `findAll`", adapter.findAll);
+        Ember.assert("You tried to load all records but your adapter does not implement `findAll`", typeof adapter.findAll === 'function');
 
         return promiseArray(_findAll(adapter, this, type, sinceToken));
       },
@@ -74004,14 +74581,17 @@ define("ember-data/system/store",
       },
 
       /**
-        This method returns a filtered array that contains all of the known records
-        for a given type.
+        This method returns a filtered array that contains all of the
+        known records for a given type in the store.
 
-        Note that because it's just a filter, it will have any locally
-        created records of the type.
+        Note that because it's just a filter, the result will contain any
+        locally created records of the type, however, it will not make a
+        request to the backend to retrieve additional records. If you
+        would like to request all the records from the backend please use
+        [store.find](#method_find).
 
         Also note that multiple calls to `all` for a given type will always
-        return the same RecordArray.
+        return the same `RecordArray`.
 
         Example
 
@@ -74067,9 +74647,17 @@ define("ember-data/system/store",
         remains up to date as new records are loaded into the store or created
         locally.
 
-        The callback function takes a materialized record, and returns true
+        The filter function takes a materialized record, and returns true
         if the record should be included in the filter and false if it should
         not.
+
+        Example
+
+        ```javascript
+        store.filter('post', function(post) {
+          return post.get('unread');
+        });
+        ```
 
         The filter function is called once on all records for the type when
         it is created, and then once on each newly loaded or created record.
@@ -74078,14 +74666,19 @@ define("ember-data/system/store",
         filter function will be invoked again to determine whether it should
         still be in the array.
 
-        Optionally you can pass a query which will be triggered at first. The
-        results returned by the server could then appear in the filter if they
-        match the filter function.
+        Optionally you can pass a query, which is the equivalent of calling
+        [find](#method_find) with that same query, to fetch additional records
+        from the server. The results returned by the server could then appear
+        in the filter if they match the filter function.
+
+        The query itself is not used to filter records, it's only sent to your
+        server for you to be able to do server-side filtering. The filter
+        function will be applied on the returned results regardless.
 
         Example
 
         ```javascript
-        store.filter('post', {unread: true}, function(post) {
+        store.filter('post', { unread: true }, function(post) {
           return post.get('unread');
         }).then(function(unreadPosts) {
           unreadPosts.get('length'); // 5
@@ -74316,7 +74909,7 @@ define("ember-data/system/store",
 
         @method typeMapFor
         @private
-        @param type
+        @param {subclass of DS.Model} type
         @return {Object} typeMap
       */
       typeMapFor: function(type) {
@@ -74329,9 +74922,9 @@ define("ember-data/system/store",
         if (typeMap) { return typeMap; }
 
         typeMap = {
-          idToRecord: Object.create(null),
+          idToRecord: Ember.create(null),
           records: [],
-          metadata: Object.create(null),
+          metadata: Ember.create(null),
           type: type
         };
 
@@ -74377,7 +74970,7 @@ define("ember-data/system/store",
         var factory;
 
         if (typeof key === 'string') {
-          factory = this.container.lookupFactory('model:' + key);
+          factory = this.modelFactoryFor(key);
           if (!factory) {
             throw new Ember.Error("No model was found for '" + key + "'");
           }
@@ -74392,6 +74985,10 @@ define("ember-data/system/store",
 
         factory.store = this;
         return factory;
+      },
+
+      modelFactoryFor: function(key){
+        return this.container.lookupFactory('model:' + key);
       },
 
       /**
@@ -74459,10 +75056,11 @@ define("ember-data/system/store",
         // _partial is an internal param used by `update`.
         // If passed, it means that the data should be
         // merged into the existing data, not replace it.
-        Ember.assert("Expected an object as `data` in a call to push for " + typeName + " , but was " + data, Ember.typeOf(data) === 'object');
-        Ember.assert("You must include an `id` for " + typeName + " in an object passed to `push`", data.id != null);
+        Ember.assert("Expected an object as `data` in a call to `push`/`update` for " + typeName + " , but was " + data, Ember.typeOf(data) === 'object');
+        Ember.assert("You must include an `id` for " + typeName + " in an object passed to `push`/`update`", data.id != null && data.id !== '');
 
         var type = this.modelFor(typeName);
+        var filter = Ember.EnumerableUtils.filter;
 
         // If the payload contains relationships that are specified as
         // IDs, normalizeRelationships will convert them into DS.Model instances
@@ -74470,6 +75068,15 @@ define("ember-data/system/store",
         // store.
 
         data = normalizeRelationships(this, type, data);
+
+        Ember.warn("The payload for '" + typeName + "' contains these unknown keys: " +
+          Ember.inspect(filter(Ember.keys(data), function(key) {
+            return !get(type, 'fields').has(key) && key !== 'id' && key !== 'links';
+          })) + ". Make sure they've been defined in your model.",
+          filter(Ember.keys(data), function(key) {
+            return !get(type, 'fields').has(key) && key !== 'id' && key !== 'links';
+          }).length === 0
+        );
 
         // Actually load the record into the store.
 
@@ -74535,7 +75142,7 @@ define("ember-data/system/store",
         if (!inputPayload) {
           payload = type;
           serializer = defaultSerializer(this.container);
-          Ember.assert("You cannot use `store#pushPayload` without a type unless your default serializer defines `pushPayload`", serializer.pushPayload);
+          Ember.assert("You cannot use `store#pushPayload` without a type unless your default serializer defines `pushPayload`", typeof serializer.pushPayload === 'function');
         } else {
           payload = inputPayload;
           serializer = this.serializerFor(type);
@@ -74558,7 +75165,7 @@ define("ember-data/system/store",
         ```
 
         @method normalize
-        @param {String} The name of the model type for this payload
+        @param {String} type The name of the model type for this payload
         @param {Object} payload
         @return {Object} The normalized payload
       */
@@ -74601,8 +75208,6 @@ define("ember-data/system/store",
         @return {DS.Model} the record that was updated.
       */
       update: function(type, data) {
-        Ember.assert("You must include an `id` for " + type + " in a hash passed to `update`", data.id != null);
-
         return this.push(type, data, true);
       },
 
@@ -74809,6 +75414,7 @@ define("ember-data/system/store",
       if (isNone(id) || id instanceof Model) {
         return;
       }
+      Ember.assert("A " + relationship.parentType + " record was pushed into the store with the value of " + key + " being " + Ember.inspect(id) + ", but " + key + " is a belongsTo relationship so the value must not be an array. You should probably check your data payload or serializer.", !Ember.isArray(id));
 
       var type;
 
@@ -74830,9 +75436,11 @@ define("ember-data/system/store",
     }
 
     function deserializeRecordIds(store, data, key, relationship, ids) {
-      if (!Ember.isArray(ids)) {
+      if (isNone(ids)) {
         return;
       }
+
+      Ember.assert("A " + relationship.parentType + " record was pushed into the store with the value of " + key + " being '" + Ember.inspect(ids) + "', but " + key + " is a hasMany relationship so the value must be an array. You should probably check your data payload or serializer.", Ember.isArray(ids));
       for (var i=0, l=ids.length; i<l; i++) {
         deserializeRecordId(store, ids, i, relationship, ids[i]);
       }
@@ -74967,6 +75575,11 @@ define("ember-data/system/store",
 
       return promise.then(function(adapterPayload) {
         var payload = serializer.extract(store, relationship.type, adapterPayload, null, 'findBelongsTo');
+
+        if (!payload) {
+          return null;
+        }
+
         var record = store.push(relationship.type, payload);
         return record;
       }, null, "DS: Extract payload of " + record + " : " + relationship.type);
@@ -75034,7 +75647,9 @@ define("ember-data/system/store",
         return record;
       }, function(reason) {
         if (reason instanceof InvalidError) {
-          store.recordWasInvalid(record, reason.errors);
+          var errors = serializer.extractErrors(store, type, reason.errors, get(record, 'id'));
+          store.recordWasInvalid(record, errors);
+          reason = new InvalidError(errors);
         } else {
           store.recordWasError(record, reason);
         }
@@ -75069,7 +75684,7 @@ define("ember-data/system/store",
     __exports__.Store = Store;
     __exports__["default"] = Store;
   });
-define("ember-data/transforms",
+enifed("ember-data/transforms",
   ["ember-data/transforms/base","ember-data/transforms/number","ember-data/transforms/date","ember-data/transforms/string","ember-data/transforms/boolean","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __exports__) {
     "use strict";
@@ -75085,7 +75700,7 @@ define("ember-data/transforms",
     __exports__.StringTransform = StringTransform;
     __exports__.BooleanTransform = BooleanTransform;
   });
-define("ember-data/transforms/base",
+enifed("ember-data/transforms/base",
   ["exports"],
   function(__exports__) {
     "use strict";
@@ -75137,8 +75752,8 @@ define("ember-data/transforms/base",
         ```
 
         @method serialize
-        @param deserialized The deserialized value
-        @return The serialized value
+        @param {mixed} deserialized The deserialized value
+        @return {mixed} The serialized value
       */
       serialize: Ember.required(),
 
@@ -75155,13 +75770,13 @@ define("ember-data/transforms/base",
         ```
 
         @method deserialize
-        @param serialized The serialized value
-        @return The deserialized value
+        @param {mixed} serialized The serialized value
+        @return {mixed} The deserialized value
       */
       deserialize: Ember.required()
     });
   });
-define("ember-data/transforms/boolean",
+enifed("ember-data/transforms/boolean",
   ["ember-data/transforms/base","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -75208,7 +75823,7 @@ define("ember-data/transforms/boolean",
       }
     });
   });
-define("ember-data/transforms/date",
+enifed("ember-data/transforms/date",
   ["ember-data/transforms/base","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -75260,7 +75875,6 @@ define("ember-data/transforms/date",
     }
 
     __exports__["default"] = Transform.extend({
-
       deserialize: function(serialized) {
         var type = typeof serialized;
 
@@ -75286,7 +75900,7 @@ define("ember-data/transforms/date",
       }
     });
   });
-define("ember-data/transforms/number",
+enifed("ember-data/transforms/number",
   ["ember-data/transforms/base","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -75325,7 +75939,7 @@ define("ember-data/transforms/number",
       }
     });
   });
-define("ember-data/transforms/string",
+enifed("ember-data/transforms/string",
   ["ember-data/transforms/base","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -75362,7 +75976,7 @@ define("ember-data/transforms/string",
       }
     });
   });
-define("ember-inflector",
+enifed("ember-inflector",
   ["./system","./helpers","./ext/string","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
     "use strict";
@@ -75383,7 +75997,7 @@ define("ember-inflector",
     __exports__.pluralize = pluralize;
     __exports__.singularize = singularize;
   });
-define("ember-inflector/ext/string",
+enifed("ember-inflector/ext/string",
   ["../system/string"],
   function(__dependency1__) {
     "use strict";
@@ -75412,7 +76026,7 @@ define("ember-inflector/ext/string",
       };
     }
   });
-define("ember-inflector/helpers",
+enifed("ember-inflector/helpers",
   ["./system/string"],
   function(__dependency1__) {
     "use strict";
@@ -75451,7 +76065,7 @@ define("ember-inflector/helpers",
     */
     Ember.Handlebars.helper('pluralize', pluralize);
   });
-define("ember-inflector/system",
+enifed("ember-inflector/system",
   ["./system/inflector","./system/string","./system/inflections","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
     "use strict";
@@ -75470,7 +76084,7 @@ define("ember-inflector/system",
     __exports__.pluralize = pluralize;
     __exports__.defaultRules = defaultRules;
   });
-define("ember-inflector/system/inflections",
+enifed("ember-inflector/system/inflections",
   ["exports"],
   function(__exports__) {
     "use strict";
@@ -75553,7 +76167,7 @@ define("ember-inflector/system/inflections",
       ]
     };
   });
-define("ember-inflector/system/inflector",
+enifed("ember-inflector/system/inflector",
   ["exports"],
   function(__exports__) {
     "use strict";
@@ -75854,7 +76468,7 @@ define("ember-inflector/system/inflector",
 
     __exports__["default"] = Inflector;
   });
-define("ember-inflector/system/string",
+enifed("ember-inflector/system/string",
   ["./inflector","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -75873,6 +76487,1461 @@ define("ember-inflector/system/string",
   });
  global.DS = requireModule('ember-data')['default'];
  })(this);
+;//
+// showdown.js -- A javascript port of Markdown.
+//
+// Copyright (c) 2007 John Fraser.
+//
+// Original Markdown Copyright (c) 2004-2005 John Gruber
+//   <http://daringfireball.net/projects/markdown/>
+//
+// Redistributable under a BSD-style open source license.
+// See license.txt for more information.
+//
+// The full source distribution is at:
+//
+//				A A L
+//				T C A
+//				T K B
+//
+//   <http://www.attacklab.net/>
+//
+
+//
+// Wherever possible, Showdown is a straight, line-by-line port
+// of the Perl version of Markdown.
+//
+// This is not a normal parser design; it's basically just a
+// series of string substitutions.  It's hard to read and
+// maintain this way,  but keeping Showdown close to the original
+// design makes it easier to port new features.
+//
+// More importantly, Showdown behaves like markdown.pl in most
+// edge cases.  So web applications can do client-side preview
+// in Javascript, and then build identical HTML on the server.
+//
+// This port needs the new RegExp functionality of ECMA 262,
+// 3rd Edition (i.e. Javascript 1.5).  Most modern web browsers
+// should do fine.  Even with the new regular expression features,
+// We do a lot of work to emulate Perl's regex functionality.
+// The tricky changes in this file mostly have the "attacklab:"
+// label.  Major or self-explanatory changes don't.
+//
+// Smart diff tools like Araxis Merge will be able to match up
+// this file with markdown.pl in a useful way.  A little tweaking
+// helps: in a copy of markdown.pl, replace "#" with "//" and
+// replace "$text" with "text".  Be sure to ignore whitespace
+// and line endings.
+//
+
+
+//
+// Showdown usage:
+//
+//   var text = "Markdown *rocks*.";
+//
+//   var converter = new Showdown.converter();
+//   var html = converter.makeHtml(text);
+//
+//   alert(html);
+//
+// Note: move the sample code to the bottom of this
+// file before uncommenting it.
+//
+
+
+//
+// Showdown namespace
+//
+var Showdown = { extensions: {} };
+
+//
+// forEach
+//
+var forEach = Showdown.forEach = function(obj, callback) {
+	if (typeof obj.forEach === 'function') {
+		obj.forEach(callback);
+	} else {
+		var i, len = obj.length;
+		for (i = 0; i < len; i++) {
+			callback(obj[i], i, obj);
+		}
+	}
+};
+
+//
+// Standard extension naming
+//
+var stdExtName = function(s) {
+	return s.replace(/[_-]||\s/g, '').toLowerCase();
+};
+
+//
+// converter
+//
+// Wraps all "globals" so that the only thing
+// exposed is makeHtml().
+//
+Showdown.converter = function(converter_options) {
+
+//
+// Globals:
+//
+
+// Global hashes, used by various utility routines
+var g_urls;
+var g_titles;
+var g_html_blocks;
+
+// Used to track when we're inside an ordered or unordered list
+// (see _ProcessListItems() for details):
+var g_list_level = 0;
+
+// Global extensions
+var g_lang_extensions = [];
+var g_output_modifiers = [];
+
+
+//
+// Automatic Extension Loading (node only):
+//
+
+if (typeof module !== 'undefind' && typeof exports !== 'undefined' && typeof require !== 'undefind') {
+	var fs = require('fs');
+
+	if (fs) {
+		// Search extensions folder
+		var extensions = fs.readdirSync((__dirname || '.')+'/extensions').filter(function(file){
+			return ~file.indexOf('.js');
+		}).map(function(file){
+			return file.replace(/\.js$/, '');
+		});
+		// Load extensions into Showdown namespace
+		Showdown.forEach(extensions, function(ext){
+			var name = stdExtName(ext);
+			Showdown.extensions[name] = require('./extensions/' + ext);
+		});
+	}
+}
+
+this.makeHtml = function(text) {
+//
+// Main function. The order in which other subs are called here is
+// essential. Link and image substitutions need to happen before
+// _EscapeSpecialCharsWithinTagAttributes(), so that any *'s or _'s in the <a>
+// and <img> tags get encoded.
+//
+
+	// Clear the global hashes. If we don't clear these, you get conflicts
+	// from other articles when generating a page which contains more than
+	// one article (e.g. an index page that shows the N most recent
+	// articles):
+	g_urls = {};
+	g_titles = {};
+	g_html_blocks = [];
+
+	// attacklab: Replace ~ with ~T
+	// This lets us use tilde as an escape char to avoid md5 hashes
+	// The choice of character is arbitray; anything that isn't
+	// magic in Markdown will work.
+	text = text.replace(/~/g,"~T");
+
+	// attacklab: Replace $ with ~D
+	// RegExp interprets $ as a special character
+	// when it's in a replacement string
+	text = text.replace(/\$/g,"~D");
+
+	// Standardize line endings
+	text = text.replace(/\r\n/g,"\n"); // DOS to Unix
+	text = text.replace(/\r/g,"\n"); // Mac to Unix
+
+	// Make sure text begins and ends with a couple of newlines:
+	text = "\n\n" + text + "\n\n";
+
+	// Convert all tabs to spaces.
+	text = _Detab(text);
+
+	// Strip any lines consisting only of spaces and tabs.
+	// This makes subsequent regexen easier to write, because we can
+	// match consecutive blank lines with /\n+/ instead of something
+	// contorted like /[ \t]*\n+/ .
+	text = text.replace(/^[ \t]+$/mg,"");
+
+	// Run language extensions
+	Showdown.forEach(g_lang_extensions, function(x){
+		text = _ExecuteExtension(x, text);
+	});
+
+	// Handle github codeblocks prior to running HashHTML so that
+	// HTML contained within the codeblock gets escaped propertly
+	text = _DoGithubCodeBlocks(text);
+
+	// Turn block-level HTML blocks into hash entries
+	text = _HashHTMLBlocks(text);
+
+	// Strip link definitions, store in hashes.
+	text = _StripLinkDefinitions(text);
+
+	text = _RunBlockGamut(text);
+
+	text = _UnescapeSpecialChars(text);
+
+	// attacklab: Restore dollar signs
+	text = text.replace(/~D/g,"$$");
+
+	// attacklab: Restore tildes
+	text = text.replace(/~T/g,"~");
+
+	// Run output modifiers
+	Showdown.forEach(g_output_modifiers, function(x){
+		text = _ExecuteExtension(x, text);
+	});
+
+	return text;
+};
+//
+// Options:
+//
+
+// Parse extensions options into separate arrays
+if (converter_options && converter_options.extensions) {
+
+  var self = this;
+
+	// Iterate over each plugin
+	Showdown.forEach(converter_options.extensions, function(plugin){
+
+		// Assume it's a bundled plugin if a string is given
+		if (typeof plugin === 'string') {
+			plugin = Showdown.extensions[stdExtName(plugin)];
+		}
+
+		if (typeof plugin === 'function') {
+			// Iterate over each extension within that plugin
+			Showdown.forEach(plugin(self), function(ext){
+				// Sort extensions by type
+				if (ext.type) {
+					if (ext.type === 'language' || ext.type === 'lang') {
+						g_lang_extensions.push(ext);
+					} else if (ext.type === 'output' || ext.type === 'html') {
+						g_output_modifiers.push(ext);
+					}
+				} else {
+					// Assume language extension
+					g_output_modifiers.push(ext);
+				}
+			});
+		} else {
+			throw "Extension '" + plugin + "' could not be loaded.  It was either not found or is not a valid extension.";
+		}
+	});
+}
+
+
+var _ExecuteExtension = function(ext, text) {
+	if (ext.regex) {
+		var re = new RegExp(ext.regex, 'g');
+		return text.replace(re, ext.replace);
+	} else if (ext.filter) {
+		return ext.filter(text);
+	}
+};
+
+var _StripLinkDefinitions = function(text) {
+//
+// Strips link definitions from text, stores the URLs and titles in
+// hash references.
+//
+
+	// Link defs are in the form: ^[id]: url "optional title"
+
+	/*
+		var text = text.replace(/
+				^[ ]{0,3}\[(.+)\]:  // id = $1  attacklab: g_tab_width - 1
+				  [ \t]*
+				  \n?				// maybe *one* newline
+				  [ \t]*
+				<?(\S+?)>?			// url = $2
+				  [ \t]*
+				  \n?				// maybe one newline
+				  [ \t]*
+				(?:
+				  (\n*)				// any lines skipped = $3 attacklab: lookbehind removed
+				  ["(]
+				  (.+?)				// title = $4
+				  [")]
+				  [ \t]*
+				)?					// title is optional
+				(?:\n+|$)
+			  /gm,
+			  function(){...});
+	*/
+
+	// attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
+	text += "~0";
+
+	text = text.replace(/^[ ]{0,3}\[(.+)\]:[ \t]*\n?[ \t]*<?(\S+?)>?[ \t]*\n?[ \t]*(?:(\n*)["(](.+?)[")][ \t]*)?(?:\n+|(?=~0))/gm,
+		function (wholeMatch,m1,m2,m3,m4) {
+			m1 = m1.toLowerCase();
+			g_urls[m1] = _EncodeAmpsAndAngles(m2);  // Link IDs are case-insensitive
+			if (m3) {
+				// Oops, found blank lines, so it's not a title.
+				// Put back the parenthetical statement we stole.
+				return m3+m4;
+			} else if (m4) {
+				g_titles[m1] = m4.replace(/"/g,"&quot;");
+			}
+
+			// Completely remove the definition from the text
+			return "";
+		}
+	);
+
+	// attacklab: strip sentinel
+	text = text.replace(/~0/,"");
+
+	return text;
+}
+
+
+var _HashHTMLBlocks = function(text) {
+	// attacklab: Double up blank lines to reduce lookaround
+	text = text.replace(/\n/g,"\n\n");
+
+	// Hashify HTML blocks:
+	// We only want to do this for block-level HTML tags, such as headers,
+	// lists, and tables. That's because we still want to wrap <p>s around
+	// "paragraphs" that are wrapped in non-block-level tags, such as anchors,
+	// phrase emphasis, and spans. The list of tags we're looking for is
+	// hard-coded:
+	var block_tags_a = "p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del|style|section|header|footer|nav|article|aside";
+	var block_tags_b = "p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|style|section|header|footer|nav|article|aside";
+
+	// First, look for nested blocks, e.g.:
+	//   <div>
+	//     <div>
+	//     tags for inner block must be indented.
+	//     </div>
+	//   </div>
+	//
+	// The outermost tags must start at the left margin for this to match, and
+	// the inner nested divs must be indented.
+	// We need to do this before the next, more liberal match, because the next
+	// match will start at the first `<div>` and stop at the first `</div>`.
+
+	// attacklab: This regex can be expensive when it fails.
+	/*
+		var text = text.replace(/
+		(						// save in $1
+			^					// start of line  (with /m)
+			<($block_tags_a)	// start tag = $2
+			\b					// word break
+								// attacklab: hack around khtml/pcre bug...
+			[^\r]*?\n			// any number of lines, minimally matching
+			</\2>				// the matching end tag
+			[ \t]*				// trailing spaces/tabs
+			(?=\n+)				// followed by a newline
+		)						// attacklab: there are sentinel newlines at end of document
+		/gm,function(){...}};
+	*/
+	text = text.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b[^\r]*?\n<\/\2>[ \t]*(?=\n+))/gm,hashElement);
+
+	//
+	// Now match more liberally, simply from `\n<tag>` to `</tag>\n`
+	//
+
+	/*
+		var text = text.replace(/
+		(						// save in $1
+			^					// start of line  (with /m)
+			<($block_tags_b)	// start tag = $2
+			\b					// word break
+								// attacklab: hack around khtml/pcre bug...
+			[^\r]*?				// any number of lines, minimally matching
+			</\2>				// the matching end tag
+			[ \t]*				// trailing spaces/tabs
+			(?=\n+)				// followed by a newline
+		)						// attacklab: there are sentinel newlines at end of document
+		/gm,function(){...}};
+	*/
+	text = text.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|style|section|header|footer|nav|article|aside)\b[^\r]*?<\/\2>[ \t]*(?=\n+)\n)/gm,hashElement);
+
+	// Special case just for <hr />. It was easier to make a special case than
+	// to make the other regex more complicated.
+
+	/*
+		text = text.replace(/
+		(						// save in $1
+			\n\n				// Starting after a blank line
+			[ ]{0,3}
+			(<(hr)				// start tag = $2
+			\b					// word break
+			([^<>])*?			//
+			\/?>)				// the matching end tag
+			[ \t]*
+			(?=\n{2,})			// followed by a blank line
+		)
+		/g,hashElement);
+	*/
+	text = text.replace(/(\n[ ]{0,3}(<(hr)\b([^<>])*?\/?>)[ \t]*(?=\n{2,}))/g,hashElement);
+
+	// Special case for standalone HTML comments:
+
+	/*
+		text = text.replace(/
+		(						// save in $1
+			\n\n				// Starting after a blank line
+			[ ]{0,3}			// attacklab: g_tab_width - 1
+			<!
+			(--[^\r]*?--\s*)+
+			>
+			[ \t]*
+			(?=\n{2,})			// followed by a blank line
+		)
+		/g,hashElement);
+	*/
+	text = text.replace(/(\n\n[ ]{0,3}<!(--[^\r]*?--\s*)+>[ \t]*(?=\n{2,}))/g,hashElement);
+
+	// PHP and ASP-style processor instructions (<?...?> and <%...%>)
+
+	/*
+		text = text.replace(/
+		(?:
+			\n\n				// Starting after a blank line
+		)
+		(						// save in $1
+			[ ]{0,3}			// attacklab: g_tab_width - 1
+			(?:
+				<([?%])			// $2
+				[^\r]*?
+				\2>
+			)
+			[ \t]*
+			(?=\n{2,})			// followed by a blank line
+		)
+		/g,hashElement);
+	*/
+	text = text.replace(/(?:\n\n)([ ]{0,3}(?:<([?%])[^\r]*?\2>)[ \t]*(?=\n{2,}))/g,hashElement);
+
+	// attacklab: Undo double lines (see comment at top of this function)
+	text = text.replace(/\n\n/g,"\n");
+	return text;
+}
+
+var hashElement = function(wholeMatch,m1) {
+	var blockText = m1;
+
+	// Undo double lines
+	blockText = blockText.replace(/\n\n/g,"\n");
+	blockText = blockText.replace(/^\n/,"");
+
+	// strip trailing blank lines
+	blockText = blockText.replace(/\n+$/g,"");
+
+	// Replace the element text with a marker ("~KxK" where x is its key)
+	blockText = "\n\n~K" + (g_html_blocks.push(blockText)-1) + "K\n\n";
+
+	return blockText;
+};
+
+var _RunBlockGamut = function(text) {
+//
+// These are all the transformations that form block-level
+// tags like paragraphs, headers, and list items.
+//
+	text = _DoHeaders(text);
+
+	// Do Horizontal Rules:
+	var key = hashBlock("<hr />");
+	text = text.replace(/^[ ]{0,2}([ ]?\*[ ]?){3,}[ \t]*$/gm,key);
+	text = text.replace(/^[ ]{0,2}([ ]?\-[ ]?){3,}[ \t]*$/gm,key);
+	text = text.replace(/^[ ]{0,2}([ ]?\_[ ]?){3,}[ \t]*$/gm,key);
+
+	text = _DoLists(text);
+	text = _DoCodeBlocks(text);
+	text = _DoBlockQuotes(text);
+
+	// We already ran _HashHTMLBlocks() before, in Markdown(), but that
+	// was to escape raw HTML in the original Markdown source. This time,
+	// we're escaping the markup we've just created, so that we don't wrap
+	// <p> tags around block-level tags.
+	text = _HashHTMLBlocks(text);
+	text = _FormParagraphs(text);
+
+	return text;
+};
+
+
+var _RunSpanGamut = function(text) {
+//
+// These are all the transformations that occur *within* block-level
+// tags like paragraphs, headers, and list items.
+//
+
+	text = _DoCodeSpans(text);
+	text = _EscapeSpecialCharsWithinTagAttributes(text);
+	text = _EncodeBackslashEscapes(text);
+
+	// Process anchor and image tags. Images must come first,
+	// because ![foo][f] looks like an anchor.
+	text = _DoImages(text);
+	text = _DoAnchors(text);
+
+	// Make links out of things like `<http://example.com/>`
+	// Must come after _DoAnchors(), because you can use < and >
+	// delimiters in inline links like [this](<url>).
+	text = _DoAutoLinks(text);
+	text = _EncodeAmpsAndAngles(text);
+	text = _DoItalicsAndBold(text);
+
+	// Do hard breaks:
+	text = text.replace(/  +\n/g," <br />\n");
+
+	return text;
+}
+
+var _EscapeSpecialCharsWithinTagAttributes = function(text) {
+//
+// Within tags -- meaning between < and > -- encode [\ ` * _] so they
+// don't conflict with their use in Markdown for code, italics and strong.
+//
+
+	// Build a regex to find HTML tags and comments.  See Friedl's
+	// "Mastering Regular Expressions", 2nd Ed., pp. 200-201.
+	var regex = /(<[a-z\/!$]("[^"]*"|'[^']*'|[^'">])*>|<!(--.*?--\s*)+>)/gi;
+
+	text = text.replace(regex, function(wholeMatch) {
+		var tag = wholeMatch.replace(/(.)<\/?code>(?=.)/g,"$1`");
+		tag = escapeCharacters(tag,"\\`*_");
+		return tag;
+	});
+
+	return text;
+}
+
+var _DoAnchors = function(text) {
+//
+// Turn Markdown link shortcuts into XHTML <a> tags.
+//
+	//
+	// First, handle reference-style links: [link text] [id]
+	//
+
+	/*
+		text = text.replace(/
+		(							// wrap whole match in $1
+			\[
+			(
+				(?:
+					\[[^\]]*\]		// allow brackets nested one level
+					|
+					[^\[]			// or anything else
+				)*
+			)
+			\]
+
+			[ ]?					// one optional space
+			(?:\n[ ]*)?				// one optional newline followed by spaces
+
+			\[
+			(.*?)					// id = $3
+			\]
+		)()()()()					// pad remaining backreferences
+		/g,_DoAnchors_callback);
+	*/
+	text = text.replace(/(\[((?:\[[^\]]*\]|[^\[\]])*)\][ ]?(?:\n[ ]*)?\[(.*?)\])()()()()/g,writeAnchorTag);
+
+	//
+	// Next, inline-style links: [link text](url "optional title")
+	//
+
+	/*
+		text = text.replace(/
+			(						// wrap whole match in $1
+				\[
+				(
+					(?:
+						\[[^\]]*\]	// allow brackets nested one level
+					|
+					[^\[\]]			// or anything else
+				)
+			)
+			\]
+			\(						// literal paren
+			[ \t]*
+			()						// no id, so leave $3 empty
+			<?(.*?)>?				// href = $4
+			[ \t]*
+			(						// $5
+				(['"])				// quote char = $6
+				(.*?)				// Title = $7
+				\6					// matching quote
+				[ \t]*				// ignore any spaces/tabs between closing quote and )
+			)?						// title is optional
+			\)
+		)
+		/g,writeAnchorTag);
+	*/
+	text = text.replace(/(\[((?:\[[^\]]*\]|[^\[\]])*)\]\([ \t]*()<?(.*?(?:\(.*?\).*?)?)>?[ \t]*((['"])(.*?)\6[ \t]*)?\))/g,writeAnchorTag);
+
+	//
+	// Last, handle reference-style shortcuts: [link text]
+	// These must come last in case you've also got [link test][1]
+	// or [link test](/foo)
+	//
+
+	/*
+		text = text.replace(/
+		(		 					// wrap whole match in $1
+			\[
+			([^\[\]]+)				// link text = $2; can't contain '[' or ']'
+			\]
+		)()()()()()					// pad rest of backreferences
+		/g, writeAnchorTag);
+	*/
+	text = text.replace(/(\[([^\[\]]+)\])()()()()()/g, writeAnchorTag);
+
+	return text;
+}
+
+var writeAnchorTag = function(wholeMatch,m1,m2,m3,m4,m5,m6,m7) {
+	if (m7 == undefined) m7 = "";
+	var whole_match = m1;
+	var link_text   = m2;
+	var link_id	 = m3.toLowerCase();
+	var url		= m4;
+	var title	= m7;
+
+	if (url == "") {
+		if (link_id == "") {
+			// lower-case and turn embedded newlines into spaces
+			link_id = link_text.toLowerCase().replace(/ ?\n/g," ");
+		}
+		url = "#"+link_id;
+
+		if (g_urls[link_id] != undefined) {
+			url = g_urls[link_id];
+			if (g_titles[link_id] != undefined) {
+				title = g_titles[link_id];
+			}
+		}
+		else {
+			if (whole_match.search(/\(\s*\)$/m)>-1) {
+				// Special case for explicit empty url
+				url = "";
+			} else {
+				return whole_match;
+			}
+		}
+	}
+
+	url = escapeCharacters(url,"*_");
+	var result = "<a href=\"" + url + "\"";
+
+	if (title != "") {
+		title = title.replace(/"/g,"&quot;");
+		title = escapeCharacters(title,"*_");
+		result +=  " title=\"" + title + "\"";
+	}
+
+	result += ">" + link_text + "</a>";
+
+	return result;
+}
+
+
+var _DoImages = function(text) {
+//
+// Turn Markdown image shortcuts into <img> tags.
+//
+
+	//
+	// First, handle reference-style labeled images: ![alt text][id]
+	//
+
+	/*
+		text = text.replace(/
+		(						// wrap whole match in $1
+			!\[
+			(.*?)				// alt text = $2
+			\]
+
+			[ ]?				// one optional space
+			(?:\n[ ]*)?			// one optional newline followed by spaces
+
+			\[
+			(.*?)				// id = $3
+			\]
+		)()()()()				// pad rest of backreferences
+		/g,writeImageTag);
+	*/
+	text = text.replace(/(!\[(.*?)\][ ]?(?:\n[ ]*)?\[(.*?)\])()()()()/g,writeImageTag);
+
+	//
+	// Next, handle inline images:  ![alt text](url "optional title")
+	// Don't forget: encode * and _
+
+	/*
+		text = text.replace(/
+		(						// wrap whole match in $1
+			!\[
+			(.*?)				// alt text = $2
+			\]
+			\s?					// One optional whitespace character
+			\(					// literal paren
+			[ \t]*
+			()					// no id, so leave $3 empty
+			<?(\S+?)>?			// src url = $4
+			[ \t]*
+			(					// $5
+				(['"])			// quote char = $6
+				(.*?)			// title = $7
+				\6				// matching quote
+				[ \t]*
+			)?					// title is optional
+		\)
+		)
+		/g,writeImageTag);
+	*/
+	text = text.replace(/(!\[(.*?)\]\s?\([ \t]*()<?(\S+?)>?[ \t]*((['"])(.*?)\6[ \t]*)?\))/g,writeImageTag);
+
+	return text;
+}
+
+var writeImageTag = function(wholeMatch,m1,m2,m3,m4,m5,m6,m7) {
+	var whole_match = m1;
+	var alt_text   = m2;
+	var link_id	 = m3.toLowerCase();
+	var url		= m4;
+	var title	= m7;
+
+	if (!title) title = "";
+
+	if (url == "") {
+		if (link_id == "") {
+			// lower-case and turn embedded newlines into spaces
+			link_id = alt_text.toLowerCase().replace(/ ?\n/g," ");
+		}
+		url = "#"+link_id;
+
+		if (g_urls[link_id] != undefined) {
+			url = g_urls[link_id];
+			if (g_titles[link_id] != undefined) {
+				title = g_titles[link_id];
+			}
+		}
+		else {
+			return whole_match;
+		}
+	}
+
+	alt_text = alt_text.replace(/"/g,"&quot;");
+	url = escapeCharacters(url,"*_");
+	var result = "<img src=\"" + url + "\" alt=\"" + alt_text + "\"";
+
+	// attacklab: Markdown.pl adds empty title attributes to images.
+	// Replicate this bug.
+
+	//if (title != "") {
+		title = title.replace(/"/g,"&quot;");
+		title = escapeCharacters(title,"*_");
+		result +=  " title=\"" + title + "\"";
+	//}
+
+	result += " />";
+
+	return result;
+}
+
+
+var _DoHeaders = function(text) {
+
+	// Setext-style headers:
+	//	Header 1
+	//	========
+	//
+	//	Header 2
+	//	--------
+	//
+	text = text.replace(/^(.+)[ \t]*\n=+[ \t]*\n+/gm,
+		function(wholeMatch,m1){return hashBlock('<h1 id="' + headerId(m1) + '">' + _RunSpanGamut(m1) + "</h1>");});
+
+	text = text.replace(/^(.+)[ \t]*\n-+[ \t]*\n+/gm,
+		function(matchFound,m1){return hashBlock('<h2 id="' + headerId(m1) + '">' + _RunSpanGamut(m1) + "</h2>");});
+
+	// atx-style headers:
+	//  # Header 1
+	//  ## Header 2
+	//  ## Header 2 with closing hashes ##
+	//  ...
+	//  ###### Header 6
+	//
+
+	/*
+		text = text.replace(/
+			^(\#{1,6})				// $1 = string of #'s
+			[ \t]*
+			(.+?)					// $2 = Header text
+			[ \t]*
+			\#*						// optional closing #'s (not counted)
+			\n+
+		/gm, function() {...});
+	*/
+
+	text = text.replace(/^(\#{1,6})[ \t]*(.+?)[ \t]*\#*\n+/gm,
+		function(wholeMatch,m1,m2) {
+			var h_level = m1.length;
+			return hashBlock("<h" + h_level + ' id="' + headerId(m2) + '">' + _RunSpanGamut(m2) + "</h" + h_level + ">");
+		});
+
+	function headerId(m) {
+		return m.replace(/[^\w]/g, '').toLowerCase();
+	}
+	return text;
+}
+
+// This declaration keeps Dojo compressor from outputting garbage:
+var _ProcessListItems;
+
+var _DoLists = function(text) {
+//
+// Form HTML ordered (numbered) and unordered (bulleted) lists.
+//
+
+	// attacklab: add sentinel to hack around khtml/safari bug:
+	// http://bugs.webkit.org/show_bug.cgi?id=11231
+	text += "~0";
+
+	// Re-usable pattern to match any entirel ul or ol list:
+
+	/*
+		var whole_list = /
+		(									// $1 = whole list
+			(								// $2
+				[ ]{0,3}					// attacklab: g_tab_width - 1
+				([*+-]|\d+[.])				// $3 = first list item marker
+				[ \t]+
+			)
+			[^\r]+?
+			(								// $4
+				~0							// sentinel for workaround; should be $
+			|
+				\n{2,}
+				(?=\S)
+				(?!							// Negative lookahead for another list item marker
+					[ \t]*
+					(?:[*+-]|\d+[.])[ \t]+
+				)
+			)
+		)/g
+	*/
+	var whole_list = /^(([ ]{0,3}([*+-]|\d+[.])[ \t]+)[^\r]+?(~0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/gm;
+
+	if (g_list_level) {
+		text = text.replace(whole_list,function(wholeMatch,m1,m2) {
+			var list = m1;
+			var list_type = (m2.search(/[*+-]/g)>-1) ? "ul" : "ol";
+
+			// Turn double returns into triple returns, so that we can make a
+			// paragraph for the last item in a list, if necessary:
+			list = list.replace(/\n{2,}/g,"\n\n\n");;
+			var result = _ProcessListItems(list);
+
+			// Trim any trailing whitespace, to put the closing `</$list_type>`
+			// up on the preceding line, to get it past the current stupid
+			// HTML block parser. This is a hack to work around the terrible
+			// hack that is the HTML block parser.
+			result = result.replace(/\s+$/,"");
+			result = "<"+list_type+">" + result + "</"+list_type+">\n";
+			return result;
+		});
+	} else {
+		whole_list = /(\n\n|^\n?)(([ ]{0,3}([*+-]|\d+[.])[ \t]+)[^\r]+?(~0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/g;
+		text = text.replace(whole_list,function(wholeMatch,m1,m2,m3) {
+			var runup = m1;
+			var list = m2;
+
+			var list_type = (m3.search(/[*+-]/g)>-1) ? "ul" : "ol";
+			// Turn double returns into triple returns, so that we can make a
+			// paragraph for the last item in a list, if necessary:
+			var list = list.replace(/\n{2,}/g,"\n\n\n");;
+			var result = _ProcessListItems(list);
+			result = runup + "<"+list_type+">\n" + result + "</"+list_type+">\n";
+			return result;
+		});
+	}
+
+	// attacklab: strip sentinel
+	text = text.replace(/~0/,"");
+
+	return text;
+}
+
+_ProcessListItems = function(list_str) {
+//
+//  Process the contents of a single ordered or unordered list, splitting it
+//  into individual list items.
+//
+	// The $g_list_level global keeps track of when we're inside a list.
+	// Each time we enter a list, we increment it; when we leave a list,
+	// we decrement. If it's zero, we're not in a list anymore.
+	//
+	// We do this because when we're not inside a list, we want to treat
+	// something like this:
+	//
+	//    I recommend upgrading to version
+	//    8. Oops, now this line is treated
+	//    as a sub-list.
+	//
+	// As a single paragraph, despite the fact that the second line starts
+	// with a digit-period-space sequence.
+	//
+	// Whereas when we're inside a list (or sub-list), that line will be
+	// treated as the start of a sub-list. What a kludge, huh? This is
+	// an aspect of Markdown's syntax that's hard to parse perfectly
+	// without resorting to mind-reading. Perhaps the solution is to
+	// change the syntax rules such that sub-lists must start with a
+	// starting cardinal number; e.g. "1." or "a.".
+
+	g_list_level++;
+
+	// trim trailing blank lines:
+	list_str = list_str.replace(/\n{2,}$/,"\n");
+
+	// attacklab: add sentinel to emulate \z
+	list_str += "~0";
+
+	/*
+		list_str = list_str.replace(/
+			(\n)?							// leading line = $1
+			(^[ \t]*)						// leading whitespace = $2
+			([*+-]|\d+[.]) [ \t]+			// list marker = $3
+			([^\r]+?						// list item text   = $4
+			(\n{1,2}))
+			(?= \n* (~0 | \2 ([*+-]|\d+[.]) [ \t]+))
+		/gm, function(){...});
+	*/
+	list_str = list_str.replace(/(\n)?(^[ \t]*)([*+-]|\d+[.])[ \t]+([^\r]+?(\n{1,2}))(?=\n*(~0|\2([*+-]|\d+[.])[ \t]+))/gm,
+		function(wholeMatch,m1,m2,m3,m4){
+			var item = m4;
+			var leading_line = m1;
+			var leading_space = m2;
+
+			if (leading_line || (item.search(/\n{2,}/)>-1)) {
+				item = _RunBlockGamut(_Outdent(item));
+			}
+			else {
+				// Recursion for sub-lists:
+				item = _DoLists(_Outdent(item));
+				item = item.replace(/\n$/,""); // chomp(item)
+				item = _RunSpanGamut(item);
+			}
+
+			return  "<li>" + item + "</li>\n";
+		}
+	);
+
+	// attacklab: strip sentinel
+	list_str = list_str.replace(/~0/g,"");
+
+	g_list_level--;
+	return list_str;
+}
+
+
+var _DoCodeBlocks = function(text) {
+//
+//  Process Markdown `<pre><code>` blocks.
+//
+
+	/*
+		text = text.replace(text,
+			/(?:\n\n|^)
+			(								// $1 = the code block -- one or more lines, starting with a space/tab
+				(?:
+					(?:[ ]{4}|\t)			// Lines must start with a tab or a tab-width of spaces - attacklab: g_tab_width
+					.*\n+
+				)+
+			)
+			(\n*[ ]{0,3}[^ \t\n]|(?=~0))	// attacklab: g_tab_width
+		/g,function(){...});
+	*/
+
+	// attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
+	text += "~0";
+
+	text = text.replace(/(?:\n\n|^)((?:(?:[ ]{4}|\t).*\n+)+)(\n*[ ]{0,3}[^ \t\n]|(?=~0))/g,
+		function(wholeMatch,m1,m2) {
+			var codeblock = m1;
+			var nextChar = m2;
+
+			codeblock = _EncodeCode( _Outdent(codeblock));
+			codeblock = _Detab(codeblock);
+			codeblock = codeblock.replace(/^\n+/g,""); // trim leading newlines
+			codeblock = codeblock.replace(/\n+$/g,""); // trim trailing whitespace
+
+			codeblock = "<pre><code>" + codeblock + "\n</code></pre>";
+
+			return hashBlock(codeblock) + nextChar;
+		}
+	);
+
+	// attacklab: strip sentinel
+	text = text.replace(/~0/,"");
+
+	return text;
+};
+
+var _DoGithubCodeBlocks = function(text) {
+//
+//  Process Github-style code blocks
+//  Example:
+//  ```ruby
+//  def hello_world(x)
+//    puts "Hello, #{x}"
+//  end
+//  ```
+//
+
+
+	// attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
+	text += "~0";
+
+	text = text.replace(/(?:^|\n)```(.*)\n([\s\S]*?)\n```/g,
+		function(wholeMatch,m1,m2) {
+			var language = m1;
+			var codeblock = m2;
+
+			codeblock = _EncodeCode(codeblock);
+			codeblock = _Detab(codeblock);
+			codeblock = codeblock.replace(/^\n+/g,""); // trim leading newlines
+			codeblock = codeblock.replace(/\n+$/g,""); // trim trailing whitespace
+
+			codeblock = "<pre><code" + (language ? " class=\"" + language + '"' : "") + ">" + codeblock + "\n</code></pre>";
+
+			return hashBlock(codeblock);
+		}
+	);
+
+	// attacklab: strip sentinel
+	text = text.replace(/~0/,"");
+
+	return text;
+}
+
+var hashBlock = function(text) {
+	text = text.replace(/(^\n+|\n+$)/g,"");
+	return "\n\n~K" + (g_html_blocks.push(text)-1) + "K\n\n";
+}
+
+var _DoCodeSpans = function(text) {
+//
+//   *  Backtick quotes are used for <code></code> spans.
+//
+//   *  You can use multiple backticks as the delimiters if you want to
+//	 include literal backticks in the code span. So, this input:
+//
+//		 Just type ``foo `bar` baz`` at the prompt.
+//
+//	   Will translate to:
+//
+//		 <p>Just type <code>foo `bar` baz</code> at the prompt.</p>
+//
+//	There's no arbitrary limit to the number of backticks you
+//	can use as delimters. If you need three consecutive backticks
+//	in your code, use four for delimiters, etc.
+//
+//  *  You can use spaces to get literal backticks at the edges:
+//
+//		 ... type `` `bar` `` ...
+//
+//	   Turns to:
+//
+//		 ... type <code>`bar`</code> ...
+//
+
+	/*
+		text = text.replace(/
+			(^|[^\\])					// Character before opening ` can't be a backslash
+			(`+)						// $2 = Opening run of `
+			(							// $3 = The code block
+				[^\r]*?
+				[^`]					// attacklab: work around lack of lookbehind
+			)
+			\2							// Matching closer
+			(?!`)
+		/gm, function(){...});
+	*/
+
+	text = text.replace(/(^|[^\\])(`+)([^\r]*?[^`])\2(?!`)/gm,
+		function(wholeMatch,m1,m2,m3,m4) {
+			var c = m3;
+			c = c.replace(/^([ \t]*)/g,"");	// leading whitespace
+			c = c.replace(/[ \t]*$/g,"");	// trailing whitespace
+			c = _EncodeCode(c);
+			return m1+"<code>"+c+"</code>";
+		});
+
+	return text;
+}
+
+var _EncodeCode = function(text) {
+//
+// Encode/escape certain characters inside Markdown code runs.
+// The point is that in code, these characters are literals,
+// and lose their special Markdown meanings.
+//
+	// Encode all ampersands; HTML entities are not
+	// entities within a Markdown code span.
+	text = text.replace(/&/g,"&amp;");
+
+	// Do the angle bracket song and dance:
+	text = text.replace(/</g,"&lt;");
+	text = text.replace(/>/g,"&gt;");
+
+	// Now, escape characters that are magic in Markdown:
+	text = escapeCharacters(text,"\*_{}[]\\",false);
+
+// jj the line above breaks this:
+//---
+
+//* Item
+
+//   1. Subitem
+
+//            special char: *
+//---
+
+	return text;
+}
+
+
+var _DoItalicsAndBold = function(text) {
+
+	// <strong> must go first:
+	text = text.replace(/(\*\*|__)(?=\S)([^\r]*?\S[*_]*)\1/g,
+		"<strong>$2</strong>");
+
+	text = text.replace(/(\*|_)(?=\S)([^\r]*?\S)\1/g,
+		"<em>$2</em>");
+
+	return text;
+}
+
+
+var _DoBlockQuotes = function(text) {
+
+	/*
+		text = text.replace(/
+		(								// Wrap whole match in $1
+			(
+				^[ \t]*>[ \t]?			// '>' at the start of a line
+				.+\n					// rest of the first line
+				(.+\n)*					// subsequent consecutive lines
+				\n*						// blanks
+			)+
+		)
+		/gm, function(){...});
+	*/
+
+	text = text.replace(/((^[ \t]*>[ \t]?.+\n(.+\n)*\n*)+)/gm,
+		function(wholeMatch,m1) {
+			var bq = m1;
+
+			// attacklab: hack around Konqueror 3.5.4 bug:
+			// "----------bug".replace(/^-/g,"") == "bug"
+
+			bq = bq.replace(/^[ \t]*>[ \t]?/gm,"~0");	// trim one level of quoting
+
+			// attacklab: clean up hack
+			bq = bq.replace(/~0/g,"");
+
+			bq = bq.replace(/^[ \t]+$/gm,"");		// trim whitespace-only lines
+			bq = _RunBlockGamut(bq);				// recurse
+
+			bq = bq.replace(/(^|\n)/g,"$1  ");
+			// These leading spaces screw with <pre> content, so we need to fix that:
+			bq = bq.replace(
+					/(\s*<pre>[^\r]+?<\/pre>)/gm,
+				function(wholeMatch,m1) {
+					var pre = m1;
+					// attacklab: hack around Konqueror 3.5.4 bug:
+					pre = pre.replace(/^  /mg,"~0");
+					pre = pre.replace(/~0/g,"");
+					return pre;
+				});
+
+			return hashBlock("<blockquote>\n" + bq + "\n</blockquote>");
+		});
+	return text;
+}
+
+
+var _FormParagraphs = function(text) {
+//
+//  Params:
+//    $text - string to process with html <p> tags
+//
+
+	// Strip leading and trailing lines:
+	text = text.replace(/^\n+/g,"");
+	text = text.replace(/\n+$/g,"");
+
+	var grafs = text.split(/\n{2,}/g);
+	var grafsOut = [];
+
+	//
+	// Wrap <p> tags.
+	//
+	var end = grafs.length;
+	for (var i=0; i<end; i++) {
+		var str = grafs[i];
+
+		// if this is an HTML marker, copy it
+		if (str.search(/~K(\d+)K/g) >= 0) {
+			grafsOut.push(str);
+		}
+		else if (str.search(/\S/) >= 0) {
+			str = _RunSpanGamut(str);
+			str = str.replace(/^([ \t]*)/g,"<p>");
+			str += "</p>"
+			grafsOut.push(str);
+		}
+
+	}
+
+	//
+	// Unhashify HTML blocks
+	//
+	end = grafsOut.length;
+	for (var i=0; i<end; i++) {
+		// if this is a marker for an html block...
+		while (grafsOut[i].search(/~K(\d+)K/) >= 0) {
+			var blockText = g_html_blocks[RegExp.$1];
+			blockText = blockText.replace(/\$/g,"$$$$"); // Escape any dollar signs
+			grafsOut[i] = grafsOut[i].replace(/~K\d+K/,blockText);
+		}
+	}
+
+	return grafsOut.join("\n\n");
+}
+
+
+var _EncodeAmpsAndAngles = function(text) {
+// Smart processing for ampersands and angle brackets that need to be encoded.
+
+	// Ampersand-encoding based entirely on Nat Irons's Amputator MT plugin:
+	//   http://bumppo.net/projects/amputator/
+	text = text.replace(/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w+);)/g,"&amp;");
+
+	// Encode naked <'s
+	text = text.replace(/<(?![a-z\/?\$!])/gi,"&lt;");
+
+	return text;
+}
+
+
+var _EncodeBackslashEscapes = function(text) {
+//
+//   Parameter:  String.
+//   Returns:	The string, with after processing the following backslash
+//			   escape sequences.
+//
+
+	// attacklab: The polite way to do this is with the new
+	// escapeCharacters() function:
+	//
+	// 	text = escapeCharacters(text,"\\",true);
+	// 	text = escapeCharacters(text,"`*_{}[]()>#+-.!",true);
+	//
+	// ...but we're sidestepping its use of the (slow) RegExp constructor
+	// as an optimization for Firefox.  This function gets called a LOT.
+
+	text = text.replace(/\\(\\)/g,escapeCharacters_callback);
+	text = text.replace(/\\([`*_{}\[\]()>#+-.!])/g,escapeCharacters_callback);
+	return text;
+}
+
+
+var _DoAutoLinks = function(text) {
+
+	text = text.replace(/<((https?|ftp|dict):[^'">\s]+)>/gi,"<a href=\"$1\">$1</a>");
+
+	// Email addresses: <address@domain.foo>
+
+	/*
+		text = text.replace(/
+			<
+			(?:mailto:)?
+			(
+				[-.\w]+
+				\@
+				[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+
+			)
+			>
+		/gi, _DoAutoLinks_callback());
+	*/
+	text = text.replace(/<(?:mailto:)?([-.\w]+\@[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+)>/gi,
+		function(wholeMatch,m1) {
+			return _EncodeEmailAddress( _UnescapeSpecialChars(m1) );
+		}
+	);
+
+	return text;
+}
+
+
+var _EncodeEmailAddress = function(addr) {
+//
+//  Input: an email address, e.g. "foo@example.com"
+//
+//  Output: the email address as a mailto link, with each character
+//	of the address encoded as either a decimal or hex entity, in
+//	the hopes of foiling most address harvesting spam bots. E.g.:
+//
+//	<a href="&#x6D;&#97;&#105;&#108;&#x74;&#111;:&#102;&#111;&#111;&#64;&#101;
+//	   x&#x61;&#109;&#x70;&#108;&#x65;&#x2E;&#99;&#111;&#109;">&#102;&#111;&#111;
+//	   &#64;&#101;x&#x61;&#109;&#x70;&#108;&#x65;&#x2E;&#99;&#111;&#109;</a>
+//
+//  Based on a filter by Matthew Wickline, posted to the BBEdit-Talk
+//  mailing list: <http://tinyurl.com/yu7ue>
+//
+
+	var encode = [
+		function(ch){return "&#"+ch.charCodeAt(0)+";";},
+		function(ch){return "&#x"+ch.charCodeAt(0).toString(16)+";";},
+		function(ch){return ch;}
+	];
+
+	addr = "mailto:" + addr;
+
+	addr = addr.replace(/./g, function(ch) {
+		if (ch == "@") {
+		   	// this *must* be encoded. I insist.
+			ch = encode[Math.floor(Math.random()*2)](ch);
+		} else if (ch !=":") {
+			// leave ':' alone (to spot mailto: later)
+			var r = Math.random();
+			// roughly 10% raw, 45% hex, 45% dec
+			ch =  (
+					r > .9  ?	encode[2](ch)   :
+					r > .45 ?	encode[1](ch)   :
+								encode[0](ch)
+				);
+		}
+		return ch;
+	});
+
+	addr = "<a href=\"" + addr + "\">" + addr + "</a>";
+	addr = addr.replace(/">.+:/g,"\">"); // strip the mailto: from the visible part
+
+	return addr;
+}
+
+
+var _UnescapeSpecialChars = function(text) {
+//
+// Swap back in all the special characters we've hidden.
+//
+	text = text.replace(/~E(\d+)E/g,
+		function(wholeMatch,m1) {
+			var charCodeToReplace = parseInt(m1);
+			return String.fromCharCode(charCodeToReplace);
+		}
+	);
+	return text;
+}
+
+
+var _Outdent = function(text) {
+//
+// Remove one level of line-leading tabs or spaces
+//
+
+	// attacklab: hack around Konqueror 3.5.4 bug:
+	// "----------bug".replace(/^-/g,"") == "bug"
+
+	text = text.replace(/^(\t|[ ]{1,4})/gm,"~0"); // attacklab: g_tab_width
+
+	// attacklab: clean up hack
+	text = text.replace(/~0/g,"")
+
+	return text;
+}
+
+var _Detab = function(text) {
+// attacklab: Detab's completely rewritten for speed.
+// In perl we could fix it by anchoring the regexp with \G.
+// In javascript we're less fortunate.
+
+	// expand first n-1 tabs
+	text = text.replace(/\t(?=\t)/g,"    "); // attacklab: g_tab_width
+
+	// replace the nth with two sentinels
+	text = text.replace(/\t/g,"~A~B");
+
+	// use the sentinel to anchor our regex so it doesn't explode
+	text = text.replace(/~B(.+?)~A/g,
+		function(wholeMatch,m1,m2) {
+			var leadingText = m1;
+			var numSpaces = 4 - leadingText.length % 4;  // attacklab: g_tab_width
+
+			// there *must* be a better way to do this:
+			for (var i=0; i<numSpaces; i++) leadingText+=" ";
+
+			return leadingText;
+		}
+	);
+
+	// clean up sentinels
+	text = text.replace(/~A/g,"    ");  // attacklab: g_tab_width
+	text = text.replace(/~B/g,"");
+
+	return text;
+}
+
+
+//
+//  attacklab: Utility functions
+//
+
+
+var escapeCharacters = function(text, charsToEscape, afterBackslash) {
+	// First we have to escape the escape characters so that
+	// we can build a character class out of them
+	var regexString = "([" + charsToEscape.replace(/([\[\]\\])/g,"\\$1") + "])";
+
+	if (afterBackslash) {
+		regexString = "\\\\" + regexString;
+	}
+
+	var regex = new RegExp(regexString,"g");
+	text = text.replace(regex,escapeCharacters_callback);
+
+	return text;
+}
+
+
+var escapeCharacters_callback = function(wholeMatch,m1) {
+	var charCodeToEscape = m1.charCodeAt(0);
+	return "~E"+charCodeToEscape+"E";
+}
+
+} // end of Showdown.converter
+
+
+// export
+if (typeof module !== 'undefined') module.exports = Showdown;
+
+// stolen from AMD branch of underscore
+// AMD define happens at the end for compatibility with AMD loaders
+// that don't enforce next-turn semantics on modules.
+if (typeof define === 'function' && define.amd) {
+    define('showdown', function() {
+        return Showdown;
+    });
+}
+
 ;/* ========================================================================
  * Bootstrap: transition.js v3.0.0
  * http://twbs.github.com/bootstrap/javascript.html#transitions
@@ -78564,17 +80633,9 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
 }).call(this);
 
-;/*!
- * Bootstrap v3.1.1 (http://getbootstrap.com)
- * Copyright 2011-2014 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- */
-
-//if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript requires jQuery') }
-
-/* ========================================================================
- * Bootstrap: transition.js v3.1.1
- * http://getbootstrap.com/javascript/#transitions
+;/* ========================================================================
+ * Bootstrap: affix.js v3.2.0
+ * http://getbootstrap.com/javascript/#affix
  * ========================================================================
  * Copyright 2011-2014 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
@@ -78584,45 +80645,139 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 +function ($) {
   'use strict';
 
-  // CSS TRANSITION SUPPORT (Shoutout: http://www.modernizr.com/)
-  // ============================================================
+  // AFFIX CLASS DEFINITION
+  // ======================
 
-  function transitionEnd() {
-    var el = document.createElement('bootstrap')
+  var Affix = function (element, options) {
+    this.options = $.extend({}, Affix.DEFAULTS, options)
 
-    var transEndEventNames = {
-      'WebkitTransition' : 'webkitTransitionEnd',
-      'MozTransition'    : 'transitionend',
-      'OTransition'      : 'oTransitionEnd otransitionend',
-      'transition'       : 'transitionend'
-    }
+    this.$target = $(this.options.target)
+      .on('scroll.bs.affix.data-api', $.proxy(this.checkPosition, this))
+      .on('click.bs.affix.data-api',  $.proxy(this.checkPositionWithEventLoop, this))
 
-    for (var name in transEndEventNames) {
-      if (el.style[name] !== undefined) {
-        return { end: transEndEventNames[name] }
-      }
-    }
+    this.$element     = $(element)
+    this.affixed      =
+    this.unpin        =
+    this.pinnedOffset = null
 
-    return false // explicit for ie8 (  ._.)
+    this.checkPosition()
   }
 
-  // http://blog.alexmaccaw.com/css-transitions
-  $.fn.emulateTransitionEnd = function (duration) {
-    var called = false, $el = this
-    $(this).one($.support.transition.end, function () { called = true })
-    var callback = function () { if (!called) $($el).trigger($.support.transition.end) }
-    setTimeout(callback, duration)
+  Affix.VERSION  = '3.2.0'
+
+  Affix.RESET    = 'affix affix-top affix-bottom'
+
+  Affix.DEFAULTS = {
+    offset: 0,
+    target: window
+  }
+
+  Affix.prototype.getPinnedOffset = function () {
+    if (this.pinnedOffset) return this.pinnedOffset
+    this.$element.removeClass(Affix.RESET).addClass('affix')
+    var scrollTop = this.$target.scrollTop()
+    var position  = this.$element.offset()
+    return (this.pinnedOffset = position.top - scrollTop)
+  }
+
+  Affix.prototype.checkPositionWithEventLoop = function () {
+    setTimeout($.proxy(this.checkPosition, this), 1)
+  }
+
+  Affix.prototype.checkPosition = function () {
+    if (!this.$element.is(':visible')) return
+
+    var scrollHeight = $(document).height()
+    var scrollTop    = this.$target.scrollTop()
+    var position     = this.$element.offset()
+    var offset       = this.options.offset
+    var offsetTop    = offset.top
+    var offsetBottom = offset.bottom
+
+    if (typeof offset != 'object')         offsetBottom = offsetTop = offset
+    if (typeof offsetTop == 'function')    offsetTop    = offset.top(this.$element)
+    if (typeof offsetBottom == 'function') offsetBottom = offset.bottom(this.$element)
+
+    var affix = this.unpin   != null && (scrollTop + this.unpin <= position.top) ? false :
+                offsetBottom != null && (position.top + this.$element.height() >= scrollHeight - offsetBottom) ? 'bottom' :
+                offsetTop    != null && (scrollTop <= offsetTop) ? 'top' : false
+
+    if (this.affixed === affix) return
+    if (this.unpin != null) this.$element.css('top', '')
+
+    var affixType = 'affix' + (affix ? '-' + affix : '')
+    var e         = $.Event(affixType + '.bs.affix')
+
+    this.$element.trigger(e)
+
+    if (e.isDefaultPrevented()) return
+
+    this.affixed = affix
+    this.unpin = affix == 'bottom' ? this.getPinnedOffset() : null
+
+    this.$element
+      .removeClass(Affix.RESET)
+      .addClass(affixType)
+      .trigger($.Event(affixType.replace('affix', 'affixed')))
+
+    if (affix == 'bottom') {
+      this.$element.offset({
+        top: scrollHeight - this.$element.height() - offsetBottom
+      })
+    }
+  }
+
+
+  // AFFIX PLUGIN DEFINITION
+  // =======================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this   = $(this)
+      var data    = $this.data('bs.affix')
+      var options = typeof option == 'object' && option
+
+      if (!data) $this.data('bs.affix', (data = new Affix(this, options)))
+      if (typeof option == 'string') data[option]()
+    })
+  }
+
+  var old = $.fn.affix
+
+  $.fn.affix             = Plugin
+  $.fn.affix.Constructor = Affix
+
+
+  // AFFIX NO CONFLICT
+  // =================
+
+  $.fn.affix.noConflict = function () {
+    $.fn.affix = old
     return this
   }
 
-  $(function () {
-    $.support.transition = transitionEnd()
+
+  // AFFIX DATA-API
+  // ==============
+
+  $(window).on('load', function () {
+    $('[data-spy="affix"]').each(function () {
+      var $spy = $(this)
+      var data = $spy.data()
+
+      data.offset = data.offset || {}
+
+      if (data.offsetBottom) data.offset.bottom = data.offsetBottom
+      if (data.offsetTop)    data.offset.top    = data.offsetTop
+
+      Plugin.call($spy, data)
+    })
   })
 
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: alert.js v3.1.1
+ * Bootstrap: alert.js v3.2.0
  * http://getbootstrap.com/javascript/#alerts
  * ========================================================================
  * Copyright 2011-2014 Twitter, Inc.
@@ -78640,6 +80795,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var Alert   = function (el) {
     $(el).on('click', dismiss, this.close)
   }
+
+  Alert.VERSION = '3.2.0'
 
   Alert.prototype.close = function (e) {
     var $this    = $(this)
@@ -78665,12 +80822,13 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     $parent.removeClass('in')
 
     function removeElement() {
-      $parent.trigger('closed.bs.alert').remove()
+      // detach from parent, fire event then clean up data
+      $parent.detach().trigger('closed.bs.alert').remove()
     }
 
     $.support.transition && $parent.hasClass('fade') ?
       $parent
-        .one($.support.transition.end, removeElement)
+        .one('bsTransitionEnd', removeElement)
         .emulateTransitionEnd(150) :
       removeElement()
   }
@@ -78679,9 +80837,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   // ALERT PLUGIN DEFINITION
   // =======================
 
-  var old = $.fn.alert
-
-  $.fn.alert = function (option) {
+  function Plugin(option) {
     return this.each(function () {
       var $this = $(this)
       var data  = $this.data('bs.alert')
@@ -78691,6 +80847,9 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     })
   }
 
+  var old = $.fn.alert
+
+  $.fn.alert             = Plugin
   $.fn.alert.Constructor = Alert
 
 
@@ -78711,7 +80870,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: button.js v3.1.1
+ * Bootstrap: button.js v3.2.0
  * http://getbootstrap.com/javascript/#buttons
  * ========================================================================
  * Copyright 2011-2014 Twitter, Inc.
@@ -78731,6 +80890,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     this.isLoading = false
   }
 
+  Button.VERSION  = '3.2.0'
+
   Button.DEFAULTS = {
     loadingText: 'loading...'
   }
@@ -78743,9 +80904,9 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
     state = state + 'Text'
 
-    if (!data.resetText) $el.data('resetText', $el[val]())
+    if (data.resetText == null) $el.data('resetText', $el[val]())
 
-    $el[val](data[state] || this.options[state])
+    $el[val](data[state] == null ? this.options[state] : data[state])
 
     // push to event loop to allow forms to submit
     setTimeout($.proxy(function () {
@@ -78779,9 +80940,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   // BUTTON PLUGIN DEFINITION
   // ========================
 
-  var old = $.fn.button
-
-  $.fn.button = function (option) {
+  function Plugin(option) {
     return this.each(function () {
       var $this   = $(this)
       var data    = $this.data('bs.button')
@@ -78794,6 +80953,9 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     })
   }
 
+  var old = $.fn.button
+
+  $.fn.button             = Plugin
   $.fn.button.Constructor = Button
 
 
@@ -78809,17 +80971,17 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   // BUTTON DATA-API
   // ===============
 
-  $(document).on('click.bs.button.data-api', '[data-toggle^=button]', function (e) {
+  $(document).on('click.bs.button.data-api', '[data-toggle^="button"]', function (e) {
     var $btn = $(e.target)
     if (!$btn.hasClass('btn')) $btn = $btn.closest('.btn')
-    $btn.button('toggle')
+    Plugin.call($btn, 'toggle')
     e.preventDefault()
   })
 
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: carousel.js v3.1.1
+ * Bootstrap: carousel.js v3.2.0
  * http://getbootstrap.com/javascript/#carousel
  * ========================================================================
  * Copyright 2011-2014 Twitter, Inc.
@@ -78834,7 +80996,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   // =========================
 
   var Carousel = function (element, options) {
-    this.$element    = $(element)
+    this.$element    = $(element).on('keydown.bs.carousel', $.proxy(this.keydown, this))
     this.$indicators = this.$element.find('.carousel-indicators')
     this.options     = options
     this.paused      =
@@ -78844,9 +81006,11 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     this.$items      = null
 
     this.options.pause == 'hover' && this.$element
-      .on('mouseenter', $.proxy(this.pause, this))
-      .on('mouseleave', $.proxy(this.cycle, this))
+      .on('mouseenter.bs.carousel', $.proxy(this.pause, this))
+      .on('mouseleave.bs.carousel', $.proxy(this.cycle, this))
   }
+
+  Carousel.VERSION  = '3.2.0'
 
   Carousel.DEFAULTS = {
     interval: 5000,
@@ -78854,7 +81018,17 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     wrap: true
   }
 
-  Carousel.prototype.cycle =  function (e) {
+  Carousel.prototype.keydown = function (e) {
+    switch (e.which) {
+      case 37: this.prev(); break
+      case 39: this.next(); break
+      default: return
+    }
+
+    e.preventDefault()
+  }
+
+  Carousel.prototype.cycle = function (e) {
     e || (this.paused = false)
 
     this.interval && clearInterval(this.interval)
@@ -78866,20 +81040,18 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     return this
   }
 
-  Carousel.prototype.getActiveIndex = function () {
-    this.$active = this.$element.find('.item.active')
-    this.$items  = this.$active.parent().children()
-
-    return this.$items.index(this.$active)
+  Carousel.prototype.getItemIndex = function (item) {
+    this.$items = item.parent().children('.item')
+    return this.$items.index(item || this.$active)
   }
 
   Carousel.prototype.to = function (pos) {
     var that        = this
-    var activeIndex = this.getActiveIndex()
+    var activeIndex = this.getItemIndex(this.$active = this.$element.find('.item.active'))
 
     if (pos > (this.$items.length - 1) || pos < 0) return
 
-    if (this.sliding)       return this.$element.one('slid.bs.carousel', function () { that.to(pos) })
+    if (this.sliding)       return this.$element.one('slid.bs.carousel', function () { that.to(pos) }) // yes, "slid"
     if (activeIndex == pos) return this.pause().cycle()
 
     return this.slide(pos > activeIndex ? 'next' : 'prev', $(this.$items[pos]))
@@ -78921,11 +81093,15 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
       $next = this.$element.find('.item')[fallback]()
     }
 
-    if ($next.hasClass('active')) return this.sliding = false
+    if ($next.hasClass('active')) return (this.sliding = false)
 
-    var e = $.Event('slide.bs.carousel', { relatedTarget: $next[0], direction: direction })
-    this.$element.trigger(e)
-    if (e.isDefaultPrevented()) return
+    var relatedTarget = $next[0]
+    var slideEvent = $.Event('slide.bs.carousel', {
+      relatedTarget: relatedTarget,
+      direction: direction
+    })
+    this.$element.trigger(slideEvent)
+    if (slideEvent.isDefaultPrevented()) return
 
     this.sliding = true
 
@@ -78933,30 +81109,31 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
     if (this.$indicators.length) {
       this.$indicators.find('.active').removeClass('active')
-      this.$element.one('slid.bs.carousel', function () {
-        var $nextIndicator = $(that.$indicators.children()[that.getActiveIndex()])
-        $nextIndicator && $nextIndicator.addClass('active')
-      })
+      var $nextIndicator = $(this.$indicators.children()[this.getItemIndex($next)])
+      $nextIndicator && $nextIndicator.addClass('active')
     }
 
+    var slidEvent = $.Event('slid.bs.carousel', { relatedTarget: relatedTarget, direction: direction }) // yes, "slid"
     if ($.support.transition && this.$element.hasClass('slide')) {
       $next.addClass(type)
       $next[0].offsetWidth // force reflow
       $active.addClass(direction)
       $next.addClass(direction)
       $active
-        .one($.support.transition.end, function () {
+        .one('bsTransitionEnd', function () {
           $next.removeClass([type, direction].join(' ')).addClass('active')
           $active.removeClass(['active', direction].join(' '))
           that.sliding = false
-          setTimeout(function () { that.$element.trigger('slid.bs.carousel') }, 0)
+          setTimeout(function () {
+            that.$element.trigger(slidEvent)
+          }, 0)
         })
         .emulateTransitionEnd($active.css('transition-duration').slice(0, -1) * 1000)
     } else {
       $active.removeClass('active')
       $next.addClass('active')
       this.sliding = false
-      this.$element.trigger('slid.bs.carousel')
+      this.$element.trigger(slidEvent)
     }
 
     isCycling && this.cycle()
@@ -78968,9 +81145,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   // CAROUSEL PLUGIN DEFINITION
   // ==========================
 
-  var old = $.fn.carousel
-
-  $.fn.carousel = function (option) {
+  function Plugin(option) {
     return this.each(function () {
       var $this   = $(this)
       var data    = $this.data('bs.carousel')
@@ -78984,6 +81159,9 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     })
   }
 
+  var old = $.fn.carousel
+
+  $.fn.carousel             = Plugin
   $.fn.carousel.Constructor = Carousel
 
 
@@ -79000,15 +81178,17 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   // =================
 
   $(document).on('click.bs.carousel.data-api', '[data-slide], [data-slide-to]', function (e) {
-    var $this   = $(this), href
-    var $target = $($this.attr('data-target') || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) //strip for ie7
+    var href
+    var $this   = $(this)
+    var $target = $($this.attr('data-target') || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) // strip for ie7
+    if (!$target.hasClass('carousel')) return
     var options = $.extend({}, $target.data(), $this.data())
     var slideIndex = $this.attr('data-slide-to')
     if (slideIndex) options.interval = false
 
-    $target.carousel(options)
+    Plugin.call($target, options)
 
-    if (slideIndex = $this.attr('data-slide-to')) {
+    if (slideIndex) {
       $target.data('bs.carousel').to(slideIndex)
     }
 
@@ -79018,14 +81198,14 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   $(window).on('load', function () {
     $('[data-ride="carousel"]').each(function () {
       var $carousel = $(this)
-      $carousel.carousel($carousel.data())
+      Plugin.call($carousel, $carousel.data())
     })
   })
 
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: collapse.js v3.1.1
+ * Bootstrap: collapse.js v3.2.0
  * http://getbootstrap.com/javascript/#collapse
  * ========================================================================
  * Copyright 2011-2014 Twitter, Inc.
@@ -79048,6 +81228,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     if (this.options.toggle) this.toggle()
   }
 
+  Collapse.VERSION  = '3.2.0'
+
   Collapse.DEFAULTS = {
     toggle: true
   }
@@ -79069,7 +81251,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     if (actives && actives.length) {
       var hasData = actives.data('bs.collapse')
       if (hasData && hasData.transitioning) return
-      actives.collapse('hide')
+      Plugin.call(actives, 'hide')
       hasData || actives.data('bs.collapse', null)
     }
 
@@ -79077,18 +81259,17 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
     this.$element
       .removeClass('collapse')
-      .addClass('collapsing')
-      [dimension](0)
+      .addClass('collapsing')[dimension](0)
 
     this.transitioning = 1
 
     var complete = function () {
       this.$element
         .removeClass('collapsing')
-        .addClass('collapse in')
-        [dimension]('auto')
+        .addClass('collapse in')[dimension]('')
       this.transitioning = 0
-      this.$element.trigger('shown.bs.collapse')
+      this.$element
+        .trigger('shown.bs.collapse')
     }
 
     if (!$.support.transition) return complete.call(this)
@@ -79096,9 +81277,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     var scrollSize = $.camelCase(['scroll', dimension].join('-'))
 
     this.$element
-      .one($.support.transition.end, $.proxy(complete, this))
-      .emulateTransitionEnd(350)
-      [dimension](this.$element[0][scrollSize])
+      .one('bsTransitionEnd', $.proxy(complete, this))
+      .emulateTransitionEnd(350)[dimension](this.$element[0][scrollSize])
   }
 
   Collapse.prototype.hide = function () {
@@ -79110,9 +81290,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
     var dimension = this.dimension()
 
-    this.$element
-      [dimension](this.$element[dimension]())
-      [0].offsetHeight
+    this.$element[dimension](this.$element[dimension]())[0].offsetHeight
 
     this.$element
       .addClass('collapsing')
@@ -79133,7 +81311,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
     this.$element
       [dimension](0)
-      .one($.support.transition.end, $.proxy(complete, this))
+      .one('bsTransitionEnd', $.proxy(complete, this))
       .emulateTransitionEnd(350)
   }
 
@@ -79145,9 +81323,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   // COLLAPSE PLUGIN DEFINITION
   // ==========================
 
-  var old = $.fn.collapse
-
-  $.fn.collapse = function (option) {
+  function Plugin(option) {
     return this.each(function () {
       var $this   = $(this)
       var data    = $this.data('bs.collapse')
@@ -79159,6 +81335,9 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     })
   }
 
+  var old = $.fn.collapse
+
+  $.fn.collapse             = Plugin
   $.fn.collapse.Constructor = Collapse
 
 
@@ -79174,11 +81353,12 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   // COLLAPSE DATA-API
   // =================
 
-  $(document).on('click.bs.collapse.data-api', '[data-toggle=collapse]', function (e) {
-    var $this   = $(this), href
+  $(document).on('click.bs.collapse.data-api', '[data-toggle="collapse"]', function (e) {
+    var href
+    var $this   = $(this)
     var target  = $this.attr('data-target')
         || e.preventDefault()
-        || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '') //strip for ie7
+        || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '') // strip for ie7
     var $target = $(target)
     var data    = $target.data('bs.collapse')
     var option  = data ? 'toggle' : $this.data()
@@ -79186,17 +81366,17 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     var $parent = parent && $(parent)
 
     if (!data || !data.transitioning) {
-      if ($parent) $parent.find('[data-toggle=collapse][data-parent="' + parent + '"]').not($this).addClass('collapsed')
+      if ($parent) $parent.find('[data-toggle="collapse"][data-parent="' + parent + '"]').not($this).addClass('collapsed')
       $this[$target.hasClass('in') ? 'addClass' : 'removeClass']('collapsed')
     }
 
-    $target.collapse(option)
+    Plugin.call($target, option)
   })
 
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: dropdown.js v3.1.1
+ * Bootstrap: dropdown.js v3.2.0
  * http://getbootstrap.com/javascript/#dropdowns
  * ========================================================================
  * Copyright 2011-2014 Twitter, Inc.
@@ -79211,10 +81391,12 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   // =========================
 
   var backdrop = '.dropdown-backdrop'
-  var toggle   = '[data-toggle=dropdown]'
+  var toggle   = '[data-toggle="dropdown"]'
   var Dropdown = function (element) {
     $(element).on('click.bs.dropdown', this.toggle)
   }
+
+  Dropdown.VERSION = '3.2.0'
 
   Dropdown.prototype.toggle = function (e) {
     var $this = $(this)
@@ -79237,11 +81419,11 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
       if (e.isDefaultPrevented()) return
 
+      $this.trigger('focus')
+
       $parent
         .toggleClass('open')
         .trigger('shown.bs.dropdown', relatedTarget)
-
-      $this.focus()
     }
 
     return false
@@ -79261,12 +81443,12 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     var isActive = $parent.hasClass('open')
 
     if (!isActive || (isActive && e.keyCode == 27)) {
-      if (e.which == 27) $parent.find(toggle).focus()
-      return $this.click()
+      if (e.which == 27) $parent.find(toggle).trigger('focus')
+      return $this.trigger('click')
     }
 
     var desc = ' li:not(.divider):visible a'
-    var $items = $parent.find('[role=menu]' + desc + ', [role=listbox]' + desc)
+    var $items = $parent.find('[role="menu"]' + desc + ', [role="listbox"]' + desc)
 
     if (!$items.length) return
 
@@ -79276,10 +81458,11 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     if (e.keyCode == 40 && index < $items.length - 1) index++                        // down
     if (!~index)                                      index = 0
 
-    $items.eq(index).focus()
+    $items.eq(index).trigger('focus')
   }
 
   function clearMenus(e) {
+    if (e && e.which === 3) return
     $(backdrop).remove()
     $(toggle).each(function () {
       var $parent = getParent($(this))
@@ -79296,7 +81479,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
     if (!selector) {
       selector = $this.attr('href')
-      selector = selector && /#[A-Za-z]/.test(selector) && selector.replace(/.*(?=#[^\s]*$)/, '') //strip for ie7
+      selector = selector && /#[A-Za-z]/.test(selector) && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
     }
 
     var $parent = selector && $(selector)
@@ -79308,9 +81491,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   // DROPDOWN PLUGIN DEFINITION
   // ==========================
 
-  var old = $.fn.dropdown
-
-  $.fn.dropdown = function (option) {
+  function Plugin(option) {
     return this.each(function () {
       var $this = $(this)
       var data  = $this.data('bs.dropdown')
@@ -79320,6 +81501,9 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     })
   }
 
+  var old = $.fn.dropdown
+
+  $.fn.dropdown             = Plugin
   $.fn.dropdown.Constructor = Dropdown
 
 
@@ -79339,12 +81523,372 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     .on('click.bs.dropdown.data-api', clearMenus)
     .on('click.bs.dropdown.data-api', '.dropdown form', function (e) { e.stopPropagation() })
     .on('click.bs.dropdown.data-api', toggle, Dropdown.prototype.toggle)
-    .on('keydown.bs.dropdown.data-api', toggle + ', [role=menu], [role=listbox]', Dropdown.prototype.keydown)
+    .on('keydown.bs.dropdown.data-api', toggle + ', [role="menu"], [role="listbox"]', Dropdown.prototype.keydown)
 
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: modal.js v3.1.1
+ * Bootstrap: tab.js v3.2.0
+ * http://getbootstrap.com/javascript/#tabs
+ * ========================================================================
+ * Copyright 2011-2014 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // TAB CLASS DEFINITION
+  // ====================
+
+  var Tab = function (element) {
+    this.element = $(element)
+  }
+
+  Tab.VERSION = '3.2.0'
+
+  Tab.prototype.show = function () {
+    var $this    = this.element
+    var $ul      = $this.closest('ul:not(.dropdown-menu)')
+    var selector = $this.data('target')
+
+    if (!selector) {
+      selector = $this.attr('href')
+      selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
+    }
+
+    if ($this.parent('li').hasClass('active')) return
+
+    var previous = $ul.find('.active:last a')[0]
+    var e        = $.Event('show.bs.tab', {
+      relatedTarget: previous
+    })
+
+    $this.trigger(e)
+
+    if (e.isDefaultPrevented()) return
+
+    var $target = $(selector)
+
+    this.activate($this.closest('li'), $ul)
+    this.activate($target, $target.parent(), function () {
+      $this.trigger({
+        type: 'shown.bs.tab',
+        relatedTarget: previous
+      })
+    })
+  }
+
+  Tab.prototype.activate = function (element, container, callback) {
+    var $active    = container.find('> .active')
+    var transition = callback
+      && $.support.transition
+      && $active.hasClass('fade')
+
+    function next() {
+      $active
+        .removeClass('active')
+        .find('> .dropdown-menu > .active')
+        .removeClass('active')
+
+      element.addClass('active')
+
+      if (transition) {
+        element[0].offsetWidth // reflow for transition
+        element.addClass('in')
+      } else {
+        element.removeClass('fade')
+      }
+
+      if (element.parent('.dropdown-menu')) {
+        element.closest('li.dropdown').addClass('active')
+      }
+
+      callback && callback()
+    }
+
+    transition ?
+      $active
+        .one('bsTransitionEnd', next)
+        .emulateTransitionEnd(150) :
+      next()
+
+    $active.removeClass('in')
+  }
+
+
+  // TAB PLUGIN DEFINITION
+  // =====================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this = $(this)
+      var data  = $this.data('bs.tab')
+
+      if (!data) $this.data('bs.tab', (data = new Tab(this)))
+      if (typeof option == 'string') data[option]()
+    })
+  }
+
+  var old = $.fn.tab
+
+  $.fn.tab             = Plugin
+  $.fn.tab.Constructor = Tab
+
+
+  // TAB NO CONFLICT
+  // ===============
+
+  $.fn.tab.noConflict = function () {
+    $.fn.tab = old
+    return this
+  }
+
+
+  // TAB DATA-API
+  // ============
+
+  $(document).on('click.bs.tab.data-api', '[data-toggle="tab"], [data-toggle="pill"]', function (e) {
+    e.preventDefault()
+    Plugin.call($(this), 'show')
+  })
+
+}(jQuery);
+
+/* ========================================================================
+ * Bootstrap: transition.js v3.2.0
+ * http://getbootstrap.com/javascript/#transitions
+ * ========================================================================
+ * Copyright 2011-2014 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // CSS TRANSITION SUPPORT (Shoutout: http://www.modernizr.com/)
+  // ============================================================
+
+  function transitionEnd() {
+    var el = document.createElement('bootstrap')
+
+    var transEndEventNames = {
+      WebkitTransition : 'webkitTransitionEnd',
+      MozTransition    : 'transitionend',
+      OTransition      : 'oTransitionEnd otransitionend',
+      transition       : 'transitionend'
+    }
+
+    for (var name in transEndEventNames) {
+      if (el.style[name] !== undefined) {
+        return { end: transEndEventNames[name] }
+      }
+    }
+
+    return false // explicit for ie8 (  ._.)
+  }
+
+  // http://blog.alexmaccaw.com/css-transitions
+  $.fn.emulateTransitionEnd = function (duration) {
+    var called = false
+    var $el = this
+    $(this).one('bsTransitionEnd', function () { called = true })
+    var callback = function () { if (!called) $($el).trigger($.support.transition.end) }
+    setTimeout(callback, duration)
+    return this
+  }
+
+  $(function () {
+    $.support.transition = transitionEnd()
+
+    if (!$.support.transition) return
+
+    $.event.special.bsTransitionEnd = {
+      bindType: $.support.transition.end,
+      delegateType: $.support.transition.end,
+      handle: function (e) {
+        if ($(e.target).is(this)) return e.handleObj.handler.apply(this, arguments)
+      }
+    }
+  })
+
+}(jQuery);
+
+/* ========================================================================
+ * Bootstrap: scrollspy.js v3.2.0
+ * http://getbootstrap.com/javascript/#scrollspy
+ * ========================================================================
+ * Copyright 2011-2014 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // SCROLLSPY CLASS DEFINITION
+  // ==========================
+
+  function ScrollSpy(element, options) {
+    var process  = $.proxy(this.process, this)
+
+    this.$body          = $('body')
+    this.$scrollElement = $(element).is('body') ? $(window) : $(element)
+    this.options        = $.extend({}, ScrollSpy.DEFAULTS, options)
+    this.selector       = (this.options.target || '') + ' .nav li > a'
+    this.offsets        = []
+    this.targets        = []
+    this.activeTarget   = null
+    this.scrollHeight   = 0
+
+    this.$scrollElement.on('scroll.bs.scrollspy', process)
+    this.refresh()
+    this.process()
+  }
+
+  ScrollSpy.VERSION  = '3.2.0'
+
+  ScrollSpy.DEFAULTS = {
+    offset: 10
+  }
+
+  ScrollSpy.prototype.getScrollHeight = function () {
+    return this.$scrollElement[0].scrollHeight || Math.max(this.$body[0].scrollHeight, document.documentElement.scrollHeight)
+  }
+
+  ScrollSpy.prototype.refresh = function () {
+    var offsetMethod = 'offset'
+    var offsetBase   = 0
+
+    if (!$.isWindow(this.$scrollElement[0])) {
+      offsetMethod = 'position'
+      offsetBase   = this.$scrollElement.scrollTop()
+    }
+
+    this.offsets = []
+    this.targets = []
+    this.scrollHeight = this.getScrollHeight()
+
+    var self     = this
+
+    this.$body
+      .find(this.selector)
+      .map(function () {
+        var $el   = $(this)
+        var href  = $el.data('target') || $el.attr('href')
+        var $href = /^#./.test(href) && $(href)
+
+        return ($href
+          && $href.length
+          && $href.is(':visible')
+          && [[$href[offsetMethod]().top + offsetBase, href]]) || null
+      })
+      .sort(function (a, b) { return a[0] - b[0] })
+      .each(function () {
+        self.offsets.push(this[0])
+        self.targets.push(this[1])
+      })
+  }
+
+  ScrollSpy.prototype.process = function () {
+    var scrollTop    = this.$scrollElement.scrollTop() + this.options.offset
+    var scrollHeight = this.getScrollHeight()
+    var maxScroll    = this.options.offset + scrollHeight - this.$scrollElement.height()
+    var offsets      = this.offsets
+    var targets      = this.targets
+    var activeTarget = this.activeTarget
+    var i
+
+    if (this.scrollHeight != scrollHeight) {
+      this.refresh()
+    }
+
+    if (scrollTop >= maxScroll) {
+      return activeTarget != (i = targets[targets.length - 1]) && this.activate(i)
+    }
+
+    if (activeTarget && scrollTop <= offsets[0]) {
+      return activeTarget != (i = targets[0]) && this.activate(i)
+    }
+
+    for (i = offsets.length; i--;) {
+      activeTarget != targets[i]
+        && scrollTop >= offsets[i]
+        && (!offsets[i + 1] || scrollTop <= offsets[i + 1])
+        && this.activate(targets[i])
+    }
+  }
+
+  ScrollSpy.prototype.activate = function (target) {
+    this.activeTarget = target
+
+    $(this.selector)
+      .parentsUntil(this.options.target, '.active')
+      .removeClass('active')
+
+    var selector = this.selector +
+        '[data-target="' + target + '"],' +
+        this.selector + '[href="' + target + '"]'
+
+    var active = $(selector)
+      .parents('li')
+      .addClass('active')
+
+    if (active.parent('.dropdown-menu').length) {
+      active = active
+        .closest('li.dropdown')
+        .addClass('active')
+    }
+
+    active.trigger('activate.bs.scrollspy')
+  }
+
+
+  // SCROLLSPY PLUGIN DEFINITION
+  // ===========================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this   = $(this)
+      var data    = $this.data('bs.scrollspy')
+      var options = typeof option == 'object' && option
+
+      if (!data) $this.data('bs.scrollspy', (data = new ScrollSpy(this, options)))
+      if (typeof option == 'string') data[option]()
+    })
+  }
+
+  var old = $.fn.scrollspy
+
+  $.fn.scrollspy             = Plugin
+  $.fn.scrollspy.Constructor = ScrollSpy
+
+
+  // SCROLLSPY NO CONFLICT
+  // =====================
+
+  $.fn.scrollspy.noConflict = function () {
+    $.fn.scrollspy = old
+    return this
+  }
+
+
+  // SCROLLSPY DATA-API
+  // ==================
+
+  $(window).on('load.bs.scrollspy.data-api', function () {
+    $('[data-spy="scroll"]').each(function () {
+      var $spy = $(this)
+      Plugin.call($spy, $spy.data())
+    })
+  })
+
+}(jQuery);
+
+/* ========================================================================
+ * Bootstrap: modal.js v3.2.0
  * http://getbootstrap.com/javascript/#modals
  * ========================================================================
  * Copyright 2011-2014 Twitter, Inc.
@@ -79359,10 +81903,12 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   // ======================
 
   var Modal = function (element, options) {
-    this.options   = options
-    this.$element  = $(element)
-    this.$backdrop =
-    this.isShown   = null
+    this.options        = options
+    this.$body          = $(document.body)
+    this.$element       = $(element)
+    this.$backdrop      =
+    this.isShown        = null
+    this.scrollbarWidth = 0
 
     if (this.options.remote) {
       this.$element
@@ -79373,6 +81919,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     }
   }
 
+  Modal.VERSION  = '3.2.0'
+
   Modal.DEFAULTS = {
     backdrop: true,
     keyboard: true,
@@ -79380,7 +81928,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   }
 
   Modal.prototype.toggle = function (_relatedTarget) {
-    return this[!this.isShown ? 'show' : 'hide'](_relatedTarget)
+    return this.isShown ? this.hide() : this.show(_relatedTarget)
   }
 
   Modal.prototype.show = function (_relatedTarget) {
@@ -79393,6 +81941,10 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
     this.isShown = true
 
+    this.checkScrollbar()
+    this.$body.addClass('modal-open')
+
+    this.setScrollbar()
     this.escape()
 
     this.$element.on('click.dismiss.bs.modal', '[data-dismiss="modal"]', $.proxy(this.hide, this))
@@ -79401,7 +81953,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
       var transition = $.support.transition && that.$element.hasClass('fade')
 
       if (!that.$element.parent().length) {
-        that.$element.appendTo(document.body) // don't move modals dom position
+        that.$element.appendTo(that.$body) // don't move modals dom position
       }
 
       that.$element
@@ -79422,11 +81974,11 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
       transition ?
         that.$element.find('.modal-dialog') // wait for modal to slide in
-          .one($.support.transition.end, function () {
-            that.$element.focus().trigger(e)
+          .one('bsTransitionEnd', function () {
+            that.$element.trigger('focus').trigger(e)
           })
           .emulateTransitionEnd(300) :
-        that.$element.focus().trigger(e)
+        that.$element.trigger('focus').trigger(e)
     })
   }
 
@@ -79441,6 +81993,9 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
     this.isShown = false
 
+    this.$body.removeClass('modal-open')
+
+    this.resetScrollbar()
     this.escape()
 
     $(document).off('focusin.bs.modal')
@@ -79452,7 +82007,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
     $.support.transition && this.$element.hasClass('fade') ?
       this.$element
-        .one($.support.transition.end, $.proxy(this.hideModal, this))
+        .one('bsTransitionEnd', $.proxy(this.hideModal, this))
         .emulateTransitionEnd(300) :
       this.hideModal()
   }
@@ -79462,7 +82017,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
       .off('focusin.bs.modal') // guard against infinite focus loop
       .on('focusin.bs.modal', $.proxy(function (e) {
         if (this.$element[0] !== e.target && !this.$element.has(e.target).length) {
-          this.$element.focus()
+          this.$element.trigger('focus')
         }
       }, this))
   }
@@ -79481,7 +82036,6 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     var that = this
     this.$element.hide()
     this.backdrop(function () {
-      that.removeBackdrop()
       that.$element.trigger('hidden.bs.modal')
     })
   }
@@ -79492,13 +82046,14 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   }
 
   Modal.prototype.backdrop = function (callback) {
+    var that = this
     var animate = this.$element.hasClass('fade') ? 'fade' : ''
 
     if (this.isShown && this.options.backdrop) {
       var doAnimate = $.support.transition && animate
 
       this.$backdrop = $('<div class="modal-backdrop ' + animate + '" />')
-        .appendTo(document.body)
+        .appendTo(this.$body)
 
       this.$element.on('click.dismiss.bs.modal', $.proxy(function (e) {
         if (e.target !== e.currentTarget) return
@@ -79515,31 +82070,56 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
       doAnimate ?
         this.$backdrop
-          .one($.support.transition.end, callback)
+          .one('bsTransitionEnd', callback)
           .emulateTransitionEnd(150) :
         callback()
 
     } else if (!this.isShown && this.$backdrop) {
       this.$backdrop.removeClass('in')
 
+      var callbackRemove = function () {
+        that.removeBackdrop()
+        callback && callback()
+      }
       $.support.transition && this.$element.hasClass('fade') ?
         this.$backdrop
-          .one($.support.transition.end, callback)
+          .one('bsTransitionEnd', callbackRemove)
           .emulateTransitionEnd(150) :
-        callback()
+        callbackRemove()
 
     } else if (callback) {
       callback()
     }
   }
 
+  Modal.prototype.checkScrollbar = function () {
+    if (document.body.clientWidth >= window.innerWidth) return
+    this.scrollbarWidth = this.scrollbarWidth || this.measureScrollbar()
+  }
+
+  Modal.prototype.setScrollbar = function () {
+    var bodyPad = parseInt((this.$body.css('padding-right') || 0), 10)
+    if (this.scrollbarWidth) this.$body.css('padding-right', bodyPad + this.scrollbarWidth)
+  }
+
+  Modal.prototype.resetScrollbar = function () {
+    this.$body.css('padding-right', '')
+  }
+
+  Modal.prototype.measureScrollbar = function () { // thx walsh
+    var scrollDiv = document.createElement('div')
+    scrollDiv.className = 'modal-scrollbar-measure'
+    this.$body.append(scrollDiv)
+    var scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth
+    this.$body[0].removeChild(scrollDiv)
+    return scrollbarWidth
+  }
+
 
   // MODAL PLUGIN DEFINITION
   // =======================
 
-  var old = $.fn.modal
-
-  $.fn.modal = function (option, _relatedTarget) {
+  function Plugin(option, _relatedTarget) {
     return this.each(function () {
       var $this   = $(this)
       var data    = $this.data('bs.modal')
@@ -79551,6 +82131,9 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     })
   }
 
+  var old = $.fn.modal
+
+  $.fn.modal             = Plugin
   $.fn.modal.Constructor = Modal
 
 
@@ -79569,26 +82152,24 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   $(document).on('click.bs.modal.data-api', '[data-toggle="modal"]', function (e) {
     var $this   = $(this)
     var href    = $this.attr('href')
-    var $target = $($this.attr('data-target') || (href && href.replace(/.*(?=#[^\s]+$)/, ''))) //strip for ie7
+    var $target = $($this.attr('data-target') || (href && href.replace(/.*(?=#[^\s]+$)/, ''))) // strip for ie7
     var option  = $target.data('bs.modal') ? 'toggle' : $.extend({ remote: !/#/.test(href) && href }, $target.data(), $this.data())
 
     if ($this.is('a')) e.preventDefault()
 
-    $target
-      .modal(option, this)
-      .one('hide', function () {
-        $this.is(':visible') && $this.focus()
+    $target.one('show.bs.modal', function (showEvent) {
+      if (showEvent.isDefaultPrevented()) return // only register focus restorer if modal will actually get shown
+      $target.one('hidden.bs.modal', function () {
+        $this.is(':visible') && $this.trigger('focus')
       })
+    })
+    Plugin.call($target, option, this)
   })
-
-  $(document)
-    .on('show.bs.modal', '.modal', function () { $(document.body).addClass('modal-open') })
-    .on('hidden.bs.modal', '.modal', function () { $(document.body).removeClass('modal-open') })
 
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: tooltip.js v3.1.1
+ * Bootstrap: tooltip.js v3.2.0
  * http://getbootstrap.com/javascript/#tooltip
  * Inspired by the original jQuery.tipsy by Jason Frame
  * ========================================================================
@@ -79614,23 +82195,30 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     this.init('tooltip', element, options)
   }
 
+  Tooltip.VERSION  = '3.2.0'
+
   Tooltip.DEFAULTS = {
     animation: true,
     placement: 'top',
     selector: false,
-    template: '<div class="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>',
+    template: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>',
     trigger: 'hover focus',
     title: '',
     delay: 0,
     html: false,
-    container: false
+    container: false,
+    viewport: {
+      selector: 'body',
+      padding: 0
+    }
   }
 
   Tooltip.prototype.init = function (type, element, options) {
-    this.enabled  = true
-    this.type     = type
-    this.$element = $(element)
-    this.options  = this.getOptions(options)
+    this.enabled   = true
+    this.type      = type
+    this.$element  = $(element)
+    this.options   = this.getOptions(options)
+    this.$viewport = this.options.viewport && $(this.options.viewport.selector || this.options.viewport)
 
     var triggers = this.options.trigger.split(' ')
 
@@ -79683,7 +82271,12 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
   Tooltip.prototype.enter = function (obj) {
     var self = obj instanceof this.constructor ?
-      obj : $(obj.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type)
+      obj : $(obj.currentTarget).data('bs.' + this.type)
+
+    if (!self) {
+      self = new this.constructor(obj.currentTarget, this.getDelegateOptions())
+      $(obj.currentTarget).data('bs.' + this.type, self)
+    }
 
     clearTimeout(self.timeout)
 
@@ -79698,7 +82291,12 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
   Tooltip.prototype.leave = function (obj) {
     var self = obj instanceof this.constructor ?
-      obj : $(obj.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type)
+      obj : $(obj.currentTarget).data('bs.' + this.type)
+
+    if (!self) {
+      self = new this.constructor(obj.currentTarget, this.getDelegateOptions())
+      $(obj.currentTarget).data('bs.' + this.type, self)
+    }
 
     clearTimeout(self.timeout)
 
@@ -79717,12 +82315,17 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     if (this.hasContent() && this.enabled) {
       this.$element.trigger(e)
 
-      if (e.isDefaultPrevented()) return
-      var that = this;
+      var inDom = $.contains(document.documentElement, this.$element[0])
+      if (e.isDefaultPrevented() || !inDom) return
+      var that = this
 
       var $tip = this.tip()
 
+      var tipId = this.getUID(this.type)
+
       this.setContent()
+      $tip.attr('id', tipId)
+      this.$element.attr('aria-describedby', tipId)
 
       if (this.options.animation) $tip.addClass('fade')
 
@@ -79738,6 +82341,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
         .detach()
         .css({ top: 0, left: 0, display: 'block' })
         .addClass(placement)
+        .data('bs.' + this.type, this)
 
       this.options.container ? $tip.appendTo(this.options.container) : $tip.insertAfter(this.$element)
 
@@ -79746,18 +82350,14 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
       var actualHeight = $tip[0].offsetHeight
 
       if (autoPlace) {
-        var $parent = this.$element.parent()
-
         var orgPlacement = placement
-        var docScroll    = document.documentElement.scrollTop || document.body.scrollTop
-        var parentWidth  = this.options.container == 'body' ? window.innerWidth  : $parent.outerWidth()
-        var parentHeight = this.options.container == 'body' ? window.innerHeight : $parent.outerHeight()
-        var parentLeft   = this.options.container == 'body' ? 0 : $parent.offset().left
+        var $parent      = this.$element.parent()
+        var parentDim    = this.getPosition($parent)
 
-        placement = placement == 'bottom' && pos.top   + pos.height  + actualHeight - docScroll > parentHeight  ? 'top'    :
-                    placement == 'top'    && pos.top   - docScroll   - actualHeight < 0                         ? 'bottom' :
-                    placement == 'right'  && pos.right + actualWidth > parentWidth                              ? 'left'   :
-                    placement == 'left'   && pos.left  - actualWidth < parentLeft                               ? 'right'  :
+        placement = placement == 'bottom' && pos.top   + pos.height       + actualHeight - parentDim.scroll > parentDim.height ? 'top'    :
+                    placement == 'top'    && pos.top   - parentDim.scroll - actualHeight < 0                                   ? 'bottom' :
+                    placement == 'right'  && pos.right + actualWidth      > parentDim.width                                    ? 'left'   :
+                    placement == 'left'   && pos.left  - actualWidth      < parentDim.left                                     ? 'right'  :
                     placement
 
         $tip
@@ -79768,22 +82368,21 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
       var calculatedOffset = this.getCalculatedOffset(placement, pos, actualWidth, actualHeight)
 
       this.applyPlacement(calculatedOffset, placement)
-      this.hoverState = null
 
-      var complete = function() {
+      var complete = function () {
         that.$element.trigger('shown.bs.' + that.type)
+        that.hoverState = null
       }
 
       $.support.transition && this.$tip.hasClass('fade') ?
         $tip
-          .one($.support.transition.end, complete)
+          .one('bsTransitionEnd', complete)
           .emulateTransitionEnd(150) :
         complete()
     }
   }
 
   Tooltip.prototype.applyPlacement = function (offset, placement) {
-    var replace
     var $tip   = this.tip()
     var width  = $tip[0].offsetWidth
     var height = $tip[0].offsetHeight
@@ -79817,29 +82416,20 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     var actualHeight = $tip[0].offsetHeight
 
     if (placement == 'top' && actualHeight != height) {
-      replace = true
       offset.top = offset.top + height - actualHeight
     }
 
-    if (/bottom|top/.test(placement)) {
-      var delta = 0
+    var delta = this.getViewportAdjustedDelta(placement, offset, actualWidth, actualHeight)
 
-      if (offset.left < 0) {
-        delta       = offset.left * -2
-        offset.left = 0
+    if (delta.left) offset.left += delta.left
+    else offset.top += delta.top
 
-        $tip.offset(offset)
+    var arrowDelta          = delta.left ? delta.left * 2 - width + actualWidth : delta.top * 2 - height + actualHeight
+    var arrowPosition       = delta.left ? 'left'        : 'top'
+    var arrowOffsetPosition = delta.left ? 'offsetWidth' : 'offsetHeight'
 
-        actualWidth  = $tip[0].offsetWidth
-        actualHeight = $tip[0].offsetHeight
-      }
-
-      this.replaceArrow(delta - width + actualWidth, actualWidth, 'left')
-    } else {
-      this.replaceArrow(actualHeight - height, actualHeight, 'top')
-    }
-
-    if (replace) $tip.offset(offset)
+    $tip.offset(offset)
+    this.replaceArrow(arrowDelta, $tip[0][arrowOffsetPosition], arrowPosition)
   }
 
   Tooltip.prototype.replaceArrow = function (delta, dimension, position) {
@@ -79859,6 +82449,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     var $tip = this.tip()
     var e    = $.Event('hide.bs.' + this.type)
 
+    this.$element.removeAttr('aria-describedby')
+
     function complete() {
       if (that.hoverState != 'in') $tip.detach()
       that.$element.trigger('hidden.bs.' + that.type)
@@ -79872,7 +82464,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
     $.support.transition && this.$tip.hasClass('fade') ?
       $tip
-        .one($.support.transition.end, complete)
+        .one('bsTransitionEnd', complete)
         .emulateTransitionEnd(150) :
       complete()
 
@@ -79883,7 +82475,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
   Tooltip.prototype.fixTitle = function () {
     var $e = this.$element
-    if ($e.attr('title') || typeof($e.attr('data-original-title')) != 'string') {
+    if ($e.attr('title') || typeof ($e.attr('data-original-title')) != 'string') {
       $e.attr('data-original-title', $e.attr('title') || '').attr('title', '')
     }
   }
@@ -79892,12 +82484,15 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     return this.getTitle()
   }
 
-  Tooltip.prototype.getPosition = function () {
-    var el = this.$element[0]
-    return $.extend({}, (typeof el.getBoundingClientRect == 'function') ? el.getBoundingClientRect() : {
-      width: el.offsetWidth,
-      height: el.offsetHeight
-    }, this.$element.offset())
+  Tooltip.prototype.getPosition = function ($element) {
+    $element   = $element || this.$element
+    var el     = $element[0]
+    var isBody = el.tagName == 'BODY'
+    return $.extend({}, (typeof el.getBoundingClientRect == 'function') ? el.getBoundingClientRect() : null, {
+      scroll: isBody ? document.documentElement.scrollTop || document.body.scrollTop : $element.scrollTop(),
+      width:  isBody ? $(window).width()  : $element.outerWidth(),
+      height: isBody ? $(window).height() : $element.outerHeight()
+    }, isBody ? { top: 0, left: 0 } : $element.offset())
   }
 
   Tooltip.prototype.getCalculatedOffset = function (placement, pos, actualWidth, actualHeight) {
@@ -79905,6 +82500,35 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
            placement == 'top'    ? { top: pos.top - actualHeight, left: pos.left + pos.width / 2 - actualWidth / 2  } :
            placement == 'left'   ? { top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left - actualWidth } :
         /* placement == 'right' */ { top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left + pos.width   }
+
+  }
+
+  Tooltip.prototype.getViewportAdjustedDelta = function (placement, pos, actualWidth, actualHeight) {
+    var delta = { top: 0, left: 0 }
+    if (!this.$viewport) return delta
+
+    var viewportPadding = this.options.viewport && this.options.viewport.padding || 0
+    var viewportDimensions = this.getPosition(this.$viewport)
+
+    if (/right|left/.test(placement)) {
+      var topEdgeOffset    = pos.top - viewportPadding - viewportDimensions.scroll
+      var bottomEdgeOffset = pos.top + viewportPadding - viewportDimensions.scroll + actualHeight
+      if (topEdgeOffset < viewportDimensions.top) { // top overflow
+        delta.top = viewportDimensions.top - topEdgeOffset
+      } else if (bottomEdgeOffset > viewportDimensions.top + viewportDimensions.height) { // bottom overflow
+        delta.top = viewportDimensions.top + viewportDimensions.height - bottomEdgeOffset
+      }
+    } else {
+      var leftEdgeOffset  = pos.left - viewportPadding
+      var rightEdgeOffset = pos.left + viewportPadding + actualWidth
+      if (leftEdgeOffset < viewportDimensions.left) { // left overflow
+        delta.left = viewportDimensions.left - leftEdgeOffset
+      } else if (rightEdgeOffset > viewportDimensions.width) { // right overflow
+        delta.left = viewportDimensions.left + viewportDimensions.width - rightEdgeOffset
+      }
+    }
+
+    return delta
   }
 
   Tooltip.prototype.getTitle = function () {
@@ -79918,12 +82542,18 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     return title
   }
 
+  Tooltip.prototype.getUID = function (prefix) {
+    do prefix += ~~(Math.random() * 1000000)
+    while (document.getElementById(prefix))
+    return prefix
+  }
+
   Tooltip.prototype.tip = function () {
-    return this.$tip = this.$tip || $(this.options.template)
+    return (this.$tip = this.$tip || $(this.options.template))
   }
 
   Tooltip.prototype.arrow = function () {
-    return this.$arrow = this.$arrow || this.tip().find('.tooltip-arrow')
+    return (this.$arrow = this.$arrow || this.tip().find('.tooltip-arrow'))
   }
 
   Tooltip.prototype.validate = function () {
@@ -79947,7 +82577,15 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   }
 
   Tooltip.prototype.toggle = function (e) {
-    var self = e ? $(e.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type) : this
+    var self = this
+    if (e) {
+      self = $(e.currentTarget).data('bs.' + this.type)
+      if (!self) {
+        self = new this.constructor(e.currentTarget, this.getDelegateOptions())
+        $(e.currentTarget).data('bs.' + this.type, self)
+      }
+    }
+
     self.tip().hasClass('in') ? self.leave(self) : self.enter(self)
   }
 
@@ -79960,9 +82598,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   // TOOLTIP PLUGIN DEFINITION
   // =========================
 
-  var old = $.fn.tooltip
-
-  $.fn.tooltip = function (option) {
+  function Plugin(option) {
     return this.each(function () {
       var $this   = $(this)
       var data    = $this.data('bs.tooltip')
@@ -79974,6 +82610,9 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     })
   }
 
+  var old = $.fn.tooltip
+
+  $.fn.tooltip             = Plugin
   $.fn.tooltip.Constructor = Tooltip
 
 
@@ -79988,7 +82627,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 }(jQuery);
 
 /* ========================================================================
- * Bootstrap: popover.js v3.1.1
+ * Bootstrap: popover.js v3.2.0
  * http://getbootstrap.com/javascript/#popovers
  * ========================================================================
  * Copyright 2011-2014 Twitter, Inc.
@@ -80008,11 +82647,13 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
   if (!$.fn.tooltip) throw new Error('Popover requires tooltip.js')
 
+  Popover.VERSION  = '3.2.0'
+
   Popover.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
     placement: 'right',
     trigger: 'click',
     content: '',
-    template: '<div class="popover"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+    template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
   })
 
 
@@ -80033,7 +82674,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     var content = this.getContent()
 
     $tip.find('.popover-title')[this.options.html ? 'html' : 'text'](title)
-    $tip.find('.popover-content')[ // we use append for html objects to maintain js events
+    $tip.find('.popover-content').empty()[ // we use append for html objects to maintain js events
       this.options.html ? (typeof content == 'string' ? 'html' : 'append') : 'text'
     ](content)
 
@@ -80059,7 +82700,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   }
 
   Popover.prototype.arrow = function () {
-    return this.$arrow = this.$arrow || this.tip().find('.arrow')
+    return (this.$arrow = this.$arrow || this.tip().find('.arrow'))
   }
 
   Popover.prototype.tip = function () {
@@ -80071,9 +82712,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   // POPOVER PLUGIN DEFINITION
   // =========================
 
-  var old = $.fn.popover
-
-  $.fn.popover = function (option) {
+  function Plugin(option) {
     return this.each(function () {
       var $this   = $(this)
       var data    = $this.data('bs.popover')
@@ -80085,6 +82724,9 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     })
   }
 
+  var old = $.fn.popover
+
+  $.fn.popover             = Plugin
   $.fn.popover.Constructor = Popover
 
 
@@ -80098,1877 +82740,3801 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
 }(jQuery);
 
-/* ========================================================================
- * Bootstrap: scrollspy.js v3.1.1
- * http://getbootstrap.com/javascript/#scrollspy
- * ========================================================================
- * Copyright 2011-2014 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- * ======================================================================== */
 
-
-+function ($) {
-  'use strict';
-
-  // SCROLLSPY CLASS DEFINITION
-  // ==========================
-
-  function ScrollSpy(element, options) {
-    var href
-    var process  = $.proxy(this.process, this)
-
-    this.$element       = $(element).is('body') ? $(window) : $(element)
-    this.$body          = $('body')
-    this.$scrollElement = this.$element.on('scroll.bs.scroll-spy.data-api', process)
-    this.options        = $.extend({}, ScrollSpy.DEFAULTS, options)
-    this.selector       = (this.options.target
-      || ((href = $(element).attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) //strip for ie7
-      || '') + ' .nav li > a'
-    this.offsets        = $([])
-    this.targets        = $([])
-    this.activeTarget   = null
-
-    this.refresh()
-    this.process()
+;(function(global) {
+  var define = global.define;
+  var require = global.require;
+  var Ember = global.Ember;
+  if (typeof Ember === 'undefined' && typeof require !== 'undefined') {
+    Ember = require('ember');
   }
 
-  ScrollSpy.DEFAULTS = {
-    offset: 10
-  }
+Ember.libraries.register('Ember Simple Auth', '0.7.2');
 
-  ScrollSpy.prototype.refresh = function () {
-    var offsetMethod = this.$element[0] == window ? 'offset' : 'position'
+define("simple-auth/authenticators/base", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    /**
+      The base for all authenticators. __This serves as a starting point for
+      implementing custom authenticators and must not be used directly.__
 
-    this.offsets = $([])
-    this.targets = $([])
+      The authenticator authenticates the session. The actual mechanism used to do
+      this might e.g. be posting a set of credentials to a server and in exchange
+      retrieving an access token, initiating authentication against an external
+      provider like Facebook etc. and depends on the specific authenticator. Any
+      data that the authenticator receives upon successful authentication and
+      resolves with from the
+      [`Authenticators.Base#authenticate`](#SimpleAuth-Authenticators-Base-authenticate)
+      method is stored in the session and can then be used by the authorizer (see
+      [`Authorizers.Base`](#SimpleAuth-Authorizers-Base)).
 
-    var self     = this
-    var $targets = this.$body
-      .find(this.selector)
-      .map(function () {
-        var $el   = $(this)
-        var href  = $el.data('target') || $el.attr('href')
-        var $href = /^#./.test(href) && $(href)
+      The authenticator also decides whether a set of data that was restored from
+      the session store (see
+      [`Stores.Base`](#SimpleAuth-Stores-Base)) is sufficient for the session to be
+      authenticated or not.
 
-        return ($href
-          && $href.length
-          && $href.is(':visible')
-          && [[ $href[offsetMethod]().top + (!$.isWindow(self.$scrollElement.get(0)) && self.$scrollElement.scrollTop()), href ]]) || null
-      })
-      .sort(function (a, b) { return a[0] - b[0] })
-      .each(function () {
-        self.offsets.push(this[0])
-        self.targets.push(this[1])
-      })
-  }
+      __Custom authenticators have to be registered with Ember's dependency
+      injection container__ so that the session can retrieve an instance, e.g.:
 
-  ScrollSpy.prototype.process = function () {
-    var scrollTop    = this.$scrollElement.scrollTop() + this.options.offset
-    var scrollHeight = this.$scrollElement[0].scrollHeight || this.$body[0].scrollHeight
-    var maxScroll    = scrollHeight - this.$scrollElement.height()
-    var offsets      = this.offsets
-    var targets      = this.targets
-    var activeTarget = this.activeTarget
-    var i
+      ```js
+      import Base from 'simple-auth/authenticators/base';
 
-    if (scrollTop >= maxScroll) {
-      return activeTarget != (i = targets.last()[0]) && this.activate(i)
-    }
+      var CustomAuthenticator = Base.extend({
+        ...
+      });
 
-    if (activeTarget && scrollTop <= offsets[0]) {
-      return activeTarget != (i = targets[0]) && this.activate(i)
-    }
+      Ember.Application.initializer({
+        name: 'authentication',
+        initialize: function(container, application) {
+          container.register('authenticator:custom', CustomAuthenticator);
+        }
+      });
+      ```
 
-    for (i = offsets.length; i--;) {
-      activeTarget != targets[i]
-        && scrollTop >= offsets[i]
-        && (!offsets[i + 1] || scrollTop <= offsets[i + 1])
-        && this.activate( targets[i] )
-    }
-  }
+      ```js
+      // app/controllers/login.js
+      import AuthenticationControllerMixin from 'simple-auth/mixins/authentication-controller-mixin';
 
-  ScrollSpy.prototype.activate = function (target) {
-    this.activeTarget = target
+      export default Ember.Controller.extend(AuthenticationControllerMixin, {
+        authenticator: 'authenticator:custom'
+      });
+      ```
 
-    $(this.selector)
-      .parentsUntil(this.options.target, '.active')
-      .removeClass('active')
+      @class Base
+      @namespace SimpleAuth.Authenticators
+      @module simple-auth/authenticators/base
+      @extends Ember.Object
+      @uses Ember.Evented
+    */
+    __exports__["default"] = Ember.Object.extend(Ember.Evented, {
+      /**
+        __Triggered when the data that constitutes the session is updated by the
+        authenticator__. This might happen e.g. because the authenticator refreshes
+        it or an event from is triggered from an external authentication provider.
+        The session automatically catches that event, passes the updated data back
+        to the authenticator's
+        [SimpleAuth.Authenticators.Base#restore](#SimpleAuth-Authenticators-Base-restore)
+        method and handles the result of that invocation accordingly.
 
-    var selector = this.selector +
-        '[data-target="' + target + '"],' +
-        this.selector + '[href="' + target + '"]'
+        @event sessionDataUpdated
+        @param {Object} data The updated session data
+      */
+      /**
+        __Triggered when the data that constitutes the session is invalidated by
+        the authenticator__. This might happen e.g. because the date expires or an
+        event is triggered from an external authentication provider. The session
+        automatically catches that event and invalidates itself.
 
-    var active = $(selector)
-      .parents('li')
-      .addClass('active')
+        @event sessionDataInvalidated
+        @param {Object} data The updated session data
+      */
 
-    if (active.parent('.dropdown-menu').length) {
-      active = active
-        .closest('li.dropdown')
-        .addClass('active')
-    }
+      /**
+        Restores the session from a set of properties. __This method is invoked by
+        the session either after the application starts up and session data was
+        restored from the store__ or when properties in the store have changed due
+        to external events (e.g. in another tab) and the new set of properties
+        needs to be re-checked for whether it still constitutes an authenticated
+        session.
 
-    active.trigger('activate.bs.scrollspy')
-  }
+        __This method returns a promise. A resolving promise will result in the
+        session being authenticated.__ Any properties the promise resolves with
+        will be saved in and accessible via the session. In most cases the `data`
+        argument will simply be forwarded through the promise. A rejecting promise
+        indicates that authentication failed and the session will remain unchanged.
 
+        `SimpleAuth.Authenticators.Base`'s implementation always returns a
+        rejecting promise.
 
-  // SCROLLSPY PLUGIN DEFINITION
-  // ===========================
+        @method restore
+        @param {Object} data The data to restore the session from
+        @return {Ember.RSVP.Promise} A promise that when it resolves results in the session being authenticated
+      */
+      restore: function(data) {
+        return new Ember.RSVP.reject();
+      },
 
-  var old = $.fn.scrollspy
+      /**
+        Authenticates the session with the specified `options`. These options vary
+        depending on the actual authentication mechanism the authenticator
+        implements (e.g. a set of credentials or a Facebook account id etc.). __The
+        session will invoke this method when an action in the application triggers
+        authentication__ (see
+        [SimpleAuth.AuthenticationControllerMixin.actions#authenticate](#SimpleAuth-AuthenticationControllerMixin-authenticate)).
 
-  $.fn.scrollspy = function (option) {
-    return this.each(function () {
-      var $this   = $(this)
-      var data    = $this.data('bs.scrollspy')
-      var options = typeof option == 'object' && option
+        __This method returns a promise. A resolving promise will result in the
+        session being authenticated.__ Any properties the promise resolves with
+        will be saved in and accessible via the session. A rejecting promise
+        indicates that authentication failed and the session will remain unchanged.
 
-      if (!data) $this.data('bs.scrollspy', (data = new ScrollSpy(this, options)))
-      if (typeof option == 'string') data[option]()
-    })
-  }
+        `SimpleAuth.Authenticators.Base`'s implementation always returns a
+        rejecting promise and thus never authenticates the session.
 
-  $.fn.scrollspy.Constructor = ScrollSpy
+        @method authenticate
+        @param {Any} [...options] The arguments that the authenticator requires to authenticate the session
+        @return {Ember.RSVP.Promise} A promise that when it resolves results in the session being authenticated
+      */
+      authenticate: function(options) {
+        return new Ember.RSVP.reject();
+      },
 
+      /**
+        This callback is invoked when the session is invalidated. While the session
+        will invalidate itself and clear all session properties, it might be
+        necessary for some authenticators to perform additional tasks (e.g.
+        invalidating an access token on the server), which should be done in this
+        method.
 
-  // SCROLLSPY NO CONFLICT
-  // =====================
+        __This method returns a promise. A resolving promise will result in the
+        session being invalidated.__ A rejecting promise will result in the session
+        invalidation being intercepted and the session being left authenticated.
 
-  $.fn.scrollspy.noConflict = function () {
-    $.fn.scrollspy = old
-    return this
-  }
+        `SimpleAuth.Authenticators.Base`'s implementation always returns a
+        resolving promise and thus never intercepts session invalidation.
 
-
-  // SCROLLSPY DATA-API
-  // ==================
-
-  $(window).on('load', function () {
-    $('[data-spy="scroll"]').each(function () {
-      var $spy = $(this)
-      $spy.scrollspy($spy.data())
-    })
-  })
-
-}(jQuery);
-
-/* ========================================================================
- * Bootstrap: tab.js v3.1.1
- * http://getbootstrap.com/javascript/#tabs
- * ========================================================================
- * Copyright 2011-2014 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- * ======================================================================== */
-
-
-+function ($) {
-  'use strict';
-
-  // TAB CLASS DEFINITION
-  // ====================
-
-  var Tab = function (element) {
-    this.element = $(element)
-  }
-
-  Tab.prototype.show = function () {
-    var $this    = this.element
-    var $ul      = $this.closest('ul:not(.dropdown-menu)')
-    var selector = $this.data('target')
-
-    if (!selector) {
-      selector = $this.attr('href')
-      selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') //strip for ie7
-    }
-
-    if ($this.parent('li').hasClass('active')) return
-
-    var previous = $ul.find('.active:last a')[0]
-    var e        = $.Event('show.bs.tab', {
-      relatedTarget: previous
-    })
-
-    $this.trigger(e)
-
-    if (e.isDefaultPrevented()) return
-
-    var $target = $(selector)
-
-    this.activate($this.parent('li'), $ul)
-    this.activate($target, $target.parent(), function () {
-      $this.trigger({
-        type: 'shown.bs.tab',
-        relatedTarget: previous
-      })
-    })
-  }
-
-  Tab.prototype.activate = function (element, container, callback) {
-    var $active    = container.find('> .active')
-    var transition = callback
-      && $.support.transition
-      && $active.hasClass('fade')
-
-    function next() {
-      $active
-        .removeClass('active')
-        .find('> .dropdown-menu > .active')
-        .removeClass('active')
-
-      element.addClass('active')
-
-      if (transition) {
-        element[0].offsetWidth // reflow for transition
-        element.addClass('in')
-      } else {
-        element.removeClass('fade')
+        @method invalidate
+        @param {Object} data The data that the session currently holds
+        @return {Ember.RSVP.Promise} A promise that when it resolves results in the session being invalidated
+      */
+      invalidate: function(data) {
+        return new Ember.RSVP.resolve();
       }
-
-      if (element.parent('.dropdown-menu')) {
-        element.closest('li.dropdown').addClass('active')
-      }
-
-      callback && callback()
-    }
-
-    transition ?
-      $active
-        .one($.support.transition.end, next)
-        .emulateTransitionEnd(150) :
-      next()
-
-    $active.removeClass('in')
-  }
-
-
-  // TAB PLUGIN DEFINITION
-  // =====================
-
-  var old = $.fn.tab
-
-  $.fn.tab = function ( option ) {
-    return this.each(function () {
-      var $this = $(this)
-      var data  = $this.data('bs.tab')
-
-      if (!data) $this.data('bs.tab', (data = new Tab(this)))
-      if (typeof option == 'string') data[option]()
-    })
-  }
-
-  $.fn.tab.Constructor = Tab
-
-
-  // TAB NO CONFLICT
-  // ===============
-
-  $.fn.tab.noConflict = function () {
-    $.fn.tab = old
-    return this
-  }
-
-
-  // TAB DATA-API
-  // ============
-
-  $(document).on('click.bs.tab.data-api', '[data-toggle="tab"], [data-toggle="pill"]', function (e) {
-    e.preventDefault()
-    $(this).tab('show')
-  })
-
-}(jQuery);
-
-/* ========================================================================
- * Bootstrap: affix.js v3.1.1
- * http://getbootstrap.com/javascript/#affix
- * ========================================================================
- * Copyright 2011-2014 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- * ======================================================================== */
-
-
-+function ($) {
-  'use strict';
-
-  // AFFIX CLASS DEFINITION
-  // ======================
-
-  var Affix = function (element, options) {
-    this.options = $.extend({}, Affix.DEFAULTS, options)
-    this.$window = $(window)
-      .on('scroll.bs.affix.data-api', $.proxy(this.checkPosition, this))
-      .on('click.bs.affix.data-api',  $.proxy(this.checkPositionWithEventLoop, this))
-
-    this.$element     = $(element)
-    this.affixed      =
-    this.unpin        =
-    this.pinnedOffset = null
-
-    this.checkPosition()
-  }
-
-  Affix.RESET = 'affix affix-top affix-bottom'
-
-  Affix.DEFAULTS = {
-    offset: 0
-  }
-
-  Affix.prototype.getPinnedOffset = function () {
-    if (this.pinnedOffset) return this.pinnedOffset
-    this.$element.removeClass(Affix.RESET).addClass('affix')
-    var scrollTop = this.$window.scrollTop()
-    var position  = this.$element.offset()
-    return (this.pinnedOffset = position.top - scrollTop)
-  }
-
-  Affix.prototype.checkPositionWithEventLoop = function () {
-    setTimeout($.proxy(this.checkPosition, this), 1)
-  }
-
-  Affix.prototype.checkPosition = function () {
-    if (!this.$element.is(':visible')) return
-
-    var scrollHeight = $(document).height()
-    var scrollTop    = this.$window.scrollTop()
-    var position     = this.$element.offset()
-    var offset       = this.options.offset
-    var offsetTop    = offset.top
-    var offsetBottom = offset.bottom
-
-    if (this.affixed == 'top') position.top += scrollTop
-
-    if (typeof offset != 'object')         offsetBottom = offsetTop = offset
-    if (typeof offsetTop == 'function')    offsetTop    = offset.top(this.$element)
-    if (typeof offsetBottom == 'function') offsetBottom = offset.bottom(this.$element)
-
-    var affix = this.unpin   != null && (scrollTop + this.unpin <= position.top) ? false :
-                offsetBottom != null && (position.top + this.$element.height() >= scrollHeight - offsetBottom) ? 'bottom' :
-                offsetTop    != null && (scrollTop <= offsetTop) ? 'top' : false
-
-    if (this.affixed === affix) return
-    if (this.unpin) this.$element.css('top', '')
-
-    var affixType = 'affix' + (affix ? '-' + affix : '')
-    var e         = $.Event(affixType + '.bs.affix')
-
-    this.$element.trigger(e)
-
-    if (e.isDefaultPrevented()) return
-
-    this.affixed = affix
-    this.unpin = affix == 'bottom' ? this.getPinnedOffset() : null
-
-    this.$element
-      .removeClass(Affix.RESET)
-      .addClass(affixType)
-      .trigger($.Event(affixType.replace('affix', 'affixed')))
-
-    if (affix == 'bottom') {
-      this.$element.offset({ top: scrollHeight - offsetBottom - this.$element.height() })
-    }
-  }
-
-
-  // AFFIX PLUGIN DEFINITION
-  // =======================
-
-  var old = $.fn.affix
-
-  $.fn.affix = function (option) {
-    return this.each(function () {
-      var $this   = $(this)
-      var data    = $this.data('bs.affix')
-      var options = typeof option == 'object' && option
-
-      if (!data) $this.data('bs.affix', (data = new Affix(this, options)))
-      if (typeof option == 'string') data[option]()
-    })
-  }
-
-  $.fn.affix.Constructor = Affix
-
-
-  // AFFIX NO CONFLICT
-  // =================
-
-  $.fn.affix.noConflict = function () {
-    $.fn.affix = old
-    return this
-  }
-
-
-  // AFFIX DATA-API
-  // ==============
-
-  $(window).on('load', function () {
-    $('[data-spy="affix"]').each(function () {
-      var $spy = $(this)
-      var data = $spy.data()
-
-      data.offset = data.offset || {}
-
-      if (data.offsetBottom) data.offset.bottom = data.offsetBottom
-      if (data.offsetTop)    data.offset.top    = data.offsetTop
-
-      $spy.affix(data)
-    })
-  })
-
-}(jQuery);
-
-;//
-// showdown.js -- A javascript port of Markdown.
-//
-// Copyright (c) 2007 John Fraser.
-//
-// Original Markdown Copyright (c) 2004-2005 John Gruber
-//   <http://daringfireball.net/projects/markdown/>
-//
-// Redistributable under a BSD-style open source license.
-// See license.txt for more information.
-//
-// The full source distribution is at:
-//
-//				A A L
-//				T C A
-//				T K B
-//
-//   <http://www.attacklab.net/>
-//
-
-//
-// Wherever possible, Showdown is a straight, line-by-line port
-// of the Perl version of Markdown.
-//
-// This is not a normal parser design; it's basically just a
-// series of string substitutions.  It's hard to read and
-// maintain this way,  but keeping Showdown close to the original
-// design makes it easier to port new features.
-//
-// More importantly, Showdown behaves like markdown.pl in most
-// edge cases.  So web applications can do client-side preview
-// in Javascript, and then build identical HTML on the server.
-//
-// This port needs the new RegExp functionality of ECMA 262,
-// 3rd Edition (i.e. Javascript 1.5).  Most modern web browsers
-// should do fine.  Even with the new regular expression features,
-// We do a lot of work to emulate Perl's regex functionality.
-// The tricky changes in this file mostly have the "attacklab:"
-// label.  Major or self-explanatory changes don't.
-//
-// Smart diff tools like Araxis Merge will be able to match up
-// this file with markdown.pl in a useful way.  A little tweaking
-// helps: in a copy of markdown.pl, replace "#" with "//" and
-// replace "$text" with "text".  Be sure to ignore whitespace
-// and line endings.
-//
-
-
-//
-// Showdown usage:
-//
-//   var text = "Markdown *rocks*.";
-//
-//   var converter = new Showdown.converter();
-//   var html = converter.makeHtml(text);
-//
-//   alert(html);
-//
-// Note: move the sample code to the bottom of this
-// file before uncommenting it.
-//
-
-
-//
-// Showdown namespace
-//
-var Showdown = { extensions: {} };
-
-//
-// forEach
-//
-var forEach = Showdown.forEach = function(obj, callback) {
-	if (typeof obj.forEach === 'function') {
-		obj.forEach(callback);
-	} else {
-		var i, len = obj.length;
-		for (i = 0; i < len; i++) {
-			callback(obj[i], i, obj);
-		}
-	}
-};
-
-//
-// Standard extension naming
-//
-var stdExtName = function(s) {
-	return s.replace(/[_-]||\s/g, '').toLowerCase();
-};
-
-//
-// converter
-//
-// Wraps all "globals" so that the only thing
-// exposed is makeHtml().
-//
-Showdown.converter = function(converter_options) {
-
-//
-// Globals:
-//
-
-// Global hashes, used by various utility routines
-var g_urls;
-var g_titles;
-var g_html_blocks;
-
-// Used to track when we're inside an ordered or unordered list
-// (see _ProcessListItems() for details):
-var g_list_level = 0;
-
-// Global extensions
-var g_lang_extensions = [];
-var g_output_modifiers = [];
-
-
-//
-// Automatic Extension Loading (node only):
-//
-
-if (typeof module !== 'undefind' && typeof exports !== 'undefined' && typeof require !== 'undefind') {
-	var fs = require('fs');
-
-	if (fs) {
-		// Search extensions folder
-		var extensions = fs.readdirSync((__dirname || '.')+'/extensions').filter(function(file){
-			return ~file.indexOf('.js');
-		}).map(function(file){
-			return file.replace(/\.js$/, '');
-		});
-		// Load extensions into Showdown namespace
-		Showdown.forEach(extensions, function(ext){
-			var name = stdExtName(ext);
-			Showdown.extensions[name] = require('./extensions/' + ext);
-		});
-	}
-}
-
-this.makeHtml = function(text) {
-//
-// Main function. The order in which other subs are called here is
-// essential. Link and image substitutions need to happen before
-// _EscapeSpecialCharsWithinTagAttributes(), so that any *'s or _'s in the <a>
-// and <img> tags get encoded.
-//
-
-	// Clear the global hashes. If we don't clear these, you get conflicts
-	// from other articles when generating a page which contains more than
-	// one article (e.g. an index page that shows the N most recent
-	// articles):
-	g_urls = {};
-	g_titles = {};
-	g_html_blocks = [];
-
-	// attacklab: Replace ~ with ~T
-	// This lets us use tilde as an escape char to avoid md5 hashes
-	// The choice of character is arbitray; anything that isn't
-	// magic in Markdown will work.
-	text = text.replace(/~/g,"~T");
-
-	// attacklab: Replace $ with ~D
-	// RegExp interprets $ as a special character
-	// when it's in a replacement string
-	text = text.replace(/\$/g,"~D");
-
-	// Standardize line endings
-	text = text.replace(/\r\n/g,"\n"); // DOS to Unix
-	text = text.replace(/\r/g,"\n"); // Mac to Unix
-
-	// Make sure text begins and ends with a couple of newlines:
-	text = "\n\n" + text + "\n\n";
-
-	// Convert all tabs to spaces.
-	text = _Detab(text);
-
-	// Strip any lines consisting only of spaces and tabs.
-	// This makes subsequent regexen easier to write, because we can
-	// match consecutive blank lines with /\n+/ instead of something
-	// contorted like /[ \t]*\n+/ .
-	text = text.replace(/^[ \t]+$/mg,"");
-
-	// Run language extensions
-	Showdown.forEach(g_lang_extensions, function(x){
-		text = _ExecuteExtension(x, text);
-	});
-
-	// Handle github codeblocks prior to running HashHTML so that
-	// HTML contained within the codeblock gets escaped propertly
-	text = _DoGithubCodeBlocks(text);
-
-	// Turn block-level HTML blocks into hash entries
-	text = _HashHTMLBlocks(text);
-
-	// Strip link definitions, store in hashes.
-	text = _StripLinkDefinitions(text);
-
-	text = _RunBlockGamut(text);
-
-	text = _UnescapeSpecialChars(text);
-
-	// attacklab: Restore dollar signs
-	text = text.replace(/~D/g,"$$");
-
-	// attacklab: Restore tildes
-	text = text.replace(/~T/g,"~");
-
-	// Run output modifiers
-	Showdown.forEach(g_output_modifiers, function(x){
-		text = _ExecuteExtension(x, text);
-	});
-
-	return text;
-};
-//
-// Options:
-//
-
-// Parse extensions options into separate arrays
-if (converter_options && converter_options.extensions) {
-
-  var self = this;
-
-	// Iterate over each plugin
-	Showdown.forEach(converter_options.extensions, function(plugin){
-
-		// Assume it's a bundled plugin if a string is given
-		if (typeof plugin === 'string') {
-			plugin = Showdown.extensions[stdExtName(plugin)];
-		}
-
-		if (typeof plugin === 'function') {
-			// Iterate over each extension within that plugin
-			Showdown.forEach(plugin(self), function(ext){
-				// Sort extensions by type
-				if (ext.type) {
-					if (ext.type === 'language' || ext.type === 'lang') {
-						g_lang_extensions.push(ext);
-					} else if (ext.type === 'output' || ext.type === 'html') {
-						g_output_modifiers.push(ext);
-					}
-				} else {
-					// Assume language extension
-					g_output_modifiers.push(ext);
-				}
-			});
-		} else {
-			throw "Extension '" + plugin + "' could not be loaded.  It was either not found or is not a valid extension.";
-		}
-	});
-}
-
-
-var _ExecuteExtension = function(ext, text) {
-	if (ext.regex) {
-		var re = new RegExp(ext.regex, 'g');
-		return text.replace(re, ext.replace);
-	} else if (ext.filter) {
-		return ext.filter(text);
-	}
-};
-
-var _StripLinkDefinitions = function(text) {
-//
-// Strips link definitions from text, stores the URLs and titles in
-// hash references.
-//
-
-	// Link defs are in the form: ^[id]: url "optional title"
-
-	/*
-		var text = text.replace(/
-				^[ ]{0,3}\[(.+)\]:  // id = $1  attacklab: g_tab_width - 1
-				  [ \t]*
-				  \n?				// maybe *one* newline
-				  [ \t]*
-				<?(\S+?)>?			// url = $2
-				  [ \t]*
-				  \n?				// maybe one newline
-				  [ \t]*
-				(?:
-				  (\n*)				// any lines skipped = $3 attacklab: lookbehind removed
-				  ["(]
-				  (.+?)				// title = $4
-				  [")]
-				  [ \t]*
-				)?					// title is optional
-				(?:\n+|$)
-			  /gm,
-			  function(){...});
-	*/
-
-	// attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
-	text += "~0";
-
-	text = text.replace(/^[ ]{0,3}\[(.+)\]:[ \t]*\n?[ \t]*<?(\S+?)>?[ \t]*\n?[ \t]*(?:(\n*)["(](.+?)[")][ \t]*)?(?:\n+|(?=~0))/gm,
-		function (wholeMatch,m1,m2,m3,m4) {
-			m1 = m1.toLowerCase();
-			g_urls[m1] = _EncodeAmpsAndAngles(m2);  // Link IDs are case-insensitive
-			if (m3) {
-				// Oops, found blank lines, so it's not a title.
-				// Put back the parenthetical statement we stole.
-				return m3+m4;
-			} else if (m4) {
-				g_titles[m1] = m4.replace(/"/g,"&quot;");
-			}
-
-			// Completely remove the definition from the text
-			return "";
-		}
-	);
-
-	// attacklab: strip sentinel
-	text = text.replace(/~0/,"");
-
-	return text;
-}
-
-
-var _HashHTMLBlocks = function(text) {
-	// attacklab: Double up blank lines to reduce lookaround
-	text = text.replace(/\n/g,"\n\n");
-
-	// Hashify HTML blocks:
-	// We only want to do this for block-level HTML tags, such as headers,
-	// lists, and tables. That's because we still want to wrap <p>s around
-	// "paragraphs" that are wrapped in non-block-level tags, such as anchors,
-	// phrase emphasis, and spans. The list of tags we're looking for is
-	// hard-coded:
-	var block_tags_a = "p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del|style|section|header|footer|nav|article|aside";
-	var block_tags_b = "p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|style|section|header|footer|nav|article|aside";
-
-	// First, look for nested blocks, e.g.:
-	//   <div>
-	//     <div>
-	//     tags for inner block must be indented.
-	//     </div>
-	//   </div>
-	//
-	// The outermost tags must start at the left margin for this to match, and
-	// the inner nested divs must be indented.
-	// We need to do this before the next, more liberal match, because the next
-	// match will start at the first `<div>` and stop at the first `</div>`.
-
-	// attacklab: This regex can be expensive when it fails.
-	/*
-		var text = text.replace(/
-		(						// save in $1
-			^					// start of line  (with /m)
-			<($block_tags_a)	// start tag = $2
-			\b					// word break
-								// attacklab: hack around khtml/pcre bug...
-			[^\r]*?\n			// any number of lines, minimally matching
-			</\2>				// the matching end tag
-			[ \t]*				// trailing spaces/tabs
-			(?=\n+)				// followed by a newline
-		)						// attacklab: there are sentinel newlines at end of document
-		/gm,function(){...}};
-	*/
-	text = text.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b[^\r]*?\n<\/\2>[ \t]*(?=\n+))/gm,hashElement);
-
-	//
-	// Now match more liberally, simply from `\n<tag>` to `</tag>\n`
-	//
-
-	/*
-		var text = text.replace(/
-		(						// save in $1
-			^					// start of line  (with /m)
-			<($block_tags_b)	// start tag = $2
-			\b					// word break
-								// attacklab: hack around khtml/pcre bug...
-			[^\r]*?				// any number of lines, minimally matching
-			</\2>				// the matching end tag
-			[ \t]*				// trailing spaces/tabs
-			(?=\n+)				// followed by a newline
-		)						// attacklab: there are sentinel newlines at end of document
-		/gm,function(){...}};
-	*/
-	text = text.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|style|section|header|footer|nav|article|aside)\b[^\r]*?<\/\2>[ \t]*(?=\n+)\n)/gm,hashElement);
-
-	// Special case just for <hr />. It was easier to make a special case than
-	// to make the other regex more complicated.
-
-	/*
-		text = text.replace(/
-		(						// save in $1
-			\n\n				// Starting after a blank line
-			[ ]{0,3}
-			(<(hr)				// start tag = $2
-			\b					// word break
-			([^<>])*?			//
-			\/?>)				// the matching end tag
-			[ \t]*
-			(?=\n{2,})			// followed by a blank line
-		)
-		/g,hashElement);
-	*/
-	text = text.replace(/(\n[ ]{0,3}(<(hr)\b([^<>])*?\/?>)[ \t]*(?=\n{2,}))/g,hashElement);
-
-	// Special case for standalone HTML comments:
-
-	/*
-		text = text.replace(/
-		(						// save in $1
-			\n\n				// Starting after a blank line
-			[ ]{0,3}			// attacklab: g_tab_width - 1
-			<!
-			(--[^\r]*?--\s*)+
-			>
-			[ \t]*
-			(?=\n{2,})			// followed by a blank line
-		)
-		/g,hashElement);
-	*/
-	text = text.replace(/(\n\n[ ]{0,3}<!(--[^\r]*?--\s*)+>[ \t]*(?=\n{2,}))/g,hashElement);
-
-	// PHP and ASP-style processor instructions (<?...?> and <%...%>)
-
-	/*
-		text = text.replace(/
-		(?:
-			\n\n				// Starting after a blank line
-		)
-		(						// save in $1
-			[ ]{0,3}			// attacklab: g_tab_width - 1
-			(?:
-				<([?%])			// $2
-				[^\r]*?
-				\2>
-			)
-			[ \t]*
-			(?=\n{2,})			// followed by a blank line
-		)
-		/g,hashElement);
-	*/
-	text = text.replace(/(?:\n\n)([ ]{0,3}(?:<([?%])[^\r]*?\2>)[ \t]*(?=\n{2,}))/g,hashElement);
-
-	// attacklab: Undo double lines (see comment at top of this function)
-	text = text.replace(/\n\n/g,"\n");
-	return text;
-}
-
-var hashElement = function(wholeMatch,m1) {
-	var blockText = m1;
-
-	// Undo double lines
-	blockText = blockText.replace(/\n\n/g,"\n");
-	blockText = blockText.replace(/^\n/,"");
-
-	// strip trailing blank lines
-	blockText = blockText.replace(/\n+$/g,"");
-
-	// Replace the element text with a marker ("~KxK" where x is its key)
-	blockText = "\n\n~K" + (g_html_blocks.push(blockText)-1) + "K\n\n";
-
-	return blockText;
-};
-
-var _RunBlockGamut = function(text) {
-//
-// These are all the transformations that form block-level
-// tags like paragraphs, headers, and list items.
-//
-	text = _DoHeaders(text);
-
-	// Do Horizontal Rules:
-	var key = hashBlock("<hr />");
-	text = text.replace(/^[ ]{0,2}([ ]?\*[ ]?){3,}[ \t]*$/gm,key);
-	text = text.replace(/^[ ]{0,2}([ ]?\-[ ]?){3,}[ \t]*$/gm,key);
-	text = text.replace(/^[ ]{0,2}([ ]?\_[ ]?){3,}[ \t]*$/gm,key);
-
-	text = _DoLists(text);
-	text = _DoCodeBlocks(text);
-	text = _DoBlockQuotes(text);
-
-	// We already ran _HashHTMLBlocks() before, in Markdown(), but that
-	// was to escape raw HTML in the original Markdown source. This time,
-	// we're escaping the markup we've just created, so that we don't wrap
-	// <p> tags around block-level tags.
-	text = _HashHTMLBlocks(text);
-	text = _FormParagraphs(text);
-
-	return text;
-};
-
-
-var _RunSpanGamut = function(text) {
-//
-// These are all the transformations that occur *within* block-level
-// tags like paragraphs, headers, and list items.
-//
-
-	text = _DoCodeSpans(text);
-	text = _EscapeSpecialCharsWithinTagAttributes(text);
-	text = _EncodeBackslashEscapes(text);
-
-	// Process anchor and image tags. Images must come first,
-	// because ![foo][f] looks like an anchor.
-	text = _DoImages(text);
-	text = _DoAnchors(text);
-
-	// Make links out of things like `<http://example.com/>`
-	// Must come after _DoAnchors(), because you can use < and >
-	// delimiters in inline links like [this](<url>).
-	text = _DoAutoLinks(text);
-	text = _EncodeAmpsAndAngles(text);
-	text = _DoItalicsAndBold(text);
-
-	// Do hard breaks:
-	text = text.replace(/  +\n/g," <br />\n");
-
-	return text;
-}
-
-var _EscapeSpecialCharsWithinTagAttributes = function(text) {
-//
-// Within tags -- meaning between < and > -- encode [\ ` * _] so they
-// don't conflict with their use in Markdown for code, italics and strong.
-//
-
-	// Build a regex to find HTML tags and comments.  See Friedl's
-	// "Mastering Regular Expressions", 2nd Ed., pp. 200-201.
-	var regex = /(<[a-z\/!$]("[^"]*"|'[^']*'|[^'">])*>|<!(--.*?--\s*)+>)/gi;
-
-	text = text.replace(regex, function(wholeMatch) {
-		var tag = wholeMatch.replace(/(.)<\/?code>(?=.)/g,"$1`");
-		tag = escapeCharacters(tag,"\\`*_");
-		return tag;
-	});
-
-	return text;
-}
-
-var _DoAnchors = function(text) {
-//
-// Turn Markdown link shortcuts into XHTML <a> tags.
-//
-	//
-	// First, handle reference-style links: [link text] [id]
-	//
-
-	/*
-		text = text.replace(/
-		(							// wrap whole match in $1
-			\[
-			(
-				(?:
-					\[[^\]]*\]		// allow brackets nested one level
-					|
-					[^\[]			// or anything else
-				)*
-			)
-			\]
-
-			[ ]?					// one optional space
-			(?:\n[ ]*)?				// one optional newline followed by spaces
-
-			\[
-			(.*?)					// id = $3
-			\]
-		)()()()()					// pad remaining backreferences
-		/g,_DoAnchors_callback);
-	*/
-	text = text.replace(/(\[((?:\[[^\]]*\]|[^\[\]])*)\][ ]?(?:\n[ ]*)?\[(.*?)\])()()()()/g,writeAnchorTag);
-
-	//
-	// Next, inline-style links: [link text](url "optional title")
-	//
-
-	/*
-		text = text.replace(/
-			(						// wrap whole match in $1
-				\[
-				(
-					(?:
-						\[[^\]]*\]	// allow brackets nested one level
-					|
-					[^\[\]]			// or anything else
-				)
-			)
-			\]
-			\(						// literal paren
-			[ \t]*
-			()						// no id, so leave $3 empty
-			<?(.*?)>?				// href = $4
-			[ \t]*
-			(						// $5
-				(['"])				// quote char = $6
-				(.*?)				// Title = $7
-				\6					// matching quote
-				[ \t]*				// ignore any spaces/tabs between closing quote and )
-			)?						// title is optional
-			\)
-		)
-		/g,writeAnchorTag);
-	*/
-	text = text.replace(/(\[((?:\[[^\]]*\]|[^\[\]])*)\]\([ \t]*()<?(.*?(?:\(.*?\).*?)?)>?[ \t]*((['"])(.*?)\6[ \t]*)?\))/g,writeAnchorTag);
-
-	//
-	// Last, handle reference-style shortcuts: [link text]
-	// These must come last in case you've also got [link test][1]
-	// or [link test](/foo)
-	//
-
-	/*
-		text = text.replace(/
-		(		 					// wrap whole match in $1
-			\[
-			([^\[\]]+)				// link text = $2; can't contain '[' or ']'
-			\]
-		)()()()()()					// pad rest of backreferences
-		/g, writeAnchorTag);
-	*/
-	text = text.replace(/(\[([^\[\]]+)\])()()()()()/g, writeAnchorTag);
-
-	return text;
-}
-
-var writeAnchorTag = function(wholeMatch,m1,m2,m3,m4,m5,m6,m7) {
-	if (m7 == undefined) m7 = "";
-	var whole_match = m1;
-	var link_text   = m2;
-	var link_id	 = m3.toLowerCase();
-	var url		= m4;
-	var title	= m7;
-
-	if (url == "") {
-		if (link_id == "") {
-			// lower-case and turn embedded newlines into spaces
-			link_id = link_text.toLowerCase().replace(/ ?\n/g," ");
-		}
-		url = "#"+link_id;
-
-		if (g_urls[link_id] != undefined) {
-			url = g_urls[link_id];
-			if (g_titles[link_id] != undefined) {
-				title = g_titles[link_id];
-			}
-		}
-		else {
-			if (whole_match.search(/\(\s*\)$/m)>-1) {
-				// Special case for explicit empty url
-				url = "";
-			} else {
-				return whole_match;
-			}
-		}
-	}
-
-	url = escapeCharacters(url,"*_");
-	var result = "<a href=\"" + url + "\"";
-
-	if (title != "") {
-		title = title.replace(/"/g,"&quot;");
-		title = escapeCharacters(title,"*_");
-		result +=  " title=\"" + title + "\"";
-	}
-
-	result += ">" + link_text + "</a>";
-
-	return result;
-}
-
-
-var _DoImages = function(text) {
-//
-// Turn Markdown image shortcuts into <img> tags.
-//
-
-	//
-	// First, handle reference-style labeled images: ![alt text][id]
-	//
-
-	/*
-		text = text.replace(/
-		(						// wrap whole match in $1
-			!\[
-			(.*?)				// alt text = $2
-			\]
-
-			[ ]?				// one optional space
-			(?:\n[ ]*)?			// one optional newline followed by spaces
-
-			\[
-			(.*?)				// id = $3
-			\]
-		)()()()()				// pad rest of backreferences
-		/g,writeImageTag);
-	*/
-	text = text.replace(/(!\[(.*?)\][ ]?(?:\n[ ]*)?\[(.*?)\])()()()()/g,writeImageTag);
-
-	//
-	// Next, handle inline images:  ![alt text](url "optional title")
-	// Don't forget: encode * and _
-
-	/*
-		text = text.replace(/
-		(						// wrap whole match in $1
-			!\[
-			(.*?)				// alt text = $2
-			\]
-			\s?					// One optional whitespace character
-			\(					// literal paren
-			[ \t]*
-			()					// no id, so leave $3 empty
-			<?(\S+?)>?			// src url = $4
-			[ \t]*
-			(					// $5
-				(['"])			// quote char = $6
-				(.*?)			// title = $7
-				\6				// matching quote
-				[ \t]*
-			)?					// title is optional
-		\)
-		)
-		/g,writeImageTag);
-	*/
-	text = text.replace(/(!\[(.*?)\]\s?\([ \t]*()<?(\S+?)>?[ \t]*((['"])(.*?)\6[ \t]*)?\))/g,writeImageTag);
-
-	return text;
-}
-
-var writeImageTag = function(wholeMatch,m1,m2,m3,m4,m5,m6,m7) {
-	var whole_match = m1;
-	var alt_text   = m2;
-	var link_id	 = m3.toLowerCase();
-	var url		= m4;
-	var title	= m7;
-
-	if (!title) title = "";
-
-	if (url == "") {
-		if (link_id == "") {
-			// lower-case and turn embedded newlines into spaces
-			link_id = alt_text.toLowerCase().replace(/ ?\n/g," ");
-		}
-		url = "#"+link_id;
-
-		if (g_urls[link_id] != undefined) {
-			url = g_urls[link_id];
-			if (g_titles[link_id] != undefined) {
-				title = g_titles[link_id];
-			}
-		}
-		else {
-			return whole_match;
-		}
-	}
-
-	alt_text = alt_text.replace(/"/g,"&quot;");
-	url = escapeCharacters(url,"*_");
-	var result = "<img src=\"" + url + "\" alt=\"" + alt_text + "\"";
-
-	// attacklab: Markdown.pl adds empty title attributes to images.
-	// Replicate this bug.
-
-	//if (title != "") {
-		title = title.replace(/"/g,"&quot;");
-		title = escapeCharacters(title,"*_");
-		result +=  " title=\"" + title + "\"";
-	//}
-
-	result += " />";
-
-	return result;
-}
-
-
-var _DoHeaders = function(text) {
-
-	// Setext-style headers:
-	//	Header 1
-	//	========
-	//
-	//	Header 2
-	//	--------
-	//
-	text = text.replace(/^(.+)[ \t]*\n=+[ \t]*\n+/gm,
-		function(wholeMatch,m1){return hashBlock('<h1 id="' + headerId(m1) + '">' + _RunSpanGamut(m1) + "</h1>");});
-
-	text = text.replace(/^(.+)[ \t]*\n-+[ \t]*\n+/gm,
-		function(matchFound,m1){return hashBlock('<h2 id="' + headerId(m1) + '">' + _RunSpanGamut(m1) + "</h2>");});
-
-	// atx-style headers:
-	//  # Header 1
-	//  ## Header 2
-	//  ## Header 2 with closing hashes ##
-	//  ...
-	//  ###### Header 6
-	//
-
-	/*
-		text = text.replace(/
-			^(\#{1,6})				// $1 = string of #'s
-			[ \t]*
-			(.+?)					// $2 = Header text
-			[ \t]*
-			\#*						// optional closing #'s (not counted)
-			\n+
-		/gm, function() {...});
-	*/
-
-	text = text.replace(/^(\#{1,6})[ \t]*(.+?)[ \t]*\#*\n+/gm,
-		function(wholeMatch,m1,m2) {
-			var h_level = m1.length;
-			return hashBlock("<h" + h_level + ' id="' + headerId(m2) + '">' + _RunSpanGamut(m2) + "</h" + h_level + ">");
-		});
-
-	function headerId(m) {
-		return m.replace(/[^\w]/g, '').toLowerCase();
-	}
-	return text;
-}
-
-// This declaration keeps Dojo compressor from outputting garbage:
-var _ProcessListItems;
-
-var _DoLists = function(text) {
-//
-// Form HTML ordered (numbered) and unordered (bulleted) lists.
-//
-
-	// attacklab: add sentinel to hack around khtml/safari bug:
-	// http://bugs.webkit.org/show_bug.cgi?id=11231
-	text += "~0";
-
-	// Re-usable pattern to match any entirel ul or ol list:
-
-	/*
-		var whole_list = /
-		(									// $1 = whole list
-			(								// $2
-				[ ]{0,3}					// attacklab: g_tab_width - 1
-				([*+-]|\d+[.])				// $3 = first list item marker
-				[ \t]+
-			)
-			[^\r]+?
-			(								// $4
-				~0							// sentinel for workaround; should be $
-			|
-				\n{2,}
-				(?=\S)
-				(?!							// Negative lookahead for another list item marker
-					[ \t]*
-					(?:[*+-]|\d+[.])[ \t]+
-				)
-			)
-		)/g
-	*/
-	var whole_list = /^(([ ]{0,3}([*+-]|\d+[.])[ \t]+)[^\r]+?(~0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/gm;
-
-	if (g_list_level) {
-		text = text.replace(whole_list,function(wholeMatch,m1,m2) {
-			var list = m1;
-			var list_type = (m2.search(/[*+-]/g)>-1) ? "ul" : "ol";
-
-			// Turn double returns into triple returns, so that we can make a
-			// paragraph for the last item in a list, if necessary:
-			list = list.replace(/\n{2,}/g,"\n\n\n");;
-			var result = _ProcessListItems(list);
-
-			// Trim any trailing whitespace, to put the closing `</$list_type>`
-			// up on the preceding line, to get it past the current stupid
-			// HTML block parser. This is a hack to work around the terrible
-			// hack that is the HTML block parser.
-			result = result.replace(/\s+$/,"");
-			result = "<"+list_type+">" + result + "</"+list_type+">\n";
-			return result;
-		});
-	} else {
-		whole_list = /(\n\n|^\n?)(([ ]{0,3}([*+-]|\d+[.])[ \t]+)[^\r]+?(~0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/g;
-		text = text.replace(whole_list,function(wholeMatch,m1,m2,m3) {
-			var runup = m1;
-			var list = m2;
-
-			var list_type = (m3.search(/[*+-]/g)>-1) ? "ul" : "ol";
-			// Turn double returns into triple returns, so that we can make a
-			// paragraph for the last item in a list, if necessary:
-			var list = list.replace(/\n{2,}/g,"\n\n\n");;
-			var result = _ProcessListItems(list);
-			result = runup + "<"+list_type+">\n" + result + "</"+list_type+">\n";
-			return result;
-		});
-	}
-
-	// attacklab: strip sentinel
-	text = text.replace(/~0/,"");
-
-	return text;
-}
-
-_ProcessListItems = function(list_str) {
-//
-//  Process the contents of a single ordered or unordered list, splitting it
-//  into individual list items.
-//
-	// The $g_list_level global keeps track of when we're inside a list.
-	// Each time we enter a list, we increment it; when we leave a list,
-	// we decrement. If it's zero, we're not in a list anymore.
-	//
-	// We do this because when we're not inside a list, we want to treat
-	// something like this:
-	//
-	//    I recommend upgrading to version
-	//    8. Oops, now this line is treated
-	//    as a sub-list.
-	//
-	// As a single paragraph, despite the fact that the second line starts
-	// with a digit-period-space sequence.
-	//
-	// Whereas when we're inside a list (or sub-list), that line will be
-	// treated as the start of a sub-list. What a kludge, huh? This is
-	// an aspect of Markdown's syntax that's hard to parse perfectly
-	// without resorting to mind-reading. Perhaps the solution is to
-	// change the syntax rules such that sub-lists must start with a
-	// starting cardinal number; e.g. "1." or "a.".
-
-	g_list_level++;
-
-	// trim trailing blank lines:
-	list_str = list_str.replace(/\n{2,}$/,"\n");
-
-	// attacklab: add sentinel to emulate \z
-	list_str += "~0";
-
-	/*
-		list_str = list_str.replace(/
-			(\n)?							// leading line = $1
-			(^[ \t]*)						// leading whitespace = $2
-			([*+-]|\d+[.]) [ \t]+			// list marker = $3
-			([^\r]+?						// list item text   = $4
-			(\n{1,2}))
-			(?= \n* (~0 | \2 ([*+-]|\d+[.]) [ \t]+))
-		/gm, function(){...});
-	*/
-	list_str = list_str.replace(/(\n)?(^[ \t]*)([*+-]|\d+[.])[ \t]+([^\r]+?(\n{1,2}))(?=\n*(~0|\2([*+-]|\d+[.])[ \t]+))/gm,
-		function(wholeMatch,m1,m2,m3,m4){
-			var item = m4;
-			var leading_line = m1;
-			var leading_space = m2;
-
-			if (leading_line || (item.search(/\n{2,}/)>-1)) {
-				item = _RunBlockGamut(_Outdent(item));
-			}
-			else {
-				// Recursion for sub-lists:
-				item = _DoLists(_Outdent(item));
-				item = item.replace(/\n$/,""); // chomp(item)
-				item = _RunSpanGamut(item);
-			}
-
-			return  "<li>" + item + "</li>\n";
-		}
-	);
-
-	// attacklab: strip sentinel
-	list_str = list_str.replace(/~0/g,"");
-
-	g_list_level--;
-	return list_str;
-}
-
-
-var _DoCodeBlocks = function(text) {
-//
-//  Process Markdown `<pre><code>` blocks.
-//
-
-	/*
-		text = text.replace(text,
-			/(?:\n\n|^)
-			(								// $1 = the code block -- one or more lines, starting with a space/tab
-				(?:
-					(?:[ ]{4}|\t)			// Lines must start with a tab or a tab-width of spaces - attacklab: g_tab_width
-					.*\n+
-				)+
-			)
-			(\n*[ ]{0,3}[^ \t\n]|(?=~0))	// attacklab: g_tab_width
-		/g,function(){...});
-	*/
-
-	// attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
-	text += "~0";
-
-	text = text.replace(/(?:\n\n|^)((?:(?:[ ]{4}|\t).*\n+)+)(\n*[ ]{0,3}[^ \t\n]|(?=~0))/g,
-		function(wholeMatch,m1,m2) {
-			var codeblock = m1;
-			var nextChar = m2;
-
-			codeblock = _EncodeCode( _Outdent(codeblock));
-			codeblock = _Detab(codeblock);
-			codeblock = codeblock.replace(/^\n+/g,""); // trim leading newlines
-			codeblock = codeblock.replace(/\n+$/g,""); // trim trailing whitespace
-
-			codeblock = "<pre><code>" + codeblock + "\n</code></pre>";
-
-			return hashBlock(codeblock) + nextChar;
-		}
-	);
-
-	// attacklab: strip sentinel
-	text = text.replace(/~0/,"");
-
-	return text;
-};
-
-var _DoGithubCodeBlocks = function(text) {
-//
-//  Process Github-style code blocks
-//  Example:
-//  ```ruby
-//  def hello_world(x)
-//    puts "Hello, #{x}"
-//  end
-//  ```
-//
-
-
-	// attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
-	text += "~0";
-
-	text = text.replace(/(?:^|\n)```(.*)\n([\s\S]*?)\n```/g,
-		function(wholeMatch,m1,m2) {
-			var language = m1;
-			var codeblock = m2;
-
-			codeblock = _EncodeCode(codeblock);
-			codeblock = _Detab(codeblock);
-			codeblock = codeblock.replace(/^\n+/g,""); // trim leading newlines
-			codeblock = codeblock.replace(/\n+$/g,""); // trim trailing whitespace
-
-			codeblock = "<pre><code" + (language ? " class=\"" + language + '"' : "") + ">" + codeblock + "\n</code></pre>";
-
-			return hashBlock(codeblock);
-		}
-	);
-
-	// attacklab: strip sentinel
-	text = text.replace(/~0/,"");
-
-	return text;
-}
-
-var hashBlock = function(text) {
-	text = text.replace(/(^\n+|\n+$)/g,"");
-	return "\n\n~K" + (g_html_blocks.push(text)-1) + "K\n\n";
-}
-
-var _DoCodeSpans = function(text) {
-//
-//   *  Backtick quotes are used for <code></code> spans.
-//
-//   *  You can use multiple backticks as the delimiters if you want to
-//	 include literal backticks in the code span. So, this input:
-//
-//		 Just type ``foo `bar` baz`` at the prompt.
-//
-//	   Will translate to:
-//
-//		 <p>Just type <code>foo `bar` baz</code> at the prompt.</p>
-//
-//	There's no arbitrary limit to the number of backticks you
-//	can use as delimters. If you need three consecutive backticks
-//	in your code, use four for delimiters, etc.
-//
-//  *  You can use spaces to get literal backticks at the edges:
-//
-//		 ... type `` `bar` `` ...
-//
-//	   Turns to:
-//
-//		 ... type <code>`bar`</code> ...
-//
-
-	/*
-		text = text.replace(/
-			(^|[^\\])					// Character before opening ` can't be a backslash
-			(`+)						// $2 = Opening run of `
-			(							// $3 = The code block
-				[^\r]*?
-				[^`]					// attacklab: work around lack of lookbehind
-			)
-			\2							// Matching closer
-			(?!`)
-		/gm, function(){...});
-	*/
-
-	text = text.replace(/(^|[^\\])(`+)([^\r]*?[^`])\2(?!`)/gm,
-		function(wholeMatch,m1,m2,m3,m4) {
-			var c = m3;
-			c = c.replace(/^([ \t]*)/g,"");	// leading whitespace
-			c = c.replace(/[ \t]*$/g,"");	// trailing whitespace
-			c = _EncodeCode(c);
-			return m1+"<code>"+c+"</code>";
-		});
-
-	return text;
-}
-
-var _EncodeCode = function(text) {
-//
-// Encode/escape certain characters inside Markdown code runs.
-// The point is that in code, these characters are literals,
-// and lose their special Markdown meanings.
-//
-	// Encode all ampersands; HTML entities are not
-	// entities within a Markdown code span.
-	text = text.replace(/&/g,"&amp;");
-
-	// Do the angle bracket song and dance:
-	text = text.replace(/</g,"&lt;");
-	text = text.replace(/>/g,"&gt;");
-
-	// Now, escape characters that are magic in Markdown:
-	text = escapeCharacters(text,"\*_{}[]\\",false);
-
-// jj the line above breaks this:
-//---
-
-//* Item
-
-//   1. Subitem
-
-//            special char: *
-//---
-
-	return text;
-}
-
-
-var _DoItalicsAndBold = function(text) {
-
-	// <strong> must go first:
-	text = text.replace(/(\*\*|__)(?=\S)([^\r]*?\S[*_]*)\1/g,
-		"<strong>$2</strong>");
-
-	text = text.replace(/(\*|_)(?=\S)([^\r]*?\S)\1/g,
-		"<em>$2</em>");
-
-	return text;
-}
-
-
-var _DoBlockQuotes = function(text) {
-
-	/*
-		text = text.replace(/
-		(								// Wrap whole match in $1
-			(
-				^[ \t]*>[ \t]?			// '>' at the start of a line
-				.+\n					// rest of the first line
-				(.+\n)*					// subsequent consecutive lines
-				\n*						// blanks
-			)+
-		)
-		/gm, function(){...});
-	*/
-
-	text = text.replace(/((^[ \t]*>[ \t]?.+\n(.+\n)*\n*)+)/gm,
-		function(wholeMatch,m1) {
-			var bq = m1;
-
-			// attacklab: hack around Konqueror 3.5.4 bug:
-			// "----------bug".replace(/^-/g,"") == "bug"
-
-			bq = bq.replace(/^[ \t]*>[ \t]?/gm,"~0");	// trim one level of quoting
-
-			// attacklab: clean up hack
-			bq = bq.replace(/~0/g,"");
-
-			bq = bq.replace(/^[ \t]+$/gm,"");		// trim whitespace-only lines
-			bq = _RunBlockGamut(bq);				// recurse
-
-			bq = bq.replace(/(^|\n)/g,"$1  ");
-			// These leading spaces screw with <pre> content, so we need to fix that:
-			bq = bq.replace(
-					/(\s*<pre>[^\r]+?<\/pre>)/gm,
-				function(wholeMatch,m1) {
-					var pre = m1;
-					// attacklab: hack around Konqueror 3.5.4 bug:
-					pre = pre.replace(/^  /mg,"~0");
-					pre = pre.replace(/~0/g,"");
-					return pre;
-				});
-
-			return hashBlock("<blockquote>\n" + bq + "\n</blockquote>");
-		});
-	return text;
-}
-
-
-var _FormParagraphs = function(text) {
-//
-//  Params:
-//    $text - string to process with html <p> tags
-//
-
-	// Strip leading and trailing lines:
-	text = text.replace(/^\n+/g,"");
-	text = text.replace(/\n+$/g,"");
-
-	var grafs = text.split(/\n{2,}/g);
-	var grafsOut = [];
-
-	//
-	// Wrap <p> tags.
-	//
-	var end = grafs.length;
-	for (var i=0; i<end; i++) {
-		var str = grafs[i];
-
-		// if this is an HTML marker, copy it
-		if (str.search(/~K(\d+)K/g) >= 0) {
-			grafsOut.push(str);
-		}
-		else if (str.search(/\S/) >= 0) {
-			str = _RunSpanGamut(str);
-			str = str.replace(/^([ \t]*)/g,"<p>");
-			str += "</p>"
-			grafsOut.push(str);
-		}
-
-	}
-
-	//
-	// Unhashify HTML blocks
-	//
-	end = grafsOut.length;
-	for (var i=0; i<end; i++) {
-		// if this is a marker for an html block...
-		while (grafsOut[i].search(/~K(\d+)K/) >= 0) {
-			var blockText = g_html_blocks[RegExp.$1];
-			blockText = blockText.replace(/\$/g,"$$$$"); // Escape any dollar signs
-			grafsOut[i] = grafsOut[i].replace(/~K\d+K/,blockText);
-		}
-	}
-
-	return grafsOut.join("\n\n");
-}
-
-
-var _EncodeAmpsAndAngles = function(text) {
-// Smart processing for ampersands and angle brackets that need to be encoded.
-
-	// Ampersand-encoding based entirely on Nat Irons's Amputator MT plugin:
-	//   http://bumppo.net/projects/amputator/
-	text = text.replace(/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w+);)/g,"&amp;");
-
-	// Encode naked <'s
-	text = text.replace(/<(?![a-z\/?\$!])/gi,"&lt;");
-
-	return text;
-}
-
-
-var _EncodeBackslashEscapes = function(text) {
-//
-//   Parameter:  String.
-//   Returns:	The string, with after processing the following backslash
-//			   escape sequences.
-//
-
-	// attacklab: The polite way to do this is with the new
-	// escapeCharacters() function:
-	//
-	// 	text = escapeCharacters(text,"\\",true);
-	// 	text = escapeCharacters(text,"`*_{}[]()>#+-.!",true);
-	//
-	// ...but we're sidestepping its use of the (slow) RegExp constructor
-	// as an optimization for Firefox.  This function gets called a LOT.
-
-	text = text.replace(/\\(\\)/g,escapeCharacters_callback);
-	text = text.replace(/\\([`*_{}\[\]()>#+-.!])/g,escapeCharacters_callback);
-	return text;
-}
-
-
-var _DoAutoLinks = function(text) {
-
-	text = text.replace(/<((https?|ftp|dict):[^'">\s]+)>/gi,"<a href=\"$1\">$1</a>");
-
-	// Email addresses: <address@domain.foo>
-
-	/*
-		text = text.replace(/
-			<
-			(?:mailto:)?
-			(
-				[-.\w]+
-				\@
-				[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+
-			)
-			>
-		/gi, _DoAutoLinks_callback());
-	*/
-	text = text.replace(/<(?:mailto:)?([-.\w]+\@[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+)>/gi,
-		function(wholeMatch,m1) {
-			return _EncodeEmailAddress( _UnescapeSpecialChars(m1) );
-		}
-	);
-
-	return text;
-}
-
-
-var _EncodeEmailAddress = function(addr) {
-//
-//  Input: an email address, e.g. "foo@example.com"
-//
-//  Output: the email address as a mailto link, with each character
-//	of the address encoded as either a decimal or hex entity, in
-//	the hopes of foiling most address harvesting spam bots. E.g.:
-//
-//	<a href="&#x6D;&#97;&#105;&#108;&#x74;&#111;:&#102;&#111;&#111;&#64;&#101;
-//	   x&#x61;&#109;&#x70;&#108;&#x65;&#x2E;&#99;&#111;&#109;">&#102;&#111;&#111;
-//	   &#64;&#101;x&#x61;&#109;&#x70;&#108;&#x65;&#x2E;&#99;&#111;&#109;</a>
-//
-//  Based on a filter by Matthew Wickline, posted to the BBEdit-Talk
-//  mailing list: <http://tinyurl.com/yu7ue>
-//
-
-	var encode = [
-		function(ch){return "&#"+ch.charCodeAt(0)+";";},
-		function(ch){return "&#x"+ch.charCodeAt(0).toString(16)+";";},
-		function(ch){return ch;}
-	];
-
-	addr = "mailto:" + addr;
-
-	addr = addr.replace(/./g, function(ch) {
-		if (ch == "@") {
-		   	// this *must* be encoded. I insist.
-			ch = encode[Math.floor(Math.random()*2)](ch);
-		} else if (ch !=":") {
-			// leave ':' alone (to spot mailto: later)
-			var r = Math.random();
-			// roughly 10% raw, 45% hex, 45% dec
-			ch =  (
-					r > .9  ?	encode[2](ch)   :
-					r > .45 ?	encode[1](ch)   :
-								encode[0](ch)
-				);
-		}
-		return ch;
-	});
-
-	addr = "<a href=\"" + addr + "\">" + addr + "</a>";
-	addr = addr.replace(/">.+:/g,"\">"); // strip the mailto: from the visible part
-
-	return addr;
-}
-
-
-var _UnescapeSpecialChars = function(text) {
-//
-// Swap back in all the special characters we've hidden.
-//
-	text = text.replace(/~E(\d+)E/g,
-		function(wholeMatch,m1) {
-			var charCodeToReplace = parseInt(m1);
-			return String.fromCharCode(charCodeToReplace);
-		}
-	);
-	return text;
-}
-
-
-var _Outdent = function(text) {
-//
-// Remove one level of line-leading tabs or spaces
-//
-
-	// attacklab: hack around Konqueror 3.5.4 bug:
-	// "----------bug".replace(/^-/g,"") == "bug"
-
-	text = text.replace(/^(\t|[ ]{1,4})/gm,"~0"); // attacklab: g_tab_width
-
-	// attacklab: clean up hack
-	text = text.replace(/~0/g,"")
-
-	return text;
-}
-
-var _Detab = function(text) {
-// attacklab: Detab's completely rewritten for speed.
-// In perl we could fix it by anchoring the regexp with \G.
-// In javascript we're less fortunate.
-
-	// expand first n-1 tabs
-	text = text.replace(/\t(?=\t)/g,"    "); // attacklab: g_tab_width
-
-	// replace the nth with two sentinels
-	text = text.replace(/\t/g,"~A~B");
-
-	// use the sentinel to anchor our regex so it doesn't explode
-	text = text.replace(/~B(.+?)~A/g,
-		function(wholeMatch,m1,m2) {
-			var leadingText = m1;
-			var numSpaces = 4 - leadingText.length % 4;  // attacklab: g_tab_width
-
-			// there *must* be a better way to do this:
-			for (var i=0; i<numSpaces; i++) leadingText+=" ";
-
-			return leadingText;
-		}
-	);
-
-	// clean up sentinels
-	text = text.replace(/~A/g,"    ");  // attacklab: g_tab_width
-	text = text.replace(/~B/g,"");
-
-	return text;
-}
-
-
-//
-//  attacklab: Utility functions
-//
-
-
-var escapeCharacters = function(text, charsToEscape, afterBackslash) {
-	// First we have to escape the escape characters so that
-	// we can build a character class out of them
-	var regexString = "([" + charsToEscape.replace(/([\[\]\\])/g,"\\$1") + "])";
-
-	if (afterBackslash) {
-		regexString = "\\\\" + regexString;
-	}
-
-	var regex = new RegExp(regexString,"g");
-	text = text.replace(regex,escapeCharacters_callback);
-
-	return text;
-}
-
-
-var escapeCharacters_callback = function(wholeMatch,m1) {
-	var charCodeToEscape = m1.charCodeAt(0);
-	return "~E"+charCodeToEscape+"E";
-}
-
-} // end of Showdown.converter
-
-
-// export
-if (typeof module !== 'undefined') module.exports = Showdown;
-
-// stolen from AMD branch of underscore
-// AMD define happens at the end for compatibility with AMD loaders
-// that don't enforce next-turn semantics on modules.
-if (typeof define === 'function' && define.amd) {
-    define('showdown', function() {
-        return Showdown;
     });
-}
+  });
+define("simple-auth/authorizers/base", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    /**
+      The base for all authorizers. __This serves as a starting point for
+      implementing custom authorizers and must not be used directly.__
 
-;
+      __The authorizer preprocesses all XHR requests__ (except ones to 3rd party
+      origins, see
+      [Configuration.crossOriginWhitelist](#SimpleAuth-Configuration-crossOriginWhitelist))
+      and makes sure they have the required data attached that allows the server to
+      identify the user making the request. This data might be an HTTP header,
+      query string parameters in the URL, cookies etc. __The authorizer has to fit
+      the authenticator__ (see
+      [SimpleAuth.Authenticators.Base](#SimpleAuth-Authenticators-Base))
+      as it relies on data that the authenticator acquires during authentication.
+
+      @class Base
+      @namespace SimpleAuth.Authorizers
+      @module simple-auth/authorizers/base
+      @extends Ember.Object
+    */
+    __exports__["default"] = Ember.Object.extend({
+      /**
+        The session the authorizer gets the data it needs to authorize requests
+        from.
+
+        @property session
+        @readOnly
+        @type SimpleAuth.Session
+        @default the session instance
+      */
+      session: null,
+
+      /**
+        Authorizes an XHR request by adding some sort of secret information that
+        allows the server to identify the user making the request (e.g. a token in
+        the `Authorization` header or some other secret in the query string etc.).
+
+        `SimpleAuth.Authorizers.Base`'s implementation does nothing.
+
+        @method authorize
+        @param {jqXHR} jqXHR The XHR request to authorize (see http://api.jquery.com/jQuery.ajax/#jqXHR)
+        @param {Object} requestOptions The options as provided to the `$.ajax` method (see http://api.jquery.com/jQuery.ajaxPrefilter/)
+      */
+      authorize: function(jqXHR, requestOptions) {
+      }
+    });
+  });
+define("simple-auth/configuration", 
+  ["simple-auth/utils/load-config","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var loadConfig = __dependency1__["default"];
+
+    var defaults = {
+      authenticationRoute:         'login',
+      routeAfterAuthentication:    'index',
+      routeIfAlreadyAuthenticated: 'index',
+      sessionPropertyName:         'session',
+      authorizer:                  null,
+      session:                     'simple-auth-session:main',
+      store:                       'simple-auth-session-store:local-storage',
+      localStorageKey:             'ember_simple_auth:session',
+      crossOriginWhitelist:        [],
+      applicationRootUrl:          null
+    };
+
+    /**
+      Ember Simple Auth's configuration object.
+
+      To change any of these values, set them on the application's environment
+      object:
+
+      ```js
+      ENV['simple-auth'] = {
+        authenticationRoute: 'sign-in'
+      };
+      ```
+
+      @class Configuration
+      @namespace SimpleAuth
+      @module simple-auth/configuration
+    */
+    __exports__["default"] = {
+      /**
+        The route to transition to for authentication.
+
+        @property authenticationRoute
+        @readOnly
+        @static
+        @type String
+        @default 'login'
+      */
+      authenticationRoute: defaults.authenticationRoute,
+
+      /**
+        The route to transition to after successful authentication.
+
+        @property routeAfterAuthentication
+        @readOnly
+        @static
+        @type String
+        @default 'index'
+      */
+      routeAfterAuthentication: defaults.routeAfterAuthentication,
+
+      /**
+        The route to transition to if a route that implements
+        [`UnauthenticatedRouteMixin`](#SimpleAuth-UnauthenticatedRouteMixin) is
+        accessed when the session is authenticated.
+
+        @property routeIfAlreadyAuthenticated
+        @readOnly
+        @static
+        @type String
+        @default 'index'
+      */
+      routeIfAlreadyAuthenticated: defaults.routeIfAlreadyAuthenticated,
+
+      /**
+        The name of the property that the session is injected with into routes and
+        controllers.
+
+        @property sessionPropertyName
+        @readOnly
+        @static
+        @type String
+        @default 'session'
+      */
+      sessionPropertyName: defaults.sessionPropertyName,
+
+      /**
+        The authorizer factory to use as it is registered with Ember's container,
+        see
+        [Ember's API docs](http://emberjs.com/api/classes/Ember.Application.html#method_register);
+        when the application does not interact with a server that requires
+        authorized requests, no auzthorizer is needed.
+
+        @property authorizer
+        @readOnly
+        @static
+        @type String
+        @default null
+      */
+      authorizer: defaults.authorizer,
+
+      /**
+        The session factory to use as it is registered with Ember's container,
+        see
+        [Ember's API docs](http://emberjs.com/api/classes/Ember.Application.html#method_register).
+
+        @property session
+        @readOnly
+        @static
+        @type String
+        @default 'simple-auth-session:main'
+      */
+      session: defaults.session,
+
+      /**
+        The store factory to use as it is registered with Ember's container, see
+        [Ember's API docs](http://emberjs.com/api/classes/Ember.Application.html#method_register).
+
+        @property store
+        @readOnly
+        @static
+        @type String
+        @default simple-auth-session-store:local-storage
+      */
+      store: defaults.store,
+
+      /**
+        The key the store stores the data in.
+
+        @property key
+        @type String
+        @default 'ember_simple_auth:session'
+      */
+      localStorageKey: defaults.localStorageKey,
+
+      /**
+        Ember Simple Auth will never authorize requests going to a different origin
+        than the one the Ember.js application was loaded from; to explicitely
+        enable authorization for additional origins, whitelist those origins with
+        this setting. _Beware that origins consist of protocol, host and port (port
+        can be left out when it is 80 for HTTP or 443 for HTTPS)_, e.g.
+        `http://domain.com:1234`, `https://external.net`. You can also whitelist
+        all external origins by specifying `[*]`.
+
+        @property crossOriginWhitelist
+        @readOnly
+        @static
+        @type Array
+        @default []
+      */
+      crossOriginWhitelist: defaults.crossOriginWhitelist,
+
+      /**
+        @property applicationRootUrl
+        @private
+      */
+      applicationRootUrl: defaults.applicationRootUrl,
+
+      /**
+        @method load
+        @private
+      */
+      load: loadConfig(defaults, function(container, config) {
+        this.applicationRootUrl = container.lookup('router:main').get('rootURL') || '/';
+      })
+    };
+  });
+define("simple-auth/ember", 
+  ["./initializer"],
+  function(__dependency1__) {
+    "use strict";
+    var initializer = __dependency1__["default"];
+
+    Ember.onLoad('Ember.Application', function(Application) {
+      Application.initializer(initializer);
+    });
+  });
+define("simple-auth/initializer", 
+  ["./configuration","./utils/get-global-config","./setup","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
+    "use strict";
+    var Configuration = __dependency1__["default"];
+    var getGlobalConfig = __dependency2__["default"];
+    var setup = __dependency3__["default"];
+
+    __exports__["default"] = {
+      name:       'simple-auth',
+      initialize: function(container, application) {
+        var config = getGlobalConfig('simple-auth');
+        Configuration.load(container, config);
+        setup(container, application);
+      }
+    };
+  });
+define("simple-auth/mixins/application-route-mixin", 
+  ["./../configuration","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Configuration = __dependency1__["default"];
+
+    var routeEntryComplete = false;
+
+    /**
+      The mixin for the application route; defines actions to authenticate the
+      session as well as to invalidate it. These actions can be used in all
+      templates like this:
+
+      ```handlebars
+      {{#if session.isAuthenticated}}
+        <a {{ action 'invalidateSession' }}>Logout</a>
+      {{else}}
+        <a {{ action 'authenticateSession' }}>Login</a>
+      {{/if}}
+      ```
+
+      or in the case that the application uses a dedicated route for logging in:
+
+      ```handlebars
+      {{#if session.isAuthenticated}}
+        <a {{ action 'invalidateSession' }}>Logout</a>
+      {{else}}
+        {{#link-to 'login'}}Login{{/link-to}}
+      {{/if}}
+      ```
+
+      This mixin also defines actions that are triggered whenever the session is
+      successfully authenticated or invalidated and whenever authentication or
+      invalidation fails. These actions provide a good starting point for adding
+      custom behavior to these events.
+
+      __When this mixin is used and the application's `ApplicationRoute` defines
+      the `beforeModel` method, that method has to call `_super`.__
+
+      Using this mixin is optional. Without using it, the session's events will not
+      be automatically translated into route actions but would have to be handled
+      inidivially, e.g. in an initializer:
+
+      ```js
+      Ember.Application.initializer({
+        name:       'authentication',
+        after:      'simple-auth',
+        initialize: function(container, application) {
+          var applicationRoute = container.lookup('route:application');
+          var session          = container.lookup('simple-auth-session:main');
+          // handle the session events
+          session.on('sessionAuthenticationSucceeded', function() {
+            applicationRoute.transitionTo('index');
+          });
+        }
+      });
+      ```
+
+      @class ApplicationRouteMixin
+      @namespace SimpleAuth
+      @module simple-auth/mixins/application-route-mixin
+      @extends Ember.Mixin
+      @static
+    */
+    __exports__["default"] = Ember.Mixin.create({
+      /**
+        @method activate
+        @private
+      */
+      activate: function () {
+        routeEntryComplete = true;
+        this._super();
+      },
+
+      /**
+        @method beforeModel
+        @private
+      */
+      beforeModel: function(transition) {
+        this._super(transition);
+        if (!this.get('_authEventListenersAssigned')) {
+          this.set('_authEventListenersAssigned', true);
+          var _this = this;
+          Ember.A([
+            'sessionAuthenticationSucceeded',
+            'sessionAuthenticationFailed',
+            'sessionInvalidationSucceeded',
+            'sessionInvalidationFailed',
+            'authorizationFailed'
+          ]).forEach(function(event) {
+            _this.get(Configuration.sessionPropertyName).on(event, function(error) {
+              Array.prototype.unshift.call(arguments, event);
+              var target = routeEntryComplete ? _this : transition;
+              target.send.apply(target, arguments);
+            });
+          });
+        }
+      },
+
+      actions: {
+        /**
+          This action triggers transition to the
+          [`Configuration.authenticationRoute`](#SimpleAuth-Configuration-authenticationRoute).
+          It can be used in templates as shown above. It is also triggered
+          automatically by the
+          [`AuthenticatedRouteMixin`](#SimpleAuth-AuthenticatedRouteMixin) whenever
+          a route that requries authentication is accessed but the session is not
+          currently authenticated.
+
+          __For an application that works without an authentication route (e.g.
+          because it opens a new window to handle authentication there), this is
+          the action to override, e.g.:__
+
+          ```js
+          App.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin, {
+            actions: {
+              authenticateSession: function() {
+                this.get('session').authenticate('authenticator:custom', {});
+              }
+            }
+          });
+          ```
+
+          @method actions.authenticateSession
+        */
+        authenticateSession: function() {
+          this.transitionTo(Configuration.authenticationRoute);
+        },
+
+        /**
+          This action is triggered whenever the session is successfully
+          authenticated. If there is a transition that was previously intercepted
+          by
+          [`AuthenticatedRouteMixin#beforeModel`](#SimpleAuth-AuthenticatedRouteMixin-beforeModel)
+          it will retry it. If there is no such transition, this action transitions
+          to the
+          [`Configuration.routeAfterAuthentication`](#SimpleAuth-Configuration-routeAfterAuthentication).
+
+          @method actions.sessionAuthenticationSucceeded
+        */
+        sessionAuthenticationSucceeded: function() {
+          var attemptedTransition = this.get(Configuration.sessionPropertyName).get('attemptedTransition');
+          if (attemptedTransition) {
+            attemptedTransition.retry();
+            this.get(Configuration.sessionPropertyName).set('attemptedTransition', null);
+          } else {
+            this.transitionTo(Configuration.routeAfterAuthentication);
+          }
+        },
+
+        /**
+          This action is triggered whenever session authentication fails. The
+          `error` argument is the error object that the promise the authenticator
+          returns rejects with. (see
+          [`Authenticators.Base#authenticate`](#SimpleAuth-Authenticators-Base-authenticate)).
+
+          It can be overridden to display error messages etc.:
+
+          ```js
+          App.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin, {
+            actions: {
+              sessionAuthenticationFailed: function(error) {
+                this.controllerFor('application').set('loginErrorMessage', error.message);
+              }
+            }
+          });
+          ```
+
+          @method actions.sessionAuthenticationFailed
+          @param {any} error The error the promise returned by the authenticator rejects with, see [`Authenticators.Base#authenticate`](#SimpleAuth-Authenticators-Base-authenticate)
+        */
+        sessionAuthenticationFailed: function(error) {
+        },
+
+        /**
+          This action invalidates the session (see
+          [`Session#invalidate`](#SimpleAuth-Session-invalidate)).
+          If invalidation succeeds, it reloads the application (see
+          [`ApplicationRouteMixin#sessionInvalidationSucceeded`](#SimpleAuth-ApplicationRouteMixin-sessionInvalidationSucceeded)).
+
+          @method actions.invalidateSession
+        */
+        invalidateSession: function() {
+          this.get(Configuration.sessionPropertyName).invalidate();
+        },
+
+        /**
+          This action is invoked whenever the session is successfully invalidated.
+          It reloads the Ember.js application by redirecting the browser to the
+          application's root URL so that all in-memory data (such as Ember Data
+          stores etc.) gets cleared. The root URL is automatically retrieved from
+          the Ember.js application's router (see
+          http://emberjs.com/guides/routing/#toc_specifying-a-root-url).
+
+          If your Ember.js application will be used in an environment where the
+          users don't have direct access to any data stored on the client (e.g.
+          [cordova](http://cordova.apache.org)) this action can be overridden to
+          simply transition to the `'index'` route.
+
+          @method actions.sessionInvalidationSucceeded
+        */
+        sessionInvalidationSucceeded: function() {
+          if (!Ember.testing) {
+            window.location.replace(Configuration.applicationRootUrl);
+          }
+        },
+
+        /**
+          This action is invoked whenever session invalidation fails. This mainly
+          serves as an extension point to add custom behavior and does nothing by
+          default.
+
+          @method actions.sessionInvalidationFailed
+          @param {any} error The error the promise returned by the authenticator rejects with, see [`Authenticators.Base#invalidate`](#SimpleAuth-Authenticators-Base-invalidate)
+        */
+        sessionInvalidationFailed: function(error) {
+        },
+
+        /**
+          This action is invoked when an authorization error occurs (which is
+          the case __when the server responds with HTTP status 401__). It
+          invalidates the session and reloads the application (see
+          [`ApplicationRouteMixin#sessionInvalidationSucceeded`](#SimpleAuth-ApplicationRouteMixin-sessionInvalidationSucceeded)).
+
+          @method actions.authorizationFailed
+        */
+        authorizationFailed: function() {
+          if (this.get(Configuration.sessionPropertyName).get('isAuthenticated')) {
+            this.get(Configuration.sessionPropertyName).invalidate();
+          }
+        }
+      }
+    });
+  });
+define("simple-auth/mixins/authenticated-route-mixin", 
+  ["./../configuration","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Configuration = __dependency1__["default"];
+
+    /**
+      This mixin is for routes that require the session to be authenticated to be
+      accessible. Including this mixin in a route automatically adds a hook that
+      enforces the session to be authenticated and redirects to the
+      [`Configuration.authenticationRoute`](#SimpleAuth-Configuration-authenticationRoute)
+      if it is not.
+
+      ```js
+      // app/routes/protected.js
+      import AuthenticatedRouteMixin from 'simple-auth/mixins/authenticated-route-mixin';
+
+      export default Ember.Route.extend(AuthenticatedRouteMixin);
+      ```
+
+      `AuthenticatedRouteMixin` performs the redirect in the `beforeModel` method
+      so that in all methods executed after that the session is guaranteed to be
+      authenticated. __If `beforeModel` is overridden, ensure that the custom
+      implementation calls `this._super(transition)`__ so that the session
+      enforcement code is actually executed.
+
+      @class AuthenticatedRouteMixin
+      @namespace SimpleAuth
+      @module simple-auth/mixins/authenticated-route-mixin
+      @extends Ember.Mixin
+      @static
+    */
+    __exports__["default"] = Ember.Mixin.create({
+      /**
+        This method implements the enforcement of the session being authenticated.
+        If the session is not authenticated, the current transition will be aborted
+        and a redirect will be triggered to the
+        [`Configuration.authenticationRoute`](#SimpleAuth-Configuration-authenticationRoute).
+        The method also saves the intercepted transition so that it can be retried
+        after the session has been authenticated (see
+        [`ApplicationRouteMixin#sessionAuthenticationSucceeded`](#SimpleAuth-ApplicationRouteMixin-sessionAuthenticationSucceeded)).
+
+        @method beforeModel
+        @param {Transition} transition The transition that lead to this route
+      */
+      beforeModel: function(transition) {
+        this._super(transition);
+        if (!this.get(Configuration.sessionPropertyName).get('isAuthenticated')) {
+          transition.abort();
+          this.get(Configuration.sessionPropertyName).set('attemptedTransition', transition);
+          Ember.assert('The route configured as Configuration.authenticationRoute cannot implement the AuthenticatedRouteMixin mixin as that leads to an infinite transitioning loop.', this.get('routeName') !== Configuration.authenticationRoute);
+          transition.send('authenticateSession');
+        }
+      }
+    });
+  });
+define("simple-auth/mixins/authentication-controller-mixin", 
+  ["./../configuration","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Configuration = __dependency1__["default"];
+
+    /**
+      This mixin is for the controller that handles the
+      [`Configuration.authenticationRoute`](#SimpleAuth-Configuration-authenticationRoute).
+      It provides the `authenticate` action that will authenticate the session with
+      the configured authenticator (see
+      [`AuthenticationControllerMixin#authenticator`](#SimpleAuth-AuthenticationControllerMixin-authenticator)).
+
+      @class AuthenticationControllerMixin
+      @namespace SimpleAuth
+      @module simple-auth/mixins/authentication-controller-mixin
+      @extends Ember.Mixin
+    */
+    __exports__["default"] = Ember.Mixin.create({
+      /**
+        The authenticator factory to use as it is registered with Ember's
+        container, see
+        [Ember's API docs](http://emberjs.com/api/classes/Ember.Application.html#method_register).
+
+        @property authenticator
+        @type String
+        @default null
+      */
+      authenticator: null,
+
+      actions: {
+        /**
+          This action will authenticate the session with the configured
+          authenticator (see
+          [`AuthenticationControllerMixin#authenticator`](#SimpleAuth-AuthenticationControllerMixin-authenticator),
+          [`Session#authenticate`](#SimpleAuth-Session-authenticate)).
+
+          @method actions.authenticate
+          @param {Object} options Any options the authenticator needs to authenticate the session
+        */
+        authenticate: function(options) {
+          var authenticator = this.get('authenticator');
+          Ember.assert('AuthenticationControllerMixin/LoginControllerMixin require the authenticator property to be set on the controller', !Ember.isEmpty(authenticator));
+          return this.get(Configuration.sessionPropertyName).authenticate(authenticator, options);
+        }
+      }
+    });
+  });
+define("simple-auth/mixins/login-controller-mixin", 
+  ["./../configuration","./authentication-controller-mixin","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
+    "use strict";
+    var Configuration = __dependency1__["default"];
+    var AuthenticationControllerMixin = __dependency2__["default"];
+
+    /**
+      This mixin is for the controller that handles the
+      [`Configuration.authenticationRoute`](#SimpleAuth-Configuration-authenticationRoute)
+      if the used authentication mechanism works with a login form that asks for
+      user credentials. It provides the `authenticate` action that will
+      authenticate the session with the configured authenticator when invoked.
+      __This is a specialization of
+      [`AuthenticationControllerMixin`](#SimpleAuth-AuthenticationControllerMixin).__
+
+      Accompanying the controller that this mixin is mixed in the application needs
+      to have a `login` template with the fields `identification` and `password` as
+      well as an actionable button or link that triggers the `authenticate` action,
+      e.g.:
+
+      ```handlebars
+      <form {{action 'authenticate' on='submit'}}>
+        <label for="identification">Login</label>
+        {{input value=identification placeholder='Enter Login'}}
+        <label for="password">Password</label>
+        {{input value=password placeholder='Enter Password' type='password'}}
+        <button type="submit">Login</button>
+      </form>
+      ```
+
+      @class LoginControllerMixin
+      @namespace SimpleAuth
+      @module simple-auth/mixins/login-controller-mixin
+      @extends SimpleAuth.AuthenticationControllerMixin
+    */
+    __exports__["default"] = Ember.Mixin.create(AuthenticationControllerMixin, {
+      actions: {
+        /**
+          This action will authenticate the session with the configured
+          authenticator (see
+          [AuthenticationControllerMixin#authenticator](#SimpleAuth-Authentication-authenticator))
+          if both `identification` and `password` are non-empty. It passes both
+          values to the authenticator.
+
+          __The action also resets the `password` property so sensitive data does
+          not stay in memory for longer than necessary.__
+
+          @method actions.authenticate
+        */
+        authenticate: function() {
+          var data = this.getProperties('identification', 'password');
+          this.set('password', null);
+          return this._super(data);
+        }
+      }
+    });
+  });
+define("simple-auth/mixins/unauthenticated-route-mixin", 
+  ["./../configuration","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Configuration = __dependency1__["default"];
+
+    /**
+      This mixin is for routes that should only be accessible if the session is
+      not authenticated. This is e.g. the case for the login route that should not
+      be accessible when the session is already authenticated. Including this mixin
+      in a route automatically adds a hook that redirects to the
+      [`Configuration.routeIfAlreadyAuthenticated`](#SimpleAuth-Configuration-routeIfAlreadyAuthenticated),
+      which defaults to `'index'`.
+
+      ```js
+      // app/routes/login.js
+      import UnauthenticatedRouteMixin from 'simple-auth/mixins/unauthenticated-route-mixin';
+
+      export default Ember.Route.extend(UnauthenticatedRouteMixin);
+      ```
+
+      `UnauthenticatedRouteMixin` performs the redirect in the `beforeModel`
+      method. __If `beforeModel` is overridden, ensure that the custom
+      implementation calls `this._super(transition)`__.
+
+      @class UnauthenticatedRouteMixin
+      @namespace SimpleAuth
+      @module simple-auth/mixins/unauthenticated-route-mixin
+      @extends Ember.Mixin
+      @static
+    */
+    __exports__["default"] = Ember.Mixin.create({
+      /**
+        This method implements the enforcement of the session not being
+        authenticated. If the session is authenticated, the current transition will
+        be aborted and a redirect will be triggered to the
+        [`Configuration.routeIfAlreadyAuthenticated`](#SimpleAuth-Configuration-routeIfAlreadyAuthenticated).
+
+        @method beforeModel
+        @param {Transition} transition The transition that lead to this route
+      */
+      beforeModel: function(transition) {
+        if (this.get(Configuration.sessionPropertyName).get('isAuthenticated')) {
+          transition.abort();
+          Ember.assert('The route configured as Configuration.routeIfAlreadyAuthenticated cannot implement the UnauthenticatedRouteMixin mixin as that leads to an infinite transitioning loop.', this.get('routeName') !== Configuration.routeIfAlreadyAuthenticated);
+          this.transitionTo(Configuration.routeIfAlreadyAuthenticated);
+        }
+      }
+    });
+  });
+define("simple-auth/session", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    /**
+      __The session provides access to the current authentication state as well as
+      any data the authenticator resolved with__ (see
+      [`Authenticators.Base#authenticate`](#SimpleAuth-Authenticators-Base-authenticate)).
+      It is created when Ember Simple Auth is set up and __injected into all
+      controllers and routes so that these parts of the application can always
+      access the current authentication state and other data__, depending on the
+      authenticator in use and whether the session is actually authenticated (see
+      [`Authenticators.Base`](#SimpleAuth-Authenticators-Base)).
+
+      The session also provides methods to authenticate and to invalidate itself
+      (see
+      [`Session#authenticate`](#SimpleAuth-Session-authenticate),
+      [`Session#invaldiate`](#SimpleAuth-Session-invaldiate)).
+      These methods are usually invoked through actions from routes or controllers.
+      To authenticate the session manually, simple call the
+      [`Session#authenticate`](#SimpleAuth-Session-authenticate)
+      method with the authenticator factory to use as well as any options the
+      authenticator needs to authenticate the session:
+
+      ```js
+      this.get('session').authenticate('authenticator:custom', { some: 'option' }).then(function() {
+        // authentication was successful
+      }, function() {
+        // authentication failed
+      });
+      ```
+
+      The session also observes the store and - if it is authenticated - the
+      authenticator for changes (see
+      [`Authenticators.Base`](#SimpleAuth-Authenticators-Base)
+      end [`Stores.Base`](#SimpleAuth-Stores-Base)).
+
+      @class Session
+      @namespace SimpleAuth
+      @module simple-auth/session
+      @extends Ember.ObjectProxy
+      @uses Ember.Evented
+    */
+    __exports__["default"] = Ember.ObjectProxy.extend(Ember.Evented, {
+      /**
+        Triggered __whenever the session is successfully authenticated__. When the
+        application uses the
+        [`ApplicationRouteMixin` mixin](#SimpleAuth-ApplicationRouteMixin),
+        [`ApplicationRouteMixin.actions#sessionAuthenticationSucceeded`](#SimpleAuth-ApplicationRouteMixin-sessionAuthenticationSucceeded)
+        will be invoked whenever this event is triggered.
+
+        @event sessionAuthenticationSucceeded
+      */
+      /**
+        Triggered __whenever an attempt to authenticate the session fails__. When
+        the application uses the
+        [`ApplicationRouteMixin` mixin](#SimpleAuth-ApplicationRouteMixin),
+        [`ApplicationRouteMixin.actions#sessionAuthenticationFailed`](#SimpleAuth-ApplicationRouteMixin-sessionAuthenticationFailed)
+        will be invoked whenever this event is triggered.
+
+        @event sessionAuthenticationFailed
+        @param {Object} error The error object; this depends on the authenticator in use, see [SimpleAuth.Authenticators.Base#authenticate](#SimpleAuth-Authenticators-Base-authenticate)
+      */
+      /**
+        Triggered __whenever the session is successfully invalidated__. When the
+        application uses the
+        [`ApplicationRouteMixin` mixin](#SimpleAuth-ApplicationRouteMixin),
+        [`ApplicationRouteMixin.actions#sessionInvalidationSucceeded`](#SimpleAuth-ApplicationRouteMixin-sessionInvalidationSucceeded)
+        will be invoked whenever this event is triggered.
+
+        @event sessionInvalidationSucceeded
+      */
+      /**
+        Triggered __whenever an attempt to invalidate the session fails__. When the
+        application uses the
+        [`ApplicationRouteMixin` mixin](#SimpleAuth-ApplicationRouteMixin),
+        [`ApplicationRouteMixin.actions#sessionInvalidationFailed`](#SimpleAuth-ApplicationRouteMixin-sessionInvalidationFailed)
+        will be invoked whenever this event is triggered.
+
+        @event sessionInvalidationFailed
+        @param {Object} error The error object; this depends on the authenticator in use, see [SimpleAuth.Authenticators.Base#invalidate](#SimpleAuth-Authenticators-Base-invalidate)
+      */
+      /**
+        Triggered __whenever the server rejects the authorization information
+        passed with a request and responds with status 401__. When the application
+        uses the
+        [`ApplicationRouteMixin` mixin](#SimpleAuth-ApplicationRouteMixin),
+        [`ApplicationRouteMixin.actions#authorizationFailed`](#SimpleAuth-ApplicationRouteMixin-authorizationFailed)
+        will be invoked whenever this event is triggered.
+
+        @event authorizationFailed
+      */
+
+      /**
+        The authenticator factory to use as it is registered with Ember's
+        container, see
+        [Ember's API docs](http://emberjs.com/api/classes/Ember.Application.html#method_register).
+        This is only set when the session is currently authenticated.
+
+        @property authenticator
+        @type String
+        @readOnly
+        @default null
+      */
+      authenticator: null,
+      /**
+        The store used to persist session properties.
+
+        @property store
+        @type SimpleAuth.Stores.Base
+        @readOnly
+        @default null
+      */
+      store: null,
+      /**
+        The Ember.js container,
+
+        @property container
+        @type Container
+        @readOnly
+        @default null
+      */
+      container: null,
+      /**
+        Returns whether the session is currently authenticated.
+
+        @property isAuthenticated
+        @type Boolean
+        @readOnly
+        @default false
+      */
+      isAuthenticated: false,
+      /**
+        @property attemptedTransition
+        @private
+      */
+      attemptedTransition: null,
+      /**
+        @property content
+        @private
+      */
+      content: {},
+
+      /**
+        Authenticates the session with an `authenticator` and appropriate
+        `options`. __This delegates the actual authentication work to the
+        `authenticator`__ and handles the returned promise accordingly (see
+        [`Authenticators.Base#authenticate`](#SimpleAuth-Authenticators-Base-authenticate)).
+        All data the authenticator resolves with will be saved in the session.
+
+        __This method returns a promise itself. A resolving promise indicates that
+        the session was successfully authenticated__ while a rejecting promise
+        indicates that authentication failed and the session remains
+        unauthenticated.
+
+        @method authenticate
+        @param {String} authenticator The authenticator factory to use as it is registered with Ember's container, see [Ember's API docs](http://emberjs.com/api/classes/Ember.Application.html#method_register)
+        @param {Any} [...args] The arguments to pass to the authenticator; depending on the type of authenticator these might be a set of credentials, a Facebook OAuth Token, etc.
+        @return {Ember.RSVP.Promise} A promise that resolves when the session was authenticated successfully
+      */
+      authenticate: function() {
+        var args          = Array.prototype.slice.call(arguments);
+        var authenticator = args.shift();
+        Ember.assert('Session#authenticate requires the authenticator factory to be specified, was ' + authenticator, !Ember.isEmpty(authenticator));
+        var _this            = this;
+        var theAuthenticator = this.container.lookup(authenticator);
+        Ember.assert('No authenticator for factory "' + authenticator + '" could be found', !Ember.isNone(theAuthenticator));
+        return new Ember.RSVP.Promise(function(resolve, reject) {
+          theAuthenticator.authenticate.apply(theAuthenticator, args).then(function(content) {
+            _this.setup(authenticator, content, true);
+            resolve();
+          }, function(error) {
+            _this.clear();
+            _this.trigger('sessionAuthenticationFailed', error);
+            reject(error);
+          });
+        });
+      },
+
+      /**
+        Invalidates the session with the authenticator it is currently
+        authenticated with (see
+        [`Session#authenticator`](#SimpleAuth-Session-authenticator)). __This
+        invokes the authenticator's `invalidate` method and handles the returned
+        promise accordingly__ (see
+        [`Authenticators.Base#invalidate`](#SimpleAuth-Authenticators-Base-invalidate)).
+
+        __This method returns a promise itself. A resolving promise indicates that
+        the session was successfully invalidated__ while a rejecting promise
+        indicates that the promise returned by the `authenticator` rejected and
+        thus invalidation was cancelled. In that case the session remains
+        authenticated. Once the session is successfully invalidated it clears all
+        of its data.
+
+        @method invalidate
+        @return {Ember.RSVP.Promise} A promise that resolves when the session was invalidated successfully
+      */
+      invalidate: function() {
+        Ember.assert('Session#invalidate requires the session to be authenticated', this.get('isAuthenticated'));
+        var _this = this;
+        return new Ember.RSVP.Promise(function(resolve, reject) {
+          var authenticator = _this.container.lookup(_this.authenticator);
+          authenticator.invalidate(_this.content).then(function() {
+            authenticator.off('sessionDataUpdated');
+            _this.clear(true);
+            resolve();
+          }, function(error) {
+            _this.trigger('sessionInvalidationFailed', error);
+            reject(error);
+          });
+        });
+      },
+
+      /**
+        @method restore
+        @private
+      */
+      restore: function() {
+        var _this = this;
+        return new Ember.RSVP.Promise(function(resolve, reject) {
+          var restoredContent = _this.store.restore();
+          var authenticator   = restoredContent.authenticator;
+          if (!!authenticator) {
+            delete restoredContent.authenticator;
+            _this.container.lookup(authenticator).restore(restoredContent).then(function(content) {
+              _this.setup(authenticator, content);
+              resolve();
+            }, function() {
+              _this.store.clear();
+              reject();
+            });
+          } else {
+            _this.store.clear();
+            reject();
+          }
+        });
+      },
+
+      /**
+        @method setup
+        @private
+      */
+      setup: function(authenticator, content, trigger) {
+        content = Ember.merge(Ember.merge({}, this.content), content);
+        trigger = !!trigger && !this.get('isAuthenticated');
+        this.beginPropertyChanges();
+        this.setProperties({
+          isAuthenticated: true,
+          authenticator:   authenticator,
+          content:         content
+        });
+        this.bindToAuthenticatorEvents();
+        this.updateStore();
+        this.endPropertyChanges();
+        if (trigger) {
+          this.trigger('sessionAuthenticationSucceeded');
+        }
+      },
+
+      /**
+        @method clear
+        @private
+      */
+      clear: function(trigger) {
+        trigger = !!trigger && this.get('isAuthenticated');
+        this.beginPropertyChanges();
+        this.setProperties({
+          isAuthenticated: false,
+          authenticator:   null,
+          content:         {}
+        });
+        this.store.clear();
+        this.endPropertyChanges();
+        if (trigger) {
+          this.trigger('sessionInvalidationSucceeded');
+        }
+      },
+
+      /**
+        @method setUnknownProperty
+        @private
+      */
+      setUnknownProperty: function(key, value) {
+        var result = this._super(key, value);
+        this.updateStore();
+        return result;
+      },
+
+      /**
+        @method updateStore
+        @private
+      */
+      updateStore: function() {
+        var data = this.content;
+        if (!Ember.isEmpty(this.authenticator)) {
+          data = Ember.merge({ authenticator: this.authenticator }, data);
+        }
+        if (!Ember.isEmpty(data)) {
+          this.store.persist(data);
+        }
+      },
+
+      /**
+        @method bindToAuthenticatorEvents
+        @private
+      */
+      bindToAuthenticatorEvents: function() {
+        var _this = this;
+        var authenticator = this.container.lookup(this.authenticator);
+        authenticator.off('sessionDataUpdated');
+        authenticator.off('sessionDataInvalidated');
+        authenticator.on('sessionDataUpdated', function(content) {
+          _this.setup(_this.authenticator, content);
+        });
+        authenticator.on('sessionDataInvalidated', function(content) {
+          _this.clear(true);
+        });
+      },
+
+      /**
+        @method bindToStoreEvents
+        @private
+      */
+      bindToStoreEvents: function() {
+        var _this = this;
+        this.store.on('sessionDataUpdated', function(content) {
+          var authenticator = content.authenticator;
+          if (!!authenticator) {
+            delete content.authenticator;
+            _this.container.lookup(authenticator).restore(content).then(function(content) {
+              _this.setup(authenticator, content, true);
+            }, function() {
+              _this.clear(true);
+            });
+          } else {
+            _this.clear(true);
+          }
+        });
+      }.observes('store')
+    });
+  });
+define("simple-auth/setup", 
+  ["./configuration","./session","./stores/local-storage","./stores/ephemeral","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
+    "use strict";
+    var Configuration = __dependency1__["default"];
+    var Session = __dependency2__["default"];
+    var LocalStorage = __dependency3__["default"];
+    var Ephemeral = __dependency4__["default"];
+
+    function extractLocationOrigin(location) {
+      if (location === '*'){
+          return location;
+      }
+      if (Ember.typeOf(location) === 'string') {
+        var link = document.createElement('a');
+        link.href = location;
+        //IE requires the following line when url is relative.
+        //First assignment of relative url to link.href results in absolute url on link.href but link.hostname and other properties are not set
+        //Second assignment of absolute url to link.href results in link.hostname and other properties being set as expected
+        link.href = link.href;
+        location = link;
+      }
+      var port = location.port;
+      if (Ember.isEmpty(port)) {
+        //need to include the port whether its actually present or not as some versions of IE will always set it
+        port = location.protocol === 'http:' ? '80' : (location.protocol === 'https:' ? '443' : '');
+      }
+      return location.protocol + '//' + location.hostname + (port !== '' ? ':' + port : '');
+    }
+
+    var urlOrigins     = {};
+    var crossOriginWhitelist;
+    function shouldAuthorizeRequest(options) {
+      if (options.crossDomain === false || crossOriginWhitelist.indexOf('*') > -1) {
+        return true;
+      }
+      var urlOrigin = urlOrigins[options.url] = urlOrigins[options.url] || extractLocationOrigin(options.url);
+      return crossOriginWhitelist.indexOf(urlOrigin) > -1;
+    }
+
+    function registerFactories(container) {
+      container.register('simple-auth-session-store:local-storage', LocalStorage);
+      container.register('simple-auth-session-store:ephemeral', Ephemeral);
+      container.register('simple-auth-session:main', Session);
+    }
+
+    function ajaxPrefilter(options, originalOptions, jqXHR) {
+      if (shouldAuthorizeRequest(options)) {
+        jqXHR.__simple_auth_authorized__ = true;
+        ajaxPrefilter.authorizer.authorize(jqXHR, options);
+      }
+    }
+
+    function ajaxError(event, jqXHR, setting, exception) {
+      if (!!jqXHR.__simple_auth_authorized__ && jqXHR.status === 401) {
+        ajaxError.session.trigger('authorizationFailed');
+      }
+    }
+
+    var didSetupAjaxHooks = false;
+
+    /**
+      @method setup
+      @private
+    **/
+    __exports__["default"] = function(container, application) {
+      application.deferReadiness();
+      registerFactories(container);
+
+      var store   = container.lookup(Configuration.store);
+      var session = container.lookup(Configuration.session);
+      session.setProperties({ store: store, container: container });
+      Ember.A(['controller', 'route', 'component']).forEach(function(component) {
+        container.injection(component, Configuration.sessionPropertyName, Configuration.session);
+      });
+
+      crossOriginWhitelist = Ember.A(Configuration.crossOriginWhitelist).map(function(origin) {
+        return extractLocationOrigin(origin);
+      });
+
+      if (!Ember.isEmpty(Configuration.authorizer)) {
+        var authorizer = container.lookup(Configuration.authorizer);
+        Ember.assert('The configured authorizer "' + Configuration.authorizer + '" could not be found in the container.', !Ember.isEmpty(authorizer));
+        authorizer.set('session', session);
+        ajaxPrefilter.authorizer = authorizer;
+        ajaxError.session = session;
+
+        if (!didSetupAjaxHooks) {
+          Ember.$.ajaxPrefilter('+*', ajaxPrefilter);
+          Ember.$(document).ajaxError(ajaxError);
+          didSetupAjaxHooks = true;
+        }
+      } else {
+        Ember.Logger.info('No authorizer was configured for Ember Simple Auth - specify one if backend requests need to be authorized.');
+      }
+
+      var advanceReadiness = function() {
+        application.advanceReadiness();
+      };
+      session.restore().then(advanceReadiness, advanceReadiness);
+    }
+  });
+define("simple-auth/stores/base", 
+  ["../utils/objects-are-equal","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var objectsAreEqual = __dependency1__["default"];
+
+    /**
+      The base for all store types. __This serves as a starting point for
+      implementing custom stores and must not be used directly.__
+
+      Stores are used to persist the session's state so it survives a page reload
+      and is synchronized across multiple tabs or windows of the same application.
+      The store to be used with the application can be configured on the
+      application's environment object:
+
+      ```js
+      ENV['simple-auth'] = {
+        store: 'simple-auth-session-store:local-storage'
+      }
+      ```
+
+      @class Base
+      @namespace SimpleAuth.Stores
+      @module simple-auth/stores/base
+      @extends Ember.Object
+      @uses Ember.Evented
+    */
+    __exports__["default"] = Ember.Object.extend(Ember.Evented, {
+      /**
+        __Triggered when the data that constitutes the session changes in the
+        store. This usually happens because the session is authenticated or
+        invalidated in another tab or window.__ The session automatically catches
+        that event, passes the updated data to its authenticator's
+        [`Authenticators.Base#restore`](#SimpleAuth-Authenticators-Base-restore)
+        method and handles the result of that invocation accordingly.
+
+        @event sessionDataUpdated
+        @param {Object} data The updated session data
+      */
+
+      /**
+        Persists the `data` in the store. This actually replaces all currently
+        stored data.
+
+        `Stores.Base`'s implementation does nothing.
+
+        @method persist
+        @param {Object} data The data to persist
+      */
+      persist: function(data) {
+      },
+
+      /**
+        Restores all data currently saved in the store as a plain object.
+
+        `Stores.Base`'s implementation always returns an empty plain Object.
+
+        @method restore
+        @return {Object} The data currently persisted in the store.
+      */
+      restore: function() {
+        return {};
+      },
+
+      /**
+        Clears the store.
+
+        `Stores.Base`'s implementation does nothing.
+
+        @method clear
+      */
+      clear: function() {
+      }
+    });
+  });
+define("simple-auth/stores/ephemeral", 
+  ["./base","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Base = __dependency1__["default"];
+
+    /**
+      Store that saves its data in memory and thus __is not actually persistent__.
+      It does also not synchronize the session's state across multiple tabs or
+      windows as those cannot share memory.
+
+      __This store is mainly useful for testing.__
+
+      _The factory for this store is registered as
+      `'simple-auth-session-store:ephemeral'` in Ember's container._
+
+      @class Ephemeral
+      @namespace SimpleAuth.Stores
+      @module simple-auth/stores/ephemeral
+      @extends Stores.Base
+    */
+    __exports__["default"] = Base.extend({
+      /**
+        @method init
+        @private
+      */
+      init: function() {
+        this.clear();
+      },
+
+      /**
+        Persists the `data`.
+
+        @method persist
+        @param {Object} data The data to persist
+      */
+      persist: function(data) {
+        this._data = JSON.stringify(data || {});
+      },
+
+      /**
+        Restores all data currently saved as a plain object.
+
+        @method restore
+        @return {Object} All data currently persisted
+      */
+      restore: function() {
+        return JSON.parse(this._data) || {};
+      },
+
+      /**
+        Clears the store.
+
+        @method clear
+      */
+      clear: function() {
+        delete this._data;
+        this._data = '{}';
+      }
+    });
+  });
+define("simple-auth/stores/local-storage", 
+  ["./base","../utils/objects-are-equal","../configuration","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
+    "use strict";
+    var Base = __dependency1__["default"];
+    var objectsAreEqual = __dependency2__["default"];
+    var Configuration = __dependency3__["default"];
+
+    /**
+      Store that saves its data in the browser's `localStorage`.
+
+      _The factory for this store is registered as
+      `'simple-auth-session-store:local-storage'` in Ember's container._
+
+      __`Stores.LocalStorage` is Ember Simple Auth's default store.__
+
+      @class LocalStorage
+      @namespace SimpleAuth.Stores
+      @module simple-auth/stores/local-storage
+      @extends Stores.Base
+    */
+    __exports__["default"] = Base.extend({
+      /**
+        The key the store stores the data in.
+
+        @property key
+        @type String
+        @default 'ember_simple_auth:session'
+      */
+      key: 'ember_simple_auth:session',
+
+      /**
+        @method init
+        @private
+      */
+      init: function() {
+        this.key = Configuration.localStorageKey;
+
+        this.bindToStorageEvents();
+      },
+
+      /**
+        Persists the `data` in the `localStorage`.
+
+        @method persist
+        @param {Object} data The data to persist
+      */
+      persist: function(data) {
+        data = JSON.stringify(data || {});
+        localStorage.setItem(this.key, data);
+        this._lastData = this.restore();
+      },
+
+      /**
+        Restores all data currently saved in the `localStorage` identified by the
+        `keyPrefix` as one plain object.
+
+        @method restore
+        @return {Object} All data currently persisted in the `localStorage`
+      */
+      restore: function() {
+        var data = localStorage.getItem(this.key);
+        return JSON.parse(data) || {};
+      },
+
+      /**
+        Clears the store by deleting all `localStorage` keys prefixed with the
+        `keyPrefix`.
+
+        @method clear
+      */
+      clear: function() {
+        localStorage.removeItem(this.key);
+        this._lastData = {};
+      },
+
+      /**
+        @method bindToStorageEvents
+        @private
+      */
+      bindToStorageEvents: function() {
+        var _this = this;
+        Ember.$(window).bind('storage', function(e) {
+          var data = _this.restore();
+          if (!objectsAreEqual(data, _this._lastData)) {
+            _this._lastData = data;
+            _this.trigger('sessionDataUpdated', data);
+          }
+        });
+      }
+    });
+  });
+define("simple-auth/utils/get-global-config", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    var global = (typeof window !== 'undefined') ? window : {};
+
+    __exports__["default"] = function(scope) {
+      return Ember.get(global, 'ENV.' + scope) || {};
+    }
+  });
+define("simple-auth/utils/load-config", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    __exports__["default"] = function(defaults, callback) {
+      return function(container, config) {
+        var wrappedConfig = Ember.Object.create(config);
+        for (var property in this) {
+          if (this.hasOwnProperty(property) && Ember.typeOf(this[property]) !== 'function') {
+            this[property] = wrappedConfig.getWithDefault(property, defaults[property]);
+          }
+        }
+        if (callback) {
+          callback.apply(this, [container, config]);
+        }
+      };
+    }
+  });
+define("simple-auth/utils/objects-are-equal", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    /**
+      @method objectsAreEqual
+      @private
+    */
+    function objectsAreEqual(a, b) {
+      if (a === b) {
+        return true;
+      }
+      if (!(a instanceof Object) || !(b instanceof Object)) {
+        return false;
+      }
+      if(a.constructor !== b.constructor) {
+        return false;
+      }
+
+      for (var property in a) {
+        if (!a.hasOwnProperty(property)) {
+          continue;
+        }
+        if (!b.hasOwnProperty(property)) {
+          return false;
+        }
+        if (a[property] === b[property]) {
+          continue;
+        }
+        if (Ember.typeOf(a[property]) !== 'object') {
+          return false;
+        }
+        if (!objectsAreEqual(a[property], b[property])) {
+          return false;
+        }
+      }
+
+      for (property in b) {
+        if (b.hasOwnProperty(property) && !a.hasOwnProperty(property)) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    __exports__["default"] = objectsAreEqual;
+  });
+})(this);
+
+;/**
+ * Torii version: 0.2.2
+ * Built: Mon Nov 17 2014 15:17:01 GMT-0500 (EST)
+ */
+define("torii/adapters/application", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    var ApplicationAdapter = Ember.Object.extend({
+
+      open: function(){
+        return new Ember.RSVP.Promise(function(){
+          throw new Error(
+            'The Torii adapter must implement `open` for a session to be opened');
+        });
+      },
+
+      fetch: function(){
+        return new Ember.RSVP.Promise(function(){
+          throw new Error(
+            'The Torii adapter must implement `fetch` for a session to be fetched');
+        });
+      },
+
+      close: function(){
+        return new Ember.RSVP.Promise(function(){
+          throw new Error(
+            'The Torii adapter must implement `close` for a session to be closed');
+        });
+      }
+
+    });
+
+    __exports__["default"] = ApplicationAdapter;
+  });
+define("torii/bootstrap/session", 
+  ["torii/session","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Session = __dependency1__["default"];
+
+    __exports__["default"] = function(container, sessionName){
+      container.register('torii:session', Session);
+      container.injection('torii:session', 'torii', 'torii:main');
+      container.injection('route',      sessionName, 'torii:session');
+      container.injection('controller', sessionName, 'torii:session');
+
+      return container;
+    }
+  });
+define("torii/bootstrap/torii", 
+  ["torii/torii","torii/providers/linked-in-oauth2","torii/providers/google-oauth2","torii/providers/facebook-connect","torii/providers/facebook-oauth2","torii/adapters/application","torii/providers/twitter-oauth1","torii/providers/github-oauth2","torii/services/popup","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __dependency9__, __exports__) {
+    "use strict";
+    var Torii = __dependency1__["default"];
+    var LinkedInOauth2Provider = __dependency2__["default"];
+    var GoogleOauth2Provider = __dependency3__["default"];
+    var FacebookConnectProvider = __dependency4__["default"];
+    var FacebookOauth2Provider = __dependency5__["default"];
+    var ApplicationAdapter = __dependency6__["default"];
+    var TwitterProvider = __dependency7__["default"];
+    var GithubOauth2Provider = __dependency8__["default"];
+
+    var PopupService = __dependency9__["default"];
+
+    __exports__["default"] = function(container){
+      container.register('torii:main', Torii);
+      container.register('torii-provider:linked-in-oauth2', LinkedInOauth2Provider);
+      container.register('torii-provider:google-oauth2', GoogleOauth2Provider);
+      container.register('torii-provider:facebook-connect', FacebookConnectProvider);
+      container.register('torii-provider:facebook-oauth2', FacebookOauth2Provider);
+      container.register('torii-provider:twitter', TwitterProvider);
+      container.register('torii-provider:github-oauth2', GithubOauth2Provider);
+      container.register('torii-adapter:application', ApplicationAdapter);
+
+      container.register('torii-service:popup', PopupService);
+
+      container.injection('torii-provider', 'popup', 'torii-service:popup');
+
+      if (window.DS) {
+        container.injection('torii-provider', 'store', 'store:main');
+        container.injection('torii-adapter', 'store', 'store:main');
+      }
+
+      return container;
+    }
+  });
+define("torii/configuration", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    var get = Ember.get;
+
+    var configuration       = require("fusor-ember-cli/config/environment")["default"].torii || {};
+    configuration.providers = configuration.providers || {};
+
+    function configurable(configKey, defaultValue){
+      return Ember.computed(function(){
+        var namespace = this.get('configNamespace'),
+            fullKey   = namespace ? [namespace, configKey].join('.') : configKey,
+            value     = get(configuration, fullKey);
+        if (typeof value === 'undefined') {
+          if (typeof defaultValue !== 'undefined') {
+            if (typeof defaultValue === 'function') {
+              return defaultValue.call(this);
+            } else {
+              return defaultValue;
+            }
+          } else {
+            throw new Error("Expected configuration value "+fullKey+" to be defined!");
+          }
+        }
+        return value;
+      });
+    }
+
+    __exports__.configurable = configurable;
+
+    __exports__["default"] = configuration;
+  });
+define("torii/initializers/initialize-torii-callback", 
+  ["torii/redirect-handler","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var RedirectHandler = __dependency1__["default"];
+
+    __exports__["default"] = {
+      name: 'torii-callback',
+      before: 'torii',
+      initialize: function(container, app){
+        app.deferReadiness();
+        RedirectHandler.handle(window.location.toString())["catch"](function(){
+          app.advanceReadiness();
+        });
+      }
+    };
+  });
+define("torii/initializers/initialize-torii-session", 
+  ["torii/configuration","torii/bootstrap/session","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
+    "use strict";
+    var configuration = __dependency1__["default"];
+    var bootstrapSession = __dependency2__["default"];
+
+    __exports__["default"] = {
+      name: 'torii-session',
+      after: 'torii',
+
+      initialize: function(container){
+        if (configuration.sessionServiceName) {
+          bootstrapSession(container, configuration.sessionServiceName);
+          container.injection('adapter', configuration.sessionServiceName, 'torii:session');
+        }
+      }
+    };
+  });
+define("torii/initializers/initialize-torii", 
+  ["torii/bootstrap/torii","torii/configuration","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
+    "use strict";
+    var bootstrapTorii = __dependency1__["default"];
+    var configuration = __dependency2__["default"];
+
+    var initializer = {
+      name: 'torii',
+      initialize: function(container, app){
+        bootstrapTorii(container);
+
+        // Walk all configured providers and eagerly instantiate
+        // them. This gives providers with initialization side effects
+        // like facebook-connect a chance to load up assets.
+        for (var key in  configuration.providers) {
+          if (configuration.providers.hasOwnProperty(key)) {
+            container.lookup('torii-provider:'+key);
+          }
+        }
+
+        app.inject('route', 'torii', 'torii:main');
+      }
+    };
+
+    if (window.DS) {
+      initializer.after = 'store';
+    }
+
+    __exports__["default"] = initializer;
+  });
+define("torii/lib/load-initializer", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    /* global Ember */
+    __exports__["default"] = function(initializer){
+      Ember.onLoad('Ember.Application', function(Application){
+        Application.initializer(initializer);
+      });
+    }
+  });
+define("torii/lib/parse-query-string", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    __exports__["default"] = Ember.Object.extend({
+      init: function(url, validKeys) {
+        this.url = url;
+        this.validKeys = validKeys;
+      },
+
+      parse: function(){
+        var url       = this.url,
+            validKeys = this.validKeys,
+            data      = {};
+
+        for (var i = 0; i < validKeys.length; i++) {
+          var key = validKeys[i],
+              regex = new RegExp(key + "=([^&#]*)"),
+              match = regex.exec(url);
+          if (match) {
+            data[key] = match[1];
+          }
+        }
+        return data;
+      }
+    });
+  });
+define("torii/lib/query-string", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    var camelize = Ember.String.camelize,
+        get      = Ember.get;
+
+    function isValue(value){
+      return (value || value === false);
+    }
+
+    function getParamValue(obj, paramName, optional){
+      var camelizedName = camelize(paramName),
+          value         = get(obj, camelizedName);
+
+      if (!optional) {
+        if ( !isValue(value) && isValue(get(obj, paramName))) {
+          throw new Error(
+            'Use camelized versions of url params. (Did not find ' +
+            '"' + camelizedName + '" property but did find ' +
+            '"' + paramName + '".');
+        }
+
+        if (!isValue(value)) {
+          throw new Error(
+            'Missing url param: "'+paramName+'". (Looked for: property named "' +
+            camelizedName + '".'
+          );
+        }
+      }
+
+      return isValue(value) ? encodeURIComponent(value) : undefined;
+    }
+
+    function getOptionalParamValue(obj, paramName){
+      return getParamValue(obj, paramName, true);
+    }
+
+    __exports__["default"] = Ember.Object.extend({
+      init: function(obj, urlParams, optionalUrlParams){
+        this.obj               = obj;
+        this.urlParams         = Ember.A(urlParams).uniq();
+        this.optionalUrlParams = Ember.A(optionalUrlParams || []).uniq();
+
+        this.optionalUrlParams.forEach(function(param){
+          if (this.urlParams.indexOf(param) > -1) {
+            throw "Required parameters cannot also be optional: '" + param + "'";
+          }
+        }, this);
+      },
+
+      toString: function(){
+        var urlParams         = this.urlParams,
+            optionalUrlParams = this.optionalUrlParams,
+            obj               = this.obj,
+            keyValuePairs     = Ember.A([]);
+
+        urlParams.forEach(function(paramName){
+          var paramValue = getParamValue(obj, paramName);
+
+          keyValuePairs.push( [paramName, paramValue] );
+        });
+
+        optionalUrlParams.forEach(function(paramName){
+          var paramValue = getOptionalParamValue(obj, paramName);
+
+          if (isValue(paramValue)) {
+            keyValuePairs.push( [paramName, paramValue] );
+          }
+        });
+
+        return keyValuePairs.map(function(pair){
+          return pair.join('=');
+        }).join('&');
+      }
+    });
+  });
+define("torii/lib/required-property", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    function requiredProperty(){
+      return Ember.computed(function(key){
+        throw new Error("Definition of property "+key+" by a subclass is required.");
+      });
+    }
+
+    __exports__["default"] = requiredProperty;
+  });
+define("torii/lib/state-machine", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    /*
+     * Modification of Stefan Penner's StateMachine.js: https://github.com/stefanpenner/state_machine.js/
+     *
+     * This modification requires Ember.js to be loaded first
+     */
+
+    var a_slice = Array.prototype.slice;
+    var o_keys = Ember.keys;
+
+    function makeArray(entry){
+      if (entry.constructor === Array) {
+        return entry;
+      }else if(entry) {
+        return [entry];
+      }else{
+        return [];
+      }
+    }
+
+    function StateMachine(options){
+      var initialState = options.initialState;
+      this.states = options.states;
+
+      if (!this.states) {
+        throw new Error('StateMachine needs states');
+      }
+
+      this.state  = this.states[initialState];
+
+      if (!this.state) {
+        throw new Error('Missing initial state');
+      }
+
+      this.currentStateName = initialState;
+
+      this._subscriptions = {};
+
+      var beforeTransitions = (options.beforeTransitions ||[]);
+      var afterTransitions  = (options.afterTransitions ||[]);
+      var rule;
+
+      var i, length;
+      for(i = 0, length = beforeTransitions.length; length > i; i++){
+        rule = beforeTransitions[i];
+        this.beforeTransition.call(this, rule, rule.fn);
+      }
+
+      for(i = 0, length = afterTransitions.length; length > i; i++){
+        rule = afterTransitions[i];
+        this.afterTransition.call(this, rule, rule.fn);
+      }
+    }
+
+    var SPLAT = StateMachine.SPLAT = '*';
+
+    StateMachine.transitionTo = function(state){
+      return function(){
+        this.transitionTo(state);
+      };
+    };
+
+    StateMachine.prototype = {
+      states: {},
+      toString: function(){
+        return "<StateMachine currentState:'" + this.currentStateName +"' >";
+      },
+
+      transitionTo: function(nextStateName){
+        if (nextStateName.charAt(0) === '.') {
+          var splits = this.currentStateName.split('.').slice(0,-1);
+
+          // maybe all states should have an implicit leading dot (kinda like dns)
+          if (0 < splits.length){
+            nextStateName = splits.join('.') + nextStateName;
+          } else {
+            nextStateName = nextStateName.substring(1);
+          }
+        }
+
+        var state = this.states[nextStateName],
+        stateName = this.currentStateName;
+
+        if (!state) {
+          throw new Error('Unknown State: `' + nextStateName + '`');
+        }
+        this.willTransition(stateName, nextStateName);
+
+        this.state = state;
+
+        this.currentStateName = nextStateName;
+        this.didTransition(stateName, nextStateName);
+      },
+
+      beforeTransition: function(options, fn) {
+        this._transition('willTransition', options, fn);
+      },
+
+      afterTransition: function(options, fn) {
+        this._transition('didTransition', options, fn);
+      },
+
+      _transition: function(event, filter, fn) {
+        var from = filter.from || SPLAT,
+          to = filter.to || SPLAT,
+          context = this,
+          matchingTo, matchingFrom,
+          toSplatOffset, fromSplatOffset,
+          negatedMatchingTo, negatedMatchingFrom;
+
+        if (to.indexOf('!') === 0) {
+          matchingTo = to.substr(1);
+          negatedMatchingTo = true;
+        } else {
+          matchingTo = to;
+          negatedMatchingTo = false;
+        }
+
+        if (from.indexOf('!') === 0) {
+          matchingFrom = from.substr(1);
+          negatedMatchingFrom = true;
+        } else {
+          matchingFrom = from;
+          negatedMatchingFrom = false;
+        }
+
+        fromSplatOffset = matchingFrom.indexOf(SPLAT);
+        toSplatOffset = matchingTo.indexOf(SPLAT);
+
+        if (fromSplatOffset >= 0) {
+          matchingFrom = matchingFrom.substring(fromSplatOffset, 0);
+        }
+
+        if (toSplatOffset >= 0) {
+          matchingTo = matchingTo.substring(toSplatOffset, 0);
+        }
+
+        this.on(event, function(currentFrom, currentTo) {
+          var currentMatcherTo = currentTo,
+            currentMatcherFrom = currentFrom,
+            toMatches, fromMatches;
+
+          if (fromSplatOffset >= 0){
+            currentMatcherFrom = currentFrom.substring(fromSplatOffset, 0);
+          }
+
+          if (toSplatOffset >= 0){
+            currentMatcherTo = currentTo.substring(toSplatOffset, 0);
+          }
+
+          toMatches = (currentMatcherTo === matchingTo) !== negatedMatchingTo;
+          fromMatches = (currentMatcherFrom === matchingFrom) !== negatedMatchingFrom;
+
+          if (toMatches && fromMatches) {
+            fn.call(this, currentFrom, currentTo);
+          }
+        });
+      },
+
+      willTransition: function(from, to) {
+        this._notify('willTransition', from, to);
+      },
+
+      didTransition: function(from, to) {
+        this._notify('didTransition', from, to);
+      },
+
+      _notify: function(name, from, to) {
+        var subscriptions = (this._subscriptions[name] || []);
+
+        for( var i = 0, length = subscriptions.length; i < length; i++){
+          subscriptions[i].call(this, from, to);
+        }
+      },
+
+      on: function(event, fn) {
+        this._subscriptions[event] = this._subscriptions[event] || [];
+        this._subscriptions[event].push(fn);
+      },
+
+      off: function(event, fn) {
+        var idx = this._subscriptions[event].indexOf(fn);
+
+        if (fn){
+          if (idx) {
+            this._subscriptions[event].splice(idx, 1);
+          }
+        }else {
+          this._subscriptions[event] = null;
+        }
+      },
+
+      send: function(eventName) {
+        var event = this.state[eventName];
+        var args = a_slice.call(arguments, 1);
+
+        if (event) {
+          return event.apply(this, args);
+        } else {
+          this.unhandledEvent(eventName);
+        }
+      },
+
+      trySend: function(eventName) {
+        var event = this.state[eventName];
+        var args = a_slice.call(arguments,1);
+
+        if (event) {
+          return event.apply(this, args);
+        }
+      },
+
+      event: function(eventName, callback){
+        var states = this.states;
+
+        var eventApi = {
+          transition: function() {
+            var length = arguments.length,
+            first = arguments[0],
+            second = arguments[1],
+            events = normalizeEvents(eventName, first, second);
+
+            o_keys(events).forEach(function(from){
+              var to = events[from];
+              compileEvent(states, eventName, from, to, StateMachine.transitionTo(to));
+            });
+          }
+        };
+
+        callback.call(eventApi);
+      },
+
+      unhandledEvent: function(event){
+        var currentStateName = this.currentStateName,
+        message = "Unknown Event: `" + event + "` for: " + this.toString();
+
+        throw new Error(message);
+      }
+    };
+
+    function normalizeEvents(eventName, first, second){
+      var events;
+      if (!first) { throw new Error('invalid Transition'); }
+
+      if (second) {
+        var froms = first, to = second;
+        events = expandArrayEvents(froms, to);
+      } else {
+        if (first.constructor === Object) {
+          events = first;
+        } else {
+          throw new Error('something went wrong');
+        }
+      }
+
+      return events;
+    }
+
+    function expandArrayEvents(froms, to){
+      return  makeArray(froms).reduce(function(events, from){
+         events[from] = to;
+         return events;
+       }, {});
+    }
+
+    function compileEvent(states, eventName, from, to, fn){
+      var state = states[from];
+
+      if (from && to && state) {
+        states[from][eventName] = fn;
+      } else {
+        var message = "invalid transition state: " + (state && state.currentStateName) + " from: " + from+ " to: " + to ;
+        throw new Error(message);
+      }
+    }
+
+    __exports__["default"] = StateMachine;
+  });
+define("torii/load-initializers", 
+  ["torii/lib/load-initializer","torii/initializers/initialize-torii","torii/initializers/initialize-torii-callback","torii/initializers/initialize-torii-session","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
+    "use strict";
+    var loadInitializer = __dependency1__["default"];
+    var initializeTorii = __dependency2__["default"];
+    var initializeToriiCallback = __dependency3__["default"];
+    var initializeToriiSession = __dependency4__["default"];
+
+    __exports__["default"] = function(){
+      loadInitializer(initializeToriiCallback);
+      loadInitializer(initializeTorii);
+      loadInitializer(initializeToriiSession);
+    }
+  });
+define("torii/providers/base", 
+  ["torii/lib/required-property","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var requiredProperty = __dependency1__["default"];
+
+    /**
+     * The base class for all torii providers
+     * @class BaseProvider
+     */
+    var Base = Ember.Object.extend({
+
+     /**
+      * The name of the provider
+      * @property {string} name
+      */
+      name: requiredProperty(),
+
+      /**
+       * The name of the configuration property
+       * that holds config information for this provider.
+       * @property {string} configNamespace
+       */
+      configNamespace: function(){
+        return 'providers.'+this.get('name');
+      }.property('name')
+
+    });
+
+    __exports__["default"] = Base;
+  });
+define("torii/providers/facebook-connect", 
+  ["torii/providers/base","torii/configuration","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
+    "use strict";
+    /* global FB, $ */
+
+    /**
+     * This class implements authentication against facebook
+     * connect using the Facebook SDK.
+     */
+
+    var Provider = __dependency1__["default"];
+    var configurable = __dependency2__.configurable;
+
+    var fbPromise;
+
+    function fbLoad(settings){
+      if (fbPromise) { return fbPromise; }
+
+      var original = window.fbAsyncInit;
+      fbPromise = new Ember.RSVP.Promise(function(resolve, reject){
+        window.fbAsyncInit = function(){
+          FB.init(settings);
+          Ember.run(null, resolve);
+        };
+        $.getScript('//connect.facebook.net/en_US/all.js');
+      }).then(function(){
+        window.fbAsyncInit = original;
+      });
+
+      return fbPromise;
+    }
+
+    function fbLogin(scope){
+      return new Ember.RSVP.Promise(function(resolve, reject){
+        FB.login(function(response){
+          if (response.authResponse) {
+            Ember.run(null, resolve, response.authResponse);
+          } else {
+            Ember.run(null, reject, response.status);
+          }
+        }, { scope: scope });
+      });
+    }
+
+    function fbNormalize(response){
+      return {
+        userId: response.userID,
+        accessToken: response.accessToken
+      };
+    }
+
+    var Facebook = Provider.extend({
+
+      // Required settings:
+      name:  'facebook-connect',
+      scope: configurable('scope', 'email'),
+      appId: configurable('appId'),
+
+      // API:
+      //
+      open: function(){
+        var scope = this.get('scope');
+
+        return fbLoad( this.settings() )
+          .then(function(){
+            return fbLogin(scope);
+          })
+          .then(fbNormalize);
+      },
+
+      settings: function(){
+        return {
+          status: true,
+          cookie: true,
+          xfbml: false,
+          appId: this.get('appId')
+        };
+      },
+
+      // Load Facebook's script eagerly, so that the window.open
+      // in FB.login will be part of the same JS frame as the
+      // click itself.
+      loadFbLogin: function(){
+        fbLoad( this.settings() );
+      }.on('init')
+
+    });
+
+    __exports__["default"] = Facebook;
+  });
+define("torii/providers/facebook-oauth2", 
+  ["torii/configuration","torii/providers/oauth2-code","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
+    "use strict";
+    var configurable = __dependency1__.configurable;
+    var Oauth2 = __dependency2__["default"];
+
+    __exports__["default"] = Oauth2.extend({
+      name:    'facebook-oauth2',
+      baseUrl: 'https://www.facebook.com/dialog/oauth',
+
+      // Additional url params that this provider requires
+      requiredUrlParams: ['display'],
+
+      responseParams: ['code'],
+
+      scope:        configurable('scope', 'email'),
+
+      display: 'popup',
+      redirectUri: configurable('redirectUri', function(){
+        // A hack that allows redirectUri to be configurable
+        // but default to the superclass
+        return this._super();
+      }),
+
+      open: function() {
+        return this._super().then(function(authData){
+          if (authData.authorizationCode && authData.authorizationCode === '200') {
+            // indication that the user hit 'cancel', not 'ok'
+            throw 'User canceled authorization';
+          }
+
+          return authData;
+        });
+      }
+    });
+  });
+define("torii/providers/github-oauth2", 
+  ["torii/providers/oauth2-code","torii/configuration","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
+    "use strict";
+    var Oauth2 = __dependency1__["default"];
+    var configurable = __dependency2__.configurable;
+
+    /**
+     * This class implements authentication against Github
+     * using the OAuth2 authorization flow in a popup window.
+     * @class
+     */
+    var GithubOauth2 = Oauth2.extend({
+      name:       'github-oauth2',
+      baseUrl:    'https://github.com/login/oauth/authorize',
+
+      // additional url params that this provider requires
+      requiredUrlParams: ['state'],
+
+      responseParams: ['code'],
+
+      state: 'STATE',
+
+      redirectUri: configurable('redirectUri', function(){
+        // A hack that allows redirectUri to be configurable
+        // but default to the superclass
+        return this._super();
+      })
+    });
+
+    __exports__["default"] = GithubOauth2;
+  });
+define("torii/providers/google-oauth2", 
+  ["torii/providers/oauth2-code","torii/configuration","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
+    "use strict";
+    /**
+     * This class implements authentication against google
+     * using the OAuth2 authorization flow in a popup window.
+     */
+
+    var Oauth2 = __dependency1__["default"];
+    var configurable = __dependency2__.configurable;
+
+    var GoogleOauth2 = Oauth2.extend({
+
+      name:    'google-oauth2',
+      baseUrl: 'https://accounts.google.com/o/oauth2/auth',
+
+      // additional params that this provider requires
+      requiredUrlParams: ['state'],
+      optionalUrlParams: ['scope', 'request_visible_actions'],
+
+      requestVisibleActions: configurable('requestVisibleActions', ''),
+
+      responseParams: ['code'],
+
+      scope: configurable('scope', 'email'),
+
+      state: configurable('state', 'STATE'),
+
+      redirectUri: configurable('redirectUri',
+                                'http://localhost:8000/oauth2callback')
+    });
+
+    __exports__["default"] = GoogleOauth2;
+  });
+define("torii/providers/linked-in-oauth2", 
+  ["torii/providers/oauth2-code","torii/configuration","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
+    "use strict";
+    var Oauth2 = __dependency1__["default"];
+    var configurable = __dependency2__.configurable;
+
+    /**
+     * This class implements authentication against Linked In
+     * using the OAuth2 authorization flow in a popup window.
+     *
+     * @class LinkedInOauth2
+     */
+    var LinkedInOauth2 = Oauth2.extend({
+      name:       'linked-in-oauth2',
+      baseUrl:    'https://www.linkedin.com/uas/oauth2/authorization',
+
+      // additional url params that this provider requires
+      requiredUrlParams: ['state'],
+
+      responseParams: ['code'],
+
+      state: 'STATE',
+
+      redirectUri: configurable('redirectUri', function(){
+        // A hack that allows redirectUri to be configurable
+        // but default to the superclass
+        return this._super();
+      })
+
+    });
+
+    __exports__["default"] = LinkedInOauth2;
+  });
+define("torii/providers/oauth1", 
+  ["torii/providers/base","torii/configuration","torii/lib/query-string","torii/lib/required-property","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
+    "use strict";
+    /*
+     * This class implements authentication against an API
+     * using the OAuth1.0a request token flow in a popup window.
+     */
+
+    var Provider = __dependency1__["default"];
+    var configurable = __dependency2__.configurable;
+    var QueryString = __dependency3__["default"];
+    var requiredProperty = __dependency4__["default"];
+
+    function currentUrl(){
+      return [window.location.protocol,
+              "//",
+              window.location.host,
+              window.location.pathname].join('');
+    }
+
+    var Oauth1 = Provider.extend({
+      name: 'oauth1',
+
+      requestTokenUri: configurable('requestTokenUri'),
+
+      buildRequestTokenUrl: function(){
+        var requestTokenUri = this.get('requestTokenUri');
+        return requestTokenUri;
+      },
+
+      open: function(){
+        var name        = this.get('name'),
+            url         = this.buildRequestTokenUrl();
+
+        return this.get('popup').open(url, ['code']).then(function(authData){
+          authData.provider = name;
+          return authData;
+        });
+      }
+    });
+
+    __exports__["default"] = Oauth1;
+  });
+define("torii/providers/oauth2-bearer", 
+  ["torii/providers/oauth2-code","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Provider = __dependency1__["default"];
+
+    var Oauth2Bearer = Provider.extend({
+      responseType: 'token',
+
+      /**
+       * @method open
+       * @return {Promise<object>} If the authorization attempt is a success,
+       * the promise will resolve an object containing the following keys:
+       *   - authorizationToken: The `token` from the 3rd-party provider
+       *   - provider: The name of the provider (i.e., google-oauth2)
+       *   - redirectUri: The redirect uri (some server-side exchange flows require this)
+       * If there was an error or the user either canceled the authorization or
+       * closed the popup window, the promise rejects.
+       */
+      open: function(){
+        var name        = this.get('name'),
+            url         = this.buildUrl(),
+            redirectUri = this.get('redirectUri'),
+            responseParams = this.get('responseParams');
+
+        return this.get('popup').open(url, responseParams).then(function(authData){
+          var missingResponseParams = [];
+
+          responseParams.forEach(function(param){
+            if (authData[param] === undefined) {
+              missingResponseParams.push(param);
+            }
+          });
+
+          if (missingResponseParams.length){
+            throw "The response from the provider is missing " +
+                  "these required response params: " + responseParams.join(', ');
+          }
+
+          return {
+            authorizationToken: authData,
+            provider: name,
+            redirectUri: redirectUri
+          };
+        });
+      }
+    });
+
+    __exports__["default"] = Oauth2Bearer;
+  });
+define("torii/providers/oauth2-code", 
+  ["torii/providers/base","torii/configuration","torii/lib/query-string","torii/lib/required-property","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
+    "use strict";
+    var Provider = __dependency1__["default"];
+    var configurable = __dependency2__.configurable;
+    var QueryString = __dependency3__["default"];
+    var requiredProperty = __dependency4__["default"];
+
+    function currentUrl(){
+      return [window.location.protocol,
+              "//",
+              window.location.host,
+              window.location.pathname].join('');
+    }
+
+    /**
+     * Implements authorization against an OAuth2 API
+     * using the OAuth2 authorization flow in a popup window.
+     *
+     * Subclasses should extend this class and define the following properties:
+     *   - requiredUrlParams: If there are additional required params
+     *   - optionalUrlParams: If there are additional optional params
+     *   - name: The name used in the configuration `providers` key
+     *   - baseUrl: The base url for OAuth2 code-based flow at the 3rd-party
+     *
+     *   If there are any additional required or optional url params,
+     *   include default values for them (if appropriate).
+     *
+     * @class Oauth2Provider
+     */
+    var Oauth2 = Provider.extend({
+      concatenatedProperties: ['requiredUrlParams','optionalUrlParams'],
+
+      /**
+       * The parameters that must be included as query params in the 3rd-party provider's url that we build.
+       * These properties are in the format that should be in the URL (i.e.,
+       * usually underscored), but they are looked up as camelCased properties
+       * on the instance of this provider. For example, if the 'client_id' is
+       * a required url param, when building the URL we look up the value of
+       * the 'clientId' (camel-cased) property and put it in the URL as
+       * 'client_id=' + this.get('clientId')
+       * Subclasses can add additional required url params.
+       *
+       * @property {array} requiredUrlParams
+       */
+      requiredUrlParams: ['response_type', 'client_id', 'redirect_uri'],
+
+      /**
+       * Parameters that may be included in the 3rd-party provider's url that we build.
+       * Subclasses can add additional optional url params.
+       *
+       * @property {array} optionalUrlParams
+       */
+      optionalUrlParams: ['scope'],
+
+      /**
+       * The base url for the 3rd-party provider's OAuth2 flow (example: 'https://github.com/login/oauth/authorize')
+       *
+       * @property {string} baseUrl
+       */
+      baseUrl:      requiredProperty(),
+
+      /**
+       * The apiKey (sometimes called app id) that identifies the registered application at the 3rd-party provider
+       *
+       * @property {string} apiKey
+       */
+      apiKey:       configurable('apiKey'),
+
+      scope:        configurable('scope', null),
+      clientId:     Ember.computed.alias('apiKey'),
+
+      /**
+       * The oauth response type we expect from the third party provider. Hardcoded to 'code' for oauth2-code flows
+       * @property {string} responseType
+       */
+      responseType: 'code',
+
+     /**
+      * List of parameters that we expect
+      * to see in the query params that the 3rd-party provider appends to
+      * our `redirectUri` after the user confirms/denies authorization.
+      * If any of these parameters are missing, the OAuth attempt is considered
+      * to have failed (usually this is due to the user hitting the 'cancel' button)
+      *
+      * @property {array} responseParams
+      */
+      responseParams: requiredProperty(),
+
+      redirectUri: function(){
+        return currentUrl();
+      }.property(),
+
+      buildQueryString: function(){
+        var requiredParams = this.get('requiredUrlParams'),
+            optionalParams = this.get('optionalUrlParams');
+
+        var qs = new QueryString(this, requiredParams, optionalParams);
+        return qs.toString();
+      },
+
+      buildUrl: function(){
+        var base = this.get('baseUrl'),
+            qs   = this.buildQueryString();
+
+        return [base, qs].join('?');
+      },
+
+      /**
+       * @method open
+       * @return {Promise<object>} If the authorization attempt is a success,
+       * the promise will resolve an object containing the following keys:
+       *   - authorizationCode: The `code` from the 3rd-party provider
+       *   - provider: The name of the provider (i.e., google-oauth2)
+       *   - redirectUri: The redirect uri (some server-side exchange flows require this)
+       * If there was an error or the user either canceled the authorization or
+       * closed the popup window, the promise rejects.
+       */
+      open: function(){
+        var name        = this.get('name'),
+            url         = this.buildUrl(),
+            redirectUri = this.get('redirectUri'),
+            responseParams = this.get('responseParams');
+
+        return this.get('popup').open(url, responseParams).then(function(authData){
+          var missingResponseParams = [];
+
+          responseParams.forEach(function(param){
+            if (authData[param] === undefined) {
+              missingResponseParams.push(param);
+            }
+          });
+
+          if (missingResponseParams.length){
+            throw "The response from the provider is missing " +
+                  "these required response params: " + responseParams.join(', ');
+          }
+
+          return {
+            authorizationCode: authData.code,
+            provider: name,
+            redirectUri: redirectUri
+          };
+        });
+      }
+    });
+
+    __exports__["default"] = Oauth2;
+  });
+define("torii/providers/twitter-oauth1", 
+  ["torii/providers/oauth1","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Oauth1Provider = __dependency1__["default"];
+
+    __exports__["default"] = Oauth1Provider.extend({
+      name: 'twitter'
+    });
+  });
+define("torii/redirect-handler", 
+  ["./services/popup","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    /**
+     * RedirectHandler will attempt to find
+     * these keys in the URL. If found,
+     * this is an indication to Torii that
+     * the Ember app has loaded inside a popup
+     * and should postMessage this data to window.opener
+     */
+
+    var postMessageFixed = __dependency1__.postMessageFixed;
+    var readToriiMessage = __dependency1__.readToriiMessage;
+
+    var RedirectHandler = Ember.Object.extend({
+
+      init: function(url){
+        this.url = url;
+      },
+
+      run: function(){
+        var url = this.url;
+        return new Ember.RSVP.Promise(function(resolve, reject){
+          if (window.opener && window.opener.name === 'torii-opener') {
+            postMessageFixed(window.opener, url);
+            window.close();
+          } else {
+            reject('No window.opener');
+          }
+        });
+      }
+
+    });
+
+    RedirectHandler.reopenClass({
+      // untested
+      handle: function(url){
+        var handler = new RedirectHandler(url);
+        return handler.run();
+      }
+    });
+
+    __exports__["default"] = RedirectHandler;
+  });
+define("torii/services/popup", 
+  ["torii/lib/parse-query-string","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var ParseQueryString = __dependency1__["default"];
+
+    var postMessageFixed;
+    var postMessageDomain = window.location.protocol+'//'+window.location.host;
+    var postMessagePrefix = "__torii_message:";
+    // in IE11 window.attachEvent was removed.
+    if (window.attachEvent) {
+      postMessageFixed = function postMessageFixed(win, data) {
+        win.postMessageWithFix(postMessagePrefix+data, postMessageDomain);
+      };
+      window.postMessageWithFix = function postMessageWithFix(data, domain) {
+        setTimeout(function(){
+          window.postMessage(data, domain);
+        }, 0);
+      };
+    } else {
+      postMessageFixed = function postMessageFixed(win, data) {
+        win.postMessage(postMessagePrefix+data, postMessageDomain);
+      };
+    }
+
+    __exports__.postMessageFixed = postMessageFixed;
+
+    function stringifyOptions(options){
+      var optionsStrings = [];
+      for (var key in options) {
+        if (options.hasOwnProperty(key)) {
+          var value;
+          switch (options[key]) {
+            case true:
+              value = '1';
+              break;
+            case false:
+              value = '0';
+              break;
+            default:
+              value = options[key];
+          }
+          optionsStrings.push(
+            key+"="+value
+          );
+        }
+      }
+      return optionsStrings.join(',');
+    }
+
+    function prepareOptions(options){
+      var width = options.width || 500,
+          height = options.height || 500;
+      return Ember.$.extend({
+        left: ((screen.width / 2) - (width / 2)),
+        top: ((screen.height / 2) - (height / 2)),
+        width: width,
+        height: height
+      }, options);
+    }
+
+    function readToriiMessage(message){
+      if (message && typeof message === 'string' && message.indexOf(postMessagePrefix) === 0) {
+        return message.slice(postMessagePrefix.length);
+      }
+    }
+
+    __exports__.readToriiMessage = readToriiMessage;
+
+    function parseMessage(url, keys){
+      var parser = new ParseQueryString(url, keys),
+          data = parser.parse();
+      return data;
+    }
+
+    var Popup = Ember.Object.extend(Ember.Evented, {
+
+      // Open a popup window. Returns a promise that resolves or rejects
+      // accoring to if the popup is redirected with arguments in the URL.
+      //
+      // For example, an OAuth2 request:
+      //
+      // popup.open('http://some-oauth.com', ['code']).then(function(data){
+      //   // resolves with data.code, as from http://app.com?code=13124
+      // });
+      //
+      open: function(url, keys, options){
+        var service   = this,
+            lastPopup = this.popup;
+
+        var oldName = window.name;
+        // Is checked by the popup to see if it was opened by Torii
+        window.name = 'torii-opener';
+
+        return new Ember.RSVP.Promise(function(resolve, reject){
+          if (lastPopup) {
+            service.close();
+          }
+
+          var optionsString = stringifyOptions(prepareOptions(options || {}));
+          service.popup = window.open(url, 'torii-auth', optionsString);
+
+          if (service.popup && !service.popup.closed) {
+            service.popup.focus();
+          } else {
+            reject(new Error(
+              'Popup could not open or was closed'));
+            return;
+          }
+
+          service.one('didClose', function(){
+            reject(new Error(
+              'Popup was closed or authorization was denied'));
+          });
+
+          Ember.$(window).on('message.torii', function(event){
+            var message = event.originalEvent.data;
+            var toriiMessage = readToriiMessage(message);
+            if (toriiMessage) {
+              var data = parseMessage(toriiMessage, keys);
+              resolve(data);
+            }
+          });
+
+          service.schedulePolling();
+
+        })["finally"](function(){
+          // didClose will reject this same promise, but it has already resolved.
+          service.close();
+          window.name = oldName;
+          Ember.$(window).off('message.torii');
+        });
+      },
+
+      close: function(){
+        if (this.popup) {
+          this.popup = null;
+          this.trigger('didClose');
+        }
+      },
+
+      pollPopup: function(){
+        if (!this.popup) {
+          return;
+        }
+        if (this.popup.closed) {
+          this.trigger('didClose');
+        }
+      },
+
+      schedulePolling: function(){
+        this.polling = Ember.run.later(this, function(){
+          this.pollPopup();
+          this.schedulePolling();
+        }, 35);
+      },
+
+      stopPolling: function(){
+        Ember.run.cancel(this.polling);
+      }.on('didClose'),
+
+
+    });
+
+    __exports__["default"] = Popup;
+  });
+define("torii/session", 
+  ["torii/session/state-machine","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var createStateMachine = __dependency1__["default"];
+
+    function lookupAdapter(container, authenticationType){
+      var adapter = container.lookup('torii-adapter:'+authenticationType);
+      if (!adapter) {
+        adapter = container.lookup('torii-adapter:application');
+      }
+      return adapter;
+    }
+
+    var Session = Ember.ObjectProxy.extend({
+      state: null,
+
+      stateMachine: function(){
+        return createStateMachine(this);
+      }.property(),
+
+      setupStateProxy: function(){
+        var sm    = this.get('stateMachine'),
+            proxy = this;
+        sm.on('didTransition', function(){
+          proxy.set('content', sm.state);
+          proxy.set('currentStateName', sm.currentStateName);
+        });
+      }.on('init'),
+
+      // Make these properties one-way.
+      setUnknownProperty: Ember.K,
+
+      open: function(provider, options){
+        var container = this.container,
+            torii     = this.get('torii'),
+            sm        = this.get('stateMachine');
+
+        return new Ember.RSVP.Promise(function(resolve){
+          sm.send('startOpen');
+          resolve();
+        }).then(function(){
+          return torii.open(provider, options);
+        }).then(function(authorization){
+          var adapter = lookupAdapter(
+            container, provider
+          );
+
+          return adapter.open(authorization);
+        }).then(function(user){
+          sm.send('finishOpen', user);
+          return user;
+        })["catch"](function(error){
+          sm.send('failOpen', error);
+          return Ember.RSVP.reject(error);
+        });
+      },
+
+      fetch: function(provider, options){
+        var container = this.container,
+            sm        = this.get('stateMachine');
+
+        return new Ember.RSVP.Promise(function(resolve){
+          sm.send('startFetch');
+          resolve();
+        }).then(function(){
+          var adapter = lookupAdapter(
+            container, provider
+          );
+
+          return adapter.fetch(options);
+        }).then(function(data){
+          sm.send('finishFetch', data);
+          return;
+        })["catch"](function(error){
+          sm.send('failFetch', error);
+          return Ember.RSVP.reject(error);
+        });
+      },
+
+      close: function(provider, options){
+        var container = this.container,
+            sm        = this.get('stateMachine');
+
+        return new Ember.RSVP.Promise(function(resolve){
+          sm.send('startClose');
+          resolve();
+        }).then(function(){
+          var adapter = lookupAdapter(container, provider);
+          return adapter.close(options);
+        }).then(function(){
+          sm.send('finishClose');
+        })["catch"](function(error){
+          sm.send('failClose', error);
+          return Ember.RSVP.reject(error);
+        });
+      }
+
+    });
+
+    __exports__["default"] = Session;
+  });
+define("torii/session/state-machine", 
+  ["torii/lib/state-machine","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var StateMachine = __dependency1__["default"];
+
+    var transitionTo = StateMachine.transitionTo;
+
+    function copyProperties(data, target) {
+      for (var key in data) {
+        if (data.hasOwnProperty(key)) {
+          target[key] = data[key];
+        }
+      }
+    }
+
+    function transitionToClearing(target, propertiesToClear) {
+      return function(){
+        for (var i;i<propertiesToClear.length;i++) {
+          this[propertiesToClear[i]] = null;
+        }
+        this.transitionTo(target);
+      };
+    }
+
+    __exports__["default"] = function(session){
+      var sm = new StateMachine({
+        initialState: 'unauthenticated',
+
+        states: {
+          unauthenticated: {
+            errorMessage: null,
+            isAuthenticated: false,
+            // Actions
+            startOpen: transitionToClearing('opening', ['errorMessage']),
+            startFetch: transitionToClearing('fetching', ['errorMessage'])
+          },
+          authenticated: {
+            // Properties
+            currentUser: null,
+            isAuthenticated: true,
+            startClose: transitionTo('closing')
+          },
+          opening: {
+            isWorking: true,
+            isOpening: true,
+            // Actions
+            finishOpen: function(data){
+              copyProperties(data, this.states['authenticated']);
+              this.transitionTo('authenticated');
+            },
+            failOpen: function(errorMessage){
+              this.states['unauthenticated'].errorMessage = errorMessage;
+              this.transitionTo('unauthenticated');
+            }
+          },
+          fetching: {
+            isWorking: true,
+            isFetching: true,
+            // Actions
+            finishFetch: function(data){
+              copyProperties(data, this.states['authenticated']);
+              this.transitionTo('authenticated');
+            },
+            failFetch: function(errorMessage){
+              this.states['unauthenticated'].errorMessage = errorMessage;
+              this.transitionTo('unauthenticated');
+            }
+          },
+          closing: {
+            isWorking: true,
+            isClosing: true,
+            isAuthenticated: true,
+            // Actions
+            finishClose: function(){
+              this.transitionTo('unauthenticated');
+            },
+            failClose: function(errorMessage){
+              this.states['unauthenticated'].errorMessage = errorMessage;
+              this.transitionTo('unauthenticated');
+            }
+          }
+        }
+      });
+      sm.session = session;
+      return sm;
+    }
+  });
+define("torii/torii", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    function lookupProvider(container, providerName){
+      return container.lookup('torii-provider:'+providerName);
+    }
+
+    function proxyToProvider(methodName, requireMethod){
+      return function(providerName, options){
+        var container = this.container;
+        var provider = lookupProvider(container, providerName);
+        if (!provider) {
+          throw new Error("Expected a provider named '"+providerName+"' " +
+                          ", did you forget to register it?");
+        }
+
+        if (!provider[methodName]) {
+          if (requireMethod) {
+            throw new Error("Expected provider '"+providerName+"' to define " +
+                            "the '"+methodName+"' method.");
+          } else {
+            return Ember.RSVP.Promise.resolve({});
+          }
+        }
+        return new Ember.RSVP.Promise(function(resolve, reject){
+          resolve( provider[methodName](options) );
+        });
+      };
+    }
+
+    /**
+     * Torii is an engine for authenticating against various
+     * providers. For example, you can open a session with
+     * Linked In via Oauth2 and authorization codes by doing
+     * the following:
+     *
+     *     Torii.open('linked-in-oauth2').then(function(authData){
+     *       console.log(authData.authorizationCode);
+     *     });
+     *
+     * For traditional authentication flows, you will often use
+     * Torii via the Torii.Session API.
+     *
+     * @class Torii
+     */
+    var Torii = Ember.Object.extend({
+
+      /**
+       * Open an authorization against an API. A promise resolving
+       * with an authentication response object is returned. These
+       * response objects,  are found in the "torii/authentications"
+       * namespace.
+       *
+       * @method open
+       * @param {String} providerName The provider to open
+       * @return {Ember.RSVP.Promise} Promise resolving to an authentication object
+       */
+      open:  proxyToProvider('open', true),
+
+      /**
+       * Return a promise which will resolve if the provider has
+       * already been opened.
+       *
+       * @method fetch
+       * @param {String} providerName The provider to open
+       * @return {Ember.RSVP.Promise} Promise resolving to an authentication object
+       */
+      fetch:  proxyToProvider('fetch'),
+
+      /**
+       * Return a promise which will resolve when the provider has been
+       * closed. Closing a provider may not always be a meaningful action,
+       * and may be better handled by torii's session management instead.
+       *
+       * @method close
+       * @param {String} providerName The provider to open
+       * @return {Ember.RSVP.Promise} Promise resolving when the provider is closed
+       */
+      close:  proxyToProvider('close')
+    });
+
+    __exports__["default"] = Torii;
+  });
+;(function(global) {
+  var define = global.define;
+  var require = global.require;
+  var Ember = global.Ember;
+  if (typeof Ember === 'undefined' && typeof require !== 'undefined') {
+    Ember = require('ember');
+  }
+
+Ember.libraries.register('Ember Simple Auth Torii', '0.7.2');
+
+define("simple-auth-torii/authenticators/torii", 
+  ["simple-auth/authenticators/base","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Base = __dependency1__["default"];
+
+    /**
+      Authenticator that wraps the
+      [Torii library](https://github.com/Vestorly/torii).
+
+      _The factory for this authenticator is registered as
+      `'simple-auth-authenticator:torii'` in Ember's container._
+
+      @class Torii
+      @namespace SimpleAuth.Authenticators
+      @module simple-auth-torii/authenticators/torii
+      @extends Base
+    */
+    __exports__["default"] = Base.extend({
+      /**
+        @property torii
+        @private
+      */
+      torii: null,
+
+      /**
+        @property provider
+        @private
+      */
+      provider: null,
+
+      /**
+        Restores the session by calling the torii provider's `fetch` method.
+
+        @method restore
+        @param {Object} data The data to restore the session from
+        @return {Ember.RSVP.Promise} A promise that when it resolves results in the session being authenticated
+      */
+      restore: function(data) {
+        var _this = this;
+        data      = data || {};
+        return new Ember.RSVP.Promise(function(resolve, reject) {
+          if (!Ember.isEmpty(data.provider)) {
+            var provider = data.provider;
+            _this.torii.fetch(data.provider, data).then(function(data) {
+              _this.resolveWith(provider, data, resolve);
+            }, function() {
+              delete _this.provider;
+              reject();
+            });
+          } else {
+            delete _this.provider;
+            reject();
+          }
+        });
+      },
+
+      /**
+        Authenticates the session by opening the torii provider. For more
+        documentation on torii, see the
+        [project's README](https://github.com/Vestorly/torii#readme).
+
+        @method authenticate
+        @param {String} provider The provider to authenticate the session with
+        @param {Object} options The options to pass to the torii provider
+        @return {Ember.RSVP.Promise} A promise that resolves when the provider successfully authenticates a user and rejects otherwise
+      */
+      authenticate: function(provider, options) {
+        var _this = this;
+        return new Ember.RSVP.Promise(function(resolve, reject) {
+          _this.torii.open(provider, options || {}).then(function(data) {
+            _this.resolveWith(provider, data, resolve);
+          }, reject);
+        });
+      },
+
+      /**
+        Closes the torii provider.
+
+        @method invalidate
+        @param {Object} data The data that's stored in the session
+        @return {Ember.RSVP.Promise} A promise that resolves when the provider successfully closes and rejects otherwise
+      */
+      invalidate: function(data) {
+        var _this = this;
+        return new Ember.RSVP.Promise(function(resolve, reject) {
+          _this.torii.close(_this.provider).then(function() {
+            delete _this.provider;
+            resolve();
+          }, reject);
+        });
+      },
+
+      /**
+        @method resolveWith
+        @private
+      */
+      resolveWith: function(provider, data, resolve) {
+        data.provider = provider;
+        this.provider = data.provider;
+        resolve(data);
+      }
+
+    });
+  });
+define("simple-auth-torii/ember", 
+  ["./initializer"],
+  function(__dependency1__) {
+    "use strict";
+    var initializer = __dependency1__["default"];
+
+    Ember.onLoad('Ember.Application', function(Application) {
+      Application.initializer(initializer);
+    });
+  });
+define("simple-auth-torii/initializer", 
+  ["simple-auth-torii/authenticators/torii","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Authenticator = __dependency1__["default"];
+
+    __exports__["default"] = {
+      name:   'simple-auth-torii',
+      before: 'simple-auth',
+      after:  'torii',
+      initialize: function(container, application) {
+        var torii         = container.lookup('torii:main');
+        var authenticator = Authenticator.create({ torii: torii });
+        container.register('simple-auth-authenticator:torii', authenticator, { instantiate: false });
+      }
+    };
+  });
+})(this);
+
+;(function(global) {
+  var define = global.define;
+  var require = global.require;
+  var Ember = global.Ember;
+  if (typeof Ember === 'undefined' && typeof require !== 'undefined') {
+    Ember = require('ember');
+  }
+
+Ember.libraries.register('Ember Simple Auth OAuth 2.0', '0.7.2');
+
+define("simple-auth-oauth2/authenticators/oauth2", 
+  ["simple-auth/authenticators/base","./../configuration","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
+    "use strict";
+    var Base = __dependency1__["default"];
+    var Configuration = __dependency2__["default"];
+
+    /**
+      Authenticator that conforms to OAuth 2
+      ([RFC 6749](http://tools.ietf.org/html/rfc6749)), specifically the _"Resource
+      Owner Password Credentials Grant Type"_.
+
+      This authenticator supports access token refresh (see
+      [RFC 6740, section 6](http://tools.ietf.org/html/rfc6749#section-6)).
+
+      _The factory for this authenticator is registered as
+      `'simple-auth-authenticator:oauth2-password-grant'` in Ember's
+      container._
+
+      @class OAuth2
+      @namespace SimpleAuth.Authenticators
+      @module simple-auth-oauth2/authenticators/oauth2
+      @extends Base
+    */
+    __exports__["default"] = Base.extend({
+      /**
+        Triggered when the authenticator refreshes the access token (see
+        [RFC 6740, section 6](http://tools.ietf.org/html/rfc6749#section-6)).
+
+        @event sessionDataUpdated
+        @param {Object} data The updated session data
+      */
+
+      /**
+        The endpoint on the server the authenticator acquires the access token
+        from.
+
+        This value can be configured via
+        [`SimpleAuth.Configuration.OAuth2#serverTokenEndpoint`](#SimpleAuth-Configuration-OAuth2-serverTokenEndpoint).
+
+        @property serverTokenEndpoint
+        @type String
+        @default '/token'
+      */
+      serverTokenEndpoint: '/token',
+
+      /**
+        The endpoint on the server the authenticator uses to revoke tokens. Only
+        set this if the server actually supports token revokation.
+
+        This value can be configured via
+        [`SimpleAuth.Configuration.OAuth2#serverTokenRevocationEndpoint`](#SimpleAuth-Configuration-OAuth2-serverTokenRevocationEndpoint).
+
+        @property serverTokenRevocationEndpoint
+        @type String
+        @default null
+      */
+      serverTokenRevocationEndpoint: null,
+
+      /**
+        Sets whether the authenticator automatically refreshes access tokens.
+
+        This value can be configured via
+        [`SimpleAuth.Configuration.OAuth2#refreshAccessTokens`](#SimpleAuth-Configuration-OAuth2-refreshAccessTokens).
+
+        @property refreshAccessTokens
+        @type Boolean
+        @default true
+      */
+      refreshAccessTokens: true,
+
+      /**
+        @property _refreshTokenTimeout
+        @private
+      */
+      _refreshTokenTimeout: null,
+
+      /**
+        @method init
+        @private
+      */
+      init: function() {
+        this.serverTokenEndpoint           = Configuration.serverTokenEndpoint;
+        this.serverTokenRevocationEndpoint = Configuration.serverTokenRevocationEndpoint;
+        this.refreshAccessTokens           = Configuration.refreshAccessTokens;
+      },
+
+      /**
+        Restores the session from a set of session properties; __will return a
+        resolving promise when there's a non-empty `access_token` in the `data`__
+        and a rejecting promise otherwise.
+
+        This method also schedules automatic token refreshing when there are values
+        for `refresh_token` and `expires_in` in the `data` and automatic token
+        refreshing is not disabled (see
+        [`Authenticators.OAuth2#refreshAccessTokens`](#SimpleAuth-Authenticators-OAuth2-refreshAccessTokens)).
+
+        @method restore
+        @param {Object} data The data to restore the session from
+        @return {Ember.RSVP.Promise} A promise that when it resolves results in the session being authenticated
+      */
+      restore: function(data) {
+        var _this = this;
+        return new Ember.RSVP.Promise(function(resolve, reject) {
+          var now = (new Date()).getTime();
+          if (!Ember.isEmpty(data.expires_at) && data.expires_at < now) {
+            if (_this.refreshAccessTokens) {
+              _this.refreshAccessToken(data.expires_in, data.refresh_token).then(function(data) {
+                resolve(data);
+              }, reject);
+            } else {
+              reject();
+            }
+          } else {
+            if (Ember.isEmpty(data.access_token)) {
+              reject();
+            } else {
+              _this.scheduleAccessTokenRefresh(data.expires_in, data.expires_at, data.refresh_token);
+              resolve(data);
+            }
+          }
+        });
+      },
+
+      /**
+        Authenticates the session with the specified `options`; makes a `POST`
+        request to the
+        [`Authenticators.OAuth2#serverTokenEndpoint`](#SimpleAuth-Authenticators-OAuth2-serverTokenEndpoint)
+        with the passed credentials and optional scope and receives the token in
+        response (see http://tools.ietf.org/html/rfc6749#section-4.3).
+
+        __If the credentials are valid (and the optionally requested scope is
+        granted) and thus authentication succeeds, a promise that resolves with the
+        server's response is returned__, otherwise a promise that rejects with the
+        error is returned.
+
+        This method also schedules automatic token refreshing when there are values
+        for `refresh_token` and `expires_in` in the server response and automatic
+        token refreshing is not disabled (see
+        [`Authenticators.OAuth2#refreshAccessTokens`](#SimpleAuth-Authenticators-OAuth2-refreshAccessTokens)).
+
+        @method authenticate
+        @param {Object} options
+        @param {String} options.identification The resource owner username
+        @param {String} options.password The resource owner password
+        @param {String|Array} [options.scope] The scope of the access request (see [RFC 6749, section 3.3](http://tools.ietf.org/html/rfc6749#section-3.3))
+        @return {Ember.RSVP.Promise} A promise that resolves when an access token is successfully acquired from the server and rejects otherwise
+      */
+      authenticate: function(options) {
+        var _this = this;
+        return new Ember.RSVP.Promise(function(resolve, reject) {
+          var data = { grant_type: 'password', username: options.identification, password: options.password };
+          if (!Ember.isEmpty(options.scope)) {
+            var scopesString = Ember.makeArray(options.scope).join(' ');
+            Ember.merge(data, { scope: scopesString });
+          }
+          _this.makeRequest(_this.serverTokenEndpoint, data).then(function(response) {
+            Ember.run(function() {
+              var expiresAt = _this.absolutizeExpirationTime(response.expires_in);
+              _this.scheduleAccessTokenRefresh(response.expires_in, expiresAt, response.refresh_token);
+              if (!Ember.isEmpty(expiresAt)) {
+                response = Ember.merge(response, { expires_at: expiresAt });
+              }
+              resolve(response);
+            });
+          }, function(xhr, status, error) {
+            Ember.run(function() {
+              reject(xhr.responseJSON || xhr.responseText);
+            });
+          });
+        });
+      },
+
+      /**
+        Cancels any outstanding automatic token refreshes and returns a resolving
+        promise.
+
+        @method invalidate
+        @param {Object} data The data of the session to be invalidated
+        @return {Ember.RSVP.Promise} A resolving promise
+      */
+      invalidate: function(data) {
+        var _this = this;
+        function success(resolve) {
+          Ember.run.cancel(_this._refreshTokenTimeout);
+          delete _this._refreshTokenTimeout;
+          resolve();
+        }
+        return new Ember.RSVP.Promise(function(resolve, reject) {
+          if (!Ember.isEmpty(_this.serverTokenRevocationEndpoint)) {
+            var requests = [];
+            Ember.A(['access_token', 'refresh_token']).forEach(function(tokenType) {
+              if (!Ember.isEmpty(data[tokenType])) {
+                requests.push(_this.makeRequest(_this.serverTokenRevocationEndpoint, {
+                  token_type_hint: tokenType, token: data[tokenType]
+                }));
+              }
+            });
+            Ember.$.when.apply(Ember.$, requests).always(function(responses) {
+              success(resolve);
+            });
+          } else {
+            success(resolve);
+          }
+        });
+      },
+
+      /**
+        Sends an `AJAX` request to the `url`. This will always be a _"POST"_
+        request with content type _"application/x-www-form-urlencoded"_ as
+        specified in [RFC 6749](http://tools.ietf.org/html/rfc6749).
+
+        This method is not meant to be used directly but serves as an extension
+        point to e.g. add _"Client Credentials"_ (see
+        [RFC 6749, section 2.3](http://tools.ietf.org/html/rfc6749#section-2.3)).
+
+        @method makeRequest
+        @param {Object} url The url to send the request to
+        @param {Object} data The data to send with the request, e.g. username and password or the refresh token
+        @return {Deferred object} A Deferred object (see [the jQuery docs](http://api.jquery.com/category/deferred-object/)) that is compatible to Ember.RSVP.Promise; will resolve if the request succeeds, reject otherwise
+        @protected
+      */
+      makeRequest: function(url, data) {
+        return Ember.$.ajax({
+          url:         url,
+          type:        'POST',
+          data:        data,
+          dataType:    'json',
+          contentType: 'application/x-www-form-urlencoded'
+        });
+      },
+
+      /**
+        @method scheduleAccessTokenRefresh
+        @private
+      */
+      scheduleAccessTokenRefresh: function(expiresIn, expiresAt, refreshToken) {
+        var _this = this;
+        if (this.refreshAccessTokens) {
+          var now = (new Date()).getTime();
+          if (Ember.isEmpty(expiresAt) && !Ember.isEmpty(expiresIn)) {
+            expiresAt = new Date(now + expiresIn * 1000).getTime();
+          }
+          var offset = (Math.floor(Math.random() * 5) + 5) * 1000;
+          if (!Ember.isEmpty(refreshToken) && !Ember.isEmpty(expiresAt) && expiresAt > now - offset) {
+            Ember.run.cancel(this._refreshTokenTimeout);
+            delete this._refreshTokenTimeout;
+            if (!Ember.testing) {
+              this._refreshTokenTimeout = Ember.run.later(this, this.refreshAccessToken, expiresIn, refreshToken, expiresAt - now - offset);
+            }
+          }
+        }
+      },
+
+      /**
+        @method refreshAccessToken
+        @private
+      */
+      refreshAccessToken: function(expiresIn, refreshToken) {
+        var _this = this;
+        var data  = { grant_type: 'refresh_token', refresh_token: refreshToken };
+        return new Ember.RSVP.Promise(function(resolve, reject) {
+          _this.makeRequest(_this.serverTokenEndpoint, data).then(function(response) {
+            Ember.run(function() {
+              expiresIn     = response.expires_in || expiresIn;
+              refreshToken  = response.refresh_token || refreshToken;
+              var expiresAt = _this.absolutizeExpirationTime(expiresIn);
+              var data      = Ember.merge(response, { expires_in: expiresIn, expires_at: expiresAt, refresh_token: refreshToken });
+              _this.scheduleAccessTokenRefresh(expiresIn, null, refreshToken);
+              _this.trigger('sessionDataUpdated', data);
+              resolve(data);
+            });
+          }, function(xhr, status, error) {
+            Ember.Logger.warn('Access token could not be refreshed - server responded with ' + error + '.');
+            reject();
+          });
+        });
+      },
+
+      /**
+        @method absolutizeExpirationTime
+        @private
+      */
+      absolutizeExpirationTime: function(expiresIn) {
+        if (!Ember.isEmpty(expiresIn)) {
+          return new Date((new Date().getTime()) + expiresIn * 1000).getTime();
+        }
+      }
+    });
+  });
+define("simple-auth-oauth2/authorizers/oauth2", 
+  ["simple-auth/authorizers/base","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Base = __dependency1__["default"];
+
+    /**
+      Authorizer that conforms to OAuth 2
+      ([RFC 6749](http://tools.ietf.org/html/rfc6749)) by sending a bearer token
+      ([RFC 6749](http://tools.ietf.org/html/rfc6750)) in the request's
+      `Authorization` header.
+
+      _The factory for this authorizer is registered as
+      `'simple-auth-authorizer:oauth2-bearer'` in Ember's container._
+
+      @class OAuth2
+      @namespace SimpleAuth.Authorizers
+      @module simple-auth-oauth2/authorizers/oauth2
+      @extends Base
+    */
+    __exports__["default"] = Base.extend({
+      /**
+        Authorizes an XHR request by sending the `access_token` property from the
+        session as a bearer token in the `Authorization` header:
+
+        ```
+        Authorization: Bearer <access_token>
+        ```
+
+        @method authorize
+        @param {jqXHR} jqXHR The XHR request to authorize (see http://api.jquery.com/jQuery.ajax/#jqXHR)
+        @param {Object} requestOptions The options as provided to the `$.ajax` method (see http://api.jquery.com/jQuery.ajaxPrefilter/)
+      */
+      authorize: function(jqXHR, requestOptions) {
+        var accessToken = this.get('session.access_token');
+        if (this.get('session.isAuthenticated') && !Ember.isEmpty(accessToken)) {
+          jqXHR.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+        }
+      }
+    });
+  });
+define("simple-auth-oauth2/configuration", 
+  ["simple-auth/utils/load-config","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var loadConfig = __dependency1__["default"];
+
+    var defaults = {
+      serverTokenEndpoint:           '/token',
+      serverTokenRevocationEndpoint: null,
+      refreshAccessTokens:           true
+    };
+
+    /**
+      Ember Simple Auth OAuth2's configuration object.
+
+      To change any of these values, set them on the application's environment
+      object:
+
+      ```js
+      ENV['simple-auth-oauth2'] = {
+        serverTokenEndpoint: '/some/custom/endpoint'
+      }
+      ```
+
+      @class OAuth2
+      @namespace SimpleAuth.Configuration
+      @module simple-auth/configuration
+    */
+    __exports__["default"] = {
+      /**
+        The endpoint on the server the authenticator acquires the access token
+        from.
+
+        @property serverTokenEndpoint
+        @readOnly
+        @static
+        @type String
+        @default '/token'
+      */
+      serverTokenEndpoint: defaults.serverTokenEndpoint,
+
+      /**
+        The endpoint on the server the authenticator uses to revoke tokens. Only
+        set this if the server actually supports token revokation.
+
+        @property serverTokenRevocationEndpoint
+        @readOnly
+        @static
+        @type String
+        @default null
+      */
+      serverTokenRevocationEndpoint: defaults.serverTokenRevocationEndpoint,
+
+      /**
+        Sets whether the authenticator automatically refreshes access tokens.
+
+        @property refreshAccessTokens
+        @readOnly
+        @static
+        @type Boolean
+        @default true
+      */
+      refreshAccessTokens: defaults.refreshAccessTokens,
+
+      /**
+        @method load
+        @private
+      */
+      load: loadConfig(defaults)
+    };
+  });
+define("simple-auth-oauth2/ember", 
+  ["./initializer"],
+  function(__dependency1__) {
+    "use strict";
+    var initializer = __dependency1__["default"];
+
+    Ember.onLoad('Ember.Application', function(Application) {
+      Application.initializer(initializer);
+    });
+  });
+define("simple-auth-oauth2/initializer", 
+  ["./configuration","simple-auth/utils/get-global-config","simple-auth-oauth2/authenticators/oauth2","simple-auth-oauth2/authorizers/oauth2","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
+    "use strict";
+    var Configuration = __dependency1__["default"];
+    var getGlobalConfig = __dependency2__["default"];
+    var Authenticator = __dependency3__["default"];
+    var Authorizer = __dependency4__["default"];
+
+    __exports__["default"] = {
+      name:       'simple-auth-oauth2',
+      before:     'simple-auth',
+      initialize: function(container, application) {
+        var config = getGlobalConfig('simple-auth-oauth2');
+        Configuration.load(container, config);
+        container.register('simple-auth-authorizer:oauth2-bearer', Authorizer);
+        container.register('simple-auth-authenticator:oauth2-password-grant', Authenticator);
+      }
+    };
+  });
+})(this);
+
+;eval("define(\"ember-drag-drop/mixins/droppable\", \n  [\"ember\",\"exports\"],\n  function(__dependency1__, __exports__) {\n    \"use strict\";\n    var Ember = __dependency1__[\"default\"];\n\n    /**\n     * Wraps the native drop events to make your components droppable.\n     *\n     * @mixin Droppable\n     */\n\n    var Droppable = Ember.Mixin.create({\n\n      classNameBindings: [\n        \'accepts-drag\',\n        \'self-drop\'\n      ],\n\n      /**\n       * Read-only className property that is set to true when the component is\n       * receiving a valid drag event. You can style your element with\n       * `.accepts-drag`.\n       *\n       * @property accepts-drag\n       * @private\n       */\n\n      \'accepts-drag\': false,\n\n      /**\n       * Will be true when the component is dragged over itself. Can use\n       * `.self-drop` in your css to style (or more common, unstyle) the component.\n       *\n       * @property self-drop\n       * @private\n       */\n\n      \'self-drop\': false,\n\n     /**\n       * Validates drag events. Override this to restrict which data types your\n       * component accepts.\n       *\n       * Example:\n       *\n       * ```js\n       * validateDragEvent: function(event) {\n       *   return event.dataTransfer.types.contains(\'text/x-foo\');\n       * }\n       * ```\n       *\n       * @method validateDragEvent\n       * @public\n       */\n\n      validateDragEvent: function() {\n        return true;\n      },\n\n      /**\n       * Called when a valid drag event is dropped on the component. Override to\n       * actually make something happen.\n       *\n       * ```js\n       * acceptDrop: function(event) {\n       *   var data = event.dataTransfer.getData(\'text/plain\');\n       *   doSomethingWith(data);\n       * }\n       * ```\n       *\n       * @method acceptDrop\n       * @public\n       */\n\n      acceptDrop: Ember.K,\n\n      /**\n       * @method _handleDragOver\n       * @private\n       */\n\n      _handleDragOver: function(event) {\n        if (this._droppableIsDraggable(event)) {\n          this.set(\'self-drop\', true);\n        }\n        if (this.get(\'accepts-drag\')) {\n          return this._allowDrop(event);\n        }\n        if (this.validateDragEvent(event)) {\n          this.set(\'accepts-drag\', true);\n          this._allowDrop(event);\n        } else {\n          this._resetDroppability();\n        }\n      }.on(\'dragOver\'),\n\n      /**\n       * @method _handleDrop\n       * @private\n       */\n\n      _handleDrop: function(event) {\n        // have to validate on drop because you may have nested sortables the\n        // parent allows the drop but the child receives it, revalidating allows\n        // the event to bubble up to the parent to handle it\n        if (!this.validateDragEvent(event)) {\n          return;\n        }\n        this.acceptDrop(event);\n        this._resetDroppability();\n        // TODO: might not need this? I can\'t remember why its here\n        event.stopPropagation();\n        return false;\n      }.on(\'drop\'),\n\n      /**\n       * Tells the browser we have an acceptable drag event.\n       *\n       * @method _allowDrop\n       * @private\n       */\n\n      _allowDrop: function(event) {\n        event.stopPropagation();\n        event.preventDefault();\n        return false;\n      },\n\n      /**\n       * We want to be able to know if the current drop target is the original\n       * element being dragged or a child of it.\n       *\n       * @method _droppableIsDraggable\n       * @private\n       */\n\n      _droppableIsDraggable: function(event) {\n        return Droppable._currentDrag && (\n          Droppable._currentDrag === event.target ||\n          Droppable._currentDrag.contains(event.target)\n        );\n      },\n\n      /**\n       * @method _resetDroppability\n       * @private\n       */\n\n      _resetDroppability: function() {\n        this.set(\'accepts-drag\', false);\n        this.set(\'self-drop\', false);\n      }.on(\'dragLeave\')\n\n    });\n\n    // Need to track this so we can determine `self-drop`.\n    // It\'s on `Droppable` so we can test :\\\n    Droppable._currentDrag = null;\n    window.addEventListener(\'dragstart\', function(event) {\n      Droppable._currentDrag = event.target;\n    }, true);\n\n    __exports__[\"default\"] = Droppable;\n  });//# sourceURL=ember-drag-drop/mixins/droppable.js");
+
+;eval("define(\"ember-drag-drop\", [\"ember-drag-drop/index\",\"exports\"], function(__index__, __exports__) {\n  \"use strict\";\n  Object.keys(__index__).forEach(function(key){\n    __exports__[key] = __index__[key];\n  });\n});\n//# sourceURL=__reexport.js");
