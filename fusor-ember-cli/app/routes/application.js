@@ -4,34 +4,28 @@ import ApplicationRouteMixin from 'simple-auth/mixins/application-route-mixin';
 
 export default Ember.Route.extend(ApplicationRouteMixin, {
 
-  // beforeModel: function() {
-  //   // UNCOMMENT when deploying to openshift
-
-  //   // if (this.controllerFor('application').get('showMainMenu')) {
-  //   //   this.transitionTo('rhci');
-  //   // } else if (!this.controllerFor('application').get('isLoggedIn')) {
-  //   //   this.transitionTo('login');
-  //   // // } else {
-  //   // //   this.transitionTo('setpassword');
-  //   // }
-  // },
-
+  beforeModel: function(transition) {
+    if (!this.controllerFor('application').get('isEmberCliMode')) {
+      return this.get('session').set('isAuthenticated', true);
+    };
+  },
 
   setupController: function(controller, model) {
     controller.set('model', model);
-    // change isLoggedIn and isLoggedIn back to FALSE when deploying to openshift
-    // controller.set('isLoggedIn', true);
-    controller.set('isPasswordSet', true);
-    controller.set('dontHideMainMenu', true);
+
+    // Ensure headers are set in ApplicationAdapter. TODO - Why can't adapter access session?
+    var adapter = this.store.adapterFor('ApplicationAdapter');
+    if (this.get('session.authType') == 'oAuth') {
+      adapter.set('headers', { Authorization: 'Bearer ' + this.get('session.access_token') });
+    } else if (this.get('session.authType') == 'Basic') {
+      adapter.set('headers', { Authorization: 'Basic ' + this.get('session.basicAuthToken') });
+    }
   },
 
   actions: {
     invalidateSession: function () {
-      return this._super().then(function() {
-          return self.transitionTo('login');
-        }, function() {
-          alert('Error: There was a problem with invalidating the session');
-      });
+      this.get('session').invalidate();
+      return this.transitionTo('login');
     },
 
     notImplemented: function() {

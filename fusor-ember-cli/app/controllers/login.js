@@ -3,22 +3,99 @@ import LoginControllerMixin from 'simple-auth/mixins/login-controller-mixin';
 
 export default Ember.ObjectController.extend(LoginControllerMixin, {
   needs: ['application'],
-  //authenticator: 'authenticator:foreman',
-  authenticator: 'simple-auth-authenticator:oauth2-password-grant',
 
   identification: null,
   password: null,
   errorMessage: null,
 
+  authType: 'Basic',
+  sessionAuthType: Ember.computed.alias("session.authType"),
+
+  authenticator: function() {
+    if (this.get('isOauth')) {
+      return 'simple-auth-authenticator:oauth2-password-grant';
+    } else {
+      return 'authenticator:foreman';
+    }
+  }.property('isOauth'),
+
+  isOauth: function() {
+    return (this.get('authType') == 'oAuth') || (this.get('sessionAuthType') == 'oAuth')
+  }.property('authType', 'sessionAuthType'),
+
   actions: {
 
-    // authenticate called from LoginControllerMixin,
     authenticate: function() {
       var self = this;
+      if (this.get('authType') == 'Basic') {
+          return this._super().then(function() {
+              var adapter = self.store.adapterFor('ApplicationAdapter');
+              adapter.set('headers', { Authorization: 'Basic ' + self.get('session.basicAuthToken') });
+              return self.transitionTo('rhci');
+          }, function () {
+                return self.set('errorMessage', "Your username or password is incorrect. Please try again.");
+          });
+
+      } else {
+
+          return this._super().then(function() {
+
+              var adapter = self.store.adapterFor('ApplicationAdapter');
+              // add token to adapter header
+              adapter.set('headers', { Authorization: 'Bearer ' + self.get('session.access_token') });
+
+              // add user to local storage session
+              self.store.find('user', self.get('identification')).then(function(response) {
+                self.get('session').set('authType', 'oAuth');
+                self.get('session').set('currentUser', response);
+                console.log('SESSION');
+                console.log(self.get('session'));
+                console.log(self.get('session.authType'));
+                console.log(self.get('session.basicAuthToken'));
+                return self.transitionTo('rhci');
+              },
+                function(response){
+                  alert('error oAuth')
+                }
+              );
+
+            }, function() {
+                  return self.set('errorMessage', "Your username or password is incorrect. Please try again.");
+          });
+      }
+
+    },
+
+    // getCurrentUser: function
+    // // authenticate called from LoginControllerMixin,
+    authenticateOauth: function() {
+      var pw = this.get('password')
+      var self = this;
       return this._super().then(function() {
-          return self.transitionTo('rhci');
+
+          var adapter = self.store.adapterFor('ApplicationAdapter');
+          if (self.get('authType') == 'Basic') {
+            self.get('session').set('basicAuthToken', btoa(self.get('identification') + ':' + pw));
+            pw = null;
+            adapter.set('headers', { Authorization: 'Basic ' + self.get('session.basicAuthToken') });
+          } else {
+            // add token to adapter header
+            adapter.set('headers', { Authorization: 'Bearer ' + self.get('session.access_token') });
+          }
+
+          // add user to local storage session
+          self.store.find('user', self.get('identification')).then(function(response) {
+            self.get('session').set('currentUser', response);
+            return self.transitionTo('rhci');
+          },
+            function(response){
+              alert('error')
+            }
+          );
+
+
         }, function() {
-          return self.set('errorMessage', "Your username or password is incorrect. Please try again.");
+              return self.set('errorMessage', "Your username or password is incorrect. Please try again.");
       });
     },
 

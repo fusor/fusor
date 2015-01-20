@@ -8,6 +8,7 @@ export default DS.Model.extend({
   admin: DS.attr('boolean'),
   auth_source_id: DS.attr('number'),
   lastLoginOn: DS.attr('date'),
+  oauth_access_tokens:  DS.hasMany('oauthAccessToken'),
   fullName: function() {
     return this.get('firstname') + ' ' + this.get('lastname');
   }.property('firstname', 'lastname')
