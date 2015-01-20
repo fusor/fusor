@@ -12,7 +12,6 @@ var Router = Ember.Router.extend({
 Router.map(function() {
   this.route('login');
   this.route('loggedin');
-  this.route ('setpassword');
 
   this.route('rhci', { path: '/deployments/new' });
   this.route('deployments');

@@ -1,6 +1,6 @@
 #ember-app {
-  padding-top: 0px;
-  /*change to 40px when deploying */ }
+  padding-top: 40px;
+  /*change to 40px when deploying, change to 0px when in ember-cli mode */ }
 
 .pager {
   position: absolute;

@@ -15,8 +15,11 @@
 
         <li class="dropdown menu_tab_dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-            {{session.content.authorizationCode.length}}
+            {{!session.content.authorizationCode.length}}
             {{session.content.provider}}
+            {{session.authType}}&nbsp;
+            {{session.basicAuthToken}}
+            {{session.access_token}}&nbsp;
             <img alt="Change your avatar at gravatar.com" class="avatar small" src="assets/user.jpg">{{loginUsername}} <span class="caret"></span>
           </a>
 

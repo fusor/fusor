@@ -1,23 +1,25 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
-  needs: ['side-menu', 'rhci', 'login'],
+  needs: ['side-menu', 'rhci'],
 
   isUpstream: true,
-  isEmberCliMode: true,
 
-  showMainMenu: Ember.computed.and('isLoggedIn', 'isPasswordSet', 'dontHideMainMenu'),
+  deployAsPlugin: true,
+  isEmberCliMode: Ember.computed.not('deployAsPlugin'),
+
+  isContainer: Ember.computed.alias("isUpstream"),
+
+  showMainMenu: Ember.computed.and('isLoggedIn', 'isEmberCliMode'),
   showSideMenu: Ember.computed.alias("controllers.side-menu.showSideMenu"),
 
   isLoggedIn: Ember.computed.alias("session.isAuthenticated"),
-  isPasswordSet: false,
-  dontHideMainMenu: true,
 
-  loginUsername: Ember.computed.alias("controllers.login.identification"),
+  loginUsername: Ember.computed.alias("session.currentUser.login"),
 
-  isContainer: function () {
-    return (this.get('isUpstream') && this.get('isLoggedIn'));
-  }.property('isUpstream','isLoggedIn'),
+  accessToken: function () {
+    return this.get("session.access_token");
+  }.property('session.access_token'),
 
   myModalButtons: [
       Ember.Object.create({title: 'Submit', type: 'primary', clicked:"submit"}),

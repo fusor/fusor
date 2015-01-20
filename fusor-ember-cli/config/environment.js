@@ -25,12 +25,12 @@ module.exports = function(environment) {
       // session:                     'simple-auth-session:main',
       store: 'simple-auth-session-store:local-storage',
       // localStorageKey:             'ember_simple_auth:session',
-      // crossOriginWhitelist:        [],
+      crossOriginWhitelist: ['http://localhost:3000', 'https://foreman.sat.lab.tlv.redhat.com'],
       // applicationRootUrl:          null
     },
-    // simpleAuthOauth2: {
-    //   serverTokenEndpoint: 'http://localhost:3000/oauth/authorize'
-    // },
+    simpleAuthOauth2: {
+      serverTokenEndpoint: 'http://localhost:3000/oauth/authorize'
+    },
     // ENV['simple-auth-oauth2'] = {
     //   serverTokenEndpoint: 'http://localhost:3000/token'
     // }
