@@ -29,12 +29,8 @@ module.exports = function(environment) {
       // applicationRootUrl:          null
     },
     simpleAuthOauth2: {
-      serverTokenEndpoint: 'http://localhost:3000/oauth/authorize'
+      serverTokenEndpoint: '/oauth/token'
     },
-    // ENV['simple-auth-oauth2'] = {
-    //   serverTokenEndpoint: 'http://localhost:3000/token'
-    // }
-
     // contentSecurityPolicy: {
     //   'default-src': "*",
     //   'script-src': "*",
@@ -44,16 +40,17 @@ module.exports = function(environment) {
     //   'style-src': "*",
     //   'frame-src': "*"
     // },
+    //contentSecurityPolicyHeader: 'Content-Security-Policy',
     contentSecurityPolicyHeader: 'Disabled-Content-Security-Policy',
 
     torii: {
       providers: {
         'facebook-connect': {
-        appId: '394152887290151'
+          appId: '394152887290151'
         },
         'facebook-oauth2': {
           apiKey: '394152887290151',
-          redirectUri: 'http://localhost:4200/#/login'
+          redirectUri: 'http://0.0.0.0:4200'
         },
         'google-oauth2': {
           apiKey: '586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com',
@@ -61,11 +58,6 @@ module.exports = function(environment) {
         },
         'github-oauth2': {
           apiKey: '9571e28a208605ba2a6e'
-          //redirectUri: 'http://localhost:4200'
-        },
-        'foreman-oauth2': {
-          appId: '6bfa2c89004215ada0b91bc3a7fff1c0b72c30d204de5c0b604cb6289315e3e1',
-          redirectUri: 'http://doorkeeper-sinatra.herokuapp.com/callback'
         }
       }
     },
@@ -75,6 +67,10 @@ module.exports = function(environment) {
     }
   };
 
+  ENV['simple-auth-oauth2'] = {
+    serverTokenEndpoint: '/oauth/token'
+  }
+
   if (environment === 'development') {
     // ENV.APP.LOG_RESOLVER = true;
     ENV.APP.LOG_ACTIVE_GENERATION = true;
@@ -82,9 +78,6 @@ module.exports = function(environment) {
     // ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
     ENV.APP.LOG_VIEW_LOOKUPS = true;
     ENV.APP.rootElement = "#ember-app";
-    ENV['simple-auth-oauth2'] = {
-      serverTokenEndpoint: 'http://localhost:3000/oauth/token'
-    }
   }
 
   if (environment === 'test') {
@@ -97,15 +90,10 @@ module.exports = function(environment) {
     ENV.APP.LOG_VIEW_LOOKUPS = false;
 
     ENV.APP.rootElement = '#ember-testing';
-    ENV['simple-auth-oauth2'] = {
-      serverTokenEndpoint: 'http://localhost:3000/oauth/token'
-    }
   }
 
   if (environment === 'production') {
-    ENV['simple-auth-oauth2'] = {
-      serverTokenEndpoint: 'http://localhost:3000/oauth/token'
-    }
+    ENV.APP.rootElement = "#ember-app";
   }
 
   return ENV;

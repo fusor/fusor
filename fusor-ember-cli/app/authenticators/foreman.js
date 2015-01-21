@@ -12,7 +12,7 @@ export default Base.extend({
     var self = this;
     return new Ember.RSVP.Promise(function (resolve, reject) {
       Ember.$.ajax({
-          url: 'http://localhost:3000/api/v2/users/' + options.loginUsername,
+          url: '/api/v2/users/' + options.loginUsername,
           headers: {
               "Authorization": "Basic " + options.basicAuthToken
           },
@@ -34,7 +34,7 @@ export default Base.extend({
         var self = this;
         return new Ember.RSVP.Promise(function (resolve, reject) {
           Ember.$.ajax({
-              url: 'http://localhost:3000/api/v2/users/' + credentials.identification,
+              url: '/api/v2/users/' + credentials.identification,
               headers: {
                   "Authorization": "Basic " + btoa(credentials.identification + ':' + credentials.password)
               },

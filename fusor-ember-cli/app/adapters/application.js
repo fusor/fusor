@@ -1,8 +1,7 @@
 import DS from 'ember-data';
 
 export default DS.ActiveModelAdapter.extend({
-    namespace: 'api/v2',
-    host: 'http://localhost:3000'
+    namespace: 'api/v2'
 
     // TODO - Why can't adapter access session?
     // headers: function() {
