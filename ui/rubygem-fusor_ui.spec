@@ -29,7 +29,7 @@ Summary: Fusor Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 1%{dist}
+Release: 3%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -112,4 +112,10 @@ ln -s %{foreman_assets_plugin} %{buildroot}%{foreman_dir}/public/assets/fusor_ui
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Tue Jan 27 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-3
+- new package built with tito
+
+* Tue Jan 27 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-2
+- new package built with tito
+
 
