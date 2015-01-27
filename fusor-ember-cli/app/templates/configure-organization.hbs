@@ -14,7 +14,7 @@
       </thead>
 
       <tbody>
-      {{#each org in organizations itemController="organization"}}
+      {{#each org in model itemController="organization"}}
         {{tr-organization org=org selectedOrganzation=selectedOrganzation}}
       {{/each}}
       </tbody>
@@ -24,9 +24,9 @@
     <br />
     <div style='float:right'>
         {{#link-to 'satellite' class='btn btn-default'}}Back{{/link-to}}
-        {{#link-to 'configure-environment' class='btn btn-primary'}}Next{{/link-to}}
+        {{#link-to 'configure-environment' (query-params organization_id=organizationId) class='btn btn-primary'}}Next{{/link-to}}
     </div>
-
+{{organizationId}}
   </div>
 </div>
 

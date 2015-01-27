@@ -5,7 +5,7 @@ export default Ember.Controller.extend({
 
   isUpstream: true,
 
-  deployAsPlugin: true,
+  deployAsPlugin: false,
   isEmberCliMode: Ember.computed.not('deployAsPlugin'),
 
   isContainer: Ember.computed.alias("isUpstream"),

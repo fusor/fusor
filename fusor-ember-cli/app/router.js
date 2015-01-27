@@ -19,7 +19,6 @@ Router.map(function() {
   this.resource('deployment', function() {
 
     this.resource('satellite', function() {
-      this.resource('configure');
       this.resource('configure-organization');
       this.resource('configure-environment');
     });
@@ -72,6 +71,9 @@ Router.map(function() {
   this.route('hostgroup/edit');
   this.route('review/installation');
   this.route('review/progress');
+  this.resource("discovered-hosts", function() {
+    this.resource("discovered-host", { path: '/:discovered_hosts_id' });
+  });
 });
 
 export default Router;

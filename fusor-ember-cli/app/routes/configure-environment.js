@@ -1,11 +1,11 @@
 import Ember from 'ember';
 
 export default Ember.Route.extend({
-  setupController: function(controller, model) {
-    controller.set('model', model);
-    controller.set('environments', this.store.find('environment'));
-    controller.set('newenvs', this.store.find('newenv'));
+
+  model: function() {
+    return this.store.find('lifecycle-environment');
   },
+
   activate: function() {
     this.controllerFor('side-menu').set('etherpadName', '44'); //route-configure-environment
   },

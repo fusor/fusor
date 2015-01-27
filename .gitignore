@@ -3,6 +3,7 @@
 # compiled output
 /fusor-ember-cli/dist
 /fusor-ember-cli/tmp
+/fusor-ember-cli/markie
 
 # dependencies
 /fusor-ember-cli/node_modules
