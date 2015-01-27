@@ -86575,171 +86575,164 @@ enifed("ember-inflector/system/string",
   });
  global.DS = requireModule('ember-data')['default'];
  })(this);
-;define("ember-drag-drop/mixins/droppable", 
-  ["ember","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Ember = __dependency1__["default"];
+;define('ember-drag-drop/mixins/droppable', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  var Droppable = Ember['default'].Mixin.create({
+
+    classNameBindings: [
+      'accepts-drag',
+      'self-drop'
+    ],
 
     /**
-     * Wraps the native drop events to make your components droppable.
+     * Read-only className property that is set to true when the component is
+     * receiving a valid drag event. You can style your element with
+     * `.accepts-drag`.
      *
-     * @mixin Droppable
+     * @property accepts-drag
+     * @private
      */
 
-    var Droppable = Ember.Mixin.create({
+    'accepts-drag': false,
 
-      classNameBindings: [
-        'accepts-drag',
-        'self-drop'
-      ],
+    /**
+     * Will be true when the component is dragged over itself. Can use
+     * `.self-drop` in your css to style (or more common, unstyle) the component.
+     *
+     * @property self-drop
+     * @private
+     */
 
-      /**
-       * Read-only className property that is set to true when the component is
-       * receiving a valid drag event. You can style your element with
-       * `.accepts-drag`.
-       *
-       * @property accepts-drag
-       * @private
-       */
+    'self-drop': false,
 
-      'accepts-drag': false,
+   /**
+     * Validates drag events. Override this to restrict which data types your
+     * component accepts.
+     *
+     * Example:
+     *
+     * ```js
+     * validateDragEvent: function(event) {
+     *   return event.dataTransfer.types.contains('text/x-foo');
+     * }
+     * ```
+     *
+     * @method validateDragEvent
+     * @public
+     */
 
-      /**
-       * Will be true when the component is dragged over itself. Can use
-       * `.self-drop` in your css to style (or more common, unstyle) the component.
-       *
-       * @property self-drop
-       * @private
-       */
+    validateDragEvent: function() {
+      return true;
+    },
 
-      'self-drop': false,
+    /**
+     * Called when a valid drag event is dropped on the component. Override to
+     * actually make something happen.
+     *
+     * ```js
+     * acceptDrop: function(event) {
+     *   var data = event.dataTransfer.getData('text/plain');
+     *   doSomethingWith(data);
+     * }
+     * ```
+     *
+     * @method acceptDrop
+     * @public
+     */
 
-     /**
-       * Validates drag events. Override this to restrict which data types your
-       * component accepts.
-       *
-       * Example:
-       *
-       * ```js
-       * validateDragEvent: function(event) {
-       *   return event.dataTransfer.types.contains('text/x-foo');
-       * }
-       * ```
-       *
-       * @method validateDragEvent
-       * @public
-       */
+    acceptDrop: Ember['default'].K,
 
-      validateDragEvent: function() {
-        return true;
-      },
+    /**
+     * @method _handleDragOver
+     * @private
+     */
 
-      /**
-       * Called when a valid drag event is dropped on the component. Override to
-       * actually make something happen.
-       *
-       * ```js
-       * acceptDrop: function(event) {
-       *   var data = event.dataTransfer.getData('text/plain');
-       *   doSomethingWith(data);
-       * }
-       * ```
-       *
-       * @method acceptDrop
-       * @public
-       */
-
-      acceptDrop: Ember.K,
-
-      /**
-       * @method _handleDragOver
-       * @private
-       */
-
-      _handleDragOver: function(event) {
-        if (this._droppableIsDraggable(event)) {
-          this.set('self-drop', true);
-        }
-        if (this.get('accepts-drag')) {
-          return this._allowDrop(event);
-        }
-        if (this.validateDragEvent(event)) {
-          this.set('accepts-drag', true);
-          this._allowDrop(event);
-        } else {
-          this._resetDroppability();
-        }
-      }.on('dragOver'),
-
-      /**
-       * @method _handleDrop
-       * @private
-       */
-
-      _handleDrop: function(event) {
-        // have to validate on drop because you may have nested sortables the
-        // parent allows the drop but the child receives it, revalidating allows
-        // the event to bubble up to the parent to handle it
-        if (!this.validateDragEvent(event)) {
-          return;
-        }
-        this.acceptDrop(event);
+    _handleDragOver: function(event) {
+      if (this._droppableIsDraggable(event)) {
+        this.set('self-drop', true);
+      }
+      if (this.get('accepts-drag')) {
+        return this._allowDrop(event);
+      }
+      if (this.validateDragEvent(event)) {
+        this.set('accepts-drag', true);
+        this._allowDrop(event);
+      } else {
         this._resetDroppability();
-        // TODO: might not need this? I can't remember why its here
-        event.stopPropagation();
-        return false;
-      }.on('drop'),
+      }
+    }.on('dragOver'),
 
-      /**
-       * Tells the browser we have an acceptable drag event.
-       *
-       * @method _allowDrop
-       * @private
-       */
+    /**
+     * @method _handleDrop
+     * @private
+     */
 
-      _allowDrop: function(event) {
-        event.stopPropagation();
-        event.preventDefault();
-        return false;
-      },
+    _handleDrop: function(event) {
+      // have to validate on drop because you may have nested sortables the
+      // parent allows the drop but the child receives it, revalidating allows
+      // the event to bubble up to the parent to handle it
+      if (!this.validateDragEvent(event)) {
+        return;
+      }
+      this.acceptDrop(event);
+      this._resetDroppability();
+      // TODO: might not need this? I can't remember why its here
+      event.stopPropagation();
+      return false;
+    }.on('drop'),
 
-      /**
-       * We want to be able to know if the current drop target is the original
-       * element being dragged or a child of it.
-       *
-       * @method _droppableIsDraggable
-       * @private
-       */
+    /**
+     * Tells the browser we have an acceptable drag event.
+     *
+     * @method _allowDrop
+     * @private
+     */
 
-      _droppableIsDraggable: function(event) {
-        return Droppable._currentDrag && (
-          Droppable._currentDrag === event.target ||
-          Droppable._currentDrag.contains(event.target)
-        );
-      },
+    _allowDrop: function(event) {
+      event.stopPropagation();
+      event.preventDefault();
+      return false;
+    },
 
-      /**
-       * @method _resetDroppability
-       * @private
-       */
+    /**
+     * We want to be able to know if the current drop target is the original
+     * element being dragged or a child of it.
+     *
+     * @method _droppableIsDraggable
+     * @private
+     */
 
-      _resetDroppability: function() {
-        this.set('accepts-drag', false);
-        this.set('self-drop', false);
-      }.on('dragLeave')
+    _droppableIsDraggable: function(event) {
+      return Droppable._currentDrag && (
+        Droppable._currentDrag === event.target ||
+        Droppable._currentDrag.contains(event.target)
+      );
+    },
 
-    });
+    /**
+     * @method _resetDroppability
+     * @private
+     */
 
-    // Need to track this so we can determine `self-drop`.
-    // It's on `Droppable` so we can test :\
-    Droppable._currentDrag = null;
-    window.addEventListener('dragstart', function(event) {
-      Droppable._currentDrag = event.target;
-    }, true);
+    _resetDroppability: function() {
+      this.set('accepts-drag', false);
+      this.set('self-drop', false);
+    }.on('dragLeave')
 
-    __exports__["default"] = Droppable;
   });
+
+  // Need to track this so we can determine `self-drop`.
+  // It's on `Droppable` so we can test :\
+  Droppable._currentDrag = null;
+  window.addEventListener('dragstart', function(event) {
+    Droppable._currentDrag = event.target;
+  }, true);
+
+  exports['default'] = Droppable;
+
+});
 define("ember-drag-drop", ["ember-drag-drop/index","exports"], function(__index__, __exports__) {
   "use strict";
   Object.keys(__index__).forEach(function(key){
