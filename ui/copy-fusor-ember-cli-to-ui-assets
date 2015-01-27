@@ -2,6 +2,7 @@
 
 cp ../fusor-ember-cli/dist/assets/vendor.css          ./app/assets/stylesheets/fusor_ui/vendor-fusor.css;
 cp ../fusor-ember-cli/dist/assets/fusor-ember-cli.css ./app/assets/stylesheets/fusor_ui/;
+cp ../fusor-ember-cli/dist/assets/fusor-ember-cli.css.map  ./app/assets/stylesheets/fusor_ui/;
 
 cp ../fusor-ember-cli/dist/assets/vendor.js       ./app/assets/javascripts/fusor_ui/vendor-fusor.js;
 cp ../fusor-ember-cli/dist/assets/fusor-ember-cli.js   ./app/assets/javascripts/fusor_ui/;
@@ -16,5 +17,6 @@ cp ../fusor-ember-cli/dist/assets/manageiq-640-210.png  ./app/assets/images/;
 
 cp ../fusor-ember-cli/dist/fonts/*.*  ./public/fonts/;
 
+cd ~/fusor
 git add .;
 git commit -m "moved assets from /fusor-ember-cli/dist to /ui/app/assets";
