@@ -1,5 +1,6 @@
 module Fusor
   class Engine < ::Rails::Engine
+    isolate_namespace Fusor
 
     config.autoload_paths += Dir["#{config.root}/app/controllers/concerns"]
     config.autoload_paths += Dir["#{config.root}/app/helpers/concerns"]
@@ -9,6 +10,10 @@ module Fusor
     # Add any db migrations
     initializer "fusor.load_app_instance_data" do |app|
       app.config.paths['db/migrate'] += Fusor::Engine.paths['db/migrate'].existent
+    end
+
+    initializer 'fusor.mount_engine', :after => :build_middleware_stack do |app|
+      app.routes_reloader.paths << "#{Fusor::Engine.root}/config/routes/mount_engine.rb"
     end
 
     initializer 'fusor.register_plugin', :after => :finisher_hook do |app|

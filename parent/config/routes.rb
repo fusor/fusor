@@ -8,6 +8,7 @@ Rails.application.routes.draw do
             :apiv        => /v1|v2/,
             :constraints => ApiConstraints.new(:version => 2) do
 
+       resources :deployments
       end
     end
   end
