@@ -1,5 +1,4 @@
-<!-- NOTE: This will assign the <strong>Self Hosted Engine</strong> hostgroup to the selected hosts.
- -->
+
 
 <strong>{{model.length}}</strong> hosts found
 {{!bs-button title="Refresh Discovered Hosts" type='default'}}
@@ -12,7 +11,8 @@
   <thead>
     <tr>
       <th> {{input type="checkbox" checked=allChecked}}</th>
-      <th> FQDN </th>
+      <th> Name </th>
+      <th> MAC </th>
       <th> Vendor </th>
       <th> CPU </th>
       <th> Memory </th>
@@ -24,9 +24,12 @@
     <tr>
       <td> {{input type="checkbox" name="isSelectedAsHypervisor" checked=host.isSelectedAsHypervisor}}</td>
       <td> {{host.name}} </td>
+      <td> {{host.mac}} </td>
       <td> {{host.vendor}} </td>
       <td> {{host.cpu}} </td>
       <td> {{host.memory}} </td>
+      <td> {{host.isSelectedAsHypervisor}} </td>
+      <td> {{host.isSelectedAsEngine}} </td>
     </tr>
   {{/each}}
   </tbody>

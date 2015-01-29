@@ -5,7 +5,7 @@ export default Ember.ArrayController.extend({
 //  isSelected: Em.computed.alias('isSelectedAsEngine'),
 
   // Filter out hosts already selected as Hypervisor, since we are NOT in self-hosted
-  avialableHosts: Em.computed.filterBy('model', 'isSelectedAsHypervisor', false),
+  availableHosts: Em.computed.filterBy('model', 'isSelectedAsHypervisor', false),
 
   selectedHosts: Em.computed.filterBy('model', 'isSelectedAsEngine', true),
 
@@ -36,6 +36,19 @@ export default Ember.ArrayController.extend({
       return value;
     }
   }.property('model.@each.isSelectedAsEngine'),
+
+  idChecked: function(key){
+    var model = this.get('model');
+    if (model && model.isAny('isSelectedAsEngine')) {
+      return this.get('selectedHosts').getEach("id"); //this.//   return model && model.isEvery('isSelectedAsHypervisor');
+    } else {
+      return '';
+    }
+    // } else {
+    //   this.get('model').setEach('isSelectedAsHypervisor', value);
+    //   return value;
+    // }
+  }.property('model.@each.isSelectedAsEngine', 'selectedHosts'),
 
 
 });
