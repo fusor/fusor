@@ -40,14 +40,14 @@ export default Ember.ArrayController.extend({
   idChecked: function(key){
     var model = this.get('model');
     if (model && model.isAny('isSelectedAsHypervisor')) {
-      return 'yes'; //this.//   return model && model.isEvery('isSelectedAsHypervisor');
+      return this.get('selectedHosts').getEach("id"); //this.//   return model && model.isEvery('isSelectedAsHypervisor');
     } else {
-      return 'none';
+      return '';
     }
     // } else {
     //   this.get('model').setEach('isSelectedAsHypervisor', value);
     //   return value;
     // }
-  }.property('model.@each.isSelectedAsHypervisor'),
+  }.property('model.@each.isSelectedAsHypervisor', 'selectedHosts'),
 
 });
