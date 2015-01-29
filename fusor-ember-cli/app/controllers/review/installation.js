@@ -15,6 +15,9 @@ export default Ember.Controller.extend({
   hypervisorSelectedHosts: Ember.computed.alias("controllers.hypervisor/discovered-host.selectedHosts"),
   engineSelectedHosts: Ember.computed.alias("controllers.engine/discovered-host.selectedHosts"),
 
+  hypervisorSelectedId: Ember.computed.alias("controllers.hypervisor/discovered-host.idChecked"),
+  engineSelectedId: Ember.computed.alias("controllers.engine/discovered-host.idChecked"),
+
   oVirtHostedtype: function() {
     if (this.get('rhevSetup') === 'selfhost') {
       return "Self Hosted";
@@ -32,5 +35,38 @@ export default Ember.Controller.extend({
   nameOpenStack: Ember.computed.alias("controllers.rhci.nameOpenStack"),
   nameCloudForms: Ember.computed.alias("controllers.rhci.nameCloudForms"),
   nameSatellite: Ember.computed.alias("controllers.rhci.nameSatellite"),
+
+  actions: {
+    installDeployment: function(options) {
+    console.log('OPTIONS');
+    console.log(options);
+
+    var self = this;
+    return new Ember.RSVP.Promise(function (resolve, reject) {
+      Ember.$.ajax({
+          url: '/api/v2/discovered_hosts/' + self.get('hypervisorSelectedId'),
+          type: "PUT",
+          data: JSON.stringify({'discovered_host': { 'hostgroup_id': 2, 'root_pass': 'redhat!!'}}),
+          headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "Authorization": "Basic " + self.get('session.basicAuthToken')
+          },
+          success: function(response) {
+            console.log(respone);
+            alert('success');
+            resolve({currentUser: response,
+                     loginUsername: response.login,
+                     basicAuthToken: options.basicAuthToken,
+                     authType: 'Basic'});
+          },
+
+          error: function(response){
+            reject(response);
+          }
+      });
+    });
+    }
+  }
 
 });

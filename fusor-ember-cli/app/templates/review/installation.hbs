@@ -30,6 +30,9 @@
           {{#link-to 'engine.discovered-host'}} {{host.mac}} {{/link-to}}<br />
         {{/each}}
       {{/if}}
+      hypervisorSelectedId: {{hypervisorSelectedId}}<br />
+      engineSelectedId: {{engineSelectedId}}
+
       <br />
       Storage Type:
         {{#link-to 'storage'}}
@@ -139,7 +142,7 @@
     <div class='pull-right'>
       <br />
       <button {{action 'showModal' 'cancelDeploymentModal'}} class='btn btn-default'>Cancel</button>
-      {{#link-to 'review.progress' class='btn btn-primary'}}Install{{/link-to}}
+      <button {{action 'installDeployment'}} class='btn btn-primary'>Install</button>
     </div>
 
 
