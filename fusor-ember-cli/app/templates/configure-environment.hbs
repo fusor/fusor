@@ -7,42 +7,23 @@
       </button>
     </div>
 
-    {{text-f value=organization_id}}
-    <button {{action 'submit'}}>Submit</button>
-    {{organization_id}}
-
+    {{#each env in model itemController="lifecycle-environment"}}
     <div class="path-selector">
-        <ul class="path-list">
-          {{#each env in filteredEnvironments itemController="lifecycle-environment"}}
-            {{env-path-list-item env=env selectedEnvironment=selectedEnvironment}}
-          {{/each}}
-          <li class="path-list-item">
-            <label class="path-list-item-label" style='color:gray;'>
-              &nbsp;
-            </label>
-          </li>
-        </ul>
+      <ul class="path-list">
+        <li class="path-list-item">
+          <label class="path-list-item-label">
+            Library
+          </label>
+        </li>
+        {{env-path-list-item env=env selectedEnvironment=selectedEnvironment}}
+        <li class="path-list-item">
+          <label class="path-list-item-label" style='color:gray;'>
+            &nbsp;
+          </label>
+        </li>
+      </ul>
     </div>
-
-    {{#if hasNewEnvs}}
-      {{#each env in model itemController="lifecycle-environment"}}
-      <div class="path-selector">
-        <ul class="path-list">
-          <li class="path-list-item">
-            <label class="path-list-item-label">
-              Library
-            </label>
-          </li>
-          {{env-path-list-item env=env selectedEnvironment=selectedEnvironment}}
-          <li class="path-list-item">
-            <label class="path-list-item-label" style='color:gray;'>
-              &nbsp;
-            </label>
-          </li>
-        </ul>
-      </div>
-      {{/each}}
-    {{/if}}
+    {{/each}}
 
     <br />
     <br />
