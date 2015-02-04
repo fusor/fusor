@@ -49,12 +49,13 @@ export default Ember.Controller.extend({
     console.log('OPTIONS');
     console.log(options);
 
+    //TODO - inherit root_pass for hostgroup
     var self = this;
     return new Ember.RSVP.Promise(function (resolve, reject) {
       Ember.$.ajax({
           url: '/api/v2/discovered_hosts/' + self.get('hypervisorSelectedId'),
           type: "PUT",
-          data: JSON.stringify({'discovered_host': { 'hostgroup_id': 2, 'root_pass': 'redhat!!'}}),
+          data: JSON.stringify({'discovered_host': { 'hostgroup_id': self.get('rhevHypervisorHostgroupId'), 'root_pass': 'redhat!!'} }),
           headers: {
               "Accept": "application/json",
               "Content-Type": "application/json",
