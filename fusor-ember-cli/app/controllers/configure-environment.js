@@ -32,21 +32,23 @@ export default Ember.ArrayController.extend({
     }
   }.property('fields_env.name'),
 
-  hasNewEnvs: function() {
-    return (this.get('length') > 0);
-  }.property('model.@each.[]'),
+  // hasEnvironments: function() {
+  //   return (this.get('length') > 0);
+  // }.property('model.@each.[]'),
 
   actions: {
     createEnvironment: function() {
-      var environment = this.store.createRecord('newenv', this.get('fields_env'));
+      var self = this;
+      var environment = this.store.createRecord('environment', this.get('fields_env'));
       this.set('selectedEnvironment', environment.get('name'));
       this.set('fields_env',{});
+      environment.save().then(function() {
+        //success
+      }, function(response) {
+        alert('error saving environment');
+      });
       return Bootstrap.ModalManager.hide('newEnvironmentModal');
-    },
-
-     submit: function() {
-      return alert(this.get('organization_id')); // null value
-     }
+    }
 
   }
 
