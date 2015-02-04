@@ -11,9 +11,21 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 module Fusor
-  class Deployment < ActiveRecord::Base
-    serialize :rhev_params, Hash
-    serialize :cfme_params, Hash
-    serialize :openstack_params, Hash
+  module Errors
+    class NotFound < StandardError; end
+
+    # unauthorized access
+    class SecurityViolation < StandardError; end
+
+    class ConnectionRefusedException < StandardError; end
+
+    class UnsupportedActionException < StandardError
+      attr_reader :action, :receiver
+
+      def initialize(action, receiver, message)
+        @action, @receiver = action, receiver
+        super(message)
+      end
+    end
   end
 end

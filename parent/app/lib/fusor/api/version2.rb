@@ -11,9 +11,11 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 module Fusor
-  class Deployment < ActiveRecord::Base
-    serialize :rhev_params, Hash
-    serialize :cfme_params, Hash
-    serialize :openstack_params, Hash
+  module Api
+    module Version2
+      def api_version
+        '2'
+      end
+    end
   end
 end
