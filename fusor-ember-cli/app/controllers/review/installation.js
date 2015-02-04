@@ -7,6 +7,10 @@ export default Ember.Controller.extend({
           'networking', 'rhev-options', 'osp-settings', 'osp-configuration', 'where-install',
           'cloudforms-storage-domain', 'cloudforms-vm'],
 
+  isRhevOpen: false,
+  isOpenStackOpen: false,
+  isCloudFormsOpen: false,
+
   nameDeployment: Ember.computed.alias("controllers.satellite/index.name"),
   selectedOrganization: Ember.computed.alias("controllers.configure-organization.selectedOrganzation"),
   selectedEnvironment: Ember.computed.alias("controllers.configure-environment.selectedEnvironment"),

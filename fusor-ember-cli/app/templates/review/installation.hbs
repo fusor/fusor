@@ -11,7 +11,7 @@
     {{/accordion-item}}
 
   {{#if isRhev}}
-    {{#accordion-item name=nameRhev isOpen=false}}
+    {{#accordion-item name=nameRhev isOpen=isRhevOpen}}
       <!-- Setup Type:  -->{{!#link-to 'rhev-setup'}} {{!oVirtHostedtype}} {{!/link-to}}
       {{#if isSelfHosted}}
         Hypervisor/Engine: <br />
@@ -84,7 +84,7 @@
   {{/if}}
 
   {{#if isOpenStack}}
-    {{#accordion-item name=nameOpenStack isOpen=false}}
+    {{#accordion-item name=nameOpenStack isOpen=isOpenStackOpen}}
       High Availability:
         {{#link-to 'osp-settings'}}
           {{controllers.osp-settings.ha}}
@@ -131,7 +131,7 @@
   {{/if}}
 
   {{#if isCloudForms}}
-    {{#accordion-item name=nameCloudForms isOpen=false}}
+    {{#accordion-item name=nameCloudForms isOpen=isCloudFormsOpen}}
       Where to Install?
         {{#link-to 'where-install'}}
           {{controllers.where-install.whereInstallCf}}
