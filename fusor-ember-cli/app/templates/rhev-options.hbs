@@ -5,8 +5,8 @@
     <br />
     <form class="form form-horizontal">
 
-      {{text-f label="Engine admin password"}}
-      {{text-f label="Confirm admin password"}}
+      {{text-f label="Engine admin password" type='password'}}
+      {{text-f label="Confirm admin password" type='password'}}
 
       {{text-f label="Datacenter Name" value=datacenterName}}
       {{text-f label="Cluster Name" value=clusterName}}
@@ -15,7 +15,6 @@
       {{text-f label="CPU Type" value=cpuType help-inline='TODO selection list'}}
 
       {{!select-simple-f label="Application Mode" content=applicationModes}}
-
 
       {{!select-simple-f label="Engine database location" content=engineLocation}}
 

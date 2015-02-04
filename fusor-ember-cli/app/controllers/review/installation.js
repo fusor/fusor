@@ -9,8 +9,12 @@ export default Ember.Controller.extend({
 
   nameDeployment: Ember.computed.alias("controllers.satellite/index.name"),
   selectedOrganization: Ember.computed.alias("controllers.configure-organization.selectedOrganzation"),
-  selectedEnvironment: Ember.computed.alias("controllers.configure-organization.selectedEnvironment"),
+  selectedEnvironment: Ember.computed.alias("controllers.configure-environment.selectedEnvironment"),
   rhevSetup: Ember.computed.alias("controllers.rhev-setup.rhevSetup"),
+
+  isRhev: Ember.computed.alias("controllers.rhci.isRhev"),
+  isOpenStack: Ember.computed.alias("controllers.rhci.isOpenStack"),
+  isCloudForms: Ember.computed.alias("controllers.rhci.isCloudForms"),
 
   hypervisorSelectedHosts: Ember.computed.alias("controllers.hypervisor/discovered-host.selectedHosts"),
   engineSelectedHosts: Ember.computed.alias("controllers.engine/discovered-host.selectedHosts"),

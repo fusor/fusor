@@ -10,56 +10,33 @@
 
     {{/accordion-item}}
 
+  {{#if isRhev}}
     {{#accordion-item name=nameRhev isOpen=false}}
-      Setup Type: {{#link-to 'rhev-setup'}} {{oVirtHostedtype}} {{/link-to}}
-      <br />
-      <br />
+      <!-- Setup Type:  -->{{!#link-to 'rhev-setup'}} {{!oVirtHostedtype}} {{!/link-to}}
       {{#if isSelfHosted}}
         Hypervisor/Engine: <br />
         {{#each host in hypervisorSelectedHosts}}
-          {{#link-to 'hypervisor.discovered-host'}} {{host.mac}} {{/link-to}}<br />
+          {{#link-to 'hypervisor.discovered-host'}} {{host.name}} {{/link-to}}<br />
         {{/each}}
       {{else}}
         Hypervisor: <br />
         {{#each host in hypervisorSelectedHosts}}
-          {{#link-to 'hypervisor.discovered-host'}} {{host.mac}} {{/link-to}}<br />
+          {{#link-to 'hypervisor.discovered-host'}} {{host.name}} {{/link-to}}<br />
         {{/each}}
         <br />
         Engine: <br />
         {{#each host in engineSelectedHosts}}
-          {{#link-to 'engine.discovered-host'}} {{host.mac}} {{/link-to}}<br />
+          {{#link-to 'engine.discovered-host'}} {{host.name}} {{/link-to}}<br />
         {{/each}}
       {{/if}}
-      hypervisorSelectedId: {{hypervisorSelectedId}}<br />
-      engineSelectedId: {{engineSelectedId}}
+      {{!hypervisorSelectedId}}
+      {{!engineSelectedId}}
 
       <br />
-      Storage Type:
-        {{#link-to 'storage'}}
-          {{controllers.storage.storageType}}
+      Engine admin password:
+        {{#link-to 'rhev-options'}}
+          ********
         {{/link-to}} <br />
-        {{#if controllers.storage.isNFS}}
-          Local ISO domain path:
-           {{#link-to 'storage'}}
-          {{controllers.storage.isoDomainPath}}
-          {{/link-to}} <br />
-          Local ISO domain ACL:
-           {{#link-to 'storage'}}
-          {{controllers.storage.isoDomainAcl}}
-          {{/link-to}} <br />
-          Local ISO domain name:
-           {{#link-to 'storage'}}
-          {{controllers.storage.isoDomainName}}
-          {{/link-to}} <br />
-        {{/if}}
-
-      <br />
-      DNS Name:
-        {{#link-to 'networking'}}
-          {{controllers.networking.dnsName}}
-        {{/link-to}} <br />
-
-      <br />
       Datacenter Name:
         {{#link-to 'rhev-options'}}
           {{controllers.rhev-options.datacenterName}}
@@ -68,7 +45,7 @@
         {{#link-to 'rhev-options'}}
           {{controllers.rhev-options.clusterName}}
         {{/link-to}} <br />
-      Host Name:
+      Storage Name:
         {{#link-to 'rhev-options'}}
           {{controllers.rhev-options.hostName}}
         {{/link-to}} <br />
@@ -80,10 +57,33 @@
         {{#link-to 'rhev-options'}}
           {{controllers.rhev-options.storageName}}
         {{/link-to}} <br />
+      CPU Type:
+        {{#link-to 'rhev-options'}}
+          {{controllers.rhev-options.cpuType}}
+        {{/link-to}} <br />
+
+
+      <br />
+      Storage Type:
+        {{#link-to 'storage'}}
+          {{controllers.storage.storageType}}
+        {{/link-to}} <br />
+          Storage Address:
+           {{#link-to 'storage'}}
+          {{controllers.storage.storageAddress}}
+          {{/link-to}} <br />
+          Share Path:
+           {{#link-to 'storage'}}
+          {{controllers.storage.sharePath}}
+          {{/link-to}} <br />
+
+      <br />
 
       <br />
     {{/accordion-item}}
+  {{/if}}
 
+  {{#if isOpenStack}}
     {{#accordion-item name=nameOpenStack isOpen=false}}
       High Availability:
         {{#link-to 'osp-settings'}}
@@ -128,13 +128,16 @@
           {{controllers.osp-configuration.cinderBackend}}
         {{/link-to}} <br />
     {{/accordion-item}}
+  {{/if}}
 
+  {{#if isCloudForms}}
     {{#accordion-item name=nameCloudForms isOpen=false}}
       Where to Install?
         {{#link-to 'where-install'}}
           {{controllers.where-install.whereInstallCf}}
         {{/link-to}} <br />
     {{/accordion-item}}
+  {{/if}}
 
     <br />
     <br />
