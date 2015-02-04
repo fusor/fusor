@@ -56,7 +56,7 @@ export default Ember.Controller.extend({
       Ember.$.ajax({
           url: '/api/v2/discovered_hosts/' + self.get('hypervisorSelectedId'),
           type: "PUT",
-          data: JSON.stringify({'discovered_host': { 'hostgroup_id': self.get('ovirtHypervisorHostgroupId'), 'root_pass': 'redhat!!'} }),
+          data: JSON.stringify({'discovered_host': { 'hostgroup_id': self.get('ovirtHypervisorHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
           headers: {
               "Accept": "application/json",
               "Content-Type": "application/json",
@@ -80,7 +80,7 @@ export default Ember.Controller.extend({
       Ember.$.ajax({
           url: '/api/v2/discovered_hosts/' + self.get('engineSelectedId'),
           type: "PUT",
-          data: JSON.stringify({'discovered_host': { 'hostgroup_id': self.get('ovirtEngineHostgroupId'), 'root_pass': 'redhat!!'} }),
+          data: JSON.stringify({'discovered_host': { 'hostgroup_id': self.get('ovirtEngineHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
           headers: {
               "Accept": "application/json",
               "Content-Type": "application/json",
