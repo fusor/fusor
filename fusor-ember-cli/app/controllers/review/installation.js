@@ -52,18 +52,43 @@ export default Ember.Controller.extend({
     //TODO - inherit root_pass for hostgroup
     var self = this;
     return new Ember.RSVP.Promise(function (resolve, reject) {
+      //hypervisor
       Ember.$.ajax({
           url: '/api/v2/discovered_hosts/' + self.get('hypervisorSelectedId'),
           type: "PUT",
-          data: JSON.stringify({'discovered_host': { 'hostgroup_id': self.get('rhevHypervisorHostgroupId'), 'root_pass': 'redhat!!'} }),
+          data: JSON.stringify({'discovered_host': { 'hostgroup_id': self.get('ovirtHypervisorHostgroupId'), 'root_pass': 'redhat!!'} }),
           headers: {
               "Accept": "application/json",
               "Content-Type": "application/json",
               "Authorization": "Basic " + self.get('session.basicAuthToken')
           },
           success: function(response) {
-            console.log(respone);
-            alert('success');
+            console.log('YEA!!! installing hypervisor');
+            console.log(response);
+            resolve({currentUser: response,
+                     loginUsername: response.login,
+                     basicAuthToken: options.basicAuthToken,
+                     authType: 'Basic'});
+          },
+
+          error: function(response){
+            reject(response);
+          }
+      });
+
+      //engine
+      Ember.$.ajax({
+          url: '/api/v2/discovered_hosts/' + self.get('engineSelectedId'),
+          type: "PUT",
+          data: JSON.stringify({'discovered_host': { 'hostgroup_id': self.get('ovirtEngineHostgroupId'), 'root_pass': 'redhat!!'} }),
+          headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "Authorization": "Basic " + self.get('session.basicAuthToken')
+          },
+          success: function(response) {
+            console.log('YEA!!! installing ENGINE');
+            console.log(response);
             resolve({currentUser: response,
                      loginUsername: response.login,
                      basicAuthToken: options.basicAuthToken,
