@@ -11,6 +11,13 @@ export default Ember.Controller.extend({
   isOpenStackOpen: false,
   isCloudFormsOpen: false,
 
+  ovirtHypervisorHostgroupId: 9,
+  ovirtEngineHostgroupId: 7,
+
+  puppetclass smart_class_parameters
+
+
+
   nameDeployment: Ember.computed.alias("controllers.satellite/index.name"),
   selectedOrganization: Ember.computed.alias("controllers.configure-organization.selectedOrganzation"),
   selectedEnvironment: Ember.computed.alias("controllers.configure-environment.selectedEnvironment"),
@@ -101,6 +108,29 @@ export default Ember.Controller.extend({
           }
       });
 
+      //engine
+      Ember.$.ajax({
+          url: '/api/v2/smart_class_parameters/' + self.get('engineSelectedId') + '/override_values
+          type: "PUT",
+          data: JSON.stringify({'discovered_host': { 'name': 'engine1', 'hostgroup_id': self.get('ovirtEngineHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
+          headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "Authorization": "Basic " + self.get('session.basicAuthToken')
+          },
+          success: function(response) {
+            console.log('YEA!!! installing ENGINE');
+            console.log(response);
+            resolve({currentUser: response,
+                     loginUsername: response.login,
+                     basicAuthToken: options.basicAuthToken,
+                     authType: 'Basic'});
+          },
+
+          error: function(response){
+            reject(response);
+          }
+      });
     self.set('controllers.review.disableTabProgress', false);
     return self.transitionTo('review.progress');
     });
