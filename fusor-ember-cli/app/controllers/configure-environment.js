@@ -19,7 +19,7 @@ export default Ember.ArrayController.extend({
 
   fields_env: {},
 
-  selectedEnvironment: "Development",
+  selectedEnvironment: "development",
 
   rhciNewEnvButtons: [
       Ember.Object.create({title: 'Cancel', clicked:"cancel", dismiss: 'modal'}),
