@@ -60,6 +60,29 @@ export default Ember.Controller.extend({
     //TODO - inherit root_pass for hostgroup
     var self = this;
     return new Ember.RSVP.Promise(function (resolve, reject) {
+      //engine
+      Ember.$.ajax({
+          url: '/api/v2/discovered_hosts/' + self.get('engineSelectedId'),
+          type: "PUT",
+          data: JSON.stringify({'discovered_host': { 'name': 'ovirt-engine', 'hostgroup_id': self.get('engineHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
+          headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "Authorization": "Basic " + self.get('session.basicAuthToken')
+          },
+          success: function(response) {
+            console.log('YEA!!! installing ENGINE');
+            console.log(response);
+            resolve({currentUser: response,
+                     loginUsername: response.login,
+                     basicAuthToken: options.basicAuthToken,
+                     authType: 'Basic'});
+          },
+
+          error: function(response){
+            reject(response);
+          }
+      });
 
       //hypervisor
       Ember.$.ajax({
@@ -85,19 +108,6 @@ export default Ember.Controller.extend({
           }
       });
 
-      //engine
-      Ember.$.ajax({
-          url: '/api/v2/discovered_hosts/' + self.get('engineSelectedId'),
-          type: "PUT",
-          data: JSON.stringify({'discovered_host': { 'name': 'ovirt-engine', 'hostgroup_id': self.get('engineHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
-          headers: {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-              "Authorization": "Basic " + self.get('session.basicAuthToken')
-          },
-          success: function(response) {
-            console.log('YEA!!! installing ENGINE');
-            console.log(response);
 
                     //engine's hypervisor hostAddress
                    if (self.get('hostAddress')) {
@@ -150,18 +160,6 @@ export default Ember.Controller.extend({
                         }
                     });
                   }
-
-
-            resolve({currentUser: response,
-                     loginUsername: response.login,
-                     basicAuthToken: options.basicAuthToken,
-                     authType: 'Basic'});
-          },
-
-          error: function(response){
-            reject(response);
-          }
-      });
 
     self.set('controllers.review.disableTabProgress', false);
     return self.transitionTo('review.progress');
