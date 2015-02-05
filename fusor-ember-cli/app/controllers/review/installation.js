@@ -17,6 +17,7 @@ export default Ember.Controller.extend({
   engineAdminPasswordLookupKeyId: 55,
   engineHostAddressLookupKeyId: 61,
   engineHostAddressDefault: 'ovirt-hypervisor.rhci.redhat.com',
+  hostAddress: Ember.computed.alias("controllers.rhev-options.hostAddress"),
 
   nameDeployment: Ember.computed.alias("controllers.satellite/index.name"),
   selectedOrganization: Ember.computed.alias("controllers.configure-organization.selectedOrganzation"),
@@ -64,7 +65,7 @@ export default Ember.Controller.extend({
       Ember.$.ajax({
           url: '/api/v2/discovered_hosts/' + self.get('hypervisorSelectedId'),
           type: "PUT",
-          data: JSON.stringify({'discovered_host': { 'name': 'ovirt-hypervisor', 'hostgroup_id': self.get('hypervisorHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
+          data: JSON.stringify({'discovered_host': { 'name': self.get('hostAddress'), 'hostgroup_id': self.get('hypervisorHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
           headers: {
               "Accept": "application/json",
               "Content-Type": "application/json",
@@ -108,6 +109,32 @@ export default Ember.Controller.extend({
           }
       });
 
+      //engine's hypervisor hostAddress
+     if (self.get('hostAddress')) {
+      Ember.$.ajax({
+          url: '/api/v2/smart_class_parameters/' + self.get('engineHostAddressLookupKeyId') + '/override_values',
+          type: "POST",
+          data: JSON.stringify({'override_value': { 'value': self.get('hostAddress'), 'match': 'fqdn=ovirt-engine.rhci.redhat.com' } }),
+          headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "Authorization": "Basic " + self.get('session.basicAuthToken')
+          },
+          success: function(response) {
+            console.log('updating host address');
+            console.log(response);
+            resolve({currentUser: response,
+                     loginUsername: response.login,
+                     basicAuthToken: options.basicAuthToken,
+                     authType: 'Basic'});
+          },
+
+          error: function(response){
+            reject(response);
+          }
+      });
+
+     }
       //engine admin password
      if (self.get('controllers.rhev-options.engineAdminPassword')) {
       Ember.$.ajax({
