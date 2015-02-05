@@ -108,7 +108,7 @@ export default Ember.Controller.extend({
           }
       });
 
-      //engine
+      //engine admin password
      if (self.get('controllers.rhev-options.engineAdminPassword')) {
       Ember.$.ajax({
           url: '/api/v2/smart_class_parameters/' + self.get('engineAdminPasswordLookupKeyId') + '/override_values',
