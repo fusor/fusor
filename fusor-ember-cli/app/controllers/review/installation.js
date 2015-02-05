@@ -11,12 +11,12 @@ export default Ember.Controller.extend({
   isOpenStackOpen: false,
   isCloudFormsOpen: false,
 
-  ovirtHypervisorHostgroupId: 9,
-  ovirtEngineHostgroupId: 7,
+  hypervisorHostgroupId: 9,
+  engineHostgroupId: 7,
 
-  puppetclass smart_class_parameters
-
-
+  engineAdminPasswordLookupKeyId: 55,
+  engineHostAddressLookupKeyId: 61,
+  engineHostAddressDefault: 'ovirt-hypervisor.rhci.redhat.com',
 
   nameDeployment: Ember.computed.alias("controllers.satellite/index.name"),
   selectedOrganization: Ember.computed.alias("controllers.configure-organization.selectedOrganzation"),
@@ -64,7 +64,7 @@ export default Ember.Controller.extend({
       Ember.$.ajax({
           url: '/api/v2/discovered_hosts/' + self.get('hypervisorSelectedId'),
           type: "PUT",
-          data: JSON.stringify({'discovered_host': { 'name': 'hypervisor1', 'hostgroup_id': self.get('ovirtHypervisorHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
+          data: JSON.stringify({'discovered_host': { 'name': 'ovirt-hypervisor', 'hostgroup_id': self.get('ovirtHypervisorHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
           headers: {
               "Accept": "application/json",
               "Content-Type": "application/json",
@@ -88,7 +88,7 @@ export default Ember.Controller.extend({
       Ember.$.ajax({
           url: '/api/v2/discovered_hosts/' + self.get('engineSelectedId'),
           type: "PUT",
-          data: JSON.stringify({'discovered_host': { 'name': 'engine1', 'hostgroup_id': self.get('ovirtEngineHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
+          data: JSON.stringify({'discovered_host': { 'name': 'ovirt-engine', 'hostgroup_id': self.get('ovirtEngineHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
           headers: {
               "Accept": "application/json",
               "Content-Type": "application/json",
@@ -109,17 +109,18 @@ export default Ember.Controller.extend({
       });
 
       //engine
+     if (self.get('controllers.rhev-options.engineAdminPassword')) {
       Ember.$.ajax({
-          url: '/api/v2/smart_class_parameters/' + self.get('engineSelectedId') + '/override_values
+          url: '/api/v2/smart_class_parameters/' + self.get('engineAdminPasswordLookupKeyId') + '/override_values',
           type: "PUT",
-          data: JSON.stringify({'discovered_host': { 'name': 'engine1', 'hostgroup_id': self.get('ovirtEngineHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
+          data: JSON.stringify({'override_value': { 'value': self.get('controllers.rhev-options.engineAdminPassword'), 'match': 'fqdn=ovirt-engine.rhci.redhat.com' } }),
           headers: {
               "Accept": "application/json",
               "Content-Type": "application/json",
               "Authorization": "Basic " + self.get('session.basicAuthToken')
           },
           success: function(response) {
-            console.log('YEA!!! installing ENGINE');
+            console.log('updating admin password');
             console.log(response);
             resolve({currentUser: response,
                      loginUsername: response.login,
@@ -131,6 +132,7 @@ export default Ember.Controller.extend({
             reject(response);
           }
       });
+    }
     self.set('controllers.review.disableTabProgress', false);
     return self.transitionTo('review.progress');
     });
