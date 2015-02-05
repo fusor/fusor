@@ -108,6 +108,7 @@ export default Ember.Controller.extend({
           }
       });
 
+      setTimeout(function() {
 
                     //engine's hypervisor hostAddress
                    if (self.get('hostAddress')) {
@@ -160,6 +161,7 @@ export default Ember.Controller.extend({
                         }
                     });
                   }
+    }, 7000);  //end setTimeout
 
     self.set('controllers.review.disableTabProgress', false);
     return self.transitionTo('review.progress');

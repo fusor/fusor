@@ -1,3 +1,8 @@
+<h4> Hypervisor Configuration </h4>
+
+  {{text-f label="Host Name" value=hostAddress}}
+
+
 <h4> Engine Configuration </h4>
 
 <div class='row'>
@@ -8,13 +13,11 @@
       {{text-f label="Engine admin password" value=engineAdminPassword}}
       {{!text-f label="Confirm admin password" value=engineConfirmAdminPassword}}
 
-      {{text-f label="Hypervisor FQDN" value=hostAddress}}
+      {{text-f label="Datacenter Name" value=datacenterName placeholder='Leave blank for default'}}
+      {{text-f label="Cluster Name" value=clusterName placeholder='Leave blank for default'}}
+      {{text-f label="Storage name" value=storageName placeholder='Leave blank for default'}}
 
-      {{text-f label="Datacenter Name" value=datacenterName}}
-      {{text-f label="Cluster Name" value=clusterName}}
-      {{text-f label="Storage name" value=storageName}}
-
-      {{text-f label="CPU Type" value=cpuType help-inline='TODO selection list'}}
+      {{text-f label="CPU Type" value=cpuType placeholder='Leave blank for default' help-inline='TODO selection list'}}
 
       {{!select-simple-f label="Application Mode" content=applicationModes}}
 
