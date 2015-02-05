@@ -98,6 +98,60 @@ export default Ember.Controller.extend({
           success: function(response) {
             console.log('YEA!!! installing ENGINE');
             console.log(response);
+
+                    //engine's hypervisor hostAddress
+                   if (self.get('hostAddress')) {
+                    Ember.$.ajax({
+                        url: '/api/v2/smart_class_parameters/' + self.get('engineHostAddressLookupKeyId') + '/override_values',
+                        type: "POST",
+                        data: JSON.stringify({'override_value': { 'value': self.get('hostAddress'), 'match': 'fqdn=ovirt-engine.rhci.redhat.com' } }),
+                        headers: {
+                            "Accept": "application/json",
+                            "Content-Type": "application/json",
+                            "Authorization": "Basic " + self.get('session.basicAuthToken')
+                        },
+                        success: function(response) {
+                          console.log('updating host address');
+                          console.log(response);
+                          resolve({currentUser: response,
+                                   loginUsername: response.login,
+                                   basicAuthToken: options.basicAuthToken,
+                                   authType: 'Basic'});
+                        },
+
+                        error: function(response){
+                          reject(response);
+                        }
+                    });
+
+                   }
+                    //engine admin password
+                   if (self.get('controllers.rhev-options.engineAdminPassword')) {
+                    Ember.$.ajax({
+                        url: '/api/v2/smart_class_parameters/' + self.get('engineAdminPasswordLookupKeyId') + '/override_values',
+                        type: "POST",
+                        data: JSON.stringify({'override_value': { 'value': self.get('controllers.rhev-options.engineAdminPassword'), 'match': 'fqdn=ovirt-engine.rhci.redhat.com' } }),
+                        headers: {
+                            "Accept": "application/json",
+                            "Content-Type": "application/json",
+                            "Authorization": "Basic " + self.get('session.basicAuthToken')
+                        },
+                        success: function(response) {
+                          console.log('updating admin password');
+                          console.log(response);
+                          resolve({currentUser: response,
+                                   loginUsername: response.login,
+                                   basicAuthToken: options.basicAuthToken,
+                                   authType: 'Basic'});
+                        },
+
+                        error: function(response){
+                          reject(response);
+                        }
+                    });
+                  }
+
+
             resolve({currentUser: response,
                      loginUsername: response.login,
                      basicAuthToken: options.basicAuthToken,
@@ -109,57 +163,6 @@ export default Ember.Controller.extend({
           }
       });
 
-      //engine's hypervisor hostAddress
-     if (self.get('hostAddress')) {
-      Ember.$.ajax({
-          url: '/api/v2/smart_class_parameters/' + self.get('engineHostAddressLookupKeyId') + '/override_values',
-          type: "POST",
-          data: JSON.stringify({'override_value': { 'value': self.get('hostAddress'), 'match': 'fqdn=ovirt-engine.rhci.redhat.com' } }),
-          headers: {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-              "Authorization": "Basic " + self.get('session.basicAuthToken')
-          },
-          success: function(response) {
-            console.log('updating host address');
-            console.log(response);
-            resolve({currentUser: response,
-                     loginUsername: response.login,
-                     basicAuthToken: options.basicAuthToken,
-                     authType: 'Basic'});
-          },
-
-          error: function(response){
-            reject(response);
-          }
-      });
-
-     }
-      //engine admin password
-     if (self.get('controllers.rhev-options.engineAdminPassword')) {
-      Ember.$.ajax({
-          url: '/api/v2/smart_class_parameters/' + self.get('engineAdminPasswordLookupKeyId') + '/override_values',
-          type: "POST",
-          data: JSON.stringify({'override_value': { 'value': self.get('controllers.rhev-options.engineAdminPassword'), 'match': 'fqdn=ovirt-engine.rhci.redhat.com' } }),
-          headers: {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-              "Authorization": "Basic " + self.get('session.basicAuthToken')
-          },
-          success: function(response) {
-            console.log('updating admin password');
-            console.log(response);
-            resolve({currentUser: response,
-                     loginUsername: response.login,
-                     basicAuthToken: options.basicAuthToken,
-                     authType: 'Basic'});
-          },
-
-          error: function(response){
-            reject(response);
-          }
-      });
-    }
     self.set('controllers.review.disableTabProgress', false);
     return self.transitionTo('review.progress');
     });
