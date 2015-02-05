@@ -116,7 +116,7 @@ export default Ember.Controller.extend({
                     Ember.$.ajax({
                         url: '/api/v2/smart_class_parameters/' + self.get('engineHostAddressLookupKeyId') + '/override_values',
                         type: "POST",
-                        data: JSON.stringify({'override_value': { 'value': self.get('hostAddress'), 'match': ('fqdn='+self.get('engineHostName')+'.rhci.redhat.com') } }),
+                        data: JSON.stringify({'override_value': { 'value': (self.get('hostAddress')+'.rhci.redhat.com'), 'match': ('fqdn='+self.get('engineHostName')+'.rhci.redhat.com') } }),
                         headers: {
                             "Accept": "application/json",
                             "Content-Type": "application/json",
