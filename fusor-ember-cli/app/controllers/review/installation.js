@@ -5,7 +5,7 @@ export default Ember.Controller.extend({
           'configure-environment', 'rhev-setup', 'hypervisor', 'hypervisor/discovered-host',
           'engine/discovered-host', 'storage',
           'networking', 'rhev-options', 'osp-settings', 'osp-configuration', 'where-install',
-          'cloudforms-storage-domain', 'cloudforms-vm'],
+          'cloudforms-storage-domain', 'cloudforms-vm', 'review'],
 
   isRhevOpen: false,
   isOpenStackOpen: false,
@@ -52,11 +52,12 @@ export default Ember.Controller.extend({
     //TODO - inherit root_pass for hostgroup
     var self = this;
     return new Ember.RSVP.Promise(function (resolve, reject) {
+
       //hypervisor
       Ember.$.ajax({
           url: '/api/v2/discovered_hosts/' + self.get('hypervisorSelectedId'),
           type: "PUT",
-          data: JSON.stringify({'discovered_host': { 'hostgroup_id': self.get('ovirtHypervisorHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
+          data: JSON.stringify({'discovered_host': { 'name': 'hypervisor1', 'hostgroup_id': self.get('ovirtHypervisorHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
           headers: {
               "Accept": "application/json",
               "Content-Type": "application/json",
@@ -80,7 +81,7 @@ export default Ember.Controller.extend({
       Ember.$.ajax({
           url: '/api/v2/discovered_hosts/' + self.get('engineSelectedId'),
           type: "PUT",
-          data: JSON.stringify({'discovered_host': { 'hostgroup_id': self.get('ovirtEngineHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
+          data: JSON.stringify({'discovered_host': { 'name': 'engine1', 'hostgroup_id': self.get('ovirtEngineHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
           headers: {
               "Accept": "application/json",
               "Content-Type": "application/json",
@@ -99,6 +100,9 @@ export default Ember.Controller.extend({
             reject(response);
           }
       });
+
+    self.set('controllers.review.disableTabProgress', false);
+    return self.transitionTo('review.progress');
     });
     }
   }
