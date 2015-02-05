@@ -33,13 +33,19 @@
       {{!engineSelectedId}}
 
       <br />
+      Hypervisor Host Address:
+        {{#link-to 'rhev-options'}}
+          {{controllers.rhev-options.hostAddress}}.rhci.redhat.com
+        {{/link-to}} <br />
+
+      Engine Host Address:
+        {{#link-to 'rhev-options'}}
+          {{controllers.rhev-options.engineHostName}}.rhci.redhat.com
+        {{/link-to}} <br />
+
       Engine admin password:
         {{#link-to 'rhev-options'}}
           {{controllers.rhev-options.engineAdminPassword}}
-        {{/link-to}} <br />
-      Host Address:
-        {{#link-to 'rhev-options'}}
-          {{controllers.rhev-options.hostAddress}}
         {{/link-to}} <br />
       Datacenter Name:
         {{#link-to 'rhev-options'}}
