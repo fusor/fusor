@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.date        = Date.today.to_s
   s.author     = "Fusor team"
   s.email       = "fusor@example.com"
-  s.homepage    = "github.com/fusor/fusor"
+  s.homepage    = "https://github.com/fusor/fusor"
   s.summary     = "Fusor installer"
   s.description = "Fusor installer"
 
