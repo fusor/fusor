@@ -16,33 +16,24 @@ module Fusor
    before_filter :find_deployment, :only => [:destroy, :show, :update]
 
     def index
-      puts "XXX index called"
-      Rails.logger.info("XXX index called")
       respond :collection => Deployment.all
     end
 
     def show
-      puts "XXX show called"
       respond :resource => @deployment
     end
 
     def create
-      Rails.logger.info("XXX create")
-      puts "XXX create"
-      puts "XXX " + params[:deployment].to_s
-
       @deployment = Deployment.create!(params[:deployment])
       respond_for_show :resource => @deployment
     end
 
     def update
-      puts "XXX update"
       @deployment.update_attributes!(params[:deployment])
       respond_for_show :resource => @deployment
     end
 
     def destroy
-      puts "XXX destroy"
       @deployment.destroy
       respond_for_show :resource => @deployment
     end
