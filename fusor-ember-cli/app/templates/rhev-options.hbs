@@ -1,7 +1,12 @@
 <h4> Hypervisor Configuration </h4>
 
-  {{text-f label="Host Name" value=hostAddress}}
+  <div class='col-md-12'>
+    <form class="form form-horizontal">
+      {{text-f label="Hypervisor Host Name" value=hostAddress}}
+    </form>
+  </div>
 
+<br />
 
 <h4> Engine Configuration </h4>
 
@@ -10,7 +15,7 @@
     <br />
     <form class="form form-horizontal">
 
-      {{text-f label="Host Name" value=engineHostName}}
+      {{text-f label="Engine Host Name" value=engineHostName}}
       {{text-f label="Engine admin password" value=engineAdminPassword}}
       {{!text-f label="Confirm admin password" value=engineConfirmAdminPassword}}
 

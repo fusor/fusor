@@ -24,9 +24,8 @@
     <br />
     <div style='float:right'>
         {{#link-to 'satellite' class='btn btn-default'}}Back{{/link-to}}
-        {{#link-to 'configure-environment' (query-params organization_id=organizationId) class='btn btn-primary'}}Next{{/link-to}}
+        {{#link-to 'configure-environment' (query-params organization_id=organizationId) class='btn btn-primary' disabled=disable1BNext}}Next{{/link-to}}
     </div>
-{{organizationId}}
   </div>
 </div>
 

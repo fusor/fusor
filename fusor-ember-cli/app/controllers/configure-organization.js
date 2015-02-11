@@ -5,12 +5,17 @@ export default Ember.ArrayController.extend({
 
   fields_org: {},
 
+  selectedOrganzation: "",
+  disable1BNext: function() {
+    return (this.get('selectedOrganzation.length') === 0);
+  }.property('selectedOrganzation'),
+
   deploymentName: Ember.computed.alias("controllers.satellite/index.name"),
   defaultOrgName: function () {
     return this.getWithDefault('defaultOrg', this.get('deploymentName'));
   }.property(),
 
-  selectedOrganzation: "Default_Organization",
+
   selectedOrg: "Default_Organization",
   organizationId: function() {
     return this.get('selectedOrg').id;

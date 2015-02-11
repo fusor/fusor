@@ -2,15 +2,16 @@
 
   <ul class="nav nav-pills nav-stacked col-md-3">
       {{#link-to 'satellite.index' tagName='li'}}
-        <a>Deployment Name</a>
+        <a>1A. Deployment Name</a>
       {{/link-to}}
 
-      {{#link-to 'configure-organization' tagName='li'}}
-        <a>Configure Organization</a>
+      {{#link-to 'configure-organization' tagName='li' disabled=disable1ANext}}
+        <a>2B. Configure Organization</a>
       {{/link-to}}
 
-      {{#link-to 'configure-environment' (query-params organization_id="1") tagName='li'}}
-        <a>Configure Lifecycle Environment</a>
+      {{#link-to 'configure-environment' (query-params organization_id="1")
+                 tagName='li' disabled=disable1ANext}}
+        <a>3C. Configure Lifecycle Environment</a>
       {{/link-to}}
   </ul>
 

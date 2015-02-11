@@ -4,7 +4,7 @@ export default Ember.ObjectController.extend({
 
   name: '',
 
-  disableNext: function() {
+  disable1ANext: function() {
     return (this.get('name.length') === 0);
   }.property('name'),
 
