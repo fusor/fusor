@@ -1,6 +1,13 @@
 import Ember from 'ember';
 
-export default Ember.Controller.extend({
+export default Ember.ObjectController.extend({
+
+  name: '',
+
+  disableNext: function() {
+    return (this.get('name.length') === 0);
+  }.property('name'),
+
   rhciModalButtons: [
       Ember.Object.create({title: 'No', clicked:"cancel", dismiss: 'modal'}),
       Ember.Object.create({title: 'Yes', clicked:"redirectToDeployments", type: 'primary'})

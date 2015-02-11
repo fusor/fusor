@@ -3,14 +3,14 @@
     <br />
     <form class="form-horizontal" role="form">
 
-      {{text-f label="Name" value=name inputSize='col-md-5' }}
+      {{text-f label="Name *" value=name inputSize='col-md-5' }}
 
       {{textarea-f label="Description" value=description inputSize='col-md-5' }}
 
       <div class='pull-right'>
         <br />
         <button {{action 'showModal' 'cancelDeploymentModal'}} class='btn btn-default'>Cancel</button>
-        {{#link-to 'configure-organization' class='btn btn-primary'}}Next{{/link-to}}
+        {{#link-to 'configure-organization' class='btn btn-primary' disabled=disableNext}}Next{{/link-to}}
       </div>
 
     </form>
