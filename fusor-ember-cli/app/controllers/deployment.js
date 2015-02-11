@@ -37,7 +37,7 @@ export default Ember.ObjectController.extend({
     }
   }.property('isRhev', 'isOpenStack'),
 
-  stepNumberReview: function() {
+  stepNumberSubscriptions: function() {
     if (this.get('isRhev') && this.get('isOpenStack') && this.get('isCloudForms')) {
       return '5';
     } else if ((this.get('isRhev') && this.get('isOpenStack')) || (this.get('isRhev') && this.get('isCloudForms')) ||  (this.get('isOpenStack') && this.get('isCloudForms')))  {
@@ -46,6 +46,18 @@ export default Ember.ObjectController.extend({
       return '3';
     } else {
       return '2';
+    }
+  }.property('isRhev', 'isOpenStack', 'isCloudForms'),
+
+  stepNumberReview: function() {
+    if (this.get('isRhev') && this.get('isOpenStack') && this.get('isCloudForms')) {
+      return '6';
+    } else if ((this.get('isRhev') && this.get('isOpenStack')) || (this.get('isRhev') && this.get('isCloudForms')) ||  (this.get('isOpenStack') && this.get('isCloudForms')))  {
+      return '5';
+    } else if (this.get('isRhev') || this.get('isOpenStack') || this.get('isCloudForms')) {
+      return '4';
+    } else {
+      return '3';
     }
   }.property('isRhev', 'isOpenStack', 'isCloudForms'),
 

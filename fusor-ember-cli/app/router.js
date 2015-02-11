@@ -52,8 +52,8 @@ Router.map(function() {
       this.resource('cloudforms-storage-domain', {path: 'storage-domain'});
       this.resource('cloudforms-vm', {path: 'vm'});
     });
+    this.resource('subscriptions');
     this.resource('review', function() {
-      this.resource('subscriptions');
       this.resource('products');
       this.route('installation');
       this.route('progress');

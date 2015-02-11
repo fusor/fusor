@@ -1,10 +1,8 @@
 <div class='row'>
   <div class='col-md-12'>
-    <h1>New Deployment: Select Cloud Infrastructure Products</h1>
+    <h2>New Deployment: Select Cloud Infrastructure Products</h2>
 
-    Choose the products to deploy. The installer guides you through creating a new {{nameRHCI}} Cloud Infrastructure deployment.
-    <br />
-    You may click anywhere in a box to select or de-select.
+    Choose the products to deploy. This wizard guides you through creating a new {{nameRedHat}} Cloud Infrastructure deployment.
     <br />
     <br />
   </div>
@@ -13,27 +11,26 @@
 <div class='row' style='height:370px;'>
 
   <div class='col-md-4'>
-    {{#rchi-item srcImage=imgRhev isChecked=isRhev name=nameRhev}}
-        Complete virtualization management bacon ipsum dolor sit amet kevin incididunt enim minim. Id
-        officia aliqua, mollit short ribs cillum consectetur spare ribs magna commodo.
-    {{/rchi-item}}
+    {{rchi-item srcImage=imgRhev isChecked=isRhev name=nameRhev}}
   </div>
 
   <div class='col-md-4'>
-    {{#rchi-item srcImage=imgOpenStack isChecked=isOpenStack name=nameOpenStack}}
-        OpenStack gives you a flexible, secure foundation to build a
-        massively scalable private or public cloud ... lorem ipsum
-    {{/rchi-item}}
+    {{rchi-item srcImage=imgOpenStack isChecked=isOpenStack name=nameOpenStack}}
   </div>
 
   <div class='col-md-4'>
-    {{#rchi-item srcImage=imgCloudForms isChecked=isCloudForms name=nameCloudForms}}
-        Manage your virtual, private, and hybrid cloud infrastructures. bacon ipsum dolor sit amet kevin incididunt enim minim. Id
-        officia aliqua, mollit short ribs cillum consectetur spare ribs.
-    {{/rchi-item}}
+    {{rchi-item srcImage=imgCloudForms isChecked=isCloudForms name=nameCloudForms}}
   </div>
 
 </div>
+
+
+{{#unless isUpstream}}
+<p class='subscriptions_needed'>
+<i class="fa fa-info-circle"></i>
+<strong>Subscriptions needed to complete this deployment.</strong> Check your account in <a>Portal</a> to verify you have subscriptions available to cover the selected products.
+</p>
+{{/unless}}
 
 <br />
 <div class='row'>

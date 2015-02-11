@@ -1,18 +1,32 @@
 <br />
 <h1>New {{nameRHCI}} Deployment: {{deploymentName}}</h1>
 
-<ul class="wizard">
-  {{#link-to 'satellite' tagName='li'}}{{step-number value=1}}{{nameSatellite}}{{/link-to}}
-  {{#if isRhev}}
-    {{#link-to 'rhev' tagName='li'}}{{step-number value=stepNumberRhev}}{{nameRhev}}{{/link-to}}
-  {{/if}}
-  {{#if isOpenStack}}
-    {{#link-to 'openstack' tagName='li'}}{{step-number value=stepNumberOpenstack}}{{nameOpenStack}}{{/link-to}}
-  {{/if}}
-  {{#if isCloudForms}}
-    {{#link-to 'cloudforms' tagName='li'}}{{step-number value=stepNumberCloudForms}}{{nameCloudForms}}{{/link-to}}
-  {{/if}}
-  {{#link-to 'review' tagName='li' disabled=disableReview}}{{step-number value=stepNumberReview}}Review{{/link-to}}
-</ul>
+
+<div class="wizard-block">
+
+  <div class="wizard-line"></div>
+
+  <ul class="wizard">
+    {{wizard-item num=1 name=nameSatellite routeName='satellite'}}
+
+    {{#if isRhev}}
+      {{wizard-item num=stepNumberRhev name=nameRhev routeName='rhev'}}
+    {{/if}}
+
+    {{#if isOpenStack}}
+      {{wizard-item num=stepNumberOpenstack name=nameOpenStack routeName='openstack'}}
+    {{/if}}
+
+    {{#if isCloudForms}}
+      {{wizard-item num=stepNumberCloudForms name=nameCloudForms routeName='cloudforms'}}
+    {{/if}}
+
+    {{#unless isUpstream}}
+      {{wizard-item num=stepNumberSubscriptions name='Subscriptions' routeName='subscriptions' disabled=disableReview}}
+    {{/unless}}
+
+    {{wizard-item num=stepNumberReview name='Review' routeName='review' disabled=disableReview}}
+  </ul>
+</div>
 
 {{outlet}}
