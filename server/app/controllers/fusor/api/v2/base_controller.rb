@@ -15,12 +15,9 @@ require 'strong_parameters'
 module Fusor
   module Api
     module V2
-      class BaseController < ::Api::V2::BaseController
+      class BaseController < ::Katello::Api::V2::ApiController
 
-        include Concerns::Api::ApiController
-        include Api::Version2
         include Api::V2::Rendering
-        include Api::V2::ErrorHandling
 
         resource_description do
           api_version 'v2'
