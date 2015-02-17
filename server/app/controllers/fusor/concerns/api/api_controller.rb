@@ -16,6 +16,8 @@ module Fusor
       extend ActiveSupport::Concern
 
       included do
+        include ForemanTasks::Triggers
+
         respond_to :json
         before_filter :set_gettext_locale
       end
