@@ -1,5 +1,7 @@
 <center>
-<div class='full-circle'></div>
-{{#link-to routeName tagName='li'}}{{num}}. {{name}}{{/link-to}}
+{{#link-to routeName tagName='li' disabled=isDisabled}}{{num}}. {{name}}
+<div {{bind-attr class=":full-circle isDisabled:disable-circle"}}>
+</div>
+{{/link-to}}
 {{yield}}
 </center>

@@ -7,6 +7,12 @@
   margin-top:15px;
 }
 
+/*.white-wizard-line {
+  border-top: solid 3px red;
+  margin-bottom:-18px;
+  z-index: 114000;
+}
+*/
 .wizard-item {
   font-weight: bold;
   font-size: 110%;
@@ -21,6 +27,11 @@
   position: relative;
   display: inline-block;
 }
+
+.wizard li.disabled {
+  color: #ddd !important;
+}
+
 .wizard .badge {
   margin: 0 5px 0 18px;
   position: relative;
@@ -33,14 +44,22 @@
   color: #007ACC !important;
 }
 
+.wizard .active > .full-circle {
+  background-color: #007ACC !important;
+}
+
 .full-circle {
  background-color: #999;
  height: 8px;
  -moz-border-radius:4px;
  -webkit-border-radius: 4px;
  width: 8px;
+ margin-top: -41px;
 }
 
+.disable-circle {
+  background-color: #ddd !important;
+}
 
 .tabbed_side_nav_form{
   .tab-content {

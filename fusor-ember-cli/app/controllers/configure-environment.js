@@ -17,9 +17,13 @@ export default Ember.ArrayController.extend({
     }
   }.property('organization_id', 'model'),
 
+  disable1CNext: function() {
+    return (this.get('selectedEnvironment.length') === 0);
+  }.property('selectedEnvironment'),
+
   fields_env: {},
 
-  selectedEnvironment: "development",
+  selectedEnvironment: "",
 
   rhciNewEnvButtons: [
       Ember.Object.create({title: 'Cancel', clicked:"cancel", dismiss: 'modal'}),

@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.ObjectController.extend({
-  needs: ['rhci', 'subscriptions', 'satellite/index'],
+  needs: ['rhci', 'subscriptions', 'satellite/index', 'configure-environment'],
 
   isSatellite: Ember.computed.alias("controllers.rhci.isSatellite"),
   isRhev: Ember.computed.alias("controllers.rhci.isRhev"),
@@ -15,6 +15,13 @@ export default Ember.ObjectController.extend({
   nameSatellite: Ember.computed.alias("controllers.rhci.nameSatellite"),
 
   deploymentName: Ember.computed.alias("controllers.satellite/index.name"),
+
+  isDisabledRhev: Ember.computed.alias("controllers.configure-environment.disable1CNext"),
+
+  isDisabledOpenstack: false,
+  isDisabledCloudForms: false,
+  isDisabledReview: false,
+  isDisabledSubscriptions: false,
 
   disableReview: false, //Ember.computed.alias("controllers.subscriptions.disableNext"),
   stepNumberRhev: 2,

@@ -4,14 +4,12 @@
       {{#link-to 'satellite.index' tagName='li'}}
         <a>1A. Deployment Name</a>
       {{/link-to}}
-
-      {{#link-to 'configure-organization' tagName='li' disabled=disable1ANext}}
-        <a>2B. Configure Organization</a>
+      {{#link-to 'configure-organization' tagName='li' disabled=disable1B}}
+        <a>1B. Configure Organization</a>
       {{/link-to}}
-
       {{#link-to 'configure-environment' (query-params organization_id="1")
-                 tagName='li' disabled=disable1ANext}}
-        <a>3C. Configure Lifecycle Environment</a>
+                 tagName='li' disabled=disable1C}}
+        <a>1C. Configure Lifecycle Environment</a>
       {{/link-to}}
   </ul>
 
