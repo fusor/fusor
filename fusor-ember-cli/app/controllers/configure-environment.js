@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.ArrayController.extend({
-  //needs: ['configure-organization'],
+  needs: ['satellite'],
   queryParams: ['organization_id'],
 
   organization_id: null,
@@ -20,6 +20,10 @@ export default Ember.ArrayController.extend({
   disable1CNext: function() {
     return (this.get('selectedEnvironment.length') === 0);
   }.property('selectedEnvironment'),
+
+  disableAll: Ember.computed.alias("controllers.satellite.disableAll"),
+
+  nameRHCI: Ember.computed.alias("controllers.rhci.nameRHCI"),
 
   fields_env: {},
 

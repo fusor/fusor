@@ -16,14 +16,13 @@ export default Ember.ObjectController.extend({
 
   deploymentName: Ember.computed.alias("controllers.satellite/index.name"),
 
-  isDisabledRhev: Ember.computed.alias("controllers.configure-environment.disable1CNext"),
+  isDisabledRhev: Ember.computed.alias("controllers.configure-environment.disableAll"),
 
-  isDisabledOpenstack: false,
-  isDisabledCloudForms: false,
-  isDisabledReview: false,
-  isDisabledSubscriptions: false,
+  isDisabledOpenstack: Ember.computed.alias("controllers.configure-environment.disableAll"),
+  isDisabledCloudForms: Ember.computed.alias("controllers.configure-environment.disableAll"),
+  isDisabledReview: Ember.computed.alias("controllers.configure-environment.disableAll"),
+  isDisabledSubscriptions: Ember.computed.alias("controllers.configure-environment.disableAll"),
 
-  disableReview: false, //Ember.computed.alias("controllers.subscriptions.disableNext"),
   stepNumberRhev: 2,
 
   stepNumberOpenstack: function() {

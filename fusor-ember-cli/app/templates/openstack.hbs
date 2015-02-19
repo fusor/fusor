@@ -3,19 +3,19 @@
   <ul class="nav nav-pills nav-stacked col-md-3">
 
       {{#link-to 'osp-settings' tagName='li'}}
-        <a>Settings</a>
+        <a>{{stepNumberOpenstack}}A. Settings</a>
       {{/link-to}}
 
       {{#link-to 'osp-network' tagName='li'}}
-        <a>Network Configuration</a>
+        <a>{{stepNumberOpenstack}}B. Network Configuration</a>
       {{/link-to}}
 
       {{#link-to 'osp-overview' tagName='li'}}
-        <a>Services Overview</a>
+        <a>{{stepNumberOpenstack}}C. Services Overview</a>
       {{/link-to}}
 
       {{#link-to 'osp-configuration' tagName='li'}}
-        <a>Services Configuration</a>
+        <a>{{stepNumberOpenstack}}D. Services Configuration</a>
       {{/link-to}}
   </ul>
 

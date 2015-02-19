@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
-  needs: ['subscriptions', 'rhci', 'application'],
+  needs: ['subscriptions', 'rhci', 'application', 'deployment'],
 
   isUpstream: Ember.computed.alias("controllers.application.isUpstream"),
   disableNext: Ember.computed.alias("controllers.subscriptions.disableNext"),
@@ -14,4 +14,5 @@ export default Ember.Controller.extend({
 
   nameSelectSubscriptions: Ember.computed.alias("controllers.rhci.nameSelectSubscriptions"),
 
+  stepNumberReview: Ember.computed.alias("controllers.deployment.stepNumberReview"),
 });
