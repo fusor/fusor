@@ -13,7 +13,7 @@
 module Fusor
   class Api::V2::DeploymentsController < Api::V2::BaseController
 
-   before_filter :find_deployment, :only => [:destroy, :show, :update]
+   before_filter :find_deployment, :only => [:destroy, :show, :update, :deploy]
 
     def index
       respond :collection => Deployment.all
@@ -36,6 +36,11 @@ module Fusor
     def destroy
       @deployment.destroy
       respond_for_show :resource => @deployment
+    end
+
+    def deploy
+      task = async_task(::Actions::Fusor::Deploy, @deployment)
+      respond_for_async :resource => task
     end
 
     def find_deployment
