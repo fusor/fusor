@@ -19,4 +19,4 @@ cp ./dist/fonts/*.*  ~/fusor/ui/public/fonts/;
 
 cd ~/fusor
 git add .;
-git commit -m "moved assets from /fusor-ember-cli/dist to /ui/app/assets";
+git commit -m "copy compiled assets from fusor-ember-cli/dist to FusorUI gem at fusor/ui/app/assets";

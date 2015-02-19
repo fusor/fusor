@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.ObjectController.extend({
-  needs: ['rhci', 'subscriptions', 'satellite/index'],
+  needs: ['rhci', 'subscriptions', 'satellite/index', 'configure-environment'],
 
   isSatellite: Ember.computed.alias("controllers.rhci.isSatellite"),
   isRhev: Ember.computed.alias("controllers.rhci.isRhev"),
@@ -16,7 +16,13 @@ export default Ember.ObjectController.extend({
 
   deploymentName: Ember.computed.alias("controllers.satellite/index.name"),
 
-  disableReview: false, //Ember.computed.alias("controllers.subscriptions.disableNext"),
+  isDisabledRhev: Ember.computed.alias("controllers.configure-environment.disableAll"),
+
+  isDisabledOpenstack: Ember.computed.alias("controllers.configure-environment.disableAll"),
+  isDisabledCloudForms: Ember.computed.alias("controllers.configure-environment.disableAll"),
+  isDisabledReview: Ember.computed.alias("controllers.configure-environment.disableAll"),
+  isDisabledSubscriptions: Ember.computed.alias("controllers.configure-environment.disableAll"),
+
   stepNumberRhev: 2,
 
   stepNumberOpenstack: function() {
@@ -37,7 +43,7 @@ export default Ember.ObjectController.extend({
     }
   }.property('isRhev', 'isOpenStack'),
 
-  stepNumberReview: function() {
+  stepNumberSubscriptions: function() {
     if (this.get('isRhev') && this.get('isOpenStack') && this.get('isCloudForms')) {
       return '5';
     } else if ((this.get('isRhev') && this.get('isOpenStack')) || (this.get('isRhev') && this.get('isCloudForms')) ||  (this.get('isOpenStack') && this.get('isCloudForms')))  {
@@ -46,6 +52,18 @@ export default Ember.ObjectController.extend({
       return '3';
     } else {
       return '2';
+    }
+  }.property('isRhev', 'isOpenStack', 'isCloudForms'),
+
+  stepNumberReview: function() {
+    if (this.get('isRhev') && this.get('isOpenStack') && this.get('isCloudForms')) {
+      return '6';
+    } else if ((this.get('isRhev') && this.get('isOpenStack')) || (this.get('isRhev') && this.get('isCloudForms')) ||  (this.get('isOpenStack') && this.get('isCloudForms')))  {
+      return '5';
+    } else if (this.get('isRhev') || this.get('isOpenStack') || this.get('isCloudForms')) {
+      return '4';
+    } else {
+      return '3';
     }
   }.property('isRhev', 'isOpenStack', 'isCloudForms'),
 

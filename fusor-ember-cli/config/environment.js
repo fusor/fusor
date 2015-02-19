@@ -45,19 +45,18 @@ module.exports = function(environment) {
 
     torii: {
       providers: {
-        'facebook-connect': {
-          appId: '394152887290151'
-        },
         'facebook-oauth2': {
           apiKey: '394152887290151',
-          redirectUri: 'http://0.0.0.0:4200'
+          redirectUri: 'http://localhost:4200/#/login'
         },
         'google-oauth2': {
           apiKey: '586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com',
           redirectUri: 'http://localhost:4200'
         },
         'github-oauth2': {
-          apiKey: '9571e28a208605ba2a6e'
+          //apiKey: '9571e28a208605ba2a6e'
+          //apiKey: 'f5efb99912a0fd79696a'
+          apiKey: '985e267c717e3f873120'
         }
       }
     },

@@ -9,8 +9,8 @@
         {{radio-button label="Gluster" checked=storageType value="Gluster"}}Gluster
       {{/base-f}}
 
-      {{text-f label="Storage Address" value=storageAddress}}
-      {{text-f label="Share Path" value=sharePath}}
+      {{text-f label="Storage Address" value=storageAddress placeholder='Leave blank for default'}}
+      {{text-f label="Share Path" value=sharePath placeholder='Leave blank for default'}}
 
 
       {{#if isNFS}}

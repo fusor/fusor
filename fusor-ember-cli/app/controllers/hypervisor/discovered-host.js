@@ -13,6 +13,11 @@ export default Ember.ArrayController.extend({
 
   cntSelectedHosts: Em.computed.alias('selectedHosts.length'),
 
+  // hypervisorHostId: function() {
+  //   return this.get('selectedHosts.length');
+  // }.property('selectedHosts'),
+
+
   // TODO Why didn't this work???
   // numSelectedHosts: function() {
   //   return this.get('selectedHosts').get('length');
@@ -31,5 +36,18 @@ export default Ember.ArrayController.extend({
       return value;
     }
   }.property('model.@each.isSelectedAsHypervisor'),
+
+  idChecked: function(key){
+    var model = this.get('model');
+    if (model && model.isAny('isSelectedAsHypervisor')) {
+      return this.get('selectedHosts').getEach("id"); //this.//   return model && model.isEvery('isSelectedAsHypervisor');
+    } else {
+      return '';
+    }
+    // } else {
+    //   this.get('model').setEach('isSelectedAsHypervisor', value);
+    //   return value;
+    // }
+  }.property('model.@each.isSelectedAsHypervisor', 'selectedHosts'),
 
 });

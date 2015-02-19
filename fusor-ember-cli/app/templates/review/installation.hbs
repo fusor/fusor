@@ -10,53 +10,43 @@
 
     {{/accordion-item}}
 
-    {{#accordion-item name=nameRhev isOpen=false}}
-      Setup Type: {{#link-to 'rhev-setup'}} {{oVirtHostedtype}} {{/link-to}}
-      <br />
-      <br />
+  {{#if isRhev}}
+    {{#accordion-item name=nameRhev isOpen=isRhevOpen}}
+      <!-- Setup Type:  -->{{!#link-to 'rhev-setup'}} {{!oVirtHostedtype}} {{!/link-to}}
       {{#if isSelfHosted}}
         Hypervisor/Engine: <br />
         {{#each host in hypervisorSelectedHosts}}
-          {{#link-to 'hypervisor.discovered-host'}} {{host.mac}} {{/link-to}}<br />
+          {{#link-to 'hypervisor.discovered-host'}} {{host.name}} {{/link-to}}<br />
         {{/each}}
       {{else}}
         Hypervisor: <br />
         {{#each host in hypervisorSelectedHosts}}
-          {{#link-to 'hypervisor.discovered-host'}} {{host.mac}} {{/link-to}}<br />
+          {{#link-to 'hypervisor.discovered-host'}} {{host.name}} {{/link-to}}<br />
         {{/each}}
         <br />
         Engine: <br />
         {{#each host in engineSelectedHosts}}
-          {{#link-to 'engine.discovered-host'}} {{host.mac}} {{/link-to}}<br />
+          {{#link-to 'engine.discovered-host'}} {{host.name}} {{/link-to}}<br />
         {{/each}}
       {{/if}}
-      <br />
-      Storage Type:
-        {{#link-to 'storage'}}
-          {{controllers.storage.storageType}}
-        {{/link-to}} <br />
-        {{#if controllers.storage.isNFS}}
-          Local ISO domain path:
-           {{#link-to 'storage'}}
-          {{controllers.storage.isoDomainPath}}
-          {{/link-to}} <br />
-          Local ISO domain ACL:
-           {{#link-to 'storage'}}
-          {{controllers.storage.isoDomainAcl}}
-          {{/link-to}} <br />
-          Local ISO domain name:
-           {{#link-to 'storage'}}
-          {{controllers.storage.isoDomainName}}
-          {{/link-to}} <br />
-        {{/if}}
+      {{!hypervisorSelectedId}}
+      {{!engineSelectedId}}
 
       <br />
-      DNS Name:
-        {{#link-to 'networking'}}
-          {{controllers.networking.dnsName}}
+      Hypervisor Host Address:
+        {{#link-to 'rhev-options'}}
+          {{controllers.rhev-options.hostAddress}}.rhci.redhat.com
         {{/link-to}} <br />
 
-      <br />
+      Engine Host Address:
+        {{#link-to 'rhev-options'}}
+          {{controllers.rhev-options.engineHostName}}.rhci.redhat.com
+        {{/link-to}} <br />
+
+      Engine admin password:
+        {{#link-to 'rhev-options'}}
+          {{controllers.rhev-options.engineAdminPassword}}
+        {{/link-to}} <br />
       Datacenter Name:
         {{#link-to 'rhev-options'}}
           {{controllers.rhev-options.datacenterName}}
@@ -65,23 +55,42 @@
         {{#link-to 'rhev-options'}}
           {{controllers.rhev-options.clusterName}}
         {{/link-to}} <br />
-      Host Name:
+      Storage Name:
         {{#link-to 'rhev-options'}}
           {{controllers.rhev-options.hostName}}
-        {{/link-to}} <br />
-      Host Address:
-        {{#link-to 'rhev-options'}}
-          {{controllers.rhev-options.hostAddress}}
         {{/link-to}} <br />
       Storage Name:
         {{#link-to 'rhev-options'}}
           {{controllers.rhev-options.storageName}}
         {{/link-to}} <br />
+      CPU Type:
+        {{#link-to 'rhev-options'}}
+          {{controllers.rhev-options.cpuType}}
+        {{/link-to}} <br />
+
+
+      <br />
+      Storage Type:
+        {{#link-to 'storage'}}
+          {{controllers.storage.storageType}}
+        {{/link-to}} <br />
+          Storage Address:
+           {{#link-to 'storage'}}
+          {{controllers.storage.storageAddress}}
+          {{/link-to}} <br />
+          Share Path:
+           {{#link-to 'storage'}}
+          {{controllers.storage.sharePath}}
+          {{/link-to}} <br />
+
+      <br />
 
       <br />
     {{/accordion-item}}
+  {{/if}}
 
-    {{#accordion-item name=nameOpenStack isOpen=false}}
+  {{#if isOpenStack}}
+    {{#accordion-item name=nameOpenStack isOpen=isOpenStackOpen}}
       High Availability:
         {{#link-to 'osp-settings'}}
           {{controllers.osp-settings.ha}}
@@ -125,13 +134,16 @@
           {{controllers.osp-configuration.cinderBackend}}
         {{/link-to}} <br />
     {{/accordion-item}}
+  {{/if}}
 
-    {{#accordion-item name=nameCloudForms isOpen=false}}
+  {{#if isCloudForms}}
+    {{#accordion-item name=nameCloudForms isOpen=isCloudFormsOpen}}
       Where to Install?
         {{#link-to 'where-install'}}
           {{controllers.where-install.whereInstallCf}}
         {{/link-to}} <br />
     {{/accordion-item}}
+  {{/if}}
 
     <br />
     <br />
@@ -139,7 +151,7 @@
     <div class='pull-right'>
       <br />
       <button {{action 'showModal' 'cancelDeploymentModal'}} class='btn btn-default'>Cancel</button>
-      {{#link-to 'review.progress' class='btn btn-primary'}}Install{{/link-to}}
+      <button {{action 'installDeployment'}} class='btn btn-primary'>Install</button>
     </div>
 
 

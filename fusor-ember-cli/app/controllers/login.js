@@ -103,6 +103,35 @@ export default Ember.ObjectController.extend(LoginControllerMixin, {
       var self = this;
       return this.get('session').authenticate('simple-auth-authenticator:torii', authType+'-oauth2').then(function() {
         console.log(self.get('session.content'));
+        var authCode = self.get('session.content.authorizationCode');
+        //alert(authCode);
+        Ember.$.ajax({
+                type: "POST",
+                url: "https://github.com/login/oauth/access_token",
+                data: {
+                        code: authCode,
+                        client_id: '985e267c717e3f873120',
+                        client_secret: '4855e5732487423f328f0c4ecfd57464aee2ee7b',
+                        redirect_uri: 'http://development.fusor-ember-cli.divshot.io'
+                },
+                headers: {
+                  "Access-Control-Allow-Origin": "*",
+                  "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE",
+                  "Access-Control-Allow-Credentials": true
+                },
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(data) {
+                        // TODO : manage access_token and save it to the session
+                        return alert(data);
+                },
+                failure: function(errMsg) {
+                        // TODO : manage error
+                       return alert('failure');
+                       return alert(errMsg);
+                }
+        });
+
         return self.transitionToRoute('rhci');
       });
     },

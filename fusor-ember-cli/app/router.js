@@ -19,7 +19,6 @@ Router.map(function() {
   this.resource('deployment', function() {
 
     this.resource('satellite', function() {
-      this.resource('configure');
       this.resource('configure-organization');
       this.resource('configure-environment');
     });
@@ -53,8 +52,8 @@ Router.map(function() {
       this.resource('cloudforms-storage-domain', {path: 'storage-domain'});
       this.resource('cloudforms-vm', {path: 'vm'});
     });
+    this.resource('subscriptions');
     this.resource('review', function() {
-      this.resource('subscriptions');
       this.resource('products');
       this.route('installation');
       this.route('progress');
@@ -72,6 +71,9 @@ Router.map(function() {
   this.route('hostgroup/edit');
   this.route('review/installation');
   this.route('review/progress');
+  this.resource("discovered-hosts", function() {
+    this.resource("discovered-host", { path: '/:discovered_hosts_id' });
+  });
 });
 
 export default Router;

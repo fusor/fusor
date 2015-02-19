@@ -189,7 +189,7 @@ td, th {
     display: none; }
   .table td, .table th {
     background-color: #fff !important; }
-  .btn > .caret, .btn > span.editable button, span.editable .btn > button, .btn > span.editable:hover button, span.editable:hover .btn > button, .btn > .subnet-type-pull, .btn > .subnet-pull, .dropup > .btn > .caret, .dropup > .btn > span.editable button, span.editable .dropup > .btn > button, .dropup > .btn > span.editable:hover button, span.editable:hover .dropup > .btn > button, .dropup > .btn > .subnet-type-pull, .dropup > .btn > .subnet-pull {
+  .btn > .caret, .dropup > .btn > .caret {
     border-top-color: #000 !important; }
   .label {
     border: 1px solid #000; }
@@ -1877,7 +1877,7 @@ output {
   line-height: 1.42857;
   color: #555555; }
 
-.form-control, span.editable input, span.editable:hover input {
+.form-control {
   display: block;
   width: 100%;
   height: 34px;
@@ -1894,19 +1894,19 @@ output {
   -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
   -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
   transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s; }
-  .form-control:focus, span.editable input:focus, span.editable:hover input:focus {
+  .form-control:focus {
     border-color: #66afe9;
     outline: 0;
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6); }
-  .form-control::-moz-placeholder, span.editable input::-moz-placeholder, span.editable:hover input::-moz-placeholder {
+  .form-control::-moz-placeholder {
     color: #777777;
     opacity: 1; }
-  .form-control:-ms-input-placeholder, span.editable input:-ms-input-placeholder, span.editable:hover input:-ms-input-placeholder {
+  .form-control:-ms-input-placeholder {
     color: #777777; }
-  .form-control::-webkit-input-placeholder, span.editable input::-webkit-input-placeholder, span.editable:hover input::-webkit-input-placeholder {
+  .form-control::-webkit-input-placeholder {
     color: #777777; }
-  .form-control[disabled], span.editable input[disabled], span.editable:hover input[disabled], .form-control[readonly], span.editable input[readonly], span.editable:hover input[readonly], fieldset[disabled] .form-control, fieldset[disabled] span.editable input, span.editable fieldset[disabled] input, fieldset[disabled] span.editable:hover input, span.editable:hover fieldset[disabled] input {
+  .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
     cursor: not-allowed;
     background-color: #eeeeee;
     opacity: 1; }
@@ -1920,9 +1920,9 @@ input[type="search"] {
 input[type="date"], input[type="time"], input[type="datetime-local"], input[type="month"] {
   line-height: 34px;
   line-height: 1.42857 \0; }
-  input[type="date"].input-sm, .form-horizontal .form-group-sm input[type="date"].form-control, span.editable input[type="date"], span.editable:hover input[type="date"], .input-group-sm > input[type="date"].form-control, span.editable input[type="date"], span.editable:hover input[type="date"], .input-group-sm > input[type="date"].input-group-addon, .input-group-sm > .input-group-btn > input[type="date"].btn, input[type="date"].subnet-type-pull, input[type="date"].subnet-pull, input[type="time"].input-sm, .form-horizontal .form-group-sm input[type="time"].form-control, span.editable input[type="time"], span.editable:hover input[type="time"], .input-group-sm > input[type="time"].form-control, span.editable input[type="time"], span.editable:hover input[type="time"], .input-group-sm > input[type="time"].input-group-addon, .input-group-sm > .input-group-btn > input[type="time"].btn, input[type="time"].subnet-type-pull, input[type="time"].subnet-pull, input[type="datetime-local"].input-sm, .form-horizontal .form-group-sm input[type="datetime-local"].form-control, span.editable input[type="datetime-local"], span.editable:hover input[type="datetime-local"], .input-group-sm > input[type="datetime-local"].form-control, span.editable input[type="datetime-local"], span.editable:hover input[type="datetime-local"], .input-group-sm > input[type="datetime-local"].input-group-addon, .input-group-sm > .input-group-btn > input[type="datetime-local"].btn, input[type="datetime-local"].subnet-type-pull, input[type="datetime-local"].subnet-pull, input[type="month"].input-sm, .form-horizontal .form-group-sm input[type="month"].form-control, span.editable input[type="month"], span.editable:hover input[type="month"], .input-group-sm > input[type="month"].form-control, span.editable input[type="month"], span.editable:hover input[type="month"], .input-group-sm > input[type="month"].input-group-addon, .input-group-sm > .input-group-btn > input[type="month"].btn, input[type="month"].subnet-type-pull, input[type="month"].subnet-pull {
+  input[type="date"].input-sm, .form-horizontal .form-group-sm input[type="date"].form-control, .input-group-sm > input[type="date"].form-control, .input-group-sm > input[type="date"].input-group-addon, .input-group-sm > .input-group-btn > input[type="date"].btn, input[type="time"].input-sm, .form-horizontal .form-group-sm input[type="time"].form-control, .input-group-sm > input[type="time"].form-control, .input-group-sm > input[type="time"].input-group-addon, .input-group-sm > .input-group-btn > input[type="time"].btn, input[type="datetime-local"].input-sm, .form-horizontal .form-group-sm input[type="datetime-local"].form-control, .input-group-sm > input[type="datetime-local"].form-control, .input-group-sm > input[type="datetime-local"].input-group-addon, .input-group-sm > .input-group-btn > input[type="datetime-local"].btn, input[type="month"].input-sm, .form-horizontal .form-group-sm input[type="month"].form-control, .input-group-sm > input[type="month"].form-control, .input-group-sm > input[type="month"].input-group-addon, .input-group-sm > .input-group-btn > input[type="month"].btn {
     line-height: 30px; }
-  input[type="date"].input-lg, .form-horizontal .form-group-lg input[type="date"].form-control, span.editable input[type="date"], span.editable:hover input[type="date"], .input-group-lg > input[type="date"].form-control, span.editable input[type="date"], span.editable:hover input[type="date"], .input-group-lg > input[type="date"].input-group-addon, .input-group-lg > .input-group-btn > input[type="date"].btn, input[type="date"].subnet-type-pull, input[type="date"].subnet-pull, input[type="time"].input-lg, .form-horizontal .form-group-lg input[type="time"].form-control, span.editable input[type="time"], span.editable:hover input[type="time"], .input-group-lg > input[type="time"].form-control, span.editable input[type="time"], span.editable:hover input[type="time"], .input-group-lg > input[type="time"].input-group-addon, .input-group-lg > .input-group-btn > input[type="time"].btn, input[type="time"].subnet-type-pull, input[type="time"].subnet-pull, input[type="datetime-local"].input-lg, .form-horizontal .form-group-lg input[type="datetime-local"].form-control, span.editable input[type="datetime-local"], span.editable:hover input[type="datetime-local"], .input-group-lg > input[type="datetime-local"].form-control, span.editable input[type="datetime-local"], span.editable:hover input[type="datetime-local"], .input-group-lg > input[type="datetime-local"].input-group-addon, .input-group-lg > .input-group-btn > input[type="datetime-local"].btn, input[type="datetime-local"].subnet-type-pull, input[type="datetime-local"].subnet-pull, input[type="month"].input-lg, .form-horizontal .form-group-lg input[type="month"].form-control, span.editable input[type="month"], span.editable:hover input[type="month"], .input-group-lg > input[type="month"].form-control, span.editable input[type="month"], span.editable:hover input[type="month"], .input-group-lg > input[type="month"].input-group-addon, .input-group-lg > .input-group-btn > input[type="month"].btn, input[type="month"].subnet-type-pull, input[type="month"].subnet-pull {
+  input[type="date"].input-lg, .form-horizontal .form-group-lg input[type="date"].form-control, .input-group-lg > input[type="date"].form-control, .input-group-lg > input[type="date"].input-group-addon, .input-group-lg > .input-group-btn > input[type="date"].btn, input[type="time"].input-lg, .form-horizontal .form-group-lg input[type="time"].form-control, .input-group-lg > input[type="time"].form-control, .input-group-lg > input[type="time"].input-group-addon, .input-group-lg > .input-group-btn > input[type="time"].btn, input[type="datetime-local"].input-lg, .form-horizontal .form-group-lg input[type="datetime-local"].form-control, .input-group-lg > input[type="datetime-local"].form-control, .input-group-lg > input[type="datetime-local"].input-group-addon, .input-group-lg > .input-group-btn > input[type="datetime-local"].btn, input[type="month"].input-lg, .form-horizontal .form-group-lg input[type="month"].form-control, .input-group-lg > input[type="month"].form-control, .input-group-lg > input[type="month"].input-group-addon, .input-group-lg > .input-group-btn > input[type="month"].btn {
     line-height: 46px; }
 
 .form-group {
@@ -1973,41 +1973,41 @@ input[type="radio"][disabled], input[type="radio"].disabled, fieldset[disabled] 
   padding-top: 7px;
   padding-bottom: 7px;
   margin-bottom: 0; }
-  .form-control-static.input-lg, .form-horizontal .form-group-lg .form-control-static.form-control, span.editable input.form-control-static, span.editable:hover input.form-control-static, .input-group-lg > .form-control-static.form-control, span.editable input.form-control-static, span.editable:hover input.form-control-static, .input-group-lg > .form-control-static.input-group-addon, .input-group-lg > .input-group-btn > .form-control-static.btn, span.editable button.form-control-static, span.editable:hover button.form-control-static, .form-control-static.subnet-type-pull, .form-control-static.subnet-pull, .form-control-static.input-sm, .form-horizontal .form-group-sm .form-control-static.form-control, span.editable input.form-control-static, span.editable:hover input.form-control-static, .input-group-sm > .form-control-static.form-control, span.editable input.form-control-static, span.editable:hover input.form-control-static, .input-group-sm > .form-control-static.input-group-addon, .input-group-sm > .input-group-btn > .form-control-static.btn, span.editable button.form-control-static, span.editable:hover button.form-control-static, .form-control-static.subnet-type-pull, .form-control-static.subnet-pull {
+  .form-control-static.input-lg, .form-horizontal .form-group-lg .form-control-static.form-control, .input-group-lg > .form-control-static.form-control, .input-group-lg > .form-control-static.input-group-addon, .input-group-lg > .input-group-btn > .form-control-static.btn, .form-control-static.input-sm, .form-horizontal .form-group-sm .form-control-static.form-control, .input-group-sm > .form-control-static.form-control, .input-group-sm > .form-control-static.input-group-addon, .input-group-sm > .input-group-btn > .form-control-static.btn {
     padding-left: 0;
     padding-right: 0; }
 
-.input-sm, .form-horizontal .form-group-sm .form-control, span.editable input, span.editable:hover input, .input-group-sm > .form-control, span.editable input, span.editable:hover input, .input-group-sm > .input-group-addon, .input-group-sm > .input-group-btn > .btn, span.editable button, span.editable:hover button, .subnet-type-pull, .subnet-pull {
+.input-sm, .form-horizontal .form-group-sm .form-control, .input-group-sm > .form-control, .input-group-sm > .input-group-addon, .input-group-sm > .input-group-btn > .btn {
   height: 30px;
   padding: 5px 10px;
   font-size: 12px;
   line-height: 1.5;
   border-radius: 3px; }
 
-select.input-sm, .form-horizontal .form-group-sm select.form-control, .input-group-sm > select.form-control, .input-group-sm > select.input-group-addon, .input-group-sm > .input-group-btn > select.btn, select.subnet-type-pull, select.subnet-pull {
+select.input-sm, .form-horizontal .form-group-sm select.form-control, .input-group-sm > select.form-control, .input-group-sm > select.input-group-addon, .input-group-sm > .input-group-btn > select.btn {
   height: 30px;
   line-height: 30px; }
 
-textarea.input-sm, .form-horizontal .form-group-sm textarea.form-control, .input-group-sm > textarea.form-control, .input-group-sm > textarea.input-group-addon, .input-group-sm > .input-group-btn > textarea.btn, textarea.subnet-type-pull, textarea.subnet-pull, select[multiple].input-sm, .form-horizontal .form-group-sm select[multiple].form-control, .input-group-sm > select[multiple].form-control, .input-group-sm > select[multiple].input-group-addon, .input-group-sm > .input-group-btn > select[multiple].btn, select[multiple].subnet-type-pull, select[multiple].subnet-pull {
+textarea.input-sm, .form-horizontal .form-group-sm textarea.form-control, .input-group-sm > textarea.form-control, .input-group-sm > textarea.input-group-addon, .input-group-sm > .input-group-btn > textarea.btn, select[multiple].input-sm, .form-horizontal .form-group-sm select[multiple].form-control, .input-group-sm > select[multiple].form-control, .input-group-sm > select[multiple].input-group-addon, .input-group-sm > .input-group-btn > select[multiple].btn {
   height: auto; }
 
-.input-lg, .form-horizontal .form-group-lg .form-control, span.editable input, span.editable:hover input, .input-group-lg > .form-control, span.editable input, span.editable:hover input, .input-group-lg > .input-group-addon, .input-group-lg > .input-group-btn > .btn, span.editable button, span.editable:hover button, .subnet-type-pull, .subnet-pull {
+.input-lg, .form-horizontal .form-group-lg .form-control, .input-group-lg > .form-control, .input-group-lg > .input-group-addon, .input-group-lg > .input-group-btn > .btn {
   height: 46px;
   padding: 10px 16px;
   font-size: 18px;
   line-height: 1.33;
   border-radius: 6px; }
 
-select.input-lg, .form-horizontal .form-group-lg select.form-control, .input-group-lg > select.form-control, .input-group-lg > select.input-group-addon, .input-group-lg > .input-group-btn > select.btn, select.subnet-type-pull, select.subnet-pull {
+select.input-lg, .form-horizontal .form-group-lg select.form-control, .input-group-lg > select.form-control, .input-group-lg > select.input-group-addon, .input-group-lg > .input-group-btn > select.btn {
   height: 46px;
   line-height: 46px; }
 
-textarea.input-lg, .form-horizontal .form-group-lg textarea.form-control, .input-group-lg > textarea.form-control, .input-group-lg > textarea.input-group-addon, .input-group-lg > .input-group-btn > textarea.btn, textarea.subnet-type-pull, textarea.subnet-pull, select[multiple].input-lg, .form-horizontal .form-group-lg select[multiple].form-control, .input-group-lg > select[multiple].form-control, .input-group-lg > select[multiple].input-group-addon, .input-group-lg > .input-group-btn > select[multiple].btn, select[multiple].subnet-type-pull, select[multiple].subnet-pull {
+textarea.input-lg, .form-horizontal .form-group-lg textarea.form-control, .input-group-lg > textarea.form-control, .input-group-lg > textarea.input-group-addon, .input-group-lg > .input-group-btn > textarea.btn, select[multiple].input-lg, .form-horizontal .form-group-lg select[multiple].form-control, .input-group-lg > select[multiple].form-control, .input-group-lg > select[multiple].input-group-addon, .input-group-lg > .input-group-btn > select[multiple].btn {
   height: auto; }
 
 .has-feedback {
   position: relative; }
-  .has-feedback .form-control, .has-feedback span.editable input, span.editable .has-feedback input, .has-feedback span.editable:hover input, span.editable:hover .has-feedback input {
+  .has-feedback .form-control {
     padding-right: 42.5px; }
 
 .form-control-feedback {
@@ -2021,23 +2021,23 @@ textarea.input-lg, .form-horizontal .form-group-lg textarea.form-control, .input
   line-height: 34px;
   text-align: center; }
 
-.input-lg + .form-control-feedback, .input-lg + .form-horizontal .form-group-lg .form-control, .form-horizontal .form-group-lg .input-lg + .form-control, .input-lg + span.editable input, span.editable .input-lg + input, .input-lg + span.editable:hover input, span.editable:hover .input-lg + input, .input-lg + .input-group-lg > .form-control, .input-group-lg > .input-lg + .form-control, .input-lg + span.editable input, span.editable .input-lg + input, .input-lg + span.editable:hover input, span.editable:hover .input-lg + input, .input-lg + .input-group-lg > .input-group-addon, .input-group-lg > .input-lg + .input-group-addon, .input-lg + .input-group-lg > .input-group-btn > .btn, .input-group-lg > .input-group-btn > .input-lg + .btn, .input-lg + span.editable button, span.editable .input-lg + button, .input-lg + span.editable:hover button, span.editable:hover .input-lg + button, .input-lg + .subnet-type-pull, .input-lg + .subnet-pull {
+.input-lg + .form-control-feedback, .input-lg + .form-horizontal .form-group-lg .form-control, .form-horizontal .form-group-lg .input-lg + .form-control, .input-lg + .input-group-lg > .form-control, .input-group-lg > .input-lg + .form-control, .input-lg + .input-group-lg > .input-group-addon, .input-group-lg > .input-lg + .input-group-addon, .input-lg + .input-group-lg > .input-group-btn > .btn, .input-group-lg > .input-group-btn > .input-lg + .btn {
   width: 46px;
   height: 46px;
   line-height: 46px; }
 
-.input-sm + .form-control-feedback, .input-sm + .form-horizontal .form-group-sm .form-control, .form-horizontal .form-group-sm .input-sm + .form-control, .input-sm + span.editable input, span.editable .input-sm + input, .input-sm + span.editable:hover input, span.editable:hover .input-sm + input, .input-sm + .input-group-sm > .form-control, .input-group-sm > .input-sm + .form-control, .input-sm + span.editable input, span.editable .input-sm + input, .input-sm + span.editable:hover input, span.editable:hover .input-sm + input, .input-sm + .input-group-sm > .input-group-addon, .input-group-sm > .input-sm + .input-group-addon, .input-sm + .input-group-sm > .input-group-btn > .btn, .input-group-sm > .input-group-btn > .input-sm + .btn, .input-sm + span.editable button, span.editable .input-sm + button, .input-sm + span.editable:hover button, span.editable:hover .input-sm + button, .input-sm + .subnet-type-pull, .input-sm + .subnet-pull {
+.input-sm + .form-control-feedback, .input-sm + .form-horizontal .form-group-sm .form-control, .form-horizontal .form-group-sm .input-sm + .form-control, .input-sm + .input-group-sm > .form-control, .input-group-sm > .input-sm + .form-control, .input-sm + .input-group-sm > .input-group-addon, .input-group-sm > .input-sm + .input-group-addon, .input-sm + .input-group-sm > .input-group-btn > .btn, .input-group-sm > .input-group-btn > .input-sm + .btn {
   width: 30px;
   height: 30px;
   line-height: 30px; }
 
 .has-success .help-block, .has-success .control-label, .has-success .radio, .has-success .checkbox, .has-success .radio-inline, .has-success .checkbox-inline {
   color: #3c763d; }
-.has-success .form-control, .has-success span.editable input, span.editable .has-success input, .has-success span.editable:hover input, span.editable:hover .has-success input {
+.has-success .form-control {
   border-color: #3c763d;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075); }
-  .has-success .form-control:focus, .has-success span.editable input:focus, span.editable .has-success input:focus, .has-success span.editable:hover input:focus, span.editable:hover .has-success input:focus {
+  .has-success .form-control:focus {
     border-color: #2b542b;
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #67b168;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #67b168; }
@@ -2050,11 +2050,11 @@ textarea.input-lg, .form-horizontal .form-group-lg textarea.form-control, .input
 
 .has-warning .help-block, .has-warning .control-label, .has-warning .radio, .has-warning .checkbox, .has-warning .radio-inline, .has-warning .checkbox-inline {
   color: #8a6d3b; }
-.has-warning .form-control, .has-warning span.editable input, span.editable .has-warning input, .has-warning span.editable:hover input, span.editable:hover .has-warning input {
+.has-warning .form-control {
   border-color: #8a6d3b;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075); }
-  .has-warning .form-control:focus, .has-warning span.editable input:focus, span.editable .has-warning input:focus, .has-warning span.editable:hover input:focus, span.editable:hover .has-warning input:focus {
+  .has-warning .form-control:focus {
     border-color: #66502c;
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #c09f6b;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #c09f6b; }
@@ -2067,11 +2067,11 @@ textarea.input-lg, .form-horizontal .form-group-lg textarea.form-control, .input
 
 .has-error .help-block, .has-error .control-label, .has-error .radio, .has-error .checkbox, .has-error .radio-inline, .has-error .checkbox-inline {
   color: #a94442; }
-.has-error .form-control, .has-error span.editable input, span.editable .has-error input, .has-error span.editable:hover input, span.editable:hover .has-error input {
+.has-error .form-control {
   border-color: #a94442;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075); }
-  .has-error .form-control:focus, .has-error span.editable input:focus, span.editable .has-error input:focus, .has-error span.editable:hover input:focus, span.editable:hover .has-error input:focus {
+  .has-error .form-control:focus {
     border-color: #843534;
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483; }
@@ -2092,35 +2092,35 @@ textarea.input-lg, .form-horizontal .form-group-lg textarea.form-control, .input
   color: #737373; }
 
 @media (min-width: 768px) {
-  .form-inline .form-group, .form-inline .navbar-form, .form-inline span.editable form, span.editable .form-inline form, .form-inline span.editable:hover form, span.editable:hover .form-inline form {
+  .form-inline .form-group, .form-inline .navbar-form {
     display: inline-block;
     margin-bottom: 0;
     vertical-align: middle; }
-  .form-inline .form-control, .form-inline .navbar-form, .form-inline span.editable form, span.editable .form-inline form, .form-inline span.editable:hover form, span.editable:hover .form-inline form, .form-inline span.editable input, span.editable .form-inline input, .form-inline span.editable:hover input, span.editable:hover .form-inline input {
+  .form-inline .form-control, .form-inline .navbar-form {
     display: inline-block;
     width: auto;
     vertical-align: middle; }
-  .form-inline .input-group, .form-inline .navbar-form, .form-inline span.editable form, span.editable .form-inline form, .form-inline span.editable:hover form, span.editable:hover .form-inline form {
+  .form-inline .input-group, .form-inline .navbar-form {
     display: inline-table;
     vertical-align: middle; }
-    .form-inline .input-group .input-group-addon, .form-inline .input-group .navbar-form, .form-inline .input-group span.editable form, span.editable .form-inline .input-group form, .form-inline .input-group span.editable:hover form, span.editable:hover .form-inline .input-group form, .form-inline .input-group .input-group-btn, .form-inline .input-group .navbar-form, .form-inline .input-group span.editable form, span.editable .form-inline .input-group form, .form-inline .input-group span.editable:hover form, span.editable:hover .form-inline .input-group form, .form-inline .input-group .form-control, .form-inline .input-group .navbar-form, .form-inline .input-group span.editable form, span.editable .form-inline .input-group form, .form-inline .input-group span.editable:hover form, span.editable:hover .form-inline .input-group form, .form-inline .input-group span.editable input, span.editable .form-inline .input-group input, .form-inline .input-group span.editable:hover input, span.editable:hover .form-inline .input-group input {
+    .form-inline .input-group .input-group-addon, .form-inline .input-group .navbar-form, .form-inline .input-group .input-group-btn, .form-inline .input-group .navbar-form, .form-inline .input-group .form-control, .form-inline .input-group .navbar-form {
       width: auto; }
-  .form-inline .input-group > .form-control, .form-inline .input-group > .navbar-form, .form-inline .input-group > span.editable form, span.editable .form-inline .input-group > form, .form-inline .input-group > span.editable:hover form, span.editable:hover .form-inline .input-group > form, .form-inline .input-group > span.editable input, span.editable .form-inline .input-group > input, .form-inline .input-group > span.editable:hover input, span.editable:hover .form-inline .input-group > input {
+  .form-inline .input-group > .form-control, .form-inline .input-group > .navbar-form {
     width: 100%; }
-  .form-inline .control-label, .form-inline .navbar-form, .form-inline span.editable form, span.editable .form-inline form, .form-inline span.editable:hover form, span.editable:hover .form-inline form {
+  .form-inline .control-label, .form-inline .navbar-form {
     margin-bottom: 0;
     vertical-align: middle; }
-  .form-inline .radio, .form-inline .navbar-form, .form-inline span.editable form, span.editable .form-inline form, .form-inline span.editable:hover form, span.editable:hover .form-inline form, .form-inline .checkbox, .form-inline .navbar-form, .form-inline span.editable form, span.editable .form-inline form, .form-inline span.editable:hover form, span.editable:hover .form-inline form {
+  .form-inline .radio, .form-inline .navbar-form, .form-inline .checkbox, .form-inline .navbar-form {
     display: inline-block;
     margin-top: 0;
     margin-bottom: 0;
     vertical-align: middle; }
-    .form-inline .radio label, .form-inline .radio .navbar-form, .form-inline .radio span.editable form, span.editable .form-inline .radio form, .form-inline .radio span.editable:hover form, span.editable:hover .form-inline .radio form, .form-inline .checkbox label, .form-inline .checkbox .navbar-form, .form-inline .checkbox span.editable form, span.editable .form-inline .checkbox form, .form-inline .checkbox span.editable:hover form, span.editable:hover .form-inline .checkbox form {
+    .form-inline .radio label, .form-inline .radio .navbar-form, .form-inline .checkbox label, .form-inline .checkbox .navbar-form {
       padding-left: 0; }
-  .form-inline .radio input[type="radio"], .form-inline .radio .navbar-form, .form-inline .radio span.editable form, span.editable .form-inline .radio form, .form-inline .radio span.editable:hover form, span.editable:hover .form-inline .radio form, .form-inline .checkbox input[type="checkbox"], .form-inline .checkbox .navbar-form, .form-inline .checkbox span.editable form, span.editable .form-inline .checkbox form, .form-inline .checkbox span.editable:hover form, span.editable:hover .form-inline .checkbox form {
+  .form-inline .radio input[type="radio"], .form-inline .radio .navbar-form, .form-inline .checkbox input[type="checkbox"], .form-inline .checkbox .navbar-form {
     position: relative;
     margin-left: 0; }
-  .form-inline .has-feedback .form-control-feedback, .form-inline .has-feedback .navbar-form, .form-inline .has-feedback span.editable form, span.editable .form-inline .has-feedback form, .form-inline .has-feedback span.editable:hover form, span.editable:hover .form-inline .has-feedback form {
+  .form-inline .has-feedback .form-control-feedback, .form-inline .has-feedback .navbar-form {
     top: 0; } }
 
 .form-horizontal .radio, .form-horizontal .checkbox, .form-horizontal .radio-inline, .form-horizontal .checkbox-inline {
@@ -2152,7 +2152,7 @@ textarea.input-lg, .form-horizontal .form-group-lg textarea.form-control, .input
   .form-horizontal .form-group-sm .control-label {
     padding-top: 6px; } }
 
-.btn, span.editable button, span.editable:hover button, .subnet-type-pull, .subnet-pull {
+.btn {
   display: inline-block;
   margin-bottom: 0;
   font-weight: normal;
@@ -2170,19 +2170,19 @@ textarea.input-lg, .form-horizontal .form-group-lg textarea.form-control, .input
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none; }
-  .btn:focus, span.editable button:focus, span.editable:hover button:focus, .subnet-type-pull:focus, .subnet-pull:focus, .btn:active:focus, span.editable button:active:focus, span.editable:hover button:active:focus, .subnet-type-pull:active:focus, .subnet-pull:active:focus, .btn.active:focus, span.editable button.active:focus, span.editable:hover button.active:focus, .active.subnet-type-pull:focus, .active.subnet-pull:focus {
+  .btn:focus, .btn:active:focus, .btn.active:focus {
     outline: thin dotted;
     outline: 5px auto -webkit-focus-ring-color;
     outline-offset: -2px; }
-  .btn:hover, span.editable button:hover, span.editable:hover button:hover, .subnet-type-pull:hover, .subnet-pull:hover, .btn:focus, span.editable button:focus, span.editable:hover button:focus, .subnet-type-pull:focus, .subnet-pull:focus {
+  .btn:hover, .btn:focus {
     color: #333;
     text-decoration: none; }
-  .btn:active, span.editable button:active, span.editable:hover button:active, .subnet-type-pull:active, .subnet-pull:active, .btn.active, span.editable button.active, span.editable:hover button.active, .active.subnet-type-pull, .active.subnet-pull {
+  .btn:active, .btn.active {
     outline: 0;
     background-image: none;
     -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
     box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125); }
-  .btn.disabled, span.editable button.disabled, span.editable:hover button.disabled, .disabled.subnet-type-pull, .disabled.subnet-pull, .btn[disabled], span.editable button[disabled], span.editable:hover button[disabled], [disabled].subnet-type-pull, [disabled].subnet-pull, fieldset[disabled] .btn, fieldset[disabled] span.editable button, span.editable fieldset[disabled] button, fieldset[disabled] span.editable:hover button, span.editable:hover fieldset[disabled] button, fieldset[disabled] .subnet-type-pull, fieldset[disabled] .subnet-pull {
+  .btn.disabled, .btn[disabled], fieldset[disabled] .btn {
     cursor: not-allowed;
     pointer-events: none;
     opacity: 0.65;
@@ -2190,37 +2190,37 @@ textarea.input-lg, .form-horizontal .form-group-lg textarea.form-control, .input
     -webkit-box-shadow: none;
     box-shadow: none; }
 
-.btn-default, span.editable button, span.editable:hover button, .subnet-type-pull, .subnet-pull {
+.btn-default {
   color: #333;
   background-color: #fff;
   border-color: #ccc; }
-  .btn-default:hover, span.editable button:hover, span.editable:hover button:hover, .subnet-type-pull:hover, .subnet-pull:hover, .btn-default:focus, span.editable button:focus, span.editable:hover button:focus, .subnet-type-pull:focus, .subnet-pull:focus, .btn-default:active, span.editable button:active, span.editable:hover button:active, .subnet-type-pull:active, .subnet-pull:active, .btn-default.active, span.editable button.active, span.editable:hover button.active, .active.subnet-type-pull, .active.subnet-pull, .open > .btn-default.dropdown-toggle, .open > span.editable button.dropdown-toggle, span.editable .open > button.dropdown-toggle, .open > span.editable:hover button.dropdown-toggle, span.editable:hover .open > button.dropdown-toggle, .open > .dropdown-toggle.subnet-type-pull, .open > .dropdown-toggle.subnet-pull {
+  .btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active, .open > .btn-default.dropdown-toggle {
     color: #333;
     background-color: #e6e6e6;
     border-color: #adadad; }
-  .btn-default:active, span.editable button:active, span.editable:hover button:active, .subnet-type-pull:active, .subnet-pull:active, .btn-default.active, span.editable button.active, span.editable:hover button.active, .active.subnet-type-pull, .active.subnet-pull, .open > .btn-default.dropdown-toggle, .open > span.editable button.dropdown-toggle, span.editable .open > button.dropdown-toggle, .open > span.editable:hover button.dropdown-toggle, span.editable:hover .open > button.dropdown-toggle, .open > .dropdown-toggle.subnet-type-pull, .open > .dropdown-toggle.subnet-pull {
+  .btn-default:active, .btn-default.active, .open > .btn-default.dropdown-toggle {
     background-image: none; }
-  .btn-default.disabled, span.editable button.disabled, span.editable:hover button.disabled, .disabled.subnet-type-pull, .disabled.subnet-pull, .btn-default.disabled:hover, span.editable button.disabled:hover, span.editable:hover button.disabled:hover, .disabled.subnet-type-pull:hover, .disabled.subnet-pull:hover, .btn-default.disabled:focus, span.editable button.disabled:focus, span.editable:hover button.disabled:focus, .disabled.subnet-type-pull:focus, .disabled.subnet-pull:focus, .btn-default.disabled:active, span.editable button.disabled:active, span.editable:hover button.disabled:active, .disabled.subnet-type-pull:active, .disabled.subnet-pull:active, .btn-default.disabled.active, span.editable button.disabled.active, span.editable:hover button.disabled.active, .disabled.active.subnet-type-pull, .disabled.active.subnet-pull, .btn-default[disabled], span.editable button[disabled], span.editable:hover button[disabled], [disabled].subnet-type-pull, [disabled].subnet-pull, .btn-default[disabled]:hover, span.editable button[disabled]:hover, span.editable:hover button[disabled]:hover, [disabled].subnet-type-pull:hover, [disabled].subnet-pull:hover, .btn-default[disabled]:focus, span.editable button[disabled]:focus, span.editable:hover button[disabled]:focus, [disabled].subnet-type-pull:focus, [disabled].subnet-pull:focus, .btn-default[disabled]:active, span.editable button[disabled]:active, span.editable:hover button[disabled]:active, [disabled].subnet-type-pull:active, [disabled].subnet-pull:active, .btn-default[disabled].active, span.editable button[disabled].active, span.editable:hover button[disabled].active, [disabled].active.subnet-type-pull, [disabled].active.subnet-pull, fieldset[disabled] .btn-default, fieldset[disabled] span.editable button, span.editable fieldset[disabled] button, fieldset[disabled] span.editable:hover button, span.editable:hover fieldset[disabled] button, fieldset[disabled] .subnet-type-pull, fieldset[disabled] .subnet-pull, fieldset[disabled] .btn-default:hover, fieldset[disabled] span.editable button:hover, span.editable fieldset[disabled] button:hover, fieldset[disabled] span.editable:hover button:hover, span.editable:hover fieldset[disabled] button:hover, fieldset[disabled] .subnet-type-pull:hover, fieldset[disabled] .subnet-pull:hover, fieldset[disabled] .btn-default:focus, fieldset[disabled] span.editable button:focus, span.editable fieldset[disabled] button:focus, fieldset[disabled] span.editable:hover button:focus, span.editable:hover fieldset[disabled] button:focus, fieldset[disabled] .subnet-type-pull:focus, fieldset[disabled] .subnet-pull:focus, fieldset[disabled] .btn-default:active, fieldset[disabled] span.editable button:active, span.editable fieldset[disabled] button:active, fieldset[disabled] span.editable:hover button:active, span.editable:hover fieldset[disabled] button:active, fieldset[disabled] .subnet-type-pull:active, fieldset[disabled] .subnet-pull:active, fieldset[disabled] .btn-default.active, fieldset[disabled] span.editable button.active, span.editable fieldset[disabled] button.active, fieldset[disabled] span.editable:hover button.active, span.editable:hover fieldset[disabled] button.active, fieldset[disabled] .active.subnet-type-pull, fieldset[disabled] .active.subnet-pull {
+  .btn-default.disabled, .btn-default.disabled:hover, .btn-default.disabled:focus, .btn-default.disabled:active, .btn-default.disabled.active, .btn-default[disabled], .btn-default[disabled]:hover, .btn-default[disabled]:focus, .btn-default[disabled]:active, .btn-default[disabled].active, fieldset[disabled] .btn-default, fieldset[disabled] .btn-default:hover, fieldset[disabled] .btn-default:focus, fieldset[disabled] .btn-default:active, fieldset[disabled] .btn-default.active {
     background-color: #fff;
     border-color: #ccc; }
-  .btn-default .badge, .btn-default span.editable button, span.editable .btn-default button, .btn-default span.editable:hover button, span.editable:hover .btn-default button, .btn-default .subnet-type-pull, .btn-default .subnet-pull {
+  .btn-default .badge {
     color: #fff;
     background-color: #333; }
 
-.btn-primary, span.editable button:not(:last-child), span.editable:hover button:not(:last-child) {
+.btn-primary {
   color: #fff;
   background-color: #428bca;
   border-color: #3580bd; }
-  .btn-primary:hover, span.editable button:hover:not(:last-child), span.editable:hover button:hover:not(:last-child), .btn-primary:focus, span.editable button:focus:not(:last-child), span.editable:hover button:focus:not(:last-child), .btn-primary:active, span.editable button:active:not(:last-child), span.editable:hover button:active:not(:last-child), .btn-primary.active, span.editable button.active:not(:last-child), span.editable:hover button.active:not(:last-child), .open > .btn-primary.dropdown-toggle, .open > span.editable button.dropdown-toggle:not(:last-child), span.editable .open > button.dropdown-toggle:not(:last-child), .open > span.editable:hover button.dropdown-toggle:not(:last-child), span.editable:hover .open > button.dropdown-toggle:not(:last-child) {
+  .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .btn-primary.dropdown-toggle {
     color: #fff;
     background-color: #3073a9;
     border-color: #28608e; }
-  .btn-primary:active, span.editable button:active:not(:last-child), span.editable:hover button:active:not(:last-child), .btn-primary.active, span.editable button.active:not(:last-child), span.editable:hover button.active:not(:last-child), .open > .btn-primary.dropdown-toggle, .open > span.editable button.dropdown-toggle:not(:last-child), span.editable .open > button.dropdown-toggle:not(:last-child), .open > span.editable:hover button.dropdown-toggle:not(:last-child), span.editable:hover .open > button.dropdown-toggle:not(:last-child) {
+  .btn-primary:active, .btn-primary.active, .open > .btn-primary.dropdown-toggle {
     background-image: none; }
-  .btn-primary.disabled, span.editable button.disabled:not(:last-child), span.editable:hover button.disabled:not(:last-child), .btn-primary.disabled:hover, span.editable button.disabled:hover:not(:last-child), span.editable:hover button.disabled:hover:not(:last-child), .btn-primary.disabled:focus, span.editable button.disabled:focus:not(:last-child), span.editable:hover button.disabled:focus:not(:last-child), .btn-primary.disabled:active, span.editable button.disabled:active:not(:last-child), span.editable:hover button.disabled:active:not(:last-child), .btn-primary.disabled.active, span.editable button.disabled.active:not(:last-child), span.editable:hover button.disabled.active:not(:last-child), .btn-primary[disabled], span.editable button[disabled]:not(:last-child), span.editable:hover button[disabled]:not(:last-child), .btn-primary[disabled]:hover, span.editable button[disabled]:hover:not(:last-child), span.editable:hover button[disabled]:hover:not(:last-child), .btn-primary[disabled]:focus, span.editable button[disabled]:focus:not(:last-child), span.editable:hover button[disabled]:focus:not(:last-child), .btn-primary[disabled]:active, span.editable button[disabled]:active:not(:last-child), span.editable:hover button[disabled]:active:not(:last-child), .btn-primary[disabled].active, span.editable button[disabled].active:not(:last-child), span.editable:hover button[disabled].active:not(:last-child), fieldset[disabled] .btn-primary, fieldset[disabled] span.editable button:not(:last-child), span.editable fieldset[disabled] button:not(:last-child), fieldset[disabled] span.editable:hover button:not(:last-child), span.editable:hover fieldset[disabled] button:not(:last-child), fieldset[disabled] .btn-primary:hover, fieldset[disabled] span.editable button:hover:not(:last-child), span.editable fieldset[disabled] button:hover:not(:last-child), fieldset[disabled] span.editable:hover button:hover:not(:last-child), span.editable:hover fieldset[disabled] button:hover:not(:last-child), fieldset[disabled] .btn-primary:focus, fieldset[disabled] span.editable button:focus:not(:last-child), span.editable fieldset[disabled] button:focus:not(:last-child), fieldset[disabled] span.editable:hover button:focus:not(:last-child), span.editable:hover fieldset[disabled] button:focus:not(:last-child), fieldset[disabled] .btn-primary:active, fieldset[disabled] span.editable button:active:not(:last-child), span.editable fieldset[disabled] button:active:not(:last-child), fieldset[disabled] span.editable:hover button:active:not(:last-child), span.editable:hover fieldset[disabled] button:active:not(:last-child), fieldset[disabled] .btn-primary.active, fieldset[disabled] span.editable button.active:not(:last-child), span.editable fieldset[disabled] button.active:not(:last-child), fieldset[disabled] span.editable:hover button.active:not(:last-child), span.editable:hover fieldset[disabled] button.active:not(:last-child) {
+  .btn-primary.disabled, .btn-primary.disabled:hover, .btn-primary.disabled:focus, .btn-primary.disabled:active, .btn-primary.disabled.active, .btn-primary[disabled], .btn-primary[disabled]:hover, .btn-primary[disabled]:focus, .btn-primary[disabled]:active, .btn-primary[disabled].active, fieldset[disabled] .btn-primary, fieldset[disabled] .btn-primary:hover, fieldset[disabled] .btn-primary:focus, fieldset[disabled] .btn-primary:active, fieldset[disabled] .btn-primary.active {
     background-color: #428bca;
     border-color: #3580bd; }
-  .btn-primary .badge, .btn-primary span.editable button:not(:last-child), span.editable .btn-primary button:not(:last-child), .btn-primary span.editable:hover button:not(:last-child), span.editable:hover .btn-primary button:not(:last-child) {
+  .btn-primary .badge {
     color: #428bca;
     background-color: #fff; }
 
@@ -2311,19 +2311,19 @@ textarea.input-lg, .form-horizontal .form-group-lg textarea.form-control, .input
     color: #777777;
     text-decoration: none; }
 
-.btn-lg, .btn-group-lg > .btn, span.editable button, span.editable:hover button, .subnet-type-pull, .subnet-pull {
+.btn-lg, .btn-group-lg > .btn {
   padding: 10px 16px;
   font-size: 18px;
   line-height: 1.33;
   border-radius: 6px; }
 
-.btn-sm, .btn-group-sm > .btn, span.editable button, span.editable:hover button, .subnet-type-pull, .subnet-pull {
+.btn-sm, .btn-group-sm > .btn {
   padding: 5px 10px;
   font-size: 12px;
   line-height: 1.5;
   border-radius: 3px; }
 
-.btn-xs, .btn-group-xs > .btn, span.editable button, span.editable:hover button, .subnet-type-pull, .subnet-pull {
+.btn-xs, .btn-group-xs > .btn {
   padding: 1px 5px;
   font-size: 12px;
   line-height: 1.5;
@@ -2494,15 +2494,15 @@ tbody.collapse.in {
   position: relative;
   display: inline-block;
   vertical-align: middle; }
-  .btn-group > .btn, .btn-group > span.editable button, span.editable .btn-group > button, .btn-group > span.editable:hover button, span.editable:hover .btn-group > button, .btn-group > .subnet-type-pull, .btn-group > .subnet-pull, .btn-group-vertical > .btn, .btn-group-vertical > span.editable button, span.editable .btn-group-vertical > button, .btn-group-vertical > span.editable:hover button, span.editable:hover .btn-group-vertical > button, .btn-group-vertical > .subnet-type-pull, .btn-group-vertical > .subnet-pull {
+  .btn-group > .btn, .btn-group-vertical > .btn {
     position: relative;
     float: left; }
-    .btn-group > .btn:hover, .btn-group > span.editable button:hover, span.editable .btn-group > button:hover, .btn-group > span.editable:hover button:hover, span.editable:hover .btn-group > button:hover, .btn-group > .subnet-type-pull:hover, .btn-group > .subnet-pull:hover, .btn-group > .btn:focus, .btn-group > span.editable button:focus, span.editable .btn-group > button:focus, .btn-group > span.editable:hover button:focus, span.editable:hover .btn-group > button:focus, .btn-group > .subnet-type-pull:focus, .btn-group > .subnet-pull:focus, .btn-group > .btn:active, .btn-group > span.editable button:active, span.editable .btn-group > button:active, .btn-group > span.editable:hover button:active, span.editable:hover .btn-group > button:active, .btn-group > .subnet-type-pull:active, .btn-group > .subnet-pull:active, .btn-group > .btn.active, .btn-group > span.editable button.active, span.editable .btn-group > button.active, .btn-group > span.editable:hover button.active, span.editable:hover .btn-group > button.active, .btn-group > .active.subnet-type-pull, .btn-group > .active.subnet-pull, .btn-group-vertical > .btn:hover, .btn-group-vertical > span.editable button:hover, span.editable .btn-group-vertical > button:hover, .btn-group-vertical > span.editable:hover button:hover, span.editable:hover .btn-group-vertical > button:hover, .btn-group-vertical > .subnet-type-pull:hover, .btn-group-vertical > .subnet-pull:hover, .btn-group-vertical > .btn:focus, .btn-group-vertical > span.editable button:focus, span.editable .btn-group-vertical > button:focus, .btn-group-vertical > span.editable:hover button:focus, span.editable:hover .btn-group-vertical > button:focus, .btn-group-vertical > .subnet-type-pull:focus, .btn-group-vertical > .subnet-pull:focus, .btn-group-vertical > .btn:active, .btn-group-vertical > span.editable button:active, span.editable .btn-group-vertical > button:active, .btn-group-vertical > span.editable:hover button:active, span.editable:hover .btn-group-vertical > button:active, .btn-group-vertical > .subnet-type-pull:active, .btn-group-vertical > .subnet-pull:active, .btn-group-vertical > .btn.active, .btn-group-vertical > span.editable button.active, span.editable .btn-group-vertical > button.active, .btn-group-vertical > span.editable:hover button.active, span.editable:hover .btn-group-vertical > button.active, .btn-group-vertical > .active.subnet-type-pull, .btn-group-vertical > .active.subnet-pull {
+    .btn-group > .btn:hover, .btn-group > .btn:focus, .btn-group > .btn:active, .btn-group > .btn.active, .btn-group-vertical > .btn:hover, .btn-group-vertical > .btn:focus, .btn-group-vertical > .btn:active, .btn-group-vertical > .btn.active {
       z-index: 2; }
-    .btn-group > .btn:focus, .btn-group > span.editable button:focus, span.editable .btn-group > button:focus, .btn-group > span.editable:hover button:focus, span.editable:hover .btn-group > button:focus, .btn-group > .subnet-type-pull:focus, .btn-group > .subnet-pull:focus, .btn-group-vertical > .btn:focus, .btn-group-vertical > span.editable button:focus, span.editable .btn-group-vertical > button:focus, .btn-group-vertical > span.editable:hover button:focus, span.editable:hover .btn-group-vertical > button:focus, .btn-group-vertical > .subnet-type-pull:focus, .btn-group-vertical > .subnet-pull:focus {
+    .btn-group > .btn:focus, .btn-group-vertical > .btn:focus {
       outline: 0; }
 
-.btn-group .btn + .btn, .btn-group .btn + span.editable button, span.editable .btn-group .btn + button, .btn-group .btn + span.editable:hover button, span.editable:hover .btn-group .btn + button, .btn-group .btn + .subnet-type-pull, .btn-group .btn + .subnet-pull, .btn-group .btn + span.editable button, span.editable .btn-group .btn + button, .btn-group .btn + span.editable:hover button, span.editable:hover .btn-group .btn + button, .btn-group .btn + .subnet-type-pull, .btn-group .btn + .subnet-pull, .btn-group .btn + .btn-group, .btn-group .btn + span.editable button, span.editable .btn-group .btn + button, .btn-group .btn + span.editable:hover button, span.editable:hover .btn-group .btn + button, .btn-group .btn + .subnet-type-pull, .btn-group .btn + .subnet-pull, .btn-group .btn-group + .btn, .btn-group .btn-group + span.editable button, span.editable .btn-group .btn-group + button, .btn-group .btn-group + span.editable:hover button, span.editable:hover .btn-group .btn-group + button, .btn-group .btn-group + .subnet-type-pull, .btn-group .btn-group + .subnet-pull, .btn-group .btn-group + .btn-group {
+.btn-group .btn + .btn, .btn-group .btn + .btn-group, .btn-group .btn-group + .btn, .btn-group .btn-group + .btn-group {
   margin-left: -1px; }
 
 .btn-toolbar {
@@ -2514,44 +2514,44 @@ tbody.collapse.in {
     clear: both; }
   .btn-toolbar .btn-group, .btn-toolbar .input-group {
     float: left; }
-  .btn-toolbar > .btn, .btn-toolbar > span.editable button, span.editable .btn-toolbar > button, .btn-toolbar > span.editable:hover button, span.editable:hover .btn-toolbar > button, .btn-toolbar > .subnet-type-pull, .btn-toolbar > .subnet-pull, .btn-toolbar > .btn-group, .btn-toolbar > .input-group {
+  .btn-toolbar > .btn, .btn-toolbar > .btn-group, .btn-toolbar > .input-group {
     margin-left: 5px; }
 
-.btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle), .btn-group > span.editable button:not(:first-child):not(:last-child):not(.dropdown-toggle), span.editable .btn-group > button:not(:first-child):not(:last-child):not(.dropdown-toggle), .btn-group > span.editable:hover button:not(:first-child):not(:last-child):not(.dropdown-toggle), span.editable:hover .btn-group > button:not(:first-child):not(:last-child):not(.dropdown-toggle), .btn-group > .subnet-type-pull:not(:first-child):not(:last-child):not(.dropdown-toggle), .btn-group > .subnet-pull:not(:first-child):not(:last-child):not(.dropdown-toggle) {
+.btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
   border-radius: 0; }
 
-.btn-group > .btn:first-child, .btn-group > span.editable button:first-child, span.editable .btn-group > button:first-child, .btn-group > span.editable:hover button:first-child, span.editable:hover .btn-group > button:first-child, .btn-group > .subnet-type-pull:first-child, .btn-group > .subnet-pull:first-child {
+.btn-group > .btn:first-child {
   margin-left: 0; }
-  .btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle), .btn-group > span.editable button:first-child:not(:last-child):not(.dropdown-toggle), span.editable .btn-group > button:first-child:not(:last-child):not(.dropdown-toggle), .btn-group > span.editable:hover button:first-child:not(:last-child):not(.dropdown-toggle), span.editable:hover .btn-group > button:first-child:not(:last-child):not(.dropdown-toggle), .btn-group > .subnet-type-pull:first-child:not(:last-child):not(.dropdown-toggle), .btn-group > .subnet-pull:first-child:not(:last-child):not(.dropdown-toggle) {
+  .btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle) {
     border-bottom-right-radius: 0;
     border-top-right-radius: 0; }
 
-.btn-group > .btn:last-child:not(:first-child), .btn-group > span.editable button:last-child:not(:first-child), span.editable .btn-group > button:last-child:not(:first-child), .btn-group > span.editable:hover button:last-child:not(:first-child), span.editable:hover .btn-group > button:last-child:not(:first-child), .btn-group > .subnet-type-pull:last-child:not(:first-child), .btn-group > .subnet-pull:last-child:not(:first-child), .btn-group > .dropdown-toggle:not(:first-child) {
+.btn-group > .btn:last-child:not(:first-child), .btn-group > .dropdown-toggle:not(:first-child) {
   border-bottom-left-radius: 0;
   border-top-left-radius: 0; }
 
 .btn-group > .btn-group {
   float: left; }
 
-.btn-group > .btn-group:not(:first-child):not(:last-child) > .btn, .btn-group > .btn-group:not(:first-child):not(:last-child) > span.editable button, span.editable .btn-group > .btn-group:not(:first-child):not(:last-child) > button, .btn-group > .btn-group:not(:first-child):not(:last-child) > span.editable:hover button, span.editable:hover .btn-group > .btn-group:not(:first-child):not(:last-child) > button, .btn-group > .btn-group:not(:first-child):not(:last-child) > .subnet-type-pull, .btn-group > .btn-group:not(:first-child):not(:last-child) > .subnet-pull {
+.btn-group > .btn-group:not(:first-child):not(:last-child) > .btn {
   border-radius: 0; }
 
-.btn-group > .btn-group:first-child > .btn:last-child, .btn-group > .btn-group:first-child > span.editable button:last-child, span.editable .btn-group > .btn-group:first-child > button:last-child, .btn-group > .btn-group:first-child > span.editable:hover button:last-child, span.editable:hover .btn-group > .btn-group:first-child > button:last-child, .btn-group > .btn-group:first-child > .subnet-type-pull:last-child, .btn-group > .btn-group:first-child > .subnet-pull:last-child, .btn-group > .btn-group:first-child > .dropdown-toggle {
+.btn-group > .btn-group:first-child > .btn:last-child, .btn-group > .btn-group:first-child > .dropdown-toggle {
   border-bottom-right-radius: 0;
   border-top-right-radius: 0; }
 
-.btn-group > .btn-group:last-child > .btn:first-child, .btn-group > .btn-group:last-child > span.editable button:first-child, span.editable .btn-group > .btn-group:last-child > button:first-child, .btn-group > .btn-group:last-child > span.editable:hover button:first-child, span.editable:hover .btn-group > .btn-group:last-child > button:first-child, .btn-group > .btn-group:last-child > .subnet-type-pull:first-child, .btn-group > .btn-group:last-child > .subnet-pull:first-child {
+.btn-group > .btn-group:last-child > .btn:first-child {
   border-bottom-left-radius: 0;
   border-top-left-radius: 0; }
 
 .btn-group .dropdown-toggle:active, .btn-group.open .dropdown-toggle {
   outline: 0; }
 
-.btn-group > .btn + .dropdown-toggle, .btn-group > .btn + span.editable button, span.editable .btn-group > .btn + button, .btn-group > .btn + span.editable:hover button, span.editable:hover .btn-group > .btn + button, .btn-group > .btn + .subnet-type-pull, .btn-group > .btn + .subnet-pull {
+.btn-group > .btn + .dropdown-toggle {
   padding-left: 8px;
   padding-right: 8px; }
 
-.btn-group > .btn-lg + .dropdown-toggle, .btn-group > .btn-lg + .btn-group-lg > .btn, .btn-group-lg > .btn-group > .btn-lg + .btn, .btn-group > .btn-lg + span.editable button, span.editable .btn-group > .btn-lg + button, .btn-group > .btn-lg + span.editable:hover button, span.editable:hover .btn-group > .btn-lg + button, .btn-group > .btn-lg + .subnet-type-pull, .btn-group > .btn-lg + .subnet-pull {
+.btn-group > .btn-lg + .dropdown-toggle, .btn-group > .btn-lg + .btn-group-lg > .btn, .btn-group-lg > .btn-group > .btn-lg + .btn {
   padding-left: 12px;
   padding-right: 12px; }
 
@@ -2562,17 +2562,17 @@ tbody.collapse.in {
     -webkit-box-shadow: none;
     box-shadow: none; }
 
-.btn .caret, .btn span.editable button, span.editable .btn button, .btn span.editable:hover button, span.editable:hover .btn button, .btn .subnet-type-pull, .btn .subnet-pull {
+.btn .caret {
   margin-left: 0; }
 
-.btn-lg .caret, .btn-lg .btn-group-lg > .btn, .btn-group-lg > .btn-lg .btn, .btn-lg span.editable button, span.editable .btn-lg button, .btn-lg span.editable:hover button, span.editable:hover .btn-lg button, .btn-lg .subnet-type-pull, .btn-lg .subnet-pull {
+.btn-lg .caret, .btn-lg .btn-group-lg > .btn, .btn-group-lg > .btn-lg .btn {
   border-width: 5px 5px 0;
   border-bottom-width: 0; }
 
-.dropup .btn-lg .caret, .dropup .btn-lg .btn-group-lg > .btn, .btn-group-lg > .dropup .btn-lg .btn, .dropup .btn-lg span.editable button, span.editable .dropup .btn-lg button, .dropup .btn-lg span.editable:hover button, span.editable:hover .dropup .btn-lg button, .dropup .btn-lg .subnet-type-pull, .dropup .btn-lg .subnet-pull {
+.dropup .btn-lg .caret, .dropup .btn-lg .btn-group-lg > .btn, .btn-group-lg > .dropup .btn-lg .btn {
   border-width: 0 5px 5px; }
 
-.btn-group-vertical > .btn, .btn-group-vertical > span.editable button, span.editable .btn-group-vertical > button, .btn-group-vertical > span.editable:hover button, span.editable:hover .btn-group-vertical > button, .btn-group-vertical > .subnet-type-pull, .btn-group-vertical > .subnet-pull, .btn-group-vertical > .btn-group, .btn-group-vertical > .btn-group > .btn, .btn-group-vertical > .btn-group > span.editable button, span.editable .btn-group-vertical > .btn-group > button, .btn-group-vertical > .btn-group > span.editable:hover button, span.editable:hover .btn-group-vertical > .btn-group > button, .btn-group-vertical > .btn-group > .subnet-type-pull, .btn-group-vertical > .btn-group > .subnet-pull {
+.btn-group-vertical > .btn, .btn-group-vertical > .btn-group, .btn-group-vertical > .btn-group > .btn {
   display: block;
   float: none;
   width: 100%;
@@ -2582,31 +2582,31 @@ tbody.collapse.in {
   display: table; }
 .btn-group-vertical > .btn-group:after {
   clear: both; }
-.btn-group-vertical > .btn-group > .btn, .btn-group-vertical > .btn-group > span.editable button, span.editable .btn-group-vertical > .btn-group > button, .btn-group-vertical > .btn-group > span.editable:hover button, span.editable:hover .btn-group-vertical > .btn-group > button, .btn-group-vertical > .btn-group > .subnet-type-pull, .btn-group-vertical > .btn-group > .subnet-pull {
+.btn-group-vertical > .btn-group > .btn {
   float: none; }
-.btn-group-vertical > .btn + .btn, .btn-group-vertical > .btn + span.editable button, span.editable .btn-group-vertical > .btn + button, .btn-group-vertical > .btn + span.editable:hover button, span.editable:hover .btn-group-vertical > .btn + button, .btn-group-vertical > .btn + .subnet-type-pull, .btn-group-vertical > .btn + .subnet-pull, .btn-group-vertical > .btn + span.editable button, span.editable .btn-group-vertical > .btn + button, .btn-group-vertical > .btn + span.editable:hover button, span.editable:hover .btn-group-vertical > .btn + button, .btn-group-vertical > .btn + .subnet-type-pull, .btn-group-vertical > .btn + .subnet-pull, .btn-group-vertical > .btn + .btn-group, .btn-group-vertical > .btn + span.editable button, span.editable .btn-group-vertical > .btn + button, .btn-group-vertical > .btn + span.editable:hover button, span.editable:hover .btn-group-vertical > .btn + button, .btn-group-vertical > .btn + .subnet-type-pull, .btn-group-vertical > .btn + .subnet-pull, .btn-group-vertical > .btn-group + .btn, .btn-group-vertical > .btn-group + span.editable button, span.editable .btn-group-vertical > .btn-group + button, .btn-group-vertical > .btn-group + span.editable:hover button, span.editable:hover .btn-group-vertical > .btn-group + button, .btn-group-vertical > .btn-group + .subnet-type-pull, .btn-group-vertical > .btn-group + .subnet-pull, .btn-group-vertical > .btn-group + .btn-group {
+.btn-group-vertical > .btn + .btn, .btn-group-vertical > .btn + .btn-group, .btn-group-vertical > .btn-group + .btn, .btn-group-vertical > .btn-group + .btn-group {
   margin-top: -1px;
   margin-left: 0; }
 
-.btn-group-vertical > .btn:not(:first-child):not(:last-child), .btn-group-vertical > span.editable button:not(:first-child):not(:last-child), span.editable .btn-group-vertical > button:not(:first-child):not(:last-child), .btn-group-vertical > span.editable:hover button:not(:first-child):not(:last-child), span.editable:hover .btn-group-vertical > button:not(:first-child):not(:last-child), .btn-group-vertical > .subnet-type-pull:not(:first-child):not(:last-child), .btn-group-vertical > .subnet-pull:not(:first-child):not(:last-child) {
+.btn-group-vertical > .btn:not(:first-child):not(:last-child) {
   border-radius: 0; }
-.btn-group-vertical > .btn:first-child:not(:last-child), .btn-group-vertical > span.editable button:first-child:not(:last-child), span.editable .btn-group-vertical > button:first-child:not(:last-child), .btn-group-vertical > span.editable:hover button:first-child:not(:last-child), span.editable:hover .btn-group-vertical > button:first-child:not(:last-child), .btn-group-vertical > .subnet-type-pull:first-child:not(:last-child), .btn-group-vertical > .subnet-pull:first-child:not(:last-child) {
+.btn-group-vertical > .btn:first-child:not(:last-child) {
   border-top-right-radius: 4px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0; }
-.btn-group-vertical > .btn:last-child:not(:first-child), .btn-group-vertical > span.editable button:last-child:not(:first-child), span.editable .btn-group-vertical > button:last-child:not(:first-child), .btn-group-vertical > span.editable:hover button:last-child:not(:first-child), span.editable:hover .btn-group-vertical > button:last-child:not(:first-child), .btn-group-vertical > .subnet-type-pull:last-child:not(:first-child), .btn-group-vertical > .subnet-pull:last-child:not(:first-child) {
+.btn-group-vertical > .btn:last-child:not(:first-child) {
   border-bottom-left-radius: 4px;
   border-top-right-radius: 0;
   border-top-left-radius: 0; }
 
-.btn-group-vertical > .btn-group:not(:first-child):not(:last-child) > .btn, .btn-group-vertical > .btn-group:not(:first-child):not(:last-child) > span.editable button, span.editable .btn-group-vertical > .btn-group:not(:first-child):not(:last-child) > button, .btn-group-vertical > .btn-group:not(:first-child):not(:last-child) > span.editable:hover button, span.editable:hover .btn-group-vertical > .btn-group:not(:first-child):not(:last-child) > button, .btn-group-vertical > .btn-group:not(:first-child):not(:last-child) > .subnet-type-pull, .btn-group-vertical > .btn-group:not(:first-child):not(:last-child) > .subnet-pull {
+.btn-group-vertical > .btn-group:not(:first-child):not(:last-child) > .btn {
   border-radius: 0; }
 
-.btn-group-vertical > .btn-group:first-child:not(:last-child) > .btn:last-child, .btn-group-vertical > .btn-group:first-child:not(:last-child) > span.editable button:last-child, span.editable .btn-group-vertical > .btn-group:first-child:not(:last-child) > button:last-child, .btn-group-vertical > .btn-group:first-child:not(:last-child) > span.editable:hover button:last-child, span.editable:hover .btn-group-vertical > .btn-group:first-child:not(:last-child) > button:last-child, .btn-group-vertical > .btn-group:first-child:not(:last-child) > .subnet-type-pull:last-child, .btn-group-vertical > .btn-group:first-child:not(:last-child) > .subnet-pull:last-child, .btn-group-vertical > .btn-group:first-child:not(:last-child) > .dropdown-toggle {
+.btn-group-vertical > .btn-group:first-child:not(:last-child) > .btn:last-child, .btn-group-vertical > .btn-group:first-child:not(:last-child) > .dropdown-toggle {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0; }
 
-.btn-group-vertical > .btn-group:last-child:not(:first-child) > .btn:first-child, .btn-group-vertical > .btn-group:last-child:not(:first-child) > span.editable button:first-child, span.editable .btn-group-vertical > .btn-group:last-child:not(:first-child) > button:first-child, .btn-group-vertical > .btn-group:last-child:not(:first-child) > span.editable:hover button:first-child, span.editable:hover .btn-group-vertical > .btn-group:last-child:not(:first-child) > button:first-child, .btn-group-vertical > .btn-group:last-child:not(:first-child) > .subnet-type-pull:first-child, .btn-group-vertical > .btn-group:last-child:not(:first-child) > .subnet-pull:first-child {
+.btn-group-vertical > .btn-group:last-child:not(:first-child) > .btn:first-child {
   border-top-right-radius: 0;
   border-top-left-radius: 0; }
 
@@ -2615,16 +2615,16 @@ tbody.collapse.in {
   width: 100%;
   table-layout: fixed;
   border-collapse: separate; }
-  .btn-group-justified > .btn, .btn-group-justified > span.editable button, span.editable .btn-group-justified > button, .btn-group-justified > span.editable:hover button, span.editable:hover .btn-group-justified > button, .btn-group-justified > .subnet-type-pull, .btn-group-justified > .subnet-pull, .btn-group-justified > .btn-group {
+  .btn-group-justified > .btn, .btn-group-justified > .btn-group {
     float: none;
     display: table-cell;
     width: 1%; }
-  .btn-group-justified > .btn-group .btn, .btn-group-justified > .btn-group span.editable button, span.editable .btn-group-justified > .btn-group button, .btn-group-justified > .btn-group span.editable:hover button, span.editable:hover .btn-group-justified > .btn-group button, .btn-group-justified > .btn-group .subnet-type-pull, .btn-group-justified > .btn-group .subnet-pull {
+  .btn-group-justified > .btn-group .btn {
     width: 100%; }
   .btn-group-justified > .btn-group .dropdown-menu {
     left: auto; }
 
-[data-toggle="buttons"] > .btn > input[type="radio"], [data-toggle="buttons"] > .btn > span.editable button, span.editable [data-toggle="buttons"] > .btn > button, [data-toggle="buttons"] > .btn > span.editable:hover button, span.editable:hover [data-toggle="buttons"] > .btn > button, [data-toggle="buttons"] > .btn > .subnet-type-pull, [data-toggle="buttons"] > .btn > .subnet-pull, [data-toggle="buttons"] > .btn > input[type="checkbox"], [data-toggle="buttons"] > .btn > span.editable button, span.editable [data-toggle="buttons"] > .btn > button, [data-toggle="buttons"] > .btn > span.editable:hover button, span.editable:hover [data-toggle="buttons"] > .btn > button, [data-toggle="buttons"] > .btn > .subnet-type-pull, [data-toggle="buttons"] > .btn > .subnet-pull {
+[data-toggle="buttons"] > .btn > input[type="radio"], [data-toggle="buttons"] > .btn > input[type="checkbox"] {
   position: absolute;
   z-index: -1;
   opacity: 0;
@@ -2638,16 +2638,16 @@ tbody.collapse.in {
     float: none;
     padding-left: 0;
     padding-right: 0; }
-  .input-group .form-control, .input-group span.editable input, span.editable .input-group input, .input-group span.editable:hover input, span.editable:hover .input-group input {
+  .input-group .form-control {
     position: relative;
     z-index: 2;
     float: left;
     width: 100%;
     margin-bottom: 0; }
 
-.input-group-addon, .input-group-btn, .input-group .form-control, .input-group span.editable input, span.editable .input-group input, .input-group span.editable:hover input, span.editable:hover .input-group input {
+.input-group-addon, .input-group-btn, .input-group .form-control {
   display: table-cell; }
-  .input-group-addon:not(:first-child):not(:last-child), .input-group-btn:not(:first-child):not(:last-child), .input-group .form-control:not(:first-child):not(:last-child), .input-group span.editable input:not(:first-child):not(:last-child), span.editable .input-group input:not(:first-child):not(:last-child), .input-group span.editable:hover input:not(:first-child):not(:last-child), span.editable:hover .input-group input:not(:first-child):not(:last-child) {
+  .input-group-addon:not(:first-child):not(:last-child), .input-group-btn:not(:first-child):not(:last-child), .input-group .form-control:not(:first-child):not(:last-child) {
     border-radius: 0; }
 
 .input-group-addon, .input-group-btn {
@@ -2665,25 +2665,25 @@ tbody.collapse.in {
   background-color: #eeeeee;
   border: 1px solid #ccc;
   border-radius: 4px; }
-  .input-group-addon.input-sm, .form-horizontal .form-group-sm .input-group-addon.form-control, span.editable input.input-group-addon, span.editable:hover input.input-group-addon, .input-group-sm > .input-group-addon.form-control, span.editable input.input-group-addon, span.editable:hover input.input-group-addon, .input-group-sm > .input-group-addon, .input-group-sm > .input-group-btn > .input-group-addon.btn, span.editable button.input-group-addon, span.editable:hover button.input-group-addon, .input-group-addon.subnet-type-pull, .input-group-addon.subnet-pull {
+  .input-group-addon.input-sm, .form-horizontal .form-group-sm .input-group-addon.form-control, .input-group-sm > .input-group-addon.form-control, .input-group-sm > .input-group-addon, .input-group-sm > .input-group-btn > .input-group-addon.btn {
     padding: 5px 10px;
     font-size: 12px;
     border-radius: 3px; }
-  .input-group-addon.input-lg, .form-horizontal .form-group-lg .input-group-addon.form-control, span.editable input.input-group-addon, span.editable:hover input.input-group-addon, .input-group-lg > .input-group-addon.form-control, span.editable input.input-group-addon, span.editable:hover input.input-group-addon, .input-group-lg > .input-group-addon, .input-group-lg > .input-group-btn > .input-group-addon.btn, span.editable button.input-group-addon, span.editable:hover button.input-group-addon, .input-group-addon.subnet-type-pull, .input-group-addon.subnet-pull {
+  .input-group-addon.input-lg, .form-horizontal .form-group-lg .input-group-addon.form-control, .input-group-lg > .input-group-addon.form-control, .input-group-lg > .input-group-addon, .input-group-lg > .input-group-btn > .input-group-addon.btn {
     padding: 10px 16px;
     font-size: 18px;
     border-radius: 6px; }
   .input-group-addon input[type="radio"], .input-group-addon input[type="checkbox"] {
     margin-top: 0; }
 
-.input-group .form-control:first-child, .input-group span.editable input:first-child, span.editable .input-group input:first-child, .input-group span.editable:hover input:first-child, span.editable:hover .input-group input:first-child, .input-group-addon:first-child, .input-group-btn:first-child > .btn, .input-group-btn:first-child > span.editable button, span.editable .input-group-btn:first-child > button, .input-group-btn:first-child > span.editable:hover button, span.editable:hover .input-group-btn:first-child > button, .input-group-btn:first-child > .subnet-type-pull, .input-group-btn:first-child > .subnet-pull, .input-group-btn:first-child > .btn-group > .btn, .input-group-btn:first-child > .btn-group > span.editable button, span.editable .input-group-btn:first-child > .btn-group > button, .input-group-btn:first-child > .btn-group > span.editable:hover button, span.editable:hover .input-group-btn:first-child > .btn-group > button, .input-group-btn:first-child > .btn-group > .subnet-type-pull, .input-group-btn:first-child > .btn-group > .subnet-pull, .input-group-btn:first-child > .dropdown-toggle, .input-group-btn:last-child > .btn:not(:last-child):not(.dropdown-toggle), .input-group-btn:last-child > span.editable button:not(:last-child):not(.dropdown-toggle), span.editable .input-group-btn:last-child > button:not(:last-child):not(.dropdown-toggle), .input-group-btn:last-child > span.editable:hover button:not(:last-child):not(.dropdown-toggle), span.editable:hover .input-group-btn:last-child > button:not(:last-child):not(.dropdown-toggle), .input-group-btn:last-child > .subnet-type-pull:not(:last-child):not(.dropdown-toggle), .input-group-btn:last-child > .subnet-pull:not(:last-child):not(.dropdown-toggle), .input-group-btn:last-child > .btn-group:not(:last-child) > .btn, .input-group-btn:last-child > .btn-group:not(:last-child) > span.editable button, span.editable .input-group-btn:last-child > .btn-group:not(:last-child) > button, .input-group-btn:last-child > .btn-group:not(:last-child) > span.editable:hover button, span.editable:hover .input-group-btn:last-child > .btn-group:not(:last-child) > button, .input-group-btn:last-child > .btn-group:not(:last-child) > .subnet-type-pull, .input-group-btn:last-child > .btn-group:not(:last-child) > .subnet-pull {
+.input-group .form-control:first-child, .input-group-addon:first-child, .input-group-btn:first-child > .btn, .input-group-btn:first-child > .btn-group > .btn, .input-group-btn:first-child > .dropdown-toggle, .input-group-btn:last-child > .btn:not(:last-child):not(.dropdown-toggle), .input-group-btn:last-child > .btn-group:not(:last-child) > .btn {
   border-bottom-right-radius: 0;
   border-top-right-radius: 0; }
 
 .input-group-addon:first-child {
   border-right: 0; }
 
-.input-group .form-control:last-child, .input-group span.editable input:last-child, span.editable .input-group input:last-child, .input-group span.editable:hover input:last-child, span.editable:hover .input-group input:last-child, .input-group-addon:last-child, .input-group-btn:last-child > .btn, .input-group-btn:last-child > span.editable button, span.editable .input-group-btn:last-child > button, .input-group-btn:last-child > span.editable:hover button, span.editable:hover .input-group-btn:last-child > button, .input-group-btn:last-child > .subnet-type-pull, .input-group-btn:last-child > .subnet-pull, .input-group-btn:last-child > .btn-group > .btn, .input-group-btn:last-child > .btn-group > span.editable button, span.editable .input-group-btn:last-child > .btn-group > button, .input-group-btn:last-child > .btn-group > span.editable:hover button, span.editable:hover .input-group-btn:last-child > .btn-group > button, .input-group-btn:last-child > .btn-group > .subnet-type-pull, .input-group-btn:last-child > .btn-group > .subnet-pull, .input-group-btn:last-child > .dropdown-toggle, .input-group-btn:first-child > .btn:not(:first-child), .input-group-btn:first-child > span.editable button:not(:first-child), span.editable .input-group-btn:first-child > button:not(:first-child), .input-group-btn:first-child > span.editable:hover button:not(:first-child), span.editable:hover .input-group-btn:first-child > button:not(:first-child), .input-group-btn:first-child > .subnet-type-pull:not(:first-child), .input-group-btn:first-child > .subnet-pull:not(:first-child), .input-group-btn:first-child > .btn-group:not(:first-child) > .btn, .input-group-btn:first-child > .btn-group:not(:first-child) > span.editable button, span.editable .input-group-btn:first-child > .btn-group:not(:first-child) > button, .input-group-btn:first-child > .btn-group:not(:first-child) > span.editable:hover button, span.editable:hover .input-group-btn:first-child > .btn-group:not(:first-child) > button, .input-group-btn:first-child > .btn-group:not(:first-child) > .subnet-type-pull, .input-group-btn:first-child > .btn-group:not(:first-child) > .subnet-pull {
+.input-group .form-control:last-child, .input-group-addon:last-child, .input-group-btn:last-child > .btn, .input-group-btn:last-child > .btn-group > .btn, .input-group-btn:last-child > .dropdown-toggle, .input-group-btn:first-child > .btn:not(:first-child), .input-group-btn:first-child > .btn-group:not(:first-child) > .btn {
   border-bottom-left-radius: 0;
   border-top-left-radius: 0; }
 
@@ -2694,15 +2694,15 @@ tbody.collapse.in {
   position: relative;
   font-size: 0;
   white-space: nowrap; }
-  .input-group-btn > .btn, .input-group-btn > span.editable button, span.editable .input-group-btn > button, .input-group-btn > span.editable:hover button, span.editable:hover .input-group-btn > button, .input-group-btn > .subnet-type-pull, .input-group-btn > .subnet-pull {
+  .input-group-btn > .btn {
     position: relative; }
-    .input-group-btn > .btn + .btn, .input-group-btn > .btn + span.editable button, span.editable .input-group-btn > .btn + button, .input-group-btn > .btn + span.editable:hover button, span.editable:hover .input-group-btn > .btn + button, .input-group-btn > .btn + .subnet-type-pull, .input-group-btn > .btn + .subnet-pull, .input-group-btn > .btn + span.editable button, span.editable .input-group-btn > .btn + button, .input-group-btn > .btn + span.editable:hover button, span.editable:hover .input-group-btn > .btn + button, .input-group-btn > .btn + .subnet-type-pull, .input-group-btn > .btn + .subnet-pull {
+    .input-group-btn > .btn + .btn {
       margin-left: -1px; }
-    .input-group-btn > .btn:hover, .input-group-btn > span.editable button:hover, span.editable .input-group-btn > button:hover, .input-group-btn > span.editable:hover button:hover, span.editable:hover .input-group-btn > button:hover, .input-group-btn > .subnet-type-pull:hover, .input-group-btn > .subnet-pull:hover, .input-group-btn > .btn:focus, .input-group-btn > span.editable button:focus, span.editable .input-group-btn > button:focus, .input-group-btn > span.editable:hover button:focus, span.editable:hover .input-group-btn > button:focus, .input-group-btn > .subnet-type-pull:focus, .input-group-btn > .subnet-pull:focus, .input-group-btn > .btn:active, .input-group-btn > span.editable button:active, span.editable .input-group-btn > button:active, .input-group-btn > span.editable:hover button:active, span.editable:hover .input-group-btn > button:active, .input-group-btn > .subnet-type-pull:active, .input-group-btn > .subnet-pull:active {
+    .input-group-btn > .btn:hover, .input-group-btn > .btn:focus, .input-group-btn > .btn:active {
       z-index: 2; }
-  .input-group-btn:first-child > .btn, .input-group-btn:first-child > span.editable button, span.editable .input-group-btn:first-child > button, .input-group-btn:first-child > span.editable:hover button, span.editable:hover .input-group-btn:first-child > button, .input-group-btn:first-child > .subnet-type-pull, .input-group-btn:first-child > .subnet-pull, .input-group-btn:first-child > .btn-group {
+  .input-group-btn:first-child > .btn, .input-group-btn:first-child > .btn-group {
     margin-right: -1px; }
-  .input-group-btn:last-child > .btn, .input-group-btn:last-child > span.editable button, span.editable .input-group-btn:last-child > button, .input-group-btn:last-child > span.editable:hover button, span.editable:hover .input-group-btn:last-child > button, .input-group-btn:last-child > .subnet-type-pull, .input-group-btn:last-child > .subnet-pull, .input-group-btn:last-child > .btn-group {
+  .input-group-btn:last-child > .btn, .input-group-btn:last-child > .btn-group {
     margin-left: -1px; }
 
 .nav {
@@ -3025,10 +3025,10 @@ tbody.collapse.in {
 .navbar-btn {
   margin-top: 8px;
   margin-bottom: 8px; }
-  .navbar-btn.btn-sm, .btn-group-sm > .navbar-btn.btn, span.editable button.navbar-btn, span.editable:hover button.navbar-btn, .navbar-btn.subnet-type-pull, .navbar-btn.subnet-pull {
+  .navbar-btn.btn-sm, .btn-group-sm > .navbar-btn.btn {
     margin-top: 10px;
     margin-bottom: 10px; }
-  .navbar-btn.btn-xs, .btn-group-xs > .navbar-btn.btn, span.editable button.navbar-btn, span.editable:hover button.navbar-btn, .navbar-btn.subnet-type-pull, .navbar-btn.subnet-pull {
+  .navbar-btn.btn-xs, .btn-group-xs > .navbar-btn.btn {
     margin-top: 14px;
     margin-bottom: 14px; }
 
@@ -3275,7 +3275,7 @@ tbody.collapse.in {
   border-radius: 0.25em; }
   .label:empty {
     display: none; }
-  .btn .label, .btn span.editable button, span.editable .btn button, .btn span.editable:hover button, span.editable:hover .btn button, .btn .subnet-type-pull, .btn .subnet-pull {
+  .btn .label {
     position: relative;
     top: -1px; }
 
@@ -3329,10 +3329,10 @@ a.label:hover, a.label:focus {
   border-radius: 10px; }
   .badge:empty {
     display: none; }
-  .btn .badge, .btn span.editable button, span.editable .btn button, .btn span.editable:hover button, span.editable:hover .btn button, .btn .subnet-type-pull, .btn .subnet-pull {
+  .btn .badge {
     position: relative;
     top: -1px; }
-  .btn-xs .badge, .btn-xs .btn-group-xs > .btn, .btn-group-xs > .btn-xs .btn, .btn-xs span.editable button, span.editable .btn-xs button, .btn-xs span.editable:hover button, span.editable:hover .btn-xs button, .btn-xs .subnet-type-pull, .btn-xs .subnet-pull {
+  .btn-xs .badge, .btn-xs .btn-group-xs > .btn, .btn-group-xs > .btn-xs .btn {
     top: 0;
     padding: 1px 5px; }
   a.list-group-item.active > .badge, .nav-pills > .active > a > .badge {
@@ -4030,10 +4030,10 @@ button.close {
     display: table; }
   .modal-footer:after {
     clear: both; }
-  .modal-footer .btn + .btn, .modal-footer .btn + span.editable button, span.editable .modal-footer .btn + button, .modal-footer .btn + span.editable:hover button, span.editable:hover .modal-footer .btn + button, .modal-footer .btn + .subnet-type-pull, .modal-footer .btn + .subnet-pull, .modal-footer .btn + span.editable button, span.editable .modal-footer .btn + button, .modal-footer .btn + span.editable:hover button, span.editable:hover .modal-footer .btn + button, .modal-footer .btn + .subnet-type-pull, .modal-footer .btn + .subnet-pull {
+  .modal-footer .btn + .btn {
     margin-left: 5px;
     margin-bottom: 0; }
-  .modal-footer .btn-group .btn + .btn, .modal-footer .btn-group .btn + span.editable button, span.editable .modal-footer .btn-group .btn + button, .modal-footer .btn-group .btn + span.editable:hover button, span.editable:hover .modal-footer .btn-group .btn + button, .modal-footer .btn-group .btn + .subnet-type-pull, .modal-footer .btn-group .btn + .subnet-pull, .modal-footer .btn-group .btn + span.editable button, span.editable .modal-footer .btn-group .btn + button, .modal-footer .btn-group .btn + span.editable:hover button, span.editable:hover .modal-footer .btn-group .btn + button, .modal-footer .btn-group .btn + .subnet-type-pull, .modal-footer .btn-group .btn + .subnet-pull {
+  .modal-footer .btn-group .btn + .btn {
     margin-left: -1px; }
   .modal-footer .btn-block + .btn-block {
     margin-left: 0; }
@@ -4381,7 +4381,7 @@ button.close {
   color: #fff;
   text-align: center;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); }
-  .carousel-caption .btn, .carousel-caption span.editable button, span.editable .carousel-caption button, .carousel-caption span.editable:hover button, span.editable:hover .carousel-caption button, .carousel-caption .subnet-type-pull, .carousel-caption .subnet-pull {
+  .carousel-caption .btn {
     text-shadow: none; }
 
 @media screen and (min-width: 768px) {
@@ -4662,7 +4662,7 @@ span.input-group-btn .hidden-xs {
   span.input-group-btn .hidden-xs {
     display: none !important; } }
 
-span.btn a, span.btn span.subnet-type-pull, span.btn span.subnet-pull {
+span.btn a {
   text-decoration: none;
   color: #333333; }
 
@@ -4728,7 +4728,7 @@ span.btn a, span.btn span.subnet-type-pull, span.btn span.subnet-pull {
   -webkit-box-shadow: -2px 0 5px 0px rgba(0, 0, 0, 0.2);
   box-shadow: -2px 0 5px 0px rgba(0, 0, 0, 0.2); }
 
-.nav.nav-pills.nav-stacked .btn.btn-success:hover, .nav.nav-pills.nav-stacked span.editable button.btn-success:hover, span.editable .nav.nav-pills.nav-stacked button.btn-success:hover, .nav.nav-pills.nav-stacked span.editable:hover button.btn-success:hover, span.editable:hover .nav.nav-pills.nav-stacked button.btn-success:hover, .nav.nav-pills.nav-stacked .btn-success.subnet-type-pull:hover, .nav.nav-pills.nav-stacked .btn-success.subnet-pull:hover {
+.nav.nav-pills.nav-stacked .btn.btn-success:hover {
   background-color: #47a447; }
 
 .nav.nav-pills.nav-stacked {
@@ -4961,7 +4961,7 @@ select {
   margin-top: -25px;
   float: right; }
 
-.tabs-left .nav-tabs > li > a.btn:hover, .tabs-left .nav-tabs > li > a.subnet-type-pull:hover, .tabs-left .nav-tabs > li > a.subnet-pull:hover {
+.tabs-left .nav-tabs > li > a.btn:hover {
   background: inherit;
   background-color: #408140; }
 
@@ -5015,7 +5015,7 @@ select {
 .no-taxonomies .alert {
   margin-bottom: 7px; }
 
-.no-taxonomies button.btn.btn-lg, .no-taxonomies .btn-group-lg > button.btn, .btn-group-lg > .no-taxonomies button.btn, .no-taxonomies span.editable button, span.editable .no-taxonomies button, .no-taxonomies span.editable:hover button, span.editable:hover .no-taxonomies button, .no-taxonomies button.subnet-type-pull, .no-taxonomies button.subnet-pull, .no-taxonomies span.editable button.btn-lg, span.editable .no-taxonomies button.btn-lg, .no-taxonomies .btn-group-lg > button.btn, .btn-group-lg > .no-taxonomies button.btn, .no-taxonomies span.editable:hover button.btn-lg, span.editable:hover .no-taxonomies button.btn-lg, .no-taxonomies .btn-group-lg > button.btn, .btn-group-lg > .no-taxonomies button.btn, .no-taxonomies button.btn-lg.subnet-type-pull, .no-taxonomies .btn-group-lg > button.subnet-type-pull.btn, .btn-group-lg > .no-taxonomies button.subnet-type-pull.btn, .no-taxonomies button.btn-lg.subnet-pull, .no-taxonomies .btn-group-lg > button.subnet-pull.btn, .btn-group-lg > .no-taxonomies button.subnet-pull.btn {
+.no-taxonomies button.btn.btn-lg, .no-taxonomies .btn-group-lg > button.btn, .btn-group-lg > .no-taxonomies button.btn {
   margin-left: 11px; }
 
 .override-param {
@@ -5104,7 +5104,7 @@ table.table thead .sorting_asc_disabled {
 table.table thead .sorting_desc_disabled {
   background: #f9f9f9 url('sort_desc_disabled.png') no-repeat center right; }
 
-table tr td:last-child .btn, table tr td:last-child span.editable button, span.editable table tr td:last-child button, table tr td:last-child span.editable:hover button, span.editable:hover table tr td:last-child button, table tr td:last-child .subnet-type-pull, table tr td:last-child .subnet-pull {
+table tr td:last-child .btn {
   float: none; }
 table tr td:last-child .btn-group {
   white-space: nowrap; }
@@ -5512,44 +5512,34 @@ table tr td:last-child .btn-group {
   .two-pane-right .select-all:hover {
     text-decoration: none; }
 
+.wizard-block {
+  display: inline-block; }
+
+.wizard-line {
+  border-top: solid 3px #ddd;
+  margin-top: 15px; }
+
+/*.white-wizard-line {
+  border-top: solid 3px red;
+  margin-bottom:-18px;
+  z-index: 114000;
+}
+*/
+.wizard-item {
+  font-weight: bold;
+  font-size: 110%;
+  color: #555; }
+
 .wizard li {
-  padding: 10px 12px 10px;
+  padding: 7px 7px 10px;
   margin-right: 5px;
   margin-bottom: 30px;
-  background: #efefef;
+  background: #fff;
   position: relative;
   display: inline-block; }
-  .wizard li:before {
-    width: 0;
-    height: 0;
-    border-top: 20px inset transparent;
-    border-bottom: 20px inset transparent;
-    border-left: 20px solid #fff;
-    position: absolute;
-    content: "";
-    top: 0;
-    left: 0; }
-  .wizard li:after {
-    width: 0;
-    height: 0;
-    border-top: 20px inset transparent;
-    border-bottom: 20px inset transparent;
-    border-left: 20px solid #efefef;
-    position: absolute;
-    content: "";
-    top: 0;
-    right: -20px;
-    z-index: 2; }
-  .wizard li:first-child:before, .wizard li:last-child:after {
-    border: none; }
-  .wizard li:first-child {
-    -webkit-border-radius: 4px 0 0 4px;
-    -moz-border-radius: 4px 0 0 4px;
-    border-radius: 4px 0 0 4px; }
-  .wizard li:last-child {
-    -webkit-border-radius: 0 4px 4px 0;
-    -moz-border-radius: 0 4px 4px 0;
-    border-radius: 0 4px 4px 0; }
+
+.wizard li.disabled {
+  color: #ddd !important; }
 
 .wizard .badge {
   margin: 0 5px 0 18px;
@@ -5560,10 +5550,27 @@ table tr td:last-child .btn-group {
   margin-left: 0; }
 
 .wizard .active {
-  background: #007ACC;
-  color: #fff; }
-  .wizard .active:after {
-    border-left-color: #007ACC; }
+  color: #007ACC !important; }
+
+.wizard .active > .full-circle {
+  background-color: #007ACC !important; }
+
+.full-circle {
+  background-color: #999;
+  height: 8px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  width: 8px;
+  margin-top: -41px; }
+
+.disable-circle {
+  background-color: #ddd !important; }
+
+.tabbed_side_nav_form .tab-content {
+  min-height: 600px;
+  border-left: 1px solid #999;
+  background: #fff;
+  /*box-shadow: -3px 0px 4px -3px rgba(50, 50, 50, 0.75);*/ }
 
 .navbar {
   border-radius: 0;
@@ -5918,303 +5925,9 @@ table tr td:last-child .btn-group {
 .path-selector .path-list .path-list-item.disabled-item input[type="checkbox"] {
   display: none; }
 
-.table > thead > tr > td.active, .table > thead > tr > th.active, .table > thead > tr.active > td, .table > thead > tr.active > th, .table > tbody > tr > td.active, .table > tbody > tr > th.active, .table > tbody > tr.active > td, .table > tbody > tr.active > th, .table > tfoot > tr > td.active, .table > tfoot > tr > th.active, .table > tfoot > tr.active > td, .table > tfoot > tr.active > th {
-  background-color: #f5f5f5; }
-
-.table-hover > tbody > tr > td.active:hover, .table-hover > tbody > tr > th.active:hover, .table-hover > tbody > tr.active:hover > td, .table-hover > tbody > tr:hover > .active, .table-hover > tbody > tr.active:hover > th {
-  background-color: #e8e8e8; }
-
-.table > thead > tr > td.info, .table > thead > tr > th.info, .table > thead > tr.info > td, .table > thead > tr.info > th, .table > tbody > tr > td.info, .table > tbody > tr > th.info, .table > tbody > tr.info > td, .table > tbody > tr.info > th, .table > tfoot > tr > td.info, .table > tfoot > tr > th.info, .table > tfoot > tr.info > td, .table > tfoot > tr.info > th {
-  background-color: #d9edf7; }
-
-.table-hover > tbody > tr > td.info:hover, .table-hover > tbody > tr > th.info:hover, .table-hover > tbody > tr.info:hover > td, .table-hover > tbody > tr:hover > .info, .table-hover > tbody > tr.info:hover > th {
-  background-color: #c4e4f3; }
-
-.table > thead > tr > td.success, .table > thead > tr > th.success, .table > thead > tr.success > td, .table > thead > tr.success > th, .table > tbody > tr > td.success, .table > tbody > tr > th.success, .table > tbody > tr.success > td, .table > tbody > tr.success > th, .table > tfoot > tr > td.success, .table > tfoot > tr > th.success, .table > tfoot > tr.success > td, .table > tfoot > tr.success > th {
-  background-color: #dff0d8; }
-
-.table-hover > tbody > tr > td.success:hover, .table-hover > tbody > tr > th.success:hover, .table-hover > tbody > tr.success:hover > td, .table-hover > tbody > tr:hover > .success, .table-hover > tbody > tr.success:hover > th {
-  background-color: #d0e9c6; }
-
-.table > thead > tr > td.danger, .table > thead > tr > th.danger, .table > thead > tr.danger > td, .table > thead > tr.danger > th, .table > tbody > tr > td.danger, .table > tbody > tr > th.danger, .table > tbody > tr.danger > td, .table > tbody > tr.danger > th, .table > tfoot > tr > td.danger, .table > tfoot > tr > th.danger, .table > tfoot > tr.danger > td, .table > tfoot > tr.danger > th {
-  background-color: #f2dede; }
-
-.table-hover > tbody > tr > td.danger:hover, .table-hover > tbody > tr > th.danger:hover, .table-hover > tbody > tr.danger:hover > td, .table-hover > tbody > tr:hover > .danger, .table-hover > tbody > tr.danger:hover > th {
-  background-color: #ebcccc; }
-
-.table > thead > tr > td.warning, .table > thead > tr > th.warning, .table > thead > tr.warning > td, .table > thead > tr.warning > th, .table > tbody > tr > td.warning, .table > tbody > tr > th.warning, .table > tbody > tr.warning > td, .table > tbody > tr.warning > th, .table > tfoot > tr > td.warning, .table > tfoot > tr > th.warning, .table > tfoot > tr.warning > td, .table > tfoot > tr.warning > th {
-  background-color: #fcf8e3; }
-
-.table-hover > tbody > tr > td.warning:hover, .table-hover > tbody > tr > th.warning:hover, .table-hover > tbody > tr.warning:hover > td, .table-hover > tbody > tr:hover > .warning, .table-hover > tbody > tr.warning:hover > th {
-  background-color: #faf2cc; }
-
-.well {
-  padding: 19px 36px;
-  background-color: #f5f5f5;
-  display: block;
-  margin-left: auto;
-  margin-right: auto; }
-  .well table tbody td {
-    background-color: #fff; }
-
-.tabbed_side_nav_form .nav.nav-pills.nav-stacked {
-  padding-right: 0; }
-  .tabbed_side_nav_form .nav.nav-pills.nav-stacked > li > a {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0; }
-  .tabbed_side_nav_form .nav.nav-pills.nav-stacked > li.active {
-    z-index: 1; }
-    .tabbed_side_nav_form .nav.nav-pills.nav-stacked > li.active > a:after {
-      content: "";
-      position: absolute;
-      top: 0px;
-      right: -15px;
-      width: 0px;
-      height: 0px;
-      border-style: solid;
-      border-width: 20px 0 20px 15px;
-      border-color: transparent transparent transparent #428bca;
-      -webkit-transform: rotate(360deg); }
-  .tabbed_side_nav_form .nav.nav-pills.nav-stacked > li.tab-error > a.tab-error span {
-    visibility: visible !important;
-    padding-left: 6px; }
-  .tabbed_side_nav_form .nav.nav-pills.nav-stacked > li.tab-error.active a {
-    background-color: #a94442;
-    color: white !important; }
-  .tabbed_side_nav_form .nav.nav-pills.nav-stacked > li.tab-error.active a:after {
-    border-color: transparent transparent transparent #a94442; }
-.tabbed_side_nav_form .tab-content {
-  min-height: 520px;
-  border-left: 1px solid #999;
-  background: #eee;
-  box-shadow: -3px 0px 4px -3px rgba(50, 50, 50, 0.75); }
-
-.wizard {
-  width: 900px;
-  display: block;
-  display: block;
-  margin-left: auto;
-  margin-right: auto; }
-
-.tabbed_side_nav_table .nav {
-  padding: 5px 4px 0px 15px; }
-  .tabbed_side_nav_table .nav > li.activated {
-    z-index: 1; }
-    .tabbed_side_nav_table .nav > li.activated:after, .tabbed_side_nav_table .nav > li.activated:before {
-      content: "";
-      position: absolute;
-      top: 0px;
-      right: -10px;
-      width: 0px;
-      height: 0px;
-      border-style: solid;
-      border-width: 20px 15px 20px 0;
-      border-color: rgba(238, 238, 238, 0) #eeeeee rgba(238, 238, 238, 0) rgba(238, 238, 238, 0);
-      -webkit-transform: rotate(360deg); }
-    .tabbed_side_nav_table .nav > li.activated:before {
-      border-width: 21px 16px 21px 0;
-      top: -1px;
-      right: -9px;
-      border-right-color: #d9d9d9; }
-  .tabbed_side_nav_table .nav li {
-    border: 1px solid #e3e3e3;
-    height: 42px;
-    margin-bottom: 3px;
-    border-radius: 4px;
-    line-height: 40px;
-    box-sizing: border-box;
-    padding: 0;
-    text-align: center; }
-    .tabbed_side_nav_table .nav li:hover, .tabbed_side_nav_table .nav li.activated {
-      background: #eeeeee; }
-    .tabbed_side_nav_table .nav li > div {
-      padding: 0; }
-      .tabbed_side_nav_table .nav li > div div.group_name {
-        text-align: left;
-        padding: 0 8px; }
-      .tabbed_side_nav_table .nav li > div:not(:first-child) {
-        border-left: 1px solid #e3e3e3; }
-      .tabbed_side_nav_table .nav li > div:last-child > a {
-        border-top-right-radius: 4px;
-        border-bottom-right-radius: 4px; }
-      .tabbed_side_nav_table .nav li > div > a {
-        box-sizing: border-box;
-        display: block; }
-        .tabbed_side_nav_table .nav li > div > a.activated {
-          background: #428bca;
-          color: white; }
-        .tabbed_side_nav_table .nav li > div > a.disabled {
-          color: #777777; }
-.tabbed_side_nav_table .tab-content {
-  padding-left: 4px; }
-  .tabbed_side_nav_table .tab-content .well {
-    background: #eee;
-    padding: 10px 19px; }
-
-.panel-body ul {
-  padding-left: 1em; }
-
-/*
- * This is a manifest file that'll be compiled into application.css, which will include all the files
- * listed below.
- *
- * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
- * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
- *
- * You're free to add application-wide styles to this file and they'll appear at the top of the
- * compiled file, but it's generally better to create a new file per style scope.
- *
- *= require_self
- */
-/*@import "bootstrap_and_overrides";
-@import "bootstrap/buttons";
-@import "bootstrap/forms";
+/*@import "staypuft_overrides";
+@import "staypuft";
 */
-ul.inner-nav {
-  border: 0 !important; }
-
-li.inner-nav a {
-  border: 0 !important; }
-
-li.inner-nav.active a {
-  text-decoration: underline; }
-
-.deployment-wizard .wizard {
-  width: 100%;
-  float: left;
-  padding-left: 0; }
-
-.deployment-wizard label {
-  text-align: left !important;
-  float: left;
-  margin-left: 10px; }
-
-.deployment-wizard form {
-  min-height: 705px;
-  position: relative;
-  padding-bottom: 60px; }
-
-.deployment-wizard .form_actions {
-  position: absolute;
-  bottom: 20px;
-  right: 20px; }
-
-.top_actions {
-  margin: 20px 0 10px; }
-
-.title h1 {
-  word-wrap: break-word; }
-
-span.editable, span.editable:hover {
-  background-color: transparent; }
-  span.editable .spinner-placeholder, span.editable:hover .spinner-placeholder {
-    margin: 0;
-    background-repeat: no-repeat;
-    background-position: center center;
-    float: left;
-    padding: 0 150px; }
-  span.editable form, span.editable:hover form {
-    float: left; }
-  span.editable input, span.editable:hover input {
-    width: auto !important;
-    margin-right: 10px; }
-  span.editable button, span.editable:hover button {
-    margin-right: 10px; }
-
-.deployment_summary_pane {
-  padding-top: 60px; }
-
-.service-box {
-  width: 200px;
-  display: block;
-  float: left;
-  height: 300px;
-  min-height: 200px;
-  margin-right: 10px;
-  overflow: auto; }
-
-.nav > li > a.roles_list {
-  padding: 0;
-  border: 1px solid #ddd; }
-  .nav > li > a.roles_list > div {
-    padding: 10px; }
-    .nav > li > a.roles_list > div:not(:first-child) {
-      border-left: 1px solid #ddd; }
-
-.association.well {
-  min-height: 500px;
-  margin-top: 50px; }
-  .association.well h4 {
-    margin: 6px 0 6px 0; }
-    .association.well h4.pull-left {
-      margin-left: 10px; }
-
-.subnet-type-pull, .subnet-pull {
-  background: #f5f5f5;
-  margin: 3px 0; }
-  .subnet-type-pull:active, .subnet-type-pull.active, .subnet-pull:active, .subnet-pull.active {
-    box-shadow: none;
-    z-index: 1; }
-
-.subnet-pull {
-  text-align: left; }
-  .subnet-pull .virtual {
-    background-color: #d7f5f5; }
-
-.empty-zone {
-  border: 1px dashed #999;
-  display: inline-block;
-  width: 100px;
-  background: transparent;
-  min-width: 100px; }
-  .empty-zone:hover, .empty-zone:active {
-    background: transparent;
-    box-shadow: none; }
-
-.subnet-drop-zone.panel-droppable, #subnet_types.panel-droppable, .interface.panel-droppable, #subnets.panel-droppable {
-  border: 1px solid #3c763d; }
-  .subnet-drop-zone.panel-droppable .empty-zone, #subnet_types.panel-droppable .empty-zone, .interface.panel-droppable .empty-zone, #subnets.panel-droppable .empty-zone {
-    border: 1px dashed #3c763d; }
-
-#configure_networks_modal .modal-dialog {
-  width: 90%; }
-#configure_networks_modal .modal-body {
-  overflow-y: auto; }
-
-#all_details_modal .modal-dialog {
-  width: 60%;
-  min-width: 500px; }
-#all_details_modal .modal-body {
-  overflow-y: auto; }
-
-h3[data-toggle="collapse"] {
-  cursor: pointer; }
-  h3[data-toggle="collapse"] span.glyphicon:before {
-    transition: all 0.3s ease 0s;
-    display: inline-block; }
-  h3[data-toggle="collapse"].active span.glyphicon:before {
-    color: #428bca;
-    -ms-transform: rotate(180deg);
-    /* IE 9 */
-    -webkit-transform: rotate(180deg);
-    /* Chrome, Safari, Opera */
-    transform: rotate(180deg); }
-
-.inset_form {
-  font-size: 85%; }
-  .inset_form .form-group {
-    margin-bottom: 0; }
-    .inset_form .form-group .control-label {
-      text-align: left; }
-    .inset_form .form-group .help-block {
-      margin-bottom: 0; }
-
-.single_password.inset_form {
-  margin-left: 192px; }
-
-.ui-draggable-dragging {
-  z-index: 1000; }
-
 /*@import "patternfly";*/
 /*@import "foreman_downstream";*/
 /* CUSTOM APP *****************************/
@@ -6260,12 +5973,9 @@ h3[data-toggle="collapse"] {
   margin-bottom: -10px; }
 
 /********/
-i.fa-check {
-  color: green; }
-
 .rhci-footer {
-  text-align: center;
-  height: 70px; }
+  padding: 20px 10px 10px 10px;
+  height: 60px; }
 
 .rhci-footer-selected {
   background-color: #eee;
@@ -6273,7 +5983,7 @@ i.fa-check {
   vertical-align: middle; }
 
 .rhci-footer-unselected {
-  background-color: #fff; }
+  background-color: #eee; }
 
 .rhci-footer-box {
   height: 100px; }
@@ -6287,16 +5997,22 @@ i.fa-check {
   /* #31708f;*/
   font-size: 130%; }
 
+i.fa-check {
+  color: #0099d3; }
+
 .rhci-install-footer {
-  color: #000;
-  font-size: 150%; }
+  color: #0099d3;
+  font-size: 130%; }
+
+.rhci-item {
+  background-color: #eee; }
 
 .rhci-item-selected {
-  border: solid 3px #554d4d; }
+  border-bottom: solid 6px #0099d3; }
 
-.rhci-item-deselected {
-  border: solid 3px #999;
-  opacity: 0.5; }
+.subscriptions_needed {
+  padding: 10px;
+  border: solid 3px #ddd; }
 
 .rhci-item-text {
   padding: 10px; }

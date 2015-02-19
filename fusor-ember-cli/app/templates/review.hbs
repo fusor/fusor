@@ -3,16 +3,16 @@
   <ul class="nav nav-pills nav-stacked col-md-3">
       {{#unless isUpstream}}
         {{#link-to 'subscriptions' tagName='li'}}
-          <a>{{nameSelectSubscriptions}}</a>
+          <a>{{stepNumberReview}}A. {{nameSelectSubscriptions}}</a>
         {{/link-to}}
       {{/unless}}
 
       {{#link-to 'review.installation' tagName='li' disabled=disableTabInstallation}}
-        <a>Review Installation</a>
+        <a>{{stepNumberReview}}B. Review Installation</a>
       {{/link-to}}
 
       {{#link-to 'review.progress' tagName='li' disabled=disableTabProgress}}
-        <a>Installation Progress</a>
+        <a>{{stepNumberReview}}C. Installation Progress</a>
       {{/link-to}}
   </ul>
 

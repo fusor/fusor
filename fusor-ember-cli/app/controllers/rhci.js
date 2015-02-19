@@ -6,11 +6,15 @@ export default Ember.ObjectController.extend({
   isUpstream: Ember.computed.alias("controllers.application.isUpstream"),
 
   isRhev: true,
-  isOpenStack: true,
+  isOpenStack: false,
   isCloudForms: true,
 
   nameRHCI: function() {
     if (this.get('isUpstream')) { return "Fusor"; } else { return "RHCI"; }
+  }.property('isUpstream'),
+
+  nameRedHat: function() {
+    if (this.get('isUpstream')) { return ""; } else { return "Red Hat"; }
   }.property('isUpstream'),
 
   nameSatellite: function() {
