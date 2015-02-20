@@ -12,7 +12,5 @@
 
 module Fusor
   class Deployment < ActiveRecord::Base
-    serialize :cfme_params, Hash
-    serialize :openstack_params, Hash
   end
 end
