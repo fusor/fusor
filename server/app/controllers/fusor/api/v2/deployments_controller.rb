@@ -47,10 +47,5 @@ module Fusor
       not_found and return false if params[:id].blank?
       @deployment = Deployment.find(params[:id])
     end
-
-    def deploy
-      @deployment.deploy
-      respond_for_show :resource => @deployment
-    end
   end
 end
