@@ -4,9 +4,21 @@ class CreateDeployments < ActiveRecord::Migration
       t.string :name
       t.integer :lifecycle_environment_id
       t.integer :organization_id
-      t.text :rhev_params
-      t.text :cfme_params
-      t.text :openstack_params
+      t.boolean :deploy_rhev
+      t.boolean :deploy_cfme
+      t.boolean :deploy_openstack
+      t.integer :rhev_hypervisor_host_id
+      t.integer :rhev_engine_host_id
+      t.string :rhev_hypervisor_hostname
+      t.string :rhev_engine_hostname
+      t.string :rhev_database_name
+      t.string :rhev_cluster_name
+      t.string :rhev_storage_name
+      t.string :rhev_storage_type
+      t.string :rhev_storage_address
+      t.string :rhev_cpu_type
+      t.string :rhev_share_path
+      t.string :cfme_install_loc
 
       t.timestamps
     end
