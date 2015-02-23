@@ -1,6 +1,5 @@
-
 #ember-app {
-  padding-top: 40px;  /*change to 40px when deploying, change to 0px when in ember-cli mode */
+  padding-top: 0px;  /*change to 40px when deploying, change to 0px when in ember-cli mode */
 }
 
 .pager{
@@ -8,21 +7,13 @@
     left:-50px;
 }
 
-/*if upstream */
-/*
-*//*else*/
-
-@import "bootstrap_and_overrides";
-@import "foreman";
-
-@import "katello";
-/*@import "staypuft_overrides";
-@import "staypuft";
-*/
-
-/*@import "patternfly";*/
-/*@import "foreman_downstream";*/
-
+@import "downstream/application";
+@import "downstream/mixin";
+@import "downstream/bootstrap_and_overrides";
+@import "downstream/charts";
+@import "downstream/colors";
+@import "downstream/topbar";
+@import "downstream/typography";
+@import "downstream/wizard";
+@import "katello-path-selector";
 @import "custom";
-
-/*@import "other";*/

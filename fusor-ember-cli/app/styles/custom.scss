@@ -2,7 +2,7 @@
 
 /***Changes caused by going from Bootstrap 3.0.3 in foreman to version used by ember-cli-bootstrap-sass*****/
 
-.navbar-inner {
+/*.navbar-inner {
   padding-bottom: 0px;
   margin-bottom: 0px;
   border-bottom: none;
@@ -40,13 +40,13 @@
   font-size: 18px;
   line-height: 20px;
 }
-
-.navbar-brand img {
+*/
+/*.navbar-brand img {
   height: 34px;
   padding-top: 0px !important;
   margin-top: 0px !important;
   margin-bottom: -10px;
-}
+}*/
 /********/
 
 .rhci-footer {
@@ -111,7 +111,7 @@ i.fa-check {
   padding:10px;
 }
 
-table {
+/*table {
   table-layout: fixed !important;
 }
 
@@ -120,7 +120,7 @@ td {
   word-break: break-all;
   overflow: wrap;
 }
-
+*/
 .highlight {
   background-color: yellow !important;
 }
@@ -271,7 +271,7 @@ a.nav-expander.fixed {
     right: 250px;
 }
 
-nav {
+/*nav {
   background: #fff;
   display: block;
   height: 100%;
@@ -289,7 +289,7 @@ nav {
   -moz-transition: right 0.3s ease-in-out 0s;
   -o-transition: right 0.3s ease-in-out 0s;
 
-}
+}*/
 .nav-expanded nav {
   right: 0;
 }
@@ -341,10 +341,84 @@ ul.path-list {
   padding:0px;
 }
 label.env_path_active {
-  background: #428bca !important;
+  background: #00a8d6 !important;
   color:#fff !important;
-  font-weight:bold !important;
 }
 label.env_path_active:after {
-  border-left: 15px solid #428bca !important;
+  border-left: 15px solid #00a8d6 !important;
+}
+
+
+/* WIZARD stuff */
+
+.wizard-block {
+  display: inline-block;
+}
+
+.wizard-line {
+  border-top: solid 3px #ddd;
+  margin-top:15px;
+}
+
+/*.white-wizard-line {
+  border-top: solid 3px red;
+  margin-bottom:-18px;
+  z-index: 114000;
+}
+*/
+.wizard-item {
+  font-weight: bold;
+  font-size: 110%;
+  color: #555;
+}
+
+.deployment-wizard li {
+  padding: 7px 7px 10px;
+  margin-right: 5px;
+  margin-bottom: 30px;
+  background: #fff;
+  position: relative;
+  display: inline-block;
+}
+
+.deployment-wizard li.disabled {
+  color: #ddd !important;
+}
+
+.deployment-wizard .badge {
+  margin: 0 5px 0 18px;
+  position: relative;
+  top: -1px;
+}
+.deployment-wizard a:first-child .badge {
+  margin-left: 0;
+}
+.deployment-wizard .active {
+  color: #007ACC !important;
+}
+
+.deployment-wizard .active > .full-circle {
+  background-color: #007ACC !important;
+}
+
+.full-circle {
+ background-color: #999;
+ height: 8px;
+ -moz-border-radius:4px;
+ -webkit-border-radius: 4px;
+ width: 8px;
+ margin-top: -41px;
+}
+
+.disable-circle {
+  background-color: #ddd !important;
+}
+
+.tabbed_side_nav_form {
+  .tab-content {
+    min-height: 600px;
+    border-left: 1px solid #999;
+    background: #fff;
+    /*box-shadow: -3px 0px 4px -3px rgba(50, 50, 50, 0.75);*/
+  }
 }
