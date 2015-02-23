@@ -4,9 +4,9 @@ class CreateDeployments < ActiveRecord::Migration
       t.string :name
       t.integer :lifecycle_environment_id
       t.integer :organization_id
-      t.boolean :deploy_rhev
-      t.boolean :deploy_cfme
-      t.boolean :deploy_openstack
+      t.boolean :deploy_rhev, :default => false
+      t.boolean :deploy_cfme, :default => false
+      t.boolean :deploy_openstack, :default => false
       t.integer :rhev_hypervisor_host_id
       t.integer :rhev_engine_host_id
       t.string :rhev_hypervisor_hostname
