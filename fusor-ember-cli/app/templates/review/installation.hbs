@@ -138,7 +138,7 @@
 
   {{#if isCloudForms}}
     {{#accordion-item name=nameCloudForms isOpen=isCloudFormsOpen}}
-      Where to Install?
+      Installation Location
         {{#link-to 'where-install'}}
           {{controllers.where-install.whereInstallCf}}
         {{/link-to}} <br />
@@ -151,7 +151,7 @@
     <div class='pull-right'>
       <br />
       <button {{action 'showModal' 'cancelDeploymentModal'}} class='btn btn-default'>Cancel</button>
-      <button {{action 'installDeployment'}} class='btn btn-primary'>Install</button>
+      <button {{action 'installDeployment'}} class='btn btn-primary'>Deploy</button>
     </div>
 
 

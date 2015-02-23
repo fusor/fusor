@@ -2,7 +2,8 @@ import Ember from 'ember';
 
 export default Ember.ObjectController.extend({
 
-  name: '',
+  name: '',  //MAKE '' WHEN PACKAGING
+  description: '',
 
   disable1B: function() {
     return (this.get('name.length') === 0);

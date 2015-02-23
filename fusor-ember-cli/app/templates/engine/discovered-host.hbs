@@ -1,20 +1,13 @@
-{{!partial 'hypervisor/discovered-host'}}
-
-<strong>{{availableHosts.length}}</strong> available hosts found
-{{!bs-button title="Refresh Discovered Hosts" type='default'}}
-<br />
-<br />
-<strong>{{cntSelectedHosts}}</strong> {{hostInflection}} selected ({{idChecked}})
+<strong>{{cntSelectedHosts}}</strong> of <strong>{{availableHosts.length}}</strong>
+available hosts selected {{!engineIdSelected}}
 <br />
 <br />
 <table class="table table-bordered table-striped small">
   <thead>
     <tr>
-      <th> {{input type="checkbox" checked=allChecked}}</th>
-      <th> Name </th>
+      <th> </th>
       <th> MAC </th>
-      <th> Vendor </th>
-      <th> CPU </th>
+      <th> CPU's </th>
       <th> Memory </th>
     </tr>
   </thead>
@@ -22,16 +15,14 @@
   <tbody>
   {{#each host in availableHosts itemController="host"}}
     <tr>
-      <td> {{input type="checkbox" name="isSelectedAsEngine" checked=host.isSelectedAsEngine}}</td>
-      <td> {{host.name}} </td>
+      <td>
+        {{radio-button name='engineIdSelected' checked=engineIdSelected value=host.id}}
+      </td>
       <td> {{host.mac}} </td>
-      <td> {{host.vendor}} </td>
-      <td> {{host.cpu}} </td>
+      <td> {{host.cpus}} </td>
       <td> {{host.memory}} </td>
-      <td> {{host.memory}} </td>
-      <td> {{host.isSelectedAsHypervisor}} </td>
-      <td> {{host.isSelectedAsEngine}} </td>
     </tr>
   {{/each}}
   </tbody>
 </table>
+

@@ -1,11 +1,15 @@
 <div class="row">
   </div class='col-md-12'>
 
-   <h4 style='padding-left:15px;'>Select Target Machines for {{controllers.rhev.hypervisorTabName}}:</h4>
+    <h4 style='padding-left:15px;'>Select Target Machine(s) to Install Hypervisor(s):</h4>
 
-   <br />
+    <ul class="nav nav-tabs col-md-12" data-tabs="pills">
+        {{#link-to 'hypervisor.discovered-host' tagName='li'}}
+          <a>Discovered Hosts</a>
+        {{/link-to}}
+    </ul>
     <div class="col-md-12">
-          {{outlet}}
+        {{outlet}}
     </div>
   </div>
 </div>

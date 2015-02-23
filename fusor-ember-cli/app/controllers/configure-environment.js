@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.ArrayController.extend({
-  needs: ['satellite'],
+  needs: ['satellite', 'application'],
   queryParams: ['organization_id'],
 
   organization_id: null,
@@ -27,7 +27,8 @@ export default Ember.ArrayController.extend({
 
   fields_env: {},
 
-  selectedEnvironment: "",
+  selectedEnvironment: '',   //MAKE NULL WHEN PACKAGING
+
 
   rhciNewEnvButtons: [
       Ember.Object.create({title: 'Cancel', clicked:"cancel", dismiss: 'modal'}),
@@ -47,14 +48,16 @@ export default Ember.ArrayController.extend({
   actions: {
     createEnvironment: function() {
       var self = this;
-      var environment = this.store.createRecord('environment', this.get('fields_env'));
+      var environment = this.store.createRecord('lifecycle-environment', this.get('fields_env'));
       this.set('selectedEnvironment', environment.get('name'));
       this.set('fields_env',{});
-      environment.save().then(function() {
-        //success
-      }, function(response) {
-        alert('error saving environment');
-      });
+      if (this.get('controllers.application.isLiveBackendMode')) {
+        environment.save().then(function() {
+          //success
+        }, function(response) {
+          alert('error saving environment');
+        });
+      }
       return Bootstrap.ModalManager.hide('newEnvironmentModal');
     }
 

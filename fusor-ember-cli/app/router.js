@@ -52,7 +52,10 @@ Router.map(function() {
       this.resource('cloudforms-storage-domain', {path: 'storage-domain'});
       this.resource('cloudforms-vm', {path: 'vm'});
     });
-    this.resource('subscriptions');
+    this.resource('subscriptions', function() {
+      this.route('credentials');
+      this.route('select-subscriptions', {path: 'select'});
+    });
     this.resource('review', function() {
       this.resource('products');
       this.route('installation');

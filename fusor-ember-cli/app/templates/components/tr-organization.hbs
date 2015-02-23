@@ -1,4 +1,5 @@
 
-  <td class="checkmark"> {{#unless isChecked}}{{input type="radio"}}{{/unless}}{{showCheckMark}}</td>
-  <td> {{org.name}} </td>
-  <td> {{org.description}}</td>
+  {{radio-button name='deployment-organization' value=org.id checked=selectedOrgId}}
+  {{org.name}}
+{{!selectedOrgId}}
+{{!selectedOrganzation}}

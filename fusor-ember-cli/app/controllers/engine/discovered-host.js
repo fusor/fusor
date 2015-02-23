@@ -2,12 +2,14 @@ import Ember from 'ember';
 
 export default Ember.ArrayController.extend({
 
-//  isSelected: Em.computed.alias('isSelectedAsEngine'),
+  // isSelected: Em.computed.alias('isSelectedAsEngine'),
 
   // Filter out hosts already selected as Hypervisor, since we are NOT in self-hosted
   availableHosts: Em.computed.filterBy('model', 'isSelectedAsHypervisor', false),
 
-  selectedHosts: Em.computed.filterBy('model', 'isSelectedAsEngine', true),
+  selectedHosts: Ember.computed.filter('model', function(host, index, array) {
+    return (host.get('id') == this.get('engineIdSelected'));
+  }).property('model', 'engineIdSelected'),
 
   // TODO Why didn't this work???
   // selectedHosts: function() {
@@ -16,39 +18,12 @@ export default Ember.ArrayController.extend({
   //   });
   // }.property('model.@each.isSelectedAsEngine')
 
-  cntSelectedHosts: Em.computed.alias('selectedHosts.length'),
+  engineIdSelected: 0,
 
-  // TODO Why didn't this work???
-  // numSelectedHosts: function() {
-  //   return this.get('selectedHosts').get('length');
-  // }.property('selectedHosts'),
+  cntSelectedHosts: function () {
+    return ((this.get('engineIdSelected') > 0) ? 1 : 0);
+  }.property('engineIdSelected'),
 
-  hostInflection: function() {
-    return this.get('cntSelectedHosts') === 1 ? 'host' : 'hosts';
-  }.property('cntSelectedHosts'),
-
-  allChecked: function(key, value){
-    if (arguments.length === 1) {
-      var model = this.get('model');
-      return model && model.isEvery('isSelectedAsEngine');
-    } else {
-      this.get('model').setEach('isSelectedAsEngine', value);
-      return value;
-    }
-  }.property('model.@each.isSelectedAsEngine'),
-
-  idChecked: function(key){
-    var model = this.get('model');
-    if (model && model.isAny('isSelectedAsEngine')) {
-      return this.get('selectedHosts').getEach("id"); //this.//   return model && model.isEvery('isSelectedAsHypervisor');
-    } else {
-      return '';
-    }
-    // } else {
-    //   this.get('model').setEach('isSelectedAsHypervisor', value);
-    //   return value;
-    // }
-  }.property('model.@each.isSelectedAsEngine', 'selectedHosts'),
 
 
 });

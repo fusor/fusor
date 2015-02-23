@@ -5,13 +5,21 @@ import ApplicationRouteMixin from 'simple-auth/mixins/application-route-mixin';
 export default Ember.Route.extend(ApplicationRouteMixin, {
 
   beforeModel: function(transition) {
-    if (!this.controllerFor('application').get('isEmberCliMode')) {
-      return this.get('session').set('isAuthenticated', true);
+    if (!(this.controllerFor('application').get('isLiveBackendMode'))) {
+      this.get('session').set('isAuthenticated', true);
+      return this.transitionTo('rhci');
+    } else if (this.controllerFor('application').get('deployAsPlugin')) {
+      this.get('session').set('isAuthenticated', true);
+      return this.transitionTo('login');
     };
   },
 
   setupController: function(controller, model) {
     controller.set('model', model);
+
+    if (!(this.controllerFor('application').get('isLiveBackendMode'))) {
+      this.get('session').set('currentUser', this.store.find('user', 1));
+    }
 
     // Ensure headers are set in ApplicationAdapter. TODO - Why can't adapter access session?
     var adapter = this.store.adapterFor('ApplicationAdapter');

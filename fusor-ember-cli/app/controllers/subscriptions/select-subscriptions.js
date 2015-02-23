@@ -26,7 +26,7 @@ export default Ember.ArrayController.extend({
   allSelectedItems: Ember.computed.filterBy('toggles', 'isChecked', true),
   totalSelectedCount: Ember.computed.alias('allSelectedItems.length'),
 
-  disableNext: true, // CHANGE to true when deploying
+  disableSubscriptionsNext: true, // CHANGE to true when deploying
   attachingInProgress: false,
   showAttachedSuccessMessage: false,
 
@@ -65,7 +65,7 @@ export default Ember.ArrayController.extend({
         return self.incrementProperty("prog", self.incrementBy);
       }, 4000);
       Ember.run.later(function(){
-        self.set('disableNext', false);
+        self.set('disableSubscriptionsNext', false);
         self.set('disableAttachButton', false);
         self.set('attachingInProgress', false);
         self.set('showAttachedSuccessMessage', true);

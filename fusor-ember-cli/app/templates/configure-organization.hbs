@@ -1,24 +1,16 @@
 <div class="row">
-  <div class='col-md-9'>
-    <div style='text-align:right;margin-top:15px;margin-bottom:15px;'>
-     <button class='btn btn-success' {{action 'showModal' 'newOrganizationModal'}}>Add Organization</button>
+  <div class='col-md-6'>
+
+    <p>
+      Choose an organization for this deployment. Organizations divide hosts into logical groups based on ownership, purpose, content, security level, or other divisions.
+    </p>
+
+    {{#each org in model itemController="organization"}}
+      {{tr-organization org=org selectedOrganzation=selectedOrganzation selectedOrgId=selectedOrgId}}
+    {{/each}}
+    <div style='margin-top:15px;margin-bottom:15px;'>
+     <button class='btn btn-default' {{action 'showModal' 'newOrganizationModal'}}>New Organization</button>
     </div>
-
-    <table class="table table-bordered small">
-      <thead>
-        <tr>
-          <th class="col-md-1"></th>
-          <th class="col-md-4"> Organization Name</th>
-          <th class="col-md-4"> Description </th>
-        </tr>
-      </thead>
-
-      <tbody>
-      {{#each org in model itemController="organization"}}
-        {{tr-organization org=org selectedOrganzation=selectedOrganzation}}
-      {{/each}}
-      </tbody>
-    </table>
 
     <br />
     <br />
