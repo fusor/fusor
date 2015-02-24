@@ -1,12 +1,12 @@
 class CreateDeployments < ActiveRecord::Migration
   def change
     create_table :fusor_deployments do |t|
-      t.string :name
-      t.integer :lifecycle_environment_id
-      t.integer :organization_id
-      t.boolean :deploy_rhev, :default => false
-      t.boolean :deploy_cfme, :default => false
-      t.boolean :deploy_openstack, :default => false
+      t.string :name,                      :null => false
+      t.integer :lifecycle_environment_id, :null => false
+      t.integer :organization_id,          :null => false
+      t.boolean :deploy_rhev,              :default => false
+      t.boolean :deploy_cfme,              :default => false
+      t.boolean :deploy_openstack,         :default => false
       t.integer :rhev_hypervisor_host_id
       t.integer :rhev_engine_host_id
       t.string :rhev_hypervisor_hostname

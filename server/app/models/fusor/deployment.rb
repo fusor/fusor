@@ -12,5 +12,20 @@
 
 module Fusor
   class Deployment < ActiveRecord::Base
+    belongs_to :organization
+    belongs_to :lifecycle_environment, :class_name => "Katello::KTEnvironment"
+
+    validates :name, :presence => true, :uniqueness => {:scope => :organization_id}
+    validates :organization_id, :presence => true
+    validates :lifecycle_environment_id, :presence => true
+
+    validates_with Validators::KatelloNameFormatValidator, :attributes => :name
+
+    # TODO: need to figure out the syntax for this
+    # has_one :host, foreign_key => :rhev_hypervisor_host_id, dependent => :nullify
+    # has_one :host, foreign_key => :rhev_engine_host_id, dependent => :nullify
+    #has_one :rhev_hypervisor_host_id
+    #has_one :rhev_engine_host_id
+
   end
 end
