@@ -19,7 +19,7 @@ module Fusor
     validates :organization_id, :presence => true
     validates :lifecycle_environment_id, :presence => true
 
-    validates_with Validators::KatelloNameFormatValidator, :attributes => :name
+    validates_with ::Katello::Validators::KatelloNameFormatValidator, :attributes => :name
 
     # TODO: need to figure out the syntax for this
     # has_one :host, foreign_key => :rhev_hypervisor_host_id, dependent => :nullify
