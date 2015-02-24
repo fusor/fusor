@@ -18,7 +18,7 @@ module Fusor
 
     initializer 'fusor.register_plugin', :after => :finisher_hook do |app|
       Foreman::Plugin.register :fusor do
-        requires_foreman '>= 1.8'
+        requires_foreman '>= 1.7'
 
         # Add permissions
         # security_block :fusor do
