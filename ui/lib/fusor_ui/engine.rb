@@ -20,10 +20,10 @@ module FusorUi
 
         sub_menu :top_menu, :fusor_menu, :caption => N_('Fusor Installer'), :after => :infrastructure_menu do
           menu :top_menu, :fusor_deployments,
-               :url_hash => { :controller => 'fusor_ui/deployments', :action => :index },
+               :url_hash => { :controller => 'fusor_ui/placeholders', :action => :index },
                :caption  => N_('Deployments')
           menu :top_menu, :new_fusor_deployment,
-               :url_hash => { :controller => 'fusor_ui/deployments', :action => :new },
+               :url_hash => { :controller => 'fusor_ui/placeholders', :action => :new },
                :caption  => N_('New Deployment')
         end
 
