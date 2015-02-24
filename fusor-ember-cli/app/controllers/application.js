@@ -3,7 +3,7 @@ import Ember from 'ember';
 export default Ember.Controller.extend({
   needs: ['side-menu', 'rhci'],
 
-  isLiveBackendMode: false,
+  isLiveBackendMode: true,
   deployAsPlugin: false,
   isEmberCliMode: Ember.computed.not('deployAsPlugin'),
   isUpstream: false,
