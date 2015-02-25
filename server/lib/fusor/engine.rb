@@ -6,6 +6,7 @@ module Fusor
     config.autoload_paths += Dir["#{config.root}/app/helpers/concerns"]
     config.autoload_paths += Dir["#{config.root}/app/models/concerns"]
     config.autoload_paths += Dir["#{config.root}/app/overrides"]
+    config.autoload_paths += Dir["#{config.root}/app/serializers"]
 
     # Add any db migrations
     initializer "fusor.load_app_instance_data" do |app|
@@ -14,6 +15,11 @@ module Fusor
 
     initializer 'fusor.mount_engine', :after => :build_middleware_stack do |app|
       app.routes_reloader.paths << "#{Fusor::Engine.root}/config/routes/mount_engine.rb"
+    end
+
+    initializer "katello.paths" do |app|
+      app.routes_reloader.paths << "#{Fusor::Engine.root}/config/routes/api/v2.rb"
+      app.routes_reloader.paths << "#{Fusor::Engine.root}/config/routes/api/v21.rb"
     end
 
     initializer 'fusor.register_plugin', :after => :finisher_hook do |app|

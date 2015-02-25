@@ -5,7 +5,7 @@ Rails.application.routes.draw do
       scope '(:apiv)',
             :module      => :v2,
             :defaults    => { :apiv => 'v2' },
-            :apiv        => /v1|v2/,
+            :apiv        => /v1|v2|v21/,
             :constraints => ApiConstraints.new(:version => 2) do
 
        resources :deployments do
