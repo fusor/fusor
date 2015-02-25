@@ -16,37 +16,48 @@ module Fusor
    before_filter :find_deployment, :only => [:destroy, :show, :update, :deploy]
 
     def index
-      puts "XXX v21 index called"
-      super
+      @deployments = Deployment.all
+      render :json => @deployments, :each_serializer => Fusor::DeploymentSerializer
     end
 
-#    def show
-#      respond :resource => @deployment
-#    end
-#
-#    def create
-#      @deployment = Deployment.create!(params[:deployment])
-#      respond_for_show :resource => @deployment
-#    end
-#
-#    def update
-#      @deployment.update_attributes!(params[:deployment])
-#      respond_for_show :resource => @deployment
-#    end
-#
-#    def destroy
-#      @deployment.destroy
-#      respond_for_show :resource => @deployment
-#    end
-#
-#    def find_deployment
-#      not_found and return false if params[:id].blank?
-#      @deployment = Deployment.find(params[:id])
-#    end
-#
-#    def deploy
-#      @deployment.deploy
-#      respond_for_show :resource => @deployment
-#    end
+    def show
+      render :json => @deployment, :serializer => Fusor::DeploymentSerializer
+    end
+
+    def create
+      @deployment = Deployment.new(params[:hostgroup])
+      @deployment.save
+      if @deployment.save
+        render :json => @deployment, :serializer => Fusor::DeploymentSerializer
+      else
+        render json: {errors: @deployment.errors}, status: 422
+      end
+    end
+
+    def update
+      if @deployment.update_attributes(params[:deployment])
+        render :json => @deployment, :serializer => Fusor::DeploymentSerializer
+      else
+        render json: {errors: @deployment.errors}, status: 422
+      end
+    end
+
+    def destroy
+      @deployment.destroy
+      respond_for_show :resource => @deployment
+    end
+
+    def deploy
+      task = async_task(::Actions::Fusor::Deploy, @deployment)
+      respond_for_async :resource => task
+    end
+
+    private
+
+    def find_deployment
+      not_found and return false if params[:id].blank?
+      @deployment = Deployment.find(params[:id])
+    end
+
   end
 end
