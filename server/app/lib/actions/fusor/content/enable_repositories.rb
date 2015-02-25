@@ -19,13 +19,17 @@ module Actions
         end
 
         def plan(deployment)
-          # TODO: update the enabling of repos based upon products that are associated with the deployment object
-
           sequence do
-            content = SETTINGS[:fusor][:content]
-            if content
-              [content[:rhev], content[:cloudforms], content[:openstack]].compact.flatten(1).each do |details|
-                enable_repo(details)
+            unless content = SETTINGS[:fusor][:content]
+              fail _("fusor.yaml is missing definition for fusor content.")
+            end
+
+            products_enabled = [deployment.deploy_rhev, deployment.deploy_cfme, deployment.deploy_openstack]
+            products_content = [content[:rhev], content[:cloudforms], content[:openstack]]
+
+            products_enabled.each_with_index do |product_enabled, index|
+              if product_enabled && products_content[index]
+                products_content[index].each { |details| enable_repo(deployment.organization, details) }
               end
             end
           end
@@ -33,9 +37,11 @@ module Actions
 
         private
 
-        def enable_repo(repo_details)
-          # TODO: update the find to also include deployment.organization_id, once we have the model in place
-          if product = ::Katello::Product.find_by_name(repo_details[:product_name])
+        def enable_repo(organization, repo_details)
+          product = ::Katello::Product.where(:organization_id => organization.id,
+                                             :name => repo_details[:product_name]).first
+
+          if product
             product_content = product.productContent.find do |content|
               content.content.name == repo_details[:repository_set_name]
             end
