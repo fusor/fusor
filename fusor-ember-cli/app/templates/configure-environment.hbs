@@ -1,11 +1,7 @@
 <div class="row">
   <div class='col-md-9'>
 
-    <div style='text-align:right;margin-top:15px;'>
-      <button class='btn btn-success' {{action 'showModal' 'newEnvironmentModal'}}>
-        Add Environment Path
-      </button>
-    </div>
+
 
     {{#each env in model itemController="lifecycle-environment"}}
     <div class="path-selector">
@@ -24,6 +20,12 @@
       </ul>
     </div>
     {{/each}}
+
+    <div style='margin-top:15px;'>
+      <button class='btn btn-default' {{action 'showModal' 'newEnvironmentModal'}}>
+        New Environment Path
+      </button>
+    </div>
 
     <br />
     <br />

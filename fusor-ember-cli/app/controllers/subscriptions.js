@@ -1,9 +1,10 @@
 import Ember from 'ember';
 
 export default Ember.ArrayController.extend({
-  needs: ['application'],
+  needs: ['application', 'deployment'],
 
   isUpstream: Ember.computed.alias("controllers.application.isUpstream"),
+  stepNumberSubscriptions: Ember.computed.alias("controllers.deployment.stepNumberSubscriptions"),
 
   isOnlyShowSubscriptions: true,
 

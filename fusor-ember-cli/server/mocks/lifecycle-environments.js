@@ -4,26 +4,6 @@ module.exports = function(app) {
 
   var lifecycleEnvironments = [
         {
-            "id": 2,
-            "name": "Library",
-            "label": "Library",
-            "description": null,
-            "organization": {
-                "name": "Default_Organization",
-                "label": "Default_Organization"
-            },
-            "created_at": "2014-07-14T13:01:06Z",
-            "updated_at": "2014-07-14T13:01:06Z",
-            "library": true,
-            "prior": null,
-            "permissions": {
-                "view_lifecycle_environments": true,
-                "edit_lifecycle_environments": true,
-                "destroy_lifecycle_environments": true,
-                "promote_or_remove_content_views_to_environments": true
-            }
-        },
-        {
             "id": 3,
             "name": "Development",
             "label": "Development",

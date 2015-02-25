@@ -6,7 +6,7 @@
   <div class="white-wizard-line"></div>
   <div class="wizard-line"></div>
 
-  <ul class="wizard">
+  <ul class="deployment-wizard">
     {{wizard-item num=1 name=nameSatellite routeName='satellite' isDisabled=false}}
 
     {{#if isRhev}}
@@ -26,6 +26,7 @@
     {{/unless}}
 
     {{wizard-item num=stepNumberReview name='Review' routeName='review' isDisabled=isDisabledReview}}
+    {{controllers.subscriptions/select-subscriptions.disableSubscriptionsNext}}
   </ul>
 </div>
 

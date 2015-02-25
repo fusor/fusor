@@ -1,11 +1,11 @@
 import Ember from 'ember';
 
 export default Ember.ArrayController.extend({
-  needs: ['organization', 'organizations', 'satellite/index'],
+  needs: ['organization', 'organizations', 'satellite/index', 'application'],
 
   fields_org: {},
 
-  selectedOrganzation: "",
+  selectedOrganzation: '',  //MAKE '' WHEN PACKAGING
   disable1BNext: function() {
     return (this.get('selectedOrganzation.length') === 0);
   }.property('selectedOrganzation'),
@@ -15,6 +15,11 @@ export default Ember.ArrayController.extend({
     return this.getWithDefault('defaultOrg', this.get('deploymentName'));
   }.property(),
 
+  orgLabelName: function() {
+    if(this.get('fields_org.name')) {
+      return this.get('defaultOrgName').underscore();
+    }
+  }.property('defaultOrgName'),
 
   selectedOrg: "Default_Organization",
   organizationId: function() {
@@ -35,15 +40,17 @@ export default Ember.ArrayController.extend({
         self.set('fields_org',{});
         self.set('selectedOrganzation', organization.get('name'));
         self.set('selectedOrg', organization);
-        organization.save().then(function() {
-          //success
-        }, function(response) {
-          alert('error saving organization');
-        //organization.destroyRecord();
-        //organization.rollback()
-        //organization.reload();
-        //organization.unloadRecord();
-        });
+        if (this.get('controllers.application.isLiveBackendMode')) {
+          organization.save().then(function() {
+            //success
+          }, function(response) {
+            alert('error saving organization');
+          //organization.destroyRecord();
+          //organization.rollback()
+          //organization.reload();
+          //organization.unloadRecord();
+          });
+        }
       //}
 
       return Bootstrap.ModalManager.hide('newOrganizationModal');

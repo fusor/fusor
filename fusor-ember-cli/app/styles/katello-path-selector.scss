@@ -10,8 +10,8 @@
 @import "katello/header";
 @import "katello/ie";
 @import "katello/katello";
-
 */
+
 /* katello */
 
 .path-selector {
@@ -52,12 +52,12 @@
   background: #ffffff;
 }
 .path-selector .path-list .path-list-item label.active {
-  background: #005870;
+  background: #00a8d6;
   color: white;
   text-shadow: 1px 1px #000;
 }
 .path-selector .path-list .path-list-item label.active:after {
-  border-left-color: #005870;
+  border-left-color: #00a8d6;
 }
 .path-selector .path-list .path-list-item label:after {
   content: " ";
@@ -135,12 +135,12 @@
   background: #ffffff;
 }
 .path-selector .path-list .path-list-item label.active {
-  background: #005870;
+  background: #00a8d6;
   color: white;
   text-shadow: 1px 1px #000;
 }
 .path-selector .path-list .path-list-item label.active:after {
-  border-left-color: #005870;
+  border-left-color: #00a8d6;
 }
 
 .path-selector .path-list .path-list-item label:after {

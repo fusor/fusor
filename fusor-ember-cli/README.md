@@ -24,6 +24,23 @@ The fuser-ember-cli/dist distory is generated automatically by [ember-cli](http:
   - In [styles/app.scss](https://github.com/fusor/fusor-ember-cli/blob/master/app/styles/app.scss#L3), change `padding-top` from `0px` to `40px`
   - Run bash script [`./prep-fusor-repo`](https://github.com/fusor/fusor-ember-cli/blob/master/prep-fusor-repo) which copies files from `fusor/fusor-ember-cli/dist` to the `fusor/ui` repo
 
+## Development Mode
+
+If you have a local foreman instance, you can run the ember server and proxy API calls to Foreman like this:
+
+In [controllers/application.js](https://github.com/fusor/fusor-ember-cli/blob/master/app/controllers/application.js#L8), change `isLiveBackendMode` to `true`
+
+```
+$ ember server --proxy http://0.0.0.0:3000
+```
+
+Alternatively, if you don't have a foreman backend, you can use fake API calls and fake data like this:
+
+In [controllers/application.js](https://github.com/fusor/fusor-ember-cli/blob/master/app/controllers/application.js#L8), change `isLiveBackendMode` to `false`
+```
+ENABLE_HTTP_MOCKS=true ember server
+```
+
 ## Prerequisites
 
 You will need the following things properly installed on your computer.

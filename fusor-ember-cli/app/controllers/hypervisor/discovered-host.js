@@ -1,8 +1,15 @@
 import Ember from 'ember';
 
 export default Ember.ArrayController.extend({
+  needs: ['engine/discovered-host'],
+
+  engineIdSelected: Ember.computed.alias("controllers.engine/discovered-host.engineIdSelected"),
 
   selectedHosts: Em.computed.filterBy('model', 'isSelectedAsHypervisor', true),
+
+  availableHosts: Ember.computed.filter('model', function(host, index, array) {
+    return (host.get('id') != this.get('engineIdSelected'));
+  }).property('model', 'engineIdSelected'),
 
   // TODO Why didn't this work???
   // selectedHosts: function() {

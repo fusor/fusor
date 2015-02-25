@@ -1,5 +1,17 @@
-{{#if isUpstream}}
-  {{partial 'content-source-upstream'}}
-{{else}}
-  {{partial 'subscriptions-downstream'}}
-{{/if}}
+<div class="row tabbed_side_nav_form">
+
+  <ul class="nav nav-pills nav-stacked col-md-3">
+      {{#link-to 'subscriptions.credentials' tagName='li'}}
+        <a>{{stepNumberSubscriptions}}A. Enter Credentials</a>
+      {{/link-to}}
+      {{#link-to 'subscriptions.select-subscriptions' tagName='li'}}
+        <a>{{stepNumberSubscriptions}}B. Select Subscriptions</a>
+      {{/link-to}}
+  </ul>
+
+  <div class="tab-content col-md-9">
+      {{outlet}}
+  </div>
+
+</div>
+

@@ -1,7 +1,8 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-  tagName: 'tr',
+
+  selectedOrgId: 1, //MAKE NULL WHEN PACKAGING
 
   isChecked: function () {
     var org = this.get('org');
@@ -15,22 +16,22 @@ export default Ember.Component.extend({
     }
   }.property('isChecked'),
 
-  classNameBindings: ['bgColor', 'fontColor'],
-  bgColor: function () {
-    if (this.get('isChecked')) {
-      return 'blue';
-    } else {
-      return null;
-    }
-  }.property('isChecked'),
+  // classNameBindings: ['bgColor', 'fontColor'],
+  // bgColor: function () {
+  //   if (this.get('isChecked')) {
+  //     return 'blue';
+  //   } else {
+  //     return null;
+  //   }
+  // }.property('isChecked'),
 
-  fontColor: function () {
-    if (this.get('isChecked')) {
-      return 'fontwhite';
-    } else {
-      return null;
-    }
-  }.property('isChecked'),
+  // fontColor: function () {
+  //   if (this.get('isChecked')) {
+  //     return 'fontwhite';
+  //   } else {
+  //     return null;
+  //   }
+  // }.property('isChecked'),
 
   // highlight: function() {
   //   return this.get('color');

@@ -1,13 +1,15 @@
 <div {{bind-attr class=":navbar :navbar-default :navbar-outer isUpstream:navbar-outer-upstream"}}>
   <div class="navbar-header">
-    <div {{bind-attr class="isUpstream:container:container-fluid"}}>
+    <div {{bind-attr class="isUpstream:container:container"}}>
 
       <div class="navbar-brand">
         {{#if isUpstream}}
           <img alt="Foreman" src="assets/foreman.png">
           <a href="/">Foreman</a>
         {{else}}
-          <a href="/">RED HAT SATELLITE</a>
+          <a href="/">
+            <img alt="Header-logotype" src="assets/Header-logotype.png">
+          </a>
         {{/if}}
       </div>
 
@@ -16,10 +18,10 @@
         <li class="dropdown menu_tab_dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             {{!session.content.authorizationCode.length}}
-            {{session.content.provider}}
-            {{session.authType}}&nbsp;
-            {{session.basicAuthToken}}
-            {{session.access_token}}&nbsp;
+            {{!session.content.provider}}
+            {{!session.authType}}&nbsp;
+            {{!session.basicAuthToken}}
+            {{!session.access_token}}&nbsp;
             <img alt="Change your avatar at gravatar.com" class="avatar small" src="assets/user.jpg">{{loginUsername}} <span class="caret"></span>
           </a>
 
