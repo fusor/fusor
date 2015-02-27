@@ -17,7 +17,7 @@ module Fusor
       app.routes_reloader.paths << "#{Fusor::Engine.root}/config/routes/mount_engine.rb"
     end
 
-    initializer "katello.paths" do |app|
+    initializer "fusor.paths" do |app|
       app.routes_reloader.paths << "#{Fusor::Engine.root}/config/routes/api/v2.rb"
       app.routes_reloader.paths << "#{Fusor::Engine.root}/config/routes/api/v21.rb"
     end
