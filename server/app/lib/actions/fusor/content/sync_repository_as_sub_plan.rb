@@ -13,17 +13,17 @@
 module Actions
   module Fusor
     module Content
-      class SyncRepositories < Actions::Base
-        def humanized_name
-          _("Synchronize Repositories")
+      class SyncRepositoryAsSubPlan < Actions::ActionWithSubPlans
+        input_format do
+          param :id, Integer
         end
 
-        def plan(repositories)
-          concurrence do
-            repositories.each do |repository|
-              plan_action(::Actions::Fusor::Content::SyncRepositoryAsSubPlan, repository)
-            end
-          end
+        def plan(repository)
+          plan_self(:id => repository.id)
+        end
+
+        def create_sub_plans
+          trigger(::Actions::Katello::Repository::Sync, ::Katello::Repository.find(input[:id]))
         end
       end
     end
