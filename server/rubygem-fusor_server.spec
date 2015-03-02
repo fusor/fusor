@@ -60,6 +60,7 @@ BuildRequires: ruby(abi) = 1.8
 Requires: foreman >= 1.6.0
 BuildRequires: foreman >= 1.6.0
 BuildRequires: foreman-assets >= 1.6.0
+BuildRequires: foreman-plugin >= 1.6.0
 
 #Requires: foreman >= 1.7.0
 #BuildRequires: foreman >= 1.7.0
