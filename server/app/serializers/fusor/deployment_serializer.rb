@@ -2,7 +2,7 @@ module Fusor
   class DeploymentSerializer < ActiveModel::Serializer
 
     embed :ids, include: true
-    attributes :id, :name, :organization_id, :lifecycle_environment_id,
+    attributes :id, :name, :description, :organization_id, :lifecycle_environment_id,
                :deploy_rhev, :deploy_cfme, :deploy_openstack,
                :rhev_hypervisor_host_id, :rhev_engine_host_id,
                :rhev_hypervisor_hostname, :rhev_engine_hostname,
