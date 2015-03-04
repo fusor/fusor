@@ -20,6 +20,7 @@ module Fusor
     initializer "fusor.paths" do |app|
       app.routes_reloader.paths << "#{Fusor::Engine.root}/config/routes/api/v2.rb"
       app.routes_reloader.paths << "#{Fusor::Engine.root}/config/routes/api/v21.rb"
+      app.routes_reloader.paths << "#{Fusor::Engine.root}/config/routes/api/customer_portal.rb"
     end
 
     initializer 'fusor.register_plugin', :after => :finisher_hook do |app|
