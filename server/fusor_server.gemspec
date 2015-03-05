@@ -1,7 +1,7 @@
 require File.expand_path('../lib/fusor/version', __FILE__)
 
 Gem::Specification.new do |s|
-  s.name        = "fusor"
+  s.name        = "fusor_server"
   s.version     = Fusor::VERSION
   s.date        = Date.today.to_s
   s.author     = "Fusor team"
