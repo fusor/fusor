@@ -18,20 +18,10 @@ module Actions
           _("Enable Repositories")
         end
 
-        def plan(deployment)
+        def plan(organization, product_content_settings)
           sequence do
-            unless content = SETTINGS[:fusor][:content]
-              fail _("fusor.yaml is missing definition for fusor content.")
-            end
-
-            products_enabled = [deployment.deploy_rhev, deployment.deploy_cfme, deployment.deploy_openstack]
-            products_content = [content[:rhev], content[:cloudforms], content[:openstack]]
-
-            products_enabled.each_with_index do |product_enabled, index|
-              if product_enabled && products_content[index]
-                products_content[index].each { |details| enable_repo(deployment.organization, details) }
-              end
-            end
+            fail _("fusor.yaml is missing definition for fusor content.") unless product_content_settings
+            product_content_settings.each { |details| enable_repo(organization, details) }
           end
         end
 

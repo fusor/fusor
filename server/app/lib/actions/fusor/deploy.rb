@@ -19,35 +19,42 @@ module Actions
 
       def plan(deployment)
         fail _("Unable to locate fusor.yaml settings in config/settings.plugins.d") unless SETTINGS[:fusor]
+        fail _("Unable to locate content settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:content]
 
         sequence do
           # TODO: add an action to support importing a manifest created as part of the deployment
 
-          plan_action(::Actions::Fusor::Content::EnableRepositories, deployment)
+          products_enabled = [deployment.deploy_rhev, deployment.deploy_cfme, deployment.deploy_openstack]
 
-          # As part of enabling repositories, zero or more repos will be created.  Let's
-          # retrieve the repos needed for the deployment and use them in actions that follow
-          repositories = retrieve_deployment_repositories(deployment)
+          content = SETTINGS[:fusor][:content]
+          products_content = [content[:rhev], content[:cloudforms], content[:openstack]]
 
-          plan_action(::Actions::Fusor::Content::SyncRepositories, repositories)
-          plan_action(::Actions::Fusor::Content::PublishContentView, deployment, repositories)
+          products_enabled.each_with_index do |product_enabled, index|
+            if product_enabled && products_content[index]
+              plan_action(::Actions::Fusor::Content::EnableRepositories,
+                          deployment.organization,
+                          products_content[index])
+
+              # As part of enabling repositories, zero or more repos will be created.  Let's
+              # retrieve the repos needed for the deployment and use them in actions that follow
+              repositories = retrieve_deployment_repositories(deployment.organization, products_content[index])
+
+              plan_action(::Actions::Fusor::Content::SyncRepositories, repositories)
+
+              plan_action(::Actions::Fusor::Content::PublishContentView,
+                          deployment.organization,
+                          deployment.lifecycle_environment,
+                          repositories)
+            end
+          end
         end
       end
 
       private
 
-      def retrieve_deployment_repositories(deployment)
+      def retrieve_deployment_repositories(organization, product_content_settings)
         repos = []
-        if content = SETTINGS[:fusor][:content]
-          products_enabled = [deployment.deploy_rhev, deployment.deploy_cfme, deployment.deploy_openstack]
-          products_content = [content[:rhev], content[:cloudforms], content[:openstack]]
-
-          products_enabled.each_with_index do |product_enabled, index|
-            if product_enabled && products_content[index]
-              products_content[index].each { |details| repos << find_repository(deployment.organization, details) }
-            end
-          end
-        end
+        product_content_settings.each { |details| repos << find_repository(organization, details) }
         repos
       end
 

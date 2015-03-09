@@ -18,27 +18,27 @@ module Actions
           _("Publish Content View")
         end
 
-        def plan(deployment, repositories)
+        def plan(organization, lifecycle_environment, repositories)
           sequence do
-            composite_view = find_or_create_content_view(deployment.organization,
+            composite_view = find_or_create_content_view(organization,
                                                          SETTINGS[:fusor][:content][:content_view][:composite_view_name],
                                                          true)
 
-            rpm_view = find_or_create_content_view(deployment.organization,
+            rpm_view = find_or_create_content_view(organization,
                                                    SETTINGS[:fusor][:content][:content_view][:rpm_component_view_name])
             repo_ids = repositories.map(&:id)
             unless rpm_view.repository_ids == repo_ids
               plan_action(::Actions::Katello::ContentView::Update, rpm_view, :repository_ids => repo_ids)
               plan_action(::Actions::Katello::ContentView::Publish, rpm_view)
             end
-            rpm_view_version = rpm_view.version(deployment.organization.library)
+            rpm_view_version = rpm_view.version(organization.library)
 
             #The puppet view is created during the seeding of the plugin; therefore, we should not need to create it
-            puppet_view = find_content_view(deployment.organization,
+            puppet_view = find_content_view(organization,
                                             SETTINGS[:fusor][:content][:content_view][:puppet_component_view_name])
-            puppet_view_version = puppet_view.version(deployment.organization.library)
+            puppet_view_version = puppet_view.try(:version, organization.library)
 
-            component_version_ids = [rpm_view_version.id, puppet_view_version.id]
+            component_version_ids = [rpm_view_version.id, puppet_view_version.try(:id)].compact
             unless composite_view.component_ids == component_version_ids
               plan_action(::Actions::Katello::ContentView::Update, composite_view,
                           :component_ids => component_version_ids)
@@ -47,10 +47,10 @@ module Actions
 
             # Promote content view to target lifecycle environment (Note: if the target env is library
             # no need to promote...)
-            unless deployment.lifecycle_environment.library?
+            unless lifecycle_environment.library?
               plan_action(::Actions::Katello::ContentView::Promote,
-                          composite_view.version(deployment.organization.library),
-                          deployment.lifecycle_environment)
+                          composite_view.version(organization.library),
+                          lifecycle_environment)
             end
           end
         end
