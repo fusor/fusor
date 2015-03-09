@@ -1,5 +1,10 @@
 :fusor:
   :content:
+    :content_view:
+      :composite_view_name: "Fusor Deployment Content"
+      :rpm_component_view_name: "Fusor RPM Content"
+      :puppet_component_view_name: "Fusor Puppet Content"
+
     :rhev:
       - :product_name: "Red Hat Enterprise Linux Server"
         :repository_set_name: "Red Hat Enterprise Linux 6 Server (RPMs)"
