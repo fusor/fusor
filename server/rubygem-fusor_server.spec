@@ -29,7 +29,7 @@ Summary: Fusor Server Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 2%{dist}
+Release: 3%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -119,6 +119,14 @@ cp -a .%{gem_dir}/* \
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Tue Mar 10 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-3
+- Remove use of %%{foreman_assets_plugin} since we don't have any files under
+  public/assets/fusor_server (jwmatthews@gmail.com)
+- Move lib/fusor.rb to lib/fusor_server.rb to allow RPM build to succeed with
+  macro: %%{foreman_assets_plugin} (jwmatthews@gmail.com)
+- Update requires for rubygem-active_model_serializers to use scl prefix
+  (jwmatthews@gmail.com)
+
 * Tue Mar 10 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-2
 - new package built with tito
 
