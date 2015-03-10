@@ -20,6 +20,7 @@ module Actions
       def plan(deployment)
         fail _("Unable to locate fusor.yaml settings in config/settings.plugins.d") unless SETTINGS[:fusor]
         fail _("Unable to locate content settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:content]
+        fail _("Unable to locate host group settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:host_groups]
 
         sequence do
           # TODO: add an action to support importing a manifest created as part of the deployment
@@ -28,9 +29,11 @@ module Actions
 
           content = SETTINGS[:fusor][:content]
           products_content = [content[:rhev], content[:cloudforms], content[:openstack]]
+          host_groups = SETTINGS[:fusor][:host_groups]
+          products_host_groups = [host_groups[:rhev], host_groups[:cloudforms], host_groups[:openstack]]
 
           products_enabled.each_with_index do |product_enabled, index|
-            if product_enabled && products_content[index]
+            if product_enabled && products_content[index] && products_host_groups[index]
               plan_action(::Actions::Fusor::Content::EnableRepositories,
                           deployment.organization,
                           products_content[index])
@@ -41,10 +44,19 @@ module Actions
 
               plan_action(::Actions::Fusor::Content::SyncRepositories, repositories)
 
+              # TODO: need to update to support multiple deployments per organization... to support this, we could
+              # incorporate the deployment name in to the content view, activation key and host groups
               plan_action(::Actions::Fusor::Content::PublishContentView,
                           deployment.organization,
                           deployment.lifecycle_environment,
                           repositories)
+
+              plan_configure_activation_key(deployment)
+
+              plan_action(::Actions::Fusor::ConfigureHostGroups,
+                          deployment.organization,
+                          deployment.lifecycle_environment,
+                          products_host_groups[index])
             end
           end
         end
@@ -52,9 +64,19 @@ module Actions
 
       private
 
-      def retrieve_deployment_repositories(organization, product_content_settings)
+      def plan_configure_activation_key(deployment)
+        # At this time, 1 activation key can be used to support all products; therefore,
+        # we only need to plan the action once.
+        return if @configure_activation_key_planned
+        plan_action(::Actions::Fusor::ActivationKey::ConfigureActivationKey,
+                    deployment.organization,
+                    deployment.lifecycle_environment)
+        @configure_activation_key_planned = true
+      end
+
+      def retrieve_deployment_repositories(organization, product_content)
         repos = []
-        product_content_settings.each { |details| repos << find_repository(organization, details) }
+        product_content.each { |details| repos << find_repository(organization, details) }
         repos
       end
 

@@ -12,6 +12,11 @@
         :releasever: "6Server"
 
       - :product_name: "Red Hat Enterprise Linux Server"
+        :repository_set_name: "Red Hat Enterprise Linux 6 Server (Kickstart)"
+        :basearch: "x86_64"
+        :releasever: "6.6"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
         :repository_set_name: "Red Hat Enterprise Linux 6 Server - Supplementary (RPMs)"
         :basearch: "x86_64"
         :releasever: "6Server"
@@ -30,3 +35,27 @@
         :repository_set_name: "JBoss Enterprise Application Platform 6 (RHEL 6 Server) (RPMs)"
         :basearch: "x86_64"
         :releasever: "6Server"
+
+  :host_groups:
+    :rhev:
+     :root_name: "Fusor Base" # seeded by the fusor-installer
+     :host_groups:
+       - :name: "RHEV-Engine"
+         :parent_name: "Fusor Base"
+         :puppet_classes:
+           - "ovirt"
+           - "ovirt::repo"
+           - "ovirt::engine::config"
+           - "ovirt::engine::packages"
+           - "ovirt::engine::setup"
+
+       - :name: "RHEV-Hypervisor"
+         :parent_name: "Fusor Base"
+         :puppet_classes:
+           - "ovirt"
+           - "ovirt::hypervisor::packages"
+
+  :activation_key:
+    :name: "Fusor_Key"
+    :subscription_descriptions:
+      - "Red Hat Cloud Infrastructure"
