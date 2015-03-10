@@ -113,7 +113,7 @@ cp -a .%{gem_dir}/* \
 %{gem_spec}
 %{foreman_bundlerd_dir}/%{gem_name}.rb
 #%{foreman_dir}/public/assets/fusor_ui
-%{foreman_assets_plugin}
+#%{foreman_assets_plugin}
 
 %files doc
 %{gem_dir}/doc/%{gem_name}-%{version}
