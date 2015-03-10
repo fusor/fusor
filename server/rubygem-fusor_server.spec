@@ -61,7 +61,7 @@ Requires: foreman >= 1.6.0
 BuildRequires: foreman >= 1.6.0
 BuildRequires: foreman-assets >= 1.6.0
 BuildRequires: foreman-plugin >= 1.6.0
-BuildRequires: rubygem-active_model_serializers
+BuildRequires: %{?scl_prefix}rubygem-active_model_serializers
 
 #Requires: foreman >= 1.7.0
 #BuildRequires: foreman >= 1.7.0
