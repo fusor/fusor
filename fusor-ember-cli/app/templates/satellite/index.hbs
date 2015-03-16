@@ -3,20 +3,21 @@
     <br />
     <form class="form-horizontal" role="form">
 
-      {{text-f label="Name" value=name inputSize='col-md-5' }}
+      {{text-f label="Name" value=name inputSize='col-md-5' errors=errors}}
 
       {{textarea-f label="Description (Optional)" value=description inputSize='col-md-5' }}
 
       <div class='pull-right'>
         <br />
         <button {{action 'showModal' 'cancelDeploymentModal'}} class='btn btn-default'>Cancel</button>
-        {{#link-to 'configure-organization' class='btn btn-primary' disabled=disable1ANext}}Next{{/link-to}}
+        {{#link-to organizationTabRouteName
+                   disabled=disableNextOnDeploymentName
+                   class='btn btn-primary'}}
+            Next
+        {{/link-to}} {{!organizationTabRouteName}}
       </div>
 
     </form>
   </div>
 </div>
-
-{{#bs-modal name="cancelDeploymentModal" fade=true footerButtonsBinding="rhciModalButtons" title="Cancel Deployment"}}
-  Are you sure you want to cancel?
-{{/bs-modal}}
+{{partial 'cancel-deployment-modal'}}

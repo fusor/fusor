@@ -40,7 +40,7 @@ module.exports = function(app) {
 
   trafficTypesRouter.get('/', function(req, res) {
     res.send({
-      'results': trafficTypes
+      'traffic_types': trafficTypes
     });
   });
 
@@ -66,5 +66,5 @@ module.exports = function(app) {
     res.status(204).end();
   });
 
-  app.use('/api/v2/traffic_types', trafficTypesRouter);
+  app.use('/api/v21/traffic_types', trafficTypesRouter);
 };

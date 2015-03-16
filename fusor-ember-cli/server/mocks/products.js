@@ -31,7 +31,7 @@ module.exports = function(app) {
 
   productsRouter.get('/', function(req, res) {
     res.send({
-      'results': products
+      'products': products
     });
   });
 
@@ -57,5 +57,5 @@ module.exports = function(app) {
     res.status(204).end();
   });
 
-  app.use('/api/v2/products', productsRouter);
+  app.use('/api/v21/products', productsRouter);
 };

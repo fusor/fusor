@@ -1,6 +1,16 @@
-{{#base-f label=label labelSize=labelSize inputSize=inputSize help-inline=help-inline}}
+{{#base-f label=label labelSize=labelSize inputSize=inputSize help-inline=help-inline errors=errors}}
 
-  {{input class="form-control" value=value placeholder=placeholder type=typeInput}}
+  {{input class="form-control" value=value placeholder=placeholder type=typeInput focus-out="showErrors" id=id}}
+
+  {{#if showError}}
+    {{#if errors.name}}
+      <span class="error errorForValidation">
+        <span class="glyphicon glyphicon-warning-sign"></span> {{errors.name}}
+      </span>
+    {{/if}}
+  {{/if}}
+
   {{yield}}
 
 {{/base-f}}
+

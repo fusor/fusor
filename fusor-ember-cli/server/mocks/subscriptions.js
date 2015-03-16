@@ -38,7 +38,7 @@ module.exports = function(app) {
 
   subscriptionsRouter.get('/', function(req, res) {
     res.send({
-      'results': subscriptions
+      'subscriptions': subscriptions
     });
   });
 
@@ -64,5 +64,5 @@ module.exports = function(app) {
     res.status(204).end();
   });
 
-  app.use('/api/v2/subscriptions', subscriptionsRouter);
+  app.use('/api/v21/subscriptions', subscriptionsRouter);
 };

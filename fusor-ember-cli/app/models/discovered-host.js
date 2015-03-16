@@ -13,6 +13,12 @@ export default DS.Model.extend({
   disk_count: DS.attr('string'),
   disks_size: DS.attr('string'),
   cpus: DS.attr('string'),
-  isSelectedAsHypervisor: DS.attr('boolean', {defaultValue: false}),
-  isSelectedAsEngine: DS.attr('boolean', {defaultValue: false})
+
+  rhev_deployments: DS.hasMany('deployment', {inverse: 'rhev_engine_host', async: true}),
+  deployment: DS.belongsTo('deployment', {inverse: 'discovered_host', async: true}),
+  deployments: DS.belongsTo('deployment', {inverse: 'discovered_hosts', async: true}),
+
+  created_at: DS.attr('date'),
+  updated_at: DS.attr('date'),
+
 });

@@ -618,7 +618,7 @@ define('fusor-ember-cli/controllers/application', ['exports', 'ember'], function
     needs: ["side-menu", "rhci"],
 
     isLiveBackendMode: true,
-    deployAsPlugin: false,
+    deployAsPlugin: true,
     isEmberCliMode: Ember['default'].computed.not("deployAsPlugin"),
     isUpstream: false,
 

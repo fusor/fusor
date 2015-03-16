@@ -4,7 +4,7 @@ module.exports = function(app) {
 
   var discoveredHosts = [
         {
-          id: 1,
+          id: 197,
           name: '22:99:23:A6:2B:BC',
           ip: '10.0.0.1',
           mac: '22:99:23:A6:2B:BC',
@@ -21,7 +21,7 @@ module.exports = function(app) {
           location_name: 'TLV'
        },
        {
-          id: 2,
+          id: 927,
           name: '52:54:00:D3:3E:DF',
           ip: '10.0.1.5',
           mac: '52:54:00:D3:3E:DF',
@@ -38,7 +38,7 @@ module.exports = function(app) {
           location_name: 'TLV'
        },
        {
-          id: 3,
+          id: 857,
           name: '19:88:00:A5:7D:EE',
           ip: '10.0.2.7',
           mac: '19:88:00:A5:7D:EE',
@@ -58,7 +58,7 @@ module.exports = function(app) {
 
   discoveredHostsRouter.get('/', function(req, res) {
     res.send({
-      'results': discoveredHosts
+      'discovered_hosts': discoveredHosts
     });
   });
 
@@ -84,5 +84,5 @@ module.exports = function(app) {
     res.status(204).end();
   });
 
-  app.use('/api/v2/discovered_hosts', discoveredHostsRouter);
+  app.use('/api/v21/discovered_hosts', discoveredHostsRouter);
 };

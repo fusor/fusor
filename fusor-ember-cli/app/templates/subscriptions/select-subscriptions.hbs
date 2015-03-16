@@ -32,16 +32,16 @@ Default subscription selections have been made for the components of your RHCI d
     </thead>
 
   <tbody>
-  {{#each controller.model itemController="satellite/subscription"}}
+  {{#each subscription in controller.model itemController="subscription"}}
     <tr>
-      <td> {{input type="checkbox" checked=isChecked}}</td>
-      <td> {{name}} </td>
-      <td> {{contract_number}} </td>
-      <td> {{available}} </td>
-      <td> {{subscription_type}} </td>
-      <td> {{start_date}} </td>
-      <td> {{end_date}} </td>
-      <td> {{input type='text' value=quantity size=4}} </td>
+      <td> {{input type="checkbox" checked=subscription.isChecked}}</td>
+      <td> {{subscription.name}} </td>
+      <td> {{subscription.contract_number}} </td>
+      <td> {{subscription.available}} </td>
+      <td> {{subscription.subscription_type}} </td>
+      <td> {{subscription.start_date}} </td>
+      <td> {{subscription.end_date}} </td>
+      <td> {{input type='text' value=subscription.quantity size=4}} </td>
     </tr>
   {{/each}}
   </tbody>

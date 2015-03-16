@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
-  needs: ['side-menu', 'rhci'],
+  needs: ['side-menu', 'deployment'],
 
   isLiveBackendMode: true,
   deployAsPlugin: false,
@@ -26,12 +26,12 @@ export default Ember.Controller.extend({
       Ember.Object.create({title: 'Cancel', clicked:"cancel", dismiss: 'modal'})
   ],
 
-  nameRHCI: Ember.computed.alias("controllers.rhci.nameRHCI"),
-  nameRhev: Ember.computed.alias("controllers.rhci.nameRhev"),
-  nameOpenStack: Ember.computed.alias("controllers.rhci.nameOpenStack"),
-  nameCloudForms: Ember.computed.alias("controllers.rhci.nameCloudForms"),
-  nameSatellite: Ember.computed.alias("controllers.rhci.nameSatellite"),
-  logoPath: Ember.computed.alias("controllers.rhci.logoPath"),
+  nameRHCI: Ember.computed.alias("controllers.deployment.nameRHCI"),
+  nameRhev: Ember.computed.alias("controllers.deployment.nameRhev"),
+  nameOpenStack: Ember.computed.alias("controllers.deployment.nameOpenStack"),
+  nameCloudForms: Ember.computed.alias("controllers.deployment.nameCloudForms"),
+  nameSatellite: Ember.computed.alias("controllers.deployment.nameSatellite"),
+  logoPath: Ember.computed.alias("controllers.deployment.logoPath"),
 
   actions: {
     invalidate: function(data) {

@@ -15,7 +15,7 @@ module.exports = function(app) {
 
   usersRouter.get('/', function(req, res) {
     res.send({
-      'results': users
+      'users': users
     });
   });
 
@@ -44,5 +44,5 @@ module.exports = function(app) {
     res.status(204).end();
   });
 
-  app.use('/api/v2/users', usersRouter);
+  app.use('/api/v21aaa/users', usersRouter);
 };

@@ -6,7 +6,7 @@ export default Ember.Route.extend({
 
   beforeModel: function(transition) {
     if ( this.controllerFor('application').get('deployAsPlugin') || this.get('session.isAuthenticated') ) {
-      return this.transitionTo('rhci');
+      return this.transitionTo('deployment-new.start');
     };
   },
 

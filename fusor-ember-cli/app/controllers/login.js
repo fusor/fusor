@@ -31,7 +31,7 @@ export default Ember.ObjectController.extend(LoginControllerMixin, {
           return this._super().then(function() {
               var adapter = self.store.adapterFor('ApplicationAdapter');
               adapter.set('headers', { Authorization: 'Basic ' + self.get('session.basicAuthToken') });
-              return self.transitionTo('rhci');
+              return self.transitionTo('deployment-new.start');
           }, function () {
                 return self.set('errorMessage', "Your username or password is incorrect. Please try again.");
           });
@@ -52,7 +52,7 @@ export default Ember.ObjectController.extend(LoginControllerMixin, {
                 console.log(self.get('session'));
                 console.log(self.get('session.authType'));
                 console.log(self.get('session.basicAuthToken'));
-                return self.transitionTo('rhci');
+                return self.transitionTo('deployment-new.start');
               },
                 function(response){
                   alert('error oAuth')
@@ -86,7 +86,7 @@ export default Ember.ObjectController.extend(LoginControllerMixin, {
           // add user to local storage session
           self.store.find('user', self.get('identification')).then(function(response) {
             self.get('session').set('currentUser', response);
-            return self.transitionTo('rhci');
+            return self.transitionTo('deployment-new.start');
           },
             function(response){
               alert('error')
@@ -132,7 +132,7 @@ export default Ember.ObjectController.extend(LoginControllerMixin, {
                 }
         });
 
-        return self.transitionToRoute('rhci');
+        return self.transitionToRoute('deployment-new.start');
       });
     },
 

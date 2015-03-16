@@ -16,9 +16,9 @@ module.exports = function(app) {
   var morgan  = require('morgan');
   app.use(morgan('dev'));
 
-  if (process.env.ENABLE_HTTP_MOCKS === 'true') {
+  //if (process.env.ENABLE_HTTP_MOCKS === 'true') {
     mocks.forEach(function(route) { route(app); });
-  }
+  //}
   proxies.forEach(function(route) { route(app); });
 
 };

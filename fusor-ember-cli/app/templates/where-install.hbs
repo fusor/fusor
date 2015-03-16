@@ -1,17 +1,31 @@
+{{!cfme_install_loc}}
 <div class='row'>
   <div class='col-md-8 col-md-offset-1'>
 
     <div class='row'>
-      <h3>{{radio-button-f checked=whereInstallCf value="onOpenstack" label='Install on RHEV'}}</h3>
-      <div class='col-md-offset-1'>
-      </div>
+      Select the location where to install CloudForms.
+      <h3>
+        {{#unless disableRHEV}}
+          {{#radio-button value="RHEV" groupValue=cfme_install_loc changed="cfmeLocationChanged"}}
+            Install on RHEV
+          {{/radio-button}}
+        {{/unless}}
     </div>
 
     <div class='row'>
-      <h3>{{radio-button-f checked=whereInstallCf value="onRhev" label='Install on OpenStack'}}</h3>
-      <div class='col-md-offset-1'>
-      </div>
+      <h3>
+        {{#unless disableOpenStack}}
+          {{#radio-button value="OpenStack" groupValue=cfme_install_loc changed="cfmeLocationChanged"}}
+            Install on OpenStack
+          {{/radio-button}}
+        {{/unless}}
     </div>
 
   </div>
 </div>
+
+    <div class='pull-right'>
+      <br />
+      {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
+      {{#link-to 'subscriptions.credentials' class='btn btn-primary'}}Next{{/link-to}}
+    </div>

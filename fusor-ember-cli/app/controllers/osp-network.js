@@ -34,12 +34,4 @@ export default Ember.ArrayController.extend({
     }
   }
 
-//      })
-
-      // var subnet = ops.target.subnet;
-      // subnet.get('trafficTypes').then(function(results) {
-      //    return results.pushObject(obj);
-      // })
-
-
 });

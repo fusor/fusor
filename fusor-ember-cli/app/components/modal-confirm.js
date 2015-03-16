@@ -1,9 +1,11 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
+
   dismissButtonLabel: function () {
     return this.getWithDefault('dismissLabel', 'Close');
   }.property('dismissLabel'),
+
   okButtonLabel: function () {
     return this.getWithDefault('okLabel', 'Yes');
   }.property('okLabel'),

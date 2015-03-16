@@ -14,6 +14,4 @@ export default DS.Model.extend({
   cpu: DS.attr('string'),
   memory: DS.attr('string'),
   vendor: DS.attr('string'),
-  isSelectedAsHypervisor: DS.attr('boolean', {defaultValue: false}),
-  isSelectedAsEngine: DS.attr('boolean', {defaultValue: false})
 });

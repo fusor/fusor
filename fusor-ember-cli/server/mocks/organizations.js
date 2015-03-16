@@ -15,7 +15,7 @@ module.exports = function(app) {
 
   organizationsRouter.get('/', function(req, res) {
     res.send({
-      'results': organizations
+      'organizations': organizations
     });
   });
 
@@ -41,5 +41,5 @@ module.exports = function(app) {
     res.status(204).end();
   });
 
-  app.use('/api/v2/organizations', organizationsRouter);
+  app.use('/api/v21aaa/organizations', organizationsRouter);
 };

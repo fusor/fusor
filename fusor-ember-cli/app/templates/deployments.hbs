@@ -1,27 +1,44 @@
 <br />
-<h1>Deployments <span style='float:right;'>{{#link-to 'rhci' class='btn btn-success'}}New Deployment{{/link-to}}</span>
+<h1>Deployments<span style='float:right;'>{{#link-to 'deployment-new.start' class='btn btn-success'}}New Deployment{{/link-to}}</span>
 </h1>
 
 <br />
-
+<form class='form'>
+<div class="clearfix">
+   <div class="form-group" style='margin-left: -18px;'>
+     <div class='col-md-5'>
+       {{input type='text' class='form-control'
+                           placeholder='Filter ...'
+                           value=searchDeploymentString }}
+     </div>
+     <button class='btn btn-default' style='margin-left:-20px'><i class="fa fa-search"></i> Search</button>
+   </div>
+</div>
+</form>
+<br />
 <table class="table table-bordered table-striped small">
   <thead>
     <tr>
       <th> Name </th>
       <th> Environment </th>
       <th> Organization </th>
+      <th> </th>
     </tr>
     </thead>
 
   <tbody>
-  {{#each controller.model itemController="deployment"}}
+  {{#each deployment in filteredDeployments itemController="deployment"}}
     <tr>
-      <td> {{name}} </td>
-      <td> {{environment}} </td>
-      <td> {{organization}} </td>
+      <td> {{#link-to 'deployment' deployment}} {{deployment.name}} {{/link-to}}</td>
+      <td> {{deployment.lifecycle_environment.name}} </td>
+      <td> {{deployment.organization.name}} </td>
+      <td> {{#link-to 'deployment' deployment class='btn btn-default'}} Edit {{/link-to}}</td>
     </tr>
   {{/each}}
   </tbody>
 </table>
 
+<br />
+Displaying <strong>{{filteredDeployments.length}} of {{model.length}}</strong> entries
 
+{{outlet}}
