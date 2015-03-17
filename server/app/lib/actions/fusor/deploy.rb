@@ -53,6 +53,8 @@ module Actions
 
               plan_configure_activation_key(deployment)
 
+              enable_smart_class_parameter_overrides(products_host_groups[index])
+
               plan_action(::Actions::Fusor::ConfigureHostGroups,
                           deployment.organization,
                           deployment.lifecycle_environment,
@@ -78,6 +80,30 @@ module Actions
         repos = []
         product_content.each { |details| repos << find_repository(organization, details) }
         repos
+      end
+
+      def enable_smart_class_parameter_overrides(product_host_groups)
+        if host_group_settings = product_host_groups[:host_groups]
+          host_group_settings.each do |host_group_setting|
+
+            if puppet_class_settings = host_group_setting[:puppet_classes]
+              puppet_class_settings.each do |puppet_class_setting|
+
+                parameter_settings = puppet_class_setting[:parameters]
+                unless parameter_settings.blank?
+
+                  if puppet_class = Puppetclass.where(:name => puppet_class_setting[:name]).first
+                    smart_class_parameters = puppet_class.smart_class_parameters.where(:key => parameter_settings)
+                    smart_class_parameters.each do |parameter|
+                      parameter.override = true
+                      parameter.save!
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
       end
 
       def find_repository(organization, repo_details)

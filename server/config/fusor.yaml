@@ -43,17 +43,25 @@
        - :name: "RHEV-Engine"
          :parent_name: "Fusor Base"
          :puppet_classes:
-           - "ovirt"
-           - "ovirt::repo"
-           - "ovirt::engine::config"
-           - "ovirt::engine::packages"
-           - "ovirt::engine::setup"
+           - :name: "ovirt"
+           - :name: "ovirt::repo"
+           - :name: "ovirt::engine::config"
+             :parameters:
+             - "cluster_name"
+             - "cpu_type"
+             - "host_name"
+             - "share_path"
+             - "storage_name"
+             - "storage_type"
+             - "storage_address"
+           - :name: "ovirt::engine::packages"
+           - :name: "ovirt::engine::setup"
 
        - :name: "RHEV-Hypervisor"
          :parent_name: "Fusor Base"
          :puppet_classes:
-           - "ovirt"
-           - "ovirt::hypervisor::packages"
+           - :name: "ovirt"
+           - :name: "ovirt::hypervisor::packages"
 
   :activation_key:
     :name: "Fusor_Key"

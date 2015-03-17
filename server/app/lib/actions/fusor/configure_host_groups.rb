@@ -54,7 +54,7 @@ module Actions
           content_view_puppet_environment = content_view.puppet_env(lifecycle_environment)
 
           if puppet_class_settings = hostgroup_settings[:puppet_classes]
-            puppet_classes = Puppetclass.where(:name => puppet_class_settings).
+            puppet_classes = Puppetclass.where(:name => puppet_class_settings.map{ |c| c[:name] }).
                 joins(:environment_classes).
                 where("environment_classes.environment_id in (?)",
                       content_view_puppet_environment.puppet_environment.id).uniq
