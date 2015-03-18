@@ -1,33 +1,42 @@
+{{!rhev_engine_host}}
+{{!rhev_engine_host.id}}
+{{!selectedRhevEngine}}
+{{!selectedRhevEngine.name}}
 <br />
-<h1>New {{nameRHCI}} Deployment: {{deploymentName}}</h1>
+{{!discovered_hosts.length}}
+{{!discovered_hosts}}
+{{#unless isHideWizard}}
+  <br />
+  <h1 class='deployment_name'>New {{nameRHCI}} Deployment: <strong>{{name}}</strong></h1>
+  {{#unless isNew}}
+    &nbsp;
+    {{#link-to 'deployment.start' this}}
+        <i class="fa fa-2x fa-pencil"></i>
+    {{/link-to}}
+  {{/unless}}
+  <br />
+  <br />
 
-<div class="wizard-block">
+  {{!partial 'debug-deployment'}}
 
-  <div class="white-wizard-line"></div>
-  <div class="wizard-line"></div>
-
-  <ul class="deployment-wizard">
-    {{wizard-item num=1 name=nameSatellite routeName='satellite' isDisabled=false}}
-
-    {{#if isRhev}}
-      {{wizard-item num=stepNumberRhev name=nameRhev routeName='rhev' isDisabled=isDisabledRhev}}
-    {{/if}}
-
-    {{#if isOpenStack}}
-      {{wizard-item num=stepNumberOpenstack name=nameOpenStack routeName='openstack' isDisabled=isDisabledOpenstack}}
-    {{/if}}
-
-    {{#if isCloudForms}}
-      {{wizard-item num=stepNumberCloudForms name=nameCloudForms routeName='cloudforms' isDisabled=isDisabledCloudForms}}
-    {{/if}}
-
-    {{#unless isUpstream}}
-      {{wizard-item num=stepNumberSubscriptions name='Subscriptions' routeName='subscriptions' isDisabled=isDisabledSubscriptions}}
-    {{/unless}}
-
-    {{wizard-item num=stepNumberReview name='Review' routeName='review' isDisabled=isDisabledReview}}
-    {{controllers.subscriptions/select-subscriptions.disableSubscriptionsNext}}
-  </ul>
-</div>
+  {{rhci-wizard nameSatellite=nameSatellite
+                nameRhev=nameRhev
+                nameOpenStack=nameOpenStack
+                nameCloudForms=nameCloudForms
+                stepNumberRhev=stepNumberRhev
+                stepNumberOpenstack=stepNumberOpenstack
+                stepNumberCloudForms=stepNumberCloudForms
+                stepNumberSubscriptions=stepNumberSubscriptions
+                stepNumberReview=stepNumberReview
+                isDisabledRhev=isDisabledRhev
+                isDisabledOpenstack=isDisabledOpenstack
+                isDisabledCloudForms=isDisabledCloudForms
+                isDisabledSubscriptions=isDisabledSubscriptions
+                isDisabledReview=isDisabledReview
+                isRhev=isRhev
+                isOpenStack=isOpenStack
+                isCloudForms=isCloudForms
+                }}
+{{/unless}}
 
 {{outlet}}

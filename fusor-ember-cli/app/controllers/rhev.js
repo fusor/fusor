@@ -9,11 +9,11 @@ export default Ember.Controller.extend({
     return (this.get('rhevSetup') === 'selfhost');
   }.property('rhevSetup'),
 
-  hypervisorTabName: function() {
+  engineTabName: function() {
     if (this.get('isSelfHost')) {
-      return 'Hypervisor / Engine';
+      return 'Engine / Hypervisor';
     } else {
-      return 'Hypervisor';
+      return 'Engine';
     }
   }.property('isSelfHost'),
 

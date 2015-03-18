@@ -2,13 +2,16 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
   model: function () {
-    return this.store.find('discovered-host');
+    return this.modelFor('deployment').get('discovered_host');
   },
-  activate: function() {
-    this.controllerFor('side-menu').set('etherpadName', '47'); //route-engine-discovered
+
+  setupController: function(controller, model) {
+    controller.set('model', model);
+    controller.set('allDiscoveredHosts', this.store.find('discovered-host'));
   },
 
   deactivate: function() {
-    this.controllerFor('side-menu').set('etherpadName', '');
-  }
+    return this.send('saveDeployment', null);
+  },
+
 });

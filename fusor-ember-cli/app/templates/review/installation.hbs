@@ -1,86 +1,68 @@
 <div class='row'>
   <div class='col-md-11 col-md-offset-1'>
 
-    {{#accordion-item name=nameSatellite isOpen=true}}
-      Name: {{#link-to 'satellite'}}{{nameDeployment}}{{/link-to}} <br />
+    {{#accordion-item name=controllers.deployment.nameSatellite isOpen=true}}
+      Name: {{#link-to 'satellite'}}{{controllers.deployment.name}}{{/link-to}} <br />
 
-      Organization: {{#link-to 'configure-organization'}}{{selectedOrganization}}{{/link-to}} <br />
+      Organization: {{#link-to 'configure-organization'}}{{controllers.deployment.organization.name}}{{/link-to}} <br />
 
-      Environment: {{#link-to 'configure-environment'}}{{selectedEnvironment}}{{/link-to}}  <br />
+      Environment: {{#link-to 'configure-environment'}}{{controllers.deployment.lifecycle_environment.name}}{{/link-to}}  <br />
 
     {{/accordion-item}}
 
   {{#if isRhev}}
-    {{#accordion-item name=nameRhev isOpen=isRhevOpen}}
-      <!-- Setup Type:  -->{{!#link-to 'rhev-setup'}} {{!oVirtHostedtype}} {{!/link-to}}
+    {{#accordion-item name=controllers.deployment.nameRhev isOpen=isRhevOpen}}
+      Setup Type: {{#link-to 'rhev-setup'}} {{controllers.rhev-setup.rhevSetupTitle}} {{/link-to}}
+      <br />
       {{#if isSelfHosted}}
-        Hypervisor/Engine: <br />
-        {{#each host in hypervisorSelectedHosts}}
-          {{#link-to 'hypervisor.discovered-host'}} {{host.name}} {{/link-to}}<br />
-        {{/each}}
+        Hypervisor/Engine:
+        {{#link-to 'engine.discovered-host'}} {{rhev_engine_host.name}} {{/link-to}}<br />
       {{else}}
+        Engine:
+        {{#link-to 'engine.discovered-host'}} {{rhev_engine_host.name}} {{/link-to}}<br />
         Hypervisor: <br />
         {{#each host in hypervisorSelectedHosts}}
-          {{#link-to 'hypervisor.discovered-host'}} {{host.name}} {{/link-to}}<br />
-        {{/each}}
-        <br />
-        Engine: <br />
-        {{#each host in engineSelectedHosts}}
-          {{#link-to 'engine.discovered-host'}} {{host.name}} {{/link-to}}<br />
+          {{#link-to 'hypervisor.discovered-host'}} {{host.name}}.rhci.redhat.com {{/link-to}}<br />
         {{/each}}
       {{/if}}
       {{!hypervisorSelectedId}}
       {{!engineSelectedId}}
 
       <br />
-      Hypervisor Host Address:
-        {{#link-to 'rhev-options'}}
-          {{controllers.rhev-options.hostAddress}}.rhci.redhat.com
-        {{/link-to}} <br />
-
-      Engine Host Address:
-        {{#link-to 'rhev-options'}}
-          {{controllers.rhev-options.engineHostName}}.rhci.redhat.com
-        {{/link-to}} <br />
-
       Engine admin password:
         {{#link-to 'rhev-options'}}
-          {{controllers.rhev-options.engineAdminPassword}}
+          *********
         {{/link-to}} <br />
       Datacenter Name:
         {{#link-to 'rhev-options'}}
-          {{controllers.rhev-options.datacenterName}}
+          {{controllers.deployment.rhev_database_name}}
         {{/link-to}} <br />
       Cluster Name:
         {{#link-to 'rhev-options'}}
-          {{controllers.rhev-options.clusterName}}
+          {{controllers.deployment.rhev_cluster_name}}
         {{/link-to}} <br />
       Storage Name:
         {{#link-to 'rhev-options'}}
-          {{controllers.rhev-options.hostName}}
-        {{/link-to}} <br />
-      Storage Name:
-        {{#link-to 'rhev-options'}}
-          {{controllers.rhev-options.storageName}}
+          {{controllers.deployment.rhev_storage_name}}
         {{/link-to}} <br />
       CPU Type:
         {{#link-to 'rhev-options'}}
-          {{controllers.rhev-options.cpuType}}
+          {{controllers.deployment.rhev_cpu_type}}
         {{/link-to}} <br />
 
 
       <br />
       Storage Type:
         {{#link-to 'storage'}}
-          {{controllers.storage.storageType}}
+          {{controllers.deployment.rhev_storage_type}}
         {{/link-to}} <br />
           Storage Address:
            {{#link-to 'storage'}}
-          {{controllers.storage.storageAddress}}
+          {{controllers.deployment.rhev_storage_address}}
           {{/link-to}} <br />
           Share Path:
            {{#link-to 'storage'}}
-          {{controllers.storage.sharePath}}
+          {{controllers.deployment.rhev_share_path}}
           {{/link-to}} <br />
 
       <br />
@@ -90,7 +72,7 @@
   {{/if}}
 
   {{#if isOpenStack}}
-    {{#accordion-item name=nameOpenStack isOpen=isOpenStackOpen}}
+    {{#accordion-item name=controllers.deployment.nameOpenStack isOpen=isOpenStackOpen}}
       High Availability:
         {{#link-to 'osp-settings'}}
           {{controllers.osp-settings.ha}}
@@ -137,10 +119,10 @@
   {{/if}}
 
   {{#if isCloudForms}}
-    {{#accordion-item name=nameCloudForms isOpen=isCloudFormsOpen}}
-      Installation Location
+    {{#accordion-item name=controllers.deployment.nameCloudForms isOpen=isCloudFormsOpen}}
+      Installation Location:
         {{#link-to 'where-install'}}
-          {{controllers.where-install.whereInstallCf}}
+          {{controllers.deployment.cfme_install_loc}}
         {{/link-to}} <br />
     {{/accordion-item}}
   {{/if}}

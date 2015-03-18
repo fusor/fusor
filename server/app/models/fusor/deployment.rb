@@ -19,8 +19,17 @@ module Fusor
     validates :organization_id, :presence => true
     validates :lifecycle_environment_id, :presence => true
 
+    belongs_to :rhev_engine_host, :class_name => "::Host::Base", :foreign_key => :rhev_engine_host_id
+    has_many :rhev_hypervisor_hosts, :class_name => "::Host::Base", :through => :deployment_hosts
     validates_with ::Katello::Validators::KatelloNameFormatValidator, :attributes => :name
 
+
+    belongs_to :discovered_host, :class_name => "::Host::Base", :foreign_key => :rhev_engine_host_id
+    has_many :deployment_hosts, :class_name => "Fusor::DeploymentHost", :foreign_key => :deployment_id
+    #has_many :rhev_hypervisor_hosts, :through => :deployment_hosts, :foreign_key => :host_id, :source => :host
+    has_many :discovered_hosts, :through => :deployment_hosts, :foreign_key => :host_id, :source => :host
+
+    alias_attribute :discovered_host_id, :rhev_engine_host_id
     # TODO: need to figure out the syntax for this
     # has_one :host, foreign_key => :rhev_hypervisor_host_id, dependent => :nullify
     # has_one :host, foreign_key => :rhev_engine_host_id, dependent => :nullify

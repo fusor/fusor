@@ -7,7 +7,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
   beforeModel: function(transition) {
     if (!(this.controllerFor('application').get('isLiveBackendMode'))) {
       this.get('session').set('isAuthenticated', true);
-      return this.transitionTo('rhci');
+      return this.transitionTo('deployment-new.start');
     } else if (this.controllerFor('application').get('deployAsPlugin')) {
       this.get('session').set('isAuthenticated', true);
       return this.transitionTo('login');

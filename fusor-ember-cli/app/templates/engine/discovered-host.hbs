@@ -1,11 +1,12 @@
-<strong>{{cntSelectedHosts}}</strong> of <strong>{{availableHosts.length}}</strong>
-available hosts selected {{!engineIdSelected}}
-<br />
+{{!controllers.deployment.rhev_engine_hostname}}
+{{!model}} {{!model.id}}
+{{!selectedRhevEngineHost}}
 <br />
 <table class="table table-bordered table-striped small">
-  <thead>
+<thead>
     <tr>
       <th> </th>
+      <th> Name </th>
       <th> MAC </th>
       <th> CPU's </th>
       <th> Memory </th>
@@ -13,16 +14,27 @@ available hosts selected {{!engineIdSelected}}
   </thead>
 
   <tbody>
-  {{#each host in availableHosts itemController="host"}}
+  {{#each host in allDiscoveredHosts itemController='discovered-host'}}
     <tr>
       <td>
-        {{radio-button name='engineIdSelected' checked=engineIdSelected value=host.id}}
+        {{radio-button value=host.model groupValue=selectedRhevEngineHost changed="engineHostChanged"}} {{!host.model}} {{!selectedRhevEngineHost}}
+      </td>
+      <td>
+           {{#if host.isSelectedAsEngine}}
+              {{input type="text" value=host.name class='font-control'}}
+           {{/if}}
       </td>
       <td> {{host.mac}} </td>
       <td> {{host.cpus}} </td>
-      <td> {{host.memory}} </td>
+      <td> {{host.memory}}</td>
     </tr>
   {{/each}}
   </tbody>
 </table>
 
+
+    <div class='pull-right'>
+      <br />
+      {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
+      {{#link-to 'hypervisor.discovered-host' class='btn btn-primary'}}Next{{/link-to}}
+    </div>

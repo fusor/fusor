@@ -2,32 +2,27 @@
 
   <ul class="nav nav-pills nav-stacked col-md-3">
 
-      {{!#link-to 'rhev-setup' tagName='li'}}
-<!--         <a>Setup Architecture</a> -->
-      {{!/link-to}}
+      {{#link-to 'rhev-setup' tagName='li'}}
+        <a>2A. Setup Architecture</a>
+      {{/link-to}}
 
-      {{#link-to 'hypervisor' tagName='li'}}
-        <a>2A. {{hypervisorTabName}}</a>
+      {{#link-to 'engine' tagName='li'}}
+        <a>2B. {{engineTabName}}</a>
       {{/link-to}}
 
       {{#unless isSelfHost}}
-      {{#link-to 'engine' tagName='li'}}
-        <a>2B. Engine</a>
+      {{#link-to 'hypervisor' tagName='li'}}
+        <a>2C. Hypervisors</a>
       {{/link-to}}
       {{/unless}}
 
       {{#link-to 'rhev-options' tagName='li'}}
-        <a>2C. Configuration</a>
+        <a>2D. Configuration</a>
       {{/link-to}}
 
       {{#link-to 'storage' tagName='li'}}
-        <a>2D. Storage</a>
+        <a>2E. Storage</a>
       {{/link-to}}
-
-      {{!#link-to 'networking' tagName='li'}}
-<!--         <a>Networking</a> -->
-      {{!/link-to}}
-
   </ul>
 
   <div class="tab-content col-md-9">

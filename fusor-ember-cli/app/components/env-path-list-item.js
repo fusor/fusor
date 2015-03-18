@@ -5,9 +5,7 @@ export default Ember.Component.extend({
   classNames: ['path-list-item', 'list_item_active'],
 
   isChecked: function () {
-    var env = this.get('env');
-    var env_name = env.get('name');
-    return (this.get('selectedEnvironment') === env_name);
+    return (this.get('selectedEnvironment') === this.get('env'));
   }.property('selectedEnvironment', 'env'),
 
   bgColor: function () {
@@ -19,11 +17,7 @@ export default Ember.Component.extend({
   }.property('isChecked'),
 
   click: function(event) {
-    //this.set('color', 'blue');
-    var env = this.get('env');
-    var env_name = env.get('name');
-    this.set('selectedEnvironment', env_name);
-  },
-
+    this.sendAction('action', this.get('env'));
+  }
 
 });

@@ -76,7 +76,7 @@ module.exports = function(app) {
 
   lifecycleEnvironmentsRouter.get('/', function(req, res) {
     res.send({
-      'results': lifecycleEnvironments
+      'lifecycle_environments': lifecycleEnvironments
     });
   });
 
@@ -102,5 +102,5 @@ module.exports = function(app) {
     res.status(204).end();
   });
 
-  app.use('/katello/api/v2/environments', lifecycleEnvironmentsRouter);
+  app.use('/katello/api/v2aaa/environments', lifecycleEnvironmentsRouter);
 };

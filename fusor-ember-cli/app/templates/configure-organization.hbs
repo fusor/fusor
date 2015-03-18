@@ -1,12 +1,22 @@
+{{!model}}
+<br />
+{{!selectedOrganization}}
 <div class="row">
-  <div class='col-md-6'>
-
+  <div class='col-md-9'>
+    {{#if showAlertMessage}}
+      <div class='alert alert-success'>
+          <i class="fa fa-2x fa-check-circle-o green-circle"></i>
+          &nbsp;
+          {{selectedOrganization.name}} added successfully.
+      </div>
+    {{/if}}
     <p>
-      Choose an organization for this deployment. Organizations divide hosts into logical groups based on ownership, purpose, content, security level, or other divisions.
+      Select an organization for this RHCI deployment. Organizations divide hosts into logical groups based on ownership, purpose, content, security level, or other divisions.
     </p>
-
-    {{#each org in model itemController="organization"}}
-      {{tr-organization org=org selectedOrganzation=selectedOrganzation selectedOrgId=selectedOrgId}}
+    {{#each org in organizations}}
+      {{tr-organization org=org
+                        selectedOrganization=selectedOrganization
+                        action="selectOrganization"}}
     {{/each}}
     <div style='margin-top:15px;margin-bottom:15px;'>
      <button class='btn btn-default' {{action 'showModal' 'newOrganizationModal'}}>New Organization</button>
@@ -15,12 +25,19 @@
     <br />
     <br />
     <div style='float:right'>
-        {{#link-to 'satellite' class='btn btn-default'}}Back{{/link-to}}
-        {{#link-to 'configure-environment' (query-params organization_id=organizationId) class='btn btn-primary' disabled=disable1BNext}}Next{{/link-to}}
+        {{!satelliteTabRouteName}}
+        {{#link-to satelliteTabRouteName class='btn btn-default'}}
+          Back
+        {{/link-to}}
+        {{#link-to lifecycleEnvironmentTabRouteName
+                   disabled=disableNextOnConfigureOrganization
+                   class='btn btn-primary'}}
+            Next
+        {{/link-to}}
+        {{!lifecycleEnvironmentTabRouteName}}
     </div>
   </div>
 </div>
-
 
 {{#bs-modal name="newOrganizationModal" fade=true footerButtonsBinding="rhciModalButtons" title="Create New Organization"}}
   {{partial 'new-organization'}}

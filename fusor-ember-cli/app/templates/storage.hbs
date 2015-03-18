@@ -1,21 +1,29 @@
+{{!rhev_storage_type}}
 <div class='row'>
   <div class='col-md-12'>
     <br />
     <form class="form form-horizontal">
 
       {{#base-f label="Storage Type"}}
-        {{radio-button label="NFS" checked=storageType value="NFS"}}NFS
+
+        {{#radio-button value="NFS" groupValue=rhev_storage_type }}
+          NFS
+        {{/radio-button}}
         &nbsp;&nbsp;&nbsp;&nbsp;
-        {{radio-button label="Gluster" checked=storageType value="Gluster"}}Gluster
+        {{#radio-button value="Gluster" groupValue=rhev_storage_type }}
+          Gluster
+        {{/radio-button}}
       {{/base-f}}
 
-      {{text-f label="Storage Address" value=storageAddress placeholder='Leave blank for default'}}
-      {{text-f label="Share Path" value=sharePath placeholder='Leave blank for default'}}
+      {{text-f label="Storage Address" value=rhev_storage_address placeholder='Leave blank for default'}}
+      {{text-f label="Share Path" value=rhev_share_path placeholder='Leave blank for default'}}
 
-
-      {{#if isNFS}}
-
-      {{/if}}
     </form>
   </div>
 </div>
+
+    <div class='pull-right'>
+      <br />
+      {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
+      {{#link-to 'cloudforms' class='btn btn-primary'}}Next{{/link-to}}
+    </div>

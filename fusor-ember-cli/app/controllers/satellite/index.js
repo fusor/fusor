@@ -1,23 +1,22 @@
 import Ember from 'ember';
+import SatelliteControllerMixin from "../../mixins/satellite-controller-mixin";
+import EmberValidations from 'ember-validations';
 
-export default Ember.ObjectController.extend({
+export default Ember.Controller.extend(SatelliteControllerMixin, EmberValidations.Mixin, {
 
-  name: '',  //MAKE '' WHEN PACKAGING
-  description: '',
+  needs: ['satellite', 'deployment'],
 
-  disable1B: function() {
-    return (this.get('name.length') === 0);
-  }.property('name'),
+  validations: {
+    name: {
+      presence: true,
+    },
+  },
 
-  disable1ANext: Ember.computed.alias("disable1B"),
+  name: Ember.computed.alias("controllers.deployment.name"),
+  description: Ember.computed.alias("controllers.deployment.description"),
 
-  rhciModalButtons: [
-      Ember.Object.create({title: 'No', clicked:"cancel", dismiss: 'modal'}),
-      Ember.Object.create({title: 'Yes', clicked:"redirectToDeployments", type: 'primary'})
-  ],
-  actions: {
-    redirectToDeployments: function () {
-      this.transitionTo('deployments');
-    }
-  }
+  organizationTabRouteName: Ember.computed.alias("controllers.deployment.organizationTabRouteName"),
+
+  disableNextOnDeploymentName: Ember.computed.alias("controllers.deployment.disableNextOnDeploymentName"),
+
 });

@@ -1,60 +1,23 @@
 import Ember from 'ember';
+import ConfigureOrganizationMixin from "../mixins/configure-organization-mixin";
 
-export default Ember.ArrayController.extend({
-  needs: ['organization', 'organizations', 'satellite/index', 'application'],
+export default Ember.Controller.extend(ConfigureOrganizationMixin, {
 
-  fields_org: {},
+  needs: ['deployment'],
 
-  selectedOrganzation: '',  //MAKE '' WHEN PACKAGING
-  disable1BNext: function() {
-    return (this.get('selectedOrganzation.length') === 0);
-  }.property('selectedOrganzation'),
+  organization: Ember.computed.alias("controllers.deployment.organization"),
 
-  deploymentName: Ember.computed.alias("controllers.satellite/index.name"),
-  defaultOrgName: function () {
-    return this.getWithDefault('defaultOrg', this.get('deploymentName'));
-  }.property(),
-
-  orgLabelName: function() {
-    if(this.get('fields_org.name')) {
-      return this.get('defaultOrgName').underscore();
-    }
-  }.property('defaultOrgName'),
-
-  selectedOrg: "Default_Organization",
-  organizationId: function() {
-    return this.get('selectedOrg').id;
-  }.property('selectedOrg'),
-
-  rhciModalButtons: [
-      Ember.Object.create({title: 'Cancel', clicked:"cancel", dismiss: 'modal'}),
-      Ember.Object.create({title: 'Create', clicked:"createOrganization", type: 'primary'})
-  ],
+  disableNextOnConfigureOrganization: Ember.computed.alias("controllers.deployment.disableNextOnConfigureOrganization"),
+  satelliteTabRouteName: Ember.computed.alias("controllers.deployment.satelliteTabRouteName"),
+  lifecycleEnvironmentTabRouteName: Ember.computed.alias("controllers.deployment.lifecycleEnvironmentTabRouteName"),
+  deploymentName: Ember.computed.alias("controllers.deployment.name"),
 
   actions: {
-    createOrganization: function() {
-      //if (this.get('fields_org.isDirty')) {
-        var self = this;
-        this.set('fields_org.name', this.get('defaultOrgName'));
-        var organization = this.store.createRecord('organization', this.get('fields_org'));
-        self.set('fields_org',{});
-        self.set('selectedOrganzation', organization.get('name'));
-        self.set('selectedOrg', organization);
-        if (this.get('controllers.application.isLiveBackendMode')) {
-          organization.save().then(function() {
-            //success
-          }, function(response) {
-            alert('error saving organization');
-          //organization.destroyRecord();
-          //organization.rollback()
-          //organization.reload();
-          //organization.unloadRecord();
-          });
-        }
-      //}
-
-      return Bootstrap.ModalManager.hide('newOrganizationModal');
-    },
-  }
+    selectOrganization: function(organization) {
+      this.set('showAlertMessage', false);
+      this.set('selectedOrganization', organization);
+      return this.get('controllers.deployment').set('organization', organization);
+    }
+  },
 
 });

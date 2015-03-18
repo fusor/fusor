@@ -6,9 +6,6 @@ export default Ember.Component.extend({
 
   click: function() {
     this.set('isChecked', this.toggleProperty('isChecked'));
-    // if (this.get('isChecked')) {
-    //   this.set('isHover', false);
-    // }
   },
 
   isHover: false,
@@ -28,15 +25,5 @@ export default Ember.Component.extend({
   mouseLeave: function(){
     this.set('isHover', false);
   },
-
-  // didInsertElement: function(){
-  //     this.$().hide().show('fast');
-  // }
-
-  // actions: {
-  //   toggleHover: function() {
-  //     this.set('isHover', this.toggleProperty('isHover'));
-  //   }
-  // }
 
 });

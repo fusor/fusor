@@ -25,7 +25,7 @@ module Fusor
     end
 
     def create
-      @deployment = Deployment.new(params[:hostgroup])
+      @deployment = Deployment.new(params[:deployment])
       @deployment.save
       if @deployment.save
         render :json => @deployment, :serializer => Fusor::DeploymentSerializer

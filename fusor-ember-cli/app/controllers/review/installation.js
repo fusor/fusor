@@ -1,15 +1,11 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
-  needs: ['application','rhci', 'deployment', 'satellite', "satellite/index", 'configure-organization',
+  needs: ['application','rhci', 'deployment', 'satellite', 'configure-organization',
           'configure-environment', 'rhev-setup', 'hypervisor', 'hypervisor/discovered-host',
           'engine/discovered-host', 'storage',
           'networking', 'rhev-options', 'osp-settings', 'osp-configuration', 'where-install',
           'cloudforms-storage-domain', 'cloudforms-vm', 'review'],
-
-  isRhevOpen: false,
-  isOpenStackOpen: false,
-  isCloudFormsOpen: false,
 
   hypervisorHostgroupId: 9,
   engineHostgroupId: 7,
@@ -20,32 +16,26 @@ export default Ember.Controller.extend({
   hostAddress: Ember.computed.alias("controllers.rhev-options.hostAddress"),
   engineHostName: Ember.computed.alias("controllers.rhev-options.engineHostName"),
 
-  nameDeployment: Ember.computed.alias("controllers.satellite/index.name"),
-  selectedOrganization: Ember.computed.alias("controllers.configure-organization.selectedOrganzation"),
-  selectedEnvironment: Ember.computed.alias("controllers.configure-environment.selectedEnvironment"),
-  rhevSetup: Ember.computed.alias("controllers.rhev-setup.rhevSetup"),
+  //selectedRhevEngine: Ember.computed.alias("controllers.deployment.selectedRhevEngine"),
 
-  isRhev: Ember.computed.alias("controllers.rhci.isRhev"),
-  isOpenStack: Ember.computed.alias("controllers.rhci.isOpenStack"),
-  isCloudForms: Ember.computed.alias("controllers.rhci.isCloudForms"),
+  nameDeployment: Ember.computed.alias("controllers.deployment.name"),
+  selectedOrganization: Ember.computed.alias("controllers.deployment.selectedOrganzation"),
+  selectedEnvironment: Ember.computed.alias("controllers.deployment.selectedEnvironment"),
+  rhevSetup: Ember.computed.alias("controllers.deployment.rhevSetup"),
+
+  isRhev: Ember.computed.alias("controllers.deployment.isRhev"),
+  isOpenStack: Ember.computed.alias("controllers.deployment.isOpenStack"),
+  isCloudForms: Ember.computed.alias("controllers.deployment.isCloudForms"),
 
   hypervisorSelectedHosts: Ember.computed.alias("controllers.hypervisor/discovered-host.selectedHosts"),
   engineSelectedHosts: Ember.computed.alias("controllers.engine/discovered-host.selectedHosts"),
 
-  hypervisorSelectedId: Ember.computed.alias("controllers.hypervisor/discovered-host.idChecked"),
-  engineSelectedId: Ember.computed.alias("controllers.engine/discovered-host.idChecked"),
+  hypervisorSelectedId: Ember.computed.alias("controllers.hypervisor/discovered-host.idsChecked"),
+  engineSelectedId: Ember.computed.alias("controllers.engine/discovered-host.idsChecked"),
+  isSelfHosted: Ember.computed.alias("controllers.deployment.rhev_is_self_hosted"),
+  rhev_engine_host: Ember.computed.alias("controllers.deployment.rhev_engine_host"),
+  selectedRhevEngine: Ember.computed.alias("controllers.engine/discovered-host.selectedRhevEngine"),
 
-  oVirtHostedtype: function() {
-    if (this.get('rhevSetup') === 'selfhost') {
-      return "Self Hosted";
-    } else {
-      return "Host + Engine";
-    }
-  }.property('rhevSetup'),
-
-  isSelfHosted: function () {
-    return (this.get('rhevSetup') === 'selfhost');
-  }.property('rhevSetup'),
 
   nameRHCI: Ember.computed.alias("controllers.rhci.nameRHCI"),
   nameRhev: Ember.computed.alias("controllers.rhci.nameRhev"),
@@ -55,118 +45,10 @@ export default Ember.Controller.extend({
 
   actions: {
     installDeployment: function(options) {
-    console.log('OPTIONS');
-    console.log(options);
-
-    //TODO - inherit root_pass for hostgroup
-    var self = this;
-    return new Ember.RSVP.Promise(function (resolve, reject) {
-      //engine
-      Ember.$.ajax({
-          url: '/api/v2/discovered_hosts/' + self.get('engineSelectedId'),
-          type: "PUT",
-          data: JSON.stringify({'discovered_host': { 'name': self.get('engineHostName'), 'hostgroup_id': self.get('engineHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
-          headers: {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-              "Authorization": "Basic " + self.get('session.basicAuthToken')
-          },
-          success: function(response) {
-            console.log('YEA!!! installing ENGINE');
-            console.log(response);
-            resolve({currentUser: response,
-                     loginUsername: response.login,
-                     basicAuthToken: options.basicAuthToken,
-                     authType: 'Basic'});
-          },
-
-          error: function(response){
-            reject(response);
-          }
-      });
-
-      //hypervisor
-      Ember.$.ajax({
-          url: '/api/v2/discovered_hosts/' + self.get('hypervisorSelectedId'),
-          type: "PUT",
-          data: JSON.stringify({'discovered_host': { 'name': self.get('hostAddress'), 'hostgroup_id': self.get('hypervisorHostgroupId'), 'root_pass': 'redhat!!', 'overwrite': true} }),
-          headers: {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-              "Authorization": "Basic " + self.get('session.basicAuthToken')
-          },
-          success: function(response) {
-            console.log('YEA!!! installing hypervisor');
-            console.log(response);
-            resolve({currentUser: response,
-                     loginUsername: response.login,
-                     basicAuthToken: options.basicAuthToken,
-                     authType: 'Basic'});
-          },
-
-          error: function(response){
-            reject(response);
-          }
-      });
-
-      setTimeout(function() {
-
-                    //engine's hypervisor hostAddress
-                   if (self.get('hostAddress')) {
-                    Ember.$.ajax({
-                        url: '/api/v2/smart_class_parameters/' + self.get('engineHostAddressLookupKeyId') + '/override_values',
-                        type: "POST",
-                        data: JSON.stringify({'override_value': { 'value': (self.get('hostAddress')+'.rhci.redhat.com'), 'match': ('fqdn='+self.get('engineHostName')+'.rhci.redhat.com') } }),
-                        headers: {
-                            "Accept": "application/json",
-                            "Content-Type": "application/json",
-                            "Authorization": "Basic " + self.get('session.basicAuthToken')
-                        },
-                        success: function(response) {
-                          console.log('updating host address');
-                          console.log(response);
-                          resolve({currentUser: response,
-                                   loginUsername: response.login,
-                                   basicAuthToken: options.basicAuthToken,
-                                   authType: 'Basic'});
-                        },
-
-                        error: function(response){
-                          reject(response);
-                        }
-                    });
-
-                   }
-                    //engine admin password
-                   if (self.get('controllers.rhev-options.engineAdminPassword')) {
-                    Ember.$.ajax({
-                        url: '/api/v2/smart_class_parameters/' + self.get('engineAdminPasswordLookupKeyId') + '/override_values',
-                        type: "POST",
-                        data: JSON.stringify({'override_value': { 'value': self.get('controllers.rhev-options.engineAdminPassword'), 'match': ('fqdn='+self.get('engineHostName')+'.rhci.redhat.com') } }),
-                        headers: {
-                            "Accept": "application/json",
-                            "Content-Type": "application/json",
-                            "Authorization": "Basic " + self.get('session.basicAuthToken')
-                        },
-                        success: function(response) {
-                          console.log('updating admin password');
-                          console.log(response);
-                          resolve({currentUser: response,
-                                   loginUsername: response.login,
-                                   basicAuthToken: options.basicAuthToken,
-                                   authType: 'Basic'});
-                        },
-
-                        error: function(response){
-                          reject(response);
-                        }
-                    });
-                  }
-    }, 7000);  //end setTimeout
-
-    self.set('controllers.review.disableTabProgress', false);
-    return self.transitionTo('review.progress');
-    });
+      console.log('OPTIONS');
+      console.log(options);
+      this.get('controllers.review').set('disableTabProgress', false);
+      return this.transitionTo('review.progress');
     }
   }
 

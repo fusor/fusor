@@ -1,65 +1,69 @@
 import Ember from 'ember';
+import ConfigureEnvironmentMixin from "../mixins/configure-environment-mixin";
 
-export default Ember.ArrayController.extend({
-  needs: ['satellite', 'application'],
-  queryParams: ['organization_id'],
+export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
 
-  organization_id: null,
+  needs: ['deployment'],
 
-  filteredEnvironments: function() {
-    var organization_id = this.get('organization_id');
-    var environments = this.get('model');
+  disableNextOnLifecycleEnvironment: Ember.computed.alias("controllers.deployment.disableNextOnLifecycleEnvironment"),
 
-    if (organization_id) {
-      return environments.filterBy('organization_id', organization_id);
-    } else {
-      return environments;
-    }
-  }.property('organization_id', 'model'),
+  organizationTabRouteName: Ember.computed.alias("controllers.deployment.organizationTabRouteName"),
 
-  disable1CNext: function() {
-    return (this.get('selectedEnvironment.length') === 0);
-  }.property('selectedEnvironment'),
+  selectedOrganization: Ember.computed.alias("controllers.deployment.organization"),
 
-  disableAll: Ember.computed.alias("controllers.satellite.disableAll"),
-
-  nameRHCI: Ember.computed.alias("controllers.rhci.nameRHCI"),
-
-  fields_env: {},
-
-  selectedEnvironment: '',   //MAKE '' WHEN PACKAGING
-
-  rhciNewEnvButtons: [
-      Ember.Object.create({title: 'Cancel', clicked:"cancel", dismiss: 'modal'}),
-      Ember.Object.create({title: 'Create', clicked:"createEnvironment", type: 'primary'})
-  ],
-
-  envLabelName: function() {
-    if(this.get('fields_env.name')) {
-      return this.get('fields_env.name').underscore();
-    }
-  }.property('fields_env.name'),
-
-  // hasEnvironments: function() {
-  //   return (this.get('length') > 0);
-  // }.property('model.@each.[]'),
+  step2RouteName: Ember.computed.alias("controllers.deployment.step2RouteName"),
 
   actions: {
+    selectEnvironment: function(environment) {
+      this.set('showAlertMessage', false);
+      this.set('selectedEnvironment', environment);
+      return this.get('controllers.deployment').set('lifecycle_environment', environment);
+    },
+
     createEnvironment: function() {
       var self = this;
-      var environment = this.store.createRecord('lifecycle-environment', this.get('fields_env'));
-      this.set('selectedEnvironment', environment.get('name'));
-      this.set('fields_env',{});
-      if (this.get('controllers.application.isLiveBackendMode')) {
-        environment.save().then(function() {
+      var selectedOrganization = this.get('selectedOrganization')
+      this.set('fields_env.name', this.get('name'));
+      this.set('fields_env.label', this.get('label'));
+      this.set('fields_env.description', this.get('description'));
+      this.set('fields_env.organization', selectedOrganization);
+
+      // TODO - refactor DRY
+      if (this.get('hasLibrary')) {
+        var library = this.get('libraryEnvForOrg');
+        // assign library to prior db attribute
+        this.set('fields_env.prior', library.get('id'));
+        var environment = this.store.createRecord('lifecycle-environment', this.get('fields_env'));
+        environment.save().then(function(result) {
           //success
+          self.get('nonLibraryEnvironments').pushObject(result);
+          self.set('selectedEnvironment', environment);
+          self.get('controllers.deployment').set('lifecycle_environment', environment);
+          return self.set('showAlertMessage', true);
         }, function(response) {
           alert('error saving environment');
         });
-      }
-      return Bootstrap.ModalManager.hide('newEnvironmentModal');
-    }
 
+      } else {
+        // create library
+        var library = this.store.createRecord('lifecycle-environment', {name: 'Library', label: 'Library', library: true, organization: selectedOrganization});
+        // save library first and then save environment
+        library.save().then(function(response) {
+          self.set('fields_env.prior', response.get('id'));
+          var environment = this.store.createRecord('lifecycle-environment', this.get('fields_env'));
+          environment.save().then(function(result) {
+            //success
+            self.get('nonLibraryEnvironments').pushObject(result);
+            self.set('selectedEnvironment', environment);
+            return self.set('showAlertMessage', true);
+          }, function(response) {
+            alert('error saving environment');
+          });
+        });
+      }
+
+      return Bootstrap.ModalManager.hide('newEnvironmentModal');
+    },
   }
 
 });

@@ -13,10 +13,26 @@ Router.map(function() {
   this.route('login');
   this.route('loggedin');
 
-  this.route('rhci', { path: '/deployments/new' });
-  this.route('deployments');
+  this.resource('rhci', { path: '/old-deployments/new-old' }, function() {
+    this.route('satellite', function() {
+      this.route('configure-organization');
+      this.route('configure-environment');
+    });
+  });
 
-  this.resource('deployment', function() {
+  this.resource('deployments');
+
+  this.resource("deployment-new", { path: '/deployments/new' }, function() {
+    this.route("start");
+    this.route('satellite', function() {
+      this.route('configure-environment');
+      this.route("configure-organization");
+    });
+  });
+
+  this.resource('deployment', { path: '/deployments/:deployment_id' }, function() {
+
+    this.route("start");
 
     this.resource('satellite', function() {
       this.resource('configure-organization');

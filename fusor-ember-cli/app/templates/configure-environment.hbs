@@ -1,9 +1,23 @@
+{{!hasLibrary}}
+{{!libraryEnvForOrg}}
+{{!selectedOrganization}}
+{{!model}}
+<br />
+{{!selectedEnvironment}}
 <div class="row">
   <div class='col-md-9'>
+    {{#if showAlertMessage}}
+      <div class='alert alert-success'>
+          <i class="fa fa-2x fa-check-circle-o green-circle"></i>
+          &nbsp;
+          {{selectedEnvironment.name}} added successfully.
+      </div>
+    {{/if}}
+    <p>
+    Select a lifecycle environment for this RHCI deployment. The application lifecycle is divided into lifecycle environments, which mimic each stage of the lifecycle. These lifecycle environments are linked in an environment path. You can promote content along the environment path to the next stage when required. For example, if development completes on a particular version of an application, you can promote this version to the testing environment and start development on the next version.
+    </p>
 
-
-
-    {{#each env in model itemController="lifecycle-environment"}}
+    {{#each env in nonLibraryEnvironments}}
     <div class="path-selector">
       <ul class="path-list">
         <li class="path-list-item">
@@ -11,7 +25,9 @@
             Library
           </label>
         </li>
-        {{env-path-list-item env=env selectedEnvironment=selectedEnvironment}}
+        {{env-path-list-item env=env
+                             selectedEnvironment=selectedEnvironment
+                             action="selectEnvironment"}}
         <li class="path-list-item">
           <label class="path-list-item-label" style='color:gray;'>
             &nbsp;
@@ -19,6 +35,10 @@
         </li>
       </ul>
     </div>
+    {{else}}
+      <div class='alert alert-info'>
+        No lifecycle environments are in organization <strong>{{selectedOrganization.name}}</strong>
+      </div>
     {{/each}}
 
     <div style='margin-top:15px;'>
@@ -30,8 +50,12 @@
     <br />
     <br />
     <div style='float:right'>
-      {{#link-to 'configure-organization' class='btn btn-default'}}Back{{/link-to}}
-      {{#link-to 'rhev' class='btn btn-primary' disabled=disableAll}}Next{{/link-to}}
+      {{#link-to organizationTabRouteName class='btn btn-default'}}Back{{/link-to}}
+      <button {{action 'saveDeployment' step2RouteName}}
+              {{bind-attr disabled=disableNextOnLifecycleEnvironment}}
+              class='btn btn-primary'>
+          Next
+      </button> {{!step2RouteName}}
     </div>
 
   </div>

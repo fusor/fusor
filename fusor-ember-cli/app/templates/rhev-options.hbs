@@ -1,31 +1,22 @@
-<h4> Hypervisor Configuration </h4>
-
-<div class='row'>
-  <div class='col-md-12'>
-    <br />
-    <form class="form form-horizontal">
-      {{text-f label="Hypervisor Host Name" value=hostAddress}}
-    </form>
-  </div>
-</div>
-
-<br />
-
 <h4> Engine Configuration </h4>
 
 <div class='row'>
   <div class='col-md-12'>
     <br />
     <form class="form form-horizontal">
-      {{text-f label="Engine Host Name" value=engineHostName}}
-      {{text-f label="Engine admin password" value=engineAdminPassword}}
+      {{text-f label="Engine admin password" type='password' value=rhev_engine_admin_password}}
 
-      {{text-f label="Datacenter Name" value=datacenterName placeholder='Leave blank for default'}}
-      {{text-f label="Cluster Name" value=clusterName placeholder='Leave blank for default'}}
-      {{text-f label="Storage name" value=storageName placeholder='Leave blank for default'}}
+      {{text-f label="Datacenter Name" value=rhev_database_name placeholder='Leave blank for default'}}
+      {{text-f label="Cluster Name" value=rhev_cluster_name placeholder='Leave blank for default'}}
+      {{text-f label="Storage name" value=rhev_storage_name placeholder='Leave blank for default'}}
 
-      {{text-f label="CPU Type" value=cpuType placeholder='Leave blank for default' help-inline=''}}
+      {{text-f label="CPU Type" value=rhev_cpu_type placeholder='Leave blank for default' help-inline=''}}
     </form>
   </div>
 </div>
 
+    <div class='pull-right'>
+      <br />
+      {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
+      {{#link-to 'storage' class='btn btn-primary'}}Next{{/link-to}}
+    </div>

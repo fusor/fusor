@@ -1,14 +1,12 @@
 <div class="row tabbed_side_nav_form">
-
   <ul class="nav nav-pills nav-stacked col-md-3">
-      {{#link-to 'satellite.index' tagName='li'}}
+     {{#link-to satelliteTabRouteName tagName='li' disabled=disableTabDeploymentName}}
         <a>1A. Deployment Name</a>
       {{/link-to}}
-      {{#link-to 'configure-organization' tagName='li' disabled=disable1B}}
+      {{#link-to organizationTabRouteName tagName='li' disabled=disableTabConfigureOrganization}}
         <a>1B. Configure Organization</a>
       {{/link-to}}
-      {{#link-to 'configure-environment' (query-params organization_id="1")
-                 tagName='li' disabled=disable1C}}
+      {{#link-to lifecycleEnvironmentTabRouteName tagName='li' disabled=disableTabLifecycleEnvironment}}
         <a>1C. Configure Lifecycle Environment</a>
       {{/link-to}}
   </ul>

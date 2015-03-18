@@ -5,27 +5,21 @@ module.exports = function(app) {
   var deployments = [
         {
           id: 1,
-          name: 'My first RHEV',
-          organization: 'default_organization',
-          environment: 'development',
+          name: 'My first RHEV'
        },
        {
           id: 2,
-          name: 'My second RHEV and CloudForms',
-          organization: 'default_organization',
-          environment: 'staging',
+          name: 'My second RHEV and CloudForms'
        },
        {
           id: 3,
-          name: 'Going Live RHEV and CloudForms',
-          organization: 'default_organization',
-          environment: 'production',
+          name: 'Going Live RHEV and CloudForms'
        }
   ];
 
   deploymentsRouter.get('/', function(req, res) {
     res.send({
-      'results': deployments
+      'deployments': deployments
     });
   });
 
@@ -51,5 +45,5 @@ module.exports = function(app) {
     res.status(204).end();
   });
 
-  app.use('/api/v2/deployments', deploymentsRouter);
+  app.use('/fusor/api/v21aaaa/deployments', deploymentsRouter);
 };

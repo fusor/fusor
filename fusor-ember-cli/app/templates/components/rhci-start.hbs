@@ -1,0 +1,44 @@
+<div class='row'>
+  <div class='col-md-12'>
+    <h2>New Deployment: Select Cloud Infrastructure Products</h2>
+
+    Choose the products to deploy. This wizard guides you through creating a new {{nameRedHat}} Cloud Infrastructure deployment.
+    <br />
+    <br />
+  </div>
+</div>
+
+<div class='row' style='height:370px;'>
+
+  <div class='col-md-4'>
+    {{rchi-item srcImage=imgRhev isChecked=isRhev name=nameRhev}}
+  </div>
+
+  <div class='col-md-4'>
+    {{rchi-item srcImage=imgOpenStack isChecked=isOpenStack name=nameOpenStack}}
+  </div>
+
+  <div class='col-md-4'>
+    {{rchi-item srcImage=imgCloudForms isChecked=isCloudForms name=nameCloudForms}}
+  </div>
+
+</div>
+
+
+{{#unless isUpstream}}
+<p class='subscriptions_needed'>
+<i class="fa fa-info-circle"></i>
+<strong>Subscriptions needed to complete this deployment.</strong> Check your account in <a>Portal</a> to verify you have subscriptions available to cover the selected products.
+</p>
+{{/unless}}
+
+<br />
+<div class='row'>
+  <div class='col-md-12'>
+    <div style='float:right;'>
+      {{#link-to 'deployments' class="btn btn-default"}}Cancel{{/link-to}}
+      {{#link-to satelliteTabRouteName class="btn btn-primary" disabled=disableNextOnStart}}Next{{/link-to}}
+      {{!satelliteTabRouteName}}
+    </div>
+  </div>
+</div>
