@@ -18,46 +18,46 @@ module Actions
           _("Configure Activation Key")
         end
 
-        def plan(organization, lifecycle_environment)
-          unless activation_key_name
+        def plan(deployment)
+          unless activation_key_name(deployment)
             fail _("Unable to locate activation key settings in config/settings.plugins.d/fusor.yaml")
           end
 
-          unless content_view_name
+          unless content_view_name(deployment)
             fail _("Unable to locate content settings in config/settings.plugins.d/fusor.yaml")
           end
 
-          unless content_view = find_content_view(organization)
-            fail _("Unable to locate content view '%s'.") % content_view_name
+          unless content_view = find_content_view(deployment)
+            fail _("Unable to locate content view '%s'.") % content_view_name(deployment)
           end
 
           sequence do
-            find_or_ensure_key(organization, lifecycle_environment, content_view)
+            find_or_ensure_key(deployment, content_view)
             # TODO: update to support UpdateSubscriptions, which could add or remove based
             # on changes in configuration... not urgent, since currently there is only a single
             # subscription in the configuration
-            plan_action(::Actions::Fusor::ActivationKey::AddSubscriptions, organization)
+            plan_action(::Actions::Fusor::ActivationKey::AddSubscriptions, deployment)
           end
         end
 
         private
 
-        def find_or_ensure_key(organization, lifecycle_environment, content_view)
-          key = ::Katello::ActivationKey.where(:organization_id => organization.id,
-                                               :name => activation_key_name).first
+        def find_or_ensure_key(deployment, content_view)
+          key = ::Katello::ActivationKey.where(:organization_id => deployment.organization.id,
+                                               :name => activation_key_name(deployment)).first
           if key
-            attributes = { :name => activation_key_name,
-                           :organization_id => organization.id,
-                           :environment_id => lifecycle_environment.id,
+            attributes = { :name => activation_key_name(deployment),
+                           :organization_id => deployment.organization.id,
+                           :environment_id => deployment.lifecycle_environment.id,
                            :content_view_id => content_view.id,
                            :auto_attach => true,
                            :user_id => ::User.current.id }
 
             plan_action(::Actions::Katello::ActivationKey::Update, key, attributes)
           else
-            key = ::Katello::ActivationKey.new(:name => activation_key_name,
-                                               :organization_id => organization.id,
-                                               :environment_id => lifecycle_environment.id,
+            key = ::Katello::ActivationKey.new(:name => activation_key_name(deployment),
+                                               :organization_id => deployment.organization.id,
+                                               :environment_id => deployment.lifecycle_environment.id,
                                                :content_view_id => content_view.id,
                                                :auto_attach => true,
                                                :user_id => ::User.current.id)
@@ -66,16 +66,19 @@ module Actions
           end
         end
 
-        def find_content_view(organization)
-          ::Katello::ContentView.where(:organization_id => organization.id, :name => content_view_name).first
+        def find_content_view(deployment)
+          ::Katello::ContentView.where(:organization_id => deployment.organization.id,
+                                       :name => content_view_name(deployment)).first
         end
 
-        def content_view_name
-          SETTINGS[:fusor][:content][:content_view][:composite_view_name]
+        def content_view_name(deployment)
+          name = SETTINGS[:fusor][:content][:content_view][:composite_view_name]
+          return [name, deployment.name].join(' - ') if name
         end
 
-        def activation_key_name
-          SETTINGS[:fusor][:activation_key][:name]
+        def activation_key_name(deployment)
+          name = SETTINGS[:fusor][:activation_key][:name]
+          return [name, deployment.name].join(' - ') if name
         end
       end
     end

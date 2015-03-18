@@ -1,7 +1,7 @@
 :fusor:
   :content:
     :content_view:
-      :composite_view_name: "Fusor Deployment Content"
+      :composite_view_name: "Fusor Deployment"
       :rpm_component_view_name: "Fusor RPM Content"
       :puppet_component_view_name: "Fusor Puppet Content"
 

@@ -47,8 +47,7 @@ module Actions
               # TODO: need to update to support multiple deployments per organization... to support this, we could
               # incorporate the deployment name in to the content view, activation key and host groups
               plan_action(::Actions::Fusor::Content::PublishContentView,
-                          deployment.organization,
-                          deployment.lifecycle_environment,
+                          deployment,
                           repositories)
 
               plan_configure_activation_key(deployment)
@@ -56,8 +55,7 @@ module Actions
               enable_smart_class_parameter_overrides(products_host_groups[index])
 
               plan_action(::Actions::Fusor::ConfigureHostGroups,
-                          deployment.organization,
-                          deployment.lifecycle_environment,
+                          deployment,
                           products_host_groups[index])
             end
           end
@@ -70,9 +68,7 @@ module Actions
         # At this time, 1 activation key can be used to support all products; therefore,
         # we only need to plan the action once.
         return if @configure_activation_key_planned
-        plan_action(::Actions::Fusor::ActivationKey::ConfigureActivationKey,
-                    deployment.organization,
-                    deployment.lifecycle_environment)
+        plan_action(::Actions::Fusor::ActivationKey::ConfigureActivationKey, deployment)
         @configure_activation_key_planned = true
       end
 

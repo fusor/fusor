@@ -18,19 +18,21 @@ module Actions
           _("Activation Key - Add Subscriptions")
         end
 
-        def plan(organization)
-          unless activation_key_name && subscription_descriptions
+        def plan(deployment)
+          unless activation_key_name(deployment.name) && subscription_descriptions
             fail _("Unable to locate activation key settings in config/settings.plugins.d/fusor.yaml")
           end
 
-          plan_self(:organization_id => organization.id, :user_id => ::User.current.id)
+          plan_self(:deployment_name => deployment.name,
+                    :organization_id => deployment.organization.id,
+                    :user_id => ::User.current.id)
         end
 
         def finalize
           ::User.current = ::User.find(input[:user_id])
 
           key = ::Katello::ActivationKey.where(:organization_id => input[:organization_id],
-                                               :name => activation_key_name).first
+                                               :name => activation_key_name(input[:deployment_name])).first
           associate_subscriptions(key)
         ensure
           ::User.current = nil
@@ -45,8 +47,9 @@ module Actions
           end
         end
 
-        def activation_key_name
-          SETTINGS[:fusor][:activation_key][:name]
+        def activation_key_name(deployment_name)
+          name = SETTINGS[:fusor][:activation_key][:name]
+          return [name, deployment_name].join(' - ') if name
         end
 
         def subscription_descriptions
