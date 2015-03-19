@@ -14,9 +14,11 @@ export default DS.Model.extend({
   disks_size: DS.attr('string'),
   cpus: DS.attr('string'),
 
-  rhev_deployments: DS.hasMany('deployment', {inverse: 'rhev_engine_host', async: true}),
+  // relationship to Engine
   deployment: DS.belongsTo('deployment', {inverse: 'discovered_host', async: true}),
-  deployments: DS.belongsTo('deployment', {inverse: 'discovered_hosts', async: true}),
+
+  // relationship to Hypervisors
+  deployments: DS.hasMany('deployment', {inverse: 'discovered_hosts', async: true}),
 
   created_at: DS.attr('date'),
   updated_at: DS.attr('date'),

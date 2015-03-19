@@ -16,18 +16,29 @@ export default Ember.Route.extend({
   },
 
   actions: {
-    saveHyperVisors: function() {
+    saveHyperVisors: function(hosts) {
       var self = this;
-      var dep = this.modelFor('deployment');
-      //TODO - now working
-      // this.store.find('discovered-host').then(function(discoveredHostsToAdd) {
-      //   dep.get('discovered_hosts').then(function(discoveredHosts) {
-      //     discoveredHosts.addObjects(discoveredHostsToAdd);
-      //     dep.save().then(function() {
-      //       discoveredHostsToAdd.save();
-      //     });
-      //   });
-      // });
+      var deployment = this.modelFor('deployment');
+      var hypervisorModelIds = this.controllerFor('hypervisor/discovered-host').get('hypervisorModelIds');
+      return new Ember.RSVP.Promise(function (resolve, reject) {
+        Ember.$.ajax({
+            url: '/fusor/api/v21/deployments/' + deployment.get('id'),
+            type: "PUT",
+            data: JSON.stringify({'deployment': { 'discovered_host_ids': hypervisorModelIds } }),
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": "Basic " + self.get('session.basicAuthToken')
+            },
+            success: function(response) {
+              resolve(response);
+            },
+
+            error: function(response){
+              reject(response);
+            }
+        });
+      });
     }
   }
 

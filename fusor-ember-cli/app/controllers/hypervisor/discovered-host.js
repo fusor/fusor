@@ -1,9 +1,9 @@
 import Ember from 'ember';
 
-export default Ember.Controller.extend({
+export default Ember.ArrayController.extend({
   needs: ['deployment'],
 
-  //discovered_hosts: Ember.computed.alias("controllers.deployment.discovered_hosts"),
+  itemController: ['discovered-host'],
 
   selectedRhevEngine: Ember.computed.alias("controllers.deployment.discovered_host"),
 
@@ -12,35 +12,66 @@ export default Ember.Controller.extend({
     return (host.get('id') != this.get('selectedRhevEngine.id'));
   }).property('allDiscoveredHosts', 'selectedRhevEngine'),
 
-  selectedHosts: Em.computed.filterBy('model', 'isSelectedAsHypervisor', true),
+  hypervisorModelIds: function() {
+    if (this.get('model')) {
+      var allIds = this.get('model').getEach('id');
+      return allIds.removeObject(this.get('selectedRhevEngine').get('id'));
+    } else {
+      return [];
+    }
+  }.property('model.[]', 'selectedRhevEngine'),
 
-  modelIds: function() {
-    return this.get('model').getEach('id');
-  }.property('model'),
-
-  cntSelectedHosts: Em.computed.alias('selectedHosts.length'),
+  cntSelectedHypervisorHosts: Ember.computed.alias('hypervisorModelIds.length'),
 
   hostInflection: function() {
-    return this.get('cntSelectedHosts') === 1 ? 'host' : 'hosts';
-  }.property('cntSelectedHosts'),
+      return this.get('cntSelectedHypervisorHosts') === 1 ? 'host' : 'hosts';
+  }.property('cntSelectedHypervisorHosts'),
+
+  isAllChecked: function(key, value) {
+      if (this.get('cntSelectedHypervisorHosts') === this.get('availableHosts.length')) {
+        return this.set('allChecked', true);
+      } else {
+        return this.set('allChecked', false);
+      }
+  }.property('availableHosts.@each.isSelectedAsHypervisor', 'cntSelectedHypervisorHosts'),
 
   allChecked: function(key, value){
+    // get
     if (arguments.length === 1) {
-      var model = this.get('model');
-      return model && model.isEvery('isSelectedAsHypervisor');
+      var availableHosts = this.get('availableHosts');
+      var isAllChecked = (this.get('model.length') === this.get('availableHosts.length'));
+      return (availableHosts && isAllChecked);
+    // setter
     } else {
-      this.get('model').setEach('isSelectedAsHypervisor', value);
-      return value;
+      // TODO - this is running when each host is individually checked as well????
+      // Problem because isSelectedAsHypervisor is on the itemController and not model ???
+      // console.log('setter only');
     }
-  }.property('model.@each.isSelectedAsHypervisor'),
+  }.property('model.@each.isSelectedAsHypervisor', 'model.[]', 'availableHosts'),
+
+  checkAll: function(row) {
+    // TODO
+    if (this.get('allChecked')) {
+      // var hosts = this.get('model');
+      // hosts.clear();
+      // hosts.addObjects(this.get('availableHosts'));
+      // return true;
+      console.log('all checked true');
+    } else {
+      // var hosts = this.get('model');
+      // return hosts.clear();
+      // return false;
+      console.log('all checked FALSE');
+    }
+  }.observes('allChecked'),
 
   idsChecked: function(key){
     var model = this.get('model');
     if (model && model.isAny('isSelectedAsHypervisor')) {
-      return this.get('selectedHosts').getEach("id"); //this.//   return model && model.isEvery('isSelectedAsHypervisor');
+      return this.get('model').getEach("id");
     } else {
       return '';
     }
-  }.property('model.@each.isSelectedAsHypervisor', 'selectedHosts'),
+  }.property('model.@each.isSelectedAsHypervisor'),
 
 });

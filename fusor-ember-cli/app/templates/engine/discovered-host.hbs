@@ -1,6 +1,6 @@
-{{!controllers.deployment.rhev_engine_hostname}}
-{{!model}} {{!model.id}}
-{{!selectedRhevEngineHost}}
+{{!hypervisorModelIds}}
+{{!selectedHypervisors}}
+{{!selectedHypervisors.length}}
 <br />
 <table class="table table-bordered table-striped small">
 <thead>
@@ -14,10 +14,10 @@
   </thead>
 
   <tbody>
-  {{#each host in allDiscoveredHosts itemController='discovered-host'}}
+  {{#each host in availableHosts itemController='discovered-host'}}
     <tr>
       <td>
-        {{radio-button value=host.model groupValue=selectedRhevEngineHost changed="engineHostChanged"}} {{!host.model}} {{!selectedRhevEngineHost}}
+        {{radio-button value=host.model groupValue=selectedRhevEngineHost changed="engineHostChanged"}} {{!host.id}}
       </td>
       <td>
            {{#if host.isSelectedAsEngine}}
@@ -32,9 +32,8 @@
   </tbody>
 </table>
 
-
-    <div class='pull-right'>
-      <br />
-      {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
-      {{#link-to 'hypervisor.discovered-host' class='btn btn-primary'}}Next{{/link-to}}
-    </div>
+<div class='pull-right'>
+  <br />
+  {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
+  {{#link-to 'hypervisor.discovered-host' class='btn btn-primary'}}Next{{/link-to}}
+</div>

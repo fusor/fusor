@@ -21,7 +21,7 @@
         Engine:
         {{#link-to 'engine.discovered-host'}} {{rhev_engine_host.name}} {{/link-to}}<br />
         Hypervisor: <br />
-        {{#each host in hypervisorSelectedHosts}}
+        {{#each host in selectedHypervisorHosts}}
           {{#link-to 'hypervisor.discovered-host'}} {{host.name}}.rhci.redhat.com {{/link-to}}<br />
         {{/each}}
       {{/if}}
