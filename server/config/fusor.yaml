@@ -40,8 +40,10 @@
     :rhev:
      :root_name: "Fusor Base" # seeded by the fusor-installer
      :host_groups:
+       - :parent: "Fusor Base"
+
        - :name: "RHEV-Engine"
-         :parent_name: "Fusor Base"
+         :parent: :root_deployment
          :puppet_classes:
            - :name: "ovirt"
            - :name: "ovirt::repo"
@@ -58,7 +60,7 @@
            - :name: "ovirt::engine::setup"
 
        - :name: "RHEV-Hypervisor"
-         :parent_name: "Fusor Base"
+         :parent: :root_deployment
          :puppet_classes:
            - :name: "ovirt"
            - :name: "ovirt::hypervisor::packages"
