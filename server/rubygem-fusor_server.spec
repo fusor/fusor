@@ -29,7 +29,7 @@ Summary: Fusor Server Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 3%{dist}
+Release: 4%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -119,6 +119,30 @@ cp -a .%{gem_dir}/* \
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Thu Mar 19 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-4
+- Merge pull request #32 from bbuckingham/update_fusor_yaml (jmrodri@gmail.com)
+- Merge pull request #31 from fusor/rpm_fusor (jwmatthews@gmail.com)
+- fusor server: update fusor.yaml to support the chgs for hostgroup named by
+  deployment (bbuckingham@redhat.com)
+- fusor server: allow creation of hostgroup with no parent
+  (bbuckingham@redhat.com)
+- fusor server: fix to properly locate hostgroup based upon ancestry
+  (bbuckingham@redhat.com)
+- fixed deployment_serializer to remove deleted attributes
+  :rhev_hypervisor_host_id and :rhev_hypervisor_hostname
+  (joseph@isratrade.co.il)
+- fixed duplication migration (joseph@isratrade.co.il)
+- Merge pull request #26 from bbuckingham/create_rhev_hostgroups_2
+  (jmrodri@gmail.com)
+- fusor server: update to support multiple deployments per org
+  (bbuckingham@redhat.com)
+- create/edit deployments and persist in database (joseph@isratrade.co.il)
+- fusor server: enable puppet smart class parameter overrides
+  (bbuckingham@redhat.com)
+- fusor server: create hostgroups and activation key for rhev deployment
+  (bbuckingham@redhat.com)
+- remove hypervisor columns, add self_hosted column. (jesusr@redhat.com)
+
 * Tue Mar 10 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-3
 - Remove use of %%{foreman_assets_plugin} since we don't have any files under
   public/assets/fusor_server (jwmatthews@gmail.com)
