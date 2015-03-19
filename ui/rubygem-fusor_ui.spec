@@ -29,7 +29,7 @@ Summary: Fusor Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 6%{dist}
+Release: 7%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -116,6 +116,19 @@ ln -s %{foreman_assets_plugin} %{buildroot}%{foreman_dir}/public/assets/fusor_ui
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Thu Mar 19 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-7
+- Updating ui directory to match latest code in fusor-ember-cli
+  (jwmatthews@gmail.com)
+- Changes so fusor_ui RPM may build (jwmatthews@gmail.com)
+- create/edit deployments and persist in database (joseph@isratrade.co.il)
+- copy compiled assets from fusor-ember-cli/dist to FusorUI gem at
+  fusor/ui/app/assets (joseph@isratrade.co.il)
+- FusorUI fixes and refactoring (joseph@isratrade.co.il)
+- Merge pull request #14 from fusor/develop-pr (jmagen@redhat.com)
+- copy compiled assets from fusor-ember-cli/dist to FusorUI gem at
+  fusor/ui/app/assets (joseph@isratrade.co.il)
+- README changes (joseph@isratrade.co.il)
+
 * Tue Feb 03 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-6
 - Hack to allow us to try to work with a stable Katello 2.0 which requires
   Foreman 1.6 (jwmatthews@gmail.com)
