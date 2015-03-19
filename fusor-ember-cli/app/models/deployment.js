@@ -19,7 +19,6 @@ export default DS.Model.extend({
 
   // rhev_hypervisors: DS.hasMany('discovered-host', {async: true}),
 
-  rhev_hypervisor_hostname: DS.attr('string'),
   rhev_engine_hostname: DS.attr('string'),
 
   rhev_engine_admin_password: DS.attr('string'),
