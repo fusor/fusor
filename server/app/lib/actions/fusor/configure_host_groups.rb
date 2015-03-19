@@ -89,7 +89,7 @@ module Actions
           fail _("Unable to locate content view '%s'.") % content_view_name(deployment_name)
         end
 
-        hostgroup_params = { :parent_id => parent.id,
+        hostgroup_params = { :parent_id => parent.try(:id),
                              :name => hostgroup_name,
                              :organization_ids => [organization_id],
                              :lifecycle_environment_id => lifecycle_environment_id,
