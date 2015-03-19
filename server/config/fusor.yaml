@@ -1,7 +1,7 @@
 :fusor:
   :content:
     :content_view:
-      :composite_view_name: "Fusor Deployment Content"
+      :composite_view_name: "Fusor Deployment"
       :rpm_component_view_name: "Fusor RPM Content"
       :puppet_component_view_name: "Fusor Puppet Content"
 
@@ -10,6 +10,11 @@
         :repository_set_name: "Red Hat Enterprise Linux 6 Server (RPMs)"
         :basearch: "x86_64"
         :releasever: "6Server"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :repository_set_name: "Red Hat Enterprise Linux 6 Server (Kickstart)"
+        :basearch: "x86_64"
+        :releasever: "6.6"
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :repository_set_name: "Red Hat Enterprise Linux 6 Server - Supplementary (RPMs)"
@@ -30,3 +35,35 @@
         :repository_set_name: "JBoss Enterprise Application Platform 6 (RHEL 6 Server) (RPMs)"
         :basearch: "x86_64"
         :releasever: "6Server"
+
+  :host_groups:
+    :rhev:
+     :root_name: "Fusor Base" # seeded by the fusor-installer
+     :host_groups:
+       - :name: "RHEV-Engine"
+         :parent_name: "Fusor Base"
+         :puppet_classes:
+           - :name: "ovirt"
+           - :name: "ovirt::repo"
+           - :name: "ovirt::engine::config"
+             :parameters:
+             - "cluster_name"
+             - "cpu_type"
+             - "host_name"
+             - "share_path"
+             - "storage_name"
+             - "storage_type"
+             - "storage_address"
+           - :name: "ovirt::engine::packages"
+           - :name: "ovirt::engine::setup"
+
+       - :name: "RHEV-Hypervisor"
+         :parent_name: "Fusor Base"
+         :puppet_classes:
+           - :name: "ovirt"
+           - :name: "ovirt::hypervisor::packages"
+
+  :activation_key:
+    :name: "Fusor_Key"
+    :subscription_descriptions:
+      - "Red Hat Cloud Infrastructure"
