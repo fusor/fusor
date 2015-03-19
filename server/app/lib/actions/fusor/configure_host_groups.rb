@@ -125,8 +125,16 @@ module Actions
       end
 
       def find_hostgroup(organization_id, hostgroup_name, parent)
+        if parent
+          if parent.ancestry
+            ancestry = [parent.ancestry, parent.id.to_s].join('/')
+          else
+            ancestry = parent.id.to_s
+          end
+        end
+
         ::Hostgroup.where(:name => hostgroup_name).
-                    where(:ancestry => parent.try(:id).try(:to_s)).
+                    where(:ancestry => ancestry).
                     joins(:organizations).
                     where("taxonomies.id in (?)", [organization_id]).first
       end
