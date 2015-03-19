@@ -1,5 +1,5 @@
 #ember-app {
-  padding-top: 40px;
+  padding-top: 0px;
   /*change to 40px when deploying, change to 0px when in ember-cli mode */ }
 
 .pager {
@@ -10318,5 +10318,17 @@ label.env_path_active:after {
   border-left: 1px solid #999;
   background: #fff;
   /*box-shadow: -3px 0px 4px -3px rgba(50, 50, 50, 0.75);*/ }
+
+.green-circle {
+  color: green; }
+
+.errorForValidation {
+  color: red; }
+
+.deployment_name {
+  display: inline; }
+
+.gray .grey {
+  background-color: #ddd !important; }
 
 /*# sourceMappingURL=fusor-ember-cli.css.map */
