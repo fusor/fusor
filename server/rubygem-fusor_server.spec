@@ -56,20 +56,18 @@ BuildRequires: ruby(abi) = 1.8
 %endif
 %endif
 
-# Hack so we may try to work with a stable katello 2.0 which requires foreman 1.6
-Requires: foreman >= 1.6.0
-BuildRequires: foreman >= 1.6.0
-BuildRequires: foreman-assets >= 1.6.0
+Requires: foreman >= 1.7.0
+BuildRequires: foreman >= 1.7.0
+BuildRequires: foreman-assets >= 1.7.0
 BuildRequires: foreman-plugin >= 1.6.0
 BuildRequires: %{?scl_prefix}rubygem-active_model_serializers
-
-#Requires: foreman >= 1.7.0
-#BuildRequires: foreman >= 1.7.0
-#BuildRequires: foreman-assets >= 1.7.0
 
 BuildArch: noarch
 Provides: %{?scl_prefix}rubygem(fusor_server) = %{version}
 Provides: %{?scl_prefix}rubygem(fusor) = %{version}
+
+Requires: %{?scl_prefix}rubygem-foretello_api_v21
+Requires: %{?scl_prefix}rubygem-active_model_serializers
 
 %description
 Fusor Plugin
