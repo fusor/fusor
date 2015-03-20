@@ -29,7 +29,7 @@ Summary: Fusor Server Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 4%{dist}
+Release: 5%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -117,6 +117,10 @@ cp -a .%{gem_dir}/* \
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Fri Mar 20 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-5
+- Add requires for active_model_serializers and foretello_api_v21
+  (jwmatthews@gmail.com)
+
 * Thu Mar 19 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-4
 - Merge pull request #32 from bbuckingham/update_fusor_yaml (jmrodri@gmail.com)
 - Merge pull request #31 from fusor/rpm_fusor (jwmatthews@gmail.com)
