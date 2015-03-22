@@ -26,15 +26,8 @@ module Fusor
 
     belongs_to :discovered_host, :class_name => "::Host::Base", :foreign_key => :rhev_engine_host_id
     has_many :deployment_hosts, :class_name => "Fusor::DeploymentHost", :foreign_key => :deployment_id
-    #has_many :rhev_hypervisor_hosts, :through => :deployment_hosts, :foreign_key => :host_id, :source => :host
-    has_many :discovered_hosts, :through => :deployment_hosts, :foreign_key => :host_id, :source => :host
-
+    has_many :discovered_hosts, :through => :deployment_hosts, :foreign_key => :discovered_host_id, :source => :discovered_host
     alias_attribute :discovered_host_id, :rhev_engine_host_id
-    # TODO: need to figure out the syntax for this
-    # has_one :host, foreign_key => :rhev_hypervisor_host_id, dependent => :nullify
-    # has_one :host, foreign_key => :rhev_engine_host_id, dependent => :nullify
-    #has_one :rhev_hypervisor_host_id
-    #has_one :rhev_engine_host_id
 
   end
 end

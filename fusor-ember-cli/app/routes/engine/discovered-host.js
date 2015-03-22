@@ -8,6 +8,8 @@ export default Ember.Route.extend({
   setupController: function(controller, model) {
     controller.set('model', model);
     controller.set('allDiscoveredHosts', this.store.find('discovered-host'));
+    controller.set('selectedHypervisors', this.modelFor('deployment').get('discovered_hosts'));
+
   },
 
   deactivate: function() {

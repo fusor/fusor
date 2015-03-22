@@ -27,15 +27,11 @@ export default Ember.Controller.extend({
   isOpenStack: Ember.computed.alias("controllers.deployment.isOpenStack"),
   isCloudForms: Ember.computed.alias("controllers.deployment.isCloudForms"),
 
-  hypervisorSelectedHosts: Ember.computed.alias("controllers.hypervisor/discovered-host.selectedHosts"),
-  engineSelectedHosts: Ember.computed.alias("controllers.engine/discovered-host.selectedHosts"),
-
-  hypervisorSelectedId: Ember.computed.alias("controllers.hypervisor/discovered-host.idsChecked"),
-  engineSelectedId: Ember.computed.alias("controllers.engine/discovered-host.idsChecked"),
   isSelfHosted: Ember.computed.alias("controllers.deployment.rhev_is_self_hosted"),
-  rhev_engine_host: Ember.computed.alias("controllers.deployment.rhev_engine_host"),
-  selectedRhevEngine: Ember.computed.alias("controllers.engine/discovered-host.selectedRhevEngine"),
+  selectedHypervisorHosts: Ember.computed.alias("controllers.deployment.discovered_hosts"),
 
+  rhev_engine_host: Ember.computed.alias("controllers.deployment.discovered_host"),
+  selectedRhevEngine: Ember.computed.alias("controllers.deployment.discovered_host"),
 
   nameRHCI: Ember.computed.alias("controllers.rhci.nameRHCI"),
   nameRhev: Ember.computed.alias("controllers.rhci.nameRhev"),

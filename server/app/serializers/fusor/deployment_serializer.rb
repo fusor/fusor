@@ -11,10 +11,9 @@ module Fusor
                :created_at, :updated_at
     has_one :organization, serializer: ::OrganizationSerializer
     has_one :lifecycle_environment, serializer: ::LifecycleEnvironmentSerializer
-    has_one :rhev_engine_host, serializer: ::HostSerializer
-#    has_many :rhev_hypervisor_hosts, serializer: ::HostSerializer
-
+    # has one engine
     has_one :discovered_host, serializer: ::HostSerializer
+    # has many hypervisors
     has_many :discovered_hosts, serializer: ::HostSerializer
 
   end

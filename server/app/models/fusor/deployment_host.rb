@@ -12,7 +12,7 @@
 
 module Fusor
   class DeploymentHost < ActiveRecord::Base
-    belongs_to :host, :class_name => "::Host::Base"
+    belongs_to :discovered_host, :class_name => "::Host::Base"
     belongs_to :deployment, :class_name => "Fusor::Deployment"
   end
 end

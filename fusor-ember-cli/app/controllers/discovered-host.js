@@ -11,6 +11,16 @@ export default Ember.ObjectController.extend({
   selectedRhevEngineHost: Ember.computed.alias("controllers.engine/discovered-host.model"),
 
   rhev_engine_hostname: Ember.computed.alias("controllers.deployment.rhev_engine_hostname"),
+  isAllChecked: Ember.computed.alias("controllers.hypervisor/discovered-host.isAllChecked"),
+  allChecked: Ember.computed.alias("controllers.hypervisor/discovered-host.allChecked"),
+
+  addOrRemoveHypervisor: function(row){
+    if (row.get('isSelectedAsHypervisor')) {
+      this.get('controllers.hypervisor/discovered-host.model').addObject(row.get('model'));
+    } else {
+      this.get('controllers.hypervisor/discovered-host.model').removeObject(row.get('model'));
+    }
+  }.observes('isSelectedAsHypervisor'),
 
   isSelectedAsHypervisor: function () {
     if (this.get('selectedRhevHypervisorHosts')) {
@@ -19,7 +29,7 @@ export default Ember.ObjectController.extend({
     } else {
       return false
     }
-  }.property('allDiscoveredHosts'),
+  }.property('selectedRhevHypervisorHosts.[]'),
 
   isSelectedAsEngine: function () {
     return (this.get('selectedRhevEngineHost.id') === this.get('id'));

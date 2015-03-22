@@ -1,14 +1,15 @@
 {{!model.length}}
-{{!modelIds}}
-
-<!-- <strong>{{!cntSelectedHosts}}</strong> of <strong>{{!availableHosts.length}}</strong>
-available hosts selected {{!idsChecked}}
- -->
+{{!availableHosts.length}}
+{{!model}}
+{{!isAllChecked}}
+<strong>{{model.length}}</strong> of <strong>{{availableHosts.length}}</strong>
+available hosts selected {{idsChecked}}
+<br />
 <br />
 <table class="table table-bordered table-striped small">
   <thead>
     <tr>
-      <th> {{!input type="checkbox" checked=allChecked}}</th>
+      <th> {{!input type="checkbox" checked=allChecked TODO}}</th>
       <th> Name </th>
       <th> MAC </th>
       <th> CPU's </th>
@@ -21,7 +22,7 @@ available hosts selected {{!idsChecked}}
     <tr>
       <td>
         {{input type="checkbox" name="isSelectedAsHypervisor" checked=host.isSelectedAsHypervisor}}
-        {{host.id}}
+        {{!host.id}} {{!host.isSelectedAsHypervisor}}
       </td>
       <td>
         {{#if host.isSelectedAsHypervisor}}
@@ -30,16 +31,15 @@ available hosts selected {{!idsChecked}}
       </td>
       <td> {{host.mac}} </td>
       <td> {{host.cpus}} </td>
-      <td> {{host.memory}} {{host.isSelectedAsHypervisor}} {{host.isSelectedAsEngine}}</td>
+      <td> {{host.memory}} </td>
     </tr>
   {{/each}}
   </tbody>
 </table>
-<!-- <button {{!action 'saveHyperVisors'}}>saveHyperVisors</button>
- -->
-    <div class='pull-right'>
-      <br />
-      {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
-      <button {{action 'saveHyperVisors'}} class='btn btn-primary'>Next</button>
-      {{!#link-to 'rhev-options' class='btn btn-primary'}}<!--Next-->{{!/link-to}}
-    </div>
+
+<div class='pull-right'>
+  <br />
+  {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
+  <button {{action 'saveHyperVisors'}} class='btn btn-primary'>Next</button>
+  {{!#link-to 'rhev-options' class='btn btn-primary'}}<!--Next-->{{!/link-to}}
+</div>

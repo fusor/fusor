@@ -12,13 +12,6 @@ export default DS.Model.extend({
 
   rhev_is_self_hosted: DS.attr('boolean'),
 
-  // one-to-one: One deployment has one rhev engine host. One host has one deployment
-  rhev_engine_host: DS.belongsTo('discovered-host', {inverse: 'rhev_deployments', async: true}), //TODO error if I added
-  discovered_host: DS.belongsTo('discovered-host', {inverse: 'deployment', async: true}), //TODO error if I added
-  discovered_hosts: DS.hasMany('discovered-host', {inverse: 'deployments', async: true}), //TODO error if I added
-
-  // rhev_hypervisors: DS.hasMany('discovered-host', {async: true}),
-
   rhev_engine_hostname: DS.attr('string'),
 
   rhev_engine_admin_password: DS.attr('string'),
@@ -34,4 +27,11 @@ export default DS.Model.extend({
 
   created_at: DS.attr('date'),
   updated_at: DS.attr('date'),
+
+  // has one Engine
+  discovered_host: DS.belongsTo('discovered-host', {inverse: 'deployment', async: true}),
+
+  // has many Hypervisors
+  discovered_hosts: DS.hasMany('discovered-host', {inverse: 'deployments', async: true}),
+
 });
