@@ -61,19 +61,6 @@ export default Ember.Mixin.create({
     if (this.get('isUpstream')) { return "ManageIQ"; } else { return "CloudForms"; }
   }.property('isUpstream'),
 
-  // images
-  imgRhev: function() {
-    if (this.get('isUpstream')) { return "assets/ovirt-640-210.png"; } else { return "assets/rhci-rhev-640-210.png"; }
-  }.property('isUpstream'),
-
-  imgOpenStack: function() {
-    if (this.get('isUpstream')) { return "assets/rdo-640-210.png"; } else { return "assets/rhci-openstack-640-210.png"; }
-  }.property('isUpstream'),
-
-  imgCloudForms: function() {
-    if (this.get('isUpstream')) { return "assets/manageiq-640-210.png"; } else { return "assets/rhci-cloudforms-640-210.png"; }
-  }.property('isUpstream'),
-
   // logo
   logoPath: function() {
     if (this.get('isUpstream')) { return "assets/foreman.png"; } else { return "assets/Header-logotype.png"; }
