@@ -29,7 +29,7 @@ Summary: Fusor Server Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 5%{dist}
+Release: 6%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -117,6 +117,11 @@ cp -a .%{gem_dir}/* \
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Wed Mar 25 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-6
+- fusor server: fix apipie doc cache (bbuckingham@redhat.com)
+- Fixed RHEV hypervisor selection and other refactoring
+  (joseph@isratrade.co.il)
+
 * Fri Mar 20 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-5
 - Add requires for active_model_serializers and foretello_api_v21
   (jwmatthews@gmail.com)
