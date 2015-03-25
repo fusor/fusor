@@ -20,6 +20,7 @@ module Fusor
         include Api::V2::Rendering
 
         resource_description do
+          resource_id 'fusor'
           api_version 'v2'
           api_base_url '/fusor/api'
         end
