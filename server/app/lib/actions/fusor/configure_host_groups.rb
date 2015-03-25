@@ -101,7 +101,8 @@ module Actions
                              :puppetclass_ids => puppet_class_ids,
                              :operatingsystem_id => operating_system.try(:id),
                              :medium_id => operating_system.try(:media).try(:first).try(:id),
-                             :ptable_id => operating_system.try(:ptables).try(:first).try(:id) }
+                             :ptable_id => operating_system.try(:ptables).try(:first).try(:id),
+                             :architecture_id => operating_system.try(:architectures).try(:first).try(:id) }
 
         if hostgroup = find_hostgroup(organization_id, hostgroup_name, parent)
           hostgroup.update_attributes!(hostgroup_params)
