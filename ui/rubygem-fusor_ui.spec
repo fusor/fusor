@@ -95,7 +95,7 @@ cp -a .%{gem_dir}/* \
         %{buildroot}%{gem_dir}/
 
 %foreman_bundlerd_file
-%foreman_precompile_plugin
+%foreman_precompile_plugin -s
 
 mkdir -p %{buildroot}%{foreman_dir}/public/assets
 ln -s %{foreman_assets_plugin} %{buildroot}%{foreman_dir}/public/assets/fusor_ui
@@ -110,7 +110,7 @@ ln -s %{foreman_assets_plugin} %{buildroot}%{foreman_dir}/public/assets/fusor_ui
 %{gem_spec}
 %{foreman_bundlerd_dir}/%{gem_name}.rb
 %{foreman_dir}/public/assets/fusor_ui
-#%{foreman_assets_plugin}
+%{foreman_assets_plugin}
 
 %files doc
 %{gem_dir}/doc/%{gem_name}-%{version}
