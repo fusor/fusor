@@ -5,6 +5,7 @@
 
 %global foreman_dir /usr/share/foreman
 %global foreman_bundlerd_dir %{foreman_dir}/bundler.d
+%global foreman_pluginconf_dir %{foreman_dir}/config/settings.plugins.d
 
 %if !("%{?scl}" == "ruby193" || 0%{?rhel} > 6 || 0%{?fedora} > 16)
 %global gem_dir /usr/lib/ruby/gems/1.8
@@ -101,6 +102,9 @@ cp -a .%{gem_dir}/* \
 #mkdir -p %{buildroot}%{foreman_dir}/public/assets
 #ln -s %{foreman_assets_plugin} %{buildroot}%{foreman_dir}/public/assets/fusor_ui
 
+mkdir -p %{buildroot}%{foreman_pluginconf_dir}
+cp -a %{buildroot}/%{gem_instdir}/config/fusor.yaml %{buildroot}%{foreman_pluginconf_dir}/
+
 %clean
 %{__rm} -rf %{buildroot}
 
@@ -112,6 +116,7 @@ cp -a .%{gem_dir}/* \
 %{foreman_bundlerd_dir}/%{gem_name}.rb
 #%{foreman_dir}/public/assets/fusor_ui
 #%{foreman_assets_plugin}
+%{foreman_pluginconf_dir}/fusor.yaml
 
 %files doc
 %{gem_dir}/doc/%{gem_name}-%{version}
