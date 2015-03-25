@@ -16,3 +16,5 @@
 /fusor-ember-cli/libpeerconnection.log
 /fusor-ember-cli/npm-debug.log
 /fusor-ember-cli/testem.log
+
+../npm-debug.log
