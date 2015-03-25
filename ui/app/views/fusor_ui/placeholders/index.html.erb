@@ -1,10 +1,9 @@
-<%= stylesheet('fusor_ui/vendor-fusor') %>
 <%= stylesheet('fusor_ui/fusor-ember-cli') %>
 
-<% title _("Fusor Installer") %>
+<%= javascript('fusor_ui/vendor') %>
+<%= javascript('fusor_ui/fusor-ember-cli') %>
+
+<%= content_for(:title, _("Fusor Installer")) %>
 
 <div id='ember-app'>
 </div>
-
-<script src="/assets/fusor_ui/vendor-fusor.js"></script>
-<script src="/assets/fusor_ui/fusor-ember-cli.js"></script>

@@ -4,7 +4,7 @@ export default Ember.Controller.extend({
   needs: ['side-menu', 'deployment'],
 
   isLiveBackendMode: true,
-  deployAsPlugin: false,
+  deployAsPlugin: true,
   isEmberCliMode: Ember.computed.not('deployAsPlugin'),
   isUpstream: false,
 

@@ -1,37 +1,48 @@
-.wizard-block {
-  display: inline-block;
-}
-
-.wizard-line {
-  border-top: solid 3px #ddd;
-  margin-top:15px;
-}
-
-/*.white-wizard-line {
-  border-top: solid 3px red;
-  margin-bottom:-18px;
-  z-index: 114000;
-}
-*/
-.wizard-item {
-  font-weight: bold;
-  font-size: 110%;
-  color: #555;
-}
-
 .wizard li {
-  padding: 7px 7px 10px;
+  padding: 8px 12px 8px;
   margin-right: 5px;
   margin-bottom: 30px;
-  background: #fff;
+  background: #efefef;
   position: relative;
   display: inline-block;
+  &:before {
+    width: 0;
+    height: 0;
+    border-top: 20px inset transparent;
+    border-bottom: 20px inset transparent;
+    border-left: 20px solid #fff;
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+ }
+ &:after {
+   width: 0;
+   height: 0;
+   border-top: 20px inset transparent;
+   border-bottom: 20px inset transparent;
+   border-left: 20px solid #efefef;
+   position: absolute;
+   content: "";
+   top: 0;
+   right: -20px;
+   z-index: 2;
+ }
+ &:first-child:before,
+ &:last-child:after {
+   border: none;
+ }
+ &:first-child {
+   -webkit-border-radius: 0;
+   -moz-border-radius: 0;
+   border-radius: 0;
+ }
+ &:last-child {
+   -webkit-border-radius: 0;
+   -moz-border-radius: 0;
+   border-radius: 0;
+ }
 }
-
-.wizard li.disabled {
-  color: #ddd !important;
-}
-
 .wizard .badge {
   margin: 0 5px 0 18px;
   position: relative;
@@ -41,31 +52,9 @@
   margin-left: 0;
 }
 .wizard .active {
-  color: #007ACC !important;
-}
-
-.wizard .active > .full-circle {
-  background-color: #007ACC !important;
-}
-
-.full-circle {
- background-color: #999;
- height: 8px;
- -moz-border-radius:4px;
- -webkit-border-radius: 4px;
- width: 8px;
- margin-top: -41px;
-}
-
-.disable-circle {
-  background-color: #ddd !important;
-}
-
-.tabbed_side_nav_form{
-  .tab-content {
-    min-height: 600px;
-    border-left: 1px solid #999;
-    background: #fff;
-    /*box-shadow: -3px 0px 4px -3px rgba(50, 50, 50, 0.75);*/
-  }
+  background: #007ACC;
+  color: #fff;
+  &:after {
+    border-left-color: #007ACC;
+ }
 }
