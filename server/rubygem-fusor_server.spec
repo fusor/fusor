@@ -30,7 +30,7 @@ Summary: Fusor Server Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 6%{dist}
+Release: 7%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -122,6 +122,13 @@ cp -a %{buildroot}/%{gem_instdir}/config/fusor.yaml %{buildroot}%{foreman_plugin
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Wed Mar 25 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-7
+- Merge pull request #37 from bbuckingham/fixes-hostgroup-arch
+  (jwmatthews@gmail.com)
+- fusor server: hostgroup: set architecture on the deployment hostgroup
+  (bbuckingham@redhat.com)
+- Include fusor.yaml in RPM of fusor-server (jwmatthews@gmail.com)
+
 * Wed Mar 25 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-6
 - fusor server: fix apipie doc cache (bbuckingham@redhat.com)
 - Fixed RHEV hypervisor selection and other refactoring
