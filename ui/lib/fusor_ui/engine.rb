@@ -18,7 +18,7 @@ module FusorUi
         # Add role (TODO - will there be a rails called view_fusor)
         # role "FusorUi", [:view_fusor]
 
-        sub_menu :top_menu, :fusor_menu, :caption => N_('Fusor Installer'), :after => :infrastructure_menu do
+        sub_menu :top_menu, :fusor_menu, :caption => N_('RHCI Installer'), :after => :infrastructure_menu do
           menu :top_menu, :fusor_deployments,
                :url_hash => { :controller => 'fusor_ui/placeholders', :action => :index },
                :caption  => N_('Deployments')
