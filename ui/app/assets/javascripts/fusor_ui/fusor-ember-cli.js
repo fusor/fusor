@@ -1,17 +1,21 @@
+/* jshint ignore:start */
+
+/* jshint ignore:end */
+
 define('fusor-ember-cli/adapters/application', ['exports', 'ember-data'], function (exports, DS) {
 
-  'use strict';
+    'use strict';
 
-  exports['default'] = DS['default'].ActiveModelAdapter.extend({
-    namespace: "api/v21" });
+    exports['default'] = DS['default'].ActiveModelAdapter.extend({
+        namespace: "api/v21" });
 
 });
 define('fusor-ember-cli/adapters/deployment', ['exports', 'ember-data'], function (exports, DS) {
 
-  'use strict';
+    'use strict';
 
-  exports['default'] = DS['default'].ActiveModelAdapter.extend({
-    namespace: "fusor/api/v21" });
+    exports['default'] = DS['default'].ActiveModelAdapter.extend({
+        namespace: "fusor/api/v21" });
 
 });
 define('fusor-ember-cli/app', ['exports', 'ember', 'ember/resolver', 'ember/load-initializers', 'fusor-ember-cli/config/environment'], function (exports, Ember, Resolver, loadInitializers, config) {
@@ -1630,29 +1634,29 @@ define('fusor-ember-cli/controllers/rhci', ['exports', 'ember'], function (expor
 });
 define('fusor-ember-cli/controllers/rhev-options', ['exports', 'ember'], function (exports, Ember) {
 
-  'use strict';
+   'use strict';
 
-  exports['default'] = Ember['default'].Controller.extend({
+   exports['default'] = Ember['default'].Controller.extend({
 
-    needs: ["deployment"],
+      needs: ["deployment"],
 
-    rhev_engine_admin_password: Ember['default'].computed.alias("controllers.deployment.rhev_engine_admin_password"),
-    rhev_database_name: Ember['default'].computed.alias("controllers.deployment.rhev_database_name"),
-    rhev_cluster_name: Ember['default'].computed.alias("controllers.deployment.rhev_cluster_name"),
-    rhev_storage_name: Ember['default'].computed.alias("controllers.deployment.rhev_storage_name"),
-    rhev_cpu_type: Ember['default'].computed.alias("controllers.deployment.rhev_cpu_type"),
+      rhev_engine_admin_password: Ember['default'].computed.alias("controllers.deployment.rhev_engine_admin_password"),
+      rhev_database_name: Ember['default'].computed.alias("controllers.deployment.rhev_database_name"),
+      rhev_cluster_name: Ember['default'].computed.alias("controllers.deployment.rhev_cluster_name"),
+      rhev_storage_name: Ember['default'].computed.alias("controllers.deployment.rhev_storage_name"),
+      rhev_cpu_type: Ember['default'].computed.alias("controllers.deployment.rhev_cpu_type"),
 
-    applicationModes: ["Both", "Virt", "Gluster"],
-    engineLocation: ["Local", "Remote"],
-    dbSetup: ["Automatic", "Manual"],
-    yesNo: ["Yes", "No"],
-    applicationModes2: [{
-      id: 1,
-      name: "Both" }, {
-      id: 2,
-      name: "Virt" }, {
-      id: 3,
-      name: "Gluster" }] });
+      applicationModes: ["Both", "Virt", "Gluster"],
+      engineLocation: ["Local", "Remote"],
+      dbSetup: ["Automatic", "Manual"],
+      yesNo: ["Yes", "No"],
+      applicationModes2: [{
+         id: 1,
+         name: "Both" }, {
+         id: 2,
+         name: "Virt" }, {
+         id: 3,
+         name: "Gluster" }] });
 
 });
 define('fusor-ember-cli/controllers/rhev-setup', ['exports', 'ember'], function (exports, Ember) {
@@ -2043,9 +2047,7 @@ define('fusor-ember-cli/helpers/raw-text', ['exports', 'ember'], function (expor
 
   function rawText(input) {
     return new Handlebars.SafeString(input);
-  }
-
-  exports['default'] = Ember['default'].Handlebars.makeBoundHelper(rawText);
+  }exports['default'] = Ember['default'].Handlebars.makeBoundHelper(rawText);
 
 });
 define('fusor-ember-cli/helpers/showdown-addon', ['exports', 'ember'], function (exports, Ember) {
@@ -2059,6 +2061,21 @@ define('fusor-ember-cli/helpers/showdown-addon', ['exports', 'ember'], function 
       return new Ember['default'].Handlebars.SafeString(converter.makeHtml(value));
     }
   });
+
+});
+define('fusor-ember-cli/initializers/app-version', ['exports', 'fusor-ember-cli/config/environment', 'ember'], function (exports, config, Ember) {
+
+  'use strict';
+
+  var classify = Ember['default'].String.classify;
+
+  exports['default'] = {
+    name: "App Version",
+    initialize: function (container, application) {
+      var appName = classify(application.toString());
+      Ember['default'].libraries.register(appName, config['default'].APP.version);
+    }
+  };
 
 });
 define('fusor-ember-cli/initializers/coordinator-setup', ['exports', 'fusor-ember-cli/models/coordinator'], function (exports, Coordinator) {
@@ -3996,18 +4013,18 @@ define('fusor-ember-cli/routes/where-install', ['exports', 'ember'], function (e
 });
 define('fusor-ember-cli/serializers/puppetclass', ['exports', 'ember-data'], function (exports, DS) {
 
-  'use strict';
+   'use strict';
 
-  exports['default'] = DS['default'].RESTSerializer.extend({
-    extractArray: function (store, type, payload) {
-      // 'foreman-experimental-ui@model:setting:'
-      var wrapped_payload = {};
-      var model_name = type.toString().split(":")[1];
-      wrapped_payload[model_name] = $.map(payload.results, function (v) {
-        return v;
-      });
-      return this._super(store, type, wrapped_payload);
-    } });
+   exports['default'] = DS['default'].RESTSerializer.extend({
+      extractArray: function (store, type, payload) {
+         // 'foreman-experimental-ui@model:setting:'
+         var wrapped_payload = {};
+         var model_name = type.toString().split(":")[1];
+         wrapped_payload[model_name] = $.map(payload.results, function (v) {
+            return v;
+         });
+         return this._super(store, type, wrapped_payload);
+      } });
 
 });
 define('fusor-ember-cli/services/validations', ['exports', 'ember'], function (exports, Ember) {
@@ -9494,1906 +9511,6 @@ define('fusor-ember-cli/tests/controllers/where-install.jshint', function () {
   });
 
 });
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/helpers/resolver.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/helpers');
-  test('fusor-ember-cli/tests/helpers/resolver.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/helpers/resolver.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/helpers/start-app.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/helpers');
-  test('fusor-ember-cli/tests/helpers/start-app.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/helpers/start-app.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/test-helper.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests');
-  test('fusor-ember-cli/tests/test-helper.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/test-helper.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/adapters/application-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/adapters');
-  test('fusor-ember-cli/tests/unit/adapters/application-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/adapters/application-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/adapters/hostgroup-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/adapters');
-  test('fusor-ember-cli/tests/unit/adapters/hostgroup-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/adapters/hostgroup-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/adapters/lifecycle-environment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/adapters');
-  test('fusor-ember-cli/tests/unit/adapters/lifecycle-environment-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/adapters/lifecycle-environment-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/adapters/subscriptions-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/adapters');
-  test('fusor-ember-cli/tests/unit/adapters/subscriptions-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/adapters/subscriptions-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/adapters/traffic-type-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/adapters');
-  test('fusor-ember-cli/tests/unit/adapters/traffic-type-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/adapters/traffic-type-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/accordion-item-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/accordion-item-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/accordion-item-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/base-f-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/base-f-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/base-f-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/env-path-list-item-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/env-path-list-item-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/env-path-list-item-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/modal-confirm-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/modal-confirm-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/modal-confirm-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/radio-button-f-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/radio-button-f-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/radio-button-f-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/rchi-item-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/rchi-item-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/rchi-item-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/rhci-hover-text-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/rhci-hover-text-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/rhci-hover-text-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/rhci-start-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/rhci-start-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/rhci-start-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/rhci-wizard-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/rhci-wizard-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/rhci-wizard-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/select-f-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/select-f-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/select-f-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/select-simple-f-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/select-simple-f-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/select-simple-f-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/step-number-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/step-number-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/step-number-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/sub-menu-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/sub-menu-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/sub-menu-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/subnet-drop-area-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/subnet-drop-area-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/subnet-drop-area-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/text-f-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/text-f-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/text-f-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/textarea-f-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/textarea-f-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/textarea-f-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/tr-organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/tr-organization-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/tr-organization-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/traffic-type-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/traffic-type-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/traffic-type-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/upstream-downstream-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/upstream-downstream-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/upstream-downstream-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/vertical-tab-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/vertical-tab-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/vertical-tab-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/wizard-item-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/wizard-item-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/wizard-item-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/components/wrap-in-container-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/components');
-  test('fusor-ember-cli/tests/unit/components/wrap-in-container-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/components/wrap-in-container-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/application-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/application-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/application-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/cancel-modal-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/cancel-modal-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/cancel-modal-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/cloudforms-storage-domain-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/cloudforms-storage-domain-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/cloudforms-storage-domain-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/cloudforms-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/cloudforms-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/cloudforms-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/cloudforms-vm-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/cloudforms-vm-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/cloudforms-vm-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/configure-environment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/configure-environment-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/configure-environment-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/configure-organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/configure-organization-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/configure-organization-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/configure/new-organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers/configure');
-  test('fusor-ember-cli/tests/unit/controllers/configure/new-organization-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/configure/new-organization-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/deployment-new-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/deployment-new-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/deployment-new-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/deployment-new/satellite-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers/deployment-new');
-  test('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/deployment-new/satellite-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/configure-environment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers/deployment-new/satellite');
-  test('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/configure-environment-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/configure-environment-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/configure-organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers/deployment-new/satellite');
-  test('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/configure-organization-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/configure-organization-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/index-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers/deployment-new/satellite');
-  test('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/index-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/index-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/deployment-new/start-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers/deployment-new');
-  test('fusor-ember-cli/tests/unit/controllers/deployment-new/start-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/deployment-new/start-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/deployment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/deployment-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/deployment-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/deployment/start-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers/deployment');
-  test('fusor-ember-cli/tests/unit/controllers/deployment/start-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/deployment/start-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/deployments-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/deployments-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/deployments-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/discovered-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/discovered-host-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/discovered-host-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/engine-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/engine-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/engine-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/engine/discovered-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers/engine');
-  test('fusor-ember-cli/tests/unit/controllers/engine/discovered-host-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/engine/discovered-host-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/host-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/host-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/hostgroup-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/hostgroup-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/hostgroup-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/hypervisor-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/hypervisor-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/hypervisor-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/hypervisor/discovered-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers/hypervisor');
-  test('fusor-ember-cli/tests/unit/controllers/hypervisor/discovered-host-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/hypervisor/discovered-host-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/lifecycle-environment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/lifecycle-environment-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/lifecycle-environment-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/lifecycle-environments-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/lifecycle-environments-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/lifecycle-environments-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/login-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/login-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/login-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/logout-model-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/logout-model-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/logout-model-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/networking-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/networking-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/networking-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/new-environment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/new-environment-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/new-environment-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/new-organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/new-organization-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/new-organization-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/openstack-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/openstack-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/openstack-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/organization-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/organization-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/organizations-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/organizations-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/organizations-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/osp-configuration-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/osp-configuration-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/osp-configuration-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/osp-network-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/osp-network-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/osp-network-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/osp-settings-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/osp-settings-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/osp-settings-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/product-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/product-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/product-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/products-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/products-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/products-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/review-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/review-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/review-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/review/installation-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers/review');
-  test('fusor-ember-cli/tests/unit/controllers/review/installation-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/review/installation-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/review/progress-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers/review');
-  test('fusor-ember-cli/tests/unit/controllers/review/progress-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/review/progress-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/rhci-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/rhci-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/rhci-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/rhev-options-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/rhev-options-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/rhev-options-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/rhev-setup-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/rhev-setup-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/rhev-setup-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/rhev-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/rhev-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/rhev-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/rhev/index-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers/rhev');
-  test('fusor-ember-cli/tests/unit/controllers/rhev/index-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/rhev/index-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/satellite-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/satellite-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/satellite-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/satellite/index-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers/satellite');
-  test('fusor-ember-cli/tests/unit/controllers/satellite/index-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/satellite/index-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/side-menu-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/side-menu-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/side-menu-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/storage-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/storage-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/storage-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/subscription-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/subscription-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/subscription-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/subscriptions-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/subscriptions-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/subscriptions-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/subscriptions/credentials-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers/subscriptions');
-  test('fusor-ember-cli/tests/unit/controllers/subscriptions/credentials-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/subscriptions/credentials-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/subscriptions/select-subscriptions-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers/subscriptions');
-  test('fusor-ember-cli/tests/unit/controllers/subscriptions/select-subscriptions-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/subscriptions/select-subscriptions-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/user-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/user-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/user-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/user/edit-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers/user');
-  test('fusor-ember-cli/tests/unit/controllers/user/edit-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/user/edit-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/users-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/users-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/users-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/users/new-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers/users');
-  test('fusor-ember-cli/tests/unit/controllers/users/new-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/users/new-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/controllers/where-install-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/controllers');
-  test('fusor-ember-cli/tests/unit/controllers/where-install-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/controllers/where-install-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/helpers/raw-text-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/helpers');
-  test('fusor-ember-cli/tests/unit/helpers/raw-text-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/helpers/raw-text-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/mixins/config-environment-mixin-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/mixins');
-  test('fusor-ember-cli/tests/unit/mixins/config-environment-mixin-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/mixins/config-environment-mixin-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/mixins/configure-organization-mixin-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/mixins');
-  test('fusor-ember-cli/tests/unit/mixins/configure-organization-mixin-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/mixins/configure-organization-mixin-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/mixins/deployment-controller-mixin-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/mixins');
-  test('fusor-ember-cli/tests/unit/mixins/deployment-controller-mixin-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/mixins/deployment-controller-mixin-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/mixins/deployment-new-satellite-route-mixin-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/mixins');
-  test('fusor-ember-cli/tests/unit/mixins/deployment-new-satellite-route-mixin-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/mixins/deployment-new-satellite-route-mixin-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/mixins/deployment-route-mixin-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/mixins');
-  test('fusor-ember-cli/tests/unit/mixins/deployment-route-mixin-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/mixins/deployment-route-mixin-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/mixins/disable-tab-mixin-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/mixins');
-  test('fusor-ember-cli/tests/unit/mixins/disable-tab-mixin-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/mixins/disable-tab-mixin-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/mixins/satellite-controller-mixin-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/mixins');
-  test('fusor-ember-cli/tests/unit/mixins/satellite-controller-mixin-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/mixins/satellite-controller-mixin-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/mixins/start-controller-mixin-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/mixins');
-  test('fusor-ember-cli/tests/unit/mixins/start-controller-mixin-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/mixins/start-controller-mixin-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/models/deployment-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/models');
-  test('fusor-ember-cli/tests/unit/models/deployment-host-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/models/deployment-host-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/models/deployment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/models');
-  test('fusor-ember-cli/tests/unit/models/deployment-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/models/deployment-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/models/discovered-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/models');
-  test('fusor-ember-cli/tests/unit/models/discovered-host-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/models/discovered-host-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/models/environment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/models');
-  test('fusor-ember-cli/tests/unit/models/environment-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/models/environment-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/models/host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/models');
-  test('fusor-ember-cli/tests/unit/models/host-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/models/host-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/models/hostgroup-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/models');
-  test('fusor-ember-cli/tests/unit/models/hostgroup-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/models/hostgroup-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/models/lifecycle-environment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/models');
-  test('fusor-ember-cli/tests/unit/models/lifecycle-environment-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/models/lifecycle-environment-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/models/location-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/models');
-  test('fusor-ember-cli/tests/unit/models/location-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/models/location-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/models/organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/models');
-  test('fusor-ember-cli/tests/unit/models/organization-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/models/organization-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/models/product-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/models');
-  test('fusor-ember-cli/tests/unit/models/product-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/models/product-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/models/rhev-setup-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/models');
-  test('fusor-ember-cli/tests/unit/models/rhev-setup-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/models/rhev-setup-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/models/subnet-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/models');
-  test('fusor-ember-cli/tests/unit/models/subnet-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/models/subnet-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/models/subscription-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/models');
-  test('fusor-ember-cli/tests/unit/models/subscription-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/models/subscription-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/models/traffic-type-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/models');
-  test('fusor-ember-cli/tests/unit/models/traffic-type-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/models/traffic-type-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/models/user-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/models');
-  test('fusor-ember-cli/tests/unit/models/user-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/models/user-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/application-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/application-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/application-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/cloudforms-storage-domain-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/cloudforms-storage-domain-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/cloudforms-storage-domain-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/cloudforms-vm-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/cloudforms-vm-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/cloudforms-vm-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/cloudforms/index-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/cloudforms');
-  test('fusor-ember-cli/tests/unit/routes/cloudforms/index-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/cloudforms/index-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/configure-environment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/configure-environment-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/configure-environment-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/configure-organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/configure-organization-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/configure-organization-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/configure/new-organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/configure');
-  test('fusor-ember-cli/tests/unit/routes/configure/new-organization-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/configure/new-organization-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/content-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/content-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/content-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/deployment-new-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/deployment-new-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/deployment-new-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/deployment-new/index-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/deployment-new');
-  test('fusor-ember-cli/tests/unit/routes/deployment-new/index-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/deployment-new/index-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/deployment-new/satellite-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/deployment-new');
-  test('fusor-ember-cli/tests/unit/routes/deployment-new/satellite-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/deployment-new/satellite-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-environment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/deployment-new/satellite');
-  test('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-environment-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-environment-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/deployment-new/satellite');
-  test('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-organization-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-organization-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/deployment-new/satellite/index-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/deployment-new/satellite');
-  test('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/index-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/deployment-new/satellite/index-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/deployment-new/start-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/deployment-new');
-  test('fusor-ember-cli/tests/unit/routes/deployment-new/start-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/deployment-new/start-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/deployment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/deployment-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/deployment-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/deployment/index-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/deployment');
-  test('fusor-ember-cli/tests/unit/routes/deployment/index-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/deployment/index-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/deployment/new-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/deployment');
-  test('fusor-ember-cli/tests/unit/routes/deployment/new-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/deployment/new-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/deployment/review-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/deployment');
-  test('fusor-ember-cli/tests/unit/routes/deployment/review-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/deployment/review-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/deployment/satellite/configure/new-organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/deployment/satellite/configure');
-  test('fusor-ember-cli/tests/unit/routes/deployment/satellite/configure/new-organization-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/deployment/satellite/configure/new-organization-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/deployment/start-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/deployment');
-  test('fusor-ember-cli/tests/unit/routes/deployment/start-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/deployment/start-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/deployments-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/deployments-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/deployments-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/discovered-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/discovered-host-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/discovered-host-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/discovered-hosts-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/discovered-hosts-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/discovered-hosts-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/engine-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/engine-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/engine-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/engine/discovered-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/engine');
-  test('fusor-ember-cli/tests/unit/routes/engine/discovered-host-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/engine/discovered-host-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/engine/existing-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/engine');
-  test('fusor-ember-cli/tests/unit/routes/engine/existing-host-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/engine/existing-host-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/engine/hypervisor-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/engine');
-  test('fusor-ember-cli/tests/unit/routes/engine/hypervisor-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/engine/hypervisor-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/engine/new-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/engine');
-  test('fusor-ember-cli/tests/unit/routes/engine/new-host-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/engine/new-host-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/hostgroup-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/hostgroup-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/hostgroup-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/hostgroup/edit-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/hostgroup');
-  test('fusor-ember-cli/tests/unit/routes/hostgroup/edit-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/hostgroup/edit-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/hostgroups-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/hostgroups-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/hostgroups-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/hypervisor-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/hypervisor-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/hypervisor-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/hypervisor/discovered-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/hypervisor');
-  test('fusor-ember-cli/tests/unit/routes/hypervisor/discovered-host-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/hypervisor/discovered-host-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/hypervisor/existing-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/hypervisor');
-  test('fusor-ember-cli/tests/unit/routes/hypervisor/existing-host-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/hypervisor/existing-host-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/hypervisor/new-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/hypervisor');
-  test('fusor-ember-cli/tests/unit/routes/hypervisor/new-host-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/hypervisor/new-host-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/index-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/index-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/index-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/loggedin-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/loggedin-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/loggedin-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/login-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/login-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/login-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/networking-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/networking-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/networking-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/new-environment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/new-environment-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/new-environment-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/new-organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/new-organization-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/new-organization-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/openstack/index-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/openstack');
-  test('fusor-ember-cli/tests/unit/routes/openstack/index-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/openstack/index-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/osp-configuration-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/osp-configuration-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/osp-configuration-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/osp-network-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/osp-network-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/osp-network-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/osp-overview-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/osp-overview-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/osp-overview-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/osp-settings-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/osp-settings-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/osp-settings-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/review/index-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/review');
-  test('fusor-ember-cli/tests/unit/routes/review/index-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/review/index-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/review/installation-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/review');
-  test('fusor-ember-cli/tests/unit/routes/review/installation-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/review/installation-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/review/progress-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/review');
-  test('fusor-ember-cli/tests/unit/routes/review/progress-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/review/progress-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/rhci-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/rhci-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/rhci-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/rhev-options-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/rhev-options-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/rhev-options-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/rhev-setup-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/rhev-setup-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/rhev-setup-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/rhev-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/rhev-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/rhev-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/rhev/engine-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/rhev');
-  test('fusor-ember-cli/tests/unit/routes/rhev/engine-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/rhev/engine-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/rhev/index-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/rhev');
-  test('fusor-ember-cli/tests/unit/routes/rhev/index-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/rhev/index-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/satellite-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/satellite-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/satellite-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/satellite/configure-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/satellite');
-  test('fusor-ember-cli/tests/unit/routes/satellite/configure-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/satellite/configure-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/satellite/index-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/satellite');
-  test('fusor-ember-cli/tests/unit/routes/satellite/index-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/satellite/index-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/satellite/review-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/satellite');
-  test('fusor-ember-cli/tests/unit/routes/satellite/review-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/satellite/review-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/satellite/subscriptions-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/satellite');
-  test('fusor-ember-cli/tests/unit/routes/satellite/subscriptions-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/satellite/subscriptions-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/setpassword-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/setpassword-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/setpassword-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/single-deployment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/single-deployment-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/single-deployment-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/storage-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/storage-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/storage-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/subscriptions/credentials-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/subscriptions');
-  test('fusor-ember-cli/tests/unit/routes/subscriptions/credentials-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/subscriptions/credentials-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/subscriptions/index-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/subscriptions');
-  test('fusor-ember-cli/tests/unit/routes/subscriptions/index-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/subscriptions/index-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/subscriptions/select-subscriptions-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/subscriptions');
-  test('fusor-ember-cli/tests/unit/routes/subscriptions/select-subscriptions-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/subscriptions/select-subscriptions-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/user-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/user-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/user-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/user/edit-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/user');
-  test('fusor-ember-cli/tests/unit/routes/user/edit-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/user/edit-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/users-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/users-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/users-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/users/new-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes/users');
-  test('fusor-ember-cli/tests/unit/routes/users/new-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/users/new-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/routes/where-install-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/routes');
-  test('fusor-ember-cli/tests/unit/routes/where-install-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/routes/where-install-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/views/application-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/views');
-  test('fusor-ember-cli/tests/unit/views/application-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/views/application-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/views/configure-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/views');
-  test('fusor-ember-cli/tests/unit/views/configure-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/views/configure-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/views/organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/views');
-  test('fusor-ember-cli/tests/unit/views/organization-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/views/organization-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/fusor-ember-cli/tests/unit/views/rhci-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - fusor-ember-cli/tests/unit/views');
-  test('fusor-ember-cli/tests/unit/views/rhci-test.js should pass jshint', function() { 
-    ok(true, 'fusor-ember-cli/tests/unit/views/rhci-test.js should pass jshint.'); 
-  });
-
-});
 define('fusor-ember-cli/tests/helpers/raw-text.jshint', function () {
 
   'use strict';
@@ -11418,10 +9535,23 @@ define('fusor-ember-cli/tests/helpers/resolver', ['exports', 'ember/resolver', '
   exports['default'] = resolver;
 
 });
+define('fusor-ember-cli/tests/helpers/resolver.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - helpers');
+  test('helpers/resolver.js should pass jshint', function() { 
+    ok(true, 'helpers/resolver.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/helpers/start-app', ['exports', 'ember', 'fusor-ember-cli/app', 'fusor-ember-cli/router', 'fusor-ember-cli/config/environment'], function (exports, Ember, Application, Router, config) {
 
   'use strict';
 
+
+
+  exports['default'] = startApp;
   function startApp(attrs) {
     var application;
 
@@ -11436,7 +9566,16 @@ define('fusor-ember-cli/tests/helpers/start-app', ['exports', 'ember', 'fusor-em
 
     return application;
   }
-  exports['default'] = startApp;
+
+});
+define('fusor-ember-cli/tests/helpers/start-app.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - helpers');
+  test('helpers/start-app.js should pass jshint', function() { 
+    ok(true, 'helpers/start-app.js should pass jshint.'); 
+  });
 
 });
 define('fusor-ember-cli/tests/mixins/configure-environment-mixin.jshint', function () {
@@ -12315,11 +10454,15 @@ define('fusor-ember-cli/tests/test-helper', ['fusor-ember-cli/tests/helpers/reso
 
 	ember_qunit.setResolver(resolver['default']);
 
-	document.write("<div id=\"ember-testing-container\"><div id=\"ember-testing\"></div></div>");
+});
+define('fusor-ember-cli/tests/test-helper.jshint', function () {
 
-	QUnit.config.urlConfig.push({ id: "nocontainer", label: "Hide container" });
-	var containerVisibility = QUnit.urlParams.nocontainer ? "hidden" : "visible";
-	document.getElementById("ember-testing-container").style.visibility = containerVisibility;
+  'use strict';
+
+  module('JSHint - .');
+  test('test-helper.js should pass jshint', function() { 
+    ok(true, 'test-helper.js should pass jshint.'); 
+  });
 
 });
 define('fusor-ember-cli/tests/torii-providers/foreman.jshint', function () {
@@ -12347,6 +10490,16 @@ define('fusor-ember-cli/tests/unit/adapters/application-test', ['ember-qunit'], 
   // needs: ['serializer:foo']
 
 });
+define('fusor-ember-cli/tests/unit/adapters/application-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/adapters');
+  test('unit/adapters/application-test.js should pass jshint', function() { 
+    ok(false, 'unit/adapters/application-test.js should pass jshint.\nunit/adapters/application-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/adapters/hostgroup-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12360,6 +10513,16 @@ define('fusor-ember-cli/tests/unit/adapters/hostgroup-test', ['ember-qunit'], fu
   });
   // Specify the other units that are required for this test.
   // needs: ['serializer:foo']
+
+});
+define('fusor-ember-cli/tests/unit/adapters/hostgroup-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/adapters');
+  test('unit/adapters/hostgroup-test.js should pass jshint', function() { 
+    ok(false, 'unit/adapters/hostgroup-test.js should pass jshint.\nunit/adapters/hostgroup-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/adapters/lifecycle-environment-test', ['ember-qunit'], function (ember_qunit) {
@@ -12377,6 +10540,16 @@ define('fusor-ember-cli/tests/unit/adapters/lifecycle-environment-test', ['ember
   // needs: ['serializer:foo']
 
 });
+define('fusor-ember-cli/tests/unit/adapters/lifecycle-environment-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/adapters');
+  test('unit/adapters/lifecycle-environment-test.js should pass jshint', function() { 
+    ok(false, 'unit/adapters/lifecycle-environment-test.js should pass jshint.\nunit/adapters/lifecycle-environment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/adapters/subscriptions-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12392,6 +10565,16 @@ define('fusor-ember-cli/tests/unit/adapters/subscriptions-test', ['ember-qunit']
   // needs: ['serializer:foo']
 
 });
+define('fusor-ember-cli/tests/unit/adapters/subscriptions-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/adapters');
+  test('unit/adapters/subscriptions-test.js should pass jshint', function() { 
+    ok(false, 'unit/adapters/subscriptions-test.js should pass jshint.\nunit/adapters/subscriptions-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/adapters/traffic-type-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12405,6 +10588,16 @@ define('fusor-ember-cli/tests/unit/adapters/traffic-type-test', ['ember-qunit'],
   });
   // Specify the other units that are required for this test.
   // needs: ['serializer:foo']
+
+});
+define('fusor-ember-cli/tests/unit/adapters/traffic-type-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/adapters');
+  test('unit/adapters/traffic-type-test.js should pass jshint', function() { 
+    ok(false, 'unit/adapters/traffic-type-test.js should pass jshint.\nunit/adapters/traffic-type-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/accordion-item-test', ['ember-qunit'], function (ember_qunit) {
@@ -12428,6 +10621,16 @@ define('fusor-ember-cli/tests/unit/components/accordion-item-test', ['ember-quni
   // needs: ['component:foo', 'helper:bar']
 
 });
+define('fusor-ember-cli/tests/unit/components/accordion-item-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/accordion-item-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/accordion-item-test.js should pass jshint.\nunit/components/accordion-item-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/accordion-item-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/accordion-item-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/components/base-f-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12447,6 +10650,16 @@ define('fusor-ember-cli/tests/unit/components/base-f-test', ['ember-qunit'], fun
   });
   // specify the other units that are required for this test
   // needs: ['component:foo', 'helper:bar']
+
+});
+define('fusor-ember-cli/tests/unit/components/base-f-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/base-f-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/base-f-test.js should pass jshint.\nunit/components/base-f-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/base-f-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/base-f-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/env-path-list-item-test', ['ember-qunit'], function (ember_qunit) {
@@ -12470,6 +10683,16 @@ define('fusor-ember-cli/tests/unit/components/env-path-list-item-test', ['ember-
   // needs: ['component:foo', 'helper:bar']
 
 });
+define('fusor-ember-cli/tests/unit/components/env-path-list-item-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/env-path-list-item-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/env-path-list-item-test.js should pass jshint.\nunit/components/env-path-list-item-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/env-path-list-item-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/env-path-list-item-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/components/modal-confirm-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12489,6 +10712,16 @@ define('fusor-ember-cli/tests/unit/components/modal-confirm-test', ['ember-qunit
   });
   // specify the other units that are required for this test
   // needs: ['component:foo', 'helper:bar']
+
+});
+define('fusor-ember-cli/tests/unit/components/modal-confirm-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/modal-confirm-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/modal-confirm-test.js should pass jshint.\nunit/components/modal-confirm-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/modal-confirm-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/modal-confirm-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/radio-button-f-test', ['ember-qunit'], function (ember_qunit) {
@@ -12512,6 +10745,16 @@ define('fusor-ember-cli/tests/unit/components/radio-button-f-test', ['ember-quni
   // needs: ['component:foo', 'helper:bar']
 
 });
+define('fusor-ember-cli/tests/unit/components/radio-button-f-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/radio-button-f-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/radio-button-f-test.js should pass jshint.\nunit/components/radio-button-f-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/radio-button-f-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/radio-button-f-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/components/rchi-item-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12531,6 +10774,16 @@ define('fusor-ember-cli/tests/unit/components/rchi-item-test', ['ember-qunit'], 
   });
   // specify the other units that are required for this test
   // needs: ['component:foo', 'helper:bar']
+
+});
+define('fusor-ember-cli/tests/unit/components/rchi-item-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/rchi-item-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/rchi-item-test.js should pass jshint.\nunit/components/rchi-item-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/rchi-item-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/rchi-item-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/rhci-hover-text-test', ['ember-qunit'], function (ember_qunit) {
@@ -12554,6 +10807,16 @@ define('fusor-ember-cli/tests/unit/components/rhci-hover-text-test', ['ember-qun
   // needs: ['component:foo', 'helper:bar']
 
 });
+define('fusor-ember-cli/tests/unit/components/rhci-hover-text-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/rhci-hover-text-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/rhci-hover-text-test.js should pass jshint.\nunit/components/rhci-hover-text-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/rhci-hover-text-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/rhci-hover-text-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/components/rhci-start-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12573,6 +10836,16 @@ define('fusor-ember-cli/tests/unit/components/rhci-start-test', ['ember-qunit'],
   });
   // specify the other units that are required for this test
   // needs: ['component:foo', 'helper:bar']
+
+});
+define('fusor-ember-cli/tests/unit/components/rhci-start-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/rhci-start-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/rhci-start-test.js should pass jshint.\nunit/components/rhci-start-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/rhci-start-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/rhci-start-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/rhci-wizard-test', ['ember-qunit'], function (ember_qunit) {
@@ -12596,6 +10869,16 @@ define('fusor-ember-cli/tests/unit/components/rhci-wizard-test', ['ember-qunit']
   // needs: ['component:foo', 'helper:bar']
 
 });
+define('fusor-ember-cli/tests/unit/components/rhci-wizard-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/rhci-wizard-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/rhci-wizard-test.js should pass jshint.\nunit/components/rhci-wizard-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/rhci-wizard-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/rhci-wizard-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/components/select-f-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12615,6 +10898,16 @@ define('fusor-ember-cli/tests/unit/components/select-f-test', ['ember-qunit'], f
   });
   // specify the other units that are required for this test
   // needs: ['component:foo', 'helper:bar']
+
+});
+define('fusor-ember-cli/tests/unit/components/select-f-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/select-f-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/select-f-test.js should pass jshint.\nunit/components/select-f-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/select-f-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/select-f-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/select-simple-f-test', ['ember-qunit'], function (ember_qunit) {
@@ -12638,6 +10931,16 @@ define('fusor-ember-cli/tests/unit/components/select-simple-f-test', ['ember-qun
   // needs: ['component:foo', 'helper:bar']
 
 });
+define('fusor-ember-cli/tests/unit/components/select-simple-f-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/select-simple-f-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/select-simple-f-test.js should pass jshint.\nunit/components/select-simple-f-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/select-simple-f-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/select-simple-f-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/components/step-number-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12657,6 +10960,16 @@ define('fusor-ember-cli/tests/unit/components/step-number-test', ['ember-qunit']
   });
   // specify the other units that are required for this test
   // needs: ['component:foo', 'helper:bar']
+
+});
+define('fusor-ember-cli/tests/unit/components/step-number-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/step-number-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/step-number-test.js should pass jshint.\nunit/components/step-number-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/step-number-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/step-number-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/sub-menu-test', ['ember-qunit'], function (ember_qunit) {
@@ -12680,6 +10993,16 @@ define('fusor-ember-cli/tests/unit/components/sub-menu-test', ['ember-qunit'], f
   // needs: ['component:foo', 'helper:bar']
 
 });
+define('fusor-ember-cli/tests/unit/components/sub-menu-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/sub-menu-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/sub-menu-test.js should pass jshint.\nunit/components/sub-menu-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/sub-menu-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/sub-menu-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/components/subnet-drop-area-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12699,6 +11022,16 @@ define('fusor-ember-cli/tests/unit/components/subnet-drop-area-test', ['ember-qu
   });
   // specify the other units that are required for this test
   // needs: ['component:foo', 'helper:bar']
+
+});
+define('fusor-ember-cli/tests/unit/components/subnet-drop-area-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/subnet-drop-area-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/subnet-drop-area-test.js should pass jshint.\nunit/components/subnet-drop-area-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/subnet-drop-area-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/subnet-drop-area-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/text-f-test', ['ember-qunit'], function (ember_qunit) {
@@ -12722,6 +11055,16 @@ define('fusor-ember-cli/tests/unit/components/text-f-test', ['ember-qunit'], fun
   // needs: ['component:foo', 'helper:bar']
 
 });
+define('fusor-ember-cli/tests/unit/components/text-f-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/text-f-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/text-f-test.js should pass jshint.\nunit/components/text-f-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/text-f-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/text-f-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/components/textarea-f-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12741,6 +11084,16 @@ define('fusor-ember-cli/tests/unit/components/textarea-f-test', ['ember-qunit'],
   });
   // specify the other units that are required for this test
   // needs: ['component:foo', 'helper:bar']
+
+});
+define('fusor-ember-cli/tests/unit/components/textarea-f-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/textarea-f-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/textarea-f-test.js should pass jshint.\nunit/components/textarea-f-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/textarea-f-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/textarea-f-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/tr-organization-test', ['ember-qunit'], function (ember_qunit) {
@@ -12764,6 +11117,16 @@ define('fusor-ember-cli/tests/unit/components/tr-organization-test', ['ember-qun
   // needs: ['component:foo', 'helper:bar']
 
 });
+define('fusor-ember-cli/tests/unit/components/tr-organization-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/tr-organization-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/tr-organization-test.js should pass jshint.\nunit/components/tr-organization-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/tr-organization-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/tr-organization-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/components/traffic-type-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12783,6 +11146,16 @@ define('fusor-ember-cli/tests/unit/components/traffic-type-test', ['ember-qunit'
   });
   // specify the other units that are required for this test
   // needs: ['component:foo', 'helper:bar']
+
+});
+define('fusor-ember-cli/tests/unit/components/traffic-type-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/traffic-type-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/traffic-type-test.js should pass jshint.\nunit/components/traffic-type-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/traffic-type-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/traffic-type-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/upstream-downstream-test', ['ember-qunit'], function (ember_qunit) {
@@ -12806,6 +11179,16 @@ define('fusor-ember-cli/tests/unit/components/upstream-downstream-test', ['ember
   // needs: ['component:foo', 'helper:bar']
 
 });
+define('fusor-ember-cli/tests/unit/components/upstream-downstream-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/upstream-downstream-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/upstream-downstream-test.js should pass jshint.\nunit/components/upstream-downstream-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/upstream-downstream-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/upstream-downstream-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/components/vertical-tab-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12825,6 +11208,16 @@ define('fusor-ember-cli/tests/unit/components/vertical-tab-test', ['ember-qunit'
   });
   // specify the other units that are required for this test
   // needs: ['component:foo', 'helper:bar']
+
+});
+define('fusor-ember-cli/tests/unit/components/vertical-tab-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/vertical-tab-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/vertical-tab-test.js should pass jshint.\nunit/components/vertical-tab-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/vertical-tab-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/vertical-tab-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/wizard-item-test', ['ember-qunit'], function (ember_qunit) {
@@ -12848,6 +11241,16 @@ define('fusor-ember-cli/tests/unit/components/wizard-item-test', ['ember-qunit']
   // needs: ['component:foo', 'helper:bar']
 
 });
+define('fusor-ember-cli/tests/unit/components/wizard-item-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/wizard-item-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/wizard-item-test.js should pass jshint.\nunit/components/wizard-item-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/wizard-item-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/wizard-item-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/components/wrap-in-container-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12869,6 +11272,16 @@ define('fusor-ember-cli/tests/unit/components/wrap-in-container-test', ['ember-q
   // needs: ['component:foo', 'helper:bar']
 
 });
+define('fusor-ember-cli/tests/unit/components/wrap-in-container-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/wrap-in-container-test.js should pass jshint', function() { 
+    ok(false, 'unit/components/wrap-in-container-test.js should pass jshint.\nunit/components/wrap-in-container-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/wrap-in-container-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/wrap-in-container-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/application-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12882,6 +11295,16 @@ define('fusor-ember-cli/tests/unit/controllers/application-test', ['ember-qunit'
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/application-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/application-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/application-test.js should pass jshint.\nunit/controllers/application-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/cancel-modal-test', ['ember-qunit'], function (ember_qunit) {
@@ -12899,6 +11322,16 @@ define('fusor-ember-cli/tests/unit/controllers/cancel-modal-test', ['ember-qunit
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/cancel-modal-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/cancel-modal-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/cancel-modal-test.js should pass jshint.\nunit/controllers/cancel-modal-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/cloudforms-storage-domain-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12912,6 +11345,16 @@ define('fusor-ember-cli/tests/unit/controllers/cloudforms-storage-domain-test', 
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/cloudforms-storage-domain-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/cloudforms-storage-domain-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/cloudforms-storage-domain-test.js should pass jshint.\nunit/controllers/cloudforms-storage-domain-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/cloudforms-test', ['ember-qunit'], function (ember_qunit) {
@@ -12929,6 +11372,16 @@ define('fusor-ember-cli/tests/unit/controllers/cloudforms-test', ['ember-qunit']
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/cloudforms-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/cloudforms-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/cloudforms-test.js should pass jshint.\nunit/controllers/cloudforms-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/cloudforms-vm-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12942,6 +11395,16 @@ define('fusor-ember-cli/tests/unit/controllers/cloudforms-vm-test', ['ember-quni
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/cloudforms-vm-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/cloudforms-vm-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/cloudforms-vm-test.js should pass jshint.\nunit/controllers/cloudforms-vm-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/configure-environment-test', ['ember-qunit'], function (ember_qunit) {
@@ -12959,6 +11422,16 @@ define('fusor-ember-cli/tests/unit/controllers/configure-environment-test', ['em
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/configure-environment-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/configure-environment-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/configure-environment-test.js should pass jshint.\nunit/controllers/configure-environment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/configure-organization-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -12972,6 +11445,16 @@ define('fusor-ember-cli/tests/unit/controllers/configure-organization-test', ['e
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/configure-organization-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/configure-organization-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/configure-organization-test.js should pass jshint.\nunit/controllers/configure-organization-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/configure/new-organization-test', ['ember-qunit'], function (ember_qunit) {
@@ -12989,6 +11472,16 @@ define('fusor-ember-cli/tests/unit/controllers/configure/new-organization-test',
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/configure/new-organization-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/configure');
+  test('unit/controllers/configure/new-organization-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/configure/new-organization-test.js should pass jshint.\nunit/controllers/configure/new-organization-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/deployment-new-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13002,6 +11495,16 @@ define('fusor-ember-cli/tests/unit/controllers/deployment-new-test', ['ember-qun
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/deployment-new-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/deployment-new-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/deployment-new-test.js should pass jshint.\nunit/controllers/deployment-new-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite-test', ['ember-qunit'], function (ember_qunit) {
@@ -13019,6 +11522,16 @@ define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite-test', [
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/deployment-new');
+  test('unit/controllers/deployment-new/satellite-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/deployment-new/satellite-test.js should pass jshint.\nunit/controllers/deployment-new/satellite-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/configure-environment-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13032,6 +11545,16 @@ define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/configur
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/configure-environment-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/deployment-new/satellite');
+  test('unit/controllers/deployment-new/satellite/configure-environment-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/deployment-new/satellite/configure-environment-test.js should pass jshint.\nunit/controllers/deployment-new/satellite/configure-environment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/configure-organization-test', ['ember-qunit'], function (ember_qunit) {
@@ -13049,6 +11572,16 @@ define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/configur
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/configure-organization-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/deployment-new/satellite');
+  test('unit/controllers/deployment-new/satellite/configure-organization-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/deployment-new/satellite/configure-organization-test.js should pass jshint.\nunit/controllers/deployment-new/satellite/configure-organization-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/index-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13062,6 +11595,16 @@ define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/index-te
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/index-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/deployment-new/satellite');
+  test('unit/controllers/deployment-new/satellite/index-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/deployment-new/satellite/index-test.js should pass jshint.\nunit/controllers/deployment-new/satellite/index-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/deployment-new/start-test', ['ember-qunit'], function (ember_qunit) {
@@ -13079,6 +11622,16 @@ define('fusor-ember-cli/tests/unit/controllers/deployment-new/start-test', ['emb
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/deployment-new/start-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/deployment-new');
+  test('unit/controllers/deployment-new/start-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/deployment-new/start-test.js should pass jshint.\nunit/controllers/deployment-new/start-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/deployment-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13092,6 +11645,16 @@ define('fusor-ember-cli/tests/unit/controllers/deployment-test', ['ember-qunit']
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/deployment-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/deployment-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/deployment-test.js should pass jshint.\nunit/controllers/deployment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/deployment/start-test', ['ember-qunit'], function (ember_qunit) {
@@ -13109,6 +11672,16 @@ define('fusor-ember-cli/tests/unit/controllers/deployment/start-test', ['ember-q
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/deployment/start-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/deployment');
+  test('unit/controllers/deployment/start-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/deployment/start-test.js should pass jshint.\nunit/controllers/deployment/start-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/deployments-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13122,6 +11695,16 @@ define('fusor-ember-cli/tests/unit/controllers/deployments-test', ['ember-qunit'
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/deployments-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/deployments-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/deployments-test.js should pass jshint.\nunit/controllers/deployments-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/discovered-host-test', ['ember-qunit'], function (ember_qunit) {
@@ -13139,6 +11722,16 @@ define('fusor-ember-cli/tests/unit/controllers/discovered-host-test', ['ember-qu
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/discovered-host-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/discovered-host-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/discovered-host-test.js should pass jshint.\nunit/controllers/discovered-host-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/engine-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13152,6 +11745,16 @@ define('fusor-ember-cli/tests/unit/controllers/engine-test', ['ember-qunit'], fu
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/engine-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/engine-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/engine-test.js should pass jshint.\nunit/controllers/engine-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/engine/discovered-host-test', ['ember-qunit'], function (ember_qunit) {
@@ -13169,6 +11772,16 @@ define('fusor-ember-cli/tests/unit/controllers/engine/discovered-host-test', ['e
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/engine/discovered-host-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/engine');
+  test('unit/controllers/engine/discovered-host-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/engine/discovered-host-test.js should pass jshint.\nunit/controllers/engine/discovered-host-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/host-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13182,6 +11795,16 @@ define('fusor-ember-cli/tests/unit/controllers/host-test', ['ember-qunit'], func
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/host-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/host-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/host-test.js should pass jshint.\nunit/controllers/host-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/hostgroup-test', ['ember-qunit'], function (ember_qunit) {
@@ -13199,6 +11822,16 @@ define('fusor-ember-cli/tests/unit/controllers/hostgroup-test', ['ember-qunit'],
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/hostgroup-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/hostgroup-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/hostgroup-test.js should pass jshint.\nunit/controllers/hostgroup-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/hypervisor-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13212,6 +11845,16 @@ define('fusor-ember-cli/tests/unit/controllers/hypervisor-test', ['ember-qunit']
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/hypervisor-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/hypervisor-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/hypervisor-test.js should pass jshint.\nunit/controllers/hypervisor-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/hypervisor/discovered-host-test', ['ember-qunit'], function (ember_qunit) {
@@ -13229,6 +11872,16 @@ define('fusor-ember-cli/tests/unit/controllers/hypervisor/discovered-host-test',
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/hypervisor/discovered-host-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/hypervisor');
+  test('unit/controllers/hypervisor/discovered-host-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/hypervisor/discovered-host-test.js should pass jshint.\nunit/controllers/hypervisor/discovered-host-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/lifecycle-environment-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13242,6 +11895,16 @@ define('fusor-ember-cli/tests/unit/controllers/lifecycle-environment-test', ['em
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/lifecycle-environment-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/lifecycle-environment-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/lifecycle-environment-test.js should pass jshint.\nunit/controllers/lifecycle-environment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/lifecycle-environments-test', ['ember-qunit'], function (ember_qunit) {
@@ -13259,6 +11922,16 @@ define('fusor-ember-cli/tests/unit/controllers/lifecycle-environments-test', ['e
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/lifecycle-environments-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/lifecycle-environments-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/lifecycle-environments-test.js should pass jshint.\nunit/controllers/lifecycle-environments-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/login-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13272,6 +11945,16 @@ define('fusor-ember-cli/tests/unit/controllers/login-test', ['ember-qunit'], fun
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/login-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/login-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/login-test.js should pass jshint.\nunit/controllers/login-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/logout-model-test', ['ember-qunit'], function (ember_qunit) {
@@ -13289,6 +11972,16 @@ define('fusor-ember-cli/tests/unit/controllers/logout-model-test', ['ember-qunit
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/logout-model-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/logout-model-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/logout-model-test.js should pass jshint.\nunit/controllers/logout-model-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/networking-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13302,6 +11995,16 @@ define('fusor-ember-cli/tests/unit/controllers/networking-test', ['ember-qunit']
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/networking-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/networking-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/networking-test.js should pass jshint.\nunit/controllers/networking-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/new-environment-test', ['ember-qunit'], function (ember_qunit) {
@@ -13319,6 +12022,16 @@ define('fusor-ember-cli/tests/unit/controllers/new-environment-test', ['ember-qu
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/new-environment-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/new-environment-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/new-environment-test.js should pass jshint.\nunit/controllers/new-environment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/new-organization-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13332,6 +12045,16 @@ define('fusor-ember-cli/tests/unit/controllers/new-organization-test', ['ember-q
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/new-organization-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/new-organization-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/new-organization-test.js should pass jshint.\nunit/controllers/new-organization-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/openstack-test', ['ember-qunit'], function (ember_qunit) {
@@ -13349,6 +12072,16 @@ define('fusor-ember-cli/tests/unit/controllers/openstack-test', ['ember-qunit'],
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/openstack-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/openstack-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/openstack-test.js should pass jshint.\nunit/controllers/openstack-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/organization-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13362,6 +12095,16 @@ define('fusor-ember-cli/tests/unit/controllers/organization-test', ['ember-qunit
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/organization-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/organization-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/organization-test.js should pass jshint.\nunit/controllers/organization-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/organizations-test', ['ember-qunit'], function (ember_qunit) {
@@ -13379,6 +12122,16 @@ define('fusor-ember-cli/tests/unit/controllers/organizations-test', ['ember-quni
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/organizations-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/organizations-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/organizations-test.js should pass jshint.\nunit/controllers/organizations-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/osp-configuration-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13392,6 +12145,16 @@ define('fusor-ember-cli/tests/unit/controllers/osp-configuration-test', ['ember-
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/osp-configuration-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/osp-configuration-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/osp-configuration-test.js should pass jshint.\nunit/controllers/osp-configuration-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/osp-network-test', ['ember-qunit'], function (ember_qunit) {
@@ -13409,6 +12172,16 @@ define('fusor-ember-cli/tests/unit/controllers/osp-network-test', ['ember-qunit'
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/osp-network-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/osp-network-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/osp-network-test.js should pass jshint.\nunit/controllers/osp-network-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/osp-settings-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13422,6 +12195,16 @@ define('fusor-ember-cli/tests/unit/controllers/osp-settings-test', ['ember-qunit
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/osp-settings-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/osp-settings-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/osp-settings-test.js should pass jshint.\nunit/controllers/osp-settings-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/product-test', ['ember-qunit'], function (ember_qunit) {
@@ -13439,6 +12222,16 @@ define('fusor-ember-cli/tests/unit/controllers/product-test', ['ember-qunit'], f
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/product-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/product-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/product-test.js should pass jshint.\nunit/controllers/product-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/products-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13452,6 +12245,16 @@ define('fusor-ember-cli/tests/unit/controllers/products-test', ['ember-qunit'], 
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/products-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/products-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/products-test.js should pass jshint.\nunit/controllers/products-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/review-test', ['ember-qunit'], function (ember_qunit) {
@@ -13469,6 +12272,16 @@ define('fusor-ember-cli/tests/unit/controllers/review-test', ['ember-qunit'], fu
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/review-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/review-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/review-test.js should pass jshint.\nunit/controllers/review-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/review/installation-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13482,6 +12295,16 @@ define('fusor-ember-cli/tests/unit/controllers/review/installation-test', ['embe
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/review/installation-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/review');
+  test('unit/controllers/review/installation-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/review/installation-test.js should pass jshint.\nunit/controllers/review/installation-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/review/progress-test', ['ember-qunit'], function (ember_qunit) {
@@ -13499,6 +12322,16 @@ define('fusor-ember-cli/tests/unit/controllers/review/progress-test', ['ember-qu
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/review/progress-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/review');
+  test('unit/controllers/review/progress-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/review/progress-test.js should pass jshint.\nunit/controllers/review/progress-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/rhci-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13512,6 +12345,16 @@ define('fusor-ember-cli/tests/unit/controllers/rhci-test', ['ember-qunit'], func
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/rhci-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/rhci-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/rhci-test.js should pass jshint.\nunit/controllers/rhci-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/rhev-options-test', ['ember-qunit'], function (ember_qunit) {
@@ -13529,6 +12372,16 @@ define('fusor-ember-cli/tests/unit/controllers/rhev-options-test', ['ember-qunit
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/rhev-options-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/rhev-options-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/rhev-options-test.js should pass jshint.\nunit/controllers/rhev-options-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/rhev-setup-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13542,6 +12395,16 @@ define('fusor-ember-cli/tests/unit/controllers/rhev-setup-test', ['ember-qunit']
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/rhev-setup-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/rhev-setup-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/rhev-setup-test.js should pass jshint.\nunit/controllers/rhev-setup-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/rhev-test', ['ember-qunit'], function (ember_qunit) {
@@ -13559,6 +12422,16 @@ define('fusor-ember-cli/tests/unit/controllers/rhev-test', ['ember-qunit'], func
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/rhev-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/rhev-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/rhev-test.js should pass jshint.\nunit/controllers/rhev-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/rhev/index-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13572,6 +12445,16 @@ define('fusor-ember-cli/tests/unit/controllers/rhev/index-test', ['ember-qunit']
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/rhev/index-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/rhev');
+  test('unit/controllers/rhev/index-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/rhev/index-test.js should pass jshint.\nunit/controllers/rhev/index-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/satellite-test', ['ember-qunit'], function (ember_qunit) {
@@ -13589,6 +12472,16 @@ define('fusor-ember-cli/tests/unit/controllers/satellite-test', ['ember-qunit'],
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/satellite-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/satellite-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/satellite-test.js should pass jshint.\nunit/controllers/satellite-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/satellite/index-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13602,6 +12495,16 @@ define('fusor-ember-cli/tests/unit/controllers/satellite/index-test', ['ember-qu
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/satellite/index-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/satellite');
+  test('unit/controllers/satellite/index-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/satellite/index-test.js should pass jshint.\nunit/controllers/satellite/index-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/side-menu-test', ['ember-qunit'], function (ember_qunit) {
@@ -13619,6 +12522,16 @@ define('fusor-ember-cli/tests/unit/controllers/side-menu-test', ['ember-qunit'],
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/side-menu-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/side-menu-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/side-menu-test.js should pass jshint.\nunit/controllers/side-menu-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/storage-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13632,6 +12545,16 @@ define('fusor-ember-cli/tests/unit/controllers/storage-test', ['ember-qunit'], f
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/storage-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/storage-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/storage-test.js should pass jshint.\nunit/controllers/storage-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/subscription-test', ['ember-qunit'], function (ember_qunit) {
@@ -13649,6 +12572,16 @@ define('fusor-ember-cli/tests/unit/controllers/subscription-test', ['ember-qunit
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/subscription-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/subscription-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/subscription-test.js should pass jshint.\nunit/controllers/subscription-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/subscriptions-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13662,6 +12595,16 @@ define('fusor-ember-cli/tests/unit/controllers/subscriptions-test', ['ember-quni
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/subscriptions-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/subscriptions-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/subscriptions-test.js should pass jshint.\nunit/controllers/subscriptions-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/subscriptions/credentials-test', ['ember-qunit'], function (ember_qunit) {
@@ -13679,6 +12622,16 @@ define('fusor-ember-cli/tests/unit/controllers/subscriptions/credentials-test', 
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/subscriptions/credentials-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/subscriptions');
+  test('unit/controllers/subscriptions/credentials-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/subscriptions/credentials-test.js should pass jshint.\nunit/controllers/subscriptions/credentials-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/subscriptions/select-subscriptions-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13692,6 +12645,16 @@ define('fusor-ember-cli/tests/unit/controllers/subscriptions/select-subscription
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/subscriptions/select-subscriptions-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/subscriptions');
+  test('unit/controllers/subscriptions/select-subscriptions-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/subscriptions/select-subscriptions-test.js should pass jshint.\nunit/controllers/subscriptions/select-subscriptions-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/user-test', ['ember-qunit'], function (ember_qunit) {
@@ -13709,6 +12672,16 @@ define('fusor-ember-cli/tests/unit/controllers/user-test', ['ember-qunit'], func
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/user-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/user-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/user-test.js should pass jshint.\nunit/controllers/user-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/user/edit-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13722,6 +12695,16 @@ define('fusor-ember-cli/tests/unit/controllers/user/edit-test', ['ember-qunit'],
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/user/edit-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/user');
+  test('unit/controllers/user/edit-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/user/edit-test.js should pass jshint.\nunit/controllers/user/edit-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/users-test', ['ember-qunit'], function (ember_qunit) {
@@ -13739,6 +12722,16 @@ define('fusor-ember-cli/tests/unit/controllers/users-test', ['ember-qunit'], fun
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/users-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/users-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/users-test.js should pass jshint.\nunit/controllers/users-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/controllers/users/new-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13752,6 +12745,16 @@ define('fusor-ember-cli/tests/unit/controllers/users/new-test', ['ember-qunit'],
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/users/new-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/users');
+  test('unit/controllers/users/new-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/users/new-test.js should pass jshint.\nunit/controllers/users/new-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/where-install-test', ['ember-qunit'], function (ember_qunit) {
@@ -13769,6 +12772,16 @@ define('fusor-ember-cli/tests/unit/controllers/where-install-test', ['ember-quni
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/controllers/where-install-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/where-install-test.js should pass jshint', function() { 
+    ok(false, 'unit/controllers/where-install-test.js should pass jshint.\nunit/controllers/where-install-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/helpers/raw-text-test', ['fusor-ember-cli/helpers/raw-text'], function (raw_text) {
 
   'use strict';
@@ -13779,6 +12792,16 @@ define('fusor-ember-cli/tests/unit/helpers/raw-text-test', ['fusor-ember-cli/hel
   test("it works", function () {
     var result = raw_text.rawText(42);
     ok(result);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/helpers/raw-text-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/helpers');
+  test('unit/helpers/raw-text-test.js should pass jshint', function() { 
+    ok(false, 'unit/helpers/raw-text-test.js should pass jshint.\nunit/helpers/raw-text-test.js: line 5, col 1, \'module\' is not defined.\nunit/helpers/raw-text-test.js: line 8, col 1, \'test\' is not defined.\nunit/helpers/raw-text-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
   });
 
 });
@@ -13796,6 +12819,16 @@ define('fusor-ember-cli/tests/unit/mixins/config-environment-mixin-test', ['embe
   });
 
 });
+define('fusor-ember-cli/tests/unit/mixins/config-environment-mixin-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/mixins');
+  test('unit/mixins/config-environment-mixin-test.js should pass jshint', function() { 
+    ok(false, 'unit/mixins/config-environment-mixin-test.js should pass jshint.\nunit/mixins/config-environment-mixin-test.js: line 4, col 1, \'module\' is not defined.\nunit/mixins/config-environment-mixin-test.js: line 7, col 1, \'test\' is not defined.\nunit/mixins/config-environment-mixin-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/mixins/configure-organization-mixin-test', ['ember', 'fusor-ember-cli/mixins/configure-organization-mixin'], function (Ember, ConfigureOrganizationMixinMixin) {
 
   'use strict';
@@ -13807,6 +12840,16 @@ define('fusor-ember-cli/tests/unit/mixins/configure-organization-mixin-test', ['
     var ConfigureOrganizationMixinObject = Ember['default'].Object.extend(ConfigureOrganizationMixinMixin['default']);
     var subject = ConfigureOrganizationMixinObject.create();
     ok(subject);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/mixins/configure-organization-mixin-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/mixins');
+  test('unit/mixins/configure-organization-mixin-test.js should pass jshint', function() { 
+    ok(false, 'unit/mixins/configure-organization-mixin-test.js should pass jshint.\nunit/mixins/configure-organization-mixin-test.js: line 4, col 1, \'module\' is not defined.\nunit/mixins/configure-organization-mixin-test.js: line 7, col 1, \'test\' is not defined.\nunit/mixins/configure-organization-mixin-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
   });
 
 });
@@ -13824,6 +12867,16 @@ define('fusor-ember-cli/tests/unit/mixins/deployment-controller-mixin-test', ['e
   });
 
 });
+define('fusor-ember-cli/tests/unit/mixins/deployment-controller-mixin-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/mixins');
+  test('unit/mixins/deployment-controller-mixin-test.js should pass jshint', function() { 
+    ok(false, 'unit/mixins/deployment-controller-mixin-test.js should pass jshint.\nunit/mixins/deployment-controller-mixin-test.js: line 4, col 1, \'module\' is not defined.\nunit/mixins/deployment-controller-mixin-test.js: line 7, col 1, \'test\' is not defined.\nunit/mixins/deployment-controller-mixin-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/mixins/deployment-new-satellite-route-mixin-test', ['ember', 'fusor-ember-cli/mixins/deployment-new-satellite-route-mixin'], function (Ember, DeploymentNewSatelliteRouteMixinMixin) {
 
   'use strict';
@@ -13835,6 +12888,16 @@ define('fusor-ember-cli/tests/unit/mixins/deployment-new-satellite-route-mixin-t
     var DeploymentNewSatelliteRouteMixinObject = Ember['default'].Object.extend(DeploymentNewSatelliteRouteMixinMixin['default']);
     var subject = DeploymentNewSatelliteRouteMixinObject.create();
     ok(subject);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/mixins/deployment-new-satellite-route-mixin-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/mixins');
+  test('unit/mixins/deployment-new-satellite-route-mixin-test.js should pass jshint', function() { 
+    ok(false, 'unit/mixins/deployment-new-satellite-route-mixin-test.js should pass jshint.\nunit/mixins/deployment-new-satellite-route-mixin-test.js: line 4, col 1, \'module\' is not defined.\nunit/mixins/deployment-new-satellite-route-mixin-test.js: line 7, col 1, \'test\' is not defined.\nunit/mixins/deployment-new-satellite-route-mixin-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
   });
 
 });
@@ -13852,6 +12915,16 @@ define('fusor-ember-cli/tests/unit/mixins/deployment-route-mixin-test', ['ember'
   });
 
 });
+define('fusor-ember-cli/tests/unit/mixins/deployment-route-mixin-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/mixins');
+  test('unit/mixins/deployment-route-mixin-test.js should pass jshint', function() { 
+    ok(false, 'unit/mixins/deployment-route-mixin-test.js should pass jshint.\nunit/mixins/deployment-route-mixin-test.js: line 4, col 1, \'module\' is not defined.\nunit/mixins/deployment-route-mixin-test.js: line 7, col 1, \'test\' is not defined.\nunit/mixins/deployment-route-mixin-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/mixins/disable-tab-mixin-test', ['ember', 'fusor-ember-cli/mixins/disable-tab-mixin'], function (Ember, DisableTabMixinMixin) {
 
   'use strict';
@@ -13863,6 +12936,16 @@ define('fusor-ember-cli/tests/unit/mixins/disable-tab-mixin-test', ['ember', 'fu
     var DisableTabMixinObject = Ember['default'].Object.extend(DisableTabMixinMixin['default']);
     var subject = DisableTabMixinObject.create();
     ok(subject);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/mixins/disable-tab-mixin-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/mixins');
+  test('unit/mixins/disable-tab-mixin-test.js should pass jshint', function() { 
+    ok(false, 'unit/mixins/disable-tab-mixin-test.js should pass jshint.\nunit/mixins/disable-tab-mixin-test.js: line 4, col 1, \'module\' is not defined.\nunit/mixins/disable-tab-mixin-test.js: line 7, col 1, \'test\' is not defined.\nunit/mixins/disable-tab-mixin-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
   });
 
 });
@@ -13880,6 +12963,16 @@ define('fusor-ember-cli/tests/unit/mixins/satellite-controller-mixin-test', ['em
   });
 
 });
+define('fusor-ember-cli/tests/unit/mixins/satellite-controller-mixin-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/mixins');
+  test('unit/mixins/satellite-controller-mixin-test.js should pass jshint', function() { 
+    ok(false, 'unit/mixins/satellite-controller-mixin-test.js should pass jshint.\nunit/mixins/satellite-controller-mixin-test.js: line 4, col 1, \'module\' is not defined.\nunit/mixins/satellite-controller-mixin-test.js: line 7, col 1, \'test\' is not defined.\nunit/mixins/satellite-controller-mixin-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/mixins/start-controller-mixin-test', ['ember', 'fusor-ember-cli/mixins/start-controller-mixin'], function (Ember, StartControllerMixinMixin) {
 
   'use strict';
@@ -13891,6 +12984,16 @@ define('fusor-ember-cli/tests/unit/mixins/start-controller-mixin-test', ['ember'
     var StartControllerMixinObject = Ember['default'].Object.extend(StartControllerMixinMixin['default']);
     var subject = StartControllerMixinObject.create();
     ok(subject);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/mixins/start-controller-mixin-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/mixins');
+  test('unit/mixins/start-controller-mixin-test.js should pass jshint', function() { 
+    ok(false, 'unit/mixins/start-controller-mixin-test.js should pass jshint.\nunit/mixins/start-controller-mixin-test.js: line 4, col 1, \'module\' is not defined.\nunit/mixins/start-controller-mixin-test.js: line 7, col 1, \'test\' is not defined.\nunit/mixins/start-controller-mixin-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
   });
 
 });
@@ -13910,6 +13013,16 @@ define('fusor-ember-cli/tests/unit/models/deployment-host-test', ['ember-qunit']
   });
 
 });
+define('fusor-ember-cli/tests/unit/models/deployment-host-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/deployment-host-test.js should pass jshint', function() { 
+    ok(false, 'unit/models/deployment-host-test.js should pass jshint.\nunit/models/deployment-host-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/models/deployment-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13923,6 +13036,16 @@ define('fusor-ember-cli/tests/unit/models/deployment-test', ['ember-qunit'], fun
     var model = this.subject();
     // var store = this.store();
     ok(!!model);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/models/deployment-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/deployment-test.js should pass jshint', function() { 
+    ok(false, 'unit/models/deployment-test.js should pass jshint.\nunit/models/deployment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
   });
 
 });
@@ -13942,6 +13065,16 @@ define('fusor-ember-cli/tests/unit/models/discovered-host-test', ['ember-qunit']
   });
 
 });
+define('fusor-ember-cli/tests/unit/models/discovered-host-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/discovered-host-test.js should pass jshint', function() { 
+    ok(false, 'unit/models/discovered-host-test.js should pass jshint.\nunit/models/discovered-host-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/models/environment-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13955,6 +13088,16 @@ define('fusor-ember-cli/tests/unit/models/environment-test', ['ember-qunit'], fu
     var model = this.subject();
     // var store = this.store();
     ok(!!model);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/models/environment-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/environment-test.js should pass jshint', function() { 
+    ok(false, 'unit/models/environment-test.js should pass jshint.\nunit/models/environment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
   });
 
 });
@@ -13974,6 +13117,16 @@ define('fusor-ember-cli/tests/unit/models/host-test', ['ember-qunit'], function 
   });
 
 });
+define('fusor-ember-cli/tests/unit/models/host-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/host-test.js should pass jshint', function() { 
+    ok(false, 'unit/models/host-test.js should pass jshint.\nunit/models/host-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/models/hostgroup-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -13987,6 +13140,16 @@ define('fusor-ember-cli/tests/unit/models/hostgroup-test', ['ember-qunit'], func
     var model = this.subject();
     // var store = this.store();
     ok(!!model);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/models/hostgroup-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/hostgroup-test.js should pass jshint', function() { 
+    ok(false, 'unit/models/hostgroup-test.js should pass jshint.\nunit/models/hostgroup-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
   });
 
 });
@@ -14006,6 +13169,16 @@ define('fusor-ember-cli/tests/unit/models/lifecycle-environment-test', ['ember-q
   });
 
 });
+define('fusor-ember-cli/tests/unit/models/lifecycle-environment-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/lifecycle-environment-test.js should pass jshint', function() { 
+    ok(false, 'unit/models/lifecycle-environment-test.js should pass jshint.\nunit/models/lifecycle-environment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/models/location-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14019,6 +13192,16 @@ define('fusor-ember-cli/tests/unit/models/location-test', ['ember-qunit'], funct
     var model = this.subject();
     // var store = this.store();
     ok(!!model);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/models/location-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/location-test.js should pass jshint', function() { 
+    ok(false, 'unit/models/location-test.js should pass jshint.\nunit/models/location-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
   });
 
 });
@@ -14038,6 +13221,16 @@ define('fusor-ember-cli/tests/unit/models/organization-test', ['ember-qunit'], f
   });
 
 });
+define('fusor-ember-cli/tests/unit/models/organization-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/organization-test.js should pass jshint', function() { 
+    ok(false, 'unit/models/organization-test.js should pass jshint.\nunit/models/organization-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/models/product-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14051,6 +13244,16 @@ define('fusor-ember-cli/tests/unit/models/product-test', ['ember-qunit'], functi
     var model = this.subject();
     // var store = this.store();
     ok(!!model);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/models/product-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/product-test.js should pass jshint', function() { 
+    ok(false, 'unit/models/product-test.js should pass jshint.\nunit/models/product-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
   });
 
 });
@@ -14070,6 +13273,16 @@ define('fusor-ember-cli/tests/unit/models/rhev-setup-test', ['ember-qunit'], fun
   });
 
 });
+define('fusor-ember-cli/tests/unit/models/rhev-setup-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/rhev-setup-test.js should pass jshint', function() { 
+    ok(false, 'unit/models/rhev-setup-test.js should pass jshint.\nunit/models/rhev-setup-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/models/subnet-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14083,6 +13296,16 @@ define('fusor-ember-cli/tests/unit/models/subnet-test', ['ember-qunit'], functio
     var model = this.subject();
     // var store = this.store();
     ok(!!model);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/models/subnet-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/subnet-test.js should pass jshint', function() { 
+    ok(false, 'unit/models/subnet-test.js should pass jshint.\nunit/models/subnet-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
   });
 
 });
@@ -14102,6 +13325,16 @@ define('fusor-ember-cli/tests/unit/models/subscription-test', ['ember-qunit'], f
   });
 
 });
+define('fusor-ember-cli/tests/unit/models/subscription-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/subscription-test.js should pass jshint', function() { 
+    ok(false, 'unit/models/subscription-test.js should pass jshint.\nunit/models/subscription-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/models/traffic-type-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14115,6 +13348,16 @@ define('fusor-ember-cli/tests/unit/models/traffic-type-test', ['ember-qunit'], f
     var model = this.subject();
     // var store = this.store();
     ok(!!model);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/models/traffic-type-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/traffic-type-test.js should pass jshint', function() { 
+    ok(false, 'unit/models/traffic-type-test.js should pass jshint.\nunit/models/traffic-type-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
   });
 
 });
@@ -14134,6 +13377,16 @@ define('fusor-ember-cli/tests/unit/models/user-test', ['ember-qunit'], function 
   });
 
 });
+define('fusor-ember-cli/tests/unit/models/user-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/user-test.js should pass jshint', function() { 
+    ok(false, 'unit/models/user-test.js should pass jshint.\nunit/models/user-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/application-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14146,6 +13399,16 @@ define('fusor-ember-cli/tests/unit/routes/application-test', ['ember-qunit'], fu
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/application-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/application-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/application-test.js should pass jshint.\nunit/routes/application-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/cloudforms-storage-domain-test', ['ember-qunit'], function (ember_qunit) {
@@ -14162,6 +13425,16 @@ define('fusor-ember-cli/tests/unit/routes/cloudforms-storage-domain-test', ['emb
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/cloudforms-storage-domain-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/cloudforms-storage-domain-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/cloudforms-storage-domain-test.js should pass jshint.\nunit/routes/cloudforms-storage-domain-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/cloudforms-vm-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14174,6 +13447,16 @@ define('fusor-ember-cli/tests/unit/routes/cloudforms-vm-test', ['ember-qunit'], 
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/cloudforms-vm-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/cloudforms-vm-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/cloudforms-vm-test.js should pass jshint.\nunit/routes/cloudforms-vm-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/cloudforms/index-test', ['ember-qunit'], function (ember_qunit) {
@@ -14190,6 +13473,16 @@ define('fusor-ember-cli/tests/unit/routes/cloudforms/index-test', ['ember-qunit'
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/cloudforms/index-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/cloudforms');
+  test('unit/routes/cloudforms/index-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/cloudforms/index-test.js should pass jshint.\nunit/routes/cloudforms/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/configure-environment-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14202,6 +13495,16 @@ define('fusor-ember-cli/tests/unit/routes/configure-environment-test', ['ember-q
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/configure-environment-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/configure-environment-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/configure-environment-test.js should pass jshint.\nunit/routes/configure-environment-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/configure-organization-test', ['ember-qunit'], function (ember_qunit) {
@@ -14218,6 +13521,16 @@ define('fusor-ember-cli/tests/unit/routes/configure-organization-test', ['ember-
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/configure-organization-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/configure-organization-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/configure-organization-test.js should pass jshint.\nunit/routes/configure-organization-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/configure/new-organization-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14230,6 +13543,16 @@ define('fusor-ember-cli/tests/unit/routes/configure/new-organization-test', ['em
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/configure/new-organization-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/configure');
+  test('unit/routes/configure/new-organization-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/configure/new-organization-test.js should pass jshint.\nunit/routes/configure/new-organization-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/content-test', ['ember-qunit'], function (ember_qunit) {
@@ -14246,6 +13569,16 @@ define('fusor-ember-cli/tests/unit/routes/content-test', ['ember-qunit'], functi
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/content-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/content-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/content-test.js should pass jshint.\nunit/routes/content-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/deployment-new-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14258,6 +13591,16 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new-test', ['ember-qunit'],
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/deployment-new-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/deployment-new-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/deployment-new-test.js should pass jshint.\nunit/routes/deployment-new-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployment-new/index-test', ['ember-qunit'], function (ember_qunit) {
@@ -14274,6 +13617,16 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/index-test', ['ember-qu
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/deployment-new/index-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/deployment-new');
+  test('unit/routes/deployment-new/index-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/deployment-new/index-test.js should pass jshint.\nunit/routes/deployment-new/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14286,6 +13639,16 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite-test', ['embe
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/deployment-new');
+  test('unit/routes/deployment-new/satellite-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/deployment-new/satellite-test.js should pass jshint.\nunit/routes/deployment-new/satellite-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-environment-test', ['ember-qunit'], function (ember_qunit) {
@@ -14302,6 +13665,16 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-env
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-environment-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/deployment-new/satellite');
+  test('unit/routes/deployment-new/satellite/configure-environment-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/deployment-new/satellite/configure-environment-test.js should pass jshint.\nunit/routes/deployment-new/satellite/configure-environment-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-organization-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14314,6 +13687,16 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-org
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-organization-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/deployment-new/satellite');
+  test('unit/routes/deployment-new/satellite/configure-organization-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/deployment-new/satellite/configure-organization-test.js should pass jshint.\nunit/routes/deployment-new/satellite/configure-organization-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/index-test', ['ember-qunit'], function (ember_qunit) {
@@ -14330,6 +13713,16 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/index-test', 
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/index-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/deployment-new/satellite');
+  test('unit/routes/deployment-new/satellite/index-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/deployment-new/satellite/index-test.js should pass jshint.\nunit/routes/deployment-new/satellite/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/deployment-new/start-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14342,6 +13735,16 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/start-test', ['ember-qu
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/deployment-new/start-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/deployment-new');
+  test('unit/routes/deployment-new/start-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/deployment-new/start-test.js should pass jshint.\nunit/routes/deployment-new/start-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployment-test', ['ember-qunit'], function (ember_qunit) {
@@ -14358,6 +13761,16 @@ define('fusor-ember-cli/tests/unit/routes/deployment-test', ['ember-qunit'], fun
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/deployment-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/deployment-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/deployment-test.js should pass jshint.\nunit/routes/deployment-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/deployment/index-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14370,6 +13783,16 @@ define('fusor-ember-cli/tests/unit/routes/deployment/index-test', ['ember-qunit'
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/deployment/index-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/deployment');
+  test('unit/routes/deployment/index-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/deployment/index-test.js should pass jshint.\nunit/routes/deployment/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployment/new-test', ['ember-qunit'], function (ember_qunit) {
@@ -14386,6 +13809,16 @@ define('fusor-ember-cli/tests/unit/routes/deployment/new-test', ['ember-qunit'],
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/deployment/new-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/deployment');
+  test('unit/routes/deployment/new-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/deployment/new-test.js should pass jshint.\nunit/routes/deployment/new-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/deployment/review-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14398,6 +13831,16 @@ define('fusor-ember-cli/tests/unit/routes/deployment/review-test', ['ember-qunit
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/deployment/review-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/deployment');
+  test('unit/routes/deployment/review-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/deployment/review-test.js should pass jshint.\nunit/routes/deployment/review-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployment/satellite/configure/new-organization-test', ['ember-qunit'], function (ember_qunit) {
@@ -14414,6 +13857,16 @@ define('fusor-ember-cli/tests/unit/routes/deployment/satellite/configure/new-org
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/deployment/satellite/configure/new-organization-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/deployment/satellite/configure');
+  test('unit/routes/deployment/satellite/configure/new-organization-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/deployment/satellite/configure/new-organization-test.js should pass jshint.\nunit/routes/deployment/satellite/configure/new-organization-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/deployment/start-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14426,6 +13879,16 @@ define('fusor-ember-cli/tests/unit/routes/deployment/start-test', ['ember-qunit'
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/deployment/start-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/deployment');
+  test('unit/routes/deployment/start-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/deployment/start-test.js should pass jshint.\nunit/routes/deployment/start-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployments-test', ['ember-qunit'], function (ember_qunit) {
@@ -14442,6 +13905,16 @@ define('fusor-ember-cli/tests/unit/routes/deployments-test', ['ember-qunit'], fu
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/deployments-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/deployments-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/deployments-test.js should pass jshint.\nunit/routes/deployments-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/discovered-host-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14454,6 +13927,16 @@ define('fusor-ember-cli/tests/unit/routes/discovered-host-test', ['ember-qunit']
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/discovered-host-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/discovered-host-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/discovered-host-test.js should pass jshint.\nunit/routes/discovered-host-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/discovered-hosts-test', ['ember-qunit'], function (ember_qunit) {
@@ -14470,6 +13953,16 @@ define('fusor-ember-cli/tests/unit/routes/discovered-hosts-test', ['ember-qunit'
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/discovered-hosts-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/discovered-hosts-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/discovered-hosts-test.js should pass jshint.\nunit/routes/discovered-hosts-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/engine-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14482,6 +13975,16 @@ define('fusor-ember-cli/tests/unit/routes/engine-test', ['ember-qunit'], functio
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/engine-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/engine-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/engine-test.js should pass jshint.\nunit/routes/engine-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/engine/discovered-host-test', ['ember-qunit'], function (ember_qunit) {
@@ -14498,6 +14001,16 @@ define('fusor-ember-cli/tests/unit/routes/engine/discovered-host-test', ['ember-
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/engine/discovered-host-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/engine');
+  test('unit/routes/engine/discovered-host-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/engine/discovered-host-test.js should pass jshint.\nunit/routes/engine/discovered-host-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/engine/existing-host-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14510,6 +14023,16 @@ define('fusor-ember-cli/tests/unit/routes/engine/existing-host-test', ['ember-qu
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/engine/existing-host-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/engine');
+  test('unit/routes/engine/existing-host-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/engine/existing-host-test.js should pass jshint.\nunit/routes/engine/existing-host-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/engine/hypervisor-test', ['ember-qunit'], function (ember_qunit) {
@@ -14526,6 +14049,16 @@ define('fusor-ember-cli/tests/unit/routes/engine/hypervisor-test', ['ember-qunit
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/engine/hypervisor-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/engine');
+  test('unit/routes/engine/hypervisor-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/engine/hypervisor-test.js should pass jshint.\nunit/routes/engine/hypervisor-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/engine/new-host-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14538,6 +14071,16 @@ define('fusor-ember-cli/tests/unit/routes/engine/new-host-test', ['ember-qunit']
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/engine/new-host-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/engine');
+  test('unit/routes/engine/new-host-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/engine/new-host-test.js should pass jshint.\nunit/routes/engine/new-host-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/hostgroup-test', ['ember-qunit'], function (ember_qunit) {
@@ -14554,6 +14097,16 @@ define('fusor-ember-cli/tests/unit/routes/hostgroup-test', ['ember-qunit'], func
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/hostgroup-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/hostgroup-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/hostgroup-test.js should pass jshint.\nunit/routes/hostgroup-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/hostgroup/edit-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14566,6 +14119,16 @@ define('fusor-ember-cli/tests/unit/routes/hostgroup/edit-test', ['ember-qunit'],
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/hostgroup/edit-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/hostgroup');
+  test('unit/routes/hostgroup/edit-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/hostgroup/edit-test.js should pass jshint.\nunit/routes/hostgroup/edit-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/hostgroups-test', ['ember-qunit'], function (ember_qunit) {
@@ -14582,6 +14145,16 @@ define('fusor-ember-cli/tests/unit/routes/hostgroups-test', ['ember-qunit'], fun
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/hostgroups-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/hostgroups-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/hostgroups-test.js should pass jshint.\nunit/routes/hostgroups-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/hypervisor-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14594,6 +14167,16 @@ define('fusor-ember-cli/tests/unit/routes/hypervisor-test', ['ember-qunit'], fun
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/hypervisor-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/hypervisor-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/hypervisor-test.js should pass jshint.\nunit/routes/hypervisor-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/hypervisor/discovered-host-test', ['ember-qunit'], function (ember_qunit) {
@@ -14610,6 +14193,16 @@ define('fusor-ember-cli/tests/unit/routes/hypervisor/discovered-host-test', ['em
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/hypervisor/discovered-host-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/hypervisor');
+  test('unit/routes/hypervisor/discovered-host-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/hypervisor/discovered-host-test.js should pass jshint.\nunit/routes/hypervisor/discovered-host-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/hypervisor/existing-host-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14622,6 +14215,16 @@ define('fusor-ember-cli/tests/unit/routes/hypervisor/existing-host-test', ['embe
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/hypervisor/existing-host-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/hypervisor');
+  test('unit/routes/hypervisor/existing-host-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/hypervisor/existing-host-test.js should pass jshint.\nunit/routes/hypervisor/existing-host-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/hypervisor/new-host-test', ['ember-qunit'], function (ember_qunit) {
@@ -14638,6 +14241,16 @@ define('fusor-ember-cli/tests/unit/routes/hypervisor/new-host-test', ['ember-qun
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/hypervisor/new-host-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/hypervisor');
+  test('unit/routes/hypervisor/new-host-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/hypervisor/new-host-test.js should pass jshint.\nunit/routes/hypervisor/new-host-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/index-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14650,6 +14263,16 @@ define('fusor-ember-cli/tests/unit/routes/index-test', ['ember-qunit'], function
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/index-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/index-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/index-test.js should pass jshint.\nunit/routes/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/loggedin-test', ['ember-qunit'], function (ember_qunit) {
@@ -14666,6 +14289,16 @@ define('fusor-ember-cli/tests/unit/routes/loggedin-test', ['ember-qunit'], funct
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/loggedin-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/loggedin-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/loggedin-test.js should pass jshint.\nunit/routes/loggedin-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/login-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14678,6 +14311,16 @@ define('fusor-ember-cli/tests/unit/routes/login-test', ['ember-qunit'], function
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/login-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/login-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/login-test.js should pass jshint.\nunit/routes/login-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/networking-test', ['ember-qunit'], function (ember_qunit) {
@@ -14694,6 +14337,16 @@ define('fusor-ember-cli/tests/unit/routes/networking-test', ['ember-qunit'], fun
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/networking-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/networking-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/networking-test.js should pass jshint.\nunit/routes/networking-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/new-environment-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14706,6 +14359,16 @@ define('fusor-ember-cli/tests/unit/routes/new-environment-test', ['ember-qunit']
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/new-environment-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/new-environment-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/new-environment-test.js should pass jshint.\nunit/routes/new-environment-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/new-organization-test', ['ember-qunit'], function (ember_qunit) {
@@ -14722,6 +14385,16 @@ define('fusor-ember-cli/tests/unit/routes/new-organization-test', ['ember-qunit'
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/new-organization-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/new-organization-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/new-organization-test.js should pass jshint.\nunit/routes/new-organization-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/openstack/index-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14734,6 +14407,16 @@ define('fusor-ember-cli/tests/unit/routes/openstack/index-test', ['ember-qunit']
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/openstack/index-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/openstack');
+  test('unit/routes/openstack/index-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/openstack/index-test.js should pass jshint.\nunit/routes/openstack/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/osp-configuration-test', ['ember-qunit'], function (ember_qunit) {
@@ -14750,6 +14433,16 @@ define('fusor-ember-cli/tests/unit/routes/osp-configuration-test', ['ember-qunit
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/osp-configuration-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/osp-configuration-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/osp-configuration-test.js should pass jshint.\nunit/routes/osp-configuration-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/osp-network-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14762,6 +14455,16 @@ define('fusor-ember-cli/tests/unit/routes/osp-network-test', ['ember-qunit'], fu
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/osp-network-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/osp-network-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/osp-network-test.js should pass jshint.\nunit/routes/osp-network-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/osp-overview-test', ['ember-qunit'], function (ember_qunit) {
@@ -14778,6 +14481,16 @@ define('fusor-ember-cli/tests/unit/routes/osp-overview-test', ['ember-qunit'], f
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/osp-overview-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/osp-overview-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/osp-overview-test.js should pass jshint.\nunit/routes/osp-overview-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/osp-settings-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14790,6 +14503,16 @@ define('fusor-ember-cli/tests/unit/routes/osp-settings-test', ['ember-qunit'], f
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/osp-settings-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/osp-settings-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/osp-settings-test.js should pass jshint.\nunit/routes/osp-settings-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/review/index-test', ['ember-qunit'], function (ember_qunit) {
@@ -14806,6 +14529,16 @@ define('fusor-ember-cli/tests/unit/routes/review/index-test', ['ember-qunit'], f
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/review/index-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/review');
+  test('unit/routes/review/index-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/review/index-test.js should pass jshint.\nunit/routes/review/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/review/installation-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14818,6 +14551,16 @@ define('fusor-ember-cli/tests/unit/routes/review/installation-test', ['ember-qun
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/review/installation-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/review');
+  test('unit/routes/review/installation-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/review/installation-test.js should pass jshint.\nunit/routes/review/installation-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/review/progress-test', ['ember-qunit'], function (ember_qunit) {
@@ -14834,6 +14577,16 @@ define('fusor-ember-cli/tests/unit/routes/review/progress-test', ['ember-qunit']
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/review/progress-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/review');
+  test('unit/routes/review/progress-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/review/progress-test.js should pass jshint.\nunit/routes/review/progress-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/rhci-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14846,6 +14599,16 @@ define('fusor-ember-cli/tests/unit/routes/rhci-test', ['ember-qunit'], function 
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/rhci-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/rhci-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/rhci-test.js should pass jshint.\nunit/routes/rhci-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/rhev-options-test', ['ember-qunit'], function (ember_qunit) {
@@ -14862,6 +14625,16 @@ define('fusor-ember-cli/tests/unit/routes/rhev-options-test', ['ember-qunit'], f
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/rhev-options-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/rhev-options-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/rhev-options-test.js should pass jshint.\nunit/routes/rhev-options-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/rhev-setup-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14874,6 +14647,16 @@ define('fusor-ember-cli/tests/unit/routes/rhev-setup-test', ['ember-qunit'], fun
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/rhev-setup-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/rhev-setup-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/rhev-setup-test.js should pass jshint.\nunit/routes/rhev-setup-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/rhev-test', ['ember-qunit'], function (ember_qunit) {
@@ -14890,6 +14673,16 @@ define('fusor-ember-cli/tests/unit/routes/rhev-test', ['ember-qunit'], function 
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/rhev-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/rhev-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/rhev-test.js should pass jshint.\nunit/routes/rhev-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/rhev/engine-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14902,6 +14695,16 @@ define('fusor-ember-cli/tests/unit/routes/rhev/engine-test', ['ember-qunit'], fu
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/rhev/engine-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/rhev');
+  test('unit/routes/rhev/engine-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/rhev/engine-test.js should pass jshint.\nunit/routes/rhev/engine-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/rhev/index-test', ['ember-qunit'], function (ember_qunit) {
@@ -14918,6 +14721,16 @@ define('fusor-ember-cli/tests/unit/routes/rhev/index-test', ['ember-qunit'], fun
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/rhev/index-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/rhev');
+  test('unit/routes/rhev/index-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/rhev/index-test.js should pass jshint.\nunit/routes/rhev/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/satellite-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14930,6 +14743,16 @@ define('fusor-ember-cli/tests/unit/routes/satellite-test', ['ember-qunit'], func
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/satellite-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/satellite-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/satellite-test.js should pass jshint.\nunit/routes/satellite-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/satellite/configure-test', ['ember-qunit'], function (ember_qunit) {
@@ -14946,6 +14769,16 @@ define('fusor-ember-cli/tests/unit/routes/satellite/configure-test', ['ember-qun
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/satellite/configure-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/satellite');
+  test('unit/routes/satellite/configure-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/satellite/configure-test.js should pass jshint.\nunit/routes/satellite/configure-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/satellite/index-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14958,6 +14791,16 @@ define('fusor-ember-cli/tests/unit/routes/satellite/index-test', ['ember-qunit']
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/satellite/index-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/satellite');
+  test('unit/routes/satellite/index-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/satellite/index-test.js should pass jshint.\nunit/routes/satellite/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/satellite/review-test', ['ember-qunit'], function (ember_qunit) {
@@ -14974,6 +14817,16 @@ define('fusor-ember-cli/tests/unit/routes/satellite/review-test', ['ember-qunit'
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/satellite/review-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/satellite');
+  test('unit/routes/satellite/review-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/satellite/review-test.js should pass jshint.\nunit/routes/satellite/review-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/satellite/subscriptions-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -14986,6 +14839,16 @@ define('fusor-ember-cli/tests/unit/routes/satellite/subscriptions-test', ['ember
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/satellite/subscriptions-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/satellite');
+  test('unit/routes/satellite/subscriptions-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/satellite/subscriptions-test.js should pass jshint.\nunit/routes/satellite/subscriptions-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/setpassword-test', ['ember-qunit'], function (ember_qunit) {
@@ -15002,6 +14865,16 @@ define('fusor-ember-cli/tests/unit/routes/setpassword-test', ['ember-qunit'], fu
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/setpassword-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/setpassword-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/setpassword-test.js should pass jshint.\nunit/routes/setpassword-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/single-deployment-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -15014,6 +14887,16 @@ define('fusor-ember-cli/tests/unit/routes/single-deployment-test', ['ember-qunit
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/single-deployment-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/single-deployment-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/single-deployment-test.js should pass jshint.\nunit/routes/single-deployment-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/storage-test', ['ember-qunit'], function (ember_qunit) {
@@ -15030,6 +14913,16 @@ define('fusor-ember-cli/tests/unit/routes/storage-test', ['ember-qunit'], functi
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/storage-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/storage-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/storage-test.js should pass jshint.\nunit/routes/storage-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/subscriptions/credentials-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -15042,6 +14935,16 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/credentials-test', ['emb
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/subscriptions/credentials-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/subscriptions');
+  test('unit/routes/subscriptions/credentials-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/subscriptions/credentials-test.js should pass jshint.\nunit/routes/subscriptions/credentials-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/subscriptions/index-test', ['ember-qunit'], function (ember_qunit) {
@@ -15058,6 +14961,16 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/index-test', ['ember-qun
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/subscriptions/index-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/subscriptions');
+  test('unit/routes/subscriptions/index-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/subscriptions/index-test.js should pass jshint.\nunit/routes/subscriptions/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/subscriptions/select-subscriptions-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -15070,6 +14983,16 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/select-subscriptions-tes
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/subscriptions/select-subscriptions-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/subscriptions');
+  test('unit/routes/subscriptions/select-subscriptions-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/subscriptions/select-subscriptions-test.js should pass jshint.\nunit/routes/subscriptions/select-subscriptions-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/user-test', ['ember-qunit'], function (ember_qunit) {
@@ -15086,6 +15009,16 @@ define('fusor-ember-cli/tests/unit/routes/user-test', ['ember-qunit'], function 
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/user-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/user-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/user-test.js should pass jshint.\nunit/routes/user-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/user/edit-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -15098,6 +15031,16 @@ define('fusor-ember-cli/tests/unit/routes/user/edit-test', ['ember-qunit'], func
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/user/edit-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/user');
+  test('unit/routes/user/edit-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/user/edit-test.js should pass jshint.\nunit/routes/user/edit-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/users-test', ['ember-qunit'], function (ember_qunit) {
@@ -15114,6 +15057,16 @@ define('fusor-ember-cli/tests/unit/routes/users-test', ['ember-qunit'], function
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/users-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/users-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/users-test.js should pass jshint.\nunit/routes/users-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/users/new-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -15126,6 +15079,16 @@ define('fusor-ember-cli/tests/unit/routes/users/new-test', ['ember-qunit'], func
   });
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/users/new-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/users');
+  test('unit/routes/users/new-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/users/new-test.js should pass jshint.\nunit/routes/users/new-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
 
 });
 define('fusor-ember-cli/tests/unit/routes/where-install-test', ['ember-qunit'], function (ember_qunit) {
@@ -15142,6 +15105,16 @@ define('fusor-ember-cli/tests/unit/routes/where-install-test', ['ember-qunit'], 
   // needs: ['controller:foo']
 
 });
+define('fusor-ember-cli/tests/unit/routes/where-install-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/where-install-test.js should pass jshint', function() { 
+    ok(false, 'unit/routes/where-install-test.js should pass jshint.\nunit/routes/where-install-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/views/application-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -15152,6 +15125,16 @@ define('fusor-ember-cli/tests/unit/views/application-test', ['ember-qunit'], fun
   ember_qunit.test("it exists", function () {
     var view = this.subject();
     ok(view);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/views/application-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/views');
+  test('unit/views/application-test.js should pass jshint', function() { 
+    ok(false, 'unit/views/application-test.js should pass jshint.\nunit/views/application-test.js: line 11, col 3, \'ok\' is not defined.\n\n1 error'); 
   });
 
 });
@@ -15168,6 +15151,16 @@ define('fusor-ember-cli/tests/unit/views/configure-test', ['ember-qunit'], funct
   });
 
 });
+define('fusor-ember-cli/tests/unit/views/configure-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/views');
+  test('unit/views/configure-test.js should pass jshint', function() { 
+    ok(false, 'unit/views/configure-test.js should pass jshint.\nunit/views/configure-test.js: line 11, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/views/organization-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -15181,6 +15174,16 @@ define('fusor-ember-cli/tests/unit/views/organization-test', ['ember-qunit'], fu
   });
 
 });
+define('fusor-ember-cli/tests/unit/views/organization-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/views');
+  test('unit/views/organization-test.js should pass jshint', function() { 
+    ok(false, 'unit/views/organization-test.js should pass jshint.\nunit/views/organization-test.js: line 11, col 3, \'ok\' is not defined.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/views/rhci-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -15191,6 +15194,16 @@ define('fusor-ember-cli/tests/unit/views/rhci-test', ['ember-qunit'], function (
   ember_qunit.test("it exists", function () {
     var view = this.subject();
     ok(view);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/views/rhci-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/views');
+  test('unit/views/rhci-test.js should pass jshint', function() { 
+    ok(false, 'unit/views/rhci-test.js should pass jshint.\nunit/views/rhci-test.js: line 11, col 3, \'ok\' is not defined.\n\n1 error'); 
   });
 
 });
@@ -15325,14 +15338,18 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 });
 /* jshint ignore:start */
 
+/* jshint ignore:end */
+
+/* jshint ignore:start */
+
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"routeAfterAuthentication":"deployment-new.start","routeIfAlreadyAuthenticated":"deployment-new.start","authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","https://foreman.sat.lab.tlv.redhat.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"routeAfterAuthentication":"deployment-new.start","routeIfAlreadyAuthenticated":"deployment-new.start","authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","https://foreman.sat.lab.tlv.redhat.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.5ae4bdc9"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.5ae4bdc9"});
 }
 
 /* jshint ignore:end */
