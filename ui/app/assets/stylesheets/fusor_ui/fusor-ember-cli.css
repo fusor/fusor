@@ -331,6 +331,14 @@ i.fa-check {
   padding: 10px;
   border: solid 3px #ddd; }
 
+.rhci-item-deselected {
+  /*  border: solid 3px #999;
+  opacity: 0.5;
+*/ }
+
+.rhci-item-hover {
+  /*opacity: 0.8;*/ }
+
 .rhci-item-text {
   padding: 10px; }
 
@@ -500,7 +508,7 @@ a.nav-expander.fixed {
   -o-transition: right 0.4s ease-in-out 0s; }
 
 #nav-close {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
   font-weight: 300;
   font-size: 24px;
   padding-right: 10px;
