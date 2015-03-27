@@ -18,7 +18,7 @@ module Actions
           _("Configure Activation Key")
         end
 
-        def plan(deployment)
+        def plan(deployment, repositories)
           unless activation_key_name(deployment)
             fail _("Unable to locate activation key settings in config/settings.plugins.d/fusor.yaml")
           end
@@ -36,7 +36,7 @@ module Actions
             # TODO: update to support UpdateSubscriptions, which could add or remove based
             # on changes in configuration... not urgent, since currently there is only a single
             # subscription in the configuration
-            plan_action(::Actions::Fusor::ActivationKey::AddSubscriptions, deployment)
+            plan_action(::Actions::Fusor::ActivationKey::AddSubscriptions, deployment, repositories)
           end
         end
 
@@ -45,6 +45,7 @@ module Actions
         def find_or_ensure_key(deployment, content_view)
           key = ::Katello::ActivationKey.where(:organization_id => deployment.organization.id,
                                                :name => activation_key_name(deployment)).first
+
           if key
             attributes = { :name => activation_key_name(deployment),
                            :organization_id => deployment.organization.id,
@@ -78,7 +79,7 @@ module Actions
 
         def activation_key_name(deployment)
           name = SETTINGS[:fusor][:activation_key][:name]
-          return [name, deployment.name].join(' - ') if name
+          return [name, deployment.name].join('-') if name
         end
       end
     end

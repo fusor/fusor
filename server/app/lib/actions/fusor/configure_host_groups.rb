@@ -167,7 +167,7 @@ module Actions
 
       def activation_key_name(deployment_name)
         name = SETTINGS[:fusor][:activation_key][:name]
-        return [name, deployment_name].join(' - ') if name
+        return [name, deployment_name].join('-') if name
       end
     end
   end

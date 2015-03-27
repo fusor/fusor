@@ -50,7 +50,7 @@ module Actions
                           deployment,
                           repositories)
 
-              plan_configure_activation_key(deployment)
+              plan_configure_activation_key(deployment, repositories)
 
               enable_smart_class_parameter_overrides(products_host_groups[index])
 
@@ -64,11 +64,11 @@ module Actions
 
       private
 
-      def plan_configure_activation_key(deployment)
+      def plan_configure_activation_key(deployment, repositories)
         # At this time, 1 activation key can be used to support all products; therefore,
         # we only need to plan the action once.
         return if @configure_activation_key_planned
-        plan_action(::Actions::Fusor::ActivationKey::ConfigureActivationKey, deployment)
+        plan_action(::Actions::Fusor::ActivationKey::ConfigureActivationKey, deployment, repositories)
         @configure_activation_key_planned = true
       end
 
