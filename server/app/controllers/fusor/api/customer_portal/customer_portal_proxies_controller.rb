@@ -11,41 +11,45 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 module Fusor
-  class Api::CustomerPortal::CustomerPortalProxiesController < Api::V2::BaseController
+  module Api
+    module CustomerPortal
+      class CustomerPortalProxiesController < Api::V2::BaseController
 
-    before_filter :proxy_request_path, :proxy_request_body
+        before_filter :proxy_request_path, :proxy_request_body
 
-    def get
-      response = Resources::CustomerPortal::Proxy.get(@request_path)
-      logger.debug response
-      render :json => response
-    end
+        def get
+          response = Resources::CustomerPortal::Proxy.get(@request_path)
+          logger.debug response
+          render :json => response
+        end
 
-    def post
-      response = Resources::CustomerPortal::Proxy.post(@request_path, @request_body.read)
-      logger.debug response
-      render :json => response
-    end
+        def post
+          response = Resources::CustomerPortal::Proxy.post(@request_path, @request_body.read)
+          logger.debug response
+          render :json => response
+        end
 
-    def delete
-      response = Resources::CustomerPortal::Proxy.delete(@request_path, @request_body.read)
-      logger.debug response
-      render :json => response
-    end
+        def delete
+          response = Resources::CustomerPortal::Proxy.delete(@request_path, @request_body.read)
+          logger.debug response
+          render :json => response
+        end
 
-    private
+        private
 
-    def proxy_request_path
-      @request_path = drop_api_namespace(@_request.fullpath)
-    end
+        def proxy_request_path
+          @request_path = drop_api_namespace(@_request.fullpath)
+        end
 
-    def proxy_request_body
-      @request_body = @_request.body
-    end
+        def proxy_request_body
+          @request_body = @_request.body
+        end
 
-    def drop_api_namespace(original_request_path)
-      prefix = "/customer_portal"
-      original_request_path.gsub(prefix, '')
+        def drop_api_namespace(original_request_path)
+          prefix = "/customer_portal"
+          original_request_path.gsub(prefix, '')
+        end
+      end
     end
   end
 end
