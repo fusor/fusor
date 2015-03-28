@@ -60,7 +60,12 @@ BuildRequires: ruby(abi) = 1.8
 Requires: foreman >= 1.7.0
 BuildRequires: foreman >= 1.7.0
 BuildRequires: foreman-assets >= 1.7.0
-BuildRequires: foreman-plugin >= 1.6.0
+# TODO
+# Detect what version of foreman we are building with
+# foreman 1.9 uses foreman-plugin
+# foreman 1.7 does not have foreman-plugin
+#
+#BuildRequires: foreman-plugin >= 1.6.0
 BuildRequires: %{?scl_prefix}rubygem-active_model_serializers
 
 BuildArch: noarch
@@ -96,11 +101,10 @@ mkdir -p %{buildroot}%{gem_dir}
 cp -a .%{gem_dir}/* \
         %{buildroot}%{gem_dir}/
 
-%foreman_bundlerd_file
-%foreman_precompile_plugin
-
-#mkdir -p %{buildroot}%{foreman_dir}/public/assets
-#ln -s %{foreman_assets_plugin} %{buildroot}%{foreman_dir}/public/assets/fusor_ui
+mkdir -p %{buildroot}%{foreman_bundlerd_dir}
+cat <<GEMFILE > %{buildroot}%{foreman_bundlerd_dir}/%{gem_name}.rb
+gem '%{gem_name}'
+GEMFILE
 
 mkdir -p %{buildroot}%{foreman_pluginconf_dir}
 cp -a %{buildroot}/%{gem_instdir}/config/fusor.yaml %{buildroot}%{foreman_pluginconf_dir}/
@@ -114,8 +118,6 @@ cp -a %{buildroot}/%{gem_instdir}/config/fusor.yaml %{buildroot}%{foreman_plugin
 %exclude %{gem_cache}
 %{gem_spec}
 %{foreman_bundlerd_dir}/%{gem_name}.rb
-#%{foreman_dir}/public/assets/fusor_ui
-#%{foreman_assets_plugin}
 %{foreman_pluginconf_dir}/fusor.yaml
 
 %files doc
