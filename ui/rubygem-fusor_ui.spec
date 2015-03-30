@@ -29,7 +29,7 @@ Summary: Fusor Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 8%{dist}
+Release: 9%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -116,6 +116,10 @@ ln -s %{foreman_assets_plugin} %{buildroot}%{foreman_dir}/public/assets/fusor_ui
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Mon Mar 30 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-9
+- Fixes CSRF issue
+
+
 * Fri Mar 27 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-8
 - Updates from fusor-ember-cli (jwmatthews@gmail.com)
 - change FusorUI menu to from Fusor to RHCI Installer (jmagen@redhat.com)
