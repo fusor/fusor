@@ -84,5 +84,5 @@ module.exports = function(app) {
     res.status(204).end();
   });
 
-  app.use('/api/v21/discovered_hosts', discoveredHostsRouter);
+  app.use('/api/v21aaaa/discovered_hosts', discoveredHostsRouter);
 };
