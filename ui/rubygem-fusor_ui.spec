@@ -29,7 +29,7 @@ Summary: Fusor Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 10%{dist}
+Release: 11%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -116,6 +116,10 @@ ln -s %{foreman_assets_plugin} %{buildroot}%{foreman_dir}/public/assets/fusor_ui
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Mon Mar 30 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-11
+- copy compiled assets from fusor-ember-cli/dist to FusorUI gem at
+  fusor/ui/app/assets (jmagen@redhat.com)
+
 * Mon Mar 30 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-10
 - Copied updated files from fusor-ember-cli (jwmatthews@gmail.com)
 
