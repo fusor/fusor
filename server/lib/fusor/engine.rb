@@ -46,6 +46,7 @@ module Fusor
     #Include concerns in this config.to_prepare block
     config.to_prepare do
       # include concerns
+      ::Hostgroup.send :include, Fusor::Concerns::HostgroupExtensions
     end
 
     rake_tasks do

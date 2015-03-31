@@ -87,9 +87,9 @@ module Actions
 
                 parameter_settings = puppet_class_setting[:parameters]
                 unless parameter_settings.blank?
-
+                  parameter_names = parameter_settings.map{ |p| p[:name] }
                   if puppet_class = Puppetclass.where(:name => puppet_class_setting[:name]).first
-                    smart_class_parameters = puppet_class.smart_class_parameters.where(:key => parameter_settings)
+                    smart_class_parameters = puppet_class.smart_class_parameters.where(:key => parameter_names)
                     smart_class_parameters.each do |parameter|
                       parameter.override = true
                       parameter.save!
