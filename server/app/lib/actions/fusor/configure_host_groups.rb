@@ -61,50 +61,42 @@ module Actions
 
           lifecycle_environment = ::Katello::KTEnvironment.find(lifecycle_environment_id)
           content_view_puppet_environment = content_view.puppet_env(lifecycle_environment)
+          puppet_environment = content_view_puppet_environment.puppet_environment
 
           if puppet_class_settings = hostgroup_settings[:puppet_classes]
             puppet_classes = Puppetclass.where(:name => puppet_class_settings.map{ |c| c[:name] }).
                 joins(:environment_classes).
-                where("environment_classes.environment_id in (?)",
-                      content_view_puppet_environment.puppet_environment.id).uniq
+                where("environment_classes.environment_id in (?)", puppet_environment.id).uniq
             puppet_class_ids = puppet_classes.map(&:id)
           end
 
+          hostgroup_params = { :parent_id => parent.try(:id),
+                               :organization_ids => [organization_id] }
+
           if name_setting = hostgroup_settings[:name]
-            # this host group is a child of the deployment group; therefore, some attributes
-            # do not need to be set
-            hostgroup_name = name_setting
-            lifecycle_environment_id = nil
-            content_view_puppet_environment = nil
-            content_view = nil
-            default_capsule_id = nil
-            operating_system = nil
+            # this host group is a child of the deployment group
+            hostgroup_params[:name] = name_setting
+            hostgroup_params[:puppetclass_ids] = puppet_class_ids
           else
             # this host group is the deployment group
-            hostgroup_name = deployment_name
             operating_system = find_operating_system(lifecycle_environment, content_view)
             default_capsule_id = ::Katello::CapsuleContent.default_capsule.try(:capsule).try(:id)
+
+            hostgroup_params[:name] = deployment_name
+            hostgroup_params[:lifecycle_environment_id] = lifecycle_environment_id
+            hostgroup_params[:environment_id] = puppet_environment.try(:id)
+            hostgroup_params[:content_view_id] = content_view.try(:id)
+            hostgroup_params[:content_source_id] = default_capsule_id
+            hostgroup_params[:puppet_ca_proxy_id] = default_capsule_id
+            hostgroup_params[:puppet_proxy_id] = default_capsule_id
+            hostgroup_params[:operatingsystem_id] = operating_system.try(:id)
+            hostgroup_params[:medium_id] = operating_system.try(:media).try(:first).try(:id)
           end
         else
           fail _("Unable to locate content view '%s'.") % content_view_name(deployment_name)
         end
 
-        hostgroup_params = { :parent_id => parent.try(:id),
-                             :name => hostgroup_name,
-                             :organization_ids => [organization_id],
-                             :lifecycle_environment_id => lifecycle_environment_id,
-                             :environment_id => content_view_puppet_environment.try(:puppet_environment).try(:id),
-                             :content_view_id => content_view.try(:id),
-                             :content_source_id => default_capsule_id,
-                             :puppet_ca_proxy_id => default_capsule_id,
-                             :puppet_proxy_id => default_capsule_id,
-                             :puppetclass_ids => puppet_class_ids,
-                             :operatingsystem_id => operating_system.try(:id),
-                             :medium_id => operating_system.try(:media).try(:first).try(:id),
-                             :ptable_id => operating_system.try(:ptables).try(:first).try(:id),
-                             :architecture_id => operating_system.try(:architectures).try(:first).try(:id) }
-
-        if hostgroup = find_hostgroup(organization_id, hostgroup_name, parent)
+        if hostgroup = find_hostgroup(organization_id, hostgroup_params[:name], parent)
           hostgroup.update_attributes!(hostgroup_params)
 
           parameter = ::GroupParameter.where(:type => "GroupParameter",
@@ -122,6 +114,29 @@ module Actions
           ::GroupParameter.create!(:hostgroup => hostgroup,
                                    :name => "kt_activation_keys",
                                    :value => activation_key_name(deployment_name))
+        end
+        apply_parameter_overrides(hostgroup, hostgroup_settings, puppet_environment)
+      end
+
+      def apply_parameter_overrides(hostgroup, hostgroup_settings, puppet_environment)
+        # Go through the hostgroup_settings.  If any of the puppet classes have a
+        # parameter override specified, set it for the host group.
+        if puppet_class_settings = hostgroup_settings[:puppet_classes]
+          puppet_class_settings.each do |puppet_class_setting|
+
+            if parameter_settings = puppet_class_setting[:parameters]
+              parameter_settings.each do |parameter_setting|
+                unless parameter_setting[:override].blank?
+                  puppet_class = Puppetclass.where(:name =>puppet_class_setting[:name]).
+                      joins(:environment_classes).
+                      where("environment_classes.environment_id in (?)", puppet_environment.id).first
+
+                  hostgroup.set_param_value_if_changed(puppet_class, parameter_setting[:name],
+                                                       parameter_setting[:override])
+                end
+              end
+            end
+          end
         end
       end
 
