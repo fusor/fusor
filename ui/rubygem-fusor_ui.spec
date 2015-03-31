@@ -29,7 +29,7 @@ Summary: Fusor Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 12%{dist}
+Release: 13%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -116,6 +116,10 @@ ln -s %{foreman_assets_plugin} %{buildroot}%{foreman_dir}/public/assets/fusor_ui
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Tue Mar 31 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-13
+- add csrf token when saving Hypervisors that doesn't use Ember-Data
+  (jmagen@redhat.com)
+
 * Tue Mar 31 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-12
 - revert csrf-param to csrf-token selector (jmagen@redhat.com)
 - fix hypervisor next button (jmagen@redhat.com)
