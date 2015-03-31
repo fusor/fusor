@@ -46,7 +46,6 @@
     "ember-export-application-global": "^1.0.0",
     "morgan": "^1.5.1",
     "torii": "^0.2.2",
-    "ember-cli-divshot": "^0.1.7",
     "ember-radio-button": "^0.1.3",
     "ember-validations": "~ 2.0.0-alpha.2"
   }
