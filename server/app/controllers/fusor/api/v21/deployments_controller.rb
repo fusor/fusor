@@ -13,7 +13,9 @@
 module Fusor
   class Api::V21::DeploymentsController < Api::V2::DeploymentsController
 
-   before_filter :find_deployment, :only => [:destroy, :show, :update, :deploy]
+    before_filter :find_deployment, :only => [:destroy, :show, :update, :deploy]
+
+    rescue_from Encoding::UndefinedConversionError, :with => :ignore_it
 
     def index
       @deployments = Deployment.all
@@ -57,6 +59,10 @@ module Fusor
     def find_deployment
       not_found and return false if params[:id].blank?
       @deployment = Deployment.find(params[:id])
+    end
+
+    def ignore_it
+      true
     end
 
   end
