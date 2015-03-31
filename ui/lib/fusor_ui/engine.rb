@@ -10,13 +10,11 @@ module FusorUi
       Foreman::Plugin.register :fusor_ui do
         requires_foreman '>= 1.4'
 
-        # Add permissions (TODO - do we need to set permissions here)
-        # security_block :fusor do
-        #   permission :view_fusor, {:'fusor/deployments' => [:r] }
-        # end
-
-        # Add role (TODO - will there be a rails called view_fusor)
-        # role "FusorUi", [:view_fusor]
+        security_block :fusor do
+          permission :view_fusor_deployments, {
+            :placeholders => [:index, :new, :r]
+          }
+        end
 
         sub_menu :top_menu, :fusor_menu, :caption => N_('RHCI Installer'), :after => :infrastructure_menu do
           menu :top_menu, :fusor_deployments,

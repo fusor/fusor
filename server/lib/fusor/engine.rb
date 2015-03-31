@@ -27,12 +27,26 @@ module Fusor
       Foreman::Plugin.register :fusor do
         requires_foreman '>= 1.7'
 
-        # Add permissions
-        # security_block :fusor do
-        #   permission :view_fusor, { :'fusor/hosts' => [:new_action] }
-        # end
+        security_block :fusor do
+          permission :view_fusor_deployments, {
+            :"fusor/api/v2/deployments" => [:index, :show],
+            :"fusor/api/v21/deployments" => [:index, :show]
+          }, :resource_type => 'Fusor::Deployment'
+          permission :create_fusor_deployments, {
+            :"fusor/api/v2/deployments" => [:create],
+            :"fusor/api/v21/deployments" => [:create]
+          }, :resource_type => 'Fusor::Deployment'
+          permission :edit_fusor_deployments, {
+            :"fusor/api/v2/deployments" => [:update],
+            :"fusor/api/v21/deployments" => [:update]
+          }, :resource_type => 'Fusor::Deployment'
+          permission :destroy_discovered_hosts, {
+            :"fusor/api/v2/deployments" => [:destroy],
+            :"fusor/api/v21/deployments" => [:destroy]
+          }, :resource_type => 'Fusor::Deployment'
+        end
 
-        # Add a new role called 'Discovery' if it doesn't exist
+        # Add a new role called 'Fusor' if it doesn't exist
         # role "Fusor", [:view_fusor]
 
       end
