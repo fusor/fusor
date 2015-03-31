@@ -3600,6 +3600,8 @@ define('fusor-ember-cli/routes/hypervisor/discovered-host', ['exports', 'ember']
         var self = this;
         var deployment = this.modelFor("deployment");
         var hypervisorModelIds = this.controllerFor("hypervisor/discovered-host").get("hypervisorModelIds");
+        var token = $("meta[name=\"csrf-token\"]").attr("content");
+
         return new Ember['default'].RSVP.Promise(function (resolve, reject) {
           Ember['default'].$.ajax({
             url: "/fusor/api/v21/deployments/" + deployment.get("id"),
@@ -3608,6 +3610,7 @@ define('fusor-ember-cli/routes/hypervisor/discovered-host', ['exports', 'ember']
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
+              "X-CSRF-Token": token,
               Authorization: "Basic " + self.get("session.basicAuthToken")
             },
             success: function (response) {
@@ -10123,7 +10126,7 @@ define('fusor-ember-cli/tests/routes/hypervisor/discovered-host.jshint', functio
 
   module('JSHint - routes/hypervisor');
   test('routes/hypervisor/discovered-host.js should pass jshint', function() { 
-    ok(false, 'routes/hypervisor/discovered-host.js should pass jshint.\nroutes/hypervisor/discovered-host.js: line 14, col 44, Missing semicolon.\nroutes/hypervisor/discovered-host.js: line 14, col 9, \'model\' is defined but never used.\n\n2 errors'); 
+    ok(false, 'routes/hypervisor/discovered-host.js should pass jshint.\nroutes/hypervisor/discovered-host.js: line 14, col 44, Missing semicolon.\nroutes/hypervisor/discovered-host.js: line 23, col 19, \'$\' is not defined.\nroutes/hypervisor/discovered-host.js: line 14, col 9, \'model\' is defined but never used.\n\n3 errors'); 
   });
 
 });

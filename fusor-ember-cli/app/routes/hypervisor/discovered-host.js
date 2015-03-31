@@ -20,6 +20,8 @@ export default Ember.Route.extend({
       var self = this;
       var deployment = this.modelFor('deployment');
       var hypervisorModelIds = this.controllerFor('hypervisor/discovered-host').get('hypervisorModelIds');
+      var token = $('meta[name="csrf-token"]').attr('content');
+
       return new Ember.RSVP.Promise(function (resolve, reject) {
         Ember.$.ajax({
             url: '/fusor/api/v21/deployments/' + deployment.get('id'),
@@ -28,6 +30,7 @@ export default Ember.Route.extend({
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
+                "X-CSRF-Token": token,
                 "Authorization": "Basic " + self.get('session.basicAuthToken')
             },
             success: function(response) {
