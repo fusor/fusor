@@ -30,7 +30,7 @@ Summary: Fusor Server Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 10%{dist}
+Release: 11%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -124,6 +124,15 @@ cp -a %{buildroot}/%{gem_instdir}/config/fusor.yaml %{buildroot}%{foreman_plugin
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Tue Mar 31 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-11
+- Merge pull request #46 from jwmatthews/rpm_spec_downstream
+  (jwmatthews@gmail.com)
+- Merge pull request #52 from bbuckingham/hostgroup_param_overrride
+  (jwmatthews@gmail.com)
+- fusor server: update config and deploy action to support overriding
+  parameters on hostgroups (bbuckingham@redhat.com)
+- Updates so we can build with downstream foreman macros (jwmatthews@gmail.com)
+
 * Tue Mar 31 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-10
 - add permission to Fusor and FusorUI (jmagen@redhat.com)
 
