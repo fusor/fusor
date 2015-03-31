@@ -30,7 +30,7 @@ Summary: Fusor Server Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 11%{dist}
+Release: 12%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -124,6 +124,12 @@ cp -a %{buildroot}/%{gem_instdir}/config/fusor.yaml %{buildroot}%{foreman_plugin
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Tue Mar 31 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-12
+- fusor server: update hostgroup to override parameters based on deployment
+  object (bbuckingham@redhat.com)
+- ignore error Encoding::UndefinedConversionError: xBA from ASCII-8BIT to UTF-8
+  (jmagen@redhat.com)
+
 * Tue Mar 31 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-11
 - Merge pull request #46 from jwmatthews/rpm_spec_downstream
   (jwmatthews@gmail.com)
