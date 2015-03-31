@@ -22,7 +22,7 @@ module Actions
           fail _("Unable to locate host group settings in config/settings.plugins.d/fusor.yaml")
         end
 
-        plan_self(:deployment_name => deployment.name,
+        plan_self(:deployment_id => deployment.id,
                   :organization_id => deployment.organization.id,
                   :lifecycle_environment_id => deployment.lifecycle_environment.id,
                   :hostgroup_settings => hostgroup_settings,
@@ -35,8 +35,9 @@ module Actions
         # this action.  In the future, we may want to see if there are alternatives to this approach.
         ::User.current = ::User.find(input[:user_id])
 
+        deployment = ::Fusor::Deployment.find(input[:deployment_id])
         input[:hostgroup_settings][:host_groups].each do |hostgroup|
-          find_or_ensure_hostgroup(input[:deployment_name], input[:organization_id],
+          find_or_ensure_hostgroup(deployment, input[:organization_id],
                                    input[:lifecycle_environment_id], hostgroup)
         end
       ensure
@@ -45,12 +46,12 @@ module Actions
 
       private
 
-      def find_or_ensure_hostgroup(deployment_name, organization_id, lifecycle_environment_id, hostgroup_settings)
-        if content_view = find_content_view(organization_id, content_view_name(deployment_name))
+      def find_or_ensure_hostgroup(deployment, organization_id, lifecycle_environment_id, hostgroup_settings)
+        if content_view = find_content_view(organization_id, content_view_name(deployment.name))
 
           if parent_setting = hostgroup_settings[:parent]
             if parent_setting == "root_deployment"
-              parent_name = deployment_name
+              parent_name = deployment.name
             else
               parent_name = parent_setting
             end
@@ -82,7 +83,7 @@ module Actions
             operating_system = find_operating_system(lifecycle_environment, content_view)
             default_capsule_id = ::Katello::CapsuleContent.default_capsule.try(:capsule).try(:id)
 
-            hostgroup_params[:name] = deployment_name
+            hostgroup_params[:name] = deployment.name
             hostgroup_params[:lifecycle_environment_id] = lifecycle_environment_id
             hostgroup_params[:environment_id] = puppet_environment.try(:id)
             hostgroup_params[:content_view_id] = content_view.try(:id)
@@ -93,7 +94,7 @@ module Actions
             hostgroup_params[:medium_id] = operating_system.try(:media).try(:first).try(:id)
           end
         else
-          fail _("Unable to locate content view '%s'.") % content_view_name(deployment_name)
+          fail _("Unable to locate content view '%s'.") % content_view_name(deployment.name)
         end
 
         if hostgroup = find_hostgroup(organization_id, hostgroup_params[:name], parent)
@@ -104,7 +105,7 @@ module Actions
                                              :name => "kt_activation_keys").first
           parameter.update_attributes!(:reference_id => hostgroup.id,
                                        :name => "kt_activation_keys",
-                                       :value => activation_key_name(deployment_name))
+                                       :value => activation_key_name(deployment.name))
         else
           # Note: when setting the arch, medium and ptable, we assume that there will only be 1
           # associated with the operating system.  If we need to support multiple in the future,
@@ -113,12 +114,13 @@ module Actions
 
           ::GroupParameter.create!(:hostgroup => hostgroup,
                                    :name => "kt_activation_keys",
-                                   :value => activation_key_name(deployment_name))
+                                   :value => activation_key_name(deployment.name))
         end
-        apply_parameter_overrides(hostgroup, hostgroup_settings, puppet_environment)
+        apply_setting_parameter_overrides(hostgroup, hostgroup_settings, puppet_environment)
+        apply_deployment_parameter_overrides(hostgroup, deployment, puppet_environment)
       end
 
-      def apply_parameter_overrides(hostgroup, hostgroup_settings, puppet_environment)
+      def apply_setting_parameter_overrides(hostgroup, hostgroup_settings, puppet_environment)
         # Go through the hostgroup_settings.  If any of the puppet classes have a
         # parameter override specified, set it for the host group.
         if puppet_class_settings = hostgroup_settings[:puppet_classes]
@@ -135,6 +137,63 @@ module Actions
                                                        parameter_setting[:override])
                 end
               end
+            end
+          end
+        end
+      end
+
+      def apply_deployment_parameter_overrides(hostgroup, deployment, puppet_environment)
+        # TODO: ISSUE: the following attributes exist on the deployment object, but I do not know
+        # if they should be mapping to puppet class parameters and if so, which class & parameter?
+        # :name => , :value => deployment.rhev_database_name,
+        # :name => , :value => deployment.rhev_share_path,
+        # :name => , :value => deployment.cfme_install_loc,
+        # :name => , :value => deployment.rhev_is_self_hosted,
+
+        # TODO: ISSUE: the following attribute exists on both ovirt::engine::config & ovirt::engine::setup; however,
+        # unclear which one the deployment attribute is associated with
+        # :name => , :value => deployment.rhev_storage_type,
+
+        deployment_overrides =
+          [
+            {
+              :hostgroup_name => "RHEV-Engine",
+              :puppet_classes =>
+              [
+                {
+                  :name => "ovirt::engine::config",
+                  :parameters =>
+                  [
+                    { :name => "host_name", :value => deployment.rhev_engine_hostname },
+                    { :name => "cluster_name", :value => deployment.rhev_cluster_name },
+                    { :name => "storage_name", :value => deployment.rhev_storage_name },
+                    { :name => "storage_address", :value => deployment.rhev_storage_address },
+                    { :name => "storage_type", :value => deployment.rhev_storage_type },
+                    { :name => "cpu_type", :value => deployment.rhev_cpu_type }
+                  ]
+                },
+                {
+                  :name => "ovirt::engine::setup",
+                  :parameters =>
+                  [
+                    { :name => "storage_type", :value => deployment.rhev_storage_type },
+                    { :name => "admin_password", :value => deployment.rhev_engine_admin_password }
+                  ]
+                }
+              ]
+            }
+          ]
+
+        # Check if the host group has some overrides specified for this deployment.
+        # If it does, set them for the host group.
+        if overrides = deployment_overrides.find{ |hg| hg[:hostgroup_name] == hostgroup.name }
+          overrides[:puppet_classes].each do |pclass|
+            puppet_class = Puppetclass.where(:name => pclass[:name]).
+                joins(:environment_classes).
+                where("environment_classes.environment_id in (?)", puppet_environment.id).first
+
+            pclass[:parameters].each do |parameter|
+              hostgroup.set_param_value_if_changed(puppet_class, parameter[:name], parameter[:value])
             end
           end
         end
