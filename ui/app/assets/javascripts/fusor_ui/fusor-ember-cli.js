@@ -6,7 +6,7 @@ define('fusor-ember-cli/adapters/application', ['exports', 'ember-data'], functi
 
     'use strict';
 
-    var token = $("meta[name=\"csrf-param\"]").attr("content");
+    var token = $("meta[name=\"csrf-token\"]").attr("content");
     exports['default'] = DS['default'].ActiveModelAdapter.extend({
         namespace: "api/v21",
         headers: {
@@ -19,7 +19,7 @@ define('fusor-ember-cli/adapters/deployment', ['exports', 'ember-data'], functio
 
     'use strict';
 
-    var token = $("meta[name=\"csrf-param\"]").attr("content");
+    var token = $("meta[name=\"csrf-token\"]").attr("content");
     exports['default'] = DS['default'].ActiveModelAdapter.extend({
         namespace: "fusor/api/v21",
         headers: {
