@@ -30,7 +30,7 @@ Summary: Fusor Server Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 9%{dist}
+Release: 10%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -122,6 +122,9 @@ cp -a %{buildroot}/%{gem_instdir}/config/fusor.yaml %{buildroot}%{foreman_plugin
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Tue Mar 31 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-10
+- add permission to Fusor and FusorUI (jmagen@redhat.com)
+
 * Fri Mar 27 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-9
 - fusor server: update customer_portal_proxies_controller definition
   (bbuckingham@redhat.com)
