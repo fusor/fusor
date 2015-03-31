@@ -12,11 +12,11 @@ export default Ember.Route.extend({
 
   deactivate: function() {
     var model = this.modelFor('deployment')
-    return this.send('saveHyperVisors');
+    return this.send('saveHyperVisors', null);
   },
 
   actions: {
-    saveHyperVisors: function(hosts) {
+    saveHyperVisors: function(redirectPath) {
       var self = this;
       var deployment = this.modelFor('deployment');
       var hypervisorModelIds = this.controllerFor('hypervisor/discovered-host').get('hypervisorModelIds');
@@ -32,6 +32,9 @@ export default Ember.Route.extend({
             },
             success: function(response) {
               resolve(response);
+              if (redirectPath) {
+                self.transitionTo('rhev-options');
+              }
             },
 
             error: function(response){
