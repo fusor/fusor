@@ -1574,53 +1574,42 @@ define('fusor-ember-cli/controllers/review', ['exports', 'ember'], function (exp
 });
 define('fusor-ember-cli/controllers/review/installation', ['exports', 'ember'], function (exports, Ember) {
 
-  'use strict';
+        'use strict';
 
-  exports['default'] = Ember['default'].Controller.extend({
-    needs: ["application", "rhci", "deployment", "satellite", "configure-organization", "configure-environment", "rhev-setup", "hypervisor", "hypervisor/discovered-host", "engine/discovered-host", "storage", "networking", "rhev-options", "osp-settings", "osp-configuration", "where-install", "cloudforms-storage-domain", "cloudforms-vm", "review"],
+        exports['default'] = Ember['default'].Controller.extend({
+                needs: ["application", "rhci", "deployment", "satellite", "configure-organization", "configure-environment", "rhev-setup", "hypervisor", "hypervisor/discovered-host", "engine/discovered-host", "storage", "networking", "rhev-options", "osp-settings", "osp-configuration", "where-install", "cloudforms-storage-domain", "cloudforms-vm", "review"],
 
-    hypervisorHostgroupId: 9,
-    engineHostgroupId: 7,
+                hypervisorHostgroupId: 9,
+                engineHostgroupId: 7,
 
-    engineAdminPasswordLookupKeyId: 55,
-    engineHostAddressLookupKeyId: 61,
-    engineHostAddressDefault: "ovirt-hypervisor.rhci.redhat.com",
-    hostAddress: Ember['default'].computed.alias("controllers.rhev-options.hostAddress"),
-    engineHostName: Ember['default'].computed.alias("controllers.rhev-options.engineHostName"),
+                engineAdminPasswordLookupKeyId: 55,
+                engineHostAddressLookupKeyId: 61,
+                engineHostAddressDefault: "ovirt-hypervisor.rhci.redhat.com",
+                hostAddress: Ember['default'].computed.alias("controllers.rhev-options.hostAddress"),
+                engineHostName: Ember['default'].computed.alias("controllers.rhev-options.engineHostName"),
 
-    //selectedRhevEngine: Ember.computed.alias("controllers.deployment.selectedRhevEngine"),
+                //selectedRhevEngine: Ember.computed.alias("controllers.deployment.selectedRhevEngine"),
 
-    nameDeployment: Ember['default'].computed.alias("controllers.deployment.name"),
-    selectedOrganization: Ember['default'].computed.alias("controllers.deployment.selectedOrganzation"),
-    selectedEnvironment: Ember['default'].computed.alias("controllers.deployment.selectedEnvironment"),
-    rhevSetup: Ember['default'].computed.alias("controllers.deployment.rhevSetup"),
+                nameDeployment: Ember['default'].computed.alias("controllers.deployment.name"),
+                selectedOrganization: Ember['default'].computed.alias("controllers.deployment.selectedOrganzation"),
+                selectedEnvironment: Ember['default'].computed.alias("controllers.deployment.selectedEnvironment"),
+                rhevSetup: Ember['default'].computed.alias("controllers.deployment.rhevSetup"),
 
-    isRhev: Ember['default'].computed.alias("controllers.deployment.isRhev"),
-    isOpenStack: Ember['default'].computed.alias("controllers.deployment.isOpenStack"),
-    isCloudForms: Ember['default'].computed.alias("controllers.deployment.isCloudForms"),
+                isRhev: Ember['default'].computed.alias("controllers.deployment.isRhev"),
+                isOpenStack: Ember['default'].computed.alias("controllers.deployment.isOpenStack"),
+                isCloudForms: Ember['default'].computed.alias("controllers.deployment.isCloudForms"),
 
-    isSelfHosted: Ember['default'].computed.alias("controllers.deployment.rhev_is_self_hosted"),
-    selectedHypervisorHosts: Ember['default'].computed.alias("controllers.deployment.discovered_hosts"),
+                isSelfHosted: Ember['default'].computed.alias("controllers.deployment.rhev_is_self_hosted"),
+                selectedHypervisorHosts: Ember['default'].computed.alias("controllers.deployment.discovered_hosts"),
 
-    rhev_engine_host: Ember['default'].computed.alias("controllers.deployment.discovered_host"),
-    selectedRhevEngine: Ember['default'].computed.alias("controllers.deployment.discovered_host"),
+                rhev_engine_host: Ember['default'].computed.alias("controllers.deployment.discovered_host"),
+                selectedRhevEngine: Ember['default'].computed.alias("controllers.deployment.discovered_host"),
 
-    nameRHCI: Ember['default'].computed.alias("controllers.rhci.nameRHCI"),
-    nameRhev: Ember['default'].computed.alias("controllers.rhci.nameRhev"),
-    nameOpenStack: Ember['default'].computed.alias("controllers.rhci.nameOpenStack"),
-    nameCloudForms: Ember['default'].computed.alias("controllers.rhci.nameCloudForms"),
-    nameSatellite: Ember['default'].computed.alias("controllers.rhci.nameSatellite"),
-
-    actions: {
-      installDeployment: function (options) {
-        console.log("OPTIONS");
-        console.log(options);
-        this.get("controllers.review").set("disableTabProgress", false);
-        return this.transitionTo("review.progress");
-      }
-    }
-
-  });
+                nameRHCI: Ember['default'].computed.alias("controllers.rhci.nameRHCI"),
+                nameRhev: Ember['default'].computed.alias("controllers.rhci.nameRhev"),
+                nameOpenStack: Ember['default'].computed.alias("controllers.rhci.nameOpenStack"),
+                nameCloudForms: Ember['default'].computed.alias("controllers.rhci.nameCloudForms"),
+                nameSatellite: Ember['default'].computed.alias("controllers.rhci.nameSatellite") });
 
 });
 define('fusor-ember-cli/controllers/review/progress', ['exports', 'ember'], function (exports, Ember) {
@@ -3380,7 +3369,39 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'simple-auth/mi
       controller.set("satelliteTabRouteName", "satellite.index");
       controller.set("organizationTabRouteName", "configure-organization");
       controller.set("lifecycleEnvironmentTabRouteName", "configure-environment");
-    } });
+    },
+
+    actions: {
+      installDeployment: function (options) {
+        var self = this;
+        var deployment = this.modelFor("deployment");
+        var token = $("meta[name=\"csrf-token\"]").attr("content");
+
+        return new Ember['default'].RSVP.Promise(function (resolve, reject) {
+          Ember['default'].$.ajax({
+            url: "/fusor/api/v21/deployments/" + deployment.get("id") + "/deploy",
+            type: "PUT",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              "X-CSRF-Token": token,
+              Authorization: "Basic " + self.get("session.basicAuthToken")
+            },
+            success: function (response) {
+              resolve(response);
+              self.controllerFor("review").set("disableTabProgress", false);
+              return self.transitionTo("review.progress");
+            },
+
+            error: function (response) {
+              reject(response);
+            }
+          });
+        });
+      }
+    }
+
+  });
 
 });
 define('fusor-ember-cli/routes/deployment/index', ['exports', 'ember'], function (exports, Ember) {
@@ -7787,29 +7808,10 @@ define('fusor-ember-cli/templates/review/progress', ['exports', 'ember'], functi
   exports['default'] = Ember['default'].Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
   helpers = this.merge(helpers, Ember['default'].Handlebars.helpers); data = data || {};
-    var buffer = '', stack1, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, self=this;
+    var buffer = '', stack1;
 
-  function program1(depth0,data) {
-    
-    var buffer = '', stack1, helper, options;
-    data.buffer.push("\n      Installing (");
-    stack1 = helpers._triageMustache.call(depth0, "prog", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("% complete)\n      ");
-    data.buffer.push(escapeExpression((helper = helpers['bs-progress'] || (depth0 && depth0['bs-progress']),options={hash:{
-      'progressBinding': ("prog"),
-      'type': ("success"),
-      'stripped': (true),
-      'animated': (true)
-    },hashTypes:{'progressBinding': "STRING",'type': "STRING",'stripped': "BOOLEAN",'animated': "BOOLEAN"},hashContexts:{'progressBinding': depth0,'type': depth0,'stripped': depth0,'animated': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "bs-progress", options))));
-    data.buffer.push("\n    ");
-    return buffer;
-    }
 
-    data.buffer.push("<div class='row'>\n  <div class='col-md-8 col-md-offset-1'>\n\n    <h1>ONE API CALL TO METHOD 'DEPLOY' WHICH RUNS ASYNC DYNFLOW ACTIONS</h1>\n    <h1>NO ORCHESTRATION LOGIC IN UI</h1>\n    <br />\n\n    <div class='alert alert-success'>\n      INSTALLING: This is currently not hooked up to dynflow to track progress.<br />\n      Go to Virt Manager to view installation progress.\n    </div>\n\n    ");
-    stack1 = helpers['if'].call(depth0, "installationInProgress", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
-    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n\n<!--\n    <div class='row'>\n      <h3>Red Hat Enterprise Virtualization (25% complete, 3 hours 15 minutes remaining)</h3>\n      <div class='col-md-offset-1'>\n      </div>\n    </div>\n\n    <div class='row'>\n      <h3>Red Hat Enterprise Linux OpenStack Platform</h3>\n      <div class='col-md-offset-1'>\n      </div>\n    </div>\n\n    <div class='row'>\n      <h3>Red Hat Enterprise Linux OpenStack Platform</h3>\n      <div class='col-md-offset-1'>\n      </div>\n    </div> -->\n\n    <br />\n    <br />\n\n\n  </div>\n</div>\n\n");
+    data.buffer.push("<div class='row'>\n  <div class='col-md-8 col-md-offset-1'>\n\n    <div class='alert alert-success'>\n      INSTALLING: This is currently not hooked up to dynflow to track progress.<br />\n    </div>\n\n    \n<!--       Installing (% complete) -->\n      \n    \n\n    <br />\n    <br />\n\n  </div>\n</div>\n\n");
     stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n");
@@ -9989,7 +9991,7 @@ define('fusor-ember-cli/tests/routes/deployment.jshint', function () {
 
   module('JSHint - routes');
   test('routes/deployment.js should pass jshint', function() { 
-    ok(true, 'routes/deployment.js should pass jshint.'); 
+    ok(false, 'routes/deployment.js should pass jshint.\nroutes/deployment.js: line 22, col 19, \'$\' is not defined.\nroutes/deployment.js: line 19, col 33, \'options\' is defined but never used.\n\n2 errors'); 
   });
 
 });
@@ -15378,13 +15380,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","https://foreman.sat.lab.tlv.redhat.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.65ba6789"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","https://foreman.sat.lab.tlv.redhat.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.dbe36721"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.65ba6789"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.dbe36721"});
 }
 
 /* jshint ignore:end */

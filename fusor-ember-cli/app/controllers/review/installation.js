@@ -7,16 +7,9 @@ export default Ember.Controller.extend({
           'networking', 'rhev-options', 'osp-settings', 'osp-configuration', 'where-install',
           'cloudforms-storage-domain', 'cloudforms-vm', 'review'],
 
-  hypervisorHostgroupId: 9,
-  engineHostgroupId: 7,
-
-  engineAdminPasswordLookupKeyId: 55,
-  engineHostAddressLookupKeyId: 61,
   engineHostAddressDefault: 'ovirt-hypervisor.rhci.redhat.com',
   hostAddress: Ember.computed.alias("controllers.rhev-options.hostAddress"),
   engineHostName: Ember.computed.alias("controllers.rhev-options.engineHostName"),
-
-  //selectedRhevEngine: Ember.computed.alias("controllers.deployment.selectedRhevEngine"),
 
   nameDeployment: Ember.computed.alias("controllers.deployment.name"),
   selectedOrganization: Ember.computed.alias("controllers.deployment.selectedOrganzation"),
@@ -38,14 +31,5 @@ export default Ember.Controller.extend({
   nameOpenStack: Ember.computed.alias("controllers.rhci.nameOpenStack"),
   nameCloudForms: Ember.computed.alias("controllers.rhci.nameCloudForms"),
   nameSatellite: Ember.computed.alias("controllers.rhci.nameSatellite"),
-
-  actions: {
-    installDeployment: function(options) {
-      console.log('OPTIONS');
-      console.log(options);
-      this.get('controllers.review').set('disableTabProgress', false);
-      return this.transitionTo('review.progress');
-    }
-  }
 
 });
