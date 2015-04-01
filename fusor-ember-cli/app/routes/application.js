@@ -5,28 +5,22 @@ import ApplicationRouteMixin from 'simple-auth/mixins/application-route-mixin';
 export default Ember.Route.extend(ApplicationRouteMixin, {
 
   beforeModel: function(transition) {
-    if (!(this.controllerFor('application').get('isLiveBackendMode'))) {
-      this.get('session').set('isAuthenticated', true);
-      return this.transitionTo('deployment-new.start');
-    } else if (this.controllerFor('application').get('deployAsPlugin')) {
-      this.get('session').set('isAuthenticated', true);
-      return this.transitionTo('login');
+    if (this.controllerFor('application').get('deployAsPlugin')) {
+      return this.get('session').set('isAuthenticated', true);
     };
   },
 
   setupController: function(controller, model) {
     controller.set('model', model);
 
-    if (!(this.controllerFor('application').get('isLiveBackendMode'))) {
-      this.get('session').set('currentUser', this.store.find('user', 1));
-    }
-
     // Ensure headers are set in ApplicationAdapter. TODO - Why can't adapter access session?
-    var adapter = this.store.adapterFor('ApplicationAdapter');
-    if (this.get('session.authType') == 'oAuth') {
-      adapter.set('headers', { Authorization: 'Bearer ' + this.get('session.access_token') });
-    } else if (this.get('session.authType') == 'Basic') {
-      adapter.set('headers', { Authorization: 'Basic ' + this.get('session.basicAuthToken') });
+    if (this.controllerFor('application').get('isEmberCliMode')) {
+      var adapter = this.store.adapterFor('ApplicationAdapter');
+      if (this.get('session.authType') == 'oAuth') {
+        adapter.set('headers', { Authorization: 'Bearer ' + this.get('session.access_token') });
+      } else if (this.get('session.authType') == 'Basic') {
+        adapter.set('headers', { Authorization: 'Basic ' + this.get('session.basicAuthToken') });
+      }
     }
   },
 
