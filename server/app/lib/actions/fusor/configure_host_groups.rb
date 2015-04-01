@@ -92,6 +92,8 @@ module Actions
             hostgroup_params[:puppet_proxy_id] = default_capsule_id
             hostgroup_params[:operatingsystem_id] = operating_system.try(:id)
             hostgroup_params[:medium_id] = operating_system.try(:media).try(:first).try(:id)
+            hostgroup_params[:ptable_id] = operating_system.try(:ptables).try(:first).try(:id)
+            hostgroup_params[:architecture_id] = operating_system.try(:architectures).try(:first).try(:id)
           end
         else
           fail _("Unable to locate content view '%s'.") % content_view_name(deployment.name)
