@@ -1,31 +1,56 @@
-{{!model}}
 <br />
-{{!selectedOrganization}}
-<div class="row">
-  <div class='col-md-9'>
-    {{#if showAlertMessage}}
+{{#if showAlertMessage}}
+  <div class="row">
+    <div class='col-md-9'>
       <div class='alert alert-success'>
           <i class="fa fa-2x fa-check-circle-o green-circle"></i>
           &nbsp;
           {{selectedOrganization.name}} added successfully.
       </div>
-    {{/if}}
-    <p>
-      Select an organization for this RHCI deployment. Organizations divide hosts into logical groups based on ownership, purpose, content, security level, or other divisions.
-    </p>
-    {{#each org in organizations}}
-      {{tr-organization org=org
-                        selectedOrganization=selectedOrganization
-                        action="selectOrganization"}}
-    {{/each}}
-    <div style='margin-top:15px;margin-bottom:15px;'>
-     <button class='btn btn-default' {{action 'showModal' 'newOrganizationModal'}}>New Organization</button>
     </div>
+  </div>
+{{/if}}
 
-    <br />
-    <br />
-    <div style='float:right'>
-        {{!satelliteTabRouteName}}
+<div class="row">
+  <div class='col-md-5'>
+    <p>
+      Choose an organization for this deployment. Organizations divide hosts into logical groups based on ownership, purpose, content, security level, or other divisions.
+    </p>
+  </div>
+  <div class='col-md-4'>
+    <div class='pull-right'>
+       <button class='btn btn-default' {{action 'showModal' 'newOrganizationModal'}}>New Organization</button>
+    </div>
+  </div>
+</div>
+
+<br />
+
+<div class="row">
+  <div class='col-md-9'>
+    <table class="table table-striped">
+      <thead>
+        <th></th>
+        <th>Name</th>
+        <th>Description</th>
+      </thead>
+      <tbody>
+        {{#each org in organizations}}
+          {{tr-organization org=org
+                            selectedOrganization=selectedOrganization
+                            action="selectOrganization"}}
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<br />
+<br />
+
+<div class="row">
+  <div class='col-md-9'>
+    <div class='pull-right'>
         {{#link-to satelliteTabRouteName class='btn btn-default'}}
           Back
         {{/link-to}}
@@ -34,11 +59,10 @@
                    class='btn btn-primary'}}
             Next
         {{/link-to}}
-        {{!lifecycleEnvironmentTabRouteName}}
     </div>
   </div>
 </div>
 
-{{#bs-modal name="newOrganizationModal" fade=true footerButtonsBinding="rhciModalButtons" title="Create New Organization"}}
+{{#bs-modal name="newOrganizationModal" fade=true footerButtonsBinding="rhciModalButtons" title="New Organization"}}
   {{partial 'new-organization'}}
 {{/bs-modal}}

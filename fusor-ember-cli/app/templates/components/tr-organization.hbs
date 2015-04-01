@@ -1,3 +1,9 @@
-{{#radio-button value=org groupValue=selectedOrganization changed="organizationChanged"}}
-  {{org.name}}
-{{/radio-button}}
+<td>
+    {{radio-button value=org groupValue=selectedOrganization changed="organizationChanged"}}
+</td>
+<td>
+    {{org.name}}
+</td>
+<td>
+    {{org.description}}
+</td>

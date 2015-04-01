@@ -1,21 +1,28 @@
-{{!hasLibrary}}
-{{!libraryEnvForOrg}}
-{{!selectedOrganization}}
-{{!model}}
 <br />
-{{!selectedEnvironment}}
+{{#if showAlertMessage}}
 <div class="row">
   <div class='col-md-9'>
-    {{#if showAlertMessage}}
-      <div class='alert alert-success'>
-          <i class="fa fa-2x fa-check-circle-o green-circle"></i>
-          &nbsp;
-          {{selectedEnvironment.name}} added successfully.
-      </div>
-    {{/if}}
+    <div class='alert alert-success'>
+        <i class="fa fa-2x fa-check-circle-o green-circle"></i>
+        &nbsp;
+        {{selectedEnvironment.name}} added successfully.
+    </div>
+  </div>
+</div>
+{{/if}}
+
+<div class="row">
+  <div class='col-md-6'>
     <p>
-    Select a lifecycle environment for this RHCI deployment. The application lifecycle is divided into lifecycle environments, which mimic each stage of the lifecycle. These lifecycle environments are linked in an environment path. You can promote content along the environment path to the next stage when required. For example, if development completes on a particular version of an application, you can promote this version to the testing environment and start development on the next version.
+      Select a lifecycle environment for this RHCI deployment. The application lifecycle is divided into lifecycle environments, which mimic each stage of the lifecycle. These lifecycle environments are linked in an environment path. You can promote content along the environment path to the next stage when required. For example, if development completes on a particular version of an application, you can promote this version to the testing environment and start development on the next version.
     </p>
+  </div>
+</div>
+
+<br />
+
+<div class="row">
+  <div class='col-md-9'>
 
     {{#each env in nonLibraryEnvironments}}
     <div class="path-selector">
@@ -47,9 +54,15 @@
       </button>
     </div>
 
-    <br />
-    <br />
-    <div style='float:right'>
+  </div>
+</div>
+
+<br />
+<br />
+
+<div class="row">
+  <div class='col-md-9'>
+    <div class='pull-right'>
       {{#link-to organizationTabRouteName class='btn btn-default'}}Back{{/link-to}}
       <button {{action 'saveDeployment' step2RouteName}}
               {{bind-attr disabled=disableNextOnLifecycleEnvironment}}
@@ -57,10 +70,9 @@
           Next
       </button> {{!step2RouteName}}
     </div>
-
   </div>
 </div>
 
-{{#bs-modal name="newEnvironmentModal" fade=true footerButtonsBinding="rhciNewEnvButtons" title="Create New Environment"}}
+{{#bs-modal name="newEnvironmentModal" fade=true footerButtonsBinding="rhciNewEnvButtons" title="New Environment Path"}}
   {{partial 'new-environment'}}
 {{/bs-modal}}

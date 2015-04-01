@@ -1,37 +1,36 @@
-{{!rhevSetup}} {{!rhev_is_self_hosted}}
+<div class='row'>
+  <div class='col-md-9'>
+    Select the setup type.
+  </div>
+</div>
+
 <div class='row'>
   <div class='col-md-8 col-md-offset-1'>
 
     <div class='row'>
       <h3>
-      {{#radio-button value="rhevhost" groupValue=rhevSetup changed="rhevSetupChanged"}}
-        Host + Engine
+      {{#radio-button value="selfhost" groupValue=rhevSetup changed="rhevSetupChanged"}}
+        Self-hosted
       {{/radio-button}}
       </h3>
-
-      <div class='col-md-offset-1'>
-          Installation flow using separate machines for the Engine and the Hypervisor(s).
-      </div>
     </div>
 
     <div class='row'>
       <h3>
-      {{#radio-button value="selfhost" groupValue=rhevSetup changed="rhevSetupChanged"}}
-        Self Hosted
+      {{#radio-button value="rhevhost" groupValue=rhevSetup changed="rhevSetupChanged"}}
+        Hypervisor + engine
       {{/radio-button}}
       </h3>
-      <div class='col-md-offset-1'>
-          Installation flow using the same machine for the Engine and the Hyperviso.
-      </div>
-    </div>
-
-    <div class='pull-right'>
-      <br />
-      {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
-      {{#link-to 'engine.discovered-host' class='btn btn-primary'}}Next{{/link-to}}
     </div>
 
   </div>
+</div>
+
+<br />
+
+<div class='pull-right'>
+    {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
+    {{#link-to 'engine.discovered-host' class='btn btn-primary'}}Next{{/link-to}}
 </div>
 
 {{partial 'cancel-deployment-modal'}}
