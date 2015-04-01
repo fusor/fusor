@@ -1,13 +1,12 @@
-{{!cfme_install_loc}}
 <div class='row'>
   <div class='col-md-8 col-md-offset-1'>
 
     <div class='row'>
-      Select the location where to install CloudForms.
+      Select a product to create and manage virtual machines.
       <h3>
         {{#unless disableRHEV}}
           {{#radio-button value="RHEV" groupValue=cfme_install_loc changed="cfmeLocationChanged"}}
-            Install on RHEV
+            Install CloudForms on Red Hat Enterprise Virtualization
           {{/radio-button}}
         {{/unless}}
     </div>
@@ -16,7 +15,8 @@
       <h3>
         {{#unless disableOpenStack}}
           {{#radio-button value="OpenStack" groupValue=cfme_install_loc changed="cfmeLocationChanged"}}
-            Install on OpenStack
+            Install CloudForms on OpenStack<br />
+            Able to split virtualization workloads across multiple controller nodes
           {{/radio-button}}
         {{/unless}}
     </div>
@@ -24,8 +24,8 @@
   </div>
 </div>
 
-    <div class='pull-right'>
-      <br />
-      {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
-      {{#link-to 'subscriptions.credentials' class='btn btn-primary'}}Next{{/link-to}}
-    </div>
+<div class='pull-right'>
+  <br />
+  {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
+  {{#link-to 'subscriptions.credentials' class='btn btn-primary'}}Next{{/link-to}}
+</div>

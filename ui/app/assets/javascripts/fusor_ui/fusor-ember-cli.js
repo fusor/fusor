@@ -512,6 +512,8 @@ define('fusor-ember-cli/components/tr-organization', ['exports', 'ember'], funct
 
   exports['default'] = Ember['default'].Component.extend({
 
+    tagName: "tr",
+
     isChecked: (function () {
       return this.get("selectedOrganization") == this.get("org");
     }).property("selectedOrganization", "org"),
@@ -1058,7 +1060,11 @@ define('fusor-ember-cli/controllers/engine', ['exports', 'ember'], function (exp
 
   exports['default'] = Ember['default'].Controller.extend({
     needs: ["rhev"],
-    engineTabName: Ember['default'].computed.alias("controllers.rhev.engineTabName") });
+    engineTabName: Ember['default'].computed.alias("controllers.rhev.engineTabName"),
+    engineTabNameLowercase: (function () {
+      return this.get("engineTabName").toLowerCase();
+    }).property("engineTabName")
+  });
 
 });
 define('fusor-ember-cli/controllers/engine/discovered-host', ['exports', 'ember'], function (exports, Ember) {
@@ -1715,7 +1721,7 @@ define('fusor-ember-cli/controllers/rhev', ['exports', 'ember'], function (expor
 
     engineTabName: (function () {
       if (this.get("isSelfHost")) {
-        return "Engine / Hypervisor";
+        return "Hypervisor/engine";
       } else {
         return "Engine";
       }
@@ -4645,7 +4651,7 @@ define('fusor-ember-cli/templates/components/rhci-start', ['exports', 'ember'], 
   function program1(depth0,data) {
     
     
-    data.buffer.push("\n<p class='subscriptions_needed'>\n<i class=\"fa fa-info-circle\"></i>\n<strong>Subscriptions needed to complete this deployment.</strong> Check your account in <a>Portal</a> to verify you have subscriptions available to cover the selected products.\n</p>\n");
+    data.buffer.push("\n<div class='subscriptions_needed'>\n\n  <i class=\"fa fa-info-circle\"></i>\n  <strong>Before you begin:</strong>\n\n  <p>\n    <strong>Subscriptions required to complete this deployment.</strong> Check your account in the <a href='https://access.redhat.com/home' target='_blank'>Red Hat Customer Portal</a> to verify you have subscriptions available to cover the selected products.\n    <br />\n    <strong>Start up host machines.</strong> Ensure that the bare-metal computers and the virtual machines that you plan to use are turned on and discoverable.\n    <br />\n    <strong>Configure your network.</strong> Ensure that the network and subnets are set up and available.\n  </p>\n\n</div>\n");
     }
 
   function program3(depth0,data) {
@@ -4657,7 +4663,7 @@ define('fusor-ember-cli/templates/components/rhci-start', ['exports', 'ember'], 
   function program5(depth0,data) {
     
     
-    data.buffer.push("Next");
+    data.buffer.push("Select");
     }
 
     data.buffer.push("<div class='row'>\n  <div class='col-md-12'>\n    <h2>New Deployment: Select Cloud Infrastructure Products</h2>\n\n    Choose the products to deploy. This wizard guides you through creating a new ");
@@ -4681,7 +4687,7 @@ define('fusor-ember-cli/templates/components/rhci-start', ['exports', 'ember'], 
       'isChecked': ("isCloudForms"),
       'name': ("nameCloudForms")
     },hashTypes:{'srcImage': "ID",'isChecked': "ID",'name': "ID"},hashContexts:{'srcImage': depth0,'isChecked': depth0,'name': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "rchi-item", options))));
-    data.buffer.push("\n  </div>\n\n</div>\n\n\n");
+    data.buffer.push("\n  </div>\n\n</div>\n\n");
     stack1 = helpers.unless.call(depth0, "isUpstream", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n\n<br />\n<div class='row'>\n  <div class='col-md-12'>\n    <div style='float:right;'>\n      ");
@@ -5122,25 +5128,22 @@ define('fusor-ember-cli/templates/components/tr-organization', ['exports', 'embe
   exports['default'] = Ember['default'].Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
   helpers = this.merge(helpers, Ember['default'].Handlebars.helpers); data = data || {};
-    var buffer = '', stack1, helper, options, self=this, helperMissing=helpers.helperMissing;
+    var buffer = '', stack1, helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
-  function program1(depth0,data) {
-    
-    var buffer = '', stack1;
-    data.buffer.push("\n  ");
-    stack1 = helpers._triageMustache.call(depth0, "org.name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n");
-    return buffer;
-    }
 
-    stack1 = (helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
+    data.buffer.push("<td>\n    ");
+    data.buffer.push(escapeExpression((helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
       'value': ("org"),
       'groupValue': ("selectedOrganization"),
       'changed': ("organizationChanged")
-    },hashTypes:{'value': "ID",'groupValue': "ID",'changed': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
+    },hashTypes:{'value': "ID",'groupValue': "ID",'changed': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options))));
+    data.buffer.push("\n</td>\n<td>\n    ");
+    stack1 = helpers._triageMustache.call(depth0, "org.name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n");
+    data.buffer.push("\n</td>\n<td>\n    ");
+    stack1 = helpers._triageMustache.call(depth0, "org.description", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+    data.buffer.push("\n</td>\n");
     return buffer;
     
   });
@@ -5263,10 +5266,10 @@ define('fusor-ember-cli/templates/configure-environment', ['exports', 'ember'], 
   function program1(depth0,data) {
     
     var buffer = '', stack1;
-    data.buffer.push("\n      <div class='alert alert-success'>\n          <i class=\"fa fa-2x fa-check-circle-o green-circle\"></i>\n          &nbsp;\n          ");
+    data.buffer.push("\n<div class=\"row\">\n  <div class='col-md-9'>\n    <div class='alert alert-success'>\n        <i class=\"fa fa-2x fa-check-circle-o green-circle\"></i>\n        &nbsp;\n        ");
     stack1 = helpers._triageMustache.call(depth0, "selectedEnvironment.name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push(" added successfully.\n      </div>\n    ");
+    data.buffer.push(" added successfully.\n    </div>\n  </div>\n</div>\n");
     return buffer;
     }
 
@@ -5308,15 +5311,15 @@ define('fusor-ember-cli/templates/configure-environment', ['exports', 'ember'], 
     return buffer;
     }
 
-    data.buffer.push("\n\n\n\n<br />\n\n<div class=\"row\">\n  <div class='col-md-9'>\n    ");
+    data.buffer.push("<br />\n");
     stack1 = helpers['if'].call(depth0, "showAlertMessage", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n    <p>\n    Select a lifecycle environment for this RHCI deployment. The application lifecycle is divided into lifecycle environments, which mimic each stage of the lifecycle. These lifecycle environments are linked in an environment path. You can promote content along the environment path to the next stage when required. For example, if development completes on a particular version of an application, you can promote this version to the testing environment and start development on the next version.\n    </p>\n\n    ");
+    data.buffer.push("\n\n<div class=\"row\">\n  <div class='col-md-6'>\n    <p>\n      Select a lifecycle environment for this RHCI deployment. The application lifecycle is divided into lifecycle environments, which mimic each stage of the lifecycle. These lifecycle environments are linked in an environment path. You can promote content along the environment path to the next stage when required. For example, if development completes on a particular version of an application, you can promote this version to the testing environment and start development on the next version.\n    </p>\n  </div>\n</div>\n\n<br />\n\n<div class=\"row\">\n  <div class='col-md-9'>\n\n    ");
     stack1 = helpers.each.call(depth0, "env", "in", "nonLibraryEnvironments", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),contexts:[depth0,depth0,depth0],types:["ID","ID","ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n\n    <div style='margin-top:15px;'>\n      <button class='btn btn-default' ");
     data.buffer.push(escapeExpression(helpers.action.call(depth0, "showModal", "newEnvironmentModal", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0,depth0],types:["STRING","STRING"],data:data})));
-    data.buffer.push(">\n        New Environment Path\n      </button>\n    </div>\n\n    <br />\n    <br />\n    <div style='float:right'>\n      ");
+    data.buffer.push(">\n        New Environment Path\n      </button>\n    </div>\n\n  </div>\n</div>\n\n<br />\n<br />\n\n<div class=\"row\">\n  <div class='col-md-9'>\n    <div class='pull-right'>\n      ");
     stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
       'class': ("btn btn-default")
     },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0],types:["ID"],data:data},helper ? helper.call(depth0, "organizationTabRouteName", options) : helperMissing.call(depth0, "link-to", "organizationTabRouteName", options));
@@ -5327,12 +5330,12 @@ define('fusor-ember-cli/templates/configure-environment', ['exports', 'ember'], 
     data.buffer.push(escapeExpression(helpers['bind-attr'].call(depth0, {hash:{
       'disabled': ("disableNextOnLifecycleEnvironment")
     },hashTypes:{'disabled': "ID"},hashContexts:{'disabled': depth0},contexts:[],types:[],data:data})));
-    data.buffer.push("\n              class='btn btn-primary'>\n          Next\n      </button> \n    </div>\n\n  </div>\n</div>\n\n");
+    data.buffer.push("\n              class='btn btn-primary'>\n          Next\n      </button> \n    </div>\n  </div>\n</div>\n\n");
     stack1 = (helper = helpers['bs-modal'] || (depth0 && depth0['bs-modal']),options={hash:{
       'name': ("newEnvironmentModal"),
       'fade': (true),
       'footerButtonsBinding': ("rhciNewEnvButtons"),
-      'title': ("Create New Environment")
+      'title': ("New Environment Path")
     },hashTypes:{'name': "STRING",'fade': "BOOLEAN",'footerButtonsBinding': "STRING",'title': "STRING"},hashContexts:{'name': depth0,'fade': depth0,'footerButtonsBinding': depth0,'title': depth0},inverse:self.noop,fn:self.program(9, program9, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "bs-modal", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     return buffer;
@@ -5367,23 +5370,23 @@ define('fusor-ember-cli/templates/configure-organization', ['exports', 'ember'],
   function program1(depth0,data) {
     
     var buffer = '', stack1;
-    data.buffer.push("\n      <div class='alert alert-success'>\n          <i class=\"fa fa-2x fa-check-circle-o green-circle\"></i>\n          &nbsp;\n          ");
+    data.buffer.push("\n  <div class=\"row\">\n    <div class='col-md-9'>\n      <div class='alert alert-success'>\n          <i class=\"fa fa-2x fa-check-circle-o green-circle\"></i>\n          &nbsp;\n          ");
     stack1 = helpers._triageMustache.call(depth0, "selectedOrganization.name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push(" added successfully.\n      </div>\n    ");
+    data.buffer.push(" added successfully.\n      </div>\n    </div>\n  </div>\n");
     return buffer;
     }
 
   function program3(depth0,data) {
     
     var buffer = '', helper, options;
-    data.buffer.push("\n      ");
+    data.buffer.push("\n          ");
     data.buffer.push(escapeExpression((helper = helpers['tr-organization'] || (depth0 && depth0['tr-organization']),options={hash:{
       'org': ("org"),
       'selectedOrganization': ("selectedOrganization"),
       'action': ("selectOrganization")
     },hashTypes:{'org': "ID",'selectedOrganization': "ID",'action': "STRING"},hashContexts:{'org': depth0,'selectedOrganization': depth0,'action': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "tr-organization", options))));
-    data.buffer.push("\n    ");
+    data.buffer.push("\n        ");
     return buffer;
     }
 
@@ -5408,15 +5411,15 @@ define('fusor-ember-cli/templates/configure-organization', ['exports', 'ember'],
     return buffer;
     }
 
-    data.buffer.push("\n<br />\n\n<div class=\"row\">\n  <div class='col-md-9'>\n    ");
+    data.buffer.push("<br />\n");
     stack1 = helpers['if'].call(depth0, "showAlertMessage", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n    <p>\n      Select an organization for this RHCI deployment. Organizations divide hosts into logical groups based on ownership, purpose, content, security level, or other divisions.\n    </p>\n    ");
+    data.buffer.push("\n\n<div class=\"row\">\n  <div class='col-md-5'>\n    <p>\n      Choose an organization for this deployment. Organizations divide hosts into logical groups based on ownership, purpose, content, security level, or other divisions.\n    </p>\n  </div>\n  <div class='col-md-4'>\n    <div class='pull-right'>\n       <button class='btn btn-default' ");
+    data.buffer.push(escapeExpression(helpers.action.call(depth0, "showModal", "newOrganizationModal", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0,depth0],types:["STRING","STRING"],data:data})));
+    data.buffer.push(">New Organization</button>\n    </div>\n  </div>\n</div>\n\n<br />\n\n<div class=\"row\">\n  <div class='col-md-9'>\n    <table class=\"table table-striped\">\n      <thead>\n        <th></th>\n        <th>Name</th>\n        <th>Description</th>\n      </thead>\n      <tbody>\n        ");
     stack1 = helpers.each.call(depth0, "org", "in", "organizations", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0,depth0,depth0],types:["ID","ID","ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n    <div style='margin-top:15px;margin-bottom:15px;'>\n     <button class='btn btn-default' ");
-    data.buffer.push(escapeExpression(helpers.action.call(depth0, "showModal", "newOrganizationModal", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0,depth0],types:["STRING","STRING"],data:data})));
-    data.buffer.push(">New Organization</button>\n    </div>\n\n    <br />\n    <br />\n    <div style='float:right'>\n        \n        ");
+    data.buffer.push("\n      </tbody>\n    </table>\n  </div>\n</div>\n\n<br />\n<br />\n\n<div class=\"row\">\n  <div class='col-md-9'>\n    <div class='pull-right'>\n        ");
     stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
       'class': ("btn btn-default")
     },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["ID"],data:data},helper ? helper.call(depth0, "satelliteTabRouteName", options) : helperMissing.call(depth0, "link-to", "satelliteTabRouteName", options));
@@ -5427,12 +5430,12 @@ define('fusor-ember-cli/templates/configure-organization', ['exports', 'ember'],
       'class': ("btn btn-primary")
     },hashTypes:{'disabled': "ID",'class': "STRING"},hashContexts:{'disabled': depth0,'class': depth0},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0],types:["ID"],data:data},helper ? helper.call(depth0, "lifecycleEnvironmentTabRouteName", options) : helperMissing.call(depth0, "link-to", "lifecycleEnvironmentTabRouteName", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n        \n    </div>\n  </div>\n</div>\n\n");
+    data.buffer.push("\n    </div>\n  </div>\n</div>\n\n");
     stack1 = (helper = helpers['bs-modal'] || (depth0 && depth0['bs-modal']),options={hash:{
       'name': ("newOrganizationModal"),
       'fade': (true),
       'footerButtonsBinding': ("rhciModalButtons"),
-      'title': ("Create New Organization")
+      'title': ("New Organization")
     },hashTypes:{'name': "STRING",'fade': "BOOLEAN",'footerButtonsBinding': "STRING",'title': "STRING"},hashContexts:{'name': depth0,'fade': depth0,'footerButtonsBinding': depth0,'title': depth0},inverse:self.noop,fn:self.program(9, program9, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "bs-modal", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n");
@@ -5768,7 +5771,7 @@ define('fusor-ember-cli/templates/deployment', ['exports', 'ember'], function (e
   function program1(depth0,data) {
     
     var buffer = '', stack1, helper, options;
-    data.buffer.push("\n  <br />\n  <h1 class='deployment_name'>New ");
+    data.buffer.push("\n  <br />\n  <br />\n  <h1 class='deployment_name'>New ");
     stack1 = helpers._triageMustache.call(depth0, "nameRHCI", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push(" Deployment: <strong>");
@@ -5815,7 +5818,7 @@ define('fusor-ember-cli/templates/deployment', ['exports', 'ember'], function (e
     data.buffer.push("\n        <i class=\"fa fa-2x fa-pencil\"></i>\n    ");
     }
 
-    data.buffer.push("\n\n\n\n<br />\n\n\n");
+    data.buffer.push("\n\n\n\n\n\n\n");
     stack1 = helpers.unless.call(depth0, "isHideWizard", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n\n");
@@ -6035,8 +6038,8 @@ define('fusor-ember-cli/templates/engine', ['exports', 'ember'], function (expor
     var buffer = '', stack1;
 
 
-    data.buffer.push("<div class=\"row\">\n  </div class='col-md-12'>\n\n    <h4 style='padding-left:15px;'>Select One Target Machine to Install ");
-    stack1 = helpers._triageMustache.call(depth0, "engineTabName", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+    data.buffer.push("<div class=\"row\">\n  </div class='col-md-12'>\n\n    <h4 style='padding-left:15px;'>Select a target machine for the ");
+    stack1 = helpers._triageMustache.call(depth0, "engineTabNameLowercase", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push(":</h4>\n\n    <div class=\"col-md-12\">\n        ");
     stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
@@ -6105,7 +6108,7 @@ define('fusor-ember-cli/templates/engine/discovered-host', ['exports', 'ember'],
     data.buffer.push("Next");
     }
 
-    data.buffer.push("\n\n\n<br />\n<table class=\"table table-bordered table-striped small\">\n<thead>\n    <tr>\n      <th> </th>\n      <th> Name </th>\n      <th> MAC </th>\n      <th> CPU's </th>\n      <th> Memory </th>\n    </tr>\n  </thead>\n\n  <tbody>\n  ");
+    data.buffer.push("\n<br />\n<table class=\"table table-bordered table-striped small\">\n<thead>\n    <tr>\n      <th> </th>\n      <th> Name </th>\n      <th> MAC </th>\n      <th> CPU's </th>\n      <th> Memory </th>\n    </tr>\n  </thead>\n\n  <tbody>\n  ");
     stack1 = helpers.each.call(depth0, "host", "in", "availableHosts", {hash:{
       'itemController': ("discovered-host")
     },hashTypes:{'itemController': "STRING"},hashContexts:{'itemController': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0,depth0],types:["ID","ID","ID"],data:data});
@@ -6249,7 +6252,7 @@ define('fusor-ember-cli/templates/hypervisor', ['exports', 'ember'], function (e
     var buffer = '', stack1;
 
 
-    data.buffer.push("<div class=\"row\">\n  </div class='col-md-12'>\n\n    <h4 style='padding-left:15px;'>Select Target Machine(s) to Install Hypervisor(s):</h4>\n\n    <div class=\"col-md-12\">\n        ");
+    data.buffer.push("<div class=\"row\">\n  </div class='col-md-12'>\n\n    <h4 style='padding-left:15px;'>Select one or more target machines to be hypervisors.</h4>\n\n    <div class=\"col-md-12\">\n        ");
     stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n    </div>\n  </div>\n</div>\n");
@@ -6647,7 +6650,7 @@ define('fusor-ember-cli/templates/new-environment', ['exports', 'ember'], functi
 
     data.buffer.push("<form class=\"form form-horizontal\">\n  ");
     data.buffer.push(escapeExpression((helper = helpers['text-f'] || (depth0 && depth0['text-f']),options={hash:{
-      'label': ("Name"),
+      'label': ("Environment Path Name"),
       'value': ("name"),
       'labelSize': ("col-md-4"),
       'inputSize': ("col-md-8")
@@ -6684,7 +6687,7 @@ define('fusor-ember-cli/templates/new-organization', ['exports', 'ember'], funct
 
     data.buffer.push("<form class=\"form form-horizontal\">\n  ");
     data.buffer.push(escapeExpression((helper = helpers['text-f'] || (depth0 && depth0['text-f']),options={hash:{
-      'label': ("Name"),
+      'label': ("Organization Name"),
       'value': ("defaultOrgName"),
       'labelSize': ("col-md-4"),
       'inputSize': ("col-md-8")
@@ -7917,13 +7920,13 @@ define('fusor-ember-cli/templates/rhev-setup', ['exports', 'ember'], function (e
   function program1(depth0,data) {
     
     
-    data.buffer.push("\n        Host + Engine\n      ");
+    data.buffer.push("\n        Self-hosted\n      ");
     }
 
   function program3(depth0,data) {
     
     
-    data.buffer.push("\n        Self Hosted\n      ");
+    data.buffer.push("\n        Hypervisor + engine\n      ");
     }
 
   function program5(depth0,data) {
@@ -7938,31 +7941,31 @@ define('fusor-ember-cli/templates/rhev-setup', ['exports', 'ember'], function (e
     data.buffer.push("Next");
     }
 
-    data.buffer.push(" \n<div class='row'>\n  <div class='col-md-8 col-md-offset-1'>\n\n    <div class='row'>\n      <h3>\n      ");
-    stack1 = (helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
-      'value': ("rhevhost"),
-      'groupValue': ("rhevSetup"),
-      'changed': ("rhevSetupChanged")
-    },hashTypes:{'value': "STRING",'groupValue': "ID",'changed': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
-    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n      </h3>\n\n      <div class='col-md-offset-1'>\n          Installation flow using separate machines for the Engine and the Hypervisor(s).\n      </div>\n    </div>\n\n    <div class='row'>\n      <h3>\n      ");
+    data.buffer.push("<div class='row'>\n  <div class='col-md-9'>\n    Select the setup type.\n  </div>\n</div>\n\n<div class='row'>\n  <div class='col-md-8 col-md-offset-1'>\n\n    <div class='row'>\n      <h3>\n      ");
     stack1 = (helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
       'value': ("selfhost"),
       'groupValue': ("rhevSetup"),
       'changed': ("rhevSetupChanged")
+    },hashTypes:{'value': "STRING",'groupValue': "ID",'changed': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
+    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+    data.buffer.push("\n      </h3>\n    </div>\n\n    <div class='row'>\n      <h3>\n      ");
+    stack1 = (helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
+      'value': ("rhevhost"),
+      'groupValue': ("rhevSetup"),
+      'changed': ("rhevSetupChanged")
     },hashTypes:{'value': "STRING",'groupValue': "ID",'changed': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0},inverse:self.noop,fn:self.program(3, program3, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n      </h3>\n      <div class='col-md-offset-1'>\n          Installation flow using the same machine for the Engine and the Hyperviso.\n      </div>\n    </div>\n\n    <div class='pull-right'>\n      <br />\n      ");
+    data.buffer.push("\n      </h3>\n    </div>\n\n  </div>\n</div>\n\n<br />\n\n<div class='pull-right'>\n    ");
     stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
       'class': ("btn btn-default")
     },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "deployments", options) : helperMissing.call(depth0, "link-to", "deployments", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n      ");
+    data.buffer.push("\n    ");
     stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
       'class': ("btn btn-primary")
     },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "engine.discovered-host", options) : helperMissing.call(depth0, "link-to", "engine.discovered-host", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n    </div>\n\n  </div>\n</div>\n\n");
+    data.buffer.push("\n</div>\n\n");
     data.buffer.push(escapeExpression((helper = helpers.partial || (depth0 && depth0.partial),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "cancel-deployment-modal", options) : helperMissing.call(depth0, "partial", "cancel-deployment-modal", options))));
     data.buffer.push("\n");
     return buffer;
@@ -7982,7 +7985,7 @@ define('fusor-ember-cli/templates/rhev', ['exports', 'ember'], function (exports
   function program1(depth0,data) {
     
     
-    data.buffer.push("\n        <a>2A. Setup Architecture</a>\n      ");
+    data.buffer.push("\n        <a>2A. Setup Type</a>\n      ");
     }
 
   function program3(depth0,data) {
@@ -8146,7 +8149,7 @@ define('fusor-ember-cli/templates/satellite/index', ['exports', 'ember'], functi
       'class': ("btn btn-primary")
     },hashTypes:{'disabled': "ID",'class': "STRING"},hashContexts:{'disabled': depth0,'class': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data},helper ? helper.call(depth0, "organizationTabRouteName", options) : helperMissing.call(depth0, "link-to", "organizationTabRouteName", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push(" \n      </div>\n\n    </form>\n  </div>\n</div>\n");
+    data.buffer.push("\n      </div>\n\n    </form>\n  </div>\n</div>\n");
     data.buffer.push(escapeExpression((helper = helpers.partial || (depth0 && depth0.partial),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "cancel-deployment-modal", options) : helperMissing.call(depth0, "partial", "cancel-deployment-modal", options))));
     return buffer;
     
@@ -8267,9 +8270,15 @@ define('fusor-ember-cli/templates/storage', ['exports', 'ember'], function (expo
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n        &nbsp;&nbsp;&nbsp;&nbsp;\n        ");
     stack1 = (helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
-      'value': ("Gluster"),
+      'value': ("Local"),
       'groupValue': ("rhev_storage_type")
     },hashTypes:{'value': "STRING",'groupValue': "ID"},hashContexts:{'value': depth0,'groupValue': depth0},inverse:self.noop,fn:self.program(4, program4, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
+    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+    data.buffer.push("\n        &nbsp;&nbsp;&nbsp;&nbsp;\n        ");
+    stack1 = (helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
+      'value': ("Gluster"),
+      'groupValue': ("rhev_storage_type")
+    },hashTypes:{'value': "STRING",'groupValue': "ID"},hashContexts:{'value': depth0,'groupValue': depth0},inverse:self.noop,fn:self.program(6, program6, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n      ");
     return buffer;
@@ -8283,16 +8292,22 @@ define('fusor-ember-cli/templates/storage', ['exports', 'ember'], function (expo
   function program4(depth0,data) {
     
     
-    data.buffer.push("\n          Gluster\n        ");
+    data.buffer.push("\n          Local\n        ");
     }
 
   function program6(depth0,data) {
     
     
-    data.buffer.push("Cancel");
+    data.buffer.push("\n          Gluster\n        ");
     }
 
   function program8(depth0,data) {
+    
+    
+    data.buffer.push("Cancel");
+    }
+
+  function program10(depth0,data) {
     
     
     data.buffer.push("Next");
@@ -8318,12 +8333,12 @@ define('fusor-ember-cli/templates/storage', ['exports', 'ember'], function (expo
     data.buffer.push("\n\n    </form>\n  </div>\n</div>\n\n    <div class='pull-right'>\n      <br />\n      ");
     stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
       'class': ("btn btn-default")
-    },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(6, program6, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "deployments", options) : helperMissing.call(depth0, "link-to", "deployments", options));
+    },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(8, program8, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "deployments", options) : helperMissing.call(depth0, "link-to", "deployments", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n      ");
     stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
       'class': ("btn btn-primary")
-    },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(8, program8, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "cloudforms", options) : helperMissing.call(depth0, "link-to", "cloudforms", options));
+    },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(10, program10, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "cloudforms", options) : helperMissing.call(depth0, "link-to", "cloudforms", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n    </div>\n");
     return buffer;
@@ -8356,7 +8371,17 @@ define('fusor-ember-cli/templates/subscriptions', ['exports', 'ember'], function
     data.buffer.push("\n        <a>");
     stack1 = helpers._triageMustache.call(depth0, "stepNumberSubscriptions", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("B. Select Subscriptions</a>\n      ");
+    data.buffer.push("B. Select Subscription Management Application</a>\n      ");
+    return buffer;
+    }
+
+  function program5(depth0,data) {
+    
+    var buffer = '', stack1;
+    data.buffer.push("\n        <a>");
+    stack1 = helpers._triageMustache.call(depth0, "stepNumberSubscriptions", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+    data.buffer.push("C. Select Subscriptions</a>\n      ");
     return buffer;
     }
 
@@ -8369,6 +8394,11 @@ define('fusor-ember-cli/templates/subscriptions', ['exports', 'ember'], function
     stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
       'tagName': ("li")
     },hashTypes:{'tagName': "STRING"},hashContexts:{'tagName': depth0},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "subscriptions.select-subscriptions", options) : helperMissing.call(depth0, "link-to", "subscriptions.select-subscriptions", options));
+    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+    data.buffer.push("\n      ");
+    stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+      'tagName': ("li")
+    },hashTypes:{'tagName': "STRING"},hashContexts:{'tagName': depth0},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "subscriptions.select-subscriptions", options) : helperMissing.call(depth0, "link-to", "subscriptions.select-subscriptions", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n  </ul>\n\n  <div class=\"tab-content col-md-9\">\n      ");
     stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
@@ -8391,7 +8421,7 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports', 'ember
   function program1(depth0,data) {
     
     
-    data.buffer.push("\n          <a href='https://www.redhat.com/wapps/sso/lostPassword.html' target='_blank'>\n          Forgot username or password?\n          </a>\n        ");
+    data.buffer.push("\n          <a href='https://www.redhat.com/wapps/sso/lostPassword.html' target='_blank'>\n          Forgot your login or password?\n          </a>\n        ");
     }
 
   function program3(depth0,data) {
@@ -8402,7 +8432,7 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports', 'ember
 
     data.buffer.push("Enter your Red Hat account information.\n\n<div class='row'>\n  <div class='col-md-12'>\n    <br />\n    <form class=\"form form-horizontal\">\n      ");
     data.buffer.push(escapeExpression((helper = helpers['text-f'] || (depth0 && depth0['text-f']),options={hash:{
-      'label': ("Username"),
+      'label': ("Red Hat login"),
       'value': ("username")
     },hashTypes:{'label': "STRING",'value': "ID"},hashContexts:{'label': depth0,'value': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "text-f", options))));
     data.buffer.push("\n      ");
@@ -8677,7 +8707,7 @@ define('fusor-ember-cli/templates/where-install', ['exports', 'ember'], function
   function program2(depth0,data) {
     
     
-    data.buffer.push("\n            Install on RHEV\n          ");
+    data.buffer.push("\n            Install CloudForms on Red Hat Enterprise Virtualization\n          ");
     }
 
   function program4(depth0,data) {
@@ -8696,7 +8726,7 @@ define('fusor-ember-cli/templates/where-install', ['exports', 'ember'], function
   function program5(depth0,data) {
     
     
-    data.buffer.push("\n            Install on OpenStack\n          ");
+    data.buffer.push("\n            Install CloudForms on OpenStack<br />\n            Able to split virtualization workloads across multiple controller nodes\n          ");
     }
 
   function program7(depth0,data) {
@@ -8711,23 +8741,23 @@ define('fusor-ember-cli/templates/where-install', ['exports', 'ember'], function
     data.buffer.push("Next");
     }
 
-    data.buffer.push("\n<div class='row'>\n  <div class='col-md-8 col-md-offset-1'>\n\n    <div class='row'>\n      Select the location where to install CloudForms.\n      <h3>\n        ");
+    data.buffer.push("<div class='row'>\n  <div class='col-md-8 col-md-offset-1'>\n\n    <div class='row'>\n      Select a product to create and manage virtual machines.\n      <h3>\n        ");
     stack1 = helpers.unless.call(depth0, "disableRHEV", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n    </div>\n\n    <div class='row'>\n      <h3>\n        ");
     stack1 = helpers.unless.call(depth0, "disableOpenStack", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n    </div>\n\n  </div>\n</div>\n\n    <div class='pull-right'>\n      <br />\n      ");
+    data.buffer.push("\n    </div>\n\n  </div>\n</div>\n\n<div class='pull-right'>\n  <br />\n  ");
     stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
       'class': ("btn btn-default")
     },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "deployments", options) : helperMissing.call(depth0, "link-to", "deployments", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n      ");
+    data.buffer.push("\n  ");
     stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
       'class': ("btn btn-primary")
     },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(9, program9, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "subscriptions.credentials", options) : helperMissing.call(depth0, "link-to", "subscriptions.credentials", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n    </div>");
+    data.buffer.push("\n</div>");
     return buffer;
     
   });
@@ -8939,7 +8969,7 @@ define('fusor-ember-cli/tests/components/tr-organization.jshint', function () {
 
   module('JSHint - components');
   test('components/tr-organization.js should pass jshint', function() { 
-    ok(false, 'components/tr-organization.js should pass jshint.\ncomponents/tr-organization.js: line 6, col 48, Expected \'===\' and instead saw \'==\'.\ncomponents/tr-organization.js: line 10, col 35, \'event\' is defined but never used.\n\n2 errors'); 
+    ok(false, 'components/tr-organization.js should pass jshint.\ncomponents/tr-organization.js: line 8, col 48, Expected \'===\' and instead saw \'==\'.\ncomponents/tr-organization.js: line 12, col 35, \'event\' is defined but never used.\n\n2 errors'); 
   });
 
 });
@@ -15355,13 +15385,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"routeAfterAuthentication":"deployment-new.start","routeIfAlreadyAuthenticated":"deployment-new.start","authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","https://foreman.sat.lab.tlv.redhat.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.7736fcdc"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"routeAfterAuthentication":"deployment-new.start","routeIfAlreadyAuthenticated":"deployment-new.start","authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","https://foreman.sat.lab.tlv.redhat.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.84b8b8a0"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.7736fcdc"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.84b8b8a0"});
 }
 
 /* jshint ignore:end */

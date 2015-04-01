@@ -1,6 +1,6 @@
 /* comment out downstream/ stylesheets when deploying */
 
-/*
+
 @import "downstream/application";
 @import "downstream/mixin";
 @import "downstream/bootstrap_and_overrides";
@@ -8,7 +8,6 @@
 @import "downstream/colors";
 @import "downstream/topbar";
 @import "downstream/typography";
-*/
 
 @import "wizard";
 @import "katello-path-selector";

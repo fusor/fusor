@@ -24,12 +24,21 @@
 
 </div>
 
-
 {{#unless isUpstream}}
-<p class='subscriptions_needed'>
-<i class="fa fa-info-circle"></i>
-<strong>Subscriptions needed to complete this deployment.</strong> Check your account in <a>Portal</a> to verify you have subscriptions available to cover the selected products.
-</p>
+<div class='subscriptions_needed'>
+
+  <i class="fa fa-info-circle"></i>
+  <strong>Before you begin:</strong>
+
+  <p>
+    <strong>Subscriptions required to complete this deployment.</strong> Check your account in the <a href='https://access.redhat.com/home' target='_blank'>Red Hat Customer Portal</a> to verify you have subscriptions available to cover the selected products.
+    <br />
+    <strong>Start up host machines.</strong> Ensure that the bare-metal computers and the virtual machines that you plan to use are turned on and discoverable.
+    <br />
+    <strong>Configure your network.</strong> Ensure that the network and subnets are set up and available.
+  </p>
+
+</div>
 {{/unless}}
 
 <br />
@@ -37,7 +46,7 @@
   <div class='col-md-12'>
     <div style='float:right;'>
       {{#link-to 'deployments' class="btn btn-default"}}Cancel{{/link-to}}
-      {{#link-to satelliteTabRouteName class="btn btn-primary" disabled=disableNextOnStart}}Next{{/link-to}}
+      {{#link-to satelliteTabRouteName class="btn btn-primary" disabled=disableNextOnStart}}Select{{/link-to}}
       {{!satelliteTabRouteName}}
     </div>
   </div>

@@ -10,11 +10,9 @@
       <div class='pull-right'>
         <br />
         <button {{action 'showModal' 'cancelDeploymentModal'}} class='btn btn-default'>Cancel</button>
-        {{#link-to organizationTabRouteName
-                   disabled=disableNextOnDeploymentName
-                   class='btn btn-primary'}}
+        {{#link-to organizationTabRouteName disabled=disableNextOnDeploymentName class='btn btn-primary'}}
             Next
-        {{/link-to}} {{!organizationTabRouteName}}
+        {{/link-to}}
       </div>
 
     </form>
