@@ -591,7 +591,6 @@ define('fusor-ember-cli/controllers/application', ['exports', 'ember'], function
   exports['default'] = Ember['default'].Controller.extend({
     needs: ["side-menu", "deployment"],
 
-    isLiveBackendMode: true,
     deployAsPlugin: true,
     isEmberCliMode: Ember['default'].computed.not("deployAsPlugin"),
     isUpstream: false,
@@ -3100,28 +3099,22 @@ define('fusor-ember-cli/routes/application', ['exports', 'ember', 'simple-auth/m
   exports['default'] = Ember['default'].Route.extend(ApplicationRouteMixin['default'], {
 
     beforeModel: function (transition) {
-      if (!this.controllerFor("application").get("isLiveBackendMode")) {
-        this.get("session").set("isAuthenticated", true);
-        return this.transitionTo("deployment-new.start");
-      } else if (this.controllerFor("application").get("deployAsPlugin")) {
-        this.get("session").set("isAuthenticated", true);
-        return this.transitionTo("login");
+      if (this.controllerFor("application").get("deployAsPlugin")) {
+        return this.get("session").set("isAuthenticated", true);
       };
     },
 
     setupController: function (controller, model) {
       controller.set("model", model);
 
-      if (!this.controllerFor("application").get("isLiveBackendMode")) {
-        this.get("session").set("currentUser", this.store.find("user", 1));
-      }
-
       // Ensure headers are set in ApplicationAdapter. TODO - Why can't adapter access session?
-      var adapter = this.store.adapterFor("ApplicationAdapter");
-      if (this.get("session.authType") == "oAuth") {
-        adapter.set("headers", { Authorization: "Bearer " + this.get("session.access_token") });
-      } else if (this.get("session.authType") == "Basic") {
-        adapter.set("headers", { Authorization: "Basic " + this.get("session.basicAuthToken") });
+      if (this.controllerFor("application").get("isEmberCliMode")) {
+        var adapter = this.store.adapterFor("ApplicationAdapter");
+        if (this.get("session.authType") == "oAuth") {
+          adapter.set("headers", { Authorization: "Bearer " + this.get("session.access_token") });
+        } else if (this.get("session.authType") == "Basic") {
+          adapter.set("headers", { Authorization: "Basic " + this.get("session.basicAuthToken") });
+        }
       }
     },
 
@@ -6377,7 +6370,7 @@ define('fusor-ember-cli/templates/loading', ['exports', 'ember'], function (expo
     var buffer = '', helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
 
-    data.buffer.push("<h2>\n");
+    data.buffer.push("<br />\n<h2>\n");
     data.buffer.push(escapeExpression((helper = helpers['fa-icon'] || (depth0 && depth0['fa-icon']),options={hash:{
       'spin': (true)
     },hashTypes:{'spin': "BOOLEAN"},hashContexts:{'spin': depth0},contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "spinner", options) : helperMissing.call(depth0, "fa-icon", "spinner", options))));
@@ -9019,7 +9012,7 @@ define('fusor-ember-cli/tests/controllers/application.jshint', function () {
 
   module('JSHint - controllers');
   test('controllers/application.js should pass jshint', function() { 
-    ok(false, 'controllers/application.js should pass jshint.\ncontrollers/application.js: line 48, col 7, \'Bootstrap\' is not defined.\ncontrollers/application.js: line 49, col 14, \'Bootstrap\' is not defined.\ncontrollers/application.js: line 54, col 14, \'Bootstrap\' is not defined.\ncontrollers/application.js: line 59, col 14, \'Bootstrap\' is not defined.\ncontrollers/application.js: line 37, col 26, \'data\' is defined but never used.\n\n5 errors'); 
+    ok(false, 'controllers/application.js should pass jshint.\ncontrollers/application.js: line 47, col 7, \'Bootstrap\' is not defined.\ncontrollers/application.js: line 48, col 14, \'Bootstrap\' is not defined.\ncontrollers/application.js: line 53, col 14, \'Bootstrap\' is not defined.\ncontrollers/application.js: line 58, col 14, \'Bootstrap\' is not defined.\ncontrollers/application.js: line 36, col 26, \'data\' is defined but never used.\n\n5 errors'); 
   });
 
 });
@@ -9866,7 +9859,7 @@ define('fusor-ember-cli/tests/routes/application.jshint', function () {
 
   module('JSHint - routes');
   test('routes/application.js should pass jshint', function() { 
-    ok(false, 'routes/application.js should pass jshint.\nroutes/application.js: line 14, col 6, Unnecessary semicolon.\nroutes/application.js: line 26, col 40, Expected \'===\' and instead saw \'==\'.\nroutes/application.js: line 28, col 47, Expected \'===\' and instead saw \'==\'.\nroutes/application.js: line 62, col 7, \'Bootstrap\' is not defined.\nroutes/application.js: line 63, col 14, \'Bootstrap\' is not defined.\nroutes/application.js: line 68, col 14, \'Bootstrap\' is not defined.\nroutes/application.js: line 73, col 14, \'Bootstrap\' is not defined.\nroutes/application.js: line 78, col 14, \'Bootstrap\' is not defined.\nroutes/application.js: line 7, col 25, \'transition\' is defined but never used.\n\n9 errors'); 
+    ok(false, 'routes/application.js should pass jshint.\nroutes/application.js: line 10, col 6, Unnecessary semicolon.\nroutes/application.js: line 19, col 42, Expected \'===\' and instead saw \'==\'.\nroutes/application.js: line 21, col 49, Expected \'===\' and instead saw \'==\'.\nroutes/application.js: line 56, col 7, \'Bootstrap\' is not defined.\nroutes/application.js: line 57, col 14, \'Bootstrap\' is not defined.\nroutes/application.js: line 62, col 14, \'Bootstrap\' is not defined.\nroutes/application.js: line 67, col 14, \'Bootstrap\' is not defined.\nroutes/application.js: line 72, col 14, \'Bootstrap\' is not defined.\nroutes/application.js: line 7, col 25, \'transition\' is defined but never used.\n\n9 errors'); 
   });
 
 });
@@ -15385,13 +15378,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"routeAfterAuthentication":"deployment-new.start","routeIfAlreadyAuthenticated":"deployment-new.start","authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","https://foreman.sat.lab.tlv.redhat.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.84b8b8a0"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","https://foreman.sat.lab.tlv.redhat.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.65ba6789"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.84b8b8a0"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.65ba6789"});
 }
 
 /* jshint ignore:end */
