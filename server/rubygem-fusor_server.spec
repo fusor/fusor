@@ -30,7 +30,7 @@ Summary: Fusor Server Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 12%{dist}
+Release: 13%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -124,6 +124,15 @@ cp -a %{buildroot}/%{gem_instdir}/config/fusor.yaml %{buildroot}%{foreman_plugin
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Wed Apr 01 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-13
+- Add RH Common to fusor.yaml (jesusr@redhat.com)
+- fixed /deployments redirecting to /deployments/new when it shoudn't
+  (jmagen@redhat.com)
+- Merge pull request #57 from bbuckingham/use_puppet_default
+  (jwmatthews@gmail.com)
+- fusor server: if deployment attribute is blank, use the puppet default
+  (bbuckingham@redhat.com)
+
 * Tue Mar 31 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-12
 - fusor server: update hostgroup to override parameters based on deployment
   object (bbuckingham@redhat.com)
