@@ -29,7 +29,7 @@ Summary: Fusor Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 13%{dist}
+Release: 14%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -116,6 +116,12 @@ ln -s %{foreman_assets_plugin} %{buildroot}%{foreman_dir}/public/assets/fusor_ui
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Wed Apr 01 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-14
+- deploy button calls PUT deploy action (jmagen@redhat.com)
+- fixed /deployments redirecting to /deployments/new when it shoudn't
+  (jmagen@redhat.com)
+- changes per new wireframes (jmagen@redhat.com)
+
 * Tue Mar 31 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-13
 - add csrf token when saving Hypervisors that doesn't use Ember-Data
   (jmagen@redhat.com)
