@@ -35,6 +35,7 @@ module Fusor::Concerns::HostgroupExtensions
       lookup       = LookupValue.where(:match         => hostgroup.send(:lookup_value_match),
                                        :lookup_key_id => lookup_key.id).first_or_initialize
       lookup.value = value
+      lookup.use_puppet_default = value.blank? ? true : false
       lookup.save!
     end
   end
