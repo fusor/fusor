@@ -935,7 +935,8 @@ define('fusor-ember-cli/controllers/deployment-new/start', ['exports', 'ember', 
 
     isRhev: Ember['default'].computed.alias("controllers.deployment-new.deploy_rhev"),
     isOpenStack: Ember['default'].computed.alias("controllers.deployment-new.deploy_openstack"),
-    isCloudForms: Ember['default'].computed.alias("controllers.deployment-new.deploy_cfme") });
+    isCloudForms: Ember['default'].computed.alias("controllers.deployment-new.deploy_cfme"),
+    isSubscriptions: Ember['default'].computed.alias("controllers.deployment-new.isSubscriptions") });
 
 });
 define('fusor-ember-cli/controllers/deployment', ['exports', 'ember', 'fusor-ember-cli/mixins/deployment-controller-mixin', 'fusor-ember-cli/mixins/disable-tab-mixin', 'ember-validations'], function (exports, Ember, DeploymentControllerMixin, DisableTabMixin, EmberValidations) {
@@ -972,7 +973,8 @@ define('fusor-ember-cli/controllers/deployment/start', ['exports', 'ember', 'fus
 
     isRhev: Ember['default'].computed.alias("controllers.deployment.deploy_rhev"),
     isOpenStack: Ember['default'].computed.alias("controllers.deployment.deploy_openstack"),
-    isCloudForms: Ember['default'].computed.alias("controllers.deployment.deploy_cfme") });
+    isCloudForms: Ember['default'].computed.alias("controllers.deployment.deploy_cfme"),
+    isSubscriptions: Ember['default'].computed.alias("controllers.deployment.isSubscriptions") });
 
 });
 define('fusor-ember-cli/controllers/deployments', ['exports', 'ember'], function (exports, Ember) {
@@ -2309,6 +2311,10 @@ define('fusor-ember-cli/mixins/deployment-controller-mixin', ['exports', 'ember'
 
     // default is downstream
     isUpstream: false,
+    hideSubscriptions: true,
+    isSubscriptions: (function () {
+      return !(this.get("hideSubscriptions") && !this.get("isUpstream"));
+    }).property("isUpstream", "hideSubscriptions"),
 
     // will be overwritten be routes
     isHideWizard: null,
@@ -2331,7 +2337,6 @@ define('fusor-ember-cli/mixins/deployment-controller-mixin', ['exports', 'ember'
     disableNextOnStart: (function () {
       return !(this.get("isRhev") || this.get("isOpenStack") || this.get("isCloudForms"));
     }).property("isRhev", "isOpenStack", "isCloudForms"),
-
 
     // names
     nameRHCI: (function () {
@@ -2396,45 +2401,54 @@ define('fusor-ember-cli/mixins/deployment-controller-mixin', ['exports', 'ember'
 
     stepNumberOpenstack: (function () {
       if (this.get("isRhev")) {
-        return "3";
+        return 3;
       } else {
-        return "2";
+        return 2;
       }
     }).property("isRhev"),
 
     stepNumberCloudForms: (function () {
       if (this.get("isRhev") && this.get("isOpenStack")) {
-        return "4";
+        return 4;
       } else if (this.get("isRhev") || this.get("isOpenStack")) {
-        return "3";
+        return 3;
       } else {
-        return "2";
+        return 2;
       }
     }).property("isRhev", "isOpenStack"),
 
     stepNumberSubscriptions: (function () {
       if (this.get("isRhev") && this.get("isOpenStack") && this.get("isCloudForms")) {
-        return "5";
+        return 5;
       } else if (this.get("isRhev") && this.get("isOpenStack") || this.get("isRhev") && this.get("isCloudForms") || this.get("isOpenStack") && this.get("isCloudForms")) {
-        return "4";
+        return 4;
       } else if (this.get("isRhev") || this.get("isOpenStack") || this.get("isCloudForms")) {
-        return "3";
+        return 3;
       } else {
-        return "2";
+        return 2;
+      }
+    }).property("isRhev", "isOpenStack", "isCloudForms"),
+
+    // calculate temporary without isSubscriptions
+    stepNumberReviewTemp: (function () {
+      if (this.get("isRhev") && this.get("isOpenStack") && this.get("isCloudForms")) {
+        return 6;
+      } else if (this.get("isRhev") && this.get("isOpenStack") || this.get("isRhev") && this.get("isCloudForms") || this.get("isOpenStack") && this.get("isCloudForms")) {
+        return 5;
+      } else if (this.get("isRhev") || this.get("isOpenStack") || this.get("isCloudForms")) {
+        return 4;
+      } else {
+        return 3;
       }
     }).property("isRhev", "isOpenStack", "isCloudForms"),
 
     stepNumberReview: (function () {
-      if (this.get("isRhev") && this.get("isOpenStack") && this.get("isCloudForms")) {
-        return "6";
-      } else if (this.get("isRhev") && this.get("isOpenStack") || this.get("isRhev") && this.get("isCloudForms") || this.get("isOpenStack") && this.get("isCloudForms")) {
-        return "5";
-      } else if (this.get("isRhev") || this.get("isOpenStack") || this.get("isCloudForms")) {
-        return "4";
+      if (this.get("isSubscriptions")) {
+        return this.get("stepNumberReviewTemp");
       } else {
-        return "3";
+        return this.get("stepNumberReviewTemp") - 1;
       }
-    }).property("isRhev", "isOpenStack", "isCloudForms"),
+    }).property("stepNumberReviewTemp", "isSubscriptions"),
 
     step2RouteName: (function () {
       if (this.get("isRhev")) {
@@ -4765,6 +4779,20 @@ define('fusor-ember-cli/templates/components/rhci-wizard', ['exports', 'ember'],
     return buffer;
     }
 
+  function program7(depth0,data) {
+    
+    var buffer = '', helper, options;
+    data.buffer.push("\n      ");
+    data.buffer.push(escapeExpression((helper = helpers['wizard-item'] || (depth0 && depth0['wizard-item']),options={hash:{
+      'num': ("stepNumberSubscriptions"),
+      'name': ("Subscriptions"),
+      'routeName': ("subscriptions"),
+      'isDisabled': ("isDisabledSubscriptions")
+    },hashTypes:{'num': "ID",'name': "STRING",'routeName': "STRING",'isDisabled': "ID"},hashContexts:{'num': depth0,'name': depth0,'routeName': depth0,'isDisabled': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "wizard-item", options))));
+    data.buffer.push("\n    ");
+    return buffer;
+    }
+
     data.buffer.push("<div class=\"wizard-block\">\n\n  <div class=\"white-wizard-line\"></div>\n  <div class=\"wizard-line\"></div>\n\n  <ul class=\"deployment-wizard\">\n    ");
     data.buffer.push(escapeExpression((helper = helpers['wizard-item'] || (depth0 && depth0['wizard-item']),options={hash:{
       'num': (1),
@@ -4782,12 +4810,8 @@ define('fusor-ember-cli/templates/components/rhci-wizard', ['exports', 'ember'],
     stack1 = helpers['if'].call(depth0, "isCloudForms", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n\n    ");
-    data.buffer.push(escapeExpression((helper = helpers['wizard-item'] || (depth0 && depth0['wizard-item']),options={hash:{
-      'num': ("stepNumberSubscriptions"),
-      'name': ("Subscriptions"),
-      'routeName': ("subscriptions"),
-      'isDisabled': ("isDisabledSubscriptions")
-    },hashTypes:{'num': "ID",'name': "STRING",'routeName': "STRING",'isDisabled': "ID"},hashContexts:{'num': depth0,'name': depth0,'routeName': depth0,'isDisabled': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "wizard-item", options))));
+    stack1 = helpers['if'].call(depth0, "isSubscriptions", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0],types:["ID"],data:data});
+    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n\n    ");
     data.buffer.push(escapeExpression((helper = helpers['wizard-item'] || (depth0 && depth0['wizard-item']),options={hash:{
       'num': ("stepNumberReview"),
@@ -5742,26 +5766,10 @@ define('fusor-ember-cli/templates/deployment-new/start', ['exports', 'ember'], f
   exports['default'] = Ember['default'].Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
   helpers = this.merge(helpers, Ember['default'].Handlebars.helpers); data = data || {};
-    var buffer = '', helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+    var helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
 
-    data.buffer.push(escapeExpression((helper = helpers['rhci-start'] || (depth0 && depth0['rhci-start']),options={hash:{
-      'isRhev': ("isRhev"),
-      'isOpenStack': ("isOpenStack"),
-      'isCloudForms': ("isCloudForms"),
-      'nameRedHat': ("nameRedHat"),
-      'nameRhev': ("nameRhev"),
-      'nameOpenStack': ("nameOpenStack"),
-      'nameCloudForms': ("nameCloudForms"),
-      'imgRhev': ("imgRhev"),
-      'imgOpenStack': ("imgOpenStack"),
-      'imgCloudForms': ("imgCloudForms"),
-      'isUpstream': ("isUpstream"),
-      'satelliteTabRouteName': ("satelliteTabRouteName"),
-      'disableNextOnStart': ("disableNextOnStart")
-    },hashTypes:{'isRhev': "ID",'isOpenStack': "ID",'isCloudForms': "ID",'nameRedHat': "ID",'nameRhev': "ID",'nameOpenStack': "ID",'nameCloudForms': "ID",'imgRhev': "ID",'imgOpenStack': "ID",'imgCloudForms': "ID",'isUpstream': "ID",'satelliteTabRouteName': "ID",'disableNextOnStart': "ID"},hashContexts:{'isRhev': depth0,'isOpenStack': depth0,'isCloudForms': depth0,'nameRedHat': depth0,'nameRhev': depth0,'nameOpenStack': depth0,'nameCloudForms': depth0,'imgRhev': depth0,'imgOpenStack': depth0,'imgCloudForms': depth0,'isUpstream': depth0,'satelliteTabRouteName': depth0,'disableNextOnStart': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "rhci-start", options))));
-    data.buffer.push("\n");
-    return buffer;
+    data.buffer.push(escapeExpression((helper = helpers.partial || (depth0 && depth0.partial),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "deployment/start", options) : helperMissing.call(depth0, "partial", "deployment/start", options))));
     
   });
 
@@ -5805,8 +5813,9 @@ define('fusor-ember-cli/templates/deployment', ['exports', 'ember'], function (e
       'isDisabledReview': ("isDisabledReview"),
       'isRhev': ("isRhev"),
       'isOpenStack': ("isOpenStack"),
-      'isCloudForms': ("isCloudForms")
-    },hashTypes:{'nameSatellite': "ID",'nameRhev': "ID",'nameOpenStack': "ID",'nameCloudForms': "ID",'stepNumberRhev': "ID",'stepNumberOpenstack': "ID",'stepNumberCloudForms': "ID",'stepNumberSubscriptions': "ID",'stepNumberReview': "ID",'isDisabledRhev': "ID",'isDisabledOpenstack': "ID",'isDisabledCloudForms': "ID",'isDisabledSubscriptions': "ID",'isDisabledReview': "ID",'isRhev': "ID",'isOpenStack': "ID",'isCloudForms': "ID"},hashContexts:{'nameSatellite': depth0,'nameRhev': depth0,'nameOpenStack': depth0,'nameCloudForms': depth0,'stepNumberRhev': depth0,'stepNumberOpenstack': depth0,'stepNumberCloudForms': depth0,'stepNumberSubscriptions': depth0,'stepNumberReview': depth0,'isDisabledRhev': depth0,'isDisabledOpenstack': depth0,'isDisabledCloudForms': depth0,'isDisabledSubscriptions': depth0,'isDisabledReview': depth0,'isRhev': depth0,'isOpenStack': depth0,'isCloudForms': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "rhci-wizard", options))));
+      'isCloudForms': ("isCloudForms"),
+      'isSubscriptions': ("isSubscriptions")
+    },hashTypes:{'nameSatellite': "ID",'nameRhev': "ID",'nameOpenStack': "ID",'nameCloudForms': "ID",'stepNumberRhev': "ID",'stepNumberOpenstack': "ID",'stepNumberCloudForms': "ID",'stepNumberSubscriptions': "ID",'stepNumberReview': "ID",'isDisabledRhev': "ID",'isDisabledOpenstack': "ID",'isDisabledCloudForms': "ID",'isDisabledSubscriptions': "ID",'isDisabledReview': "ID",'isRhev': "ID",'isOpenStack': "ID",'isCloudForms': "ID",'isSubscriptions': "ID"},hashContexts:{'nameSatellite': depth0,'nameRhev': depth0,'nameOpenStack': depth0,'nameCloudForms': depth0,'stepNumberRhev': depth0,'stepNumberOpenstack': depth0,'stepNumberCloudForms': depth0,'stepNumberSubscriptions': depth0,'stepNumberReview': depth0,'isDisabledRhev': depth0,'isDisabledOpenstack': depth0,'isDisabledCloudForms': depth0,'isDisabledSubscriptions': depth0,'isDisabledReview': depth0,'isRhev': depth0,'isOpenStack': depth0,'isCloudForms': depth0,'isSubscriptions': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "rhci-wizard", options))));
     data.buffer.push("\n");
     return buffer;
     }
@@ -6354,7 +6363,7 @@ define('fusor-ember-cli/templates/index', ['exports', 'ember'], function (export
   exports['default'] = Ember['default'].Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
   helpers = this.merge(helpers, Ember['default'].Handlebars.helpers); data = data || {};
-    var buffer = '', stack1, helper, options, self=this, helperMissing=helpers.helperMissing;
+    var buffer = '', stack1, helper, options, self=this, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
   function program1(depth0,data) {
     
@@ -6368,7 +6377,9 @@ define('fusor-ember-cli/templates/index', ['exports', 'ember'], function (export
     data.buffer.push("\n<br />\n");
     stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n");
+    data.buffer.push("\n<a ");
+    data.buffer.push(escapeExpression(helpers.action.call(depth0, "invalidateSession", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
+    data.buffer.push(">logout</a>\n");
     return buffer;
     
   });
@@ -15373,13 +15384,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","https://foreman.sat.lab.tlv.redhat.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.80759ac2"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","https://foreman.sat.lab.tlv.redhat.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.a41a9e89"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.80759ac2"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.a41a9e89"});
 }
 
 /* jshint ignore:end */
