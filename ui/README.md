@@ -16,12 +16,12 @@ Follow the workflow below for more steps.
 
 ## Workflow
 
-1. Clone [fusor](https://github.com/fusor/fusor/).
+1. Clone [fusor](https://github.com/fusor/fusor/) to your local workstation.
 2. `cd fusor-ember-cli`
-3. run `ember server`
-4. run script `./copy-fusor-ember-cli-to-assets` which copies files from `fusor-ember-cli/dist` to the `fusor/ui` repo
-5. `cd ../` to return to local `fusor` project root directory
-6. git push changes to your forked repo of fusor and create PR
+3. Run `ember server` or `ember build` (Both commands update the `fusor-ember-cli\dist` directory)
+4. Run bash script [`./copy-fusor-ember-cli-to-ui-assets`](https://github.com/fusor/fusor-ember-cli/blob/master/copy-fusor-ember-cli-to-ui-assets) which copies files from `fusor/fusor-ember-cli/dist` to the `fusor/ui` repo
+5. Git commit code
+6. Send pull request.
 
 ## Installation
 

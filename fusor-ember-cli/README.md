@@ -10,27 +10,18 @@ The fuser-ember-cli/dist directory is the [.gitignore](https://github.com/fusor/
 
 The fuser-ember-cli/dist distory is generated automatically by [ember-cli](http://www.ember-cli.com/) when you run `ember server` or `ember build` locally inside the this directory.
 
-## Workflow
+## Development Workflow
 
 1. Clone [fusor](https://github.com/fusor/fusor/) to your local workstation.
 2. `cd fusor-ember-cli`
-3. Run `ember server`
-4. Prepare for development
-  - In [controllers/application.js](https://github.com/fusor/fusor/blob/master/fusor-ember-cli/app/controllers/application.js#L8), change `deployAsPlugin` from `true` to `false`
-  - In [styles/app.scss](https://github.com/fusor/fusor/tree/master/fusor-ember-cli/app/styles/app.scss#L3), change `padding-top` from `40px` to `0px`
+3. Checkout 'develop' branch `git checkout develop`. This should be the same as `master` with the following minor differences
+        - In [controllers/application.js](https://github.com/fusor/fusor-ember-cli/blob/master/app/controllers/application.js#L8), `deployAsPlugin` is `true` in `master` and `false` in `develop`. If `false`, it shows a menu bar and directs user to login screen for authentication, both of which are not needed when running inside Foreman/Katello.
+        - In [styles/app.scss](https://github.com/fusor/fusor/tree/master/fusor-ember-cli/app/styles/app.scss#L3), the lines starting with `@import "downstream/` as not commented out in `develop` and are in `master`
+4. Run $ ember server --proxy http://0.0.0.0:3000. This assumes you have a local Foreman/Katello instance on port 3000. This tells the ember server to proxy API calls to Foreman/Katello:
 5. HAPPY HACKING!
-6. Prepare for copying compiled ember-cli output code to [FusorUi](https://github.com/fusor/fusor/ui/) plugin
-  - In [controllers/application.js](https://github.com/fusor/fusor-ember-cli/blob/master/app/controllers/application.js#L8), change `deployAsPlugin` from `false` to `true`
-  - In [styles/app.scss](https://github.com/fusor/fusor-ember-cli/blob/master/app/styles/app.scss#L3), change `padding-top` from `0px` to `40px`
-  - Run bash script [`./prep-fusor-repo`](https://github.com/fusor/fusor-ember-cli/blob/master/prep-fusor-repo) which copies files from `fusor/fusor-ember-cli/dist` to the `fusor/ui` repo
-
-## Development Mode
-
-If you have a local foreman instance, you can run the ember server and proxy API calls to Foreman like this:
-
-```
-$ ember server --proxy http://0.0.0.0:3000
-```
+6. Run bash script [`./copy-fusor-ember-cli-to-ui-assets`](https://github.com/fusor/fusor-ember-cli/blob/master/copy-fusor-ember-cli-to-ui-assets) which copies files from `fusor/fusor-ember-cli/dist` to the `fusor/ui` repo
+7. Git commit code
+8. Send pull request. CAREFUL: Ensure that you're pull request does not include the `develop` only changes in [controllers/application.js](https://github.com/fusor/fusor-ember-cli/blob/master/app/controllers/application.js#L8) and [styles/app.scss](https://github.com/fusor/fusor/tree/master/fusor-ember-cli/app/styles/app.scss#L3). One reccomendation is to create new branch from master and `git cherry-pick` new SHA commit. Then send pull request.
 
 ## Prerequisites
 
@@ -51,7 +42,7 @@ You will need the following things properly installed on your computer.
 
 ## Running / Development
 
-* `ember server`
+* `ember server --proxy http://foreman.url`
 * Visit your app at [http://localhost:4200](http://localhost:4200).
 
 ### Code Generators
