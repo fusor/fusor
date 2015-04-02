@@ -30,7 +30,7 @@ Summary: Fusor Server Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 14%{dist}
+Release: 15%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -124,6 +124,12 @@ cp -a %{buildroot}/%{gem_instdir}/config/fusor.yaml %{buildroot}%{foreman_plugin
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Thu Apr 02 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-15
+- dynamic assign route for next tab after RHEV (jmagen@redhat.com)
+- revert hostgroup extension that was deleted by mistake (jmagen@redhat.com)
+- prep work to disable CSRF for devs by commenting out one line
+  (jmagen@redhat.com)
+
 * Wed Apr 01 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-14
 - fusor server: deployment hostgroup: fix the setting of architecture and
   partition table (bbuckingham@redhat.com)
