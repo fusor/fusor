@@ -18,7 +18,10 @@
       {{wizard-item num=stepNumberCloudForms name=nameCloudForms routeName='cloudforms' isDisabled=isDisabledCloudForms}}
     {{/if}}
 
-    {{wizard-item num=stepNumberSubscriptions name='Subscriptions' routeName='subscriptions' isDisabled=isDisabledSubscriptions}}
+    {{#if isSubscriptions}}
+      {{wizard-item num=stepNumberSubscriptions name='Subscriptions' routeName='subscriptions'
+                    isDisabled=isDisabledSubscriptions}}
+    {{/if}}
 
     {{wizard-item num=stepNumberReview name='Review' routeName='review' isDisabled=isDisabledReview}}
   </ul>

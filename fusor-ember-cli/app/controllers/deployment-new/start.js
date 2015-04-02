@@ -8,5 +8,6 @@ export default Ember.ObjectController.extend(StartControllerMixin, {
   isRhev: Ember.computed.alias("controllers.deployment-new.deploy_rhev"),
   isOpenStack: Ember.computed.alias("controllers.deployment-new.deploy_openstack"),
   isCloudForms: Ember.computed.alias("controllers.deployment-new.deploy_cfme"),
+  isSubscriptions: Ember.computed.alias("controllers.deployment-new.isSubscriptions"),
 
 });

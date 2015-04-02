@@ -4,3 +4,4 @@ index template
 {{#link-to 'login'}}Login{{/link-to}}
 <br />
 {{outlet}}
+<a {{ action 'invalidateSession' }}>logout</a>
