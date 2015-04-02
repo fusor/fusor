@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
-  isRhevOpen: false,
+  isRhevOpen: true,
   isOpenStackOpen: false,
   isCloudFormsOpen: false,
 

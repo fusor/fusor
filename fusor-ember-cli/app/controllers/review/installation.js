@@ -7,6 +7,10 @@ export default Ember.Controller.extend({
           'networking', 'rhev-options', 'osp-settings', 'osp-configuration', 'where-install',
           'cloudforms-storage-domain', 'cloudforms-vm', 'review'],
 
+  isRhevOpen: true,
+  isOpenStackOpen: false,
+  isCloudFormsOpen: false,
+
   engineHostAddressDefault: 'ovirt-hypervisor.rhci.redhat.com',
   hostAddress: Ember.computed.alias("controllers.rhev-options.hostAddress"),
   engineHostName: Ember.computed.alias("controllers.rhev-options.engineHostName"),

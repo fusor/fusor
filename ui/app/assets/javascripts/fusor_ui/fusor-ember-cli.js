@@ -591,7 +591,7 @@ define('fusor-ember-cli/controllers/application', ['exports', 'ember'], function
   exports['default'] = Ember['default'].Controller.extend({
     needs: ["side-menu", "deployment"],
 
-    deployAsPlugin: true,
+    deployAsPlugin: false,
     isEmberCliMode: Ember['default'].computed.not("deployAsPlugin"),
     isUpstream: false,
 
@@ -1581,6 +1581,10 @@ define('fusor-ember-cli/controllers/review/installation', ['exports', 'ember'], 
         exports['default'] = Ember['default'].Controller.extend({
                 needs: ["application", "rhci", "deployment", "satellite", "configure-organization", "configure-environment", "rhev-setup", "hypervisor", "hypervisor/discovered-host", "engine/discovered-host", "storage", "networking", "rhev-options", "osp-settings", "osp-configuration", "where-install", "cloudforms-storage-domain", "cloudforms-vm", "review"],
 
+                isRhevOpen: true,
+                isOpenStackOpen: false,
+                isCloudFormsOpen: false,
+
                 engineHostAddressDefault: "ovirt-hypervisor.rhci.redhat.com",
                 hostAddress: Ember['default'].computed.alias("controllers.rhev-options.hostAddress"),
                 engineHostName: Ember['default'].computed.alias("controllers.rhev-options.engineHostName"),
@@ -1613,7 +1617,7 @@ define('fusor-ember-cli/controllers/review/progress', ['exports', 'ember'], func
 
   exports['default'] = Ember['default'].Controller.extend({
 
-    isRhevOpen: false,
+    isRhevOpen: true,
     isOpenStackOpen: false,
     isCloudFormsOpen: false,
 
@@ -1802,6 +1806,7 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember'], function (ex
     rhev_storage_type: Ember['default'].computed.alias("controllers.deployment.rhev_storage_type"),
     rhev_storage_address: Ember['default'].computed.alias("controllers.deployment.rhev_storage_address"),
     rhev_share_path: Ember['default'].computed.alias("controllers.deployment.rhev_share_path"),
+    step3RouteName: Ember['default'].computed.alias("controllers.deployment.step3RouteName"),
 
     isNFS: (function () {
       return this.get("rhev_storage_type") === "NFS";
@@ -2458,7 +2463,35 @@ define('fusor-ember-cli/mixins/deployment-controller-mixin', ['exports', 'ember'
       } else if (this.get("isCloudForms")) {
         return "cloudforms";
       }
-    }).property("isRhev", "isOpenStack", "isCloudForms") });
+    }).property("isRhev", "isOpenStack", "isCloudForms"),
+
+    step3RouteName: (function () {
+      if (this.get("step2RouteName") === "rhev") {
+        if (this.get("isOpenStack")) {
+          return "openstack";
+        } else if (this.get("isCloudForms")) {
+          return "cloudforms";
+        } else if (this.get("isSubscriptions")) {
+          return "subscriptions";
+        } else {
+          return "review";
+        }
+      } else if (this.get("step2RouteName") === "openstack") {
+        if (this.get("isCloudForms")) {
+          return "cloudforms";
+        } else if (this.get("isSubscriptions")) {
+          return "subscriptions";
+        } else {
+          return "review";
+        }
+      } else if (this.get("step2RouteName") === "cloudforms") {
+        if (this.get("isSubscriptions")) {
+          return "subscriptions";
+        } else {
+          return "review";
+        }
+      }
+    }).property("step2RouteName", "isOpenStack", "isCloudForms", "isSubscriptions") });
 
 });
 define('fusor-ember-cli/mixins/deployment-new-controller-mixin', ['exports', 'ember'], function (exports, Ember) {
@@ -8337,7 +8370,7 @@ define('fusor-ember-cli/templates/storage', ['exports', 'ember'], function (expo
     data.buffer.push("\n      ");
     stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
       'class': ("btn btn-primary")
-    },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(10, program10, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "cloudforms", options) : helperMissing.call(depth0, "link-to", "cloudforms", options));
+    },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(10, program10, data),contexts:[depth0],types:["ID"],data:data},helper ? helper.call(depth0, "step3RouteName", options) : helperMissing.call(depth0, "link-to", "step3RouteName", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n    </div>\n");
     return buffer;
@@ -9645,7 +9678,7 @@ define('fusor-ember-cli/tests/mixins/deployment-controller-mixin.jshint', functi
 
   module('JSHint - mixins');
   test('mixins/deployment-controller-mixin.js should pass jshint', function() { 
-    ok(true, 'mixins/deployment-controller-mixin.js should pass jshint.'); 
+    ok(false, 'mixins/deployment-controller-mixin.js should pass jshint.\nmixins/deployment-controller-mixin.js: line 145, col 24, Missing semicolon.\nmixins/deployment-controller-mixin.js: line 153, col 24, Missing semicolon.\nmixins/deployment-controller-mixin.js: line 159, col 24, Missing semicolon.\n\n3 errors'); 
   });
 
 });
@@ -15384,13 +15417,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","https://foreman.sat.lab.tlv.redhat.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.a41a9e89"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","https://foreman.sat.lab.tlv.redhat.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.0c830ea3"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.a41a9e89"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.0c830ea3"});
 }
 
 /* jshint ignore:end */

@@ -133,4 +133,32 @@ export default Ember.Mixin.create({
     }
   }.property('isRhev', 'isOpenStack', 'isCloudForms'),
 
+  step3RouteName: function() {
+    if (this.get('step2RouteName') === 'rhev') {
+      if (this.get('isOpenStack')) {
+        return 'openstack';
+      } else if (this.get('isCloudForms')) {
+        return 'cloudforms';
+      } else if (this.get('isSubscriptions')) {
+        return 'subscriptions';
+      } else {
+        return 'review'
+      }
+    } else if (this.get('step2RouteName') === 'openstack') {
+      if (this.get('isCloudForms')) {
+        return 'cloudforms';
+      } else if (this.get('isSubscriptions')) {
+        return 'subscriptions';
+      } else {
+        return 'review'
+      }
+    } else if (this.get('step2RouteName') === 'cloudforms') {
+      if (this.get('isSubscriptions')) {
+        return 'subscriptions';
+      } else {
+        return 'review'
+      }
+    }
+  }.property('step2RouteName', 'isOpenStack', 'isCloudForms', 'isSubscriptions'),
+
 });
