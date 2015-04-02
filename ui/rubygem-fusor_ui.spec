@@ -29,7 +29,7 @@ Summary: Fusor Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 14%{dist}
+Release: 15%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -116,6 +116,14 @@ ln -s %{foreman_assets_plugin} %{buildroot}%{foreman_dir}/public/assets/fusor_ui
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Thu Apr 02 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-15
+- dynamic assign route for next tab after RHEV (jmagen@redhat.com)
+- default start wizard to RHEV only (jmagen@redhat.com)
+- add option isSubscriptions to hide subscriptions tab (jmagen@redhat.com)
+- update READMEs for FusorEmberCli and FusorUI (jmagen@redhat.com)
+- fix css compilation error - comment out css code for ember-cli development
+  use only (jmagen@redhat.com)
+
 * Wed Apr 01 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-14
 - deploy button calls PUT deploy action (jmagen@redhat.com)
 - fixed /deployments redirecting to /deployments/new when it shoudn't
