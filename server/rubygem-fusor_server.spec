@@ -30,7 +30,7 @@ Summary: Fusor Server Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 15%{dist}
+Release: 16%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -124,6 +124,11 @@ cp -a %{buildroot}/%{gem_instdir}/config/fusor.yaml %{buildroot}%{foreman_plugin
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Thu Apr 02 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-16
+- Merge pull request #70 from bbuckingham/fix_rh_common (jmrodri@gmail.com)
+- fusor server: update fusor.yaml to fix RH common and add virt agent
+  (bbuckingham@redhat.com)
+
 * Thu Apr 02 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-15
 - dynamic assign route for next tab after RHEV (jmagen@redhat.com)
 - revert hostgroup extension that was deleted by mistake (jmagen@redhat.com)
