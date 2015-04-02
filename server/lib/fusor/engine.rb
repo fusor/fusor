@@ -59,6 +59,8 @@ module Fusor
 
     #Include concerns in this config.to_prepare block
     config.to_prepare do
+      # include concerns
+      ::Hostgroup.send :include, Fusor::Concerns::HostgroupExtensions
       # The following line disabled CSRF and should only be uncommented in development environments
       # ::ApplicationController.send :include, Fusor::Concerns::ApplicationControllerExtension
     end
