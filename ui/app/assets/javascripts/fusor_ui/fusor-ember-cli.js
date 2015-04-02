@@ -3353,7 +3353,7 @@ define('fusor-ember-cli/routes/deployment-new/start', ['exports', 'ember'], func
       this.controllerFor("deployment-new").set("isHideWizard", true);
       this.controllerFor("deployment-new").set("deploy_rhev", true);
       this.controllerFor("deployment-new").set("deploy_openstack", false);
-      this.controllerFor("deployment-new").set("deploy_cfme", true);
+      this.controllerFor("deployment-new").set("deploy_cfme", false);
     },
 
     deactivate: function () {
