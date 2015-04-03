@@ -29,7 +29,7 @@ Summary: Fusor Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 16%{dist}
+Release: 17%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -116,6 +116,10 @@ ln -s %{foreman_assets_plugin} %{buildroot}%{foreman_dir}/public/assets/fusor_ui
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Fri Apr 03 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-17
+- add foreman tasks URL to progress template after clicking deploy
+  (jmagen@redhat.com)
+
 * Thu Apr 02 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-16
 - update FusorUI assets (jmagen@redhat.com)
 
