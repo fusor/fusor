@@ -1,0 +1,9 @@
+ #!/bin/bash
+
+scp ./dist/assets/fusor-ember-cli.css   root@192.168.254.10:/opt/rh/ruby193/root/usr/share/gems/gems/fusor_ui-0.0.1/app/assets/stylesheets/fusor_ui/
+scp ./dist/assets/fusor-ember-cli.css.map   root@192.168.254.10:/opt/rh/ruby193/root/usr/share/gems/gems/fusor_ui-0.0.1/app/assets/stylesheets/fusor_ui/
+
+scp ./dist/assets/vendor.js   root@192.168.254.10:/opt/rh/ruby193/root/usr/share/gems/gems/fusor_ui-0.0.1/app/assets/javascripts/fusor_ui/
+scp ./dist/assets/vendor.map   root@192.168.254.10:/opt/rh/ruby193/root/usr/share/gems/gems/fusor_ui-0.0.1/app/assets/javascripts/fusor_ui/
+scp ./dist/assets/fusor-ember-cli.js   root@192.168.254.10:/opt/rh/ruby193/root/usr/share/gems/gems/fusor_ui-0.0.1/app/assets/javascripts/fusor_ui/
+scp ./dist/assets/fusor-ember-cli.map   root@192.168.254.10:/opt/rh/ruby193/root/usr/share/gems/gems/fusor_ui-0.0.1/app/assets/javascripts/fusor_ui/
