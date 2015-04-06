@@ -7,6 +7,11 @@ export default Ember.Controller.extend({
           'networking', 'rhev-options', 'osp-settings', 'osp-configuration', 'where-install',
           'cloudforms-storage-domain', 'cloudforms-vm', 'review'],
 
+  buttonDeployTitle: 'Deploy',
+  buttonDeployDisabled: false,
+  showErrorMessage: false,
+  errorMsg: null,
+
   isRhevOpen: true,
   isOpenStackOpen: false,
   isCloudFormsOpen: false,

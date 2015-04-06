@@ -25,7 +25,8 @@ module.exports = function(environment) {
       // session:                     'simple-auth-session:main',
       store: 'simple-auth-session-store:local-storage',
       // localStorageKey:             'ember_simple_auth:session',
-      crossOriginWhitelist: ['http://localhost:3000', 'https://foreman.sat.lab.tlv.redhat.com'],
+      crossOriginWhitelist: ['http://localhost:3000', 'http://localhost:4200', 'http://localhost:9010', 'http://sat61jmagen.example.com'],
+
       // applicationRootUrl:          null
     },
     simpleAuthOauth2: {

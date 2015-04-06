@@ -21,6 +21,10 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, DeploymentRouteMixin,
       var deployment = this.modelFor('deployment');
       var token = $('meta[name="csrf-token"]').attr('content');
 
+      // change button text to "Deploying ..." and disable it
+      this.controllerFor('review.installation').set('buttonDeployTitle', 'Deploying ...');
+      this.controllerFor('review.installation').set('buttonDeployDisabled', true);
+
       return new Ember.RSVP.Promise(function (resolve, reject) {
         Ember.$.ajax({
             url: '/fusor/api/v21/deployments/' + deployment.get('id') + '/deploy' ,
@@ -34,10 +38,17 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, DeploymentRouteMixin,
             success: function(response) {
               resolve(response);
               self.controllerFor('review').set('disableTabProgress', false);
+              self.controllerFor('review.installation').set('buttonDeployTitle', 'Deployed');
               return self.transitionTo('review.progress');
             },
 
             error: function(response){
+              console.log(response);
+              var errorMsg = response.responseJSON.displayMessage;
+              self.controllerFor('review.installation').set('errorMsg', errorMsg);
+              self.controllerFor('review.installation').set('showErrorMessage', true);
+              self.controllerFor('review.installation').set('buttonDeployTitle', 'Deploy');
+              self.controllerFor('review.installation').set('buttonDeployDisabled', false);
               reject(response);
             }
         });
