@@ -1,3 +1,15 @@
+{{#if showErrorMessage}}
+  <div class="row">
+    <div class='col-md-9'>
+      <div class='alert alert-danger'>
+          <i class="fa fa-2x fa-exclamation-triangle errorForValidation"></i>
+          &nbsp;
+          {{errorMsg}}
+      </div>
+    </div>
+  </div>
+{{/if}}
+
 <div class='row'>
   <div class='col-md-11 col-md-offset-1'>
 
@@ -133,7 +145,7 @@
     <div class='pull-right'>
       <br />
       <button {{action 'showModal' 'cancelDeploymentModal'}} class='btn btn-default'>Cancel</button>
-      <button {{action 'installDeployment'}} class='btn btn-primary'>Deploy</button>
+      {{button-f disabled=buttonDeployDisabled title=buttonDeployTitle action="installDeployment"}}
     </div>
 
 

@@ -6,7 +6,7 @@ export default Base.extend({
 
   // Check session if you refresh browser (F5)
   restore: function(options) {
-    console.log('OPTIONS');
+    console.log('custom foreman authenticator OPTIONS');
     console.log(options);
 
     var self = this;
