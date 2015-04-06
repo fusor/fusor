@@ -39,7 +39,7 @@ module Fusor
     end
 
     def deploy
-      task = async_task(::Actions::Fusor::Deploy, @deployment)
+      task = async_task(::Actions::Fusor::Deploy, @deployment, params[:skip_content])
       respond_for_async :resource => task
     end
 
