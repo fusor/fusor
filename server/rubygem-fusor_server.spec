@@ -30,7 +30,7 @@ Summary: Fusor Server Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 16%{dist}
+Release: 17%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -124,6 +124,9 @@ cp -a %{buildroot}/%{gem_instdir}/config/fusor.yaml %{buildroot}%{foreman_plugin
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Mon Apr 06 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-17
+- fusor server: add deploy option to 'skip_content' (bbuckingham@redhat.com)
+
 * Thu Apr 02 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-16
 - Merge pull request #70 from bbuckingham/fix_rh_common (jmrodri@gmail.com)
 - fusor server: update fusor.yaml to fix RH common and add virt agent
