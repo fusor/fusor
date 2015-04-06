@@ -17,7 +17,7 @@ module Actions
         _("Deploy")
       end
 
-      def plan(deployment)
+      def plan(deployment, skip_content = false)
         fail _("Unable to locate fusor.yaml settings in config/settings.plugins.d") unless SETTINGS[:fusor]
         fail _("Unable to locate content settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:content]
         fail _("Unable to locate host group settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:host_groups]
@@ -34,22 +34,25 @@ module Actions
 
           products_enabled.each_with_index do |product_enabled, index|
             if product_enabled && products_content[index] && products_host_groups[index]
-              plan_action(::Actions::Fusor::Content::EnableRepositories,
-                          deployment.organization,
-                          products_content[index])
+              unless skip_content
+                plan_action(::Actions::Fusor::Content::EnableRepositories,
+                            deployment.organization,
+                            products_content[index])
 
-              # As part of enabling repositories, zero or more repos will be created.  Let's
-              # retrieve the repos needed for the deployment and use them in actions that follow
-              repositories = retrieve_deployment_repositories(deployment.organization, products_content[index])
+                # As part of enabling repositories, zero or more repos will be created.  Let's
+                # retrieve the repos needed for the deployment and use them in actions that follow
+                repositories = retrieve_deployment_repositories(deployment.organization, products_content[index])
 
-              plan_action(::Actions::Fusor::Content::SyncRepositories, repositories)
+                plan_action(::Actions::Fusor::Content::SyncRepositories, repositories)
 
-              # TODO: need to update to support multiple deployments per organization... to support this, we could
-              # incorporate the deployment name in to the content view, activation key and host groups
-              plan_action(::Actions::Fusor::Content::PublishContentView,
-                          deployment,
-                          repositories)
+                plan_action(::Actions::Fusor::Content::PublishContentView,
+                            deployment,
+                            repositories)
+              end
 
+              unless repositories
+                repositories = retrieve_deployment_repositories(deployment.organization, products_content[index])
+              end
               plan_configure_activation_key(deployment, repositories)
 
               enable_smart_class_parameter_overrides(products_host_groups[index])
