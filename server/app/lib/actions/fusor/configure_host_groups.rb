@@ -167,6 +167,7 @@ module Actions
                   :parameters =>
                   [
                     { :name => "host_name", :value => deployment.rhev_engine_hostname },
+                    { :name => "host_address", :value => fqdn(deployment.discovered_hosts.first.try(:name), hostgroup) },
                     { :name => "cluster_name", :value => deployment.rhev_cluster_name },
                     { :name => "storage_name", :value => deployment.rhev_storage_name },
                     { :name => "storage_address", :value => deployment.rhev_storage_address },
@@ -198,6 +199,12 @@ module Actions
               hostgroup.set_param_value_if_changed(puppet_class, parameter[:name], parameter[:value])
             end
           end
+        end
+      end
+
+      def fqdn(hostname, hostgroup)
+        if hostname && hostgroup.domain
+          [hostname, hostgroup.domain.name].join('.')
         end
       end
 
