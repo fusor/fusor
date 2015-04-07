@@ -24,6 +24,10 @@ module Actions
           Rails.logger.warn "XXX deployment.id? #{deployment.id}"
 
           # VERIFY PARAMS HERE
+          if deployment.deploy_rhev
+            fail _("Unable to locate a RHEV Engine Host") unless deployment.rhev_engine_host
+          end
+
           plan_self deployment_id: deployment.id
 
           Rails.logger.warn "XXX plan_self called, leaving plan method"
@@ -99,6 +103,8 @@ module Actions
         # https://github.com/theforeman/staypuft/blob/master/app/controllers/staypuft/deployments_controller.rb#L158-L216
         #
         def assign_host_to_hostgroup(assignee_host, hostgroup)
+          raise "no host available to assign" if assignee_host.nil?
+
           converting_discovered = assignee_host.is_a? Host::Discovered
 
           if converting_discovered
