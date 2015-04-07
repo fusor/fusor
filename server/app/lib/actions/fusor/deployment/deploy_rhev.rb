@@ -19,26 +19,29 @@ module Actions
         end
 
         def plan(deployment)
-          Rails.logger.warn "XXX Planing RHEV Deployment"
-          Rails.logger.warn deployment.deploy_rhev
-          Rails.logger.warn deployment.id
-          Rails.logger.warn "XXX -------"
+          Rails.logger.warn "XXX ================ Planning RHEV Deployment ===================="
+          Rails.logger.warn "XXX deploy_rhev? #{deployment.deploy_rhev}"
+          Rails.logger.warn "XXX deployment.id? #{deployment.id}"
 
           # VERIFY PARAMS HERE
           plan_self deployment_id: deployment.id
 
-          Rails.logger.warn "XXX plan_self called"
-          Rails.logger.warn "XXX leaving plan method"
+          Rails.logger.warn "XXX plan_self called, leaving plan method"
         end
 
         def finalize
-          Rails.logger.warn "XXX Deploy RHEV Running. (finalize method)"
+          Rails.logger.warn "XXX ================ Deploy RHEV finalize method ===================="
+
           deployment_id = input.fetch(:deployment_id)
-          Rails.logger.warn deployment_id
+
+          Rails.logger.warn "XXX finalize: working with deployment: #{deployment_id}"
+
           deployment = ::Fusor::Deployment.find(deployment_id)
+
           Rails.logger.warn "XXX finalize: deployment is a: #{deployment.class}"
+
           if deployment.rhev_engine_host.nil?
-            Rails.logger.warn "XXX we don't have a rhev engine host."
+            Rails.logger.warn "XXX finalize: WE DO NOT HAVE A RHEV ENGINE HOST."
           else
             Rails.logger.warn "XXX finalize: managed host? #{deployment.rhev_engine_host.managed?}"
           end
@@ -46,32 +49,41 @@ module Actions
           Rails.logger.warn "XXX finalize: deployment org is: #{deployment.organization.id}"
 
           Rails.logger.warn "XXX ================ RHEV Hypervisor piece ===================="
+
+          # let's find the proper hostgroup and associate it with the
+          # hypervisors
           hypervisor_group = find_hypervisor_hostgroup(deployment)
 
-          Rails.logger.warn "XXX H: calling assign_host_to_hostgroup"
+          Rails.logger.warn "XXX finalize: calling assign_host_to_hostgroup (hypervisor)"
+
           deployment.discovered_hosts.each do |da_host|
             success, da_host = assign_host_to_hostgroup(da_host, hypervisor_group)
-            Rails.logger.warn "XXX H: returned from assign_host_to_hostgroup. #{success}"
+
+            Rails.logger.warn "XXX finalize: returned from assign_host_to_hostgroup. #{success}"
             if da_host
-              Rails.logger.warn "XXX H: host is NOT null! YAY!"
+              Rails.logger.warn "XXX finalize: hypervisor host is NOT null! YAY!"
             else
-              Rails.logger.warn "XXX H: damn what happened to the host"
+              Rails.logger.warn "XXX finalize: damn what happened to the hypervisor host"
             end
           end
 
           Rails.logger.warn "XXX ================ RHEV Engine piece ===================="
+
+          # let's find the proper hostgroup and associate it with the engine
           engine_group = find_engine_hostgroup(deployment)
 
-          Rails.logger.warn "XXX calling assign_host_to_hostgroup"
+          Rails.logger.warn "XXX finalize: calling assign_host_to_hostgroup (engine)"
+
           success, host = assign_host_to_hostgroup(deployment.rhev_engine_host, engine_group)
+
           Rails.logger.warn "XXX returned from assign_host_to_hostgroup. #{success}"
           if host
-            Rails.logger.warn "XXX host is NOT null! YAY!"
+            Rails.logger.warn "XXX engine host is NOT null! YAY!"
           else
-            Rails.logger.warn "XXX damn what happened to the host"
+            Rails.logger.warn "XXX damn what happened to the engine host"
           end
 
-          Rails.logger.warn "XXX Leaving finalize method"
+          Rails.logger.warn "XXX ================ Leaving finalize method ===================="
         end
 
         def find_engine_hostgroup(deployment)
@@ -90,7 +102,8 @@ module Actions
           converting_discovered = assignee_host.is_a? Host::Discovered
 
           if converting_discovered
-            Rails.logger.warn "XXX We have a discovered host that needs converting"
+            Rails.logger.warn "XXX ================ Converting a discovered host ===================="
+
             hosts_facts = FactValue.joins(:fact_name).where(host_id: assignee_host.id)
             discovery_bootif = hosts_facts.where(fact_names: { name: 'discovery_bootif' }).first or
                 raise 'unknown discovery_bootif fact'
@@ -119,7 +132,7 @@ module Actions
             ip = hosts_facts.where(fact_names: { name: "ipaddress_#{interface}" }).first
 
             Rails.logger.warn "XXX ip address is #{ip.value}"
-            Rails.logger.warn "XXX leaving converting_discovered"
+            Rails.logger.warn "XXX ================ Finished converting discovered host ===================="
           end
 
           original_type = assignee_host.type
@@ -167,6 +180,7 @@ module Actions
 
           Rails.logger.warn "XXX assignee host type is now: #{assignee_host.type}"
 
+          # TODO: calling save to explicitly see errors in log
           host.save!
 
           Rails.logger.warn "XXX do we have an error?"
@@ -180,11 +194,6 @@ module Actions
         end
 
         private
-
-        def deploy_rhev
-          Rails.logger.warn "XXX Deploy RHEV"
-          # haven't figured out what I'm putting here yet
-        end
 
         def find_hostgroup(deployment, name)
           # locate the top-level hostgroup for the deployment...
