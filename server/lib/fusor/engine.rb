@@ -62,7 +62,7 @@ module Fusor
       # include concerns
       ::Hostgroup.send :include, Fusor::Concerns::HostgroupExtensions
       # The following line disabled CSRF and should only be uncommented in development environments
-      # ::ApplicationController.send :include, Fusor::Concerns::ApplicationControllerExtension
+      # ::ActionController::Base.send :include, Fusor::Concerns::ApplicationControllerExtension
     end
 
     rake_tasks do
