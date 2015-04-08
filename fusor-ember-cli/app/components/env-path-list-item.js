@@ -16,6 +16,10 @@ export default Ember.Component.extend({
     }
   }.property('isChecked'),
 
+  envCssId: function () {
+    return ('env_' + this.get('env.id'));
+  }.property('env'),
+
   click: function(event) {
     this.sendAction('action', this.get('env'));
   }

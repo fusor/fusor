@@ -1,10 +1,9 @@
 <td>
-  {{input type="checkbox" name="isSelectedAsHypervisor" checked=host.isSelectedAsHypervisor}}
-  {{!host.id}} {{!host.isSelectedAsHypervisor}}
+  {{input type="checkbox" name="isSelectedAsHypervisor" checked=host.isSelectedAsHypervisor id=host.cssIdHostId}}
 </td>
 <td>
   {{#if host.isSelectedAsHypervisor}}
-    {{input type="text" value=host.name class='font-control' focus-out='saveHostname'}}
+    {{input type="text" value=host.name class='font-control' focus-out='saveHostname' id=host.cssHostHostId}}
   {{/if}}
 </td>
 <td> {{host.mac}} </td>

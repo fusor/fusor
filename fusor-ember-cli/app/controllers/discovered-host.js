@@ -4,6 +4,14 @@ export default Ember.ObjectController.extend({
 
   needs: ['deployment', 'hypervisor/discovered-host', 'engine/discovered-host'],
 
+  cssHostHostId: function () {
+    return ('host_' + this.get('id'));
+  }.property('id'),
+
+  cssIdHostId: function () {
+    return ('id_' + this.get('id'));
+  }.property('id'),
+
   allDiscoveredHosts: Ember.computed.alias("controllers.hypervisor/discovered-host.allDiscoveredHosts"),
   // same as controllers.deployment.discovered_hosts
   selectedRhevHypervisorHosts: Ember.computed.alias("controllers.hypervisor/discovered-host.model"),

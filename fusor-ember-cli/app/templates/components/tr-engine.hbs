@@ -1,9 +1,9 @@
 <td>
-    {{radio-button value=host.model groupValue=selectedRhevEngineHost changed="engineHostChanged"}} {{!host.id}}
+    {{radio-button value=host.model groupValue=selectedRhevEngineHost changed="engineHostChanged" id=host.cssIdHostId}}
 </td>
 <td>
     {{#if host.isSelectedAsEngine}}
-      {{input type="text" value=host.name class='font-control' focus-out='saveHostname'}}
+      {{input type="text" value=host.name class='font-control' focus-out='saveHostname' id=host.cssHostHostId}}
     {{/if}}
 </td>
 <td> {{host.mac}} </td>

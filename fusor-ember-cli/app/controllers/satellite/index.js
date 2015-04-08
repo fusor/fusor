@@ -19,4 +19,7 @@ export default Ember.Controller.extend(SatelliteControllerMixin, EmberValidation
 
   disableNextOnDeploymentName: Ember.computed.alias("controllers.deployment.disableNextOnDeploymentName"),
 
+  idSatName: 'deployment_sat_name',
+  idSatDesc: 'deployment_sat_desc',
+
 });

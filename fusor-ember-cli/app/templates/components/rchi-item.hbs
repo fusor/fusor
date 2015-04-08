@@ -1,11 +1,12 @@
+<span {{bind-attr id=cssId}}>
+  <img {{bind-attr src=srcImage}} class="img-responsive">
 
-<img {{bind-attr src=srcImage}} class="img-responsive">
-
-<div {{bind-attr class=":rhci-footer isChecked:rhci-footer-selected:rhci-footer-unselected"}}>
-     <span class='rhci-install-footer'>
-       {{#if isChecked}}
-         <i class="fa fa-1x fa-check"></i>
-         Deploy this product
-       {{/if}}
-     </span>
-</div>
+  <div {{bind-attr class=":rhci-footer isChecked:rhci-footer-selected:rhci-footer-unselected"}}>
+       <span class='rhci-install-footer'>
+         {{#if isChecked}}
+           <i class="fa fa-1x fa-check"></i>
+           Deploy this product
+         {{/if}}
+       </span>
+  </div>
+</span>
