@@ -1,0 +1,11 @@
+<td>
+    {{radio-button value=host.model groupValue=selectedRhevEngineHost changed="engineHostChanged"}} {{!host.id}}
+</td>
+<td>
+    {{#if host.isSelectedAsEngine}}
+      {{input type="text" value=host.name class='font-control' focus-out='saveHostname'}}
+    {{/if}}
+</td>
+<td> {{host.mac}} </td>
+<td> {{host.cpus}} </td>
+<td> {{host.memory}}</td>
