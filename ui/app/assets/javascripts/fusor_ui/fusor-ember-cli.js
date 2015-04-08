@@ -520,6 +520,33 @@ define('fusor-ember-cli/components/textarea-f', ['exports', 'ember'], function (
     }).property() });
 
 });
+define('fusor-ember-cli/components/tr-engine', ['exports', 'ember', 'fusor-ember-cli/mixins/save-hostname-mixin'], function (exports, Ember, SaveHostnameMixin) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].Component.extend(SaveHostnameMixin['default'], {
+    tagName: "tr",
+
+    actions: {
+      engineHostChanged: function (host) {
+        var self = this.get("targetObject");
+        var controller = self.get("controllers.deployment");
+        return self.store.find("discovered-host", host.get("id")).then(function (result) {
+          return controller.set("discovered_host", result);
+        });
+      } }
+
+  });
+
+});
+define('fusor-ember-cli/components/tr-hypervisor', ['exports', 'ember', 'fusor-ember-cli/mixins/save-hostname-mixin'], function (exports, Ember, SaveHostnameMixin) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].Component.extend(SaveHostnameMixin['default'], {
+    tagName: "tr" });
+
+});
 define('fusor-ember-cli/components/tr-organization', ['exports', 'ember'], function (exports, Ember) {
 
   'use strict';
@@ -2626,6 +2653,45 @@ define('fusor-ember-cli/mixins/satellite-controller-mixin', ['exports', 'ember']
     actions: {
       redirectToDeployments: function () {
         this.transitionTo("deployments");
+      }
+    }
+
+  });
+
+});
+define('fusor-ember-cli/mixins/save-hostname-mixin', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].Mixin.create({
+
+    actions: {
+      saveHostname: function () {
+        var host = this.get("host");
+        console.log(host);
+        var self = this;
+        var token = $("meta[name=\"csrf-token\"]").attr("content");
+
+        return new Ember['default'].RSVP.Promise(function (resolve, reject) {
+          Ember['default'].$.ajax({
+            url: "/api/v21/discovered_hosts/" + host.get("id") + "/rename",
+            type: "PUT",
+            data: JSON.stringify({ discovered_host: { name: host.get("name") } }),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              "X-CSRF-Token": token,
+              Authorization: "Basic " + self.get("session.basicAuthToken")
+            },
+            success: function (response) {
+              resolve(response);
+            },
+
+            error: function (response) {
+              reject(response);
+            }
+          });
+        });
       }
     }
 
@@ -5233,6 +5299,100 @@ define('fusor-ember-cli/templates/components/textarea-f', ['exports', 'ember'], 
   });
 
 });
+define('fusor-ember-cli/templates/components/tr-engine', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+  helpers = this.merge(helpers, Ember['default'].Handlebars.helpers); data = data || {};
+    var buffer = '', stack1, helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, self=this;
+
+  function program1(depth0,data) {
+    
+    var buffer = '', helper, options;
+    data.buffer.push("\n      ");
+    data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
+      'type': ("text"),
+      'value': ("host.name"),
+      'class': ("font-control"),
+      'focus-out': ("saveHostname")
+    },hashTypes:{'type': "STRING",'value': "ID",'class': "STRING",'focus-out': "STRING"},hashContexts:{'type': depth0,'value': depth0,'class': depth0,'focus-out': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
+    data.buffer.push("\n    ");
+    return buffer;
+    }
+
+    data.buffer.push("<td>\n    ");
+    data.buffer.push(escapeExpression((helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
+      'value': ("host.model"),
+      'groupValue': ("selectedRhevEngineHost"),
+      'changed': ("engineHostChanged")
+    },hashTypes:{'value': "ID",'groupValue': "ID",'changed': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options))));
+    data.buffer.push(" \n</td>\n<td>\n    ");
+    stack1 = helpers['if'].call(depth0, "host.isSelectedAsEngine", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
+    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+    data.buffer.push("\n</td>\n<td> ");
+    stack1 = helpers._triageMustache.call(depth0, "host.mac", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+    data.buffer.push(" </td>\n<td> ");
+    stack1 = helpers._triageMustache.call(depth0, "host.cpus", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+    data.buffer.push(" </td>\n<td> ");
+    stack1 = helpers._triageMustache.call(depth0, "host.memory", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+    data.buffer.push("</td>\n");
+    return buffer;
+    
+  });
+
+});
+define('fusor-ember-cli/templates/components/tr-hypervisor', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+  helpers = this.merge(helpers, Ember['default'].Handlebars.helpers); data = data || {};
+    var buffer = '', stack1, helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, self=this;
+
+  function program1(depth0,data) {
+    
+    var buffer = '', helper, options;
+    data.buffer.push("\n    ");
+    data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
+      'type': ("text"),
+      'value': ("host.name"),
+      'class': ("font-control"),
+      'focus-out': ("saveHostname")
+    },hashTypes:{'type': "STRING",'value': "ID",'class': "STRING",'focus-out': "STRING"},hashContexts:{'type': depth0,'value': depth0,'class': depth0,'focus-out': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
+    data.buffer.push("\n  ");
+    return buffer;
+    }
+
+    data.buffer.push("<td>\n  ");
+    data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
+      'type': ("checkbox"),
+      'name': ("isSelectedAsHypervisor"),
+      'checked': ("host.isSelectedAsHypervisor")
+    },hashTypes:{'type': "STRING",'name': "STRING",'checked': "ID"},hashContexts:{'type': depth0,'name': depth0,'checked': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
+    data.buffer.push("\n   \n</td>\n<td>\n  ");
+    stack1 = helpers['if'].call(depth0, "host.isSelectedAsHypervisor", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
+    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+    data.buffer.push("\n</td>\n<td> ");
+    stack1 = helpers._triageMustache.call(depth0, "host.mac", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+    data.buffer.push(" </td>\n<td> ");
+    stack1 = helpers._triageMustache.call(depth0, "host.cpus", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+    data.buffer.push(" </td>\n<td> ");
+    stack1 = helpers._triageMustache.call(depth0, "host.memory", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+    data.buffer.push(" </td>\n");
+    return buffer;
+    
+  });
+
+});
 define('fusor-ember-cli/templates/components/tr-organization', ['exports', 'ember'], function (exports, Ember) {
 
   'use strict';
@@ -6158,54 +6318,29 @@ define('fusor-ember-cli/templates/engine/discovered-host', ['exports', 'ember'],
 
   function program1(depth0,data) {
     
-    var buffer = '', stack1, helper, options;
-    data.buffer.push("\n    <tr>\n      <td>\n        ");
-    data.buffer.push(escapeExpression((helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
-      'value': ("host.model"),
-      'groupValue': ("selectedRhevEngineHost"),
-      'changed': ("engineHostChanged")
-    },hashTypes:{'value': "ID",'groupValue': "ID",'changed': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options))));
-    data.buffer.push(" \n      </td>\n      <td>\n           ");
-    stack1 = helpers['if'].call(depth0, "host.isSelectedAsEngine", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0],types:["ID"],data:data});
-    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n      </td>\n      <td> ");
-    stack1 = helpers._triageMustache.call(depth0, "host.mac", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push(" </td>\n      <td> ");
-    stack1 = helpers._triageMustache.call(depth0, "host.cpus", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push(" </td>\n      <td> ");
-    stack1 = helpers._triageMustache.call(depth0, "host.memory", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("</td>\n    </tr>\n  ");
-    return buffer;
-    }
-  function program2(depth0,data) {
-    
     var buffer = '', helper, options;
-    data.buffer.push("\n              ");
-    data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
-      'type': ("text"),
-      'value': ("host.name"),
-      'class': ("font-control")
-    },hashTypes:{'type': "STRING",'value': "ID",'class': "STRING"},hashContexts:{'type': depth0,'value': depth0,'class': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-    data.buffer.push("\n           ");
+    data.buffer.push("\n     ");
+    data.buffer.push(escapeExpression((helper = helpers['tr-engine'] || (depth0 && depth0['tr-engine']),options={hash:{
+      'host': ("host"),
+      'selectedRhevEngineHost': ("selectedRhevEngineHost")
+    },hashTypes:{'host': "ID",'selectedRhevEngineHost': "ID"},hashContexts:{'host': depth0,'selectedRhevEngineHost': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "tr-engine", options))));
+    data.buffer.push("\n  ");
     return buffer;
     }
 
-  function program4(depth0,data) {
+  function program3(depth0,data) {
     
     
     data.buffer.push("Cancel");
     }
 
-  function program6(depth0,data) {
+  function program5(depth0,data) {
     
     
     data.buffer.push("Next");
     }
 
-    data.buffer.push("\n<br />\n<table class=\"table table-bordered table-striped small\">\n<thead>\n    <tr>\n      <th> </th>\n      <th> Name </th>\n      <th> MAC </th>\n      <th> CPU's </th>\n      <th> Memory </th>\n    </tr>\n  </thead>\n\n  <tbody>\n  ");
+    data.buffer.push("<br />\n<table class=\"table table-bordered table-striped small\">\n<thead>\n    <tr>\n      <th> </th>\n      <th> Name </th>\n      <th> MAC </th>\n      <th> CPU's </th>\n      <th> Memory </th>\n    </tr>\n  </thead>\n\n  <tbody>\n  ");
     stack1 = helpers.each.call(depth0, "host", "in", "availableHosts", {hash:{
       'itemController': ("discovered-host")
     },hashTypes:{'itemController': "STRING"},hashContexts:{'itemController': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0,depth0],types:["ID","ID","ID"],data:data});
@@ -6213,12 +6348,12 @@ define('fusor-ember-cli/templates/engine/discovered-host', ['exports', 'ember'],
     data.buffer.push("\n  </tbody>\n</table>\n\n<div class='pull-right'>\n  <br />\n  ");
     stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
       'class': ("btn btn-default")
-    },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "deployments", options) : helperMissing.call(depth0, "link-to", "deployments", options));
+    },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "deployments", options) : helperMissing.call(depth0, "link-to", "deployments", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n  ");
     stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
       'class': ("btn btn-primary")
-    },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(6, program6, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "hypervisor.discovered-host", options) : helperMissing.call(depth0, "link-to", "hypervisor.discovered-host", options));
+    },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "hypervisor.discovered-host", options) : helperMissing.call(depth0, "link-to", "hypervisor.discovered-host", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n</div>\n");
     return buffer;
@@ -6369,42 +6504,16 @@ define('fusor-ember-cli/templates/hypervisor/discovered-host', ['exports', 'embe
 
   function program1(depth0,data) {
     
-    var buffer = '', stack1, helper, options;
-    data.buffer.push("\n    <tr>\n      <td>\n        ");
-    data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
-      'type': ("checkbox"),
-      'name': ("isSelectedAsHypervisor"),
-      'checked': ("host.isSelectedAsHypervisor")
-    },hashTypes:{'type': "STRING",'name': "STRING",'checked': "ID"},hashContexts:{'type': depth0,'name': depth0,'checked': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-    data.buffer.push("\n         \n      </td>\n      <td>\n        ");
-    stack1 = helpers['if'].call(depth0, "host.isSelectedAsHypervisor", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0],types:["ID"],data:data});
-    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n      </td>\n      <td> ");
-    stack1 = helpers._triageMustache.call(depth0, "host.mac", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push(" </td>\n      <td> ");
-    stack1 = helpers._triageMustache.call(depth0, "host.cpus", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push(" </td>\n      <td> ");
-    stack1 = helpers._triageMustache.call(depth0, "host.memory", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-    if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push(" </td>\n    </tr>\n  ");
-    return buffer;
-    }
-  function program2(depth0,data) {
-    
     var buffer = '', helper, options;
-    data.buffer.push("\n          ");
-    data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
-      'type': ("text"),
-      'value': ("host.name"),
-      'class': ("font-control")
-    },hashTypes:{'type': "STRING",'value': "ID",'class': "STRING"},hashContexts:{'type': depth0,'value': depth0,'class': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-    data.buffer.push("\n        ");
+    data.buffer.push("\n     ");
+    data.buffer.push(escapeExpression((helper = helpers['tr-hypervisor'] || (depth0 && depth0['tr-hypervisor']),options={hash:{
+      'host': ("host")
+    },hashTypes:{'host': "ID"},hashContexts:{'host': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "tr-hypervisor", options))));
+    data.buffer.push("\n  ");
     return buffer;
     }
 
-  function program4(depth0,data) {
+  function program3(depth0,data) {
     
     
     data.buffer.push("Cancel");
@@ -6427,7 +6536,7 @@ define('fusor-ember-cli/templates/hypervisor/discovered-host', ['exports', 'embe
     data.buffer.push("\n  </tbody>\n</table>\n\n<div class='pull-right'>\n  <br />\n  ");
     stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
       'class': ("btn btn-default")
-    },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "deployments", options) : helperMissing.call(depth0, "link-to", "deployments", options));
+    },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "deployments", options) : helperMissing.call(depth0, "link-to", "deployments", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n  <button ");
     data.buffer.push(escapeExpression(helpers.action.call(depth0, "saveHyperVisors", "rhev-options", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0,depth0],types:["STRING","STRING"],data:data})));
@@ -9057,6 +9166,26 @@ define('fusor-ember-cli/tests/components/textarea-f.jshint', function () {
   });
 
 });
+define('fusor-ember-cli/tests/components/tr-engine.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - components');
+  test('components/tr-engine.js should pass jshint', function() { 
+    ok(true, 'components/tr-engine.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/components/tr-hypervisor.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - components');
+  test('components/tr-hypervisor.js should pass jshint', function() { 
+    ok(true, 'components/tr-hypervisor.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/components/tr-organization.jshint', function () {
 
   'use strict';
@@ -9801,6 +9930,16 @@ define('fusor-ember-cli/tests/mixins/satellite-controller-mixin.jshint', functio
   module('JSHint - mixins');
   test('mixins/satellite-controller-mixin.js should pass jshint', function() { 
     ok(true, 'mixins/satellite-controller-mixin.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/mixins/save-hostname-mixin.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - mixins');
+  test('mixins/save-hostname-mixin.js should pass jshint', function() { 
+    ok(false, 'mixins/save-hostname-mixin.js should pass jshint.\nmixins/save-hostname-mixin.js: line 10, col 19, \'$\' is not defined.\n\n1 error'); 
   });
 
 });
@@ -11260,6 +11399,68 @@ define('fusor-ember-cli/tests/unit/components/textarea-f-test.jshint', function 
   module('JSHint - unit/components');
   test('unit/components/textarea-f-test.js should pass jshint', function() { 
     ok(false, 'unit/components/textarea-f-test.js should pass jshint.\nunit/components/textarea-f-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/textarea-f-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/textarea-f-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/components/tr-engine-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForComponent("tr-engine", {});
+
+  ember_qunit.test("it renders", function (assert) {
+    assert.expect(2);
+
+    // creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, "preRender");
+
+    // renders the component to the page
+    this.render();
+    assert.equal(component._state, "inDOM");
+  });
+  // specify the other units that are required for this test
+  // needs: ['component:foo', 'helper:bar']
+
+});
+define('fusor-ember-cli/tests/unit/components/tr-engine-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/tr-engine-test.js should pass jshint', function() { 
+    ok(true, 'unit/components/tr-engine-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/components/tr-hypervisor-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForComponent("tr-hypervisor", {});
+
+  ember_qunit.test("it renders", function (assert) {
+    assert.expect(2);
+
+    // creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, "preRender");
+
+    // renders the component to the page
+    this.render();
+    assert.equal(component._state, "inDOM");
+  });
+  // specify the other units that are required for this test
+  // needs: ['component:foo', 'helper:bar']
+
+});
+define('fusor-ember-cli/tests/unit/components/tr-hypervisor-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/tr-hypervisor-test.js should pass jshint', function() { 
+    ok(true, 'unit/components/tr-hypervisor-test.js should pass jshint.'); 
   });
 
 });
@@ -13137,6 +13338,30 @@ define('fusor-ember-cli/tests/unit/mixins/satellite-controller-mixin-test.jshint
   module('JSHint - unit/mixins');
   test('unit/mixins/satellite-controller-mixin-test.js should pass jshint', function() { 
     ok(false, 'unit/mixins/satellite-controller-mixin-test.js should pass jshint.\nunit/mixins/satellite-controller-mixin-test.js: line 4, col 1, \'module\' is not defined.\nunit/mixins/satellite-controller-mixin-test.js: line 7, col 1, \'test\' is not defined.\nunit/mixins/satellite-controller-mixin-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/mixins/save-hostname-mixin-test', ['ember', 'fusor-ember-cli/mixins/save-hostname-mixin', 'qunit'], function (Ember, SaveHostnameMixinMixin, qunit) {
+
+  'use strict';
+
+  qunit.module("SaveHostnameMixinMixin");
+
+  // Replace this with your real tests.
+  qunit.test("it works", function (assert) {
+    var SaveHostnameMixinObject = Ember['default'].Object.extend(SaveHostnameMixinMixin['default']);
+    var subject = SaveHostnameMixinObject.create();
+    assert.ok(subject);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/mixins/save-hostname-mixin-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/mixins');
+  test('unit/mixins/save-hostname-mixin-test.js should pass jshint', function() { 
+    ok(true, 'unit/mixins/save-hostname-mixin-test.js should pass jshint.'); 
   });
 
 });
@@ -15282,6 +15507,31 @@ define('fusor-ember-cli/tests/unit/routes/where-install-test.jshint', function (
   });
 
 });
+define('fusor-ember-cli/tests/unit/serializers/discovered-host-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor("serializer:discovered-host", {});
+
+  // Replace this with your real tests.
+  ember_qunit.test("it exists", function (assert) {
+    var serializer = this.subject();
+    assert.ok(serializer);
+  });
+  // Specify the other units that are required for this test.
+  // needs: ['serializer:foo']
+
+});
+define('fusor-ember-cli/tests/unit/serializers/discovered-host-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/serializers');
+  test('unit/serializers/discovered-host-test.js should pass jshint', function() { 
+    ok(true, 'unit/serializers/discovered-host-test.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/views/application-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -15510,13 +15760,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","http://localhost:4200","http://localhost:9010","http://sat61jmagen.example.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.51ae77bb"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","http://localhost:4200","http://localhost:9010","http://sat61jmagen.example.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.defc17d2"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.51ae77bb"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.defc17d2"});
 }
 
 /* jshint ignore:end */
