@@ -1,4 +1,3 @@
-{{!rhev_storage_type}}
 <div class='row'>
   <div class='col-md-12'>
     <br />
@@ -6,17 +5,17 @@
 
       {{#base-f label="Storage Type"}}
 
-        {{#radio-button value="NFS" groupValue=rhev_storage_type }}
+        {{#radio-button value="NFS" groupValue=rhev_storage_type id='nfs'}}
           NFS
         {{/radio-button}}
         &nbsp;&nbsp;&nbsp;&nbsp;
-        {{#radio-button value="Gluster" groupValue=rhev_storage_type }}
+        {{#radio-button value="Gluster" groupValue=rhev_storage_type id='gluster'}}
           Gluster
         {{/radio-button}}
       {{/base-f}}
 
-      {{text-f label="Storage Address" value=rhev_storage_address placeholder='Leave blank for default'}}
-      {{text-f label="Share Path" value=rhev_share_path placeholder='Leave blank for default'}}
+      {{text-f label="Storage Address" value=rhev_storage_address placeholder='Leave blank for default' cssId='rhev_storage_address'}}
+      {{text-f label="Share Path" value=rhev_share_path placeholder='Leave blank for default' cssId='rhev_share_path'}}
 
     </form>
   </div>

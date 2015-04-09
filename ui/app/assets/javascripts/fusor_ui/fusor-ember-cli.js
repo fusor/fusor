@@ -249,6 +249,10 @@ define('fusor-ember-cli/components/env-path-list-item', ['exports', 'ember'], fu
       }
     }).property("isChecked"),
 
+    envCssId: (function () {
+      return "env_" + this.get("env.id");
+    }).property("env"),
+
     click: function (event) {
       this.sendAction("action", this.get("env"));
     }
@@ -963,7 +967,10 @@ define('fusor-ember-cli/controllers/deployment-new/satellite/index', ['exports',
 
     organizationTabRouteName: Ember['default'].computed.alias("controllers.deployment-new/satellite.organizationTabRouteName"),
 
-    disableNextOnDeploymentName: Ember['default'].computed.alias("controllers.deployment-new.disableNextOnDeploymentName") });
+    disableNextOnDeploymentName: Ember['default'].computed.alias("controllers.deployment-new.disableNextOnDeploymentName"),
+
+    idSatName: "deployment_new_sat_name",
+    idSatDesc: "deployment_new_sat_desc" });
 
 });
 define('fusor-ember-cli/controllers/deployment-new/start', ['exports', 'ember', 'fusor-ember-cli/mixins/start-controller-mixin'], function (exports, Ember, StartControllerMixin) {
@@ -1049,6 +1056,14 @@ define('fusor-ember-cli/controllers/discovered-host', ['exports', 'ember'], func
   exports['default'] = Ember['default'].ObjectController.extend({
 
     needs: ["deployment", "hypervisor/discovered-host", "engine/discovered-host"],
+
+    cssHostHostId: (function () {
+      return "host_" + this.get("id");
+    }).property("id"),
+
+    cssIdHostId: (function () {
+      return "id_" + this.get("id");
+    }).property("id"),
 
     allDiscoveredHosts: Ember['default'].computed.alias("controllers.hypervisor/discovered-host.allDiscoveredHosts"),
     // same as controllers.deployment.discovered_hosts
@@ -1795,7 +1810,10 @@ define('fusor-ember-cli/controllers/satellite/index', ['exports', 'ember', 'fuso
 
     organizationTabRouteName: Ember['default'].computed.alias("controllers.deployment.organizationTabRouteName"),
 
-    disableNextOnDeploymentName: Ember['default'].computed.alias("controllers.deployment.disableNextOnDeploymentName") });
+    disableNextOnDeploymentName: Ember['default'].computed.alias("controllers.deployment.disableNextOnDeploymentName"),
+
+    idSatName: "deployment_sat_name",
+    idSatDesc: "deployment_sat_desc" });
 
 });
 define('fusor-ember-cli/controllers/satellite/subscription', ['exports', 'ember'], function (exports, Ember) {
@@ -4604,10 +4622,14 @@ define('fusor-ember-cli/templates/components/env-path-list-item', ['exports', 'e
     data.buffer.push(escapeExpression(helpers['bind-attr'].call(depth0, {hash:{
       'class': ("bgColor")
     },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},contexts:[],types:[],data:data})));
-    data.buffer.push(">\n  ");
+    data.buffer.push(">\n  <span ");
+    data.buffer.push(escapeExpression(helpers['bind-attr'].call(depth0, {hash:{
+      'id': ("envCssId")
+    },hashTypes:{'id': "STRING"},hashContexts:{'id': depth0},contexts:[],types:[],data:data})));
+    data.buffer.push(">\n    ");
     stack1 = helpers._triageMustache.call(depth0, "env.name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n</label>\n\n");
+    data.buffer.push("\n  </span>\n</label>\n\n");
     return buffer;
     
   });
@@ -4717,8 +4739,9 @@ define('fusor-ember-cli/templates/components/radio-button-f', ['exports', 'ember
     data.buffer.push(escapeExpression((helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
       'name': ("name"),
       'value': ("value"),
-      'checked': ("checked")
-    },hashTypes:{'name': "ID",'value': "ID",'checked': "ID"},hashContexts:{'name': depth0,'value': depth0,'checked': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options))));
+      'checked': ("checked"),
+      'id': ("cssId")
+    },hashTypes:{'name': "ID",'value': "ID",'checked': "ID",'id': "ID"},hashContexts:{'name': depth0,'value': depth0,'checked': depth0,'id': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options))));
     stack1 = helpers._triageMustache.call(depth0, "value", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n");
@@ -4769,21 +4792,25 @@ define('fusor-ember-cli/templates/components/rchi-item', ['exports', 'ember'], f
   function program1(depth0,data) {
     
     
-    data.buffer.push("\n         <i class=\"fa fa-1x fa-check\"></i>\n         Deploy this product\n       ");
+    data.buffer.push("\n           <i class=\"fa fa-1x fa-check\"></i>\n           Deploy this product\n         ");
     }
 
-    data.buffer.push("\n<img ");
+    data.buffer.push("<span ");
+    data.buffer.push(escapeExpression(helpers['bind-attr'].call(depth0, {hash:{
+      'id': ("cssId")
+    },hashTypes:{'id': "ID"},hashContexts:{'id': depth0},contexts:[],types:[],data:data})));
+    data.buffer.push(">\n  <img ");
     data.buffer.push(escapeExpression(helpers['bind-attr'].call(depth0, {hash:{
       'src': ("srcImage")
     },hashTypes:{'src': "ID"},hashContexts:{'src': depth0},contexts:[],types:[],data:data})));
-    data.buffer.push(" class=\"img-responsive\">\n\n<div ");
+    data.buffer.push(" class=\"img-responsive\">\n\n  <div ");
     data.buffer.push(escapeExpression(helpers['bind-attr'].call(depth0, {hash:{
       'class': (":rhci-footer isChecked:rhci-footer-selected:rhci-footer-unselected")
     },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},contexts:[],types:[],data:data})));
-    data.buffer.push(">\n     <span class='rhci-install-footer'>\n       ");
+    data.buffer.push(">\n       <span class='rhci-install-footer'>\n         ");
     stack1 = helpers['if'].call(depth0, "isChecked", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-    data.buffer.push("\n     </span>\n</div>\n");
+    data.buffer.push("\n       </span>\n  </div>\n</span>");
     return buffer;
     
   });
@@ -4841,20 +4868,23 @@ define('fusor-ember-cli/templates/components/rhci-start', ['exports', 'ember'], 
     data.buffer.push(escapeExpression((helper = helpers['rchi-item'] || (depth0 && depth0['rchi-item']),options={hash:{
       'srcImage': ("imgRhev"),
       'isChecked': ("isRhev"),
-      'name': ("nameRhev")
-    },hashTypes:{'srcImage': "ID",'isChecked': "ID",'name': "ID"},hashContexts:{'srcImage': depth0,'isChecked': depth0,'name': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "rchi-item", options))));
+      'name': ("nameRhev"),
+      'cssId': ("is_rhev")
+    },hashTypes:{'srcImage': "ID",'isChecked': "ID",'name': "ID",'cssId': "STRING"},hashContexts:{'srcImage': depth0,'isChecked': depth0,'name': depth0,'cssId': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "rchi-item", options))));
     data.buffer.push("\n  </div>\n\n  <div class='col-md-4'>\n    ");
     data.buffer.push(escapeExpression((helper = helpers['rchi-item'] || (depth0 && depth0['rchi-item']),options={hash:{
       'srcImage': ("imgOpenStack"),
       'isChecked': ("isOpenStack"),
-      'name': ("nameOpenStack")
-    },hashTypes:{'srcImage': "ID",'isChecked': "ID",'name': "ID"},hashContexts:{'srcImage': depth0,'isChecked': depth0,'name': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "rchi-item", options))));
+      'name': ("nameOpenStack"),
+      'cssId': ("is_openstack")
+    },hashTypes:{'srcImage': "ID",'isChecked': "ID",'name': "ID",'cssId': "STRING"},hashContexts:{'srcImage': depth0,'isChecked': depth0,'name': depth0,'cssId': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "rchi-item", options))));
     data.buffer.push("\n  </div>\n\n  <div class='col-md-4'>\n    ");
     data.buffer.push(escapeExpression((helper = helpers['rchi-item'] || (depth0 && depth0['rchi-item']),options={hash:{
       'srcImage': ("imgCloudForms"),
       'isChecked': ("isCloudForms"),
-      'name': ("nameCloudForms")
-    },hashTypes:{'srcImage': "ID",'isChecked': "ID",'name': "ID"},hashContexts:{'srcImage': depth0,'isChecked': depth0,'name': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "rchi-item", options))));
+      'name': ("nameCloudForms"),
+      'cssId': ("is_cloudforms")
+    },hashTypes:{'srcImage': "ID",'isChecked': "ID",'name': "ID",'cssId': "STRING"},hashContexts:{'srcImage': depth0,'isChecked': depth0,'name': depth0,'cssId': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "rchi-item", options))));
     data.buffer.push("\n  </div>\n\n</div>\n\n");
     stack1 = helpers.unless.call(depth0, "isUpstream", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
@@ -4992,8 +5022,9 @@ define('fusor-ember-cli/templates/components/select-f', ['exports', 'ember'], fu
       'optionValuePath': ("optionValuePath"),
       'selection': ("selection"),
       'prompt': ("prompt"),
-      'class': ("form-control")
-    },hashTypes:{'content': "ID",'value': "ID",'optionLabelPath': "ID",'optionValuePath': "ID",'selection': "ID",'prompt': "ID",'class': "STRING"},hashContexts:{'content': depth0,'value': depth0,'optionLabelPath': depth0,'optionValuePath': depth0,'selection': depth0,'prompt': depth0,'class': depth0},contexts:[depth0],types:["ID"],data:data})));
+      'class': ("form-control"),
+      'id': ("cssId")
+    },hashTypes:{'content': "ID",'value': "ID",'optionLabelPath': "ID",'optionValuePath': "ID",'selection': "ID",'prompt': "ID",'class': "STRING",'id': "ID"},hashContexts:{'content': depth0,'value': depth0,'optionLabelPath': depth0,'optionValuePath': depth0,'selection': depth0,'prompt': depth0,'class': depth0,'id': depth0},contexts:[depth0],types:["ID"],data:data})));
     data.buffer.push("\n\n  ");
     stack1 = helpers._triageMustache.call(depth0, "yield", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
@@ -5031,8 +5062,9 @@ define('fusor-ember-cli/templates/components/select-simple-f', ['exports', 'embe
       'value': ("value"),
       'selection': ("selection"),
       'prompt': ("prompt"),
-      'class': ("form-control")
-    },hashTypes:{'content': "ID",'value': "ID",'selection': "ID",'prompt': "ID",'class': "STRING"},hashContexts:{'content': depth0,'value': depth0,'selection': depth0,'prompt': depth0,'class': depth0},contexts:[depth0],types:["ID"],data:data})));
+      'class': ("form-control"),
+      'id': ("cssId")
+    },hashTypes:{'content': "ID",'value': "ID",'selection': "ID",'prompt': "ID",'class': "STRING",'id': "ID"},hashContexts:{'content': depth0,'value': depth0,'selection': depth0,'prompt': depth0,'class': depth0,'id': depth0},contexts:[depth0],types:["ID"],data:data})));
     data.buffer.push("\n\n  ");
     stack1 = helpers._triageMustache.call(depth0, "yield", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
@@ -5194,7 +5226,7 @@ define('fusor-ember-cli/templates/components/text-f', ['exports', 'ember'], func
       'placeholder': ("placeholder"),
       'type': ("typeInput"),
       'focus-out': ("showErrors"),
-      'id': ("id")
+      'id': ("cssId")
     },hashTypes:{'class': "STRING",'value': "ID",'placeholder': "ID",'type': "ID",'focus-out': "STRING",'id': "ID"},hashContexts:{'class': depth0,'value': depth0,'placeholder': depth0,'type': depth0,'focus-out': depth0,'id': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
     data.buffer.push("\n\n  ");
     stack1 = helpers['if'].call(depth0, "showError", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0],types:["ID"],data:data});
@@ -5267,8 +5299,9 @@ define('fusor-ember-cli/templates/components/textarea-f', ['exports', 'ember'], 
       'class': ("form-control"),
       'value': ("value"),
       'placeholder': ("placeholder"),
-      'rows': ("numRows")
-    },hashTypes:{'class': "STRING",'value': "ID",'placeholder': "ID",'rows': "ID"},hashContexts:{'class': depth0,'value': depth0,'placeholder': depth0,'rows': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "textarea", options))));
+      'rows': ("numRows"),
+      'id': ("cssId")
+    },hashTypes:{'class': "STRING",'value': "ID",'placeholder': "ID",'rows': "ID",'id': "ID"},hashContexts:{'class': depth0,'value': depth0,'placeholder': depth0,'rows': depth0,'id': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "textarea", options))));
     data.buffer.push("\n  ");
     return buffer;
     }
@@ -5280,8 +5313,9 @@ define('fusor-ember-cli/templates/components/textarea-f', ['exports', 'ember'], 
     data.buffer.push(escapeExpression((helper = helpers.textarea || (depth0 && depth0.textarea),options={hash:{
       'class': ("form-control"),
       'value': ("value"),
-      'placeholder': ("placeholder")
-    },hashTypes:{'class': "STRING",'value': "ID",'placeholder': "ID"},hashContexts:{'class': depth0,'value': depth0,'placeholder': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "textarea", options))));
+      'placeholder': ("placeholder"),
+      'id': ("cssId")
+    },hashTypes:{'class': "STRING",'value': "ID",'placeholder': "ID",'id': "ID"},hashContexts:{'class': depth0,'value': depth0,'placeholder': depth0,'id': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "textarea", options))));
     data.buffer.push("\n  ");
     return buffer;
     }
@@ -5316,8 +5350,9 @@ define('fusor-ember-cli/templates/components/tr-engine', ['exports', 'ember'], f
       'type': ("text"),
       'value': ("host.name"),
       'class': ("font-control"),
-      'focus-out': ("saveHostname")
-    },hashTypes:{'type': "STRING",'value': "ID",'class': "STRING",'focus-out': "STRING"},hashContexts:{'type': depth0,'value': depth0,'class': depth0,'focus-out': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
+      'focus-out': ("saveHostname"),
+      'id': ("host.cssHostHostId")
+    },hashTypes:{'type': "STRING",'value': "ID",'class': "STRING",'focus-out': "STRING",'id': "ID"},hashContexts:{'type': depth0,'value': depth0,'class': depth0,'focus-out': depth0,'id': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
     data.buffer.push("\n    ");
     return buffer;
     }
@@ -5326,9 +5361,10 @@ define('fusor-ember-cli/templates/components/tr-engine', ['exports', 'ember'], f
     data.buffer.push(escapeExpression((helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
       'value': ("host.model"),
       'groupValue': ("selectedRhevEngineHost"),
-      'changed': ("engineHostChanged")
-    },hashTypes:{'value': "ID",'groupValue': "ID",'changed': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options))));
-    data.buffer.push(" \n</td>\n<td>\n    ");
+      'changed': ("engineHostChanged"),
+      'id': ("host.cssIdHostId")
+    },hashTypes:{'value': "ID",'groupValue': "ID",'changed': "STRING",'id': "ID"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0,'id': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options))));
+    data.buffer.push("\n</td>\n<td>\n    ");
     stack1 = helpers['if'].call(depth0, "host.isSelectedAsEngine", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n</td>\n<td> ");
@@ -5363,8 +5399,9 @@ define('fusor-ember-cli/templates/components/tr-hypervisor', ['exports', 'ember'
       'type': ("text"),
       'value': ("host.name"),
       'class': ("font-control"),
-      'focus-out': ("saveHostname")
-    },hashTypes:{'type': "STRING",'value': "ID",'class': "STRING",'focus-out': "STRING"},hashContexts:{'type': depth0,'value': depth0,'class': depth0,'focus-out': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
+      'focus-out': ("saveHostname"),
+      'id': ("host.cssHostHostId")
+    },hashTypes:{'type': "STRING",'value': "ID",'class': "STRING",'focus-out': "STRING",'id': "ID"},hashContexts:{'type': depth0,'value': depth0,'class': depth0,'focus-out': depth0,'id': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
     data.buffer.push("\n  ");
     return buffer;
     }
@@ -5373,9 +5410,10 @@ define('fusor-ember-cli/templates/components/tr-hypervisor', ['exports', 'ember'
     data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
       'type': ("checkbox"),
       'name': ("isSelectedAsHypervisor"),
-      'checked': ("host.isSelectedAsHypervisor")
-    },hashTypes:{'type': "STRING",'name': "STRING",'checked': "ID"},hashContexts:{'type': depth0,'name': depth0,'checked': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-    data.buffer.push("\n   \n</td>\n<td>\n  ");
+      'checked': ("host.isSelectedAsHypervisor"),
+      'id': ("host.cssIdHostId")
+    },hashTypes:{'type': "STRING",'name': "STRING",'checked': "ID",'id': "ID"},hashContexts:{'type': depth0,'name': depth0,'checked': depth0,'id': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
+    data.buffer.push("\n</td>\n<td>\n  ");
     stack1 = helpers['if'].call(depth0, "host.isSelectedAsHypervisor", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n</td>\n<td> ");
@@ -5407,8 +5445,9 @@ define('fusor-ember-cli/templates/components/tr-organization', ['exports', 'embe
     data.buffer.push(escapeExpression((helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
       'value': ("org"),
       'groupValue': ("selectedOrganization"),
-      'changed': ("organizationChanged")
-    },hashTypes:{'value': "ID",'groupValue': "ID",'changed': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options))));
+      'changed': ("organizationChanged"),
+      'id': ("org.id")
+    },hashTypes:{'value': "ID",'groupValue': "ID",'changed': "STRING",'id': "ID"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0,'id': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options))));
     data.buffer.push("\n</td>\n<td>\n    ");
     stack1 = helpers._triageMustache.call(depth0, "org.name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
@@ -8070,33 +8109,38 @@ define('fusor-ember-cli/templates/rhev-options', ['exports', 'ember'], function 
     data.buffer.push(escapeExpression((helper = helpers['text-f'] || (depth0 && depth0['text-f']),options={hash:{
       'label': ("Engine admin password"),
       'type': ("password"),
-      'value': ("rhev_engine_admin_password")
-    },hashTypes:{'label': "STRING",'type': "STRING",'value': "ID"},hashContexts:{'label': depth0,'type': depth0,'value': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "text-f", options))));
+      'value': ("rhev_engine_admin_password"),
+      'cssId': ("rhev_engine_admin_password")
+    },hashTypes:{'label': "STRING",'type': "STRING",'value': "ID",'cssId': "STRING"},hashContexts:{'label': depth0,'type': depth0,'value': depth0,'cssId': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "text-f", options))));
     data.buffer.push("\n\n      ");
     data.buffer.push(escapeExpression((helper = helpers['text-f'] || (depth0 && depth0['text-f']),options={hash:{
       'label': ("Datacenter Name"),
       'value': ("rhev_database_name"),
-      'placeholder': ("Leave blank for default")
-    },hashTypes:{'label': "STRING",'value': "ID",'placeholder': "STRING"},hashContexts:{'label': depth0,'value': depth0,'placeholder': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "text-f", options))));
+      'placeholder': ("Leave blank for default"),
+      'cssId': ("rhev_database_name")
+    },hashTypes:{'label': "STRING",'value': "ID",'placeholder': "STRING",'cssId': "STRING"},hashContexts:{'label': depth0,'value': depth0,'placeholder': depth0,'cssId': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "text-f", options))));
     data.buffer.push("\n      ");
     data.buffer.push(escapeExpression((helper = helpers['text-f'] || (depth0 && depth0['text-f']),options={hash:{
       'label': ("Cluster Name"),
       'value': ("rhev_cluster_name"),
-      'placeholder': ("Leave blank for default")
-    },hashTypes:{'label': "STRING",'value': "ID",'placeholder': "STRING"},hashContexts:{'label': depth0,'value': depth0,'placeholder': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "text-f", options))));
+      'placeholder': ("Leave blank for default"),
+      'cssId': ("rhev_cluster_name")
+    },hashTypes:{'label': "STRING",'value': "ID",'placeholder': "STRING",'cssId': "STRING"},hashContexts:{'label': depth0,'value': depth0,'placeholder': depth0,'cssId': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "text-f", options))));
     data.buffer.push("\n      ");
     data.buffer.push(escapeExpression((helper = helpers['text-f'] || (depth0 && depth0['text-f']),options={hash:{
       'label': ("Storage name"),
       'value': ("rhev_storage_name"),
-      'placeholder': ("Leave blank for default")
-    },hashTypes:{'label': "STRING",'value': "ID",'placeholder': "STRING"},hashContexts:{'label': depth0,'value': depth0,'placeholder': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "text-f", options))));
+      'placeholder': ("Leave blank for default"),
+      'cssId': ("rhev_storage_name")
+    },hashTypes:{'label': "STRING",'value': "ID",'placeholder': "STRING",'cssId': "STRING"},hashContexts:{'label': depth0,'value': depth0,'placeholder': depth0,'cssId': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "text-f", options))));
     data.buffer.push("\n\n      ");
     data.buffer.push(escapeExpression((helper = helpers['text-f'] || (depth0 && depth0['text-f']),options={hash:{
       'label': ("CPU Type"),
       'value': ("rhev_cpu_type"),
       'placeholder': ("Leave blank for default"),
-      'help-inline': ("")
-    },hashTypes:{'label': "STRING",'value': "ID",'placeholder': "STRING",'help-inline': "STRING"},hashContexts:{'label': depth0,'value': depth0,'placeholder': depth0,'help-inline': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "text-f", options))));
+      'help-inline': (""),
+      'cssId': ("rhev_cpu_type")
+    },hashTypes:{'label': "STRING",'value': "ID",'placeholder': "STRING",'help-inline': "STRING",'cssId': "STRING"},hashContexts:{'label': depth0,'value': depth0,'placeholder': depth0,'help-inline': depth0,'cssId': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "text-f", options))));
     data.buffer.push("\n    </form>\n  </div>\n</div>\n\n    <div class='pull-right'>\n      <br />\n      ");
     stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
       'class': ("btn btn-default")
@@ -8150,15 +8194,17 @@ define('fusor-ember-cli/templates/rhev-setup', ['exports', 'ember'], function (e
     stack1 = (helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
       'value': ("selfhost"),
       'groupValue': ("rhevSetup"),
-      'changed': ("rhevSetupChanged")
-    },hashTypes:{'value': "STRING",'groupValue': "ID",'changed': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
+      'changed': ("rhevSetupChanged"),
+      'id': ("selfhost")
+    },hashTypes:{'value': "STRING",'groupValue': "ID",'changed': "STRING",'id': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0,'id': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n      </h3>\n    </div>\n\n    <div class='row'>\n      <h3>\n      ");
     stack1 = (helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
       'value': ("rhevhost"),
       'groupValue': ("rhevSetup"),
-      'changed': ("rhevSetupChanged")
-    },hashTypes:{'value': "STRING",'groupValue': "ID",'changed': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0},inverse:self.noop,fn:self.program(3, program3, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
+      'changed': ("rhevSetupChanged"),
+      'id': ("rhevhost")
+    },hashTypes:{'value': "STRING",'groupValue': "ID",'changed': "STRING",'id': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0,'id': depth0},inverse:self.noop,fn:self.program(3, program3, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n      </h3>\n    </div>\n\n  </div>\n</div>\n\n<br />\n\n<div class='pull-right'>\n    ");
     stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
@@ -8338,14 +8384,16 @@ define('fusor-ember-cli/templates/satellite/index', ['exports', 'ember'], functi
       'label': ("Name"),
       'value': ("name"),
       'inputSize': ("col-md-5"),
-      'errors': ("errors")
-    },hashTypes:{'label': "STRING",'value': "ID",'inputSize': "STRING",'errors': "ID"},hashContexts:{'label': depth0,'value': depth0,'inputSize': depth0,'errors': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "text-f", options))));
+      'errors': ("errors"),
+      'cssId': ("idSatName")
+    },hashTypes:{'label': "STRING",'value': "ID",'inputSize': "STRING",'errors': "ID",'cssId': "ID"},hashContexts:{'label': depth0,'value': depth0,'inputSize': depth0,'errors': depth0,'cssId': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "text-f", options))));
     data.buffer.push("\n\n      ");
     data.buffer.push(escapeExpression((helper = helpers['textarea-f'] || (depth0 && depth0['textarea-f']),options={hash:{
       'label': ("Description (Optional)"),
       'value': ("description"),
-      'inputSize': ("col-md-5")
-    },hashTypes:{'label': "STRING",'value': "ID",'inputSize': "STRING"},hashContexts:{'label': depth0,'value': depth0,'inputSize': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "textarea-f", options))));
+      'inputSize': ("col-md-5"),
+      'cssId': ("idSatDesc")
+    },hashTypes:{'label': "STRING",'value': "ID",'inputSize': "STRING",'cssId': "ID"},hashContexts:{'label': depth0,'value': depth0,'inputSize': depth0,'cssId': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "textarea-f", options))));
     data.buffer.push("\n\n      <div class='pull-right'>\n        <br />\n        <button ");
     data.buffer.push(escapeExpression(helpers.action.call(depth0, "showModal", "cancelDeploymentModal", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0,depth0],types:["STRING","STRING"],data:data})));
     data.buffer.push(" class='btn btn-default'>Cancel</button>\n        ");
@@ -8470,14 +8518,16 @@ define('fusor-ember-cli/templates/storage', ['exports', 'ember'], function (expo
     data.buffer.push("\n\n        ");
     stack1 = (helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
       'value': ("NFS"),
-      'groupValue': ("rhev_storage_type")
-    },hashTypes:{'value': "STRING",'groupValue': "ID"},hashContexts:{'value': depth0,'groupValue': depth0},inverse:self.noop,fn:self.program(2, program2, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
+      'groupValue': ("rhev_storage_type"),
+      'id': ("nfs")
+    },hashTypes:{'value': "STRING",'groupValue': "ID",'id': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'id': depth0},inverse:self.noop,fn:self.program(2, program2, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n        &nbsp;&nbsp;&nbsp;&nbsp;\n        ");
     stack1 = (helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
       'value': ("Gluster"),
-      'groupValue': ("rhev_storage_type")
-    },hashTypes:{'value': "STRING",'groupValue': "ID"},hashContexts:{'value': depth0,'groupValue': depth0},inverse:self.noop,fn:self.program(4, program4, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
+      'groupValue': ("rhev_storage_type"),
+      'id': ("gluster")
+    },hashTypes:{'value': "STRING",'groupValue': "ID",'id': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'id': depth0},inverse:self.noop,fn:self.program(4, program4, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n      ");
     return buffer;
@@ -8506,7 +8556,7 @@ define('fusor-ember-cli/templates/storage', ['exports', 'ember'], function (expo
     data.buffer.push("Next");
     }
 
-    data.buffer.push("\n<div class='row'>\n  <div class='col-md-12'>\n    <br />\n    <form class=\"form form-horizontal\">\n\n      ");
+    data.buffer.push("<div class='row'>\n  <div class='col-md-12'>\n    <br />\n    <form class=\"form form-horizontal\">\n\n      ");
     stack1 = (helper = helpers['base-f'] || (depth0 && depth0['base-f']),options={hash:{
       'label': ("Storage Type")
     },hashTypes:{'label': "STRING"},hashContexts:{'label': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "base-f", options));
@@ -8515,14 +8565,16 @@ define('fusor-ember-cli/templates/storage', ['exports', 'ember'], function (expo
     data.buffer.push(escapeExpression((helper = helpers['text-f'] || (depth0 && depth0['text-f']),options={hash:{
       'label': ("Storage Address"),
       'value': ("rhev_storage_address"),
-      'placeholder': ("Leave blank for default")
-    },hashTypes:{'label': "STRING",'value': "ID",'placeholder': "STRING"},hashContexts:{'label': depth0,'value': depth0,'placeholder': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "text-f", options))));
+      'placeholder': ("Leave blank for default"),
+      'cssId': ("rhev_storage_address")
+    },hashTypes:{'label': "STRING",'value': "ID",'placeholder': "STRING",'cssId': "STRING"},hashContexts:{'label': depth0,'value': depth0,'placeholder': depth0,'cssId': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "text-f", options))));
     data.buffer.push("\n      ");
     data.buffer.push(escapeExpression((helper = helpers['text-f'] || (depth0 && depth0['text-f']),options={hash:{
       'label': ("Share Path"),
       'value': ("rhev_share_path"),
-      'placeholder': ("Leave blank for default")
-    },hashTypes:{'label': "STRING",'value': "ID",'placeholder': "STRING"},hashContexts:{'label': depth0,'value': depth0,'placeholder': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "text-f", options))));
+      'placeholder': ("Leave blank for default"),
+      'cssId': ("rhev_share_path")
+    },hashTypes:{'label': "STRING",'value': "ID",'placeholder': "STRING",'cssId': "STRING"},hashContexts:{'label': depth0,'value': depth0,'placeholder': depth0,'cssId': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "text-f", options))));
     data.buffer.push("\n\n    </form>\n  </div>\n</div>\n\n    <div class='pull-right'>\n      <br />\n      ");
     stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
       'class': ("btn btn-default")
@@ -8891,8 +8943,9 @@ define('fusor-ember-cli/templates/where-install', ['exports', 'ember'], function
     stack1 = (helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
       'value': ("RHEV"),
       'groupValue': ("cfme_install_loc"),
-      'changed': ("cfmeLocationChanged")
-    },hashTypes:{'value': "STRING",'groupValue': "ID",'changed': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0},inverse:self.noop,fn:self.program(2, program2, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
+      'changed': ("cfmeLocationChanged"),
+      'id': ("install_on_rhev")
+    },hashTypes:{'value': "STRING",'groupValue': "ID",'changed': "STRING",'id': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0,'id': depth0},inverse:self.noop,fn:self.program(2, program2, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n        ");
     return buffer;
@@ -8910,8 +8963,9 @@ define('fusor-ember-cli/templates/where-install', ['exports', 'ember'], function
     stack1 = (helper = helpers['radio-button'] || (depth0 && depth0['radio-button']),options={hash:{
       'value': ("OpenStack"),
       'groupValue': ("cfme_install_loc"),
-      'changed': ("cfmeLocationChanged")
-    },hashTypes:{'value': "STRING",'groupValue': "ID",'changed': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0},inverse:self.noop,fn:self.program(5, program5, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
+      'changed': ("cfmeLocationChanged"),
+      'id': ("install_on_openstack")
+    },hashTypes:{'value': "STRING",'groupValue': "ID",'changed': "STRING",'id': "STRING"},hashContexts:{'value': depth0,'groupValue': depth0,'changed': depth0,'id': depth0},inverse:self.noop,fn:self.program(5, program5, data),contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "radio-button", options));
     if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
     data.buffer.push("\n        ");
     return buffer;
@@ -9032,7 +9086,7 @@ define('fusor-ember-cli/tests/components/env-path-list-item.jshint', function ()
 
   module('JSHint - components');
   test('components/env-path-list-item.js should pass jshint', function() { 
-    ok(false, 'components/env-path-list-item.js should pass jshint.\ncomponents/env-path-list-item.js: line 19, col 19, \'event\' is defined but never used.\n\n1 error'); 
+    ok(false, 'components/env-path-list-item.js should pass jshint.\ncomponents/env-path-list-item.js: line 23, col 19, \'event\' is defined but never used.\n\n1 error'); 
   });
 
 });
@@ -9402,7 +9456,7 @@ define('fusor-ember-cli/tests/controllers/discovered-host.jshint', function () {
 
   module('JSHint - controllers');
   test('controllers/discovered-host.js should pass jshint', function() { 
-    ok(false, 'controllers/discovered-host.js should pass jshint.\ncontrollers/discovered-host.js: line 27, col 78, Missing semicolon.\ncontrollers/discovered-host.js: line 28, col 50, Missing semicolon.\ncontrollers/discovered-host.js: line 30, col 19, Missing semicolon.\n\n3 errors'); 
+    ok(false, 'controllers/discovered-host.js should pass jshint.\ncontrollers/discovered-host.js: line 35, col 78, Missing semicolon.\ncontrollers/discovered-host.js: line 36, col 50, Missing semicolon.\ncontrollers/discovered-host.js: line 38, col 19, Missing semicolon.\n\n3 errors'); 
   });
 
 });
@@ -15760,13 +15814,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","http://localhost:4200","http://localhost:9010","http://sat61jmagen.example.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.defc17d2"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","http://localhost:4200","http://localhost:9010","http://sat61jmagen.example.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.dfc97457"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.defc17d2"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.dfc97457"});
 }
 
 /* jshint ignore:end */

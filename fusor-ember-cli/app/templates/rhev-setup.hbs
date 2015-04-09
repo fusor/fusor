@@ -9,7 +9,7 @@
 
     <div class='row'>
       <h3>
-      {{#radio-button value="selfhost" groupValue=rhevSetup changed="rhevSetupChanged"}}
+      {{#radio-button value="selfhost" groupValue=rhevSetup changed="rhevSetupChanged" id='selfhost'}}
         Self-hosted
       {{/radio-button}}
       </h3>
@@ -17,7 +17,7 @@
 
     <div class='row'>
       <h3>
-      {{#radio-button value="rhevhost" groupValue=rhevSetup changed="rhevSetupChanged"}}
+      {{#radio-button value="rhevhost" groupValue=rhevSetup changed="rhevSetupChanged" id='rhevhost'}}
         Hypervisor + engine
       {{/radio-button}}
       </h3>
