@@ -8,6 +8,7 @@ export default Ember.Route.extend({
 
   setupController: function(controller, model) {
     controller.set('model', model);
+    controller.set('showAlertMessage', false);
     var organizations = this.store.find('organization');
     controller.set('organizations', organizations);
   },
