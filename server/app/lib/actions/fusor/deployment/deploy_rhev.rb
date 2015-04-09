@@ -66,6 +66,7 @@ module Actions
             Rails.logger.warn "XXX finalize: returned from assign_host_to_hostgroup. #{success}"
             if da_host
               Rails.logger.warn "XXX finalize: hypervisor host is NOT null! YAY!"
+              reboot_host(da_host)
             else
               Rails.logger.warn "XXX finalize: damn what happened to the hypervisor host"
             end
@@ -83,6 +84,7 @@ module Actions
           Rails.logger.warn "XXX returned from assign_host_to_hostgroup. #{success}"
           if host
             Rails.logger.warn "XXX engine host is NOT null! YAY!"
+            reboot_host(host)
           else
             Rails.logger.warn "XXX damn what happened to the engine host"
           end
@@ -200,6 +202,12 @@ module Actions
         end
 
         private
+
+        def reboot_host(host)
+          Rails.logger.warn "XXX About to reboot host"
+          host.becomes(::Host::Discovered).reboot unless host.nil?
+          Rails.logger.warn "XXX host rebooted"
+        end
 
         def find_hostgroup(deployment, name)
           # locate the top-level hostgroup for the deployment...
