@@ -35,8 +35,9 @@ export default Ember.Mixin.create({
         self.set('fields_org',{});
         self.set('defaultOrgName', null);
         self.set('selectedOrganization', organization);
-        organization.save().then(function() {
+        organization.save().then(function(org) {
           //success
+          self.set('organization', org);
           return self.set('showAlertMessage', true);
         }, function(error) {
           alert('There was an error trying to save: ' + error);

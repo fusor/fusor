@@ -1449,33 +1449,9 @@ define('fusor-ember-cli/controllers/new-environment', ['exports', 'ember'], func
 });
 define('fusor-ember-cli/controllers/new-organization', ['exports', 'ember'], function (exports, Ember) {
 
-  'use strict';
+	'use strict';
 
-  exports['default'] = Ember['default'].ObjectController.extend({
-    fields: {},
-
-    rhciModalButtons: [Ember['default'].Object.create({ title: "Cancel", clicked: "cancel", dismiss: "modal" }), Ember['default'].Object.create({ title: "Create", clicked: "createOrganization" })],
-
-    myModalButtons: [Ember['default'].Object.create({ title: "Submit", type: "primary", clicked: "submit" }), Ember['default'].Object.create({ title: "Cancel", clicked: "cancel", dismiss: "modal" })],
-
-    actions: {
-
-      cancel: function () {
-        this.transitionTo("configure");
-      },
-
-      createOrganization: function () {
-        var self = this;
-        var organization = this.store.createRecord("organization", this.get("fields"));
-        organization.save().then(function () {
-          self.controllerFor("configure").set("selectedOrganization", organization);
-          self.transitionTo("configure");
-        }, function () {
-          alert("error");
-        });
-      }
-    }
-  });
+	exports['default'] = Ember['default'].Controller.extend({});
 
 });
 define('fusor-ember-cli/controllers/openstack', ['exports', 'ember'], function (exports, Ember) {
@@ -2348,8 +2324,9 @@ define('fusor-ember-cli/mixins/configure-organization-mixin', ['exports', 'ember
         self.set("fields_org", {});
         self.set("defaultOrgName", null);
         self.set("selectedOrganization", organization);
-        organization.save().then(function () {
+        organization.save().then(function (org) {
           //success
+          self.set("organization", org);
           return self.set("showAlertMessage", true);
         }, function (error) {
           alert("There was an error trying to save: " + error);
@@ -2620,12 +2597,12 @@ define('fusor-ember-cli/mixins/disable-tab-mixin', ['exports', 'ember'], functio
     hasNoName: Ember['default'].computed.not("hasName"),
 
     hasOrganization: (function () {
-      return !!this.get("organization");
+      return !!this.get("organization").get("id"); // without .get('id') returns promise that is true
     }).property("organization"),
     hasNoOrganization: Ember['default'].computed.not("hasOrganization"),
 
     hasLifecycleEnvironment: (function () {
-      return !!this.get("lifecycle_environment");
+      return !!this.get("lifecycle_environment").get("id"); // without .get('id') returns promise that is true
     }).property("lifecycle_environment"),
     hasNoLifecycleEnvironment: Ember['default'].computed.not("hasLifecycleEnvironment"),
 
@@ -3367,6 +3344,7 @@ define('fusor-ember-cli/routes/configure-organization', ['exports', 'ember'], fu
 
     setupController: function (controller, model) {
       controller.set("model", model);
+      controller.set("showAlertMessage", false);
       var organizations = this.store.find("organization");
       controller.set("organizations", organizations);
     },
@@ -3462,6 +3440,7 @@ define('fusor-ember-cli/routes/deployment-new/satellite/configure-organization',
 
     setupController: function (controller, model) {
       controller.set("model", model);
+      controller.set("showAlertMessage", false);
       var organizations = this.store.find("organization");
       controller.set("organizations", organizations);
     } });
@@ -9913,7 +9892,7 @@ define('fusor-ember-cli/tests/mixins/configure-organization-mixin.jshint', funct
 
   module('JSHint - mixins');
   test('mixins/configure-organization-mixin.js should pass jshint', function() { 
-    ok(false, 'mixins/configure-organization-mixin.js should pass jshint.\nmixins/configure-organization-mixin.js: line 50, col 14, \'Bootstrap\' is not defined.\n\n1 error'); 
+    ok(false, 'mixins/configure-organization-mixin.js should pass jshint.\nmixins/configure-organization-mixin.js: line 51, col 14, \'Bootstrap\' is not defined.\n\n1 error'); 
   });
 
 });
@@ -15814,13 +15793,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","http://localhost:4200","http://localhost:9010","http://sat61jmagen.example.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.dfc97457"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"simpleAuth":{"authorizer":"simple-auth-authorizer:oauth2-bearer","store":"simple-auth-session-store:local-storage","crossOriginWhitelist":["http://localhost:3000","http://localhost:4200","http://localhost:9010","http://sat61jmagen.example.com"]},"simpleAuthOauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","torii":{"providers":{"facebook-oauth2":{"apiKey":"394152887290151","redirectUri":"http://localhost:4200/#/login"},"google-oauth2":{"apiKey":"586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com","redirectUri":"http://localhost:4200"},"github-oauth2":{"apiKey":"985e267c717e3f873120"}}},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.6d888e24"},"simple-auth-oauth2":{"serverTokenEndpoint":"/oauth/token"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.dfc97457"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.6d888e24"});
 }
 
 /* jshint ignore:end */

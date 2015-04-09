@@ -10,12 +10,12 @@ export default Ember.Mixin.create({
   hasNoName: Ember.computed.not('hasName'),
 
   hasOrganization: function() {
-    return !!(this.get('organization'));
+    return !!(this.get('organization').get('id')); // without .get('id') returns promise that is true
   }.property('organization'),
   hasNoOrganization: Ember.computed.not('hasOrganization'),
 
   hasLifecycleEnvironment: function() {
-    return !!(this.get('lifecycle_environment'));
+    return !!(this.get('lifecycle_environment').get('id')); // without .get('id') returns promise that is true
   }.property('lifecycle_environment'),
   hasNoLifecycleEnvironment: Ember.computed.not('hasLifecycleEnvironment'),
 
