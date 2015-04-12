@@ -21,11 +21,6 @@ export default Ember.Mixin.create({
     }
   }.property('defaultOrgName'),
 
-  rhciModalButtons: [
-      Ember.Object.create({title: 'Cancel', clicked:"cancel", dismiss: 'modal'}),
-      Ember.Object.create({title: 'Create', clicked:"createOrganization", type: 'primary'})
-  ],
-
   actions: {
     createOrganization: function() {
       //if (this.get('fields_org.isDirty')) {
@@ -47,8 +42,6 @@ export default Ember.Mixin.create({
           //organization.unloadRecord();
         });
       //}
-
-      return Bootstrap.ModalManager.hide('newOrganizationModal');
     },
   }
 

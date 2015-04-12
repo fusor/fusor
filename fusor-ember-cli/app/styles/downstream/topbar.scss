@@ -1,6 +1,11 @@
 @import "mixin";
 @import "colors";
 
+$dropdown-bg: #333333;
+$dropdown-fallback-border: white;
+$dropdown-border: white;
+$dropdown-link-color: #0088cc;
+
 .navbar {
   border-radius: 0;
   margin-bottom: 0;
@@ -177,7 +182,6 @@
 
 // Necessary to override bootstrap3 media query restyling for small screens
 #userMenu .dropdown-menu {
-  @import "bootstrap/variables";
 
   background-color: $dropdown-bg;
   border: 1px solid $dropdown-fallback-border; // IE8 fallback

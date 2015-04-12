@@ -49,9 +49,9 @@
     {{/each}}
 
     <div style='margin-top:15px;'>
-      <button class='btn btn-default' {{action 'showModal' 'newEnvironmentModal'}}>
+      {{#em-modal-toggler modal-id="newLifecycleEnvironmentModal" class="btn btn-default"}}
         New Environment Path
-      </button>
+      {{/em-modal-toggler}}
     </div>
 
   </div>
@@ -73,6 +73,4 @@
   </div>
 </div>
 
-{{#bs-modal name="newEnvironmentModal" fade=true footerButtonsBinding="rhciNewEnvButtons" title="New Environment Path"}}
-  {{partial 'new-environment'}}
-{{/bs-modal}}
+{{partial 'new-environment'}}

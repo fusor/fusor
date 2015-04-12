@@ -12,26 +12,6 @@ module.exports = function(environment) {
         // e.g. 'with-controller': true
       }
     },
-    simpleAuth: {
-      //https://github.com/simplabs/ember-simple-auth/blob/master/packages/ember-simple-auth/lib/simple-auth/configuration.js
-      // authenticationRoute:         'login',
-      // routeAfterAuthentication:    'index',
-      // routeIfAlreadyAuthenticated: 'loggedin',
-      // routeAfterAuthentication:    'deployment-new.start',
-      // routeIfAlreadyAuthenticated: 'deployment-new.start',
-      // sessionPropertyName:         'session',
-      // authorizer:                  null,
-      authorizer: 'simple-auth-authorizer:oauth2-bearer',
-      // session:                     'simple-auth-session:main',
-      store: 'simple-auth-session-store:local-storage',
-      // localStorageKey:             'ember_simple_auth:session',
-      crossOriginWhitelist: ['http://localhost:3000', 'http://localhost:4200', 'http://localhost:9010', 'http://sat61jmagen.example.com'],
-
-      // applicationRootUrl:          null
-    },
-    simpleAuthOauth2: {
-      serverTokenEndpoint: '/oauth/token'
-    },
     // contentSecurityPolicy: {
     //   'default-src': "*",
     //   'script-src': "*",
@@ -44,32 +24,11 @@ module.exports = function(environment) {
     //contentSecurityPolicyHeader: 'Content-Security-Policy',
     contentSecurityPolicyHeader: 'Disabled-Content-Security-Policy',
 
-    torii: {
-      providers: {
-        'facebook-oauth2': {
-          apiKey: '394152887290151',
-          redirectUri: 'http://localhost:4200/#/login'
-        },
-        'google-oauth2': {
-          apiKey: '586079650480-rgupqq2ss2bnebii11gakbu1a735tru9.apps.googleusercontent.com',
-          redirectUri: 'http://localhost:4200'
-        },
-        'github-oauth2': {
-          //apiKey: '9571e28a208605ba2a6e'
-          //apiKey: 'f5efb99912a0fd79696a'
-          apiKey: '985e267c717e3f873120'
-        }
-      }
-    },
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
     }
   };
-
-  ENV['simple-auth-oauth2'] = {
-    serverTokenEndpoint: '/oauth/token'
-  }
 
   if (environment === 'development') {
     // ENV.APP.LOG_RESOLVER = true;

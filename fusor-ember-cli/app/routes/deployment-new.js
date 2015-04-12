@@ -1,8 +1,7 @@
 import Ember from 'ember';
-import AuthenticatedRouteMixin from 'simple-auth/mixins/authenticated-route-mixin';
 import DeploymentRouteMixin from "../mixins/deployment-route-mixin";
 
-export default Ember.Route.extend(AuthenticatedRouteMixin, DeploymentRouteMixin, {
+export default Ember.Route.extend(DeploymentRouteMixin, {
 
   model: function() {
     return this.store.createRecord('deployment');
