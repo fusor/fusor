@@ -85,48 +85,6 @@
 
   {{#if isOpenStack}}
     {{#accordion-item name=controllers.deployment.nameOpenStack isOpen=isOpenStackOpen}}
-      High Availability:
-        {{#link-to 'osp-settings'}}
-          {{controllers.osp-settings.ha}}
-        {{/link-to}} <br />
-      Networking:
-        {{#link-to 'osp-settings'}}
-          {{controllers.osp-settings.networking}}
-        {{/link-to}} <br />
-      Messaging Provider:
-        {{#link-to 'osp-settings'}}
-          {{controllers.osp-settings.messaging}}
-        {{/link-to}} <br />
-      Platform:
-        {{#link-to 'osp-settings'}}
-          {{controllers.osp-settings.platform}}
-        {{/link-to}} <br />
-      Service Password:
-        {{#link-to 'osp-settings'}}
-          {{controllers.osp-settings.password}}
-        {{/link-to}} <br />
-      Custom Repos:
-        {{#link-to 'osp-settings'}}
-          {{showdown-addon controllers.osp-settings.customRepos}}
-        {{/link-to}}<br />
-        <br />
-
-      Tenant Network Type
-        {{#link-to 'osp-configuration'}}
-          {{controllers.osp-configuration.tenantType}}
-        {{/link-to}} <br />
-      Core Plugin Type
-        {{#link-to 'osp-configuration'}}
-          {{controllers.osp-configuration.corePlugin}}
-        {{/link-to}} <br />
-      Glance Driver Backend
-        {{#link-to 'osp-configuration'}}
-          {{controllers.osp-configuration.glanceBackend}}
-        {{/link-to}} <br />
-      Cinder Driver Backend
-        {{#link-to 'osp-configuration'}}
-          {{controllers.osp-configuration.cinderBackend}}
-        {{/link-to}} <br />
     {{/accordion-item}}
   {{/if}}
 

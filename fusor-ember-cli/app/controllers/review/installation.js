@@ -4,7 +4,7 @@ export default Ember.Controller.extend({
   needs: ['application','rhci', 'deployment', 'satellite', 'configure-organization',
           'configure-environment', 'rhev-setup', 'hypervisor', 'hypervisor/discovered-host',
           'engine/discovered-host', 'storage',
-          'networking', 'rhev-options', 'osp-settings', 'osp-configuration', 'where-install',
+          'networking', 'rhev-options', 'where-install',
           'cloudforms-storage-domain', 'cloudforms-vm', 'review'],
 
   buttonDeployTitle: 'Deploy',
