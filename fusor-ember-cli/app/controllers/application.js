@@ -3,7 +3,7 @@ import Ember from 'ember';
 export default Ember.Controller.extend({
   needs: ['side-menu', 'deployment'],
 
-  deployAsPlugin: true,
+  deployAsPlugin: false,
   isEmberCliMode: Ember.computed.not('deployAsPlugin'),
   isUpstream: false,
 
