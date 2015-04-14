@@ -1,21 +1,12 @@
 <div class="row tabbed_side_nav_form">
 
   <ul class="nav nav-pills nav-stacked col-md-3">
-
-      {{#link-to 'osp-settings' tagName='li'}}
-        <a>{{stepNumberOpenstack}}A. Settings</a>
+      {{#link-to 'register-nodes' tagName='li'}}
+        <a>{{stepNumberOpenstack}}A. Registering Nodes</a>
       {{/link-to}}
 
-      {{#link-to 'osp-network' tagName='li'}}
-        <a>{{stepNumberOpenstack}}B. Network Configuration</a>
-      {{/link-to}}
-
-      {{#link-to 'osp-overview' tagName='li'}}
-        <a>{{stepNumberOpenstack}}C. Services Overview</a>
-      {{/link-to}}
-
-      {{#link-to 'osp-configuration' tagName='li'}}
-        <a>{{stepNumberOpenstack}}D. Services Configuration</a>
+      {{#link-to 'assign-nodes' tagName='li'}}
+        <a>{{stepNumberOpenstack}}B. Assigning Nodes</a>
       {{/link-to}}
   </ul>
 

@@ -19,7 +19,9 @@
   </div>
   <div class='col-md-4'>
     <div class='pull-right'>
-       <button class='btn btn-default' {{action 'showModal' 'newOrganizationModal'}}>New Organization</button>
+      {{#em-modal-toggler modal-id="newOrganizationModal" class="btn btn-primary"}}
+        New Organization
+      {{/em-modal-toggler}}
     </div>
   </div>
 </div>
@@ -63,6 +65,4 @@
   </div>
 </div>
 
-{{#bs-modal name="newOrganizationModal" fade=true footerButtonsBinding="rhciModalButtons" title="New Organization"}}
-  {{partial 'new-organization'}}
-{{/bs-modal}}
+{{partial 'new-organization'}}

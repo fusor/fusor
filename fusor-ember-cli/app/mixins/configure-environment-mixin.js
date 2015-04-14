@@ -20,11 +20,6 @@ export default Ember.Mixin.create({
 
   showAlertMessage: false,
 
-  rhciNewEnvButtons: [
-      Ember.Object.create({title: 'Cancel', clicked:"cancel", dismiss: 'modal'}),
-      Ember.Object.create({title: 'Create', clicked:"createEnvironment", type: 'primary'})
-  ],
-
   envLabelName: function() {
     if(this.get('name')) {
       return this.get('name').underscore();

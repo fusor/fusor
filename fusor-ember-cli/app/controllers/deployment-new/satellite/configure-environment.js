@@ -62,7 +62,6 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
         });
       }
 
-      return Bootstrap.ModalManager.hide('newEnvironmentModal');
     },
   }
 });

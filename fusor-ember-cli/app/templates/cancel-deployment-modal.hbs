@@ -1,3 +1,21 @@
-{{#bs-modal name="cancelDeploymentModal" fade=true footerButtonsBinding="rhciModalButtons" title="Cancel Deployment"}}
-  Are you sure you want to cancel?
-{{/bs-modal}}
+{{!#em-modal name="cancelDeploymentModal" fade=true footerButtonsBinding="rhciModalButtons" title="Cancel Deployment"}}
+  <!-- Are you sure you want to cancel? -->
+{{!/em-modal}}
+
+
+ {{#em-modal configName="bs" id="cancelDeploymentModal"}}
+    {{#em-modal-title}}
+        <!--optional toggler to close the opened modal-->
+        {{#em-modal-toggler class="close"}}×Close{{/em-modal-toggler}}
+        <h4 class="modal-title">Cancel Deployment</h4>
+    {{/em-modal-title}}
+    <!--the content of the modal...-->
+    {{#em-modal-body}}
+        One fine body…
+    {{/em-modal-body}}
+    <!--optional footer section of the modal, usually contains buttons-->
+    {{#em-modal-footer}}
+        {{#em-modal-toggler class="btn btn-default"}}Close{{/em-modal-toggler}}
+    {{/em-modal-footer}}
+{{/em-modal}}
+

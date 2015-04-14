@@ -1,9 +1,8 @@
 import Ember from 'ember';
 import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
 import DisableTabMixin from "../mixins/disable-tab-mixin";
-import EmberValidations from 'ember-validations';
 
-export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableTabMixin, EmberValidations.Mixin, {
+export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableTabMixin, {
 
   validations: {
     name: {
