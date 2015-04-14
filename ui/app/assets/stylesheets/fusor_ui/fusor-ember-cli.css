@@ -3,7 +3,6 @@
 @import "downstream/application";
 @import "downstream/mixin";
 @import "downstream/bootstrap_and_overrides";
-@import "downstream/charts";
 @import "downstream/colors";
 @import "downstream/topbar";
 @import "downstream/typography";
@@ -623,5 +622,3 @@ label.env_path_active:after {
 
 .gray .grey {
   background-color: #ddd !important; }
-
-/*# sourceMappingURL=fusor-ember-cli.css.map */
