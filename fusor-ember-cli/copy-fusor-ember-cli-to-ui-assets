@@ -1,12 +1,34 @@
  #!/bin/bash
 
-cp ./dist/assets/fusor-ember-cli.css     ../ui/app/assets/stylesheets/fusor_ui/;
-cp ./dist/assets/fusor-ember-cli.css.map ../ui/app/assets/stylesheets/fusor_ui/;
+if [ -f ./dist/assets/fusor-ember-cli.css ]
+then
+    cp ./dist/assets/fusor-ember-cli.css     ../ui/app/assets/stylesheets/fusor_ui/;
+fi
 
-cp ./dist/assets/vendor.js               ../ui/app/assets/javascripts/fusor_ui/;
-cp ./dist/assets/vendor.map              ../ui/app/assets/javascripts/fusor_ui/;
-cp ./dist/assets/fusor-ember-cli.js      ../ui/app/assets/javascripts/fusor_ui/;
-cp ./dist/assets/fusor-ember-cli.map     ../ui/app/assets/javascripts/fusor_ui/;
+if [ -f ./dist/assets/fusor-ember-cli.css.map ]
+then
+    cp ./dist/assets/fusor-ember-cli.css.map ../ui/app/assets/stylesheets/fusor_ui/;
+fi
+
+if [ -f ./dist/assets/vendor.js ]
+then
+    cp ./dist/assets/vendor.js               ../ui/app/assets/javascripts/fusor_ui/;
+fi
+
+if [ -f ./dist/assets/vendor.map ]
+then
+    cp ./dist/assets/vendor.map              ../ui/app/assets/javascripts/fusor_ui/;
+fi
+
+if [ -f ./dist/assets/fusor-ember-cli.js ]
+then
+    cp ./dist/assets/fusor-ember-cli.js      ../ui/app/assets/javascripts/fusor_ui/;
+fi
+
+if [ -f ./dist/assets/fusor-ember-cli.map ]
+then
+    cp ./dist/assets/fusor-ember-cli.map     ../ui/app/assets/javascripts/fusor_ui/;
+fi
 
 cp ./dist/assets/rhci-rhev-640-210.png            ../ui/app/assets/images/r/;
 cp ./dist/assets/rhci-openstack-640-210.png       ../ui/app/assets/images/r/;
