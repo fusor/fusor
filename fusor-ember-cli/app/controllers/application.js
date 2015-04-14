@@ -3,7 +3,7 @@ import Ember from 'ember';
 export default Ember.Controller.extend({
   needs: ['side-menu', 'deployment'],
 
-  deployAsPlugin: false,
+  deployAsPlugin: true,
   isEmberCliMode: Ember.computed.not('deployAsPlugin'),
   isUpstream: false,
 
@@ -12,7 +12,7 @@ export default Ember.Controller.extend({
   showMainMenu: Ember.computed.and('isLoggedIn', 'isEmberCliMode'),
   showSideMenu: Ember.computed.alias("controllers.side-menu.showSideMenu"),
 
-  isLoggedIn: Ember.computed.alias("session.isAuthenticated"),
+  isLoggedIn: true, //Ember.computed.alias("session.isAuthenticated"),
 
   loginUsername: Ember.computed.alias("session.currentUser.login"),
 
