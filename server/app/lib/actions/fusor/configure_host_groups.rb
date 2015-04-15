@@ -94,6 +94,11 @@ module Actions
             hostgroup_params[:medium_id] = operating_system.try(:media).try(:first).try(:id)
             hostgroup_params[:ptable_id] = operating_system.try(:ptables).try(:first).try(:id)
             hostgroup_params[:architecture_id] = operating_system.try(:architectures).try(:first).try(:id)
+
+            # TODO: the root_pass should later be configurable by the user.  In addition, we'll need to make
+            # sure that it aligns with the password (if any) used by the puppet modules
+            # (e.g. ovirt::engine::config, root_password)
+            hostgroup_params[:root_pass] = "changeme"
           end
         else
           fail _("Unable to locate content view '%s'.") % content_view_name(deployment.name)
@@ -148,7 +153,6 @@ module Actions
         # TODO: ISSUE: the following attributes exist on the deployment object, but I do not know
         # if they should be mapping to puppet class parameters and if so, which class & parameter?
         # :name => , :value => deployment.rhev_database_name,
-        # :name => , :value => deployment.rhev_share_path,
         # :name => , :value => deployment.cfme_install_loc,
         # :name => , :value => deployment.rhev_is_self_hosted,
 
@@ -172,6 +176,7 @@ module Actions
                     { :name => "storage_name", :value => deployment.rhev_storage_name },
                     { :name => "storage_address", :value => deployment.rhev_storage_address },
                     { :name => "storage_type", :value => deployment.rhev_storage_type },
+                    { :name => "storage_path", :value => deployment.rhev_share_path },
                     { :name => "cpu_type", :value => deployment.rhev_cpu_type }
                   ]
                 },
