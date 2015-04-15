@@ -30,7 +30,7 @@ Summary: Fusor Server Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 0.0.1
-Release: 18%{dist}
+Release: 19%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -124,6 +124,10 @@ cp -a %{buildroot}/%{gem_instdir}/config/fusor.yaml %{buildroot}%{foreman_plugin
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Wed Apr 15 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-19
+- fusor server: hard-code root_pass and set storage_path param on hostgroup
+  (bbuckingham@redhat.com)
+
 * Tue Apr 07 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-18
 - Merge pull request #77 from bbuckingham/set_host_address (jmrodri@gmail.com)
 - validate rhev engine host (jesusr@redhat.com)
