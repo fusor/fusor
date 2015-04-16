@@ -36,8 +36,11 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
             },
             success: function(response) {
               resolve(response);
+              var uuid = response.id;
+              var foremanTasksURL = 'foreman_tasks/tasks/' + uuid;
               self.controllerFor('review').set('disableTabProgress', false);
               self.controllerFor('review.installation').set('buttonDeployTitle', 'Deployed');
+              self.controllerFor('review.progress').set('foremanTasksURL', foremanTasksURL);
               return self.transitionTo('review.progress');
             },
 

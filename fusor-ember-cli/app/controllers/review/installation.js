@@ -11,6 +11,7 @@ export default Ember.Controller.extend({
   buttonDeployDisabled: false,
   showErrorMessage: false,
   errorMsg: null,
+  foremanTasksURL: null,
 
   isRhevOpen: true,
   isOpenStackOpen: false,
