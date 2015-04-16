@@ -14,10 +14,13 @@ export default Ember.ArrayController.extend({
     var rx = new RegExp(searchDeploymentString, 'gi');
     var model = this.get('sortedDeployments');
 
-    return model.filter(function(record) {
-      return record.get('name').match(rx)
-    });
-
+    if (model.get('length') > 0) {
+      return model.filter(function(record) {
+        return record.get('name').match(rx)
+      });
+    } else {
+      return model;
+    }
   }.property('sortedDeployments', 'searchDeploymentString'),
 
 });
