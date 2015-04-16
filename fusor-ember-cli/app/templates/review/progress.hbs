@@ -5,8 +5,10 @@
       INSTALLING: This is currently not hooked up to dynflow to track progress.<br />
     </div>
 
-    <a href="/foreman_tasks/tasks">Click here to view Tasks of deployment</a>
-
+    <a {{bind-attr href=foremanTasksURL}}>
+      <h4>Click here to view tasks for deployments for </h4>
+      /{{foremanTasksURL}}
+    </a>
     <br />
     <br />
 

@@ -1298,6 +1298,7 @@ define('fusor-ember-cli/controllers/review/installation', ['exports', 'ember'], 
                 buttonDeployDisabled: false,
                 showErrorMessage: false,
                 errorMsg: null,
+                foremanTasksURL: null,
 
                 isRhevOpen: true,
                 isOpenStackOpen: false,
@@ -1338,6 +1339,7 @@ define('fusor-ember-cli/controllers/review/progress', ['exports', 'ember'], func
     isRhevOpen: true,
     isOpenStackOpen: false,
     isCloudFormsOpen: false,
+    foremanTasksURL: null,
 
     installationInProgress: true,
 
@@ -2985,8 +2987,11 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cl
             },
             success: function success(response) {
               resolve(response);
+              var uuid = response.id;
+              var foremanTasksURL = 'foreman_tasks/tasks/' + uuid;
               self.controllerFor('review').set('disableTabProgress', false);
               self.controllerFor('review.installation').set('buttonDeployTitle', 'Deployed');
+              self.controllerFor('review.progress').set('foremanTasksURL', foremanTasksURL);
               return self.transitionTo('review.progress');
             },
 
@@ -17479,11 +17484,20 @@ define('fusor-ember-cli/templates/review/progress', ['exports'], function (expor
         var el3 = dom.createTextNode("\n\n    ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("a");
-        dom.setAttribute(el3,"href","/foreman_tasks/tasks");
-        var el4 = dom.createTextNode("Click here to view Tasks of deployment");
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("h4");
+        var el5 = dom.createTextNode("Click here to view tasks for deployments for ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      /");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n    ");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("\n\n    ");
+        var el3 = dom.createTextNode("\n    ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("br");
         dom.appendChild(el2, el3);
@@ -17507,7 +17521,7 @@ define('fusor-ember-cli/templates/review/progress', ['exports'], function (expor
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, content = hooks.content;
+        var hooks = env.hooks, get = hooks.get, element = hooks.element, content = hooks.content;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -17525,8 +17539,12 @@ define('fusor-ember-cli/templates/review/progress', ['exports'], function (expor
         } else {
           fragment = this.build(dom);
         }
-        var morph0 = dom.createMorphAt(fragment,2,2,contextualElement);
-        content(env, morph0, context, "outlet");
+        var element0 = dom.childAt(fragment, [0, 1, 3]);
+        var morph0 = dom.createMorphAt(element0,3,3);
+        var morph1 = dom.createMorphAt(fragment,2,2,contextualElement);
+        element(env, element0, context, "bind-attr", [], {"href": get(env, context, "foremanTasksURL")});
+        content(env, morph0, context, "foremanTasksURL");
+        content(env, morph1, context, "outlet");
         return fragment;
       }
     };
@@ -27938,13 +27956,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.e8390f80"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.e5a271e0"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.e8390f80"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.e5a271e0"});
 }
 
 /* jshint ignore:end */
