@@ -170,8 +170,7 @@ module Actions
                   :name => "ovirt::engine::config",
                   :parameters =>
                   [
-                    { :name => "host_name", :value => deployment.rhev_engine_hostname },
-                    { :name => "host_address", :value => fqdn(deployment.discovered_hosts.first.try(:name), hostgroup) },
+                    { :name => "hosts_addresses", :value => host_addresses(deployment, hostgroup) },
                     { :name => "cluster_name", :value => deployment.rhev_cluster_name },
                     { :name => "storage_name", :value => deployment.rhev_storage_name },
                     { :name => "storage_address", :value => deployment.rhev_storage_address },
@@ -207,10 +206,13 @@ module Actions
         end
       end
 
-      def fqdn(hostname, hostgroup)
-        if hostname && hostgroup.domain
-          [hostname, hostgroup.domain.name].join('.')
+      def host_addresses(deployment, hostgroup)
+        addresses = deployment.discovered_hosts.inject([]) do |result, host|
+          if host.name && hostgroup.domain
+            result << [host.name, hostgroup.domain.name].join('.')
+          end
         end
+        addresses.join(',')
       end
 
       def find_hostgroup(organization_id, hostgroup_name, parent)
