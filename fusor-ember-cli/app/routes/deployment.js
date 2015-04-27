@@ -17,7 +17,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
   actions: {
     installDeployment: function(options) {
       var self = this;
-      var deployment = this.modelFor('deployment');
+      var deployment = this.controllerFor('deployment');
       var token = $('meta[name="csrf-token"]').attr('content');
 
       // change button text to "Deploying ..." and disable it
@@ -28,6 +28,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
         Ember.$.ajax({
             url: '/fusor/api/v21/deployments/' + deployment.get('id') + '/deploy' ,
             type: "PUT",
+            data: JSON.stringify({'skip_content': deployment.get('skipContent') }),
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
