@@ -37,11 +37,16 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
             success: function(response) {
               resolve(response);
               var uuid = response.id;
-              var foremanTasksURL = 'foreman_tasks/tasks/' + uuid;
-              self.controllerFor('review').set('disableTabProgress', false);
-              self.controllerFor('review.installation').set('buttonDeployTitle', 'Deployed');
-              self.controllerFor('review.progress').set('foremanTasksURL', foremanTasksURL);
-              return self.transitionTo('review.progress');
+              var deployment = self.modelFor('deployment');
+              deployment.set('foreman_task_uuid', uuid);
+              deployment.save().then(function () {
+                return self.transitionTo('review.progress.overview');
+              }, function () {
+                self.controllerFor('review.installation').set('errorMsg', 'Error is saving UUID of deployment task.');
+                self.controllerFor('review.installation').set('showErrorMessage', true);
+                self.controllerFor('review.installation').set('buttonDeployTitle', 'Deploy');
+                self.controllerFor('review.installation').set('buttonDeployDisabled', false);
+              })
             },
 
             error: function(response){

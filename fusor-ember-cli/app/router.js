@@ -70,13 +70,22 @@ export default Router.map(function() {
       this.route('credentials');
       this.route('select-subscriptions', {path: 'select'});
     });
+    this.resource('products');
     this.resource('review', function() {
-      this.resource('products');
       this.route('installation');
-      this.route('progress');
+      this.route('progress', function() {
+        this.route('overview');
+        this.route('details', function() {
+          this.route('task', {path: '/:task_id' }, function () {
+            this.route('running_steps');
+            this.route('task_errors');
+            this.route('task_locks');
+            this.route('task_raw');
+          });
+        });
+      });
     });
   });
-
 
   this.resource('hostgroups', function() {
     this.resource('hostgroup', { path: '/:hostgroup_id' }, function() {
@@ -84,10 +93,8 @@ export default Router.map(function() {
     });
   });
 
-
   this.route('hostgroup/edit');
   this.route('review/installation');
-  this.route('review/progress');
   this.resource("discovered-hosts", function() {
     this.resource("discovered-host", { path: '/:discovered_hosts_id' });
   });

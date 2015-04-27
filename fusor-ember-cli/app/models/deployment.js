@@ -5,6 +5,7 @@ export default DS.Model.extend({
   description: DS.attr('string'),
   organization: DS.belongsTo('organization', {async: true}),
   lifecycle_environment: DS.belongsTo('lifecycle-environment', {async: true}),
+  foreman_task_uuid: DS.attr('string'),
 
   deploy_rhev: DS.attr('boolean'),
   deploy_cfme: DS.attr('boolean'),
