@@ -22,6 +22,8 @@ export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableT
   isDisabledSubscriptions: Ember.computed.alias("satelliteInvalid"),
   isDisabledReview: Ember.computed.alias("satelliteInvalid"),
 
+  skipContent: false,
+
   isStarted: function() {
     return !!(this.get('model.foreman_task_uuid'));
   }.property('model.foreman_task_uuid'),

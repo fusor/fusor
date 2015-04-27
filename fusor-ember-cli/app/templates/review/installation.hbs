@@ -104,6 +104,8 @@
       <br />
       <button {{action 'showModal' 'cancelDeploymentModal'}} class='btn btn-default'>Cancel</button>
       {{button-f disabled=buttonDeployDisabled title=buttonDeployTitle action="installDeployment"}}
+      <br />
+      {{input type="checkbox" name="skipContent" checked=skipContent}} Skip Content (DEV ONLY)
     </div>
 
 

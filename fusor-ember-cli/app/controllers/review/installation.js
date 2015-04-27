@@ -23,6 +23,7 @@ export default Ember.Controller.extend({
   showErrorMessage: false,
   errorMsg: null,
   foremanTasksURL: null,
+  skipContent: Ember.computed.alias("controllers.deployment.skipContent"),
 
   isRhevOpen: true,
   isOpenStackOpen: false,

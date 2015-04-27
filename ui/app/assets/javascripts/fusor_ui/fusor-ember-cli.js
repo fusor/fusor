@@ -917,6 +917,8 @@ define('fusor-ember-cli/controllers/deployment', ['exports', 'ember', 'fusor-emb
     isDisabledSubscriptions: Ember['default'].computed.alias("satelliteInvalid"),
     isDisabledReview: Ember['default'].computed.alias("satelliteInvalid"),
 
+    skipContent: false,
+
     isStarted: (function () {
       return !!this.get("model.foreman_task_uuid");
     }).property("model.foreman_task_uuid") });
@@ -1339,6 +1341,7 @@ define('fusor-ember-cli/controllers/review/installation', ['exports', 'ember'], 
     showErrorMessage: false,
     errorMsg: null,
     foremanTasksURL: null,
+    skipContent: Ember['default'].computed.alias('controllers.deployment.skipContent'),
 
     isRhevOpen: true,
     isOpenStackOpen: false,
@@ -2318,6 +2321,33 @@ define('fusor-ember-cli/mixins/progress-bar-mixin', ['exports', 'ember'], functi
 
   exports['default'] = Ember['default'].Mixin.create({
 
+    // START REFRESH
+    intervalPolling: (function () {
+      return 5000; // Time between refreshing (in ms)
+    }).property().readOnly(),
+
+    scheduleNextRefresh: function scheduleNextRefresh(f) {
+      return Ember['default'].run.later(this, function () {
+        f.apply(this);
+        this.set('timer', this.scheduleNextRefresh(f));
+      }, this.get('intervalPolling'));
+    },
+
+    // executes `refreshModel` for every intervalPolling.
+    startPolling: function startPolling() {
+      this.get('model').reload(); // run immediately
+      this.set('timer', this.scheduleNextRefresh(this.get('refreshModel'))); //and then repeats
+    },
+
+    stopPolling: function stopPolling() {
+      Ember['default'].run.cancel(this.get('timer'));
+    },
+
+    refreshModel: function refreshModel() {
+      return this.get('model').reload();
+    },
+    // END REFRESH
+
     percentProgress: (function () {
       return (this.get('model.progress') * 100).toFixed(1);
     }).property('model.progress'),
@@ -3149,7 +3179,7 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cl
     actions: {
       installDeployment: function installDeployment(options) {
         var self = this;
-        var deployment = this.modelFor('deployment');
+        var deployment = this.controllerFor('deployment');
         var token = $('meta[name="csrf-token"]').attr('content');
 
         // change button text to "Deploying ..." and disable it
@@ -3160,6 +3190,7 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cl
           Ember['default'].$.ajax({
             url: '/fusor/api/v21/deployments/' + deployment.get('id') + '/deploy',
             type: 'PUT',
+            data: JSON.stringify({ skip_content: deployment.get('skipContent') }),
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json',
@@ -3625,6 +3656,23 @@ define('fusor-ember-cli/routes/review/progress/details/task', ['exports', 'ember
   });
 
 });
+define('fusor-ember-cli/routes/review/progress/details/task/index', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].Route.extend({
+
+    setupController: function setupController(controller, model) {
+      controller.startPolling();
+    },
+
+    deactivate: function deactivate() {
+      this.get('controller').stopPolling();
+    }
+
+  });
+
+});
 define('fusor-ember-cli/routes/review/progress/details/task/running-steps', ['exports', 'ember'], function (exports, Ember) {
 
 	'use strict';
@@ -3661,6 +3709,15 @@ define('fusor-ember-cli/routes/review/progress/overview', ['exports', 'ember'], 
     model: function model() {
       var deployment = this.modelFor('deployment');
       return this.store.find('foreman-task', deployment.get('foreman_task_uuid'));
+    },
+
+    setupController: function setupController(controller, model) {
+      controller.set('model', model);
+      controller.startPolling();
+    },
+
+    deactivate: function deactivate() {
+      this.get('controller').stopPolling();
     }
 
   });
@@ -17868,7 +17925,15 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
         dom.appendChild(el3, el4);
         var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n    ");
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("br");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode(" Skip Content (DEV ONLY)\n    ");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n\n\n  ");
@@ -17914,7 +17979,8 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
         var morph3 = dom.createMorphAt(element0,5,5);
         var morph4 = dom.createMorphAt(element0,7,7);
         var morph5 = dom.createMorphAt(element1,5,5);
-        var morph6 = dom.createMorphAt(fragment,4,4,contextualElement);
+        var morph6 = dom.createMorphAt(element1,9,9);
+        var morph7 = dom.createMorphAt(fragment,4,4,contextualElement);
         dom.insertBoundary(fragment, 0);
         block(env, morph0, context, "if", [get(env, context, "showErrorMessage")], {}, child0, null);
         block(env, morph1, context, "accordion-item", [], {"name": get(env, context, "controllers.deployment.nameSatellite"), "isOpen": true}, child1, null);
@@ -17923,7 +17989,8 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
         block(env, morph4, context, "if", [get(env, context, "isCloudForms")], {}, child4, null);
         element(env, element2, context, "action", ["showModal", "cancelDeploymentModal"], {});
         inline(env, morph5, context, "button-f", [], {"disabled": get(env, context, "buttonDeployDisabled"), "title": get(env, context, "buttonDeployTitle"), "action": "installDeployment"});
-        content(env, morph6, context, "outlet");
+        inline(env, morph6, context, "input", [], {"type": "checkbox", "name": "skipContent", "checked": get(env, context, "skipContent")});
+        content(env, morph7, context, "outlet");
         return fragment;
       }
     };
@@ -24462,7 +24529,7 @@ define('fusor-ember-cli/tests/mixins/progress-bar-mixin.jshint', function () {
 
   module('JSHint - mixins');
   test('mixins/progress-bar-mixin.js should pass jshint', function() { 
-    ok(true, 'mixins/progress-bar-mixin.js should pass jshint.'); 
+    ok(false, 'mixins/progress-bar-mixin.js should pass jshint.\nmixins/progress-bar-mixin.js: line 19, col 31, Missing semicolon.\n\n1 error'); 
   });
 
 });
@@ -24792,7 +24859,7 @@ define('fusor-ember-cli/tests/routes/deployment.jshint', function () {
 
   module('JSHint - routes');
   test('routes/deployment.js should pass jshint', function() { 
-    ok(false, 'routes/deployment.js should pass jshint.\nroutes/deployment.js: line 49, col 17, Missing semicolon.\nroutes/deployment.js: line 21, col 19, \'$\' is not defined.\nroutes/deployment.js: line 18, col 33, \'options\' is defined but never used.\n\n3 errors'); 
+    ok(false, 'routes/deployment.js should pass jshint.\nroutes/deployment.js: line 50, col 17, Missing semicolon.\nroutes/deployment.js: line 21, col 19, \'$\' is not defined.\nroutes/deployment.js: line 18, col 33, \'options\' is defined but never used.\n\n3 errors'); 
   });
 
 });
@@ -25113,6 +25180,16 @@ define('fusor-ember-cli/tests/routes/review/progress/details/task.jshint', funct
   module('JSHint - routes/review/progress/details');
   test('routes/review/progress/details/task.js should pass jshint', function() { 
     ok(true, 'routes/review/progress/details/task.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/routes/review/progress/details/task/index.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - routes/review/progress/details/task');
+  test('routes/review/progress/details/task/index.js should pass jshint', function() { 
+    ok(false, 'routes/review/progress/details/task/index.js should pass jshint.\nroutes/review/progress/details/task/index.js: line 5, col 41, \'model\' is defined but never used.\n\n1 error'); 
   });
 
 });
@@ -29808,6 +29885,31 @@ define('fusor-ember-cli/tests/unit/routes/review/progress/details/task-test.jshi
   });
 
 });
+define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/index-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('route:review/progress/details/task/index', {});
+
+  ember_qunit.test('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+
+  // Specify the other units that are required for this test.
+  // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/index-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/review/progress/details/task');
+  test('unit/routes/review/progress/details/task/index-test.js should pass jshint', function() { 
+    ok(true, 'unit/routes/review/progress/details/task/index-test.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/running-steps-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -30765,13 +30867,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.def1d843"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.0423ca7f"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.def1d843"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.0423ca7f"});
 }
 
 /* jshint ignore:end */
