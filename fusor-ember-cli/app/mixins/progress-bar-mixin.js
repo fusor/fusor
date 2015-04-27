@@ -2,6 +2,33 @@ import Ember from 'ember';
 
 export default Ember.Mixin.create({
 
+  // START REFRESH
+  intervalPolling: function() {
+    return 5000; // Time between refreshing (in ms)
+  }.property().readOnly(),
+
+  scheduleNextRefresh: function(f) {
+    return Ember.run.later(this, function() {
+      f.apply(this);
+      this.set('timer', this.scheduleNextRefresh(f));
+    }, this.get('intervalPolling'));
+  },
+
+  // executes `refreshModel` for every intervalPolling.
+  startPolling: function() {
+    this.get('model').reload() // run immediately
+    this.set('timer', this.scheduleNextRefresh(this.get('refreshModel'))); //and then repeats
+  },
+
+  stopPolling: function() {
+    Ember.run.cancel(this.get('timer'));
+  },
+
+  refreshModel: function(){
+    return this.get('model').reload();
+  },
+  // END REFRESH
+
   percentProgress: function() {
     return (this.get('model.progress') * 100).toFixed(1);
   }.property('model.progress'),
