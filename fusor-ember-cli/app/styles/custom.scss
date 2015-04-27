@@ -443,3 +443,15 @@ label.env_path_active:after {
 .gray .grey {
   background-color: #ddd !important;
 }
+
+.progress-bar-label {
+  font-weight: bold;
+}
+
+.no-bold {
+  font-weight: normal !important;
+}
+
+th {
+  padding-left: 10px;
+}

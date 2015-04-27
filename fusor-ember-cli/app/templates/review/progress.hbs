@@ -1,18 +1,37 @@
-<div class='row'>
-  <div class='col-md-8 col-md-offset-1'>
+{{#if showErrorMessage}}
+  <div class="row">
+    <div class='col-md-9'>
+      <div class='alert alert-danger'>
+          <i class="fa fa-2x fa-exclamation-triangle errorForValidation"></i>
+          &nbsp;
+          {{errorMsg}}
+      </div>
+    </div>
+  </div>
+{{/if}}
 
-    <div class='alert alert-success'>
-      INSTALLING: This is currently not hooked up to dynflow to track progress.<br />
+<div class='row'>
+  <div class='col-md-12'>
+    <ul class="nav nav-tabs col-md-12" data-tabs="pills">
+        {{#link-to 'review.progress.overview' tagName='li'}}
+          <a>Overview</a>
+        {{/link-to}}
+        {{#link-to 'review.progress.details' tagName='li'}}
+          <a>Details</a>
+        {{/link-to}}
+    </ul>
+
+    <div class="col-md-12">
+        {{outlet}}
     </div>
 
-    <a {{bind-attr href=foremanTasksURL}}>
-      <h4>Click here to view tasks for deployments for </h4>
-      /{{foremanTasksURL}}
-    </a>
     <br />
     <br />
+    <div class='pull-right'>
+      <br />
+      <button {{action 'showModal' 'cancelDeploymentModal'}} class='btn btn-default'>Cancel</button>
+      {{button-f disabled=buttonDeployDisabled title=buttonDeployTitle action="installDeployment"}}
+    </div>
 
   </div>
 </div>
-
-{{outlet}}

@@ -6,7 +6,10 @@ export default Ember.Controller.extend({
 
   isUpstream: Ember.computed.alias("controllers.application.isUpstream"),
   disableNext: Ember.computed.alias("controllers.subscriptions.disableNext"),
-  disableTabProgress: true,
+
+  disableTabProgress: function() {
+    return !(this.get('controllers.deployment.isStarted'))
+  }.property('controllers.deployment.isStarted'),
 
   disableTabInstallation: function() {
     return (this.get('disableNext') && (!(this.get('isUpstream'))));

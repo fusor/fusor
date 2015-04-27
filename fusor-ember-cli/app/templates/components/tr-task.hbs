@@ -1,0 +1,21 @@
+<td>
+    {{#link-to 'review.progress.details.task' task}}{{task.id}}{{/link-to}}
+</td>
+<td>
+    {{#link-to 'review.progress.details.task' task}}{{task.label}}{{/link-to}}
+</td>
+<td>
+    {{task.state}}
+</td>
+<td>
+    {{task.result}}
+</td>
+<td>
+    {{task.started_at}}
+</td>
+<td>
+    {{task.user}}
+</td>
+<td>
+    <a href={{task.taskUrl}}>View Task</a>
+</td>
