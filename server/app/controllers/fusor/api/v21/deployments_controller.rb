@@ -50,8 +50,8 @@ module Fusor
     end
 
     def deploy
-      task = async_task(::Actions::Fusor::Deploy, @deployment)
-      respond_for_async :resource => task
+      # just inherit from V2
+      super
     end
 
     private
