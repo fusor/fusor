@@ -38,6 +38,19 @@ module Fusor
         end
       end
 
+      class Consumer
+        def self.get(uuid, credentials)
+          client = CustomerPortalResource.rest_client("/consumers/#{uuid}", credentials)
+          response = client.get({ :accept => :json })
+          JSON.parse(response).with_indifferent_access
+        end
+
+        def self.export(uuid, credentials)
+          client = CustomerPortalResource.rest_client("/consumers/#{uuid}/export", credentials)
+          client.get
+        end
+      end
+
       class CustomerPortalResource
         def self.default_headers
           { 'accept' => 'application/json',
@@ -52,8 +65,6 @@ module Fusor
         def self.rest_client(path, credentials)
           settings = SETTINGS[:fusor][:customer_portal]
           prefix = (settings && settings[:url]) || "https://subscription.rhn.redhat.com:443/subscription/"
-          username = credentials[:username]
-          password = credentials[:password]
 
           if ::Katello.config.cdn_proxy && ::Katello.config.cdn_proxy.host
             proxy_config = ::Katello.config.cdn_proxy
@@ -68,10 +79,18 @@ module Fusor
             RestClient.proxy = uri.to_s
           end
 
-          RestClient::Resource.new(prefix + path,
-                                   :user => username,
-                                   :password => password,
-                                   :headers => self.default_headers)
+          options = {}
+          if credentials[:username] && credentials[:password]
+            options[:headers] = self.default_headers
+            options[:user] = credentials[:username]
+            options[:password] = credentials[:password]
+          else
+            options[:ssl_client_cert] = OpenSSL::X509::Certificate.new(credentials[:client_cert])
+            options[:ssl_client_key] = OpenSSL::PKey::RSA.new(credentials[:client_key])
+            options[:verify_ssl] = OpenSSL::SSL::VERIFY_NONE
+          end
+
+          RestClient::Resource.new(prefix + path, options)
         end
       end
     end
