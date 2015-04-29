@@ -20,8 +20,6 @@ module Actions
 
         def plan(deployment)
           Rails.logger.warn "XXX ================ Planning RHEV Deployment ===================="
-          Rails.logger.warn "XXX deploy_rhev? #{deployment.deploy_rhev}"
-          Rails.logger.warn "XXX deployment.id? #{deployment.id}"
 
           # VERIFY PARAMS HERE
           if deployment.deploy_rhev
@@ -29,8 +27,6 @@ module Actions
           end
 
           plan_self deployment_id: deployment.id
-
-          Rails.logger.warn "XXX plan_self called, leaving plan method"
         end
 
         def finalize
@@ -38,11 +34,7 @@ module Actions
 
           deployment_id = input.fetch(:deployment_id)
 
-          Rails.logger.warn "XXX finalize: working with deployment: #{deployment_id}"
-
           deployment = ::Fusor::Deployment.find(deployment_id)
-
-          Rails.logger.warn "XXX finalize: deployment is a: #{deployment.class}"
 
           if deployment.rhev_engine_host.nil?
             Rails.logger.warn "XXX finalize: WE DO NOT HAVE A RHEV ENGINE HOST."
@@ -159,12 +151,6 @@ module Actions
           # set build to true so the PXE config-template takes effect under discovery environment
           host.build = true if assignee_host.managed?
 
-          # 2015-03-24 zeus Not sure we need this for RHCI
-          # set discovery environment to keep booting discovery image
-          # host.environment = Environment.get_discovery
-
-          Rails.logger.warn "XXX host is setup. Just got environment"
-
           # root_pass is not copied for some reason
           host.root_pass = hostgroup.root_pass
 
@@ -191,10 +177,7 @@ module Actions
           # TODO: calling save to explicitly see errors in log
           host.save!
 
-          Rails.logger.warn "XXX do we have an error?"
-
           [host.save, host].tap do |saved, _|
-            Rails.logger.warn "XXX we're tapping the host. whatever that means. Saved? #{saved}"
             assignee_host.becomes(Host::Base).update_column(:type, original_type) unless saved
             Rails.logger.warn "XXX we finished becoming a Host::Base"
             assignee_host
