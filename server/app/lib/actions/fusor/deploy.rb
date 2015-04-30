@@ -25,6 +25,7 @@ module Actions
         fail _("Unable to locate puppet class settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:puppet_classes]
 
         sequence do
+          product_types = [:rhev, :cfme, :openstack]  # array of supported products
           products_enabled = [deployment.deploy_rhev, deployment.deploy_cfme, deployment.deploy_openstack]
 
           content = SETTINGS[:fusor][:content]
@@ -59,6 +60,7 @@ module Actions
 
               plan_action(::Actions::Fusor::ConfigureHostGroups,
                           deployment,
+                          product_types[index],
                           products_host_groups[index])
             end
           end
