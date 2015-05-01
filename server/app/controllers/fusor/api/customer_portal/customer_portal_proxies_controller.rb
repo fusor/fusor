@@ -15,22 +15,37 @@ module Fusor
     module CustomerPortal
       class CustomerPortalProxiesController < Api::V2::BaseController
 
-        before_filter :proxy_request_path, :proxy_request_body
+        before_filter :verify_logged_in, :except => [:login, :logout]
+        before_filter :verify_portal_credentials, :only => [:login]
+        before_filter :proxy_request_path, :except => [:login, :logout]
+        before_filter :proxy_request_body, :except => [:login, :logout]
+
+        def login
+          session[:portal_username] = params[:username]
+          session[:portal_password] = params[:password]
+          render :json => {}
+        end
+
+        def logout
+          session.delete(:portal_username)
+          session.delete(:portal_password)
+          render :json => {}
+        end
 
         def get
-          response = Resources::CustomerPortal::Proxy.get(@request_path)
+          response = Resources::CustomerPortal::Proxy.get(@request_path, credentials)
           logger.debug response
           render :json => response
         end
 
         def post
-          response = Resources::CustomerPortal::Proxy.post(@request_path, @request_body.read)
+          response = Resources::CustomerPortal::Proxy.post(@request_path, credentials, @request_body.read)
           logger.debug response
           render :json => response
         end
 
         def delete
-          response = Resources::CustomerPortal::Proxy.delete(@request_path, @request_body.read)
+          response = Resources::CustomerPortal::Proxy.delete(@request_path, credentials, @request_body.read)
           logger.debug response
           render :json => response
         end
@@ -48,6 +63,22 @@ module Fusor
         def drop_api_namespace(original_request_path)
           prefix = "/customer_portal"
           original_request_path.gsub(prefix, '')
+        end
+
+        def verify_portal_credentials
+          unless (params[:username] && params[:password])
+            fail ::Katello::HttpErrors::Unauthorized, _("Please provide username and password.")
+          end
+        end
+
+        def verify_logged_in
+          unless (session[:portal_username] && session[:portal_password])
+            fail ::Katello::HttpErrors::Unauthorized, _("Customer portal credentials are required.  Please provide them using login.")
+          end
+        end
+
+        def credentials
+          { :username => session[:portal_username], :password => session[:portal_password] }
         end
       end
     end

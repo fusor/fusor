@@ -24,11 +24,8 @@ module Actions
         fail _("Unable to locate host group settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:host_groups]
 
         sequence do
-          # TODO: add an action to support importing a manifest created as part of the deployment
           Rails.logger.warn "XXX Entered sequence"
-
           products_enabled = [deployment.deploy_rhev, deployment.deploy_cfme, deployment.deploy_openstack]
-
           Rails.logger.warn "XXX #{products_enabled}"
 
           content = SETTINGS[:fusor][:content]

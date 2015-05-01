@@ -13,7 +13,7 @@
 module Fusor
   class Api::V2::DeploymentsController < Api::V2::BaseController
 
-   before_filter :find_deployment, :only => [:destroy, :show, :update, :deploy]
+    before_filter :find_deployment, :only => [:destroy, :show, :update, :deploy]
 
     def index
       respond :collection => Deployment.all
@@ -39,13 +39,26 @@ module Fusor
     end
 
     def deploy
-      task = async_task(::Actions::Fusor::Deploy, @deployment, params[:skip_content])
+      sync_task(::Actions::Fusor::Subscription::ManageManifest,
+                @deployment,
+                customer_portal_credentials)
+
+      task = async_task(::Actions::Fusor::Deploy,
+                        @deployment,
+                        params[:skip_content])
+
       respond_for_async :resource => task
     end
+
+    private
 
     def find_deployment
       not_found and return false if params[:id].blank?
       @deployment = Deployment.find(params[:id])
+    end
+
+    def customer_portal_credentials
+      { :username => session[:portal_username], :password => session[:portal_password] }
     end
   end
 end

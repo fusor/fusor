@@ -17,24 +17,37 @@ module Fusor
 
     module CustomerPortal
       class Proxy
-        def self.post(path, body)
+        def self.post(path, credentials, body)
           Rails.logger.debug "Sending POST request to Customer Portal: #{ path }"
-          client = CustomerPortalResource.rest_client(path)
+          client = CustomerPortalResource.rest_client(path, credentials)
           client.post(body, { :accept => :json, :content_type => :json })
         end
 
-        def self.delete(path, body = nil)
+        def self.delete(path, credentials, body = nil)
           Rails.logger.debug "Sending DELETE request to Customer Portal: #{ path }"
-          client = CustomerPortalResource.rest_client(path)
+          client = CustomerPortalResource.rest_client(path, credentials)
           # Some candlepin calls will set the body in DELETE requests.
           client.options[:payload] = body unless body.nil?
           client.delete({ :accept => :json, :content_type => :json })
         end
 
-        def self.get(path)
+        def self.get(path, credentials)
           Rails.logger.debug "Sending GET request to Customer Portal: #{ path }"
-          client = CustomerPortalResource.rest_client(path)
+          client = CustomerPortalResource.rest_client(path, credentials)
           client.get({ :accept => :json })
+        end
+      end
+
+      class Consumer
+        def self.get(uuid, credentials)
+          client = CustomerPortalResource.rest_client("/consumers/#{uuid}", credentials)
+          response = client.get({ :accept => :json })
+          JSON.parse(response).with_indifferent_access
+        end
+
+        def self.export(uuid, credentials)
+          client = CustomerPortalResource.rest_client("/consumers/#{uuid}/export", credentials)
+          client.get
         end
       end
 
@@ -49,11 +62,9 @@ module Fusor
           a_name.tr(' ', '_')
         end
 
-        def self.rest_client(path)
+        def self.rest_client(path, credentials)
           settings = SETTINGS[:fusor][:customer_portal]
-          prefix = settings[:url] || "https://subscription.rhn.redhat.com:443/subscription/"
-          username = settings[:username]
-          password = settings[:password]
+          prefix = (settings && settings[:url]) || "https://subscription.rhn.redhat.com:443/subscription/"
 
           if ::Katello.config.cdn_proxy && ::Katello.config.cdn_proxy.host
             proxy_config = ::Katello.config.cdn_proxy
@@ -68,10 +79,18 @@ module Fusor
             RestClient.proxy = uri.to_s
           end
 
-          RestClient::Resource.new(prefix + path,
-                                   :user => username,
-                                   :password => password,
-                                   :headers => self.default_headers)
+          options = {}
+          if credentials[:username] && credentials[:password]
+            options[:headers] = self.default_headers
+            options[:user] = credentials[:username]
+            options[:password] = credentials[:password]
+          else
+            options[:ssl_client_cert] = OpenSSL::X509::Certificate.new(credentials[:client_cert])
+            options[:ssl_client_key] = OpenSSL::PKey::RSA.new(credentials[:client_key])
+            options[:verify_ssl] = OpenSSL::SSL::VERIFY_NONE
+          end
+
+          RestClient::Resource.new(prefix + path, options)
         end
       end
     end

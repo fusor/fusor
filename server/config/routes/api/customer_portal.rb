@@ -3,6 +3,9 @@ Fusor::Engine.routes.draw do
     match '/customer_portal' => 'v2/root#resource_list', :via => :get
 
     scope :path => :customer_portal, :module => :customer_portal, :as => :customer_portal do
+      match '/login' => 'customer_portal_proxies#login', :via => :post
+      match '/logout' => 'customer_portal_proxies#logout', :via => :post
+
       match '/users/:login/owners' => 'customer_portal_proxies#get', :via => :get, :as => :proxy_users_owners_path, :constraints => { :login => /\S+/ }
       match '/owners/:id/consumers' => 'customer_portal_proxies#get', :via => :get, :as => :proxy_owners_consumers_path
       match '/consumers' => 'customer_portal_proxies#post', :via => :post, :as => :proxy_consumer_create_path
