@@ -24,7 +24,7 @@ module Actions
 
         plan_self(:deployment_id => deployment.id,
                   :organization_id => deployment.organization.id,
-                  :lifecycle_environment_id => deployment.lifecycle_environment.id,
+                  :lifecycle_environment_id => deployment.lifecycle_environment_id,
                   :hostgroup_settings => hostgroup_settings,
                   :user_id => ::User.current.id)
       end
@@ -47,7 +47,7 @@ module Actions
       private
 
       def find_or_ensure_hostgroup(deployment, organization_id, lifecycle_environment_id, hostgroup_settings)
-        if content_view = find_content_view(organization_id, content_view_name(deployment.name))
+        if content_view = find_content_view(organization_id, content_view_name(deployment))
 
           if parent_setting = hostgroup_settings[:parent]
             if parent_setting == "root_deployment"
@@ -60,8 +60,14 @@ module Actions
                 where("taxonomies.id in (?)", [organization_id]).first
           end
 
-          lifecycle_environment = ::Katello::KTEnvironment.find(lifecycle_environment_id)
-          content_view_puppet_environment = content_view.puppet_env(lifecycle_environment)
+          if lifecycle_environment_id
+            lifecycle_environment = ::Katello::KTEnvironment.find(lifecycle_environment_id)
+            content_view_puppet_environment = content_view.puppet_env(lifecycle_environment)
+          else
+            lifecycle_environment = deployment.organization.library
+            puppet_content_view = find_content_view(organization_id, default_puppet_content_view_name)
+            content_view_puppet_environment = puppet_content_view.puppet_env(lifecycle_environment)
+          end
           puppet_environment = content_view_puppet_environment.puppet_environment
 
           if puppet_class_settings = hostgroup_settings[:puppet_classes]
@@ -84,7 +90,7 @@ module Actions
             default_capsule_id = ::Katello::CapsuleContent.default_capsule.try(:capsule).try(:id)
 
             hostgroup_params[:name] = deployment.name
-            hostgroup_params[:lifecycle_environment_id] = lifecycle_environment_id
+            hostgroup_params[:lifecycle_environment_id] = lifecycle_environment.id
             hostgroup_params[:environment_id] = puppet_environment.try(:id)
             hostgroup_params[:content_view_id] = content_view.try(:id)
             hostgroup_params[:content_source_id] = default_capsule_id
@@ -101,7 +107,7 @@ module Actions
             hostgroup_params[:root_pass] = "changeme"
           end
         else
-          fail _("Unable to locate content view '%s'.") % content_view_name(deployment.name)
+          fail _("Unable to locate content view '%s'.") % content_view_name(deployment)
         end
 
         if hostgroup = find_hostgroup(organization_id, hostgroup_params[:name], parent)
@@ -112,7 +118,7 @@ module Actions
                                              :name => "kt_activation_keys").first
           parameter.update_attributes!(:reference_id => hostgroup.id,
                                        :name => "kt_activation_keys",
-                                       :value => activation_key_name(deployment.name))
+                                       :value => activation_key_name(deployment))
         else
           # Note: when setting the arch, medium and ptable, we assume that there will only be 1
           # associated with the operating system.  If we need to support multiple in the future,
@@ -121,7 +127,7 @@ module Actions
 
           ::GroupParameter.create!(:hostgroup => hostgroup,
                                    :name => "kt_activation_keys",
-                                   :value => activation_key_name(deployment.name))
+                                   :value => activation_key_name(deployment))
         end
         apply_setting_parameter_overrides(hostgroup, hostgroup_settings, puppet_environment)
         apply_deployment_parameter_overrides(hostgroup, deployment, puppet_environment)
@@ -170,7 +176,7 @@ module Actions
                   :name => "ovirt::engine::config",
                   :parameters =>
                   [
-                    { :name => "hosts_addresses", :value => host_addresses(deployment, hostgroup) },
+                    #{ :name => "hosts_addresses", :value => host_addresses(deployment, hostgroup) },
                     { :name => "cluster_name", :value => deployment.rhev_cluster_name },
                     { :name => "storage_name", :value => deployment.rhev_storage_name },
                     { :name => "storage_address", :value => deployment.rhev_storage_address },
@@ -250,14 +256,22 @@ module Actions
         ::Redhat.where(:name => os_name, :major => major, :minor => minor).first
       end
 
-      def content_view_name(deployment_name)
-        name = SETTINGS[:fusor][:content][:content_view][:composite_view_name]
-        return [name, deployment_name].join(' - ') if name
+      def content_view_name(deployment)
+        if deployment.lifecycle_environment_id
+          name = SETTINGS[:fusor][:content][:content_view][:composite_view_name]
+          [name, deployment.name].join(' - ') if name
+        else
+          deployment.organization.default_content_view.name
+        end
       end
 
-      def activation_key_name(deployment_name)
+      def default_puppet_content_view_name
+        SETTINGS[:fusor][:content][:content_view][:puppet_component_view_name]
+      end
+
+      def activation_key_name(deployment)
         name = SETTINGS[:fusor][:activation_key][:name]
-        return [name, deployment_name].join('-') if name
+        return [name, deployment.name].join('-') if name
       end
     end
   end
