@@ -24,9 +24,7 @@ module Actions
         fail _("Unable to locate host group settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:host_groups]
 
         sequence do
-          Rails.logger.warn "XXX Entered sequence"
           products_enabled = [deployment.deploy_rhev, deployment.deploy_cfme, deployment.deploy_openstack]
-          Rails.logger.warn "XXX #{products_enabled}"
 
           content = SETTINGS[:fusor][:content]
           products_content = [content[:rhev], content[:cloudforms], content[:openstack]]
@@ -65,9 +63,9 @@ module Actions
           end
 
           if deployment.deploy_rhev
-            Rails.logger.warn "XXX RHEV is enabled, planning deployment of rhev"
+            Rails.logger.debug "XXX RHEV is enabled, planning deployment of rhev"
             plan_action(::Actions::Fusor::Deployment::DeployRhev, deployment)
-            Rails.logger.warn"XXX Deployment action planned"
+            Rails.logger.debug"XXX Deployment action planned"
           end
         end
       end
