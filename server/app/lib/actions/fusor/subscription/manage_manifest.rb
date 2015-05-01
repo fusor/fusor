@@ -42,7 +42,7 @@ module Actions
             # If there is an upstream consumer, a manifest has been previously imported; therefore, we
             # either need to refresh or delete it and import another
 
-            if upstream_consumer['uuid'] == deployment.upstream_consumer_uuid
+            if upstream_consumer['uuid'] == deployment.upstream_consumer_uuid || deployment.upstream_consumer_uuid.nil?
               plan_action(::Actions::Katello::Provider::ManifestRefresh,
                           deployment.organization.redhat_provider,
                           upstream_consumer)
