@@ -13,8 +13,6 @@ export default DS.Model.extend({
 
   rhev_is_self_hosted: DS.attr('boolean'),
 
-  rhev_engine_hostname: DS.attr('string'),
-
   rhev_engine_admin_password: DS.attr('string'),
   rhev_database_name: DS.attr('string'),
   rhev_cluster_name: DS.attr('string'),
