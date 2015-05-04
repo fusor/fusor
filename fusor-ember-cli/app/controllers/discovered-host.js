@@ -18,7 +18,6 @@ export default Ember.ObjectController.extend({
   // same as controllers.deployment.discovered_host
   selectedRhevEngineHost: Ember.computed.alias("controllers.engine/discovered-host.model"),
 
-  rhev_engine_hostname: Ember.computed.alias("controllers.deployment.rhev_engine_hostname"),
   isAllChecked: Ember.computed.alias("controllers.hypervisor/discovered-host.isAllChecked"),
   allChecked: Ember.computed.alias("controllers.hypervisor/discovered-host.allChecked"),
 
@@ -48,7 +47,6 @@ export default Ember.ObjectController.extend({
       var engine_hostname = host.get('name');
       var controller = this.get('controllers.deployment');
       return this.store.find('discovered-host', host.get('id')).then(function (result) {
-        controller.set('rhev_engine_hostname', engine_hostname);
         return controller.set('discovered_host', result);
         //TODO save hostname on discovered host on save deploy
       });

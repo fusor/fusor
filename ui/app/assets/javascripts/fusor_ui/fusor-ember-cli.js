@@ -988,7 +988,6 @@ define('fusor-ember-cli/controllers/discovered-host', ['exports', 'ember'], func
     // same as controllers.deployment.discovered_host
     selectedRhevEngineHost: Ember['default'].computed.alias('controllers.engine/discovered-host.model'),
 
-    rhev_engine_hostname: Ember['default'].computed.alias('controllers.deployment.rhev_engine_hostname'),
     isAllChecked: Ember['default'].computed.alias('controllers.hypervisor/discovered-host.isAllChecked'),
     allChecked: Ember['default'].computed.alias('controllers.hypervisor/discovered-host.allChecked'),
 
@@ -1018,7 +1017,6 @@ define('fusor-ember-cli/controllers/discovered-host', ['exports', 'ember'], func
         var engine_hostname = host.get('name');
         var controller = this.get('controllers.deployment');
         return this.store.find('discovered-host', host.get('id')).then(function (result) {
-          controller.set('rhev_engine_hostname', engine_hostname);
           return controller.set('discovered_host', result);
           //TODO save hostname on discovered host on save deploy
         });
@@ -2579,8 +2577,6 @@ define('fusor-ember-cli/models/deployment', ['exports', 'ember-data'], function 
     deploy_openstack: DS['default'].attr('boolean'),
 
     rhev_is_self_hosted: DS['default'].attr('boolean'),
-
-    rhev_engine_hostname: DS['default'].attr('string'),
 
     rhev_engine_admin_password: DS['default'].attr('string'),
     rhev_database_name: DS['default'].attr('string'),
@@ -24002,7 +23998,7 @@ define('fusor-ember-cli/tests/controllers/discovered-host.jshint', function () {
 
   module('JSHint - controllers');
   test('controllers/discovered-host.js should pass jshint', function() { 
-    ok(false, 'controllers/discovered-host.js should pass jshint.\ncontrollers/discovered-host.js: line 35, col 78, Missing semicolon.\ncontrollers/discovered-host.js: line 36, col 50, Missing semicolon.\ncontrollers/discovered-host.js: line 38, col 19, Missing semicolon.\n\n3 errors'); 
+    ok(false, 'controllers/discovered-host.js should pass jshint.\ncontrollers/discovered-host.js: line 34, col 78, Missing semicolon.\ncontrollers/discovered-host.js: line 35, col 50, Missing semicolon.\ncontrollers/discovered-host.js: line 37, col 19, Missing semicolon.\ncontrollers/discovered-host.js: line 47, col 11, \'engine_hostname\' is defined but never used.\n\n4 errors'); 
   });
 
 });
@@ -30867,13 +30863,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.0423ca7f"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.083e5831"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.0423ca7f"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.083e5831"});
 }
 
 /* jshint ignore:end */
