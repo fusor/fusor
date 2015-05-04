@@ -24,60 +24,49 @@
 
   {{#if isRhev}}
     {{#accordion-item name=controllers.deployment.nameRhev isOpen=isRhevOpen}}
+
       Setup Type: {{#link-to 'rhev-setup'}} {{controllers.rhev-setup.rhevSetupTitle}} {{/link-to}}
       <br />
       {{#if isSelfHosted}}
-        Hypervisor/Engine:
-        {{#link-to 'engine.discovered-host'}} {{rhev_engine_host.name}} {{/link-to}}<br />
+          {{review-link label='Hypervisor/Engine' routeName='engine.discovered-host' isRequired=true
+                        value=selectedRhevEngine.name}}
       {{else}}
-        Engine:
-        {{#link-to 'engine.discovered-host'}} {{rhev_engine_host.name}} {{/link-to}}<br />
-        Hypervisor: <br />
-        {{#each host in selectedHypervisorHosts}}
-          {{#link-to 'hypervisor.discovered-host'}} {{host.name}}.rhci.redhat.com {{/link-to}}<br />
-        {{/each}}
+          {{review-link label='Engine' routeName='engine.discovered-host' isRequired=true
+                        value=selectedRhevEngine.name}}
+
+          {{#review-link label='Hypervisor(s)' routeName='hypervisor.discovered-host' isRequired=true
+                         value=selectedHypervisorHosts useYieldInstead=true}}
+              <br />
+              {{#each host in selectedHypervisorHosts}}
+                  {{#link-to 'hypervisor.discovered-host'}} {{host.name}}.rhci.redhat.com {{/link-to}}<br />
+              {{/each}}
+          {{/review-link}}
       {{/if}}
-      {{!hypervisorSelectedId}}
-      {{!engineSelectedId}}
 
       <br />
-      Engine admin password:
-        {{#link-to 'rhev-options'}}
-          *********
-        {{/link-to}} <br />
-      Datacenter Name:
-        {{#link-to 'rhev-options'}}
-          {{controllers.deployment.rhev_database_name}}
-        {{/link-to}} <br />
-      Cluster Name:
-        {{#link-to 'rhev-options'}}
-          {{controllers.deployment.rhev_cluster_name}}
-        {{/link-to}} <br />
-      Storage Name:
-        {{#link-to 'rhev-options'}}
-          {{controllers.deployment.rhev_storage_name}}
-        {{/link-to}} <br />
-      CPU Type:
-        {{#link-to 'rhev-options'}}
-          {{controllers.deployment.rhev_cpu_type}}
-        {{/link-to}} <br />
+      {{review-link label='Engine admin password' routeName='rhev-options' isRequired=true isPassword=true
+                    value=controllers.deployment.rhev_engine_admin_password }}
 
+      {{review-link label='Datacenter Name' routeName='rhev-options' isDefault=true
+                    value=controllers.deployment.rhev_database_name}}
 
-      <br />
-      Storage Type:
-        {{#link-to 'storage'}}
-          {{controllers.deployment.rhev_storage_type}}
-        {{/link-to}} <br />
-          Storage Address:
-           {{#link-to 'storage'}}
-          {{controllers.deployment.rhev_storage_address}}
-          {{/link-to}} <br />
-          Share Path:
-           {{#link-to 'storage'}}
-          {{controllers.deployment.rhev_share_path}}
-          {{/link-to}} <br />
+      {{review-link label='Cluster Name' routeName='rhev-options' isDefault=true
+                    value=controllers.deployment.rhev_cluster_name}}
 
-      <br />
+      {{review-link label='Storage Name' routeName='rhev-options' isDefault=true
+                    value=controllers.deployment.rhev_storage_name}}
+
+      {{review-link label='CPU Type' routeName='rhev-options' isDefault=true
+                    value=controllers.deployment.rhev_cpu_type}}
+
+      {{review-link label='Storage Type' routeName='storage' isRequired=true
+                    value=controllers.deployment.rhev_storage_type}}
+
+      {{review-link label='Storage Address' routeName='storage' isDefault=true
+                    value=controllers.deployment.rhev_storage_address}}
+
+      {{review-link label='Storage Path' routeName='storage' isDefault=true
+                    value=controllers.deployment.rhev_share_path}}
 
       <br />
     {{/accordion-item}}
