@@ -46,7 +46,7 @@ module Actions
 
                 plan_action(::Actions::Fusor::Content::PublishContentView,
                             deployment,
-                            repositories)
+                            repositories) if deployment.lifecycle_environment_id
               end
 
               unless repositories

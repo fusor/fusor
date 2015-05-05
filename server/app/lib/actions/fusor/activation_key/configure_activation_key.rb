@@ -49,7 +49,7 @@ module Actions
           if key
             attributes = { :name => activation_key_name(deployment),
                            :organization_id => deployment.organization.id,
-                           :environment_id => deployment.lifecycle_environment.id,
+                           :environment_id => lifecycle_environment(deployment),
                            :content_view_id => content_view.id,
                            :auto_attach => true,
                            :user_id => ::User.current.id }
@@ -58,7 +58,7 @@ module Actions
           else
             key = ::Katello::ActivationKey.new(:name => activation_key_name(deployment),
                                                :organization_id => deployment.organization.id,
-                                               :environment_id => deployment.lifecycle_environment.id,
+                                               :environment_id => lifecycle_environment(deployment),
                                                :content_view_id => content_view.id,
                                                :auto_attach => true,
                                                :user_id => ::User.current.id)
@@ -72,9 +72,21 @@ module Actions
                                        :name => content_view_name(deployment)).first
         end
 
+        def lifecycle_environment(deployment)
+          if deployment.lifecycle_environment_id
+            deployment.lifecycle_environment_id
+          else
+            deployment.organization.library.id
+          end
+        end
+
         def content_view_name(deployment)
-          name = SETTINGS[:fusor][:content][:content_view][:composite_view_name]
-          return [name, deployment.name].join(' - ') if name
+          if deployment.lifecycle_environment_id
+            name = SETTINGS[:fusor][:content][:content_view][:composite_view_name]
+            [name, deployment.name].join(' - ') if name
+          else
+            deployment.organization.default_content_view.name
+          end
         end
 
         def activation_key_name(deployment)
