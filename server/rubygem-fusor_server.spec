@@ -74,6 +74,7 @@ Provides: %{?scl_prefix}rubygem(fusor) = %{version}
 
 Requires: %{?scl_prefix}rubygem-foretello_api_v21
 Requires: %{?scl_prefix}rubygem-active_model_serializers
+Requires: %{?scl_prefix}rhevm-image-uploader
 
 %description
 Fusor Plugin
