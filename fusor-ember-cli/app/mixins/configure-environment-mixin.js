@@ -6,15 +6,9 @@ export default Ember.Mixin.create({
 
   nonLibraryEnvironments: Ember.computed.filterBy('lifecycleEnvironments', 'library', false),
   libraryEnvironments: Ember.computed.filterBy('lifecycleEnvironments', 'library', true),
-
-  hasLibrary: function() {
-    return (this.get('libraryEnvironments.length') > 0);
+  libraryEnv: function() {
+    return this.get('libraryEnvironments').get('firstObject');
   }.property('libraryEnvironments'),
-  libraryEnvForOrg: function() {
-    if (this.get('hasLibrary')) {
-      return this.get('libraryEnvironments.firstObject');
-    }
-  }.property('libraryEnvironments', 'hasLibrary'),
 
   fields_env: {},
 

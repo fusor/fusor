@@ -15,8 +15,8 @@ export default Ember.Mixin.create({
   hasNoOrganization: Ember.computed.not('hasOrganization'),
 
   hasLifecycleEnvironment: function() {
-    return !!(this.get('lifecycle_environment').get('id')); // without .get('id') returns promise that is true
-  }.property('lifecycle_environment'),
+    return (!!(this.get('lifecycle_environment').get('id')) || this.get('useDefaultOrgViewForEnv')); // without .get('id') returns promise that is true
+  }.property('lifecycle_environment', 'useDefaultOrgViewForEnv'),
   hasNoLifecycleEnvironment: Ember.computed.not('hasLifecycleEnvironment'),
 
   // disable All if there is no deployment name
@@ -30,6 +30,7 @@ export default Ember.Mixin.create({
 
   // disable Next on Lifecycle Environment if no lifecycle environment is selected
   disableNextOnLifecycleEnvironment: Ember.computed.or('hasNoLifecycleEnvironment', 'disableAll'),
+  useDefaultOrgViewForEnv: Ember.computed.alias("controllers.configure-environment.useDefaultOrgViewForEnv"),
 
   // Satellite Tabs Only
   disableTabDeploymentName: false, // always enable tab for entering deployment name
