@@ -436,6 +436,18 @@ label.env_path_active:after {
   color: red;
 }
 
+.errorForValidation a {
+  color: red;
+}
+
+.defaultValue {
+  color: #999;
+}
+
+.defaultValue a {
+  color: #999;
+}
+
 .deployment_name {
   display: inline;
 }

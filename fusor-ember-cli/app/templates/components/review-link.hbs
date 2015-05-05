@@ -1,0 +1,24 @@
+{{label}}:&nbsp;
+{{#link-to routeName}}
+    {{#if useYieldInstead}}
+      {{yield}}
+    {{else}}
+      {{valueFormatted}}
+    {{/if}}
+{{/link-to}}
+
+{{#if showValidationMessage}}
+  <span class='errorForValidation'>
+    {{#link-to routeName}}
+      {{validationMessage}}
+    {{/link-to}}
+  </span>
+{{/if}}
+
+{{#if showDefaultMessage}}
+  <span class='defaultValue'>
+    {{#link-to routeName}}
+      {{defaultMessage}}
+    {{/link-to}}
+  </span>
+{{/if}}
