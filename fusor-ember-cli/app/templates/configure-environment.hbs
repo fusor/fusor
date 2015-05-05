@@ -21,22 +21,26 @@
 
 <br />
 
+<div class='default_org_view'>
+  {{input type="checkbox" name="skipContent" checked=useDefaultOrgViewForEnv}}
+  Use Default Organization View
+</div>
+
+{{#unless useDefaultOrgViewForEnv}}
 <div class="row">
   <div class='col-md-9'>
 
     {{#each env in nonLibraryEnvironments}}
     <div class="path-selector">
       <ul class="path-list">
-        <li class="path-list-item">
-          <label class="path-list-item-label">
-            Library
-          </label>
-        </li>
+        {{env-path-list-item env=libraryEnv
+                             selectedEnvironment=selectedEnvironment
+                             action="selectEnvironment"}}
         {{env-path-list-item env=env
                              selectedEnvironment=selectedEnvironment
                              action="selectEnvironment"}}
         <li class="path-list-item">
-          <label class="path-list-item-label" style='color:gray;'>
+          <label class="path-list-item-label">
             &nbsp;
           </label>
         </li>
@@ -56,6 +60,7 @@
 
   </div>
 </div>
+{{/unless}}
 
 <br />
 <br />
