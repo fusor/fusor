@@ -36,32 +36,37 @@ module Actions
           enable_smart_class_parameter_overrides
 
           products_enabled.each_with_index do |product_enabled, index|
-            if product_enabled && products_content[index] && products_host_groups[index]
-              unless skip_content
-                plan_action(::Actions::Fusor::Content::EnableRepositories,
-                            deployment.organization,
-                            products_content[index])
+            if product_enabled
+              if products_content[index]
+                unless skip_content
+                  plan_action(::Actions::Fusor::Content::EnableRepositories,
+                              deployment.organization,
+                              products_content[index])
 
-                # As part of enabling repositories, zero or more repos will be created.  Let's
-                # retrieve the repos needed for the deployment and use them in actions that follow
-                repositories = retrieve_deployment_repositories(deployment.organization, products_content[index])
+                  # As part of enabling repositories, zero or more repos will be created.  Let's
+                  # retrieve the repos needed for the deployment and use them in actions that follow
+                  repositories = retrieve_deployment_repositories(deployment.organization, products_content[index])
 
-                plan_action(::Actions::Fusor::Content::SyncRepositories, repositories)
+                  plan_action(::Actions::Fusor::Content::SyncRepositories, repositories)
 
-                plan_action(::Actions::Fusor::Content::PublishContentView,
+                  plan_action(::Actions::Fusor::Content::PublishContentView,
+                              deployment,
+                              yum_repositories(repositories)) if deployment.lifecycle_environment_id
+                end
+
+                unless repositories
+                  repositories = retrieve_deployment_repositories(deployment.organization, products_content[index])
+                end
+                plan_configure_activation_key(deployment, yum_repositories(repositories))
+              end
+
+              if products_host_groups[index]
+                enable_smart_class_parameter_overrides(products_host_groups[index])
+
+                plan_action(::Actions::Fusor::ConfigureHostGroups,
                             deployment,
-                            repositories) if deployment.lifecycle_environment_id
+                            products_host_groups[index])
               end
-
-              unless repositories
-                repositories = retrieve_deployment_repositories(deployment.organization, products_content[index])
-              end
-              plan_configure_activation_key(deployment, repositories)
-
-              plan_action(::Actions::Fusor::ConfigureHostGroups,
-                          deployment,
-                          product_types[index],
-                          products_host_groups[index])
             end
           end
 
@@ -89,14 +94,29 @@ module Actions
         repos
       end
 
-      def enable_smart_class_parameter_overrides
-        # Enable parameter overrides for all parameters supported by the configured puppet classes
-        puppet_classes = ::Puppetclass.where(:name => SETTINGS[:fusor][:puppet_classes].map{ |p| p[:name] })
-        puppet_classes.each do |puppet_class|
-          puppet_class.smart_class_parameters.each do |parameter|
-            unless parameter.override
-              parameter.override = true
-              parameter.save!
+      def yum_repositories(repositories)
+        repositories.select{ |repo| repo.content_type == ::Katello::Repository::YUM_TYPE }
+      end
+
+      def enable_smart_class_parameter_overrides(product_host_groups)
+        if host_group_settings = product_host_groups[:host_groups]
+          host_group_settings.each do |host_group_setting|
+
+            if puppet_class_settings = host_group_setting[:puppet_classes]
+              puppet_class_settings.each do |puppet_class_setting|
+
+                parameter_settings = puppet_class_setting[:parameters]
+                unless parameter_settings.blank?
+                  parameter_names = parameter_settings.map{ |p| p[:name] }
+                  if puppet_class = Puppetclass.where(:name => puppet_class_setting[:name]).first
+                    smart_class_parameters = puppet_class.smart_class_parameters.where(:key => parameter_names)
+                    smart_class_parameters.each do |parameter|
+                      parameter.override = true
+                      parameter.save!
+                    end
+                  end
+                end
+              end
             end
           end
         end

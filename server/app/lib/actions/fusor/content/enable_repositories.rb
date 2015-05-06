@@ -36,7 +36,8 @@ module Actions
               content.content.name == repo_details[:repository_set_name]
             end
 
-            substitutions = { basearch: repo_details[:basearch], releasever: repo_details[:releasever] }
+            substitutions = { basearch: repo_details[:basearch] }
+            substitutions[:releasever] = repo_details[:releasever] if repo_details[:releasever]
             if repo_mapper(product, product_content.content, substitutions).find_repository
               Rails.logger.info("Repository already enabled for: Product: #{product.name},"\
                                 " Repository Set: #{product_content.content.name}")
