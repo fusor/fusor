@@ -70,7 +70,6 @@
     <div class='pull-right'>
       {{#link-to organizationTabRouteName class='btn btn-default'}}Back{{/link-to}}
       <button {{action 'saveDeployment' step2RouteName}}
-              {{bind-attr disabled=disableNextOnLifecycleEnvironment}}
               class='btn btn-primary'>
           Next
       </button> {{!step2RouteName}}
