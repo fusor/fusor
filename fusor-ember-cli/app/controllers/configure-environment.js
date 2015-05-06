@@ -5,15 +5,13 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
 
   needs: ['deployment'],
 
-  disableNextOnLifecycleEnvironment: Ember.computed.alias("controllers.deployment.disableNextOnLifecycleEnvironment"),
-
   organizationTabRouteName: Ember.computed.alias("controllers.deployment.organizationTabRouteName"),
 
   selectedOrganization: Ember.computed.alias("controllers.deployment.organization"),
 
   step2RouteName: Ember.computed.alias("controllers.deployment.step2RouteName"),
 
-  useDefaultOrgViewForEnv: false,
+  useDefaultOrgViewForEnv: Ember.computed.alias("controllers.deployment.useDefaultOrgViewForEnv"),
 
   nullifyLifecycleEnvIfSelected: function(){
     if (this.get('useDefaultOrgViewForEnv')) {
@@ -21,6 +19,10 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
       return this.get('controllers.deployment').set('lifecycle_environment', null);
     }
   }.observes('useDefaultOrgViewForEnv'),
+
+  hasLifecycleEnvironment: Ember.computed.alias("controllers.deployment.hasLifecycleEnvironment"),
+  hasNoLifecycleEnvironment: Ember.computed.alias("controllers.deployment.hasNoLifecycleEnvironment"),
+  disableNextOnLifecycleEnvironment: Ember.computed.alias("controllers.deployment.disableNextOnLifecycleEnvironment"),
 
   actions: {
     selectEnvironment: function(environment) {
