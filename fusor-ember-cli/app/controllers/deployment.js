@@ -4,6 +4,18 @@ import DisableTabMixin from "../mixins/disable-tab-mixin";
 
 export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableTabMixin, {
 
+  // disable Steps 2, 3, 4, etc on wizard
+  isDisabledRhev: Ember.computed.alias("satelliteInvalid"),
+  isDisabledOpenstack: Ember.computed.alias("satelliteInvalid"),
+  isDisabledCloudForms: Ember.computed.alias("satelliteInvalid"),
+  isDisabledSubscriptions: Ember.computed.alias("satelliteInvalid"),
+  isDisabledReview: Ember.computed.alias("satelliteInvalid"),
+
+  hasLifecycleEnvironment: function() {
+    return (!!(this.get('lifecycle_environment').get('id')) || this.get('useDefaultOrgViewForEnv')); // without .get('id') returns promise that is true
+  }.property('lifecycle_environment', 'useDefaultOrgViewForEnv'),
+  hasNoLifecycleEnvironment: Ember.computed.not('hasLifecycleEnvironment'),
+
   validations: {
     name: {
       presence: true,
@@ -14,13 +26,6 @@ export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableT
   selectedRhevEngine: null,
 
   satelliteInvalid: Ember.computed.or('hasNoName', 'hasNoOrganization', 'hasNoLifecycleEnvironment'),
-
-  // disable Steps 2, 3, 4, etc on wizard
-  isDisabledRhev: Ember.computed.alias("satelliteInvalid"),
-  isDisabledOpenstack: Ember.computed.alias("satelliteInvalid"),
-  isDisabledCloudForms: Ember.computed.alias("satelliteInvalid"),
-  isDisabledSubscriptions: Ember.computed.alias("satelliteInvalid"),
-  isDisabledReview: Ember.computed.alias("satelliteInvalid"),
 
   skipContent: false,
 

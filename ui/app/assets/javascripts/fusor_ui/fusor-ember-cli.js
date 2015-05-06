@@ -685,15 +685,13 @@ define('fusor-ember-cli/controllers/configure-environment', ['exports', 'ember',
 
     needs: ['deployment'],
 
-    disableNextOnLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment.disableNextOnLifecycleEnvironment'),
-
     organizationTabRouteName: Ember['default'].computed.alias('controllers.deployment.organizationTabRouteName'),
 
     selectedOrganization: Ember['default'].computed.alias('controllers.deployment.organization'),
 
     step2RouteName: Ember['default'].computed.alias('controllers.deployment.step2RouteName'),
 
-    useDefaultOrgViewForEnv: false,
+    useDefaultOrgViewForEnv: Ember['default'].computed.alias('controllers.deployment.useDefaultOrgViewForEnv'),
 
     nullifyLifecycleEnvIfSelected: (function () {
       if (this.get('useDefaultOrgViewForEnv')) {
@@ -701,6 +699,10 @@ define('fusor-ember-cli/controllers/configure-environment', ['exports', 'ember',
         return this.get('controllers.deployment').set('lifecycle_environment', null);
       }
     }).observes('useDefaultOrgViewForEnv'),
+
+    hasLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment.hasLifecycleEnvironment'),
+    hasNoLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment.hasNoLifecycleEnvironment'),
+    disableNextOnLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment.disableNextOnLifecycleEnvironment'),
 
     actions: {
       selectEnvironment: function selectEnvironment(environment) {
@@ -770,7 +772,12 @@ define('fusor-ember-cli/controllers/deployment-new', ['exports', 'ember', 'fusor
     isDisabledOpenstack: true,
     isDisabledCloudForms: true,
     isDisabledSubscriptions: true,
-    isDisabledReview: true });
+    isDisabledReview: true,
+
+    hasLifecycleEnvironment: (function () {
+      return !!this.get("lifecycle_environment").get("id") || this.get("useDefaultOrgViewForEnv"); // without .get('id') returns promise that is true
+    }).property("lifecycle_environment", "useDefaultOrgViewForEnv"),
+    hasNoLifecycleEnvironment: Ember['default'].computed.not("hasLifecycleEnvironment") });
 
 });
 define('fusor-ember-cli/controllers/deployment-new/satellite', ['exports', 'ember', 'fusor-ember-cli/mixins/satellite-controller-mixin'], function (exports, Ember, SatelliteControllerMixin) {
@@ -798,13 +805,24 @@ define('fusor-ember-cli/controllers/deployment-new/satellite/configure-environme
 
     needs: ['deployment-new'],
 
-    disableNextOnLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment-new.disableNextOnLifecycleEnvironment'),
-
     organizationTabRouteName: Ember['default'].computed.alias('controllers.deployment-new.organizationTabRouteName'),
 
     selectedOrganization: Ember['default'].computed.alias('controllers.deployment-new.organization'),
 
     step2RouteName: Ember['default'].computed.alias('controllers.deployment-new.step2RouteName'),
+
+    useDefaultOrgViewForEnv: Ember['default'].computed.alias('controllers.deployment-new.useDefaultOrgViewForEnv'),
+
+    nullifyLifecycleEnvIfSelected: (function () {
+      if (this.get('useDefaultOrgViewForEnv')) {
+        this.set('selectedEnvironment', null);
+        return this.get('controllers.deployment-new').set('lifecycle_environment', null);
+      }
+    }).observes('useDefaultOrgViewForEnv'),
+
+    hasLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment-new.hasLifecycleEnvironment'),
+    hasNoLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment-new.hasNoLifecycleEnvironment'),
+    disableNextOnLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment-new.disableNextOnLifecycleEnvironment'),
 
     actions: {
       selectEnvironment: function selectEnvironment(environment) {
@@ -923,6 +941,18 @@ define('fusor-ember-cli/controllers/deployment', ['exports', 'ember', 'fusor-emb
 
   exports['default'] = Ember['default'].ObjectController.extend(DeploymentControllerMixin['default'], DisableTabMixin['default'], {
 
+    // disable Steps 2, 3, 4, etc on wizard
+    isDisabledRhev: Ember['default'].computed.alias("satelliteInvalid"),
+    isDisabledOpenstack: Ember['default'].computed.alias("satelliteInvalid"),
+    isDisabledCloudForms: Ember['default'].computed.alias("satelliteInvalid"),
+    isDisabledSubscriptions: Ember['default'].computed.alias("satelliteInvalid"),
+    isDisabledReview: Ember['default'].computed.alias("satelliteInvalid"),
+
+    hasLifecycleEnvironment: (function () {
+      return !!this.get("lifecycle_environment").get("id") || this.get("useDefaultOrgViewForEnv"); // without .get('id') returns promise that is true
+    }).property("lifecycle_environment", "useDefaultOrgViewForEnv"),
+    hasNoLifecycleEnvironment: Ember['default'].computed.not("hasLifecycleEnvironment"),
+
     validations: {
       name: {
         presence: true,
@@ -932,13 +962,6 @@ define('fusor-ember-cli/controllers/deployment', ['exports', 'ember', 'fusor-emb
     selectedRhevEngine: null,
 
     satelliteInvalid: Ember['default'].computed.or("hasNoName", "hasNoOrganization", "hasNoLifecycleEnvironment"),
-
-    // disable Steps 2, 3, 4, etc on wizard
-    isDisabledRhev: Ember['default'].computed.alias("satelliteInvalid"),
-    isDisabledOpenstack: Ember['default'].computed.alias("satelliteInvalid"),
-    isDisabledCloudForms: Ember['default'].computed.alias("satelliteInvalid"),
-    isDisabledSubscriptions: Ember['default'].computed.alias("satelliteInvalid"),
-    isDisabledReview: Ember['default'].computed.alias("satelliteInvalid"),
 
     skipContent: false,
 
@@ -2312,11 +2335,6 @@ define('fusor-ember-cli/mixins/disable-tab-mixin', ['exports', 'ember'], functio
     }).property('organization'),
     hasNoOrganization: Ember['default'].computed.not('hasOrganization'),
 
-    hasLifecycleEnvironment: (function () {
-      return !!this.get('lifecycle_environment').get('id') || this.get('useDefaultOrgViewForEnv'); // without .get('id') returns promise that is true
-    }).property('lifecycle_environment', 'useDefaultOrgViewForEnv'),
-    hasNoLifecycleEnvironment: Ember['default'].computed.not('hasLifecycleEnvironment'),
-
     // disable All if there is no deployment name
     disableAll: Ember['default'].computed.alias('hasNoName'),
 
@@ -2327,8 +2345,9 @@ define('fusor-ember-cli/mixins/disable-tab-mixin', ['exports', 'ember'], functio
     disableNextOnConfigureOrganization: Ember['default'].computed.or('hasNoOrganization', 'disableAll'),
 
     // disable Next on Lifecycle Environment if no lifecycle environment is selected
+    // note: hasNoLifecycleEnvironment and hasNoLifecycleEnvironment is defined in /app/controllers/deployment.js
+    //       and app/controllers/deployment-new.js rather than in this mixin
     disableNextOnLifecycleEnvironment: Ember['default'].computed.or('hasNoLifecycleEnvironment', 'disableAll'),
-    useDefaultOrgViewForEnv: Ember['default'].computed.alias('controllers.configure-environment.useDefaultOrgViewForEnv'),
 
     // Satellite Tabs Only
     disableTabDeploymentName: false, // always enable tab for entering deployment name
@@ -2625,6 +2644,10 @@ define('fusor-ember-cli/models/deployment', ['exports', 'ember-data'], function 
 
     created_at: DS['default'].attr('date'),
     updated_at: DS['default'].attr('date'),
+
+    useDefaultOrgViewForEnv: (function () {
+      return !!this.get('discovered_host.id');
+    }).property('discovered_host'),
 
     // has one Engine
     discovered_host: DS['default'].belongsTo('discovered-host', { inverse: 'deployment', async: true }),
@@ -10838,6 +10861,7 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
         block(env, morph2, context, "unless", [get(env, context, "useDefaultOrgViewForEnv")], {}, child1, null);
         block(env, morph3, context, "link-to", [get(env, context, "organizationTabRouteName")], {"class": "btn btn-default"}, child2, null);
         element(env, element3, context, "action", ["saveDeployment", get(env, context, "step2RouteName")], {});
+        element(env, element3, context, "bind-attr", [], {"disabled": get(env, context, "disableNextOnLifecycleEnvironment")});
         inline(env, morph4, context, "partial", ["new-environment"], {});
         return fragment;
       }
@@ -23930,7 +23954,7 @@ define('fusor-ember-cli/tests/controllers/configure-environment.jshint', functio
 
   module('JSHint - controllers');
   test('controllers/configure-environment.js should pass jshint', function() { 
-    ok(false, 'controllers/configure-environment.js should pass jshint.\ncontrollers/configure-environment.js: line 34, col 66, Missing semicolon.\ncontrollers/configure-environment.js: line 50, col 19, \'response\' is defined but never used.\n\n2 errors'); 
+    ok(false, 'controllers/configure-environment.js should pass jshint.\ncontrollers/configure-environment.js: line 36, col 66, Missing semicolon.\ncontrollers/configure-environment.js: line 52, col 19, \'response\' is defined but never used.\n\n2 errors'); 
   });
 
 });
@@ -23970,7 +23994,7 @@ define('fusor-ember-cli/tests/controllers/deployment-new/satellite/configure-env
 
   module('JSHint - controllers/deployment-new/satellite');
   test('controllers/deployment-new/satellite/configure-environment.js should pass jshint', function() { 
-    ok(false, 'controllers/deployment-new/satellite/configure-environment.js should pass jshint.\ncontrollers/deployment-new/satellite/configure-environment.js: line 25, col 66, Missing semicolon.\ncontrollers/deployment-new/satellite/configure-environment.js: line 49, col 21, \'library\' is already defined.\ncontrollers/deployment-new/satellite/configure-environment.js: line 43, col 21, \'response\' is defined but never used.\ncontrollers/deployment-new/satellite/configure-environment.js: line 59, col 23, \'response\' is defined but never used.\n\n4 errors'); 
+    ok(false, 'controllers/deployment-new/satellite/configure-environment.js should pass jshint.\ncontrollers/deployment-new/satellite/configure-environment.js: line 36, col 66, Missing semicolon.\ncontrollers/deployment-new/satellite/configure-environment.js: line 60, col 21, \'library\' is already defined.\ncontrollers/deployment-new/satellite/configure-environment.js: line 54, col 21, \'response\' is defined but never used.\ncontrollers/deployment-new/satellite/configure-environment.js: line 70, col 23, \'response\' is defined but never used.\n\n4 errors'); 
   });
 
 });
@@ -30937,13 +30961,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.436c1366"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.16adbf44"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.436c1366"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.16adbf44"});
 }
 
 /* jshint ignore:end */
