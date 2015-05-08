@@ -176,7 +176,7 @@ module Actions
                   :name => "ovirt::engine::config",
                   :parameters =>
                   [
-                    #{ :name => "hosts_addresses", :value => host_addresses(deployment, hostgroup) },
+                    { :name => "hosts_addresses", :value => host_addresses(deployment, hostgroup) },
                     { :name => "cluster_name", :value => deployment.rhev_cluster_name },
                     { :name => "storage_name", :value => deployment.rhev_storage_name },
                     { :name => "storage_address", :value => deployment.rhev_storage_address },
