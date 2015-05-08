@@ -46,6 +46,15 @@
         :basearch: "x86_64"
         :releasever: "6Server"
 
+  :puppet_classes:
+    - :name: "ovirt"
+    - :name: "ovirt::engine::config"
+    - :name: "ovirt::engine::packages"
+    - :name: "ovirt::engine::setup"
+    - :name: "ovirt::engine::import_template"
+    - :name: "ovirt::engine::run_vm"
+    - :name: "ovirt::hypervisor::packages"
+
   :host_groups:
     :rhev:
      :root_name: "Fusor Base" # seeded by the fusor-installer
@@ -60,40 +69,11 @@
              - :name: "product"
                :override: "RHEV"
            - :name: "ovirt::engine::config"
-             :parameters:
-             - :name: "username"
-             - :name: "dc_name"
-             - :name: "cluster_name"
-             - :name: "cpu_type"
-             - :name: "hosts_addresses"
-             - :name: "root_password"
-             - :name: "storage_name"
-             - :name: "storage_address"
-             - :name: "storage_path"
-             - :name: "export_address"
-             - :name: "export_name"
-             - :name: "export_path"
-             - :name: "storage_type"
-             - :name: "share_path"
            - :name: "ovirt::engine::packages"
            - :name: "ovirt::engine::setup"
              :parameters:
-             - :name: "application_mode"
-             - :name: "storage_type"
-             - :name: "organization"
-             - :name: "nfs_config_enabled"
-             - :name: "iso_domain_name"
-             - :name: "iso_domain_mount_point"
-             - :name: "admin_password"
-             - :name: "db_user"
-             - :name: "db_password"
-             - :name: "db_host"
-             - :name: "db_port"
-             - :name: "storage_domain_dir"
              - :name: "firewall_manager"
                :override: "iptables"
-             - :name: "url"
-             - :name: "username"
 
        - :name: "RHEV-Hypervisor"
          :parent: :root_deployment
