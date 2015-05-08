@@ -22,6 +22,7 @@ module Actions
         fail _("Unable to locate fusor.yaml settings in config/settings.plugins.d") unless SETTINGS[:fusor]
         fail _("Unable to locate content settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:content]
         fail _("Unable to locate host group settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:host_groups]
+        fail _("Unable to locate puppet class settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:puppet_classes]
 
         sequence do
           products_enabled = [deployment.deploy_rhev, deployment.deploy_cfme, deployment.deploy_openstack]
@@ -30,6 +31,8 @@ module Actions
           products_content = [content[:rhev], content[:cloudforms], content[:openstack]]
           host_groups = SETTINGS[:fusor][:host_groups]
           products_host_groups = [host_groups[:rhev], host_groups[:cloudforms], host_groups[:openstack]]
+
+          enable_smart_class_parameter_overrides
 
           products_enabled.each_with_index do |product_enabled, index|
             if product_enabled && products_content[index] && products_host_groups[index]
@@ -53,8 +56,6 @@ module Actions
                 repositories = retrieve_deployment_repositories(deployment.organization, products_content[index])
               end
               plan_configure_activation_key(deployment, repositories)
-
-              enable_smart_class_parameter_overrides(products_host_groups[index])
 
               plan_action(::Actions::Fusor::ConfigureHostGroups,
                           deployment,
@@ -86,25 +87,14 @@ module Actions
         repos
       end
 
-      def enable_smart_class_parameter_overrides(product_host_groups)
-        if host_group_settings = product_host_groups[:host_groups]
-          host_group_settings.each do |host_group_setting|
-
-            if puppet_class_settings = host_group_setting[:puppet_classes]
-              puppet_class_settings.each do |puppet_class_setting|
-
-                parameter_settings = puppet_class_setting[:parameters]
-                unless parameter_settings.blank?
-                  parameter_names = parameter_settings.map{ |p| p[:name] }
-                  if puppet_class = Puppetclass.where(:name => puppet_class_setting[:name]).first
-                    smart_class_parameters = puppet_class.smart_class_parameters.where(:key => parameter_names)
-                    smart_class_parameters.each do |parameter|
-                      parameter.override = true
-                      parameter.save!
-                    end
-                  end
-                end
-              end
+      def enable_smart_class_parameter_overrides
+        # Enable parameter overrides for all parameters supported by the configured puppet classes
+        puppet_classes = ::Puppetclass.where(:name => SETTINGS[:fusor][:puppet_classes].map{ |p| p[:name] })
+        puppet_classes.each do |puppet_class|
+          puppet_class.smart_class_parameters.each do |parameter|
+            unless parameter.override
+              parameter.override = true
+              parameter.save!
             end
           end
         end
