@@ -15,6 +15,7 @@ export default Ember.Controller.extend(ConfigureOrganizationMixin, {
   actions: {
     selectOrganization: function(organization) {
       this.set('showAlertMessage', false);
+      this.set('selectedOrganization', organization);
       return this.get('controllers.deployment-new').set('organization', organization);
     }
   },
