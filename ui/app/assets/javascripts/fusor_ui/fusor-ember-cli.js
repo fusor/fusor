@@ -875,6 +875,7 @@ define('fusor-ember-cli/controllers/deployment-new/satellite/configure-organizat
     actions: {
       selectOrganization: function selectOrganization(organization) {
         this.set('showAlertMessage', false);
+        this.set('selectedOrganization', organization);
         return this.get('controllers.deployment-new').set('organization', organization);
       }
     } });
@@ -3159,8 +3160,14 @@ define('fusor-ember-cli/routes/deployment-new/satellite/configure-organization',
     setupController: function setupController(controller, model) {
       controller.set('model', model);
       controller.set('showAlertMessage', false);
-      var organizations = this.store.find('organization');
-      controller.set('organizations', organizations);
+      this.store.find('organization').then(function (results) {
+        controller.set('organizations', results);
+        if (results.get('length') === 1) {
+          var defaultOrg = results.get('firstObject');
+          controller.set('organization', defaultOrg);
+          controller.set('selectedOrganization', defaultOrg);
+        }
+      });
     } });
 
 });
@@ -30943,13 +30950,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.928e6458"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.1ad5546c"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.928e6458"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.1ad5546c"});
 }
 
 /* jshint ignore:end */
