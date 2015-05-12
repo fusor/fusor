@@ -839,39 +839,21 @@ define('fusor-ember-cli/controllers/deployment-new/satellite/configure-environme
         this.set('fields_env.description', this.get('description'));
         this.set('fields_env.organization', selectedOrganization);
 
-        // TODO - refactor DRY
-        if (this.get('hasLibrary')) {
-          var library = this.get('libraryEnvForOrg');
-          // assign library to prior db attribute
-          this.set('fields_env.prior', library.get('id'));
-          var environment = this.store.createRecord('lifecycle-environment', this.get('fields_env'));
-          environment.save().then(function (result) {
-            //success
-            self.get('nonLibraryEnvironments').pushObject(result);
-            self.set('selectedEnvironment', environment);
-            self.get('controllers.deployment-new').set('lifecycle_environment', environment);
-            return self.set('showAlertMessage', true);
-          }, function (response) {
-            alert('error saving environment');
-          });
-        } else {
-          // create library
-          var library = this.store.createRecord('lifecycle-environment', { name: 'Library', label: 'Library', library: true, organization: selectedOrganization });
-          // save library first and then save environment
-          library.save().then(function (response) {
-            self.set('fields_env.prior', response.get('id'));
-            var environment = this.store.createRecord('lifecycle-environment', this.get('fields_env'));
-            environment.save().then(function (result) {
-              //success
-              self.get('nonLibraryEnvironments').pushObject(result);
-              self.set('selectedEnvironment', environment);
-              return self.set('showAlertMessage', true);
-            }, function (response) {
-              alert('error saving environment');
-            });
-          });
-        }
+        var library = this.get('libraryEnv');
+        // assign library to prior db attribute
+        this.set('fields_env.prior', library.get('id'));
+        var environment = this.store.createRecord('lifecycle-environment', this.get('fields_env'));
+        environment.save().then(function (result) {
+          //success
+          self.get('nonLibraryEnvironments').pushObject(result);
+          self.set('selectedEnvironment', environment);
+          self.get('controllers.deployment-new').set('lifecycle_environment', environment);
+          return self.set('showAlertMessage', true);
+        }, function (response) {
+          alert('error saving environment');
+        });
       } }
+
   });
 
 });
@@ -23994,7 +23976,7 @@ define('fusor-ember-cli/tests/controllers/deployment-new/satellite/configure-env
 
   module('JSHint - controllers/deployment-new/satellite');
   test('controllers/deployment-new/satellite/configure-environment.js should pass jshint', function() { 
-    ok(false, 'controllers/deployment-new/satellite/configure-environment.js should pass jshint.\ncontrollers/deployment-new/satellite/configure-environment.js: line 36, col 66, Missing semicolon.\ncontrollers/deployment-new/satellite/configure-environment.js: line 60, col 21, \'library\' is already defined.\ncontrollers/deployment-new/satellite/configure-environment.js: line 54, col 21, \'response\' is defined but never used.\ncontrollers/deployment-new/satellite/configure-environment.js: line 70, col 23, \'response\' is defined but never used.\n\n4 errors'); 
+    ok(false, 'controllers/deployment-new/satellite/configure-environment.js should pass jshint.\ncontrollers/deployment-new/satellite/configure-environment.js: line 36, col 66, Missing semicolon.\ncontrollers/deployment-new/satellite/configure-environment.js: line 52, col 19, \'response\' is defined but never used.\n\n2 errors'); 
   });
 
 });
@@ -30961,13 +30943,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.16adbf44"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.928e6458"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.16adbf44"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.928e6458"});
 }
 
 /* jshint ignore:end */
