@@ -30,7 +30,7 @@ module Actions
                   :user_id => ::User.current.id)
       end
 
-      def finalize
+      def run
         # Note: user_id is being passed in and then used to set User.current to address an error
         # that could occur when we later attempt to access ::Katello.pulp_server indirectly through
         # this action.  In the future, we may want to see if there are alternatives to this approach.

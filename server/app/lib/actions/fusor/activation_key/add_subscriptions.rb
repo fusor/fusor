@@ -29,7 +29,7 @@ module Actions
                     :repository_cp_labels => repositories.map(&:cp_label))
         end
 
-        def finalize
+        def run
           ::User.current = ::User.find(input[:user_id])
 
           key = ::Katello::ActivationKey.where(:organization_id => input[:organization_id],
