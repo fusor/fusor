@@ -44,6 +44,10 @@
       {{/if}}
 
       <br />
+
+      {{review-link label='Root password for Engine and Hypervisor(s)' routeName='rhev-options' isRequired=true
+                    isPassword=true value=controllers.deployment.rhev_root_password }}
+
       {{review-link label='Engine admin password' routeName='rhev-options' isRequired=true isPassword=true
                     value=controllers.deployment.rhev_engine_admin_password }}
 
@@ -82,7 +86,11 @@
       Installation Location:
         {{#link-to 'where-install'}}
           {{controllers.deployment.cfme_install_loc}}
-        {{/link-to}} <br />
+        {{/link-to}}
+      <br />
+      {{review-link label='CFME Root password' routeName='cloudforms.cfme-configuration' isRequired=true
+                    isPassword=true value=controllers.deployment.cfme_root_password }}
+      <br />
     {{/accordion-item}}
   {{/if}}
 

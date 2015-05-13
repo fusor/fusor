@@ -24,6 +24,9 @@ export default DS.Model.extend({
 
   cfme_install_loc: DS.attr('string'),
 
+  rhev_root_password: DS.attr('string'),
+  cfme_root_password: DS.attr('string'),
+
   created_at: DS.attr('date'),
   updated_at: DS.attr('date'),
 

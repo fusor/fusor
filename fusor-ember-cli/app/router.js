@@ -63,6 +63,7 @@ export default Router.map(function() {
     });
     this.resource('cloudforms', function() {
       this.resource('where-install');
+      this.route('cfme-configuration', { path: 'configuration' });
       this.resource('cloudforms-storage-domain', {path: 'storage-domain'});
       this.resource('cloudforms-vm', {path: 'vm'});
     });
