@@ -4,6 +4,7 @@ export default Ember.Controller.extend({
 
   needs: ['deployment'],
 
+  rhev_root_password: Ember.computed.alias("controllers.deployment.rhev_root_password"),
   rhev_engine_admin_password: Ember.computed.alias("controllers.deployment.rhev_engine_admin_password"),
   rhev_database_name: Ember.computed.alias("controllers.deployment.rhev_database_name"),
   rhev_cluster_name: Ember.computed.alias("controllers.deployment.rhev_cluster_name"),
