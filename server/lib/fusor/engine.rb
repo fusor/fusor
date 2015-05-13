@@ -40,7 +40,7 @@ module Fusor
             :"fusor/api/v2/deployments" => [:update],
             :"fusor/api/v21/deployments" => [:update]
           }, :resource_type => 'Fusor::Deployment'
-          permission :destroy_discovered_hosts, {
+          permission :destroy_fusor_deployments, {
             :"fusor/api/v2/deployments" => [:destroy],
             :"fusor/api/v21/deployments" => [:destroy]
           }, :resource_type => 'Fusor::Deployment'
