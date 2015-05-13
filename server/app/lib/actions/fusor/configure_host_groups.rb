@@ -17,12 +17,13 @@ module Actions
         _("Configure Host Groups")
       end
 
-      def plan(deployment, hostgroup_settings)
+      def plan(deployment, product_type, hostgroup_settings)
         unless hostgroup_settings && hostgroup_settings[:host_groups]
           fail _("Unable to locate host group settings in config/settings.plugins.d/fusor.yaml")
         end
 
         plan_self(:deployment_id => deployment.id,
+                  :product_type => product_type,
                   :organization_id => deployment.organization.id,
                   :lifecycle_environment_id => deployment.lifecycle_environment_id,
                   :hostgroup_settings => hostgroup_settings,
@@ -37,7 +38,7 @@ module Actions
 
         deployment = ::Fusor::Deployment.find(input[:deployment_id])
         input[:hostgroup_settings][:host_groups].each do |hostgroup|
-          find_or_ensure_hostgroup(deployment, input[:organization_id],
+          find_or_ensure_hostgroup(deployment, input[:product_type], input[:organization_id],
                                    input[:lifecycle_environment_id], hostgroup)
         end
       ensure
@@ -46,7 +47,9 @@ module Actions
 
       private
 
-      def find_or_ensure_hostgroup(deployment, organization_id, lifecycle_environment_id, hostgroup_settings)
+      def find_or_ensure_hostgroup(deployment, product_type, organization_id, lifecycle_environment_id,
+                                   hostgroup_settings)
+
         if content_view = find_content_view(organization_id, content_view_name(deployment))
 
           if parent_setting = hostgroup_settings[:parent]
@@ -100,11 +103,7 @@ module Actions
             hostgroup_params[:medium_id] = operating_system.try(:media).try(:first).try(:id)
             hostgroup_params[:ptable_id] = operating_system.try(:ptables).try(:first).try(:id)
             hostgroup_params[:architecture_id] = operating_system.try(:architectures).try(:first).try(:id)
-
-            # TODO: the root_pass should later be configurable by the user.  In addition, we'll need to make
-            # sure that it aligns with the password (if any) used by the puppet modules
-            # (e.g. ovirt::engine::config, root_password)
-            hostgroup_params[:root_pass] = "changeme"
+            hostgroup_params[:root_pass] = root_password(deployment, product_type)
           end
         else
           fail _("Unable to locate content view '%s'.") % content_view_name(deployment)
@@ -130,7 +129,7 @@ module Actions
                                    :value => activation_key_name(deployment))
         end
         apply_setting_parameter_overrides(hostgroup, hostgroup_settings, puppet_environment)
-        apply_deployment_parameter_overrides(hostgroup, deployment, puppet_environment)
+        apply_deployment_parameter_overrides(hostgroup, deployment, product_type, puppet_environment)
       end
 
       def apply_setting_parameter_overrides(hostgroup, hostgroup_settings, puppet_environment)
@@ -155,7 +154,7 @@ module Actions
         end
       end
 
-      def apply_deployment_parameter_overrides(hostgroup, deployment, puppet_environment)
+      def apply_deployment_parameter_overrides(hostgroup, deployment, product_type, puppet_environment)
         # TODO: ISSUE: the following attributes exist on the deployment object, but I do not know
         # if they should be mapping to puppet class parameters and if so, which class & parameter?
         # :name => , :value => deployment.rhev_database_name,
@@ -177,6 +176,10 @@ module Actions
                   :parameters =>
                   [
                     { :name => "hosts_addresses", :value => host_addresses(deployment, hostgroup) },
+                    # Setting root password based upon the deployment vs the hostgroup.  This is
+                    # necessary because the puppet parameter needs to store it in clear text and
+                    # the hostgroup stores it using one-time encryption.
+                    { :name => "root_password", :value => root_password(deployment, product_type) },
                     { :name => "cluster_name", :value => deployment.rhev_cluster_name },
                     { :name => "storage_name", :value => deployment.rhev_storage_name },
                     { :name => "storage_address", :value => deployment.rhev_storage_address },
@@ -209,6 +212,15 @@ module Actions
               hostgroup.set_param_value_if_changed(puppet_class, parameter[:name], parameter[:value])
             end
           end
+        end
+      end
+
+      def root_password(deployment, product_type)
+        case product_type
+          when "rhev"
+            deployment.rhev_root_password
+          when "cfme"
+            deployment.cfme_root_password
         end
       end
 
