@@ -25,18 +25,13 @@ module Actions
         middleware.use Actions::Fusor::Middleware::Timeout
 
         def plan(host)
-          Rails.logger.warn "BRAD ================ Planning WaitUntilProvisioned ===================="
-
           plan_self host_id: host.id
         end
 
         def run(event = nil)
-          Rails.logger.warn "BRAD ================ Run WaitUntilProvisioned ===================="
-
           case event
           when nil
             suspend do |suspended_action|
-              Rails.logger.warn "BRAD ================ event=nil suspend ===================="
               # schedule timeout
               world.clock.ping suspended_action, input[:timeout], "timeout"
 
@@ -47,7 +42,6 @@ module Actions
                     step_id:           suspended_action.step_id })
             end
           when "timeout"
-            Rails.logger.warn "BRAD ================ event=timeout ===================="
             # clear timeout_start so that the action can be resumed/skipped
             output[:timeout_start] = nil
             fail(::Foreman::Exception,
@@ -55,10 +49,8 @@ module Actions
                  "action is still ongoing, you can click on the " +
                  "\"Resume Deployment\" button to continue.")
           when Hash
-            Rails.logger.warn "BRAD ================ event=Hash ===================="
             output[:installed_at] = event.fetch(:installed_at).to_s
           when Dynflow::Action::Skip
-            Rails.logger.warn "BRAD ================ event=Skip ===================="
             output[:installed_at] = Time.now.utc.to_s
           else
             raise TypeError
