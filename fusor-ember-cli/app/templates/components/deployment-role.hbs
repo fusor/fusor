@@ -1,0 +1,18 @@
+<li class="role role-{{role-type}}">
+    <div class="deployment-role-label">
+        {{role-label}}
+    </div>
+    {{#if role-assigned}}
+        <select class="selectpicker">
+            {{#each option in countOptions}}
+                <option>{{option}}</option>
+            {{/each}}
+        </select>
+        <a href="#" class="role-option delete">
+            <i class="fa fa-times"></i>
+        </a>
+    {{/if}}
+    <a href="#" class="role-option edit" data-toggle="modal" data-target="#deployment-role">
+        <i class="fa fa-pencil"></i>
+    </a>
+</li>

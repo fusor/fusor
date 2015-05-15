@@ -1,2 +1,43 @@
-TDB Assign Nodes
-{{outlet}}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Available Deployment Roles</h2>
+        <ul class="deployment-roles deployment-roles-unassigned deployment-roles-assignable">
+          {{deployment-role role-type='controller' role-label='Controller' role-assigned=false}}
+          {{deployment-role role-type='compute' role-label='Compute' role-assigned=false}}
+          {{deployment-role role-type='block' role-label='Block Storage' role-assigned=false}}
+          {{deployment-role role-type='object' role-label='Object Storage' role-assigned=false}}
+        </ul>
+    </div><!-- /col -->
+</div><!-- /row -->
+<div class="row">
+    <div class="col-md-12">
+        <h2>Node Profiles</h2>
+        {{#each profile in nodeProfiles}}
+          {{log 'profile name: ' profile.name}}
+            <div class="row">
+                <div class='col-md-7'>
+                  {{node-profile profile=profile doAssign=true}}
+                </div>
+            </div>
+        {{/each}}
+    </div>
+    <div class="col-sm-6 col-md-5">
+        <!-- a network topology is planned for this space -->
+    </div>
+</div>
+
+<br />
+<div class="row">
+    <div class='col-md-9'>
+        <div class='pull-right'>
+          {{#link-to 'register-nodes' class='btn btn-default'}}
+              Back
+          {{/link-to}}
+            <button {{action 'saveDeployment' nextStepRouteName}}
+              {{bind-attr disabled=disableAssignNodesNext}}
+                    class='btn btn-primary'>
+                Next
+            </button>
+        </div>
+    </div>
+</div>

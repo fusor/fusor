@@ -1,2 +1,93 @@
-TDB Register Nodes
-{{outlet}}
+<br />
+{{#if showAlertMessage}}
+    <div class="row">
+        <div class='col-md-9'>
+            <div class='alert alert-success'>
+                <i class="fa fa-2x fa-check-circle-o green-circle"></i>
+                &nbsp;
+              {{registeredNode.name}} registered successfully.
+            </div>
+        </div>
+    </div>
+{{/if}}
+
+<div class="row">
+    <div class='col-md-5'>
+      <h2>Registering Nodes</h2>
+    </div>
+</div>
+
+<div class="progress-description">
+  {{#if registrationError}}
+      <span class="pficon-layered" data-toggle="tooltip" data-placement="top" title={{registrationErrorTip}}>
+          <span class="pficon pficon-error-octagon"></span>
+          <span class="pficon pficon-error-exclamation"></span>
+            <strong>Error:</strong>  {{registrationErrorMessage}}
+        </span>
+  {{/if}}
+</div>
+{{#if registrationInProgress}}
+    <div class="progress progress-label-top-right" style="width:50%;">
+        <div class="progress-bar" role="progressbar" aria-valuenow="{{nodeRegPercentComplete}}%" aria-valuemin="0" aria-valuemax="100" style="width: {{nodeRegPercentComplete}}%;">
+            <span>{{nodeRegPercentComplete}}% ({{nodeRegComplete}} of {{nodeRegTotal}})</span>
+        </div>
+    </div>
+{{else}}
+  <div class="row">
+    <div class='col-md-5'>
+    {{#if noRegisteredNodes}}
+      <p>
+        Currently, there are no registered nodes available. You must have at least ??? nodes in order to continue
+        this deployment. Use the Register Nodes button below to begin the registration process.
+      </p>
+    {{else}}
+      <p>
+        You can register more nodes to coalesce into Node Profiles. Use the Register Nodes button below to begin the registration process.
+      </p>
+    {{/if}}
+    </div>
+  </div>
+{{/if}}
+
+<div class="row">
+    <div class='col-md-5'>
+      {{#if registrationInProgress}}
+        {{#em-modal-toggler modal-id="newOrganizationModal" class="btn btn-default"  style="margin-right:10px;"}}
+            Cancel
+        {{/em-modal-toggler}}
+      {{/if}}
+      <button class="btn btn-primary" {{action "showNodeRegistrationModal"}}>
+          Register Nodes
+      </button>
+    </div>
+</div>
+
+{{#unless noRegisteredNodes}}
+  <div class="row">
+      <div class='col-md-5'>
+          <h2>Coalescing Node Profiles</h2>
+      </div>
+  </div>
+
+  {{#each profile in model.nodeProfiles}}
+      <div class="row">
+          <div class='col-md-7'>
+            {{node-profile profile=profile stepNumberOpenstack=stepNumberOpenstack}}
+          </div>
+      </div>
+  {{/each}}
+{{/unless}}
+
+<br />
+<div class="row">
+    <div class='col-md-9'>
+        <div class='pull-right'>
+          {{#link-to satelliteTabRouteName class='btn btn-default'}}
+              Back
+          {{/link-to}}
+          {{#link-to 'assign-nodes' class='btn btn-primary' disabled=disableRegisterNodesNext}}Next{{/link-to}}
+        </div>
+    </div>
+</div>
+
+{{partial 'new-node-registration'}}

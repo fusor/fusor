@@ -1,0 +1,75 @@
+    <div class="panel panel-default node-profile nodes-coalescing">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-sm-5 col-md-4">
+                <h3 class="node-profile-label h5">{{profile.name}}</h3>
+            </div>
+            <div class="col-sm-7 col-md-8">
+                <h4 class="node-profile-free-nodes h5">Free Nodes: {{profile.freeNodes}}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-5 col-md-4">
+                <h4 class="h5">Each node has:</h4>
+                <table class="table node-specs">
+                    <tr>
+                        <th>CPU</th>
+                        <td>{{profile.cpu}}</td>
+                    </tr>
+                    <tr>
+                        <th>RAM</th>
+                        <td>{{profile.ram}} GB</td>
+                    </tr>
+                    <tr>
+                        <th>Disk</th>
+                        <td>{{profile.disk}} TB</td>
+                    </tr>
+                </table>
+            </div>
+            {{#if doAssign }}
+                <div class="col-sm-7 col-md-8">
+                    <h4 class="h5">Assigned Nodes</h4>
+                    <ul class="deployment-roles deployment-roles-assignable">
+                        <li class="role-target dropdown">
+                            <a id="role-target-dropdown-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-plus"></i> Assign Role
+                            </a>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="role-target-dropdown-1">
+                                <li>
+                                    <a href="#">Controller</a>
+                                </li>
+                                <li>
+                                    <a href="#">Compute</a>
+                                </li>
+                                <li>
+                                    <a href="#">Block Storage</a>
+                                </li>
+                                <li>
+                                    <a href="#">Object Storage</a>
+                                </li>
+                            </ul>
+                        </li>
+                      {{#if profile.isController}}
+                        {{deployment-role role-type='controller' role-label='Controller' role-assigned=true}}
+                      {{/if}}
+                      {{#if profile.computeNodes}}
+                        {{deployment-role role-type='compute' role-label='Compute' role-assigned=true}}
+                      {{/if}}
+                      {{#if profile.blockNodes}}
+                        {{deployment-role role-type='block' role-label='Block Storage' role-assigned=true}}
+                      {{/if}}
+                      {{#if profile.objectNodes}}
+                        {{deployment-role role-type='object' role-label='Object Storage' role-assigned=true}}
+                      {{/if}}
+                    </ul>
+                </div>
+            {{else}}
+                <div class="col-sm-7 col-md-8">
+                    <em>Assigning nodes to roles will occur in step {{stepNumberOpenstack}}B.</em>
+                </div>
+            {{/if}}
+        </div>
+    </div>
+</div>
