@@ -35,6 +35,14 @@ module Actions
           deployment_id = input.fetch(:deployment_id)
 
           deployment = ::Fusor::Deployment.find(deployment_id)
+
+          if is_rhev_up()
+            status, output = upload_image(deployment.cfme_install_loc)
+            if status > 0
+              Rails.logger.warn "XXX image uploaded"
+            end
+          end
+
           Rails.logger.warn "XXX #{deployment.id}"
 
           Rails.logger.warn "XXX ================ Leaving CFME  finalize method ===================="
@@ -45,6 +53,28 @@ module Actions
         def is_rhev_up()
            # TODO: figure out how to detect if rhev is running.
            return true
+        end
+
+        def upload_image(location)
+            # -N new image name
+            # -e export domain TODO: where do we get the export domain
+            # -v verbose
+            # -m do not remove network interfaces from image
+            #
+            cmd = "/usr/bin/engine-image-uploader -N CloudForms-3.0-2014-08-12.2 -e export_domain1 -v -m upload #{location}"
+
+            # run_command returns: status, output
+            return Utils::Fusor::CommandUtils.run_command(cmd)
+        end
+
+        def apply_puppet_param(param, node)
+          Rails.logger.warn "XXX applying #{param} on #{node}"
+        end
+
+        def run_appliance_console(host, user, password)
+          Rails.logger.warn "XXX running the appliance console on the node"
+          # use SSH command from the OSP code
+          client = Utils::Fusor::SSHConnection.new(host, user, password)
         end
 
       end
