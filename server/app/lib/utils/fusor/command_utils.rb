@@ -13,11 +13,11 @@
 module Utils
   module Fusor
     class CommandUtils
-      def run_command(cmd, log_on_success=false)
+      def self.run_command(cmd, log_on_success=false)
         # popen2e merges stdout and stderr, which we have put into
         # the the output variable
         stdin, stdout_err, wait_thr = Open3.popen2e(cmd)
-        status = wait_thr.value
+        status = wait_thr.value.exitstatus
         #pid = wait_thr[:pid]
         if status > 0
             Rails.logger.error "Error running command: #{cmd}"
