@@ -1,12 +1,8 @@
-<br />
-{{#if attachingInProgress}}
-  Attaching subscriptions ({{prog}}% complete)
-  {{bs-progress progressBinding="prog" type="success" stripped=true animated=true}}
-{{/if}}
-
 {{#if showAttachedSuccessMessage}}
   <div class='alert alert-success'>
-   Yeah! Successfully attached subscriptions! Attach more if you want.
+    <i class="fa fa-2x fa-check-circle-o green-circle"></i>
+    &nbsp;
+    Yeah! Successfully attached subscriptions! Attach more if you want.
   </div>
 {{/if}}
 
@@ -14,50 +10,45 @@
 Default subscription selections have been made for the components of your RHCI deployment. If the selections need to be adjusted, please do so before proceeding.
 </p>
 
-{{input type="checkbox" name="isOnlyShowSubscriptions" checked=isOnlyShowSubscriptions}} Only show subscriptions that match this Subscription Asset Manager Organization
+{{input type="checkbox" name="enableAnalytics" disabled=true checked=enableAnalytics}}
+<span class={{analyticsColor}}>Enable Red Hat Analytics for all hosts</span>
 <br />
 <br />
-<table class="table table-bordered table-striped small">
+
+{{input type="checkbox" name="isOnlyShowSubscriptions" checked=isOnlyShowSubscriptions disabled=true}}
+<span class='disabled-color'>Only show subscriptions that match this Satellite Organization</span>
+
+
+<br />
+<br />
+
+
+<table class="table table-bordered small">
   <thead>
     <tr>
-      <th> {{input type="checkbox" name="allChecked" checked=allChecked}}</th>
+      <th> </th>
       <th> Subscription Name </th>
       <th> Contract Number </th>
-      <th> Available </th>
-      <th> Type </th>
+      <th> System Type </th>
       <th> Start Date </th>
       <th> End Date </th>
+      <th> Available </th>
       <th> Quantity </th>
     </tr>
     </thead>
 
   <tbody>
-  {{#each subscription in controller.model itemController="subscription"}}
-    <tr>
-      <td> {{input type="checkbox" checked=subscription.isChecked}}</td>
-      <td> {{subscription.name}} </td>
-      <td> {{subscription.contract_number}} </td>
-      <td> {{subscription.available}} </td>
-      <td> {{subscription.subscription_type}} </td>
-      <td> {{subscription.start_date}} </td>
-      <td> {{subscription.end_date}} </td>
-      <td> {{input type='text' value=subscription.quantity size=4}} </td>
-    </tr>
+  {{#each subscription in model itemController="subscription"}}
+    {{tr-subscription subscription=subscription}}
   {{/each}}
   </tbody>
 </table>
 
-{{#unless attachingInProgress}}
-<div class='alert alert-info'>
-{{totalSelectedCount}} of {{totalCountSubscriptions}} subscriptions selected
-</div>
-{{/unless}}
-
-<button class='btn btn-success' {{bind-attr disabled=disableAttachButton}} {{action 'attachSubscriptions'}}>Attach Selected</button>
+<br />
+{{button-f class='btn btn-success' disabled=disableAttachButton title=buttonAttachTitle action="attachSubscriptions"}}
 
 <br />
 <br />
-
 
 <div style='text-align:right'>
   <button {{action 'showModal' 'cancel-modal'}} class='btn btn-default'>Cancel</button>

@@ -3,75 +3,45 @@ import Ember from 'ember';
 export default Ember.ArrayController.extend({
   needs: ['application', 'deployment'],
 
+  itemController: 'subscription',
+
   isUpstream: Ember.computed.alias("controllers.application.isUpstream"),
   stepNumberSubscriptions: Ember.computed.alias("controllers.deployment.stepNumberSubscriptions"),
 
   isOnlyShowSubscriptions: true,
+  enableAnalytics: false, // TODO should be set by setupController using API call
 
-  toggles: function(){ return Ember.A([]); }.property(),
-
-  /* boolean, computed getter and setter */
-  allChecked: function(key, value){
-    if (arguments.length === 1) {
-      var toggles = this.get('toggles');
-      return toggles && toggles.isEvery('isChecked');
+  buttonAttachTitle: function() {
+    if (this.get('attachingInProgress')) {
+      return "Attaching ...";
     } else {
-      this.get('toggles').setEach('isChecked', value);
-      return value;
+      return "Attach Selected";
     }
-  }.property('toggles.@each.isChecked'),
+  }.property('attachingInProgress'),
+
+  analyticsColor: function() {
+    if (this.get('enableAnalytics')) { return ''; } else { return 'disabled-color'; }
+  }.property('enableAnalytics'),
 
   totalCountSubscriptions: Ember.computed.alias('model.length'),
 
-  allSelectedItems: Ember.computed.filterBy('toggles', 'isChecked', true),
-  totalSelectedCount: Ember.computed.alias('allSelectedItems.length'),
-
-  disableSubscriptionsNext: true, // CHANGE to true when deploying
   attachingInProgress: false,
   showAttachedSuccessMessage: false,
 
-  prog: 20,
-  incrementBy: 20,
+  disableSubscriptionsNext: function() {
+    return (this.get('model.length') === 0) || this.get('attachingInProgress');
+  }.property('model', 'attachingInProgress'),
+
+  totalSelectedCount: function(){
+      return this.get('model').filterBy('isSelectedSubscription', true).get('length');
+  }.property('model.@each.isSelectedSubscription'),
+
+  selectedSubscriptions: function(){
+    return this.get('model').filterBy('isSelectedSubscription', true);
+  }.property('model.@each.isSelectedSubscription'),
 
   disableAttachButton: function() {
-    return (this.get('totalSelectedCount') === 0);
-  }.property('totalSelectedCount'),
-
-  actions: {
-    registerToggle: function(toggle) {
-      this.get('toggles').addObject(toggle);
-    },
-    deregisterToggle: function(toggle) {
-      this.get('toggles').removeObject(toggle);
-    },
-    attachSubscriptions: function () {
-      this.set('attachingInProgress', true);
-      this.set('disableAttachButton', true);
-      this.send('incrementProgressBar');
-    },
-
-    incrementProgressBar: function() {
-      var self = this;
-      Ember.run.later(function(){
-        return self.incrementProperty("prog", self.incrementBy);
-      }, 1000);
-      Ember.run.later(function(){
-        return self.incrementProperty("prog", self.incrementBy);
-      }, 2000);
-      Ember.run.later(function(){
-        return self.incrementProperty("prog", self.incrementBy);
-      }, 3000);
-      Ember.run.later(function(){
-        return self.incrementProperty("prog", self.incrementBy);
-      }, 4000);
-      Ember.run.later(function(){
-        self.set('disableSubscriptionsNext', false);
-        self.set('disableAttachButton', false);
-        self.set('attachingInProgress', false);
-        self.set('showAttachedSuccessMessage', true);
-      }, 4500);
-     },
-
-  },
+    return !(this.get('model').isAny('isSelectedSubscription')) || this.get('attachingInProgress');
+  }.property('model.@each.isSelectedSubscription', 'attachingInProgress'),
 
 });

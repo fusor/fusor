@@ -419,6 +419,10 @@ label.env_path_active:after {
   background-color: #ddd !important;
 }
 
+.disabled-color {
+  color: gray   !important;
+}
+
 .tabbed_side_nav_form {
   .tab-content {
     min-height: 600px;
@@ -472,4 +476,17 @@ th {
   border: 1px solid #d7d7d7;
   padding: 10px;
   display: inline-block;
+}
+
+.center {
+  text-align: center;
+}
+
+.white-on-blue {
+  background: #00a8d6;
+  color:#fff;
+}
+
+.black-font {
+  color:#000 !important;
 }
