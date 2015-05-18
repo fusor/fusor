@@ -9,7 +9,7 @@ var Router = Ember.Router.extend({
   LOG_VIEW_LOOKUPS: true
 });
 
-export default Router.map(function() {
+Router.map(function() {
   this.route('login');
   this.route('loggedin');
 
@@ -100,3 +100,5 @@ export default Router.map(function() {
     this.resource("discovered-host", { path: '/:discovered_hosts_id' });
   });
 });
+
+export default Router;
