@@ -1,11 +1,11 @@
 import Ember from 'ember';
 
-export default Ember.ObjectController.extend({
+export default Ember.Controller.extend({
 
-  username: '',
-  password: '',
+  buttonLoginTitle: 'Login',
+
   disableCredentialsNext: function() {
-    return ((this.get('username.length') === 0) || (this.get('password.length') === 0) );
-  }.property('username', 'password')
+    return (Ember.isBlank(this.get('identification')) || Ember.isBlank(this.get('password')));
+  }.property('username', 'password'),
 
 });

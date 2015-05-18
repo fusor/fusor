@@ -1,0 +1,62 @@
+{{#if showAlertMessage}}
+  <div class="row">
+    <div class='col-md-9'>
+      <div class='alert alert-success'>
+          <i class="fa fa-2x fa-check-circle-o green-circle"></i>
+          &nbsp;
+          {{newSatelliteName}} added successfully.
+      </div>
+    </div>
+  </div>
+{{/if}}
+
+<div class="row">
+  <div class='col-md-9'>
+    <div class='pull-right'>
+      {{#em-modal-toggler modal-id="registerNewSatellite" class="btn btn-primary"}}
+        Register a New Satellite
+      {{/em-modal-toggler}}
+    </div>
+  </div>
+</div>
+
+<br />
+
+<div class="row">
+  <div class='col-md-9'>
+    <table class="table table-striped">
+      <thead>
+        <th></th>
+        <th>Name</th>
+        <th>Subscriptions Attached</th>
+        <th>UUID</th>
+      </thead>
+      <tbody>
+        {{#each managementApp in model}}
+          {{tr-management-app managementApp=managementApp
+                              consumerUUID=sessionPortal.consumerUUID
+                              action="selectManagementApp"}}
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<br />
+<br />
+
+<div class="row">
+  <div class='col-md-9'>
+    <div class='pull-right'>
+        {{#link-to subscriptions.credentials class='btn btn-default'}}
+          Back
+        {{/link-to}}
+        {{#link-to subscriptions.select-subscriptions
+                   class='btn btn-primary'}}
+            Next
+        {{/link-to}}
+    </div>
+  </div>
+</div>
+
+{{partial 'new-satellite'}}

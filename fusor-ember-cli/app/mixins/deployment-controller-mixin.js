@@ -12,7 +12,7 @@ export default Ember.Mixin.create({
 
   // default is downstream
   isUpstream: false,
-  hideSubscriptions: true,
+  hideSubscriptions: false,
   isSubscriptions: function () {
     return (!(this.get('hideSubscriptions') && !(this.get('isUpstream'))));
   }.property('isUpstream', 'hideSubscriptions'),

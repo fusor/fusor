@@ -69,6 +69,7 @@ Router.map(function() {
     });
     this.resource('subscriptions', function() {
       this.route('credentials');
+      this.route('management-application');
       this.route('select-subscriptions', {path: 'select'});
     });
     this.resource('products');
