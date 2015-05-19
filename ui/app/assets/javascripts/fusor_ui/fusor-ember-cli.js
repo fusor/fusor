@@ -670,7 +670,7 @@ define('fusor-ember-cli/controllers/application', ['exports', 'ember'], function
   exports['default'] = Ember['default'].Controller.extend({
     needs: ['side-menu', 'deployment'],
 
-    deployAsPlugin: true,
+    deployAsPlugin: false,
     isEmberCliMode: Ember['default'].computed.not('deployAsPlugin'),
     isUpstream: false,
 
@@ -1784,9 +1784,10 @@ define('fusor-ember-cli/controllers/subscriptions/management-application', ['exp
 
   exports['default'] = Ember['default'].Controller.extend({
 
-    needs: ['subscriptions'],
+    needs: ['subscriptions', 'deployment'],
 
     sessionPortal: Ember['default'].computed.alias('controllers.subscriptions.model'),
+    upstream_consumer_uuid: Ember['default'].computed.alias('controllers.deployment.upstream_consumer_uuid'),
 
     showAlertMessage: false,
 
@@ -1795,6 +1796,7 @@ define('fusor-ember-cli/controllers/subscriptions/management-application', ['exp
         this.set('showAlertMessage', false);
         this.get('sessionPortal').set('consumerUUID', managementApp.uuid);
         this.get('sessionPortal').save();
+        this.set('upstream_consumer_uuid', managementApp.uuid);
       },
 
       createSatellite: function createSatellite(params) {
@@ -2753,7 +2755,6 @@ define('fusor-ember-cli/models/deployment', ['exports', 'ember-data'], function 
     description: DS['default'].attr('string'),
     organization: DS['default'].belongsTo('organization', { async: true }),
     lifecycle_environment: DS['default'].belongsTo('lifecycle-environment', { async: true }),
-    foreman_task_uuid: DS['default'].attr('string'),
 
     deploy_rhev: DS['default'].attr('boolean'),
     deploy_cfme: DS['default'].attr('boolean'),
@@ -2774,6 +2775,9 @@ define('fusor-ember-cli/models/deployment', ['exports', 'ember-data'], function 
 
     rhev_root_password: DS['default'].attr('string'),
     cfme_root_password: DS['default'].attr('string'),
+
+    foreman_task_uuid: DS['default'].attr('string'),
+    upstream_consumer_uuid: DS['default'].attr('string'),
 
     created_at: DS['default'].attr('date'),
     updated_at: DS['default'].attr('date'),
@@ -4318,6 +4322,10 @@ define('fusor-ember-cli/routes/subscriptions/management-application', ['exports'
     setupController: function setupController(controller, model) {
       controller.set('model', model);
       controller.set('sessionPortal', this.modelFor('subscriptions'));
+    },
+
+    deactivate: function deactivate() {
+      return this.send('saveDeployment', null);
     },
 
     actions: {
@@ -26270,7 +26278,7 @@ define('fusor-ember-cli/tests/controllers/subscriptions/management-application.j
 
   module('JSHint - controllers/subscriptions');
   test('controllers/subscriptions/management-application.js should pass jshint', function() { 
-    ok(false, 'controllers/subscriptions/management-application.js should pass jshint.\ncontrollers/subscriptions/management-application.js: line 19, col 19, \'$\' is not defined.\ncontrollers/subscriptions/management-application.js: line 18, col 31, \'params\' is defined but never used.\ncontrollers/subscriptions/management-application.js: line 27, col 56, \'reject\' is defined but never used.\ncontrollers/subscriptions/management-application.js: line 47, col 29, \'response\' is defined but never used.\n\n4 errors'); 
+    ok(false, 'controllers/subscriptions/management-application.js should pass jshint.\ncontrollers/subscriptions/management-application.js: line 21, col 19, \'$\' is not defined.\ncontrollers/subscriptions/management-application.js: line 20, col 31, \'params\' is defined but never used.\ncontrollers/subscriptions/management-application.js: line 29, col 56, \'reject\' is defined but never used.\ncontrollers/subscriptions/management-application.js: line 49, col 29, \'response\' is defined but never used.\n\n4 errors'); 
   });
 
 });
@@ -27327,7 +27335,7 @@ define('fusor-ember-cli/tests/routes/subscriptions/management-application.jshint
 
   module('JSHint - routes/subscriptions');
   test('routes/subscriptions/management-application.js should pass jshint', function() { 
-    ok(false, 'routes/subscriptions/management-application.js should pass jshint.\nroutes/subscriptions/management-application.js: line 15, col 29, Missing semicolon.\nroutes/subscriptions/management-application.js: line 23, col 64, Missing semicolon.\nroutes/subscriptions/management-application.js: line 33, col 68, Missing semicolon.\nroutes/subscriptions/management-application.js: line 13, col 12, \'$\' is not defined.\nroutes/subscriptions/management-application.js: line 37, col 31, \'transition\' is defined but never used.\nroutes/subscriptions/management-application.js: line 37, col 23, \'reason\' is defined but never used.\n\n6 errors'); 
+    ok(false, 'routes/subscriptions/management-application.js should pass jshint.\nroutes/subscriptions/management-application.js: line 15, col 29, Missing semicolon.\nroutes/subscriptions/management-application.js: line 23, col 64, Missing semicolon.\nroutes/subscriptions/management-application.js: line 33, col 68, Missing semicolon.\nroutes/subscriptions/management-application.js: line 13, col 12, \'$\' is not defined.\nroutes/subscriptions/management-application.js: line 41, col 31, \'transition\' is defined but never used.\nroutes/subscriptions/management-application.js: line 41, col 23, \'reason\' is defined but never used.\n\n6 errors'); 
   });
 
 });
@@ -33101,13 +33109,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.03e9b528"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.6ab081df"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.03e9b528"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.6ab081df"});
 }
 
 /* jshint ignore:end */

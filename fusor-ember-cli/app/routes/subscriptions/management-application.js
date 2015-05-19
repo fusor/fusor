@@ -33,6 +33,10 @@ export default Ember.Route.extend({
     controller.set('sessionPortal', this.modelFor('subscriptions'))
   },
 
+  deactivate: function() {
+    return this.send('saveDeployment', null);
+  },
+
   actions: {
       error: function(reason, transition) {
         // bubble up this error event:

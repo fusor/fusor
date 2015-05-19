@@ -2,9 +2,10 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
-  needs: ['subscriptions'],
+  needs: ['subscriptions', 'deployment'],
 
   sessionPortal: Ember.computed.alias('controllers.subscriptions.model'),
+  upstream_consumer_uuid: Ember.computed.alias("controllers.deployment.upstream_consumer_uuid"),
 
   showAlertMessage: false,
 
@@ -13,6 +14,7 @@ export default Ember.Controller.extend({
       this.set('showAlertMessage', false);
       this.get('sessionPortal').set('consumerUUID', managementApp.uuid);
       this.get('sessionPortal').save();
+      this.set('upstream_consumer_uuid', managementApp.uuid);
     },
 
     createSatellite: function(params) {

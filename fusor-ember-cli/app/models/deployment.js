@@ -5,7 +5,6 @@ export default DS.Model.extend({
   description: DS.attr('string'),
   organization: DS.belongsTo('organization', {async: true}),
   lifecycle_environment: DS.belongsTo('lifecycle-environment', {async: true}),
-  foreman_task_uuid: DS.attr('string'),
 
   deploy_rhev: DS.attr('boolean'),
   deploy_cfme: DS.attr('boolean'),
@@ -27,6 +26,9 @@ export default DS.Model.extend({
   rhev_root_password: DS.attr('string'),
   cfme_root_password: DS.attr('string'),
 
+  foreman_task_uuid: DS.attr('string'),
+  upstream_consumer_uuid: DS.attr('string'),
+
   created_at: DS.attr('date'),
   updated_at: DS.attr('date'),
 
@@ -41,3 +43,5 @@ export default DS.Model.extend({
   discovered_hosts: DS.hasMany('discovered-host', {inverse: 'deployments', async: true}),
 
 });
+
+
