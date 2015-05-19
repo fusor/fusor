@@ -71,10 +71,22 @@ module Actions
           Rails.logger.warn "XXX applying #{param} on #{node}"
         end
 
-        def run_appliance_console(host, user, password)
+        def run_appliance_console(host, ssh_user, ssh_password, db_password)
           Rails.logger.warn "XXX running the appliance console on the node"
           # use SSH command from the OSP code
-          client = Utils::Fusor::SSHConnection.new(host, user, password)
+          client = Utils::Fusor::SSHConnection.new(host, ssh_user, ssh_password)
+          cmd = "appliance_console_cli --region 1 --internal --force-key -p #{db_password}"
+          # need to deal with errors and return codes
+          client.execute(cmd)
+        end
+
+        def is_cloudforms_up
+          # possibly make a GET call to the webui
+        end
+
+        def add_rhev_provider
+          # not sure if this will be needed, will requier calling out to a
+          # script
         end
 
       end
