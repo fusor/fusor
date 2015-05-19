@@ -24354,8 +24354,8 @@ define('fusor-ember-cli/templates/subscriptions/management-application', ['expor
         block(env, morph0, context, "if", [get(env, context, "showAlertMessage")], {}, child0, null);
         block(env, morph1, context, "em-modal-toggler", [], {"modal-id": "registerNewSatellite", "class": "btn btn-primary"}, child1, null);
         block(env, morph2, context, "each", [get(env, context, "model")], {"keyword": "managementApp"}, child2, null);
-        block(env, morph3, context, "link-to", [get(env, context, "subscriptions.credentials")], {"class": "btn btn-default"}, child3, null);
-        block(env, morph4, context, "link-to", [get(env, context, "subscriptions.select-subscriptions")], {"class": "btn btn-primary"}, child4, null);
+        block(env, morph3, context, "link-to", ["subscriptions.credentials"], {"class": "btn btn-default"}, child3, null);
+        block(env, morph4, context, "link-to", ["subscriptions.select-subscriptions"], {"class": "btn btn-primary"}, child4, null);
         inline(env, morph5, context, "partial", ["new-satellite"], {});
         return fragment;
       }
