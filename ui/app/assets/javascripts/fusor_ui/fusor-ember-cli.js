@@ -60,6 +60,7 @@ define('fusor-ember-cli/app', ['exports', 'ember', 'ember/resolver', 'ember/load
 
   App = Ember['default'].Application.extend({
     modulePrefix: config['default'].modulePrefix,
+    podModulePrefix: config['default'].podModulePrefix,
     Resolver: Resolver['default']
   });
 
@@ -2079,36 +2080,6 @@ define('fusor-ember-cli/initializers/ember-idx-modal', ['exports', 'ember', 'emb
     };
 
 });
-define('fusor-ember-cli/initializers/ember-moment', ['exports', 'ember-moment/helpers/moment', 'ember-moment/helpers/ago', 'ember-moment/helpers/duration', 'ember'], function (exports, moment, ago, duration, Ember) {
-
-  'use strict';
-
-  var initialize = function initialize() {
-    var registerHelper;
-
-    if (Ember['default'].HTMLBars) {
-      registerHelper = function (helperName, fn) {
-        Ember['default'].HTMLBars._registerHelper(helperName, Ember['default'].HTMLBars.makeBoundHelper(fn));
-      };
-    } else {
-      registerHelper = Ember['default'].Handlebars.helper;
-    };
-
-    registerHelper('moment', moment['default']);
-    registerHelper('ago', ago['default']);
-    registerHelper('duration', duration['default']);
-  };
-
-  exports['default'] = {
-    name: 'ember-moment',
-
-    initialize: initialize
-  };
-  /* container, app */
-
-  exports.initialize = initialize;
-
-});
 define('fusor-ember-cli/initializers/export-application-global', ['exports', 'ember', 'fusor-ember-cli/config/environment'], function (exports, Ember, config) {
 
   'use strict';
@@ -3052,7 +3023,7 @@ define('fusor-ember-cli/router', ['exports', 'ember', 'fusor-ember-cli/config/en
     LOG_VIEW_LOOKUPS: true
   });
 
-  Router.map(function () {
+  exports['default'] = Router.map(function () {
     this.route('login');
     this.route('loggedin');
 
@@ -3144,8 +3115,6 @@ define('fusor-ember-cli/router', ['exports', 'ember', 'fusor-ember-cli/config/en
       this.resource('discovered-host', { path: '/:discovered_hosts_id' });
     });
   });
-
-  exports['default'] = Router;
 
 });
 define('fusor-ember-cli/routes/application', ['exports', 'ember'], function (exports, Ember) {
@@ -4130,8 +4099,13 @@ define('fusor-ember-cli/routes/subscriptions', ['exports', 'ember'], function (e
   exports['default'] = Ember['default'].Route.extend({
 
     model: function model() {
+      var self = this;
       return this.store.find('session-portal').then(function (results) {
-        return results.get('firstObject');
+        if (Ember['default'].isBlank(results)) {
+          return self.store.createRecord('session-portal');
+        } else {
+          return results.get('firstObject');
+        }
       });
     },
 
@@ -4525,7 +4499,7 @@ define('fusor-ember-cli/templates/application', ['exports'], function (exports) 
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -4567,7 +4541,7 @@ define('fusor-ember-cli/templates/application', ['exports'], function (exports) 
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -4629,7 +4603,7 @@ define('fusor-ember-cli/templates/application/index', ['exports'], function (exp
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -4669,7 +4643,7 @@ define('fusor-ember-cli/templates/assign-nodes', ['exports'], function (exports)
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -4721,7 +4695,7 @@ define('fusor-ember-cli/templates/cancel-deployment-modal', ['exports'], functio
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -4756,7 +4730,7 @@ define('fusor-ember-cli/templates/cancel-deployment-modal', ['exports'], functio
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -4810,7 +4784,7 @@ define('fusor-ember-cli/templates/cancel-deployment-modal', ['exports'], functio
       var child1 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -4847,7 +4821,7 @@ define('fusor-ember-cli/templates/cancel-deployment-modal', ['exports'], functio
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -4882,7 +4856,7 @@ define('fusor-ember-cli/templates/cancel-deployment-modal', ['exports'], functio
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -4924,7 +4898,7 @@ define('fusor-ember-cli/templates/cancel-deployment-modal', ['exports'], functio
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -4984,7 +4958,7 @@ define('fusor-ember-cli/templates/cancel-deployment-modal', ['exports'], functio
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -5038,7 +5012,7 @@ define('fusor-ember-cli/templates/cancel-modal', ['exports'], function (exports)
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -5073,7 +5047,7 @@ define('fusor-ember-cli/templates/cancel-modal', ['exports'], function (exports)
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -5120,7 +5094,7 @@ define('fusor-ember-cli/templates/cloudforms-storage-domain', ['exports'], funct
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -5190,7 +5164,7 @@ define('fusor-ember-cli/templates/cloudforms-vm', ['exports'], function (exports
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -5261,7 +5235,7 @@ define('fusor-ember-cli/templates/cloudforms', ['exports'], function (exports) {
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -5308,7 +5282,7 @@ define('fusor-ember-cli/templates/cloudforms', ['exports'], function (exports) {
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -5354,7 +5328,7 @@ define('fusor-ember-cli/templates/cloudforms', ['exports'], function (exports) {
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -5435,7 +5409,7 @@ define('fusor-ember-cli/templates/cloudforms/cfme-configuration', ['exports'], f
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -5471,7 +5445,7 @@ define('fusor-ember-cli/templates/cloudforms/cfme-configuration', ['exports'], f
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -5506,7 +5480,7 @@ define('fusor-ember-cli/templates/cloudforms/cfme-configuration', ['exports'], f
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -5576,7 +5550,7 @@ define('fusor-ember-cli/templates/cloudforms/index', ['exports'], function (expo
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -5625,7 +5599,7 @@ define('fusor-ember-cli/templates/components/accordion-item', ['exports'], funct
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -5667,7 +5641,7 @@ define('fusor-ember-cli/templates/components/accordion-item', ['exports'], funct
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -5756,7 +5730,7 @@ define('fusor-ember-cli/templates/components/base-f', ['exports'], function (exp
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -5851,7 +5825,7 @@ define('fusor-ember-cli/templates/components/button-f', ['exports'], function (e
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -5900,7 +5874,7 @@ define('fusor-ember-cli/templates/components/em-button', ['exports'], function (
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -5942,7 +5916,7 @@ define('fusor-ember-cli/templates/components/em-button', ['exports'], function (
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -5993,7 +5967,7 @@ define('fusor-ember-cli/templates/components/em-form-control-help', ['exports'],
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -6041,7 +6015,7 @@ define('fusor-ember-cli/templates/components/em-form-group', ['exports'], functi
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -6092,7 +6066,7 @@ define('fusor-ember-cli/templates/components/em-form-group', ['exports'], functi
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -6134,7 +6108,7 @@ define('fusor-ember-cli/templates/components/em-form-group', ['exports'], functi
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -6181,7 +6155,7 @@ define('fusor-ember-cli/templates/components/em-form-label', ['exports'], functi
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -6235,7 +6209,7 @@ define('fusor-ember-cli/templates/components/em-form-submit', ['exports'], funct
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -6291,7 +6265,7 @@ define('fusor-ember-cli/templates/components/em-form-submit', ['exports'], funct
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -6338,7 +6312,7 @@ define('fusor-ember-cli/templates/components/em-form-submit', ['exports'], funct
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -6386,7 +6360,7 @@ define('fusor-ember-cli/templates/components/em-form', ['exports'], function (ex
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -6428,7 +6402,7 @@ define('fusor-ember-cli/templates/components/em-form', ['exports'], function (ex
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -6484,7 +6458,7 @@ define('fusor-ember-cli/templates/components/em-modal-confirm', ['exports'], fun
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -6527,7 +6501,7 @@ define('fusor-ember-cli/templates/components/em-modal-confirm', ['exports'], fun
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -6580,7 +6554,7 @@ define('fusor-ember-cli/templates/components/em-modal-confirm', ['exports'], fun
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -6622,7 +6596,7 @@ define('fusor-ember-cli/templates/components/em-modal-confirm', ['exports'], fun
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -6681,7 +6655,7 @@ define('fusor-ember-cli/templates/components/em-modal-confirm', ['exports'], fun
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -6728,7 +6702,7 @@ define('fusor-ember-cli/templates/components/em-modal-confirm', ['exports'], fun
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -6775,7 +6749,7 @@ define('fusor-ember-cli/templates/components/em-modal-confirm', ['exports'], fun
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -6823,7 +6797,7 @@ define('fusor-ember-cli/templates/components/em-modal-confirm', ['exports'], fun
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -6871,7 +6845,7 @@ define('fusor-ember-cli/templates/components/em-modal', ['exports'], function (e
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -6927,7 +6901,7 @@ define('fusor-ember-cli/templates/components/em-modal', ['exports'], function (e
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -6974,7 +6948,7 @@ define('fusor-ember-cli/templates/components/env-path-list-item', ['exports'], f
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -7038,7 +7012,7 @@ define('fusor-ember-cli/templates/components/formgroup/control-within-label', ['
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -7080,7 +7054,7 @@ define('fusor-ember-cli/templates/components/formgroup/control-within-label', ['
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -7128,7 +7102,7 @@ define('fusor-ember-cli/templates/components/formgroup/form-group-control', ['ex
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -7179,7 +7153,7 @@ define('fusor-ember-cli/templates/components/formgroup/form-group-control', ['ex
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -7221,7 +7195,7 @@ define('fusor-ember-cli/templates/components/formgroup/form-group-control', ['ex
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -7272,7 +7246,7 @@ define('fusor-ember-cli/templates/components/formgroup/form-group', ['exports'],
           var child0 = (function() {
             return {
               isHTMLBars: true,
-              revision: "Ember@1.12.0",
+              revision: "Ember@1.11.1",
               blockParams: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -7323,7 +7297,7 @@ define('fusor-ember-cli/templates/components/formgroup/form-group', ['exports'],
           var child1 = (function() {
             return {
               isHTMLBars: true,
-              revision: "Ember@1.12.0",
+              revision: "Ember@1.11.1",
               blockParams: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -7365,7 +7339,7 @@ define('fusor-ember-cli/templates/components/formgroup/form-group', ['exports'],
           }());
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -7407,7 +7381,7 @@ define('fusor-ember-cli/templates/components/formgroup/form-group', ['exports'],
           var child0 = (function() {
             return {
               isHTMLBars: true,
-              revision: "Ember@1.12.0",
+              revision: "Ember@1.11.1",
               blockParams: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -7464,7 +7438,7 @@ define('fusor-ember-cli/templates/components/formgroup/form-group', ['exports'],
           var child1 = (function() {
             return {
               isHTMLBars: true,
-              revision: "Ember@1.12.0",
+              revision: "Ember@1.11.1",
               blockParams: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -7512,7 +7486,7 @@ define('fusor-ember-cli/templates/components/formgroup/form-group', ['exports'],
           }());
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -7552,7 +7526,7 @@ define('fusor-ember-cli/templates/components/formgroup/form-group', ['exports'],
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -7593,7 +7567,7 @@ define('fusor-ember-cli/templates/components/formgroup/form-group', ['exports'],
       var child1 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -7636,7 +7610,7 @@ define('fusor-ember-cli/templates/components/formgroup/form-group', ['exports'],
       var child2 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -7683,7 +7657,7 @@ define('fusor-ember-cli/templates/components/formgroup/form-group', ['exports'],
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -7725,7 +7699,7 @@ define('fusor-ember-cli/templates/components/formgroup/form-group', ['exports'],
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -7765,7 +7739,7 @@ define('fusor-ember-cli/templates/components/formgroup/form-group', ['exports'],
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -7818,7 +7792,7 @@ define('fusor-ember-cli/templates/components/formgroup/form-group', ['exports'],
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -7860,7 +7834,7 @@ define('fusor-ember-cli/templates/components/formgroup/form-group', ['exports'],
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -7907,7 +7881,7 @@ define('fusor-ember-cli/templates/components/labeled-radio-button', ['exports'],
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -7961,7 +7935,7 @@ define('fusor-ember-cli/templates/components/markdown-to-html', ['exports'], fun
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -8009,7 +7983,7 @@ define('fusor-ember-cli/templates/components/modal-confirm', ['exports'], functi
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -8142,7 +8116,7 @@ define('fusor-ember-cli/templates/components/radio-button-f', ['exports'], funct
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -8201,7 +8175,7 @@ define('fusor-ember-cli/templates/components/rchi-item', ['exports'], function (
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -8241,7 +8215,7 @@ define('fusor-ember-cli/templates/components/rchi-item', ['exports'], function (
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -8318,7 +8292,7 @@ define('fusor-ember-cli/templates/components/review-link', ['exports'], function
       var child0 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -8361,7 +8335,7 @@ define('fusor-ember-cli/templates/components/review-link', ['exports'], function
       var child1 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -8403,7 +8377,7 @@ define('fusor-ember-cli/templates/components/review-link', ['exports'], function
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -8445,7 +8419,7 @@ define('fusor-ember-cli/templates/components/review-link', ['exports'], function
       var child0 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -8487,7 +8461,7 @@ define('fusor-ember-cli/templates/components/review-link', ['exports'], function
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -8538,7 +8512,7 @@ define('fusor-ember-cli/templates/components/review-link', ['exports'], function
       var child0 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -8580,7 +8554,7 @@ define('fusor-ember-cli/templates/components/review-link', ['exports'], function
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -8629,7 +8603,7 @@ define('fusor-ember-cli/templates/components/review-link', ['exports'], function
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -8694,7 +8668,7 @@ define('fusor-ember-cli/templates/components/rhci-hover-text', ['exports'], func
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -8743,7 +8717,7 @@ define('fusor-ember-cli/templates/components/rhci-start', ['exports'], function 
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -8835,7 +8809,7 @@ define('fusor-ember-cli/templates/components/rhci-start', ['exports'], function 
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -8871,7 +8845,7 @@ define('fusor-ember-cli/templates/components/rhci-start', ['exports'], function 
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -8906,7 +8880,7 @@ define('fusor-ember-cli/templates/components/rhci-start', ['exports'], function 
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -9078,7 +9052,7 @@ define('fusor-ember-cli/templates/components/rhci-wizard', ['exports'], function
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -9121,7 +9095,7 @@ define('fusor-ember-cli/templates/components/rhci-wizard', ['exports'], function
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -9164,7 +9138,7 @@ define('fusor-ember-cli/templates/components/rhci-wizard', ['exports'], function
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -9207,7 +9181,7 @@ define('fusor-ember-cli/templates/components/rhci-wizard', ['exports'], function
     var child3 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -9249,7 +9223,7 @@ define('fusor-ember-cli/templates/components/rhci-wizard', ['exports'], function
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -9352,7 +9326,7 @@ define('fusor-ember-cli/templates/components/select-f', ['exports'], function (e
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -9400,7 +9374,7 @@ define('fusor-ember-cli/templates/components/select-f', ['exports'], function (e
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -9449,7 +9423,7 @@ define('fusor-ember-cli/templates/components/select-simple-f', ['exports'], func
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -9497,7 +9471,7 @@ define('fusor-ember-cli/templates/components/select-simple-f', ['exports'], func
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -9545,7 +9519,7 @@ define('fusor-ember-cli/templates/components/step-number', ['exports'], function
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -9598,7 +9572,7 @@ define('fusor-ember-cli/templates/components/subnet-drop-area', ['exports'], fun
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -9665,7 +9639,7 @@ define('fusor-ember-cli/templates/components/subnet-drop-area', ['exports'], fun
       var child0 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -9707,7 +9681,7 @@ define('fusor-ember-cli/templates/components/subnet-drop-area', ['exports'], fun
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -9748,7 +9722,7 @@ define('fusor-ember-cli/templates/components/subnet-drop-area', ['exports'], fun
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -9790,7 +9764,7 @@ define('fusor-ember-cli/templates/components/subnet-drop-area', ['exports'], fun
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -9866,7 +9840,7 @@ define('fusor-ember-cli/templates/components/text-f', ['exports'], function (exp
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -9920,7 +9894,7 @@ define('fusor-ember-cli/templates/components/text-f', ['exports'], function (exp
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -9960,7 +9934,7 @@ define('fusor-ember-cli/templates/components/text-f', ['exports'], function (exp
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -10014,7 +9988,7 @@ define('fusor-ember-cli/templates/components/text-f', ['exports'], function (exp
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -10064,7 +10038,7 @@ define('fusor-ember-cli/templates/components/textarea-f', ['exports'], function 
       var child0 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -10107,7 +10081,7 @@ define('fusor-ember-cli/templates/components/textarea-f', ['exports'], function 
       var child1 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -10149,7 +10123,7 @@ define('fusor-ember-cli/templates/components/textarea-f', ['exports'], function 
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -10197,7 +10171,7 @@ define('fusor-ember-cli/templates/components/textarea-f', ['exports'], function 
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -10245,7 +10219,7 @@ define('fusor-ember-cli/templates/components/tr-engine', ['exports'], function (
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -10287,7 +10261,7 @@ define('fusor-ember-cli/templates/components/tr-engine', ['exports'], function (
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -10385,7 +10359,7 @@ define('fusor-ember-cli/templates/components/tr-hypervisor', ['exports'], functi
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -10427,7 +10401,7 @@ define('fusor-ember-cli/templates/components/tr-hypervisor', ['exports'], functi
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -10526,7 +10500,7 @@ define('fusor-ember-cli/templates/components/tr-management-app', ['exports'], fu
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -10615,7 +10589,7 @@ define('fusor-ember-cli/templates/components/tr-organization', ['exports'], func
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -10692,7 +10666,7 @@ define('fusor-ember-cli/templates/components/tr-subscription', ['exports'], func
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -10831,7 +10805,7 @@ define('fusor-ember-cli/templates/components/tr-task', ['exports'], function (ex
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -10872,7 +10846,7 @@ define('fusor-ember-cli/templates/components/tr-task', ['exports'], function (ex
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -10912,7 +10886,7 @@ define('fusor-ember-cli/templates/components/tr-task', ['exports'], function (ex
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -11040,7 +11014,7 @@ define('fusor-ember-cli/templates/components/traffic-type', ['exports'], functio
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -11088,7 +11062,7 @@ define('fusor-ember-cli/templates/components/upstream-downstream', ['exports'], 
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -11171,7 +11145,7 @@ define('fusor-ember-cli/templates/components/vertical-tab', ['exports'], functio
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -11221,7 +11195,7 @@ define('fusor-ember-cli/templates/components/wizard-item', ['exports'], function
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -11276,7 +11250,7 @@ define('fusor-ember-cli/templates/components/wizard-item', ['exports'], function
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -11335,7 +11309,7 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -11403,7 +11377,7 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
       var child0 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -11481,7 +11455,7 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
       var child1 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -11533,7 +11507,7 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
       var child2 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -11568,7 +11542,7 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -11637,7 +11611,7 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -11672,7 +11646,7 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -11818,7 +11792,7 @@ define('fusor-ember-cli/templates/configure-environment.loading', ['exports'], f
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -11861,7 +11835,7 @@ define('fusor-ember-cli/templates/configure-organization', ['exports'], function
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -11930,7 +11904,7 @@ define('fusor-ember-cli/templates/configure-organization', ['exports'], function
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -11966,7 +11940,7 @@ define('fusor-ember-cli/templates/configure-organization', ['exports'], function
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -12009,7 +11983,7 @@ define('fusor-ember-cli/templates/configure-organization', ['exports'], function
     var child3 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -12045,7 +12019,7 @@ define('fusor-ember-cli/templates/configure-organization', ['exports'], function
     var child4 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -12080,7 +12054,7 @@ define('fusor-ember-cli/templates/configure-organization', ['exports'], function
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -12275,7 +12249,7 @@ define('fusor-ember-cli/templates/configure-organization.loading', ['exports'], 
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -12318,7 +12292,7 @@ define('fusor-ember-cli/templates/content-source-upstream', ['exports'], functio
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -12353,7 +12327,7 @@ define('fusor-ember-cli/templates/content-source-upstream', ['exports'], functio
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -12435,7 +12409,7 @@ define('fusor-ember-cli/templates/debug-deployment', ['exports'], function (expo
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -12722,7 +12696,7 @@ define('fusor-ember-cli/templates/deployment-new', ['exports'], function (export
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -12770,7 +12744,7 @@ define('fusor-ember-cli/templates/deployment-new/index', ['exports'], function (
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -12818,7 +12792,7 @@ define('fusor-ember-cli/templates/deployment-new/satellite', ['exports'], functi
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -12866,7 +12840,7 @@ define('fusor-ember-cli/templates/deployment-new/satellite/configure-environment
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -12914,7 +12888,7 @@ define('fusor-ember-cli/templates/deployment-new/satellite/configure-environment
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -12956,7 +12930,7 @@ define('fusor-ember-cli/templates/deployment-new/satellite/configure-organizatio
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -13003,7 +12977,7 @@ define('fusor-ember-cli/templates/deployment-new/satellite/configure-organizatio
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -13045,7 +13019,7 @@ define('fusor-ember-cli/templates/deployment-new/satellite/index', ['exports'], 
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -13093,7 +13067,7 @@ define('fusor-ember-cli/templates/deployment-new/satellite/loading', ['exports']
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -13135,7 +13109,7 @@ define('fusor-ember-cli/templates/deployment-new/start', ['exports'], function (
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -13185,7 +13159,7 @@ define('fusor-ember-cli/templates/deployment', ['exports'], function (exports) {
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -13225,7 +13199,7 @@ define('fusor-ember-cli/templates/deployment', ['exports'], function (exports) {
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -13266,7 +13240,7 @@ define('fusor-ember-cli/templates/deployment', ['exports'], function (exports) {
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -13350,7 +13324,7 @@ define('fusor-ember-cli/templates/deployment', ['exports'], function (exports) {
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -13405,7 +13379,7 @@ define('fusor-ember-cli/templates/deployment/start', ['exports'], function (expo
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -13454,7 +13428,7 @@ define('fusor-ember-cli/templates/deployments', ['exports'], function (exports) 
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -13491,7 +13465,7 @@ define('fusor-ember-cli/templates/deployments', ['exports'], function (exports) 
       var child0 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -13534,7 +13508,7 @@ define('fusor-ember-cli/templates/deployments', ['exports'], function (exports) 
       var child1 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -13569,7 +13543,7 @@ define('fusor-ember-cli/templates/deployments', ['exports'], function (exports) 
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -13656,7 +13630,7 @@ define('fusor-ember-cli/templates/deployments', ['exports'], function (exports) 
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -13852,7 +13826,7 @@ define('fusor-ember-cli/templates/devonly', ['exports'], function (exports) {
       var child0 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -13887,7 +13861,7 @@ define('fusor-ember-cli/templates/devonly', ['exports'], function (exports) {
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -13951,7 +13925,7 @@ define('fusor-ember-cli/templates/devonly', ['exports'], function (exports) {
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -14011,7 +13985,7 @@ define('fusor-ember-cli/templates/devonly', ['exports'], function (exports) {
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -14072,7 +14046,7 @@ define('fusor-ember-cli/templates/discovered-host', ['exports'], function (expor
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -14120,7 +14094,7 @@ define('fusor-ember-cli/templates/discovered-hosts', ['exports'], function (expo
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -14168,7 +14142,7 @@ define('fusor-ember-cli/templates/engine', ['exports'], function (exports) {
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -14251,7 +14225,7 @@ define('fusor-ember-cli/templates/engine/discovered-host', ['exports'], function
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -14294,7 +14268,7 @@ define('fusor-ember-cli/templates/engine/discovered-host', ['exports'], function
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -14330,7 +14304,7 @@ define('fusor-ember-cli/templates/engine/discovered-host', ['exports'], function
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -14365,7 +14339,7 @@ define('fusor-ember-cli/templates/engine/discovered-host', ['exports'], function
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -14495,7 +14469,7 @@ define('fusor-ember-cli/templates/hostgroup', ['exports'], function (exports) {
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -14543,7 +14517,7 @@ define('fusor-ember-cli/templates/hostgroup/edit', ['exports'], function (export
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -14592,7 +14566,7 @@ define('fusor-ember-cli/templates/hostgroups', ['exports'], function (exports) {
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -14645,7 +14619,7 @@ define('fusor-ember-cli/templates/hostgroups', ['exports'], function (exports) {
       var child0 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -14689,7 +14663,7 @@ define('fusor-ember-cli/templates/hostgroups', ['exports'], function (exports) {
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -14724,7 +14698,7 @@ define('fusor-ember-cli/templates/hostgroups', ['exports'], function (exports) {
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -14782,7 +14756,7 @@ define('fusor-ember-cli/templates/hostgroups', ['exports'], function (exports) {
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -14846,7 +14820,7 @@ define('fusor-ember-cli/templates/hostgroups', ['exports'], function (exports) {
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -14887,7 +14861,7 @@ define('fusor-ember-cli/templates/hostgroups', ['exports'], function (exports) {
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -14981,7 +14955,7 @@ define('fusor-ember-cli/templates/hypervisor', ['exports'], function (exports) {
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -15057,7 +15031,7 @@ define('fusor-ember-cli/templates/hypervisor/discovered-host', ['exports'], func
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -15100,7 +15074,7 @@ define('fusor-ember-cli/templates/hypervisor/discovered-host', ['exports'], func
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -15135,7 +15109,7 @@ define('fusor-ember-cli/templates/hypervisor/discovered-host', ['exports'], func
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -15299,7 +15273,7 @@ define('fusor-ember-cli/templates/index', ['exports'], function (exports) {
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -15334,7 +15308,7 @@ define('fusor-ember-cli/templates/index', ['exports'], function (exports) {
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -15391,7 +15365,7 @@ define('fusor-ember-cli/templates/loading', ['exports'], function (exports) {
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -15446,7 +15420,7 @@ define('fusor-ember-cli/templates/loggedin', ['exports'], function (exports) {
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -15493,7 +15467,7 @@ define('fusor-ember-cli/templates/login', ['exports'], function (exports) {
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -15559,7 +15533,7 @@ define('fusor-ember-cli/templates/login', ['exports'], function (exports) {
       var child0 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -15595,7 +15569,7 @@ define('fusor-ember-cli/templates/login', ['exports'], function (exports) {
       var child1 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -15630,7 +15604,7 @@ define('fusor-ember-cli/templates/login', ['exports'], function (exports) {
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -15674,7 +15648,7 @@ define('fusor-ember-cli/templates/login', ['exports'], function (exports) {
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -15897,7 +15871,7 @@ define('fusor-ember-cli/templates/logout-modal', ['exports'], function (exports)
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -15932,7 +15906,7 @@ define('fusor-ember-cli/templates/logout-modal', ['exports'], function (exports)
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -15980,7 +15954,7 @@ define('fusor-ember-cli/templates/mainmenu', ['exports'], function (exports) {
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -16016,7 +15990,7 @@ define('fusor-ember-cli/templates/mainmenu', ['exports'], function (exports) {
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -16058,7 +16032,7 @@ define('fusor-ember-cli/templates/mainmenu', ['exports'], function (exports) {
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -16094,7 +16068,7 @@ define('fusor-ember-cli/templates/mainmenu', ['exports'], function (exports) {
     var child3 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -16136,7 +16110,7 @@ define('fusor-ember-cli/templates/mainmenu', ['exports'], function (exports) {
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -16271,7 +16245,7 @@ define('fusor-ember-cli/templates/networking', ['exports'], function (exports) {
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -16350,7 +16324,7 @@ define('fusor-ember-cli/templates/new-environment', ['exports'], function (expor
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -16397,7 +16371,7 @@ define('fusor-ember-cli/templates/new-environment', ['exports'], function (expor
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -16447,7 +16421,7 @@ define('fusor-ember-cli/templates/new-environment', ['exports'], function (expor
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -16483,7 +16457,7 @@ define('fusor-ember-cli/templates/new-environment', ['exports'], function (expor
         var child1 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -16537,7 +16511,7 @@ define('fusor-ember-cli/templates/new-environment', ['exports'], function (expor
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -16578,7 +16552,7 @@ define('fusor-ember-cli/templates/new-environment', ['exports'], function (expor
       var child2 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -16624,7 +16598,7 @@ define('fusor-ember-cli/templates/new-environment', ['exports'], function (expor
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -16678,7 +16652,7 @@ define('fusor-ember-cli/templates/new-environment', ['exports'], function (expor
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -16728,7 +16702,7 @@ define('fusor-ember-cli/templates/new-organization', ['exports'], function (expo
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -16775,7 +16749,7 @@ define('fusor-ember-cli/templates/new-organization', ['exports'], function (expo
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -16825,7 +16799,7 @@ define('fusor-ember-cli/templates/new-organization', ['exports'], function (expo
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -16861,7 +16835,7 @@ define('fusor-ember-cli/templates/new-organization', ['exports'], function (expo
         var child1 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -16909,7 +16883,7 @@ define('fusor-ember-cli/templates/new-organization', ['exports'], function (expo
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -16950,7 +16924,7 @@ define('fusor-ember-cli/templates/new-organization', ['exports'], function (expo
       var child2 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -16996,7 +16970,7 @@ define('fusor-ember-cli/templates/new-organization', ['exports'], function (expo
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -17050,7 +17024,7 @@ define('fusor-ember-cli/templates/new-organization', ['exports'], function (expo
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -17100,7 +17074,7 @@ define('fusor-ember-cli/templates/new-satellite', ['exports'], function (exports
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -17147,7 +17121,7 @@ define('fusor-ember-cli/templates/new-satellite', ['exports'], function (exports
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -17197,7 +17171,7 @@ define('fusor-ember-cli/templates/new-satellite', ['exports'], function (exports
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -17233,7 +17207,7 @@ define('fusor-ember-cli/templates/new-satellite', ['exports'], function (exports
         var child1 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -17275,7 +17249,7 @@ define('fusor-ember-cli/templates/new-satellite', ['exports'], function (exports
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -17317,7 +17291,7 @@ define('fusor-ember-cli/templates/new-satellite', ['exports'], function (exports
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -17352,7 +17326,7 @@ define('fusor-ember-cli/templates/new-satellite', ['exports'], function (exports
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -17404,7 +17378,7 @@ define('fusor-ember-cli/templates/new-satellite', ['exports'], function (exports
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -17458,7 +17432,7 @@ define('fusor-ember-cli/templates/new-satellite', ['exports'], function (exports
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -17505,7 +17479,7 @@ define('fusor-ember-cli/templates/nodes', ['exports'], function (exports) {
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -17548,7 +17522,7 @@ define('fusor-ember-cli/templates/openstack', ['exports'], function (exports) {
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -17595,7 +17569,7 @@ define('fusor-ember-cli/templates/openstack', ['exports'], function (exports) {
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -17641,7 +17615,7 @@ define('fusor-ember-cli/templates/openstack', ['exports'], function (exports) {
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -17723,7 +17697,7 @@ define('fusor-ember-cli/templates/openstack/index', ['exports'], function (expor
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -17772,7 +17746,7 @@ define('fusor-ember-cli/templates/products', ['exports'], function (exports) {
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -17821,7 +17795,7 @@ define('fusor-ember-cli/templates/products', ['exports'], function (exports) {
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -17864,7 +17838,7 @@ define('fusor-ember-cli/templates/products', ['exports'], function (exports) {
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -17973,7 +17947,7 @@ define('fusor-ember-cli/templates/products', ['exports'], function (exports) {
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -18112,7 +18086,7 @@ define('fusor-ember-cli/templates/register-nodes', ['exports'], function (export
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -18162,7 +18136,7 @@ define('fusor-ember-cli/templates/review', ['exports'], function (exports) {
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -18209,7 +18183,7 @@ define('fusor-ember-cli/templates/review', ['exports'], function (exports) {
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -18255,7 +18229,7 @@ define('fusor-ember-cli/templates/review', ['exports'], function (exports) {
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -18337,7 +18311,7 @@ define('fusor-ember-cli/templates/review/index', ['exports'], function (exports)
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -18386,7 +18360,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -18456,7 +18430,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
       var child0 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -18497,7 +18471,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
       var child1 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -18538,7 +18512,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
       var child2 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -18578,7 +18552,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -18647,7 +18621,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -18690,7 +18664,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
         var child1 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -18736,7 +18710,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
               var child0 = (function() {
                 return {
                   isHTMLBars: true,
-                  revision: "Ember@1.12.0",
+                  revision: "Ember@1.11.1",
                   blockParams: 0,
                   cachedFragment: null,
                   hasRendered: false,
@@ -18778,7 +18752,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
               }());
               return {
                 isHTMLBars: true,
-                revision: "Ember@1.12.0",
+                revision: "Ember@1.11.1",
                 blockParams: 0,
                 cachedFragment: null,
                 hasRendered: false,
@@ -18822,7 +18796,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
             }());
             return {
               isHTMLBars: true,
-              revision: "Ember@1.12.0",
+              revision: "Ember@1.11.1",
               blockParams: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -18867,7 +18841,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
           }());
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -18914,7 +18888,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -19028,7 +19002,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -19070,7 +19044,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
       var child0 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -19103,7 +19077,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -19146,7 +19120,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
         var child0 = (function() {
           return {
             isHTMLBars: true,
-            revision: "Ember@1.12.0",
+            revision: "Ember@1.11.1",
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -19188,7 +19162,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
         }());
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -19244,7 +19218,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -19284,7 +19258,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -19414,7 +19388,7 @@ define('fusor-ember-cli/templates/review/progress', ['exports'], function (expor
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -19483,7 +19457,7 @@ define('fusor-ember-cli/templates/review/progress', ['exports'], function (expor
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -19525,7 +19499,7 @@ define('fusor-ember-cli/templates/review/progress', ['exports'], function (expor
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -19566,7 +19540,7 @@ define('fusor-ember-cli/templates/review/progress', ['exports'], function (expor
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -19696,7 +19670,7 @@ define('fusor-ember-cli/templates/review/progress/details', ['exports'], functio
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -19825,7 +19799,7 @@ define('fusor-ember-cli/templates/review/progress/details/task', ['exports'], fu
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -19867,7 +19841,7 @@ define('fusor-ember-cli/templates/review/progress/details/task', ['exports'], fu
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -19909,7 +19883,7 @@ define('fusor-ember-cli/templates/review/progress/details/task', ['exports'], fu
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -19951,7 +19925,7 @@ define('fusor-ember-cli/templates/review/progress/details/task', ['exports'], fu
     var child3 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -19993,7 +19967,7 @@ define('fusor-ember-cli/templates/review/progress/details/task', ['exports'], fu
     var child4 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -20034,7 +20008,7 @@ define('fusor-ember-cli/templates/review/progress/details/task', ['exports'], fu
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -20126,7 +20100,7 @@ define('fusor-ember-cli/templates/review/progress/details/task/index', ['exports
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -20173,7 +20147,7 @@ define('fusor-ember-cli/templates/review/progress/details/task/index', ['exports
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -20220,7 +20194,7 @@ define('fusor-ember-cli/templates/review/progress/details/task/index', ['exports
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -20283,7 +20257,7 @@ define('fusor-ember-cli/templates/review/progress/details/task/index', ['exports
     var child3 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -20345,7 +20319,7 @@ define('fusor-ember-cli/templates/review/progress/details/task/index', ['exports
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -20697,7 +20671,7 @@ define('fusor-ember-cli/templates/review/progress/details/task/running-steps', [
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -20746,7 +20720,7 @@ define('fusor-ember-cli/templates/review/progress/details/task/task-errors', ['e
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -20795,7 +20769,7 @@ define('fusor-ember-cli/templates/review/progress/details/task/task-locks', ['ex
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -20844,7 +20818,7 @@ define('fusor-ember-cli/templates/review/progress/details/task/task-raw', ['expo
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -20894,7 +20868,7 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -20994,7 +20968,7 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -21093,7 +21067,7 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -21303,7 +21277,7 @@ define('fusor-ember-cli/templates/rhci', ['exports'], function (exports) {
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -21344,7 +21318,7 @@ define('fusor-ember-cli/templates/rhev-options', ['exports'], function (exports)
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -21380,7 +21354,7 @@ define('fusor-ember-cli/templates/rhev-options', ['exports'], function (exports)
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -21415,7 +21389,7 @@ define('fusor-ember-cli/templates/rhev-options', ['exports'], function (exports)
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -21549,7 +21523,7 @@ define('fusor-ember-cli/templates/rhev-setup', ['exports'], function (exports) {
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -21585,7 +21559,7 @@ define('fusor-ember-cli/templates/rhev-setup', ['exports'], function (exports) {
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -21621,7 +21595,7 @@ define('fusor-ember-cli/templates/rhev-setup', ['exports'], function (exports) {
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -21657,7 +21631,7 @@ define('fusor-ember-cli/templates/rhev-setup', ['exports'], function (exports) {
     var child3 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -21692,7 +21666,7 @@ define('fusor-ember-cli/templates/rhev-setup', ['exports'], function (exports) {
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -21831,7 +21805,7 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -21873,7 +21847,7 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -21921,7 +21895,7 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
       var child0 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -21962,7 +21936,7 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -22003,7 +21977,7 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
     var child3 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -22045,7 +22019,7 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
     var child4 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -22086,7 +22060,7 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -22187,7 +22161,7 @@ define('fusor-ember-cli/templates/satellite', ['exports'], function (exports) {
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -22229,7 +22203,7 @@ define('fusor-ember-cli/templates/satellite', ['exports'], function (exports) {
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -22271,7 +22245,7 @@ define('fusor-ember-cli/templates/satellite', ['exports'], function (exports) {
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -22312,7 +22286,7 @@ define('fusor-ember-cli/templates/satellite', ['exports'], function (exports) {
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -22397,7 +22371,7 @@ define('fusor-ember-cli/templates/satellite/index', ['exports'], function (expor
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -22432,7 +22406,7 @@ define('fusor-ember-cli/templates/satellite/index', ['exports'], function (expor
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -22544,7 +22518,7 @@ define('fusor-ember-cli/templates/satellite/loading', ['exports'], function (exp
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -22586,7 +22560,7 @@ define('fusor-ember-cli/templates/setpassword', ['exports'], function (exports) 
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -22763,7 +22737,7 @@ define('fusor-ember-cli/templates/side-menu', ['exports'], function (exports) {
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -22845,7 +22819,7 @@ define('fusor-ember-cli/templates/side-menu.loading', ['exports'], function (exp
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -22887,7 +22861,7 @@ define('fusor-ember-cli/templates/single-deployment', ['exports'], function (exp
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -22949,7 +22923,7 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
       var child0 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -22985,7 +22959,7 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
       var child1 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -23021,7 +22995,7 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
       var child2 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -23056,7 +23030,7 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -23110,7 +23084,7 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -23146,7 +23120,7 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -23181,7 +23155,7 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -23291,7 +23265,7 @@ define('fusor-ember-cli/templates/subscriptions', ['exports'], function (exports
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -23338,7 +23312,7 @@ define('fusor-ember-cli/templates/subscriptions', ['exports'], function (exports
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -23385,7 +23359,7 @@ define('fusor-ember-cli/templates/subscriptions', ['exports'], function (exports
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -23431,7 +23405,7 @@ define('fusor-ember-cli/templates/subscriptions', ['exports'], function (exports
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -23516,7 +23490,7 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -23604,7 +23578,7 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -23674,7 +23648,7 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
       var child0 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -23717,7 +23691,7 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -23836,7 +23810,7 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -23895,7 +23869,7 @@ define('fusor-ember-cli/templates/subscriptions/index', ['exports'], function (e
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -23943,7 +23917,7 @@ define('fusor-ember-cli/templates/subscriptions/loading', ['exports'], function 
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -23992,7 +23966,7 @@ define('fusor-ember-cli/templates/subscriptions/management-application', ['expor
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -24061,7 +24035,7 @@ define('fusor-ember-cli/templates/subscriptions/management-application', ['expor
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -24097,7 +24071,7 @@ define('fusor-ember-cli/templates/subscriptions/management-application', ['expor
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -24140,7 +24114,7 @@ define('fusor-ember-cli/templates/subscriptions/management-application', ['expor
     var child3 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -24176,7 +24150,7 @@ define('fusor-ember-cli/templates/subscriptions/management-application', ['expor
     var child4 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -24211,7 +24185,7 @@ define('fusor-ember-cli/templates/subscriptions/management-application', ['expor
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -24396,7 +24370,7 @@ define('fusor-ember-cli/templates/subscriptions/management-application.loading',
   exports['default'] = Ember.HTMLBars.template((function() {
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -24439,7 +24413,7 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -24487,7 +24461,7 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -24530,7 +24504,7 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -24565,7 +24539,7 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -24784,7 +24758,7 @@ define('fusor-ember-cli/templates/topbar', ['exports'], function (exports) {
     var child0 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -24833,7 +24807,7 @@ define('fusor-ember-cli/templates/topbar', ['exports'], function (exports) {
     var child1 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -24882,7 +24856,7 @@ define('fusor-ember-cli/templates/topbar', ['exports'], function (exports) {
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -24955,7 +24929,7 @@ define('fusor-ember-cli/templates/topbar', ['exports'], function (exports) {
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -25085,7 +25059,7 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
       var child0 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -25120,7 +25094,7 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -25162,7 +25136,7 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
       var child0 = (function() {
         return {
           isHTMLBars: true,
-          revision: "Ember@1.12.0",
+          revision: "Ember@1.11.1",
           blockParams: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -25201,7 +25175,7 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
       }());
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -25242,7 +25216,7 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
     var child2 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -25278,7 +25252,7 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
     var child3 = (function() {
       return {
         isHTMLBars: true,
-        revision: "Ember@1.12.0",
+        revision: "Ember@1.11.1",
         blockParams: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -25313,7 +25287,7 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
     }());
     return {
       isHTMLBars: true,
-      revision: "Ember@1.12.0",
+      revision: "Ember@1.11.1",
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -27305,7 +27279,7 @@ define('fusor-ember-cli/tests/routes/subscriptions.jshint', function () {
 
   module('JSHint - routes');
   test('routes/subscriptions.js should pass jshint', function() { 
-    ok(false, 'routes/subscriptions.js should pass jshint.\nroutes/subscriptions.js: line 12, col 29, \'transition\' is defined but never used.\n\n1 error'); 
+    ok(false, 'routes/subscriptions.js should pass jshint.\nroutes/subscriptions.js: line 17, col 29, \'transition\' is defined but never used.\n\n1 error'); 
   });
 
 });
@@ -33109,13 +33083,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.ddca09ef"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.47c83237"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.ddca09ef"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.47c83237"});
 }
 
 /* jshint ignore:end */

@@ -3,8 +3,13 @@ import Ember from 'ember';
 export default Ember.Route.extend({
 
   model: function() {
+    var self = this;
     return this.store.find('session-portal').then(function(results) {
-      return results.get('firstObject');
+      if (Ember.isBlank(results)) {
+        return self.store.createRecord('session-portal');
+      } else {
+        return results.get('firstObject');
+      }
     });
   },
 
