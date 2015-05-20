@@ -74,6 +74,12 @@ module Actions
             plan_action(::Actions::Fusor::Deployment::DeployRhev, deployment)
             Rails.logger.debug"XXX Deployment action planned"
           end
+
+          if deployment.deploy_cfme
+            Rails.logger.debug "XXX CFME is enabled, planning deployment of cfme"
+            plan_action(::Actions::Fusor::Deployment::DeployCloudForms, deployment)
+            Rails.logger.debug"XXX CFME Deployment action planned"
+          end
         end
       end
 

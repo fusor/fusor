@@ -19,11 +19,11 @@ module Actions
         end
 
         def plan(deployment)
-          Rails.logger.warn "XXX ================ Planning RHEV Deployment ===================="
+          Rails.logger.warn "XXX ================ Planning CFME Deployment ===================="
 
           # VERIFY PARAMS HERE
           #if deployment.deploy_cfme
-          #  fail _("Unable to locate a RHEV Engine Host") unless deployment.rhev_engine_host
+          #  fail _("Unable to locate a CFME Engine Host") unless deployment.rhev_engine_host
           #end
 
           plan_self deployment_id: deployment.id
@@ -40,6 +40,8 @@ module Actions
             status, output = upload_image(deployment.cfme_install_loc)
             if status > 0
               Rails.logger.warn "XXX image uploaded"
+            else
+              Rails.logger.error "XXX There was a problem with running the command. Status: #{status}. \nOutput: #{output}"
             end
           end
 
@@ -62,6 +64,8 @@ module Actions
             # -m do not remove network interfaces from image
             #
             cmd = "/usr/bin/engine-image-uploader -N CloudForms-3.0-2014-08-12.2 -e export_domain1 -v -m upload #{location}"
+
+            Rails.logger.warn "XXX we're going to run [#{cmd}]"
 
             # run_command returns: status, output
             return Utils::Fusor::CommandUtils.run_command(cmd)
