@@ -39,13 +39,19 @@ module Actions
             end
 
           else
-            # If there is an upstream consumer, a manifest has been previously imported; therefore, we
-            # either need to refresh or delete it and import another
+            # If there is an upstream consumer, a manifest has been previously imported in to the org;
+            # therefore,if the user didn't associate a consumer with the deployment, use the existing upstream
+            # consumer from the organization; otherwise, either refresh it or delete it and import another
 
-            if upstream_consumer['uuid'] == deployment.upstream_consumer_uuid || deployment.upstream_consumer_uuid.nil?
+            if deployment.upstream_consumer_uuid.nil?
+              deployment.upstream_consumer_uuid = upstream_consumer['uuid']
+              deployment.save!
+
+            elsif upstream_consumer['uuid'] == deployment.upstream_consumer_uuid
               plan_action(::Actions::Katello::Provider::ManifestRefresh,
                           deployment.organization.redhat_provider,
                           upstream_consumer)
+
             else
               download_file_path = File.join("#{Rails.root}/tmp", "import_#{SecureRandom.hex(10)}.zip")
 
