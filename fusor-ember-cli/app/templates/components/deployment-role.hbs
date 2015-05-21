@@ -1,18 +1,22 @@
-<li class="role role-{{role-type}}">
+<li class="role role-{{role-type}} {{assignedClass}}">
     <div class="deployment-role-label">
-        {{role-label}}
+        {{roleLabel}}
     </div>
     {{#if role-assigned}}
-        <select class="selectpicker">
-            {{#each option in countOptions}}
-                <option>{{option}}</option>
+        <select class="selectpicker"  {{action "assignNodes" this on="change"}}>
+            {{#each option in availableOptions}}
+                {{#if option.selected}}
+                    <option selected>{{option.label}}</option>
+                {{else}}
+                    <option >{{option.label}}</option>
+                {{/if}}
             {{/each}}
         </select>
-        <a href="#" class="role-option delete">
-            <i class="fa fa-times"></i>
-        </a>
     {{/if}}
-    <a href="#" class="role-option edit" data-toggle="modal" data-target="#deployment-role">
-        <i class="fa fa-pencil"></i>
+    <a class="role-option delete">
+        <i class="fa fa-times" {{action "removeRole" role-type}}></i>
+    </a>
+    <a class="role-option edit" >
+        <i class="fa fa-pencil" {{action "editRole" role-type}}></i>
     </a>
 </li>

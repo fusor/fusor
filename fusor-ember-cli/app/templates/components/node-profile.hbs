@@ -31,38 +31,35 @@
             {{#if doAssign }}
                 <div class="col-sm-7 col-md-8">
                     <h4 class="h5">Assigned Nodes</h4>
-                    <ul class="deployment-roles deployment-roles-assignable">
-                        <li class="role-target dropdown">
-                            <a id="role-target-dropdown-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fa fa-plus"></i> Assign Role
-                            </a>
-                            <ul class="dropdown-menu" role="menu" aria-labelledby="role-target-dropdown-1">
-                                <li>
-                                    <a href="#">Controller</a>
-                                </li>
-                                <li>
-                                    <a href="#">Compute</a>
-                                </li>
-                                <li>
-                                    <a href="#">Block Storage</a>
-                                </li>
-                                <li>
-                                    <a href="#">Object Storage</a>
-                                </li>
-                            </ul>
-                        </li>
-                      {{#if profile.isController}}
-                        {{deployment-role role-type='controller' role-label='Controller' role-assigned=true}}
-                      {{/if}}
-                      {{#if profile.computeNodes}}
-                        {{deployment-role role-type='compute' role-label='Compute' role-assigned=true}}
-                      {{/if}}
-                      {{#if profile.blockNodes}}
-                        {{deployment-role role-type='block' role-label='Block Storage' role-assigned=true}}
-                      {{/if}}
-                      {{#if profile.objectNodes}}
-                        {{deployment-role role-type='object' role-label='Object Storage' role-assigned=true}}
-                      {{/if}}
+                    <ul class="deployment-roles deployment-roles-assigned">
+                      {{#each role in assignedRoles}}
+                        {{#draggable-object content=role}}
+                          {{deployment-role profile=profile role-type=role.roleType role-label=role.roleLabel role-assigned=true edit="editRole" remove="removeRole"}}
+                        {{/draggable-object}}
+                      {{/each}}
+                      {{#unless allAssigned}}
+                        {{#draggable-object-target action='assignDroppedRole'}}
+                            <li class="role-target {{assignMenuOpenClass}}  dropdown">
+                                <a id="role-target-dropdown-1" {{action "showAssignMenu" profile bubbles=false}} data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-plus"></i> Assign Role
+                                </a>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="role-target-dropdown-1">
+                                  {{#unless controllerAssigned}}
+                                      <a class="roles-menu-item role-controller" {{action "assignRole" 'controller'}}>Controller</a>
+                                  {{/unless}}
+                                  {{#unless computeAssigned}}
+                                      <a class="roles-menu-item  role-compute" {{action "assignRole" 'compute'}}>Compute</a>
+                                  {{/unless}}
+                                  {{#unless blockAssigned}}
+                                      <a class="roles-menu-item  role-block" {{action "assignRole" 'block'}}>Block Storage</a>
+                                  {{/unless}}
+                                  {{#unless objectAssigned}}
+                                      <a class="roles-menu-item  role-object" {{action "assignRole" 'object'}}>Object Storage</a>
+                                  {{/unless}}
+                                </ul>
+                            </li>
+                        {{/draggable-object-target}}
+                      {{/unless}}
                     </ul>
                 </div>
             {{else}}

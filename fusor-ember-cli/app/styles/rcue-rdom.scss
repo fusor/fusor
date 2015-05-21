@@ -10611,7 +10611,7 @@ h2,
   margin-left: -12px;
   padding-left: 12px;
   padding-top: 10px;
-  width:100%;
+  display: inline-block;
 }
 .deployment-roles.deployment-roles-unassigned.deployment-roles-active {
   border-color: #7b7b7b;
@@ -10641,6 +10641,11 @@ h2,
   left: 1px;
   position: absolute;
   top: 1px;
+  width: 10px;
+}
+.deployment-roles .menu-item li:before {
+  background-image: none;
+  background-repeat: no-repeat;
   width: 10px;
 }
 .deployment-roles li:hover .role-option.edit {
@@ -10682,7 +10687,7 @@ h2,
 .deployment-roles li.role-assigned .role-option:hover {
   color: #e6e6e6;
 }
-.deployment-roles li.role-block {
+.deployment-roles .role-block {
   border-color: #409d35;
 }
 .deployment-roles li.role-block:before {
@@ -10712,8 +10717,11 @@ h2,
 .deployment-roles .role-controller.role-assigned {
   background: #1ba9df;
 }
-.deployment-roles li.role-object {
+.deployment-roles .role-object {
   border-color: #a2030d;
+}
+.deployment-roles .role-hidden {
+  visibility: hidden;
 }
 .deployment-roles li.role-object:before {
   background-image: linear-gradient(to bottom, #a2030d 60%, #ffffff 0%);
@@ -10777,6 +10785,25 @@ h2,
 .deployment-roles li .role-option.edit {
   top: 4px;
 }
+.deployment-roles .draggable-object {
+  padding: 0;
+}
+.deployment-roles-assigned .draggable-object {
+  padding: 0;
+  display: block;
+}
+.roles-menu-item {
+  background: #ffffff;
+  border: 2px solid #bbbbbb;
+  border-radius: 1px;
+  float: left;
+  margin: 0 10px 10px 10px;
+  min-width: 150px;
+  padding: 6px 20px;
+  position: relative;
+  text-align: center;
+}
+
 .form-control.has-feedback {
   padding-right: 30px;
 }

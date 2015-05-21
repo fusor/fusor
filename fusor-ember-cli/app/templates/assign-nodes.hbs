@@ -1,22 +1,29 @@
 <div class="row">
     <div class="col-md-12">
         <h2>Available Deployment Roles</h2>
-        <ul class="deployment-roles deployment-roles-unassigned deployment-roles-assignable">
-          {{deployment-role role-type='controller' role-label='Controller' role-assigned=false}}
-          {{deployment-role role-type='compute' role-label='Compute' role-assigned=false}}
-          {{deployment-role role-type='block' role-label='Block Storage' role-assigned=false}}
-          {{deployment-role role-type='object' role-label='Object Storage' role-assigned=false}}
-        </ul>
+        {{#draggable-object-target action="unassignRole"}}
+            <ul class="deployment-roles deployment-roles-unassigned deployment-roles-assignable {{droppableClass}}">
+              {{#each role in availableRoles}}
+                {{#draggable-object content=role}}
+                  {{deployment-role role-type=role.roleType role-label=role.roleLabel role-assigned=false edit="editRole"}}
+                {{/draggable-object}}
+              {{/each}}
+              {{#unless noneAssigned}}
+                {{#draggable-object content=role}}
+                  {{deployment-role role-type='hidden' role-assigned=false}}
+                {{/draggable-object}}
+              {{/unless}}
+            </ul>
+        {{/draggable-object-target}}
     </div><!-- /col -->
 </div><!-- /row -->
 <div class="row">
     <div class="col-md-12">
         <h2>Node Profiles</h2>
         {{#each profile in nodeProfiles}}
-          {{log 'profile name: ' profile.name}}
             <div class="row">
                 <div class='col-md-7'>
-                  {{node-profile profile=profile doAssign=true}}
+                  {{node-profile profile=profile nodeProfiles=nodeProfiles doAssign=true assignRole="assignRole" startDrag="startDrag" stopDrag="stopDrag" edit="editRole" removeRole="removeRole"}}
                 </div>
             </div>
         {{/each}}

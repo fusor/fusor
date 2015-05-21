@@ -18,11 +18,32 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       ram: null,
       disk: null,
       totalNodes: 0,
-      freeNodes: 0,
+
       controllerNodes: 0,
       computeNodes: 0,
       blockNodes: 0,
       objectNodes: 0,
+
+      freeNodes: function() {
+        return this.get('totalNodes') - this.get('controllerNodes') - this.get('computeNodes') - this.get('blockNodes') - this.get('objectNodes');
+      }.property('totalNodes', 'controllerNodes', 'computeNodes', 'blockNodes', 'objectNodes'),
+
+      isControl: function() {
+        return this.get('controllerNodes') > 0;
+      }.property('controllerNodes'),
+
+      isCompute: function() {
+        return this.get('computeNodes') > 0;
+      }.property('computeNodes'),
+
+      isBlockStorage: function() {
+        return this.get('blockNodes') > 0;
+      }.property('blockNodes'),
+
+      isObjectStorage: function() {
+        return this.get('objectNodes') > 0;
+      }.property('objectNodes'),
+
       isActiveClass: 'inactive',
       isError: false,
       errorMessage: ''
@@ -189,8 +210,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       }
       var newProfile = this.Profile.create({
         name: 'Node ' + (nodeCount + 1),
-        totalNodes: 5,
-        freeNodes: 5
+        totalNodes: 5
       });
       edittedProfiles.insertAt(0, newProfile);
       this.updateProfileSelection(newProfile);
@@ -274,11 +294,11 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     var fulfill = function(isDone) {
       if (isDone) {
         var randomPercent = Math.round(Math.random() * 100);
-        if (randomPercent <= 15) {
+        if (randomPercent <= 5) {
           node.isError = true;
           node.errorMessage = node.name + " was not registered: node username/password is invalid.";
         }
-        else if (randomPercent <= 30) {
+        else if (randomPercent <= 10) {
           node.isError = true;
           node.errorMessage = node.name + " was not registered: node IP address is invalid.";
         }
