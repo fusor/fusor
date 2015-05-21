@@ -1125,6 +1125,14 @@ define('fusor-ember-cli/controllers/discovered-host', ['exports', 'ember'], func
       return this.get('selectedRhevEngineHost.id') === this.get('id');
     }).property('selectedRhevEngineHost'),
 
+    hostType: (function () {
+      if (this.get('is_virtual')) {
+        return 'Virtual';
+      } else {
+        return 'Bare Metal';
+      }
+    }).property('is_virtual'),
+
     actions: {
       engineHostChanged: function engineHostChanged(host) {
         var engine_hostname = host.get('name');
@@ -2777,10 +2785,14 @@ define('fusor-ember-cli/models/discovered-host', ['exports', 'ember-data'], func
     organization_name: DS['default'].attr('string'),
     location_id: DS['default'].attr('string'),
     location_name: DS['default'].attr('string'),
-    memory: DS['default'].attr('string'),
-    disk_count: DS['default'].attr('string'),
-    disks_size: DS['default'].attr('string'),
-    cpus: DS['default'].attr('string'),
+    memory: DS['default'].attr('number'),
+    disk_count: DS['default'].attr('number'),
+    disks_size: DS['default'].attr('number'),
+    cpus: DS['default'].attr('number'),
+    memory_human_size: DS['default'].attr('string'),
+    disks_human_size: DS['default'].attr('string'),
+    subnet_to_s: DS['default'].attr('string'),
+    is_virtual: DS['default'].attr('boolean'),
 
     // relationship to Engine
     deployment: DS['default'].belongsTo('deployment', { inverse: 'discovered_host', async: true }),
@@ -10355,9 +10367,55 @@ define('fusor-ember-cli/templates/components/tr-engine', ['exports'], function (
         var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
         var el1 = dom.createElement("td");
+        var el2 = dom.createTextNode("  ");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("td");
         var el2 = dom.createTextNode(" ");
         dom.appendChild(el1, el2);
         var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode(" CPU");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("td");
+        var el2 = dom.createTextNode(" ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("td");
+        var el2 = dom.createTextNode(" ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode(" ");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("td");
+        var el2 = dom.createTextNode(" ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode(" ");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("td");
+        var el2 = dom.createTextNode(" ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode(" ");
         dom.appendChild(el1, el2);
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n");
@@ -10388,12 +10446,20 @@ define('fusor-ember-cli/templates/components/tr-engine', ['exports'], function (
         var morph1 = dom.createMorphAt(dom.childAt(fragment, [2]),1,1);
         var morph2 = dom.createMorphAt(dom.childAt(fragment, [4]),1,1);
         var morph3 = dom.createMorphAt(dom.childAt(fragment, [6]),1,1);
-        var morph4 = dom.createMorphAt(dom.childAt(fragment, [8]),1,1);
+        var morph4 = dom.createMorphAt(dom.childAt(fragment, [10]),1,1);
+        var morph5 = dom.createMorphAt(dom.childAt(fragment, [12]),1,1);
+        var morph6 = dom.createMorphAt(dom.childAt(fragment, [14]),1,1);
+        var morph7 = dom.createMorphAt(dom.childAt(fragment, [16]),1,1);
+        var morph8 = dom.createMorphAt(dom.childAt(fragment, [18]),1,1);
         inline(env, morph0, context, "radio-button", [], {"value": get(env, context, "host.model"), "groupValue": get(env, context, "selectedRhevEngineHost"), "changed": "engineHostChanged", "id": get(env, context, "host.cssIdHostId")});
         block(env, morph1, context, "if", [get(env, context, "host.isSelectedAsEngine")], {}, child0, null);
         content(env, morph2, context, "host.mac");
-        content(env, morph3, context, "host.cpus");
-        content(env, morph4, context, "host.memory");
+        content(env, morph3, context, "host.hostType");
+        content(env, morph4, context, "host.cpus");
+        content(env, morph5, context, "host.memory_human_size");
+        content(env, morph6, context, "host.disk_count");
+        content(env, morph7, context, "host.disks_human_size");
+        content(env, morph8, context, "host.subnet_to_s");
         return fragment;
       }
     };
@@ -10495,6 +10561,50 @@ define('fusor-ember-cli/templates/components/tr-hypervisor', ['exports'], functi
         var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
         var el1 = dom.createElement("td");
+        var el2 = dom.createTextNode("  ");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("td");
+        var el2 = dom.createTextNode(" ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode(" CPU");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("td");
+        var el2 = dom.createTextNode(" ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("td");
+        var el2 = dom.createTextNode(" ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode(" ");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("td");
+        var el2 = dom.createTextNode(" ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode(" ");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("td");
         var el2 = dom.createTextNode(" ");
         dom.appendChild(el1, el2);
         var el2 = dom.createComment("");
@@ -10530,12 +10640,20 @@ define('fusor-ember-cli/templates/components/tr-hypervisor', ['exports'], functi
         var morph1 = dom.createMorphAt(dom.childAt(fragment, [2]),1,1);
         var morph2 = dom.createMorphAt(dom.childAt(fragment, [4]),1,1);
         var morph3 = dom.createMorphAt(dom.childAt(fragment, [6]),1,1);
-        var morph4 = dom.createMorphAt(dom.childAt(fragment, [8]),1,1);
+        var morph4 = dom.createMorphAt(dom.childAt(fragment, [10]),1,1);
+        var morph5 = dom.createMorphAt(dom.childAt(fragment, [12]),1,1);
+        var morph6 = dom.createMorphAt(dom.childAt(fragment, [14]),1,1);
+        var morph7 = dom.createMorphAt(dom.childAt(fragment, [16]),1,1);
+        var morph8 = dom.createMorphAt(dom.childAt(fragment, [18]),1,1);
         inline(env, morph0, context, "input", [], {"type": "checkbox", "name": "isSelectedAsHypervisor", "checked": get(env, context, "host.isSelectedAsHypervisor"), "id": get(env, context, "host.cssIdHostId")});
         block(env, morph1, context, "if", [get(env, context, "host.isSelectedAsHypervisor")], {}, child0, null);
         content(env, morph2, context, "host.mac");
-        content(env, morph3, context, "host.cpus");
-        content(env, morph4, context, "host.memory");
+        content(env, morph3, context, "host.hostType");
+        content(env, morph4, context, "host.cpus");
+        content(env, morph5, context, "host.memory_human_size");
+        content(env, morph6, context, "host.disk_count");
+        content(env, morph7, context, "host.disks_human_size");
+        content(env, morph8, context, "host.subnet_to_s");
         return fragment;
       }
     };
@@ -14415,25 +14533,55 @@ define('fusor-ember-cli/templates/engine/discovered-host', ['exports'], function
         var el4 = dom.createTextNode("\n      ");
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("th");
-        var el5 = dom.createTextNode(" Name ");
+        var el5 = dom.createTextNode(" Host Name ");
         dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
         var el4 = dom.createTextNode("\n      ");
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("th");
-        var el5 = dom.createTextNode(" MAC ");
+        var el5 = dom.createTextNode(" MAC Address ");
         dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
         var el4 = dom.createTextNode("\n      ");
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("th");
-        var el5 = dom.createTextNode(" CPU's ");
+        var el5 = dom.createTextNode(" Host Type ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("th");
+        var el5 = dom.createTextNode(" Vendor ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("th");
+        var el5 = dom.createTextNode(" CPU ");
         dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
         var el4 = dom.createTextNode("\n      ");
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("th");
         var el5 = dom.createTextNode(" Memory ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("th");
+        var el5 = dom.createTextNode(" # Disks ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("th");
+        var el5 = dom.createTextNode(" Disk Space ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("th");
+        var el5 = dom.createTextNode(" Network ");
         dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
         var el4 = dom.createTextNode("\n    ");
@@ -15205,25 +15353,55 @@ define('fusor-ember-cli/templates/hypervisor/discovered-host', ['exports'], func
         var el4 = dom.createTextNode("\n      ");
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("th");
-        var el5 = dom.createTextNode(" Name ");
+        var el5 = dom.createTextNode(" Host Name ");
         dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
         var el4 = dom.createTextNode("\n      ");
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("th");
-        var el5 = dom.createTextNode(" MAC ");
+        var el5 = dom.createTextNode(" MAC Address ");
         dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
         var el4 = dom.createTextNode("\n      ");
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("th");
-        var el5 = dom.createTextNode(" CPU's ");
+        var el5 = dom.createTextNode(" Host Type ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("th");
+        var el5 = dom.createTextNode(" Vendor ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("th");
+        var el5 = dom.createTextNode(" CPU ");
         dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
         var el4 = dom.createTextNode("\n      ");
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("th");
         var el5 = dom.createTextNode(" Memory ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("th");
+        var el5 = dom.createTextNode(" # Disks ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("th");
+        var el5 = dom.createTextNode(" Disk Space ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("th");
+        var el5 = dom.createTextNode(" Network ");
         dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
         var el4 = dom.createTextNode("\n    ");
@@ -25941,7 +26119,7 @@ define('fusor-ember-cli/tests/controllers/discovered-host.jshint', function () {
 
   module('JSHint - controllers');
   test('controllers/discovered-host.js should pass jshint', function() { 
-    ok(false, 'controllers/discovered-host.js should pass jshint.\ncontrollers/discovered-host.js: line 34, col 78, Missing semicolon.\ncontrollers/discovered-host.js: line 35, col 50, Missing semicolon.\ncontrollers/discovered-host.js: line 37, col 19, Missing semicolon.\ncontrollers/discovered-host.js: line 47, col 11, \'engine_hostname\' is defined but never used.\n\n4 errors'); 
+    ok(false, 'controllers/discovered-host.js should pass jshint.\ncontrollers/discovered-host.js: line 34, col 78, Missing semicolon.\ncontrollers/discovered-host.js: line 35, col 50, Missing semicolon.\ncontrollers/discovered-host.js: line 37, col 19, Missing semicolon.\ncontrollers/discovered-host.js: line 55, col 11, \'engine_hostname\' is defined but never used.\n\n4 errors'); 
   });
 
 });
@@ -33132,13 +33310,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.376d4056"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.aea85af0"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.376d4056"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.aea85af0"});
 }
 
 /* jshint ignore:end */
