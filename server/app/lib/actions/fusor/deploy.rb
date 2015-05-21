@@ -69,6 +69,8 @@ module Actions
             end
           end
 
+          Rails.logger.warn "XXX finished sequence"
+
           if deployment.deploy_rhev
             Rails.logger.debug "XXX RHEV is enabled, planning deployment of rhev"
             plan_action(::Actions::Fusor::Deployment::DeployRhev, deployment)
@@ -76,9 +78,9 @@ module Actions
           end
 
           if deployment.deploy_cfme
-            Rails.logger.debug "XXX CFME is enabled, planning deployment of cfme"
+            Rails.logger.warn "XXX CFME is enabled, planning deployment of cfme"
             plan_action(::Actions::Fusor::Deployment::DeployCloudForms, deployment)
-            Rails.logger.debug"XXX CFME Deployment action planned"
+            Rails.logger.warn "XXX CFME Deployment action planned"
           end
         end
       end
