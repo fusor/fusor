@@ -3,7 +3,7 @@
     <br />
     <form class="form form-horizontal">
 
-      {{#base-f label="Storage Type"}}
+      {{#base-f label="Storage Type" isRequired=true}}
 
         {{#radio-button value="NFS" groupValue=rhev_storage_type id='nfs'}}
           NFS

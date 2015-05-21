@@ -3,6 +3,9 @@
 
       <label {{bind-attr class=":control-label labelClassSize class"}}>
         {{label}}
+        {{# if isRequired}}
+          <span class='errorForValidation'>*</span>
+        {{/if}}
       </label>
 
       <div {{bind-attr class="inputClassSize"}}>
