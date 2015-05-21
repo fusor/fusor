@@ -4,9 +4,9 @@
   <div class='col-md-12'>
     <br />
     <form class="form form-horizontal">
-      {{text-f label="Root password for Engine and Hypervisor(s)" type='password' value=rhev_root_password cssId='rhev_root_password'}}
+      {{text-f label="Root password for Engine and Hypervisor(s)" type='password' value=rhev_root_password cssId='rhev_root_password' isRequired=true}}
 
-      {{text-f label="Engine admin password" type='password' value=rhev_engine_admin_password cssId='rhev_engine_admin_password'}}
+      {{text-f label="Engine admin password" type='password' value=rhev_engine_admin_password cssId='rhev_engine_admin_password' isRequired=true}}
 
       {{text-f label="Datacenter Name" value=rhev_database_name placeholder='Leave blank for default' cssId='rhev_database_name'}}
       {{text-f label="Cluster Name" value=rhev_cluster_name placeholder='Leave blank for default' cssId='rhev_cluster_name'}}
