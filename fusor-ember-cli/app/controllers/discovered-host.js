@@ -42,6 +42,14 @@ export default Ember.ObjectController.extend({
     return (this.get('selectedRhevEngineHost.id') === this.get('id'));
   }.property('selectedRhevEngineHost'),
 
+  hostType: function() {
+    if (this.get('is_virtual')) {
+      return "Virtual";
+    } else {
+      return "Bare Metal";
+    }
+  }.property('is_virtual'),
+
   actions: {
     engineHostChanged: function(host) {
       var engine_hostname = host.get('name');
