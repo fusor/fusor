@@ -2,15 +2,21 @@
    <div class="form-group">
 
       <label {{bind-attr class=":control-label labelClassSize class"}}>
-        {{label}}
         {{# if isRequired}}
           <span class='errorForValidation'>*</span>
         {{/if}}
+        {{label}}
       </label>
 
       <div {{bind-attr class="inputClassSize"}}>
         {{yield}}
       </div>
+
+      {{# if showUnits}}
+         <div {{bind-attr class="unitsClassSize"}}>
+           {{unitsLabel}}
+         </div>
+      {{/if}}
 
       <span class='help-block'>
       {{help-inline}}
