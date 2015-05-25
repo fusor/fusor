@@ -2,7 +2,7 @@
    <div class="form-group">
 
       <label {{bind-attr class=":control-label labelClassSize class"}}>
-        {{# if isRequired}}
+        {{#if isRequired}}
           <span class='errorForValidation'>*</span>
         {{/if}}
         {{label}}
@@ -12,7 +12,7 @@
         {{yield}}
       </div>
 
-      {{# if showUnits}}
+      {{#if showUnits}}
          <div {{bind-attr class="unitsClassSize"}}>
            {{unitsLabel}}
          </div>
