@@ -15,14 +15,13 @@ The fuser-ember-cli/dist distory is generated automatically by [ember-cli](http:
 1. Ensure that your [Foreman settings.yaml](https://github.com/theforeman/foreman/) has `login: false`. Otherwise, API calls will not authenticate properly.
 2. Clone [fusor](https://github.com/fusor/fusor/) to your local workstation.
 3. `cd fusor-ember-cli`
-4. Checkout 'develop' branch `git checkout develop`. This should be the same as `master` with the following minor differences
-        - In [controllers/application.js](https://github.com/fusor/fusor-ember-cli/blob/master/app/controllers/application.js#L8), `deployAsPlugin` is `true` in `master` and `false` in `develop`. If `false`, it shows a menu bar and directs user to login screen for authentication, both of which are not needed when running inside Foreman/Katello.
-        - In [styles/app.scss](https://github.com/fusor/fusor/tree/master/fusor-ember-cli/app/styles/app.scss#L3), the lines starting with `@import "downstream/` as not commented out in `develop` and are in `master`
+4. In [controllers/application.js](https://github.com/fusor/fusor-ember-cli/blob/master/app/controllers/application.js#L8), change `deployAsPlugin` from `true` to `false`. If `false`, it shows a menu bar for development which is not needed when running inside Foreman/Katello.
 5. Run $ ember server --proxy http://0.0.0.0:3000. This assumes you have a local Foreman/Katello instance on port 3000. This tells the ember server to proxy API calls to Foreman/Katello:
 6. HAPPY HACKING!
-7. Run bash script [`./copy-fusor-ember-cli-to-ui-assets`](https://github.com/fusor/fusor-ember-cli/blob/master/copy-fusor-ember-cli-to-ui-assets) which copies files from `fusor/fusor-ember-cli/dist` to the `fusor/ui` repo
-8. Git commit code
-9. Send pull request. CAREFUL: Ensure that you're pull request does not include the `develop` only changes in [controllers/application.js](https://github.com/fusor/fusor-ember-cli/blob/master/app/controllers/application.js#L8) and [styles/app.scss](https://github.com/fusor/fusor/tree/master/fusor-ember-cli/app/styles/app.scss#L3). One reccomendation is to create new branch from master and `git cherry-pick` new SHA commit. Then send pull request.
+7. BEFORE running next step, in [controllers/application.js](https://github.com/fusor/fusor-ember-cli/blob/master/app/controllers/application.js#L8), change `deployAsPlugin` back to `true`.
+8. Run bash script [`./copy-fusor-ember-cli-to-ui-assets`](https://github.com/fusor/fusor-ember-cli/blob/master/copy-fusor-ember-cli-to-ui-assets) which copies files from `fusor/fusor-ember-cli/dist` to the `fusor/ui` repo
+9. Git commit code
+10. Send pull request. CAREFUL: Ensure that you're pull request does not include `deployAsPlugin: false`.
 
 ## Prerequisites
 
