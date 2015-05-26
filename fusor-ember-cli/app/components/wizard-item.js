@@ -2,15 +2,14 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
   tagName: 'li',
-  classNames: ['wizard-item'],
 
+  // classNames: ['completed'],
   classNameBindings: 'active',
+  //TODO add completed
 
   active: function () {
+//        return this.get('childViews').isAny('active');
       return this.get('childViews.firstObject.active');
-  }.property(),
+  }.property('childViews.@each.active'),
 
-  // isReviewTab: function() {
-  //   return (this.get('routeName') == 'review')
-  // }.property('routeName')
 });
