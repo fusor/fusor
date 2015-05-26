@@ -164,7 +164,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       var edittedProfiles = this.get('edittedProfiles');
 
       edittedProfiles.setObjects(errorProfiles);
-      newProfiles.forEach(function(item, index) {
+      newProfiles.forEach(function(item) {
         edittedProfiles.pushObject(item);
       });
       this.set('edittedProfiles', edittedProfiles);
@@ -177,7 +177,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       var edittedProfiles = this.get('edittedProfiles');
       var errorProfiles = this.get('errorProfiles');
       var newProfiles = this.get('newProfiles');
-      edittedProfiles.forEach(function(item, index) {
+      edittedProfiles.forEach(function(item) {
         item.isError = false;
         item.errorMessage = '';
         errorProfiles.removeObject(item);
@@ -221,7 +221,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       profiles.removeObject(profile);
       this.set('edittedProfiles', profiles);
 
-      if (this.get('selectedProfile') == profile) {
+      if (this.get('selectedProfile') === profile) {
         this.updateProfileSelection(profiles[0]);
       }
     }
@@ -252,7 +252,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   doNextNodeRegistration: function() {
     if (this.get('modalOpen') === true) {
-      ;this.set('registrationPaused', true)
+      this.set('registrationPaused', true);
     }
     else
     {
@@ -280,7 +280,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
     var promiseFunction = function(resolve) {
       var checkForDone = function() {
-        if (iterationCount == 1) {
+        if (iterationCount === 1) {
           resolve(true);
         }
         else {
