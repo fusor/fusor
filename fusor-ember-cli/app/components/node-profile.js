@@ -60,7 +60,7 @@ export default Ember.Component.extend({
       return false;
     }
     var retVal = false;
-    profiles.forEach(function(item, index) {
+    profiles.forEach(function(item) {
       if (item.get('isControl')) {
         retVal = true;
       }
@@ -74,7 +74,7 @@ export default Ember.Component.extend({
       return false;
     }
     var retVal = false;
-    profiles.forEach(function(item, index) {
+    profiles.forEach(function(item) {
       if (item.get('isCompute')) {
         retVal = true;
       }
@@ -88,7 +88,7 @@ export default Ember.Component.extend({
       return false;
     }
     var retVal = false;
-    profiles.forEach(function(item, index) {
+    profiles.forEach(function(item) {
       if (item.get('isBlockStorage')) {
         retVal = true;
       }
@@ -102,7 +102,7 @@ export default Ember.Component.extend({
       return false;
     }
     var retVal = false;
-    profiles.forEach(function(item, index) {
+    profiles.forEach(function(item) {
       if (item.get('isObjectStorage')) {
         retVal = true;
       }
@@ -124,7 +124,7 @@ export default Ember.Component.extend({
   },
 
   actions: {
-    showAssignMenu: function(profile) {
+    showAssignMenu: function() {
       if (this.get('freeNodes') > 0) {
         this.set('assignMenuOpenClass', 'open');
       }

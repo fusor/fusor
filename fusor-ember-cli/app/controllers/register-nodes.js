@@ -221,7 +221,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       profiles.removeObject(profile);
       this.set('edittedProfiles', profiles);
 
-      if (this.get('selectedProfile') == profile) {
+      if (this.get('selectedProfile') === profile) {
         this.updateProfileSelection(profiles[0]);
       }
     }
@@ -280,7 +280,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
     var promiseFunction = function(resolve) {
       var checkForDone = function() {
-        if (iterationCount == 1) {
+        if (iterationCount === 1) {
           resolve(true);
         }
         else {

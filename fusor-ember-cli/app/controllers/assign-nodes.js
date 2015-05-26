@@ -136,6 +136,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   actions: {
     editRole: function(roleType) {
+      log("EDIT: " + roleType);
     },
 
     assignRole: function(profile, roleType) {
