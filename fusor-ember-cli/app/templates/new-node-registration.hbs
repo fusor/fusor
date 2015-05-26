@@ -60,77 +60,22 @@
                               <div class="form-horizontal">
                                   <fieldset>
                                       <legend>Management</legend>
-                                      <div class="form-group required">
-                                          <label class="col-xs-4" for="id_register_nodes-0-driver">Driver</label>
-                                          <div class="col-xs-6">
-                                              {{view "select" class="form-control" content=drivers value=selectedProfile.driver prompt="unspecified" }}
-                                          </div>
-                                          <div class="col-xs-2 muted"></div>
-                                      </div>
-                                      <div class="form-group required">
-                                          <label class="col-xs-4" for="id_register_nodes-0-ipmi_address">IP Address</label>
-                                          <div class="col-xs-6">
-                                              {{input class="form-control" value=selectedProfile.ipAddress type="text" placeholder="unspecified" }}
-                                          </div>
-                                          <div class="col-xs-2 muted"></div>
-                                      </div>
-                                      <div class="form-group">
-                                          <label class="col-xs-4" for="id_register_nodes-0-ipmi_username">IPMI User</label>
-                                          <div class="col-xs-6">
-                                              {{input class="form-control" value=selectedProfile.ipmiUsername type="text"}}
-                                          </div>
-                                          <div class="col-xs-2 muted"></div>
-                                      </div>
-                                      <div class="form-group">
-                                          <label class="col-xs-4" style="white-space:nowrap" for="id_register_nodes-0-ipmi_password">IPMI Password</label>
-                                          <div class="col-xs-6">
-                                            {{input class="form-control has-feedback" value=selectedProfile.ipmiPassword type="password"}}
-                                              <span class="form-control-feedback glyphicon glyphicon-eye-open"></span>
-                                          </div>
-                                          <div class="col-xs-2 muted"></div>
-                                      </div>
+                                      {{select-simple-f label="Driver" labelSize='col-xs-4' inputSize='col-xs-6' content=drivers selection=selectedProfile.driver prompt='unspecified' isRequired=true}}
+                                      {{text-f label="IP Address" type='text' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedProfile.ipAddress isRequired=true}}
+                                      {{text-f label="IPMI User" type='text' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedProfile.ipmiUsername isRequired=false}}
+                                      {{text-f label="IPMI Password" type='password' labelSize='form-label-nowrap col-xs-4' inputSize='col-xs-6' value=selectedProfile.ipmiPassword isRequired=false}}
+
                                   </fieldset>
                                   <fieldset>
                                       <legend>Networking</legend>
-                                      <div class="form-group required">
-                                          <label class="col-xs-4" style="white-space:nowrap" for="id_register_nodes-0-mac_addresses">NIC MAC Address</label>
-                                          <div class="col-xs-6">
-                                            {{textarea class="form-control" value=selectedProfile.nicMacAddress cols="40" placeholder="unspecified" rows="2"}}
-                                          </div>
-                                          <div class="col-xs-2 muted"></div>
-                                      </div>
+                                      {{textarea-f label="NIC MAC Address" labelSize='form-label-nowrap col-xs-4' inputSize='col-xs-6' value=selectedProfile.nicMacAddress cols="40" placeholder="unspecified" rows="2" isRequired=true}}
                                   </fieldset>
                                   <fieldset>
                                       <legend>Hardware</legend>
-                                      <div class="form-group required">
-                                          <label class="col-xs-4" for="id_register_nodes-0-cpu_arch">Architecture</label>
-                                          <div class="col-xs-6">
-                                            {{view "select" class="form-control" content=architectures value=selectedProfile.architecture  prompt="unspecified"}}
-                                          </div>
-                                          <div class="col-xs-2 muted"></div>
-                                      </div>
-                                      <div class="form-group required">
-                                          <label class="col-xs-4" for="id_register_nodes-0-cpus">CPUs</label>
-                                          <div class="col-xs-6" style="padding-right:5px;">
-                                            {{input class="form-control" type="number" value=selectedProfile.cpu placeholder="unspecified"}}
-                                          </div>
-                                          <div class="col-xs-2 muted" style="padding:0px;">cores</div>
-                                      </div>
-                                      <div class="form-group required">
-                                          <label class="col-xs-4" for="id_register_nodes-0-memory_mb">Memory</label>
-                                          <div class="col-xs-6" style="padding-right:5px;">
-                                              {{input class="form-control" type="number" value=selectedProfile.ram placeholder="unspecified"}}
-
-                                          </div>
-                                          <div class="col-xs-2 muted" style="padding:0px;">MB</div>
-                                      </div>
-                                      <div class="form-group required">
-                                          <label class="col-xs-4" for="id_register_nodes-0-local_gb">Local Disk</label>
-                                          <div class="col-xs-6" style="padding-right:5px;">
-                                            {{input class="form-control" type="number" value=selectedProfile.disk placeholder="unspecified"}}
-                                          </div>
-                                          <div class="col-xs-2 muted" style="padding:0px;">GB</div>
-                                      </div>
+                                      {{select-simple-f label="Architecture" labelSize='form-label-nowrap col-xs-4' inputSize='col-xs-6' content=architectures selection=selectedProfile.architecture prompt='unspecified' isRequired=true}}
+                                      {{text-f label="CPUs" type='number' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedProfile.cpu isRequired=true unitsSize="input-units-label col-xs-2 muted" unitsLabel="cores"}}
+                                      {{text-f label="Memory" type='number' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedProfile.ram isRequired=true unitsSize="input-units-label col-xs-2 muted" unitsLabel="MB"}}
+                                      {{text-f label="Local Disk" type='number' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedProfile.ram isRequired=true unitsSize="input-units-label col-xs-2 muted" unitsLabel="GB"}}
                                   </fieldset>
                               </div>
                           </div>
