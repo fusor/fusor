@@ -88,11 +88,21 @@ define('fusor-ember-cli/components/base-f', ['exports', 'ember'], function (expo
   'use strict';
 
   exports['default'] = Ember['default'].Component.extend({
+
     labelClassSize: (function () {
       return this.getWithDefault('labelSize', 'col-md-2');
     }).property(),
+
     inputClassSize: (function () {
       return this.getWithDefault('inputSize', 'col-md-4');
+    }).property(),
+
+    showUnits: (function () {
+      return Ember['default'].isBlank(this.get('unitsLabel'));
+    }).property('unitsLabel'),
+
+    unitsClassSize: (function () {
+      return this.getWithDefault('unitsSize', 'col-md-2');
     }).property()
   });
 
@@ -1124,6 +1134,14 @@ define('fusor-ember-cli/controllers/discovered-host', ['exports', 'ember'], func
     isSelectedAsEngine: (function () {
       return this.get('selectedRhevEngineHost.id') === this.get('id');
     }).property('selectedRhevEngineHost'),
+
+    hostType: (function () {
+      if (this.get('is_virtual')) {
+        return 'Virtual';
+      } else {
+        return 'Bare Metal';
+      }
+    }).property('is_virtual'),
 
     actions: {
       engineHostChanged: function engineHostChanged(host) {
@@ -3380,6 +3398,9 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cl
       controller.set('satelliteTabRouteName', 'satellite.index');
       controller.set('organizationTabRouteName', 'configure-organization');
       controller.set('lifecycleEnvironmentTabRouteName', 'configure-environment');
+      if (Ember['default'].isBlank(model.get('lifecycle_environment_id'))) {
+        controller.set('useDefaultOrgViewForEnv', true);
+      }
     },
 
     actions: {
@@ -5775,6 +5796,57 @@ define('fusor-ember-cli/templates/components/base-f', ['exports'], function (exp
         }
       };
     }());
+    var child1 = (function() {
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("         ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          var el2 = dom.createTextNode("\n           ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n         ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, element = hooks.element, content = hooks.content;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          var element0 = dom.childAt(fragment, [1]);
+          var morph0 = dom.createMorphAt(element0,1,1);
+          element(env, element0, context, "bind-attr", [], {"class": "unitsClassSize"});
+          content(env, morph0, context, "unitsLabel");
+          return fragment;
+        }
+      };
+    }());
     return {
       isHTMLBars: true,
       revision: "Ember@1.11.1",
@@ -5792,15 +5864,15 @@ define('fusor-ember-cli/templates/components/base-f', ['exports'], function (exp
         var el3 = dom.createTextNode("\n\n      ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("label");
-        var el4 = dom.createTextNode("\n        ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createComment("");
-        dom.appendChild(el3, el4);
         var el4 = dom.createTextNode("\n");
         dom.appendChild(el3, el4);
         var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("      ");
+        var el4 = dom.createTextNode("        ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n      ");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n\n      ");
@@ -5813,7 +5885,11 @@ define('fusor-ember-cli/templates/components/base-f', ['exports'], function (exp
         var el4 = dom.createTextNode("\n      ");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("\n\n      ");
+        var el3 = dom.createTextNode("\n\n");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createComment("");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n      ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("span");
         dom.setAttribute(el3,"class","help-block");
@@ -5834,7 +5910,7 @@ define('fusor-ember-cli/templates/components/base-f', ['exports'], function (exp
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, element = hooks.element, content = hooks.content, get = hooks.get, block = hooks.block;
+        var hooks = env.hooks, element = hooks.element, get = hooks.get, block = hooks.block, content = hooks.content;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -5852,19 +5928,21 @@ define('fusor-ember-cli/templates/components/base-f', ['exports'], function (exp
         } else {
           fragment = this.build(dom);
         }
-        var element0 = dom.childAt(fragment, [0, 1]);
-        var element1 = dom.childAt(element0, [1]);
-        var element2 = dom.childAt(element0, [3]);
-        var morph0 = dom.createMorphAt(element1,1,1);
-        var morph1 = dom.createMorphAt(element1,3,3);
-        var morph2 = dom.createMorphAt(element2,1,1);
-        var morph3 = dom.createMorphAt(dom.childAt(element0, [5]),1,1);
-        element(env, element1, context, "bind-attr", [], {"class": ":control-label labelClassSize class"});
-        content(env, morph0, context, "label");
-        block(env, morph1, context, "if", [get(env, context, "isRequired")], {}, child0, null);
-        element(env, element2, context, "bind-attr", [], {"class": "inputClassSize"});
+        var element1 = dom.childAt(fragment, [0, 1]);
+        var element2 = dom.childAt(element1, [1]);
+        var element3 = dom.childAt(element1, [3]);
+        var morph0 = dom.createMorphAt(element2,1,1);
+        var morph1 = dom.createMorphAt(element2,3,3);
+        var morph2 = dom.createMorphAt(element3,1,1);
+        var morph3 = dom.createMorphAt(element1,5,5);
+        var morph4 = dom.createMorphAt(dom.childAt(element1, [7]),1,1);
+        element(env, element2, context, "bind-attr", [], {"class": ":control-label labelClassSize class"});
+        block(env, morph0, context, "if", [get(env, context, "isRequired")], {}, child0, null);
+        content(env, morph1, context, "label");
+        element(env, element3, context, "bind-attr", [], {"class": "inputClassSize"});
         content(env, morph2, context, "yield");
-        content(env, morph3, context, "help-inline");
+        block(env, morph3, context, "if", [get(env, context, "showUnits")], {}, child1, null);
+        content(env, morph4, context, "help-inline");
         return fragment;
       }
     };
@@ -9461,7 +9539,7 @@ define('fusor-ember-cli/templates/components/select-f', ['exports'], function (e
         }
         var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
         dom.insertBoundary(fragment, 0);
-        block(env, morph0, context, "base-f", [], {"label": get(env, context, "label"), "labelSize": get(env, context, "labelSize"), "inputSize": get(env, context, "inputSize")}, child0, null);
+        block(env, morph0, context, "base-f", [], {"label": get(env, context, "label"), "labelSize": get(env, context, "labelSize"), "inputSize": get(env, context, "inputSize"), "unitsSize": get(env, context, "unitsSize"), "unitsLabel": get(env, context, "unitsLabel"), "isRequired": get(env, context, "isRequired")}, child0, null);
         return fragment;
       }
     };
@@ -9558,7 +9636,7 @@ define('fusor-ember-cli/templates/components/select-simple-f', ['exports'], func
         }
         var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
         dom.insertBoundary(fragment, 0);
-        block(env, morph0, context, "base-f", [], {"label": get(env, context, "label"), "labelSize": get(env, context, "labelSize"), "inputSize": get(env, context, "inputSize")}, child0, null);
+        block(env, morph0, context, "base-f", [], {"label": get(env, context, "label"), "labelSize": get(env, context, "labelSize"), "inputSize": get(env, context, "inputSize"), "unitsSize": get(env, context, "unitsSize"), "unitsLabel": get(env, context, "unitsLabel"), "isRequired": get(env, context, "isRequired")}, child0, null);
         return fragment;
       }
     };
@@ -10075,7 +10153,7 @@ define('fusor-ember-cli/templates/components/text-f', ['exports'], function (exp
         }
         var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
         dom.insertBoundary(fragment, 0);
-        block(env, morph0, context, "base-f", [], {"label": get(env, context, "label"), "labelSize": get(env, context, "labelSize"), "inputSize": get(env, context, "inputSize"), "help-inline": get(env, context, "help-inline"), "errors": get(env, context, "errors"), "isRequired": get(env, context, "isRequired")}, child0, null);
+        block(env, morph0, context, "base-f", [], {"label": get(env, context, "label"), "labelSize": get(env, context, "labelSize"), "inputSize": get(env, context, "inputSize"), "unitsSize": get(env, context, "unitsSize"), "unitsLabel": get(env, context, "unitsLabel"), "help-inline": get(env, context, "help-inline"), "errors": get(env, context, "errors"), "isRequired": get(env, context, "isRequired")}, child0, null);
         return fragment;
       }
     };
@@ -10257,7 +10335,7 @@ define('fusor-ember-cli/templates/components/textarea-f', ['exports'], function 
         var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
         dom.insertBoundary(fragment, null);
         dom.insertBoundary(fragment, 0);
-        block(env, morph0, context, "base-f", [], {"label": get(env, context, "label"), "labelSize": get(env, context, "labelSize"), "inputSize": get(env, context, "inputSize"), "help-inline": get(env, context, "help-inline")}, child0, null);
+        block(env, morph0, context, "base-f", [], {"label": get(env, context, "label"), "labelSize": get(env, context, "labelSize"), "inputSize": get(env, context, "inputSize"), "unitsSize": get(env, context, "unitsSize"), "unitsLabel": get(env, context, "unitsLabel"), "isRequired": get(env, context, "isRequired"), "help-inline": get(env, context, "help-inline")}, child0, null);
         return fragment;
       }
     };
@@ -27008,7 +27086,7 @@ define('fusor-ember-cli/tests/routes/deployment.jshint', function () {
 
   module('JSHint - routes');
   test('routes/deployment.js should pass jshint', function() { 
-    ok(false, 'routes/deployment.js should pass jshint.\nroutes/deployment.js: line 50, col 17, Missing semicolon.\nroutes/deployment.js: line 21, col 19, \'$\' is not defined.\nroutes/deployment.js: line 69, col 19, \'$\' is not defined.\nroutes/deployment.js: line 18, col 33, \'options\' is defined but never used.\nroutes/deployment.js: line 66, col 32, \'options\' is defined but never used.\nroutes/deployment.js: line 89, col 19, \'deployment\' is defined but never used.\n\n6 errors'); 
+    ok(false, 'routes/deployment.js should pass jshint.\nroutes/deployment.js: line 53, col 17, Missing semicolon.\nroutes/deployment.js: line 24, col 19, \'$\' is not defined.\nroutes/deployment.js: line 72, col 19, \'$\' is not defined.\nroutes/deployment.js: line 21, col 33, \'options\' is defined but never used.\nroutes/deployment.js: line 69, col 32, \'options\' is defined but never used.\nroutes/deployment.js: line 92, col 19, \'deployment\' is defined but never used.\n\n6 errors'); 
   });
 
 });
@@ -33302,13 +33380,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.4fff975b"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.d2e192c5"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.4fff975b"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.d2e192c5"});
 }
 
 /* jshint ignore:end */
