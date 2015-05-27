@@ -185,7 +185,10 @@ module Actions
                     { :name => "storage_address", :value => deployment.rhev_storage_address },
                     { :name => "storage_type", :value => deployment.rhev_storage_type },
                     { :name => "storage_path", :value => deployment.rhev_share_path },
-                    { :name => "cpu_type", :value => deployment.rhev_cpu_type }
+                    { :name => "cpu_type", :value => deployment.rhev_cpu_type },
+                    { :name => "export_name", :value => deployment.rhev_export_domain_name },
+                    { :name => "export_address", :value => deployment.rhev_export_domain_address },
+                    { :name => "export_path", :value => deployment.rhev_export_domain_path }
                   ]
                 },
                 {
