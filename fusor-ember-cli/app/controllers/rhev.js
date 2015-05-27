@@ -11,7 +11,7 @@ export default Ember.Controller.extend({
 
   engineTabName: function() {
     if (this.get('isSelfHost')) {
-      return 'Hypervisor/engine';
+      return 'Engine/Hypervisor';
     } else {
       return 'Engine';
     }
