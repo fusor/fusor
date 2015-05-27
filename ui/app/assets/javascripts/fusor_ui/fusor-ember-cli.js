@@ -1655,7 +1655,7 @@ define('fusor-ember-cli/controllers/rhev', ['exports', 'ember'], function (expor
 
     engineTabName: (function () {
       if (this.get('isSelfHost')) {
-        return 'Hypervisor/engine';
+        return 'Engine/Hypervisor';
       } else {
         return 'Engine';
       }
@@ -22283,7 +22283,9 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
           var el1 = dom.createTextNode("        ");
           dom.appendChild(el0, el1);
           var el1 = dom.createElement("a");
-          var el2 = dom.createTextNode("2D. Configuration");
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode(". Configuration");
           dom.appendChild(el1, el2);
           dom.appendChild(el0, el1);
           var el1 = dom.createTextNode("\n");
@@ -22292,6 +22294,7 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
         },
         render: function render(context, env, contextualElement) {
           var dom = env.dom;
+          var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
           dom.detectNamespace(contextualElement);
           var fragment;
           if (env.useFragmentCache && dom.canClone) {
@@ -22309,6 +22312,8 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
           } else {
             fragment = this.build(dom);
           }
+          var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),0,0);
+          inline(env, morph0, context, "if", [get(env, context, "isSelfHost"), "2C", "2D"], {});
           return fragment;
         }
       };
@@ -22325,7 +22330,9 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
           var el1 = dom.createTextNode("        ");
           dom.appendChild(el0, el1);
           var el1 = dom.createElement("a");
-          var el2 = dom.createTextNode("2E. Storage");
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode(". Storage");
           dom.appendChild(el1, el2);
           dom.appendChild(el0, el1);
           var el1 = dom.createTextNode("\n");
@@ -22334,6 +22341,7 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
         },
         render: function render(context, env, contextualElement) {
           var dom = env.dom;
+          var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
           dom.detectNamespace(contextualElement);
           var fragment;
           if (env.useFragmentCache && dom.canClone) {
@@ -22351,6 +22359,8 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
           } else {
             fragment = this.build(dom);
           }
+          var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),0,0);
+          inline(env, morph0, context, "if", [get(env, context, "isSelfHost"), "2D", "2E"], {});
           return fragment;
         }
       };

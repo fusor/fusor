@@ -17,11 +17,11 @@
       {{/unless}}
 
       {{#link-to 'rhev-options' tagName='li'}}
-        <a>2D. Configuration</a>
+        <a>{{if isSelfHost '2C' '2D'}}. Configuration</a>
       {{/link-to}}
 
       {{#link-to 'storage' tagName='li'}}
-        <a>2E. Storage</a>
+        <a>{{if isSelfHost '2D' '2E'}}. Storage</a>
       {{/link-to}}
   </ul>
 
