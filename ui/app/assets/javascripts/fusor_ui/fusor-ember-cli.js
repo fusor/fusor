@@ -1756,9 +1756,20 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember'], function (ex
     rhev_storage_address: Ember['default'].computed.alias('controllers.deployment.rhev_storage_address'),
     rhev_share_path: Ember['default'].computed.alias('controllers.deployment.rhev_share_path'),
     step3RouteName: Ember['default'].computed.alias('controllers.deployment.step3RouteName'),
+    isCloudForms: Ember['default'].computed.alias('controllers.deployment.isCloudForms'),
+
+    rhev_gluster_ssh_port: 22, //default
 
     isNFS: (function () {
       return this.get('rhev_storage_type') === 'NFS';
+    }).property('rhev_storage_type'),
+
+    isLocal: (function () {
+      return this.get('rhev_storage_type') === 'Local';
+    }).property('rhev_storage_type'),
+
+    isGluster: (function () {
+      return this.get('rhev_storage_type') === 'Gluster';
     }).property('rhev_storage_type') });
 
 });
@@ -2767,6 +2778,15 @@ define('fusor-ember-cli/models/deployment', ['exports', 'ember-data'], function 
 
     foreman_task_uuid: DS['default'].attr('string'),
     upstream_consumer_uuid: DS['default'].attr('string'),
+
+    rhev_export_domain_address: DS['default'].attr('string'),
+    rhev_export_domain_path: DS['default'].attr('string'),
+
+    rhev_local_storage_path: DS['default'].attr('string'),
+    rhev_gluster_node_name: DS['default'].attr('string'),
+    rhev_gluster_node_address: DS['default'].attr('string'),
+    rhev_gluster_ssh_port: DS['default'].attr('string'),
+    rhev_gluster_root_password: DS['default'].attr('string'),
 
     created_at: DS['default'].attr('date'),
     updated_at: DS['default'].attr('date'),
@@ -22379,7 +22399,7 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("ul");
         dom.setAttribute(el2,"class","nav nav-pills nav-stacked col-md-3");
-        var el3 = dom.createTextNode("\n\n");
+        var el3 = dom.createTextNode("\n");
         dom.appendChild(el2, el3);
         var el3 = dom.createComment("");
         dom.appendChild(el2, el3);
@@ -23227,6 +23247,48 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
 
   exports['default'] = Ember.HTMLBars.template((function() {
     var child0 = (function() {
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("h4");
+          var el2 = dom.createTextNode(" Data Domain ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          return fragment;
+        }
+      };
+    }());
+    var child1 = (function() {
       var child0 = (function() {
         return {
           isHTMLBars: true,
@@ -23388,7 +23450,305 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
         }
       };
     }());
-    var child1 = (function() {
+    var child2 = (function() {
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("          ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n          ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
+          var morph1 = dom.createMorphAt(fragment,3,3,contextualElement);
+          inline(env, morph0, context, "text-f", [], {"label": "Storage Address", "value": get(env, context, "rhev_storage_address"), "placeholder": "Leave blank for default (Ex. 1.2.3.4)", "cssId": "rhev_storage_address"});
+          inline(env, morph1, context, "text-f", [], {"label": "Share Path", "value": get(env, context, "rhev_share_path"), "placeholder": "Leave blank for default (Ex. /nfs_data/rhev_storage)", "cssId": "rhev_share_path"});
+          return fragment;
+        }
+      };
+    }());
+    var child3 = (function() {
+      var child0 = (function() {
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("          ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
+            inline(env, morph0, context, "text-f", [], {"label": "Storage Path", "value": get(env, context, "rhev_local_storage_path"), "placeholder": "Ex. /rhev/data_storage", "isRequired": true, "cssId": "rhev_local_storage_path", "help-inline": "This path will be created and given appropriate permissions - chown 36:36;chmod 0755, etc"});
+            return fragment;
+          }
+        };
+      }());
+      var child1 = (function() {
+        var child0 = (function() {
+          return {
+            isHTMLBars: true,
+            revision: "Ember@1.11.1",
+            blockParams: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            build: function build(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("          ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n          ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n          ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n          ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n      ");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            render: function render(context, env, contextualElement) {
+              var dom = env.dom;
+              var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
+              dom.detectNamespace(contextualElement);
+              var fragment;
+              if (env.useFragmentCache && dom.canClone) {
+                if (this.cachedFragment === null) {
+                  fragment = this.build(dom);
+                  if (this.hasRendered) {
+                    this.cachedFragment = fragment;
+                  } else {
+                    this.hasRendered = true;
+                  }
+                }
+                if (this.cachedFragment) {
+                  fragment = dom.cloneNode(this.cachedFragment, true);
+                }
+              } else {
+                fragment = this.build(dom);
+              }
+              var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
+              var morph1 = dom.createMorphAt(fragment,3,3,contextualElement);
+              var morph2 = dom.createMorphAt(fragment,5,5,contextualElement);
+              var morph3 = dom.createMorphAt(fragment,7,7,contextualElement);
+              inline(env, morph0, context, "text-f", [], {"label": "Node Name", "value": get(env, context, "rhev_gluster_node_name"), "placeholder": "Ex. node.example.com", "isRequired": true, "cssId": "rhev_gluster_node_name", "isRequired": true});
+              inline(env, morph1, context, "text-f", [], {"label": "Node Address", "value": get(env, context, "rhev_gluster_node_address"), "placeholder": "Ex. 1.2.3.4", "isRequired": true, "cssId": "rhev_gluster_node_address"});
+              inline(env, morph2, context, "text-f", [], {"label": "SSH Port", "value": get(env, context, "rhev_gluster_ssh_port"), "isRequired": true, "cssId": "rhev_gluster_ssh_port"});
+              inline(env, morph3, context, "text-f", [], {"label": "Root Password", "value": get(env, context, "rhev_gluster_root_password"), "isRequired": true, "cssId": "rhev_gluster_root_password", "type": "password"});
+              return fragment;
+            }
+          };
+        }());
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, get = hooks.get, block = hooks.block;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+            dom.insertBoundary(fragment, null);
+            dom.insertBoundary(fragment, 0);
+            block(env, morph0, context, "if", [get(env, context, "isGluster")], {}, child0, null);
+            return fragment;
+          }
+        };
+      }());
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, get = hooks.get, block = hooks.block;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+          dom.insertBoundary(fragment, null);
+          dom.insertBoundary(fragment, 0);
+          block(env, morph0, context, "if", [get(env, context, "isLocal")], {}, child0, child1);
+          return fragment;
+        }
+      };
+    }());
+    var child4 = (function() {
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("h4");
+          var el2 = dom.createTextNode(" Export Domain ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n\n    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("form");
+          dom.setAttribute(el1,"class","form form-horizontal");
+          var el2 = dom.createTextNode("\n\n      ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n      ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n\n    ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          var element0 = dom.childAt(fragment, [3]);
+          var morph0 = dom.createMorphAt(element0,1,1);
+          var morph1 = dom.createMorphAt(element0,3,3);
+          inline(env, morph0, context, "text-f", [], {"label": "Storage Address", "value": get(env, context, "rhev_export_domain_address"), "cssId": "rhev_export_domain_address", "isRequired": true});
+          inline(env, morph1, context, "text-f", [], {"label": "Share Path", "value": get(env, context, "rhev_export_domain_path"), "cssId": "rhev_export_domain_path", "isRequired": true});
+          return fragment;
+        }
+      };
+    }());
+    var child5 = (function() {
       return {
         isHTMLBars: true,
         revision: "Ember@1.11.1",
@@ -23424,7 +23784,7 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
         }
       };
     }());
-    var child2 = (function() {
+    var child6 = (function() {
       return {
         isHTMLBars: true,
         revision: "Ember@1.11.1",
@@ -23474,9 +23834,9 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("div");
         dom.setAttribute(el2,"class","col-md-12");
-        var el3 = dom.createTextNode("\n    ");
+        var el3 = dom.createTextNode("\n\n");
         dom.appendChild(el2, el3);
-        var el3 = dom.createElement("br");
+        var el3 = dom.createComment("");
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n    ");
         dom.appendChild(el2, el3);
@@ -23486,16 +23846,16 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
         dom.appendChild(el3, el4);
         var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n      ");
+        var el4 = dom.createTextNode("\n");
         dom.appendChild(el3, el4);
         var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n      ");
+        var el4 = dom.createTextNode("\n    ");
         dom.appendChild(el3, el4);
-        var el4 = dom.createComment("");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n\n    ");
-        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n\n");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createComment("");
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n  ");
         dom.appendChild(el2, el3);
@@ -23528,7 +23888,7 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, block = hooks.block, get = hooks.get, inline = hooks.inline;
+        var hooks = env.hooks, get = hooks.get, block = hooks.block;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -23546,18 +23906,21 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
         } else {
           fragment = this.build(dom);
         }
-        var element0 = dom.childAt(fragment, [0, 1, 3]);
-        var element1 = dom.childAt(fragment, [2]);
-        var morph0 = dom.createMorphAt(element0,1,1);
-        var morph1 = dom.createMorphAt(element0,3,3);
-        var morph2 = dom.createMorphAt(element0,5,5);
-        var morph3 = dom.createMorphAt(element1,3,3);
-        var morph4 = dom.createMorphAt(element1,5,5);
-        block(env, morph0, context, "base-f", [], {"label": "Storage Type", "isRequired": true}, child0, null);
-        inline(env, morph1, context, "text-f", [], {"label": "Storage Address", "value": get(env, context, "rhev_storage_address"), "placeholder": "Leave blank for default", "cssId": "rhev_storage_address"});
-        inline(env, morph2, context, "text-f", [], {"label": "Share Path", "value": get(env, context, "rhev_share_path"), "placeholder": "Leave blank for default", "cssId": "rhev_share_path"});
-        block(env, morph3, context, "link-to", ["deployments"], {"class": "btn btn-default"}, child1, null);
-        block(env, morph4, context, "link-to", [get(env, context, "step3RouteName")], {"class": "btn btn-primary"}, child2, null);
+        var element1 = dom.childAt(fragment, [0, 1]);
+        var element2 = dom.childAt(element1, [3]);
+        var element3 = dom.childAt(fragment, [2]);
+        var morph0 = dom.createMorphAt(element1,1,1);
+        var morph1 = dom.createMorphAt(element2,1,1);
+        var morph2 = dom.createMorphAt(element2,3,3);
+        var morph3 = dom.createMorphAt(element1,5,5);
+        var morph4 = dom.createMorphAt(element3,3,3);
+        var morph5 = dom.createMorphAt(element3,5,5);
+        block(env, morph0, context, "if", [get(env, context, "isCloudForms")], {}, child0, null);
+        block(env, morph1, context, "base-f", [], {"label": "Storage Type", "isRequired": true}, child1, null);
+        block(env, morph2, context, "if", [get(env, context, "isNFS")], {}, child2, child3);
+        block(env, morph3, context, "if", [get(env, context, "isCloudForms")], {}, child4, null);
+        block(env, morph4, context, "link-to", ["deployments"], {"class": "btn btn-default"}, child5, null);
+        block(env, morph5, context, "link-to", [get(env, context, "step3RouteName")], {"class": "btn btn-primary"}, child6, null);
         return fragment;
       }
     };

@@ -29,6 +29,16 @@ export default DS.Model.extend({
   foreman_task_uuid: DS.attr('string'),
   upstream_consumer_uuid: DS.attr('string'),
 
+  rhev_export_domain_name: DS.attr('string'),
+  rhev_export_domain_address: DS.attr('string'),
+  rhev_export_domain_path: DS.attr('string'),
+
+  rhev_local_storage_path: DS.attr('string'),
+  rhev_gluster_node_name: DS.attr('string'),
+  rhev_gluster_node_address: DS.attr('string'),
+  rhev_gluster_ssh_port: DS.attr('string'),
+  rhev_gluster_root_password: DS.attr('string'),
+
   created_at: DS.attr('date'),
   updated_at: DS.attr('date'),
 
