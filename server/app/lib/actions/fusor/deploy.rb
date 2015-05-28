@@ -61,10 +61,9 @@ module Actions
               end
 
               if products_host_groups[index]
-                enable_smart_class_parameter_overrides(products_host_groups[index])
-
                 plan_action(::Actions::Fusor::ConfigureHostGroups,
                             deployment,
+                            product_types[index],
                             products_host_groups[index])
               end
             end
@@ -98,25 +97,14 @@ module Actions
         repositories.select{ |repo| repo.content_type == ::Katello::Repository::YUM_TYPE }
       end
 
-      def enable_smart_class_parameter_overrides(product_host_groups)
-        if host_group_settings = product_host_groups[:host_groups]
-          host_group_settings.each do |host_group_setting|
-
-            if puppet_class_settings = host_group_setting[:puppet_classes]
-              puppet_class_settings.each do |puppet_class_setting|
-
-                parameter_settings = puppet_class_setting[:parameters]
-                unless parameter_settings.blank?
-                  parameter_names = parameter_settings.map{ |p| p[:name] }
-                  if puppet_class = Puppetclass.where(:name => puppet_class_setting[:name]).first
-                    smart_class_parameters = puppet_class.smart_class_parameters.where(:key => parameter_names)
-                    smart_class_parameters.each do |parameter|
-                      parameter.override = true
-                      parameter.save!
-                    end
-                  end
-                end
-              end
+      def enable_smart_class_parameter_overrides
+        # Enable parameter overrides for all parameters supported by the configured puppet classes
+        puppet_classes = ::Puppetclass.where(:name => SETTINGS[:fusor][:puppet_classes].map{ |p| p[:name] })
+        puppet_classes.each do |puppet_class|
+          puppet_class.smart_class_parameters.each do |parameter|
+            unless parameter.override
+              parameter.override = true
+              parameter.save!
             end
           end
         end
