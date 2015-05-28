@@ -6,8 +6,13 @@ export default Ember.Controller.extend({
 
   sessionPortal: Ember.computed.alias('controllers.subscriptions.model'),
   upstream_consumer_uuid: Ember.computed.alias("controllers.deployment.upstream_consumer_uuid"),
+  upstream_consumer_name: Ember.computed.alias("controllers.deployment.upstream_consumer_name"),
 
   showAlertMessage: false,
+
+  disableNextOnManagementApp: function() {
+    return (Ember.isBlank(this.get('sessionPortal.consumerUUID')));
+  }.property('sessionPortal.consumerUUID'),
 
   actions: {
     selectManagementApp: function(managementApp) {
@@ -15,6 +20,7 @@ export default Ember.Controller.extend({
       this.get('sessionPortal').set('consumerUUID', managementApp.uuid);
       this.get('sessionPortal').save();
       this.set('upstream_consumer_uuid', managementApp.uuid);
+      this.set('upstream_consumer_name', managementApp.name);
     },
 
     createSatellite: function(params) {

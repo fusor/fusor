@@ -28,6 +28,7 @@ export default DS.Model.extend({
 
   foreman_task_uuid: DS.attr('string'),
   upstream_consumer_uuid: DS.attr('string'),
+  upstream_consumer_name: DS.attr('string'),
 
   rhev_export_domain_name: DS.attr('string'),
   rhev_export_domain_address: DS.attr('string'),

@@ -12,8 +12,8 @@ export default Ember.Route.extend({
 
     return $.getJSON(url).then(function(results) {
         sessionPortal.set('isAuthenticated', true); // in case go to this route from URL
-        sessionPortal.save()
-      return results;
+        sessionPortal.save();
+        return results;
       }, function() {
          sessionPortal.set('isAuthenticated',false);
          sessionPortal.save().then(function() {
@@ -30,7 +30,24 @@ export default Ember.Route.extend({
 
   setupController: function(controller, model) {
     controller.set('model', model);
-    controller.set('sessionPortal', this.modelFor('subscriptions'))
+
+    var sessionPortal = this.modelFor('subscriptions');
+    var upstream_consumer_uuid = this.modelFor('deployment').get('upstream_consumer_uuid');
+    if (upstream_consumer_uuid) {
+      sessionPortal.set('consumerUUID', upstream_consumer_uuid);
+      controller.set('sessionPortal', sessionPortal);
+    } else {
+      // check if org has upstream UUID using Katello V2 API
+      var orgID = this.modelFor('deployment').get('organization.id')
+      var url = '/katello/api/v2/organizations/' + orgID;
+      $.getJSON(url).then(function(results) {
+          sessionPortal.set('consumerUUID', results.owner_details.upstreamConsumer.uuid);
+          sessionPortal.save()
+          controller.set('sessionPortal', sessionPortal)
+          controller.set('upstream_consumer_uuid', results.owner_details.upstreamConsumer.uuid);
+          controller.set('upstream_consumer_name', results.owner_details.upstreamConsumer.name);
+          });
+    }
   },
 
   deactivate: function() {
