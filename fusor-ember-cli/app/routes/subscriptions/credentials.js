@@ -2,6 +2,24 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
 
+  setupController: function(controller, model) {
+    controller.set('model', model);
+
+    var sessionPortal = this.modelFor('subscriptions');
+    var upstream_consumer_uuid = this.modelFor('deployment').get('upstream_consumer_uuid');
+    // check if org has upstream UUID using Katello V2 API
+    var orgID = this.modelFor('deployment').get('organization.id')
+    var url = '/katello/api/v2/organizations/' + orgID;
+    $.getJSON(url).then(function(results) {
+        controller.set('organizationUpstreamConsumerUUID', results.owner_details.upstreamConsumer.uuid);
+        controller.set('organizationUpstreamConsumerName', results.owner_details.upstreamConsumer.name);
+        // if (Ember.isBlank(upstream_consumer_uuid)) {
+        //   controller.set('upstream_consumer_uuid', results.owner_details.upstreamConsumer.uuid)
+        //   controller.set('upstream_consumer_name', results.owner_details.upstreamConsumer.name)
+        // }
+    });
+  },
+
   actions: {
     error: function(reason, transition) {
       // bubble up this error event:

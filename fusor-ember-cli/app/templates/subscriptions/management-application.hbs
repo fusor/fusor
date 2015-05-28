@@ -42,21 +42,10 @@
   </div>
 </div>
 
-<br />
-<br />
-
-<div class="row">
-  <div class='col-md-9'>
-    <div class='pull-right'>
-        {{#link-to 'subscriptions.credentials' class='btn btn-default'}}
-          Back
-        {{/link-to}}
-        {{#link-to 'subscriptions.select-subscriptions'
-                   class='btn btn-primary'}}
-            Next
-        {{/link-to}}
-    </div>
-  </div>
-</div>
-
 {{partial 'new-satellite'}}
+
+{{cancel-back-next backRouteName='subscriptions.credentials'
+                   disableBack=false
+                   nextRouteName='subscriptions.select-subscriptions'
+                   disableNext=disableNextOnManagementApp
+                   parentController=controller}}
