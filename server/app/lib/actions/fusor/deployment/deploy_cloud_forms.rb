@@ -29,7 +29,7 @@ module Actions
           plan_self deployment_id: deployment.id
         end
 
-        def finalize
+        def run
           Rails.logger.warn "XXX ================ Deploy CFME finalize method ===================="
 
           deployment_id = input.fetch(:deployment_id)
@@ -43,6 +43,9 @@ module Actions
             else
               Rails.logger.error "XXX There was a problem with running the command. Status: #{status}. \nOutput: #{output}"
             end
+
+            # TODO: the following call needs to pass in the IP address of the cloudforms VM that is created above
+            #add_rhev_provider(deployment, "10.8.101.247")
           end
 
           Rails.logger.warn "XXX #{deployment.id}"
@@ -88,11 +91,17 @@ module Actions
           # possibly make a GET call to the webui
         end
 
-        def add_rhev_provider
-          # not sure if this will be needed, will requier calling out to a
-          # script
-        end
+        def add_rhev_provider(deployment, cfme_ip)
+          provider = { :name => deployment.name,
+                       :type => "rhevm",
+                       :hostname => "deployment.rhev_engine_host.name",
+                       :ip => "deployment.rhev_engine_host.ip",
+                       :username => "admin@internal", # TODO: perhaps make configurable, in future
+                       :password => "deployment.rhev_engine_admin_password"
+                     }
 
+          Utils::CloudForms::Provider.add(cfme_ip, provider)
+        end
       end
     end
   end
