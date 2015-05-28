@@ -69,6 +69,8 @@ export default Ember.Mixin.create({
     if (this.get('isUpstream')) { return "assets/foreman.png"; } else { return "assets/Header-logotype.png"; }
   }.property('isUpstream'),
 
+  currentStepNumber: null, //set by setupController,
+
   // steps
   stepNumberRhev: 2,
 

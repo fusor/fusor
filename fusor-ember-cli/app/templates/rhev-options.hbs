@@ -17,8 +17,8 @@
   </div>
 </div>
 
-    <div class='pull-right'>
-      <br />
-      {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
-      {{#link-to 'storage' class='btn btn-primary'}}Next{{/link-to}}
-    </div>
+{{cancel-back-next backRouteName=optionsBackRouteName
+                   disableBack=false
+                   nextRouteName='storage'
+                   disableNext=false}}
+

@@ -65,17 +65,14 @@
 <br />
 <br />
 
-<div class="row">
-  <div class='col-md-9'>
-    <div class='pull-right'>
-      {{#link-to organizationTabRouteName class='btn btn-default'}}Back{{/link-to}}
-      <button {{action 'saveDeployment' step2RouteName}}
-              {{bind-attr disabled=disableNextOnLifecycleEnvironment}}
-              class='btn btn-primary'>
-          Next
-      </button> {{!step2RouteName}}
-    </div>
-  </div>
-</div>
-
 {{partial 'new-environment'}}
+
+{{#cancel-back-next backRouteName=organizationTabRouteName
+                    disableBack=false
+                    parentController=controller}}
+    <button {{action 'saveDeployment' step2RouteName}}
+            {{bind-attr disabled=disableNextOnLifecycleEnvironment}}
+            class='btn btn-primary'>
+        Next <i class="fa fa-angle-right"></i>
+    </button>
+{{/cancel-back-next}}

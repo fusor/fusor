@@ -25,8 +25,7 @@
   </div>
 </div>
 
-    <div class='pull-right'>
-      <br />
-      {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
-      {{#link-to step3RouteName class='btn btn-primary'}}Next{{/link-to}}
-    </div>
+{{cancel-back-next backRouteName='rhev-options'
+                   disableBack=false
+                   nextRouteName=step3RouteName
+                   disableNext=false}}

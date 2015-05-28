@@ -28,9 +28,8 @@
 
 <br />
 
-<div class='pull-right'>
-    {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
-    {{#link-to 'engine.discovered-host' class='btn btn-primary'}}Next{{/link-to}}
-</div>
+{{cancel-back-next backRouteName='configure-environment'
+                   disableBack=false
+                   nextRouteName='engine.discovered-host'
+                   disableNext=false}}
 
-{{partial 'cancel-deployment-modal'}}

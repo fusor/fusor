@@ -22,8 +22,7 @@
   </tbody>
 </table>
 
-<div class='pull-right'>
-  <br />
-  {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
-  {{#link-to 'hypervisor.discovered-host' class='btn btn-primary'}}Next{{/link-to}}
-</div>
+{{cancel-back-next backRouteName='rhev-setup'
+                   disableBack=false
+                   nextRouteName=engineNextRouteName
+                   disableNext=false}}

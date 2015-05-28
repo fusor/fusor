@@ -5,6 +5,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
 
   needs: ['deployment'],
 
+  satelliteTabRouteName: Ember.computed.alias("controllers.deployment.satelliteTabRouteName"),
   organizationTabRouteName: Ember.computed.alias("controllers.deployment.organizationTabRouteName"),
 
   selectedOrganization: Ember.computed.alias("controllers.deployment.organization"),

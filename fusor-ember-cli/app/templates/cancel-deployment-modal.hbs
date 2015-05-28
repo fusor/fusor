@@ -1,21 +1,25 @@
-{{!#em-modal name="cancelDeploymentModal" fade=true footerButtonsBinding="rhciModalButtons" title="Cancel Deployment"}}
-  <!-- Are you sure you want to cancel? -->
-{{!/em-modal}}
-
-
- {{#em-modal configName="bs" id="cancelDeploymentModal"}}
+{{#em-modal configName="bs" id="cancelDeploymentModal" close-if=closeModal}}
     {{#em-modal-title}}
-        <!--optional toggler to close the opened modal-->
-        {{#em-modal-toggler class="close"}}×Close{{/em-modal-toggler}}
-        <h4 class="modal-title">Cancel Deployment</h4>
+        {{#em-modal-toggler class="close"}}
+            <span aria-hidden="true">×</span><span class="sr-only">Close</span>
+        {{/em-modal-toggler}}
+        <h4 class="modal-title">Cancel RHCI Deployment - {{parentController.name}} </h4>
     {{/em-modal-title}}
-    <!--the content of the modal...-->
-    {{#em-modal-body}}
-        One fine body…
-    {{/em-modal-body}}
-    <!--optional footer section of the modal, usually contains buttons-->
-    {{#em-modal-footer}}
-        {{#em-modal-toggler class="btn btn-default"}}Close{{/em-modal-toggler}}
-    {{/em-modal-footer}}
-{{/em-modal}}
 
+    {{#em-modal-body}}
+        Are you sure that you want to cancel this deployment?
+    {{/em-modal-body}}
+
+    {{#em-modal-footer}}
+        <button type="submit" {{action 'cancelAndDeleteDeployment'}} class="btn btn-default">
+          Yes, Exit and Delete Deployment
+        </button>
+        <button type="submit" {{action 'saveAndCancelDeployment'}} class="btn btn-default">
+          Yes, Save Deployment and Exit
+        </button>
+        {{#em-modal-toggler class="btn btn-primary"}}
+          No, Continue Working on This Deployment
+        {{/em-modal-toggler}}
+    {{/em-modal-footer}}
+    {{isNew}}
+{{/em-modal}}

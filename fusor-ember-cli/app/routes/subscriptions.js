@@ -13,6 +13,12 @@ export default Ember.Route.extend({
     });
   },
 
+  setupController: function(controller, model) {
+    controller.set('model', model);
+    var stepNumberSubscriptions = this.controllerFor('deployment').get('stepNumberSubscriptions');
+    return this.controllerFor('deployment').set('currentStepNumber', stepNumberSubscriptions);
+  },
+
   actions: {
     error: function(reason, transition) {
       console.log(reason);
