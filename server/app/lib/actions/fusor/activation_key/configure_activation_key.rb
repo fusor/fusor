@@ -63,7 +63,7 @@ module Actions
                                                :auto_attach => true,
                                                :user_id => ::User.current.id)
 
-            plan_action(::Actions::Katello::ActivationKey::Create, key)
+            plan_action(::Actions::Fusor::ActivationKey::Create, key)
           end
         end
 
