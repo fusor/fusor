@@ -94,15 +94,24 @@
     {{/accordion-item}}
   {{/if}}
 
-    <br />
-    <br />
-
-    <div class='pull-right'>
+  {{#if isSubscriptions}}
+    {{#accordion-item name='Subscriptions' isOpen=isSubscriptionsOpen}}
+      Subscription Management Application:
+        {{#link-to 'subscriptions.management-application'}}
+          {{controllers.deployment.upstream_consumer_name}}
+        {{/link-to}}
       <br />
+    {{/accordion-item}}
+  {{/if}}
+
+{{#cancel-back-next backRouteName=''
+                    disableBack=false
+                    parentController=controller}}
       {{button-f disabled=buttonDeployDisabled title=buttonDeployTitle action="installDeployment"}}
       <br />
       {{input type="checkbox" name="skipContent" checked=skipContent}} Skip Content (DEV ONLY)
-    </div>
+{{/cancel-back-next}}
+
 
 
   </div>

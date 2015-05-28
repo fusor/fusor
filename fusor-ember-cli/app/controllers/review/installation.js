@@ -48,6 +48,7 @@ export default Ember.Controller.extend({
   isRhevOpen: true,
   isOpenStackOpen: false,
   isCloudFormsOpen: false,
+  isSubscriptionsOpen: false,
 
   engineHostAddressDefault: 'ovirt-hypervisor.rhci.redhat.com',
   hostAddress: Ember.computed.alias("controllers.rhev-options.hostAddress"),
@@ -61,6 +62,7 @@ export default Ember.Controller.extend({
   isRhev: Ember.computed.alias("controllers.deployment.isRhev"),
   isOpenStack: Ember.computed.alias("controllers.deployment.isOpenStack"),
   isCloudForms: Ember.computed.alias("controllers.deployment.isCloudForms"),
+  isSubscriptions: Ember.computed.alias("controllers.deployment.isSubscriptions"),
 
   isSelfHosted: Ember.computed.alias("controllers.deployment.rhev_is_self_hosted"),
   selectedHypervisorHosts: Ember.computed.alias("controllers.deployment.discovered_hosts"),

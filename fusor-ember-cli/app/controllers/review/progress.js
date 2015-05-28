@@ -7,6 +7,7 @@ export default Ember.Controller.extend({
   isRhevOpen: true,
   isOpenStackOpen: false,
   isCloudFormsOpen: false,
+  isSubscriptionsOpen: false,
   foremanTasksURL: null,
 
   // TODO - DRY and update while deployment is finished and button should say "Deployed"
