@@ -1,5 +1,4 @@
-import Ember from 'ember';
-import config from './config/environment';
+import Ember from 'ember';import config from './config/environment';
 
 var Router = Ember.Router.extend({
   location: config.locationType,
@@ -41,20 +40,14 @@ export default Router.map(function() {
 
     this.resource('rhev', function() {
       this.resource('rhev-setup', { path: 'setup' });
+      this.resource('engine', function() {
+        this.route('discovered-host');
+      });
       this.resource('hypervisor', function() {
         this.route('discovered-host');
-        this.route('existing-host');
-        this.route('new-host');
-      });
-      this.resource('engine', function() {
-        this.route('hypervisor');
-        this.route('discovered-host');
-        this.route('existing-host');
-        this.route('new-host');
       });
       this.resource('rhev-options', { path: 'configuration' });
       this.resource('storage');
-      this.resource('networking');
     });
 
     this.resource('openstack', function() {
@@ -96,7 +89,6 @@ export default Router.map(function() {
   });
 
   this.route('hostgroup/edit');
-  this.route('review/installation');
   this.resource("discovered-hosts", function() {
     this.resource("discovered-host", { path: '/:discovered_hosts_id' });
   });

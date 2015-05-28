@@ -66,6 +66,18 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       });
     },
 
+    saveAndCancelDeployment: function() {
+      return this.send('saveDeployment', 'deployments');
+    },
+
+    cancelAndDeleteDeployment: function() {
+      var deployment = this.get('controller.model');
+      var self = this;
+      deployment.destroyRecord().then(function() {
+        return self.transitionTo('deployments');
+      });
+    },
+
     loginCredentials: function(options) {
       var self = this;
       var deployment = this.controllerFor('deployment');

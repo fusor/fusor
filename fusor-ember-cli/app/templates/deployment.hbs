@@ -4,23 +4,11 @@
 {{!selectedRhevEngine.name}}
 {{!discovered_hosts.length}}
 {{!discovered_hosts}}
-
 {{#unless isHideWizard}}
-  <br />
-  <br />
-  <h1 class='deployment_name'>New {{nameRHCI}} Deployment: <strong>{{name}}</strong></h1>
-  {{#unless isNew}}
-    &nbsp;
-    {{#link-to 'deployment.start' this}}
-        Edit Production Selections <i class="fa fa-pencil"></i>
-    {{/link-to}}
-  {{/unless}}
-  <br />
-  <br />
 
-  {{!partial 'debug-deployment'}}
-
-  {{rhci-wizard nameSatellite=nameSatellite
+  {{rhci-wizard name=name
+                nameRHCI=nameRHCI
+                nameSatellite=nameSatellite
                 nameRhev=nameRhev
                 nameOpenStack=nameOpenStack
                 nameCloudForms=nameCloudForms
@@ -38,7 +26,10 @@
                 isOpenStack=isOpenStack
                 isCloudForms=isCloudForms
                 isSubscriptions=isSubscriptions
+                currentStepNumber=currentStepNumber
                 }}
 {{/unless}}
 
-{{outlet}}
+<div class="row parent-sidebar-pf">
+ {{outlet}}
+</div>

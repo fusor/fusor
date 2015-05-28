@@ -29,9 +29,8 @@ available hosts selected {{idsChecked}}
   </tbody>
 </table>
 
-<div class='pull-right'>
-  <br />
-  {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
+{{#cancel-back-next backRouteName=hypervisorBackRouteName
+                    disableBack=false
+                    parentController=controller}}
   <button {{action 'saveHyperVisors' 'rhev-options'}} class='btn btn-primary'>Next</button>
-  {{!#link-to 'rhev-options' class='btn btn-primary'}}<!--Next-->{{!/link-to}}
-</div>
+{{/cancel-back-next}}

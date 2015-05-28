@@ -10,6 +10,16 @@ export default Ember.Controller.extend({
   rhev_cluster_name: Ember.computed.alias("controllers.deployment.rhev_cluster_name"),
   rhev_storage_name: Ember.computed.alias("controllers.deployment.rhev_storage_name"),
   rhev_cpu_type: Ember.computed.alias("controllers.deployment.rhev_cpu_type"),
+  rhev_is_self_hosted: Ember.computed.alias("controllers.deployment.rhev_is_self_hosted"),
+
+
+  optionsBackRouteName: function() {
+    if (this.get('rhev_is_self_hosted')) {
+      return 'engine.discovered-host';
+    } else {
+      return 'hypervisor.discovered-host';
+    }
+  }.property('rhev_is_self_hosted'),
 
   applicationModes: ['Both', 'Virt', 'Gluster'],
   engineLocation: ['Local', 'Remote'],

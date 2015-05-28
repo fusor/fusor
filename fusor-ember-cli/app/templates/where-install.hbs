@@ -26,8 +26,7 @@
   </div>
 </div>
 
-<div class='pull-right'>
-  <br />
-  {{#link-to 'deployments' class='btn btn-default'}}Cancel{{/link-to}}
-  {{#link-to 'subscriptions.credentials' class='btn btn-primary'}}Next{{/link-to}}
-</div>
+{{cancel-back-next backRouteName=backRouteName
+                   disableBack=false
+                   nextRouteName='cloudforms.cfme-configuration'
+                   disableNext=false}}

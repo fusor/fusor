@@ -1,0 +1,18 @@
+<div class="col-md-12 rhci-steps-buttons">
+  {{#em-modal-toggler modal-id="cancelDeploymentModal" class="btn btn-default"}}
+      Cancel
+  {{/em-modal-toggler}}
+  {{#link-to backRouteName disabled=disableBack role="button" class='btn btn-default'}}
+      <i class="fa fa-angle-left"></i> Back
+  {{/link-to}}
+  {{#if nextRouteName}}
+      {{#link-to nextRouteName disabled=disableNext role="button" class='btn btn-primary'}}
+          Next <i class="fa fa-angle-right"></i>
+      {{/link-to}}
+  {{else}}
+      {{yield}}
+  {{/if}}
+</div>
+
+{{partial 'cancel-deployment-modal'}}
+

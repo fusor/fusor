@@ -9,7 +9,11 @@ export default Ember.Mixin.create({
       deployment.save().then(
         function(result) {
           if (routeNameForTransition) {
-            self.transitionTo(routeNameForTransition, result);
+            if (routeNameForTransition === 'deployments') {
+              return self.transitionTo('deployments');
+            } else {
+              return self.transitionTo(routeNameForTransition, result);
+            }
           }
         },
         function(error) {

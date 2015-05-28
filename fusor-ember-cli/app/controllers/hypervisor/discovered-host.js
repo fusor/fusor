@@ -6,6 +6,7 @@ export default Ember.ArrayController.extend({
   itemController: ['discovered-host'],
 
   selectedRhevEngine: Ember.computed.alias("controllers.deployment.discovered_host"),
+  rhev_is_self_hosted: Ember.computed.alias("controllers.deployment.rhev_is_self_hosted"),
 
   // Filter out hosts selected as Hypervisor
   availableHosts: Ember.computed.filter('allDiscoveredHosts', function(host, index, array) {
@@ -73,5 +74,13 @@ export default Ember.ArrayController.extend({
       return '';
     }
   }.property('model.@each.isSelectedAsHypervisor'),
+
+  hypervisorBackRouteName: function() {
+    if (this.get('rhev_is_self_hosted')) {
+      return 'rhev-setup';
+    } else {
+      return 'engine.discovered-host';
+    }
+  }.property('rhev_is_self_hosted'),
 
 });

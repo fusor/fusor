@@ -1,28 +1,27 @@
-<div class="wizard-block">
+<div class="row">
+  <div class="col-md-12 page-header page-header-rhci">
+    <h1>New {{nameRHCI}} Deployment:  {{name}}</h1>
+    <ol class="rhci-steps">
+      {{wizard-item num=1 name=nameSatellite routeName='satellite' isDisabled=false currentStepNumber=currentStepNumber}}
 
-  <div class="white-wizard-line"></div>
-  <div class="wizard-line"></div>
+      {{#if isRhev}}
+        {{wizard-item num=stepNumberRhev name=nameRhev routeName='rhev' isDisabled=isDisabledRhev currentStepNumber=currentStepNumber}}
+      {{/if}}
 
-  <ul class="deployment-wizard">
-    {{wizard-item num=1 name=nameSatellite routeName='satellite' isDisabled=false}}
+      {{#if isOpenStack}}
+        {{wizard-item num=stepNumberOpenstack name=nameOpenStack routeName='openstack' isDisabled=isDisabledOpenstack currentStepNumber=currentStepNumber}}
+      {{/if}}
 
-    {{#if isRhev}}
-      {{wizard-item num=stepNumberRhev name=nameRhev routeName='rhev' isDisabled=isDisabledRhev}}
-    {{/if}}
+      {{#if isCloudForms}}
+        {{wizard-item num=stepNumberCloudForms name=nameCloudForms routeName='cloudforms' isDisabled=isDisabledCloudForms currentStepNumber=currentStepNumber}}
+      {{/if}}
 
-    {{#if isOpenStack}}
-      {{wizard-item num=stepNumberOpenstack name=nameOpenStack routeName='openstack' isDisabled=isDisabledOpenstack}}
-    {{/if}}
+      {{#if isSubscriptions}}
+        {{wizard-item num=stepNumberSubscriptions name='Subscriptions' routeName='subscriptions'
+        isDisabled=isDisabledSubscriptions currentStepNumber=currentStepNumber}}
+      {{/if}}
 
-    {{#if isCloudForms}}
-      {{wizard-item num=stepNumberCloudForms name=nameCloudForms routeName='cloudforms' isDisabled=isDisabledCloudForms}}
-    {{/if}}
-
-    {{#if isSubscriptions}}
-      {{wizard-item num=stepNumberSubscriptions name='Subscriptions' routeName='subscriptions'
-                    isDisabled=isDisabledSubscriptions}}
-    {{/if}}
-
-    {{wizard-item num=stepNumberReview name='Review' routeName='review' isDisabled=isDisabledReview}}
-  </ul>
-</div>
+      {{wizard-item num=stepNumberReview name='Review' routeName='review' isDisabled=isDisabledReview currentStepNumber=currentStepNumber}}
+    </ol>
+  </div><!-- /col -->
+</div><!-- /row -->
