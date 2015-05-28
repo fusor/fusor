@@ -1,0 +1,148 @@
+{{#em-modal-form configName="bs" id="nodeRegistrationModal" on-submit="registerNodes" open-if=registerNodesModalOpened close-if=registerNodesModalClosed in-async=async}}
+
+    {{#em-modal-title}}
+        {{#em-modal-toggler class="close"}}
+            <span aria-hidden="true" {{action "cancelRegisterNodes"}}>×</span><span class="sr-only">Close</span>
+        {{/em-modal-toggler}}
+        <h4 class="modal-title">Node Registration</h4>
+    {{/em-modal-title}}
+
+    {{#em-modal-body}}
+        {{#if async}}
+            Submitting, please wait...
+        {{else}}
+            {{#if registrationPaused}}
+              <span>
+                Warning: The registration process is paused while editting the Node Profiles.
+              </span>
+            {{/if}}
+            <div class="row register-nodes-formset" id="formset-register_nodes">
+                <div class="col-xs-5">
+                    <ul class="nav nav-tabs nav-node-registration" role="tablist" id="add-nodes">
+                        <li role="presentation" class="active">
+                            <a href="#upload-nodes" aria-controls="upload-nodes" role="tab" data-toggle="tab" title="Upload node">
+                                <i class="fa fa-upload"></i>
+                            </a>
+                        </li>
+                        <li role="presentation">
+                            <a class="add-node-link" title="Add node" {{action "addProfile"}}>
+                                <i class="fa fa-plus"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    <h3 class="nodes-registered-count">{{edittedProfiles.length}} Nodes</h3>
+                    <div class="modal-tab-content">
+                        <div role="tabpanel" class="tab-pane active upload-nodes" id="upload-nodes">
+                            <form>
+                                <div class="form-group required">
+                                    <input id="id_csv_file" name="csv_file" type="file">
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-sm btn-default">Cancel</button>
+                                    <button type="button" class="btn btn-sm btn-primary">Upload Nodes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <ul class="nav nav-pills nav-stacked nav-registered-nodes">
+                        {{#each profile in edittedProfiles}}
+                            <li {{bind-attr class=profile.isActiveClass}}>
+                                <a {{action "selectProfile" profile}}>{{profile.name}}</a>
+                                <i class="fa fa-trash-o" {{action "removeProfile" profile}}></i>
+                            </li>
+                        {{/each}}
+                    </ul>
+                </div>
+                <form>
+                      <div class="col-xs-7" {{bind-attr style=nodeFormStyle}}>
+                          <div>
+                              <h4>Node Detail - {{selectedProfile.name}}</h4>
+                              <div class="form-horizontal">
+                                  <fieldset>
+                                      <legend>Management</legend>
+                                      <div class="form-group required">
+                                          <label class="col-xs-4" for="id_register_nodes-0-driver">Driver</label>
+                                          <div class="col-xs-6">
+                                              {{view "select" class="form-control" content=drivers value=selectedProfile.driver prompt="unspecified" }}
+                                          </div>
+                                          <div class="col-xs-2 muted"></div>
+                                      </div>
+                                      <div class="form-group required">
+                                          <label class="col-xs-4" for="id_register_nodes-0-ipmi_address">IP Address</label>
+                                          <div class="col-xs-6">
+                                              {{input class="form-control" value=selectedProfile.ipAddress type="text" placeholder="unspecified" }}
+                                          </div>
+                                          <div class="col-xs-2 muted"></div>
+                                      </div>
+                                      <div class="form-group">
+                                          <label class="col-xs-4" for="id_register_nodes-0-ipmi_username">IPMI User</label>
+                                          <div class="col-xs-6">
+                                              {{input class="form-control" value=selectedProfile.ipmiUsername type="text"}}
+                                          </div>
+                                          <div class="col-xs-2 muted"></div>
+                                      </div>
+                                      <div class="form-group">
+                                          <label class="col-xs-4" style="white-space:nowrap" for="id_register_nodes-0-ipmi_password">IPMI Password</label>
+                                          <div class="col-xs-6">
+                                            {{input class="form-control has-feedback" value=selectedProfile.ipmiPassword type="password"}}
+                                              <span class="form-control-feedback glyphicon glyphicon-eye-open"></span>
+                                          </div>
+                                          <div class="col-xs-2 muted"></div>
+                                      </div>
+                                  </fieldset>
+                                  <fieldset>
+                                      <legend>Networking</legend>
+                                      <div class="form-group required">
+                                          <label class="col-xs-4" style="white-space:nowrap" for="id_register_nodes-0-mac_addresses">NIC MAC Address</label>
+                                          <div class="col-xs-6">
+                                            {{textarea class="form-control" value=selectedProfile.nicMacAddress cols="40" placeholder="unspecified" rows="2"}}
+                                          </div>
+                                          <div class="col-xs-2 muted"></div>
+                                      </div>
+                                  </fieldset>
+                                  <fieldset>
+                                      <legend>Hardware</legend>
+                                      <div class="form-group required">
+                                          <label class="col-xs-4" for="id_register_nodes-0-cpu_arch">Architecture</label>
+                                          <div class="col-xs-6">
+                                            {{view "select" class="form-control" content=architectures value=selectedProfile.architecture  prompt="unspecified"}}
+                                          </div>
+                                          <div class="col-xs-2 muted"></div>
+                                      </div>
+                                      <div class="form-group required">
+                                          <label class="col-xs-4" for="id_register_nodes-0-cpus">CPUs</label>
+                                          <div class="col-xs-6" style="padding-right:5px;">
+                                            {{input class="form-control" type="number" value=selectedProfile.cpu placeholder="unspecified"}}
+                                          </div>
+                                          <div class="col-xs-2 muted" style="padding:0px;">cores</div>
+                                      </div>
+                                      <div class="form-group required">
+                                          <label class="col-xs-4" for="id_register_nodes-0-memory_mb">Memory</label>
+                                          <div class="col-xs-6" style="padding-right:5px;">
+                                              {{input class="form-control" type="number" value=selectedProfile.ram placeholder="unspecified"}}
+
+                                          </div>
+                                          <div class="col-xs-2 muted" style="padding:0px;">MB</div>
+                                      </div>
+                                      <div class="form-group required">
+                                          <label class="col-xs-4" for="id_register_nodes-0-local_gb">Local Disk</label>
+                                          <div class="col-xs-6" style="padding-right:5px;">
+                                            {{input class="form-control" type="number" value=selectedProfile.disk placeholder="unspecified"}}
+                                          </div>
+                                          <div class="col-xs-2 muted" style="padding:0px;">GB</div>
+                                      </div>
+                                  </fieldset>
+                              </div>
+                          </div>
+                      </div>
+                </form>
+            </div>
+        {{/if}}
+    {{/em-modal-body}}
+
+    {{#em-modal-footer}}
+        <button type="cancel" class="btn btn-default" {{bind-attr disabled=async}} {{action "cancelRegisterNodes"}}>Cancel</button>
+        <button type="submit" class="btn btn-primary" {{bind-attr disabled=async}} {{action "registerNodes"}}>Register Nodes</button>
+    {{/em-modal-footer}}
+
+{{/em-modal-form}}
