@@ -29,7 +29,17 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       ram: 0,
       disk: 0,
 
-      isActiveClass: 'inactive',
+      isSelected: false,
+      isActiveClass: function() {
+        if (this.get('isSelected') === true)
+        {
+          return 'active';
+        }
+        else
+        {
+          return 'inactive';
+        }
+      }.property('isSelected'),
       isError: false,
       errorMessage: ''
     });
@@ -105,7 +115,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
   registerNodesModalOpened: false,
   registerNodesModalClosed: true,
   modalOpen: false,
-  uploadFile: null,
+  isUploadVisible: false,
 
   registrationError: function() {
     return this.get('errorNodes').length > 0;
@@ -177,12 +187,12 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
   updateNodeSelection: function(profile) {
     var oldSelection = this.get('selectedNode');
     if (oldSelection) {
-      oldSelection.set('isActiveClass', 'inactive');
+      oldSelection.set('isSelected', false);
     }
 
     if (profile)
     {
-      profile.set('isActiveClass', 'active');
+      profile.set('isSelected', true);
     }
     this.set('selectedNode', profile);
   },
@@ -199,6 +209,14 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     this.set('modalOpen', false);
   },
 
+  doCancelUpload: function(fileInput) {
+    if (fileInput)
+    {
+      fileInput.value = null;
+    }
+    this.set('isUploadVisible', false);
+  },
+
   actions: {
     showNodeRegistrationModal: function() {
       var newNodes = this.get('newNodes');
@@ -213,6 +231,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       // Always start with at least one profile
       if (edittedNodes.length === 0) {
         var newNode = this.Node.create({});
+        newNode.isDefault = true;
         edittedNodes.pushObject(newNode);
       }
 
@@ -269,6 +288,15 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       }
     },
 
+    toggleUploadVisibility: function() {
+      if (this.get('isUploadVisible')) {
+        this.doCancelUpload();
+      }
+      else {
+        this.set('isUploadVisible', true);
+      }
+    },
+
     readCSVFile: function(file, fileInput) {
       var me = this;
       if (file) {
@@ -277,6 +305,11 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
           var text = reader.result;
           var data = $.csv.toArrays(text);
           var edittedNodes = me.get('edittedNodes');
+
+          // If the default added node is still listed, remove it
+          if (edittedNodes.length === 1 && edittedNodes[0].isDefault && Ember.isEmpty(edittedNodes[0].get('ipAddress'))) {
+            edittedNodes.removeObject(edittedNodes[0]);
+          }
 
           for (var row in data) {
             var node_data = data[row];
@@ -306,7 +339,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
               me.updateNodeSelection(newNode);
             }
           }
-          fileInput.value = null;
+          me.doCancelUpload(fileInput);
         };
         reader.onloadend = function() {
           if (reader.error) {
@@ -316,6 +349,10 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
         reader.readAsText(file);
       }
+    },
+
+    cancelUpload: function(fileInput) {
+      this.doCancelUpload(fileInput);
     }
   },
 

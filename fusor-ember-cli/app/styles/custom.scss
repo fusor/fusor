@@ -305,7 +305,7 @@ table.fusor-table {
   white-space:nowrap;
 }
 
-deployment-checklist {
+.deployment-checklist {
   background: #ffffff;
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid #eeeeee;
@@ -657,4 +657,165 @@ deployment-checklist {
 .nodes-registered-count {
   margin: 0;
   padding: 5px 0 0;
+}
+
+.nodes-add-button {
+  margin: 0;
+  padding: 3px 0 0;
+}
+
+.rhci-steps {
+  color: #999999;
+  font-size: 15px;
+  float: left;
+  list-style-position: inside;
+  margin: 0 0 10px -20px;
+  padding: 0;
+  position: relative;
+}
+.rhci-steps li {
+  float: left;
+  margin: 0;
+  padding: 30px 20px 0;
+  position: relative;
+}
+.rhci-steps li:after {
+  background: #d0d0d0;
+  border-radius: 20px;
+  content: '';
+  height: 8px;
+  left: 50%;
+  margin-left: -4px;
+  position: absolute;
+  top: 16px;
+  width: 8px;
+}
+.rhci-steps li:before {
+  border-top: 1px solid #d0d0d0;
+  content: '';
+  height: 0;
+  left: 0;
+  position: absolute;
+  top: 20px;
+  width: 100%;
+}
+.rhci-steps li:last-child:before {
+  width: 50%;
+}
+.rhci-steps li.active {
+  color: #0099d3;
+}
+.rhci-steps li.active:after {
+  background-color: #0099d3;
+}
+.rhci-steps li.completed {
+  color: #555555;
+}
+.rhci-steps li.completed:after {
+  background-color: #999999;
+}
+.rhci-steps-buttons {
+  margin-bottom: 20px;
+  margin-top: 20px;
+  text-align: right;
+}
+.rhci-steps-buttons .btn {
+  margin-left: 5px;
+}
+.rhci-steps-buttons .btn > .fa-angle-left {
+  margin-right: 5px;
+}
+.rhci-steps-buttons .btn > .fa-angle-right {
+  margin-left: 5px;
+}
+.register-nodes-formset .tab-pane > h4 {
+  margin-top: 5px;
+}
+.register-nodes-formset .tab-pane > h4 + .form-horizontal {
+  margin-top: 20px;
+}
+.table-header-rotated {
+  border-collapse: collapse;
+}
+.table-header-rotated td {
+  border-left: 1px solid #d1d1d1;
+  border-top: 0 !important;
+  text-align: center;
+  width: 30px;
+}
+.table-header-rotated th {
+  border: 0 !important;
+}
+.table-header-rotated th[colspan] {
+  text-align: center;
+}
+.table-header-rotated th.rotate {
+  height: 70px;
+  white-space: nowrap;
+}
+.ie8 .table-header-rotated th.rotate {
+  height: auto;
+  white-space: normal;
+}
+.table-header-rotated th.rotate > div {
+  transform: translate(8px, 18px) rotate(-45deg);
+  width: 30px;
+}
+.ie8 .table-header-rotated th.rotate > div {
+  width: auto;
+}
+.table-header-rotated th.rotate > div span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100px;
+}
+.ie8 .table-header-rotated th.rotate > div span {
+  width: auto;
+}
+.table-header-rotated th.row-header {
+  font-weight: 500;
+}
+.table-header-rotated thead {
+  background: none;
+}
+.title-bar .btn {
+  margin-right: 10px;
+  margin-top: 10px;
+}
+.title-bar .edit-config {
+  margin-bottom: 10px;
+}
+.title-bar h1 {
+  margin-bottom: 5px;
+}
+@media (min-width: 768px) {
+  .title-bar .btn {
+    margin-bottom: 10px;
+    margin-left: 10px;
+    margin-right: 0;
+    margin-top: 23px;
+  }
+  .title-bar .buttons {
+    text-align: right;
+  }
+}
+@media (min-width: 852px) {
+  .title-bar .edit-config {
+    margin-left: 15px;
+    margin-top: 27px;
+  }
+  .title-bar h1 {
+    display: inline-block;
+  }
+  .title-bar + .row hr {
+    margin-top: 5px;
+  }
+}
+.upload-nodes {
+  border-bottom: 1px solid #e9e8e8;
+  border-top: 1px solid #e9e8e8;
+  clear: right;
+  margin: 0 0 15px;
+  padding: 15px 0 0;
 }
