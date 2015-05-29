@@ -19,29 +19,30 @@ module Actions
           _("Deploy CloudForms Management Engine")
         end
 
-        def plan(deployment)
+        def plan(deployment, repository, image_file_name)
           Rails.logger.warn "XXX ================ Planning CFME Deployment ===================="
+
+          fail _("CloudForms repository has not been provided.") unless repository
 
           # VERIFY PARAMS HERE
           #if deployment.deploy_cfme
           #  fail _("Unable to locate a CFME Engine Host") unless deployment.rhev_engine_host
           #end
 
-          plan_self deployment_id: deployment.id
+          plan_self(deployment_id: deployment.id, repository_id: repository.id, image_file_name: image_file_name)
         end
 
         def run
           Rails.logger.warn "XXX ================ Deploy CFME finalize method ===================="
 
-          deployment_id = input.fetch(:deployment_id)
+          deployment = ::Fusor::Deployment.find(input[:deployment_id])
+          repository = ::Katello::Repository.find(input[:repository_id])
 
-          deployment = ::Fusor::Deployment.find(deployment_id)
-
-          if is_rhev_up()
+          if is_rhev_up
             # copy the cfme to the rhev host
             # host should be deployment
             Rails.logger.warn "XXX scp file"
-            scp_image_file("10.8.101.181", "dog8code", find_image_file())
+            scp_image_file("10.8.101.181", "dog8code", find_image_file(repository, input[:image_file_name]))
             Rails.logger.warn "XXX scp file DONE"
 
             status, output = upload_image(deployment.cfme_install_loc)
@@ -50,7 +51,6 @@ module Actions
             else
               Rails.logger.error "XXX There was a problem with running the command. Status: #{status}. \nOutput: #{output}"
             end
-
 
             # TODO: the following call needs to pass in the IP address of the cloudforms VM that is created above
             #add_rhev_provider(deployment, "10.8.101.247")
@@ -63,7 +63,7 @@ module Actions
 
         private
 
-        def is_rhev_up()
+        def is_rhev_up
            # TODO: figure out how to detect if rhev is running.
            return true
         end
@@ -111,8 +111,18 @@ module Actions
           Utils::CloudForms::Provider.add(cfme_ip, provider)
         end
 
-        def find_image_file
-          return "/tmp/cfme-rhevm-5.3-47.x86_64.rhevm.ova"
+        def find_image_file(repository, image_file_name)
+          images = ::Katello.pulp_server.extensions.repository.unit_search(repository.pulp_id)
+
+          if image_file_name
+            image_file = images.find{ |image| image[:metadata][:name] == image_file_name }
+            image_file = image_file[:metadata][:_storage_path] if image_file
+          else
+            images = images.find_all{ |image| image[:metadata][:name].starts_with?("cfme-rhevm") }
+            image_file = images.compact.sort_by{ |k| k[:name] }.last[:metadata][:_storage_path]
+          end
+
+          return image_file
         end
 
         def scp_image_file(rhev_host, password, image_file)
