@@ -40,8 +40,7 @@ module Fusor
         response = JSON.parse(post(:create, {deployment: {
           name: new_name,
           organization_id: 1,
-          rhev_storage_type: "Local",
-          rhev_local_storage_path: "/storage"}}).body)
+          deploy_openstack: true}}).body)
       end
       assert_response :success
       assert_equal new_name, response['deployment']['name'], "Response was not correct, did not return deployment"
