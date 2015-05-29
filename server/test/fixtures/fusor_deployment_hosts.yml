@@ -1,0 +1,15 @@
+deployment_host1:
+  discovered_host: host1
+  deployment: rhev
+
+deployment_host2:
+  discovered_host: host2
+  deployment: another_rhev
+
+deployment_host3:
+  discovered_host: host3
+  deployment: rhev_and_cfme
+
+deployment_host4:
+  discovered_host: host4
+  deployment: rhev_and_cfme
