@@ -2,7 +2,8 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
   myModel: {
-    nodeProfiles: []
+    nodes: [],
+    profiles: []
   },
 
   model: function () {

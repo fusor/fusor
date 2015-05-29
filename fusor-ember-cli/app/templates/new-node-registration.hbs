@@ -13,7 +13,7 @@
         {{else}}
             {{#if registrationPaused}}
               <span>
-                Warning: The registration process is paused while editting the Node Profiles.
+                Warning: The registration process is paused while editting Nodes.
               </span>
             {{/if}}
             <div class="row register-nodes-formset" id="formset-register_nodes">
@@ -25,30 +25,25 @@
                             </a>
                         </li>
                         <li role="presentation">
-                            <a class="add-node-link" title="Add node" {{action "addProfile"}}>
+                            <a class="add-node-link" title="Add node" {{action "addNode"}}>
                                 <i class="fa fa-plus"></i>
                             </a>
                         </li>
                     </ul>
-                    <h3 class="nodes-registered-count">{{edittedProfiles.length}} Nodes</h3>
+                    <h3 class="nodes-registered-count">{{edittedNodes.length}} Nodes</h3>
                     <div class="modal-tab-content">
                         <div role="tabpanel" class="tab-pane active upload-nodes" id="upload-nodes">
-                            <form>
-                                <div class="form-group required">
-                                    <input id="id_csv_file" name="csv_file" type="file">
-                                </div>
-                                <div class="form-group">
-                                    <button type="button" class="btn btn-sm btn-default">Cancel</button>
-                                    <button type="button" class="btn btn-sm btn-primary">Upload Nodes</button>
-                                </div>
-                            </form>
+                            <!--
+                          {{file-upload url="/upload"}}
+-->
+                            {{file-upload-form fileChooserButtonId='id_csv_file' selectedFile=uploadFile accept='text/csv' fileChooserButtonName='csv_file' uploadButtonTitle='Upload Nodes' doUpload='readCSVFile'}}
                         </div>
                     </div>
                     <ul class="nav nav-pills nav-stacked nav-registered-nodes">
-                        {{#each profile in edittedProfiles}}
-                            <li {{bind-attr class=profile.isActiveClass}}>
-                                <a {{action "selectProfile" profile}}>{{profile.name}}</a>
-                                <i class="fa fa-trash-o" {{action "removeProfile" profile}}></i>
+                        {{#each node in edittedNodes}}
+                            <li {{bind-attr class=node.isActiveClass}}>
+                                <a {{action "selectNode" node}}>{{node.name}}</a>
+                                <i class="fa fa-trash-o" {{action "removeNode" node}}></i>
                             </li>
                         {{/each}}
                     </ul>
@@ -56,26 +51,26 @@
                 <form>
                       <div class="col-xs-7" {{bind-attr style=nodeFormStyle}}>
                           <div>
-                              <h4>Node Detail - {{selectedProfile.name}}</h4>
+                              <h4>Node Detail - {{selectedNode.name}}</h4>
                               <div class="form-horizontal">
                                   <fieldset>
                                       <legend>Management</legend>
-                                      {{select-simple-f label="Driver" labelSize='col-xs-4' inputSize='col-xs-6' content=drivers selection=selectedProfile.driver prompt='unspecified' isRequired=true}}
-                                      {{text-f label="IP Address" type='text' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedProfile.ipAddress isRequired=true}}
-                                      {{text-f label="IPMI User" type='text' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedProfile.ipmiUsername isRequired=false}}
-                                      {{text-f label="IPMI Password" type='password' labelSize='form-label-nowrap col-xs-4' inputSize='col-xs-6' value=selectedProfile.ipmiPassword isRequired=false}}
+                                      {{select-simple-f label="Driver" labelSize='col-xs-4' inputSize='col-xs-6' content=drivers selection=selectedNode.driver prompt='unspecified' isRequired=true}}
+                                      {{text-f label="IP Address" type='text' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedNode.ipAddress isRequired=true }}
+                                      {{text-f label="IPMI User" type='text' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedNode.ipmiUsername isRequired=false}}
+                                      {{text-f label="IPMI Password" type='password' labelSize='form-label-nowrap col-xs-4' inputSize='col-xs-6' value=selectedNode.ipmiPassword isRequired=false}}
 
                                   </fieldset>
                                   <fieldset>
                                       <legend>Networking</legend>
-                                      {{textarea-f label="NIC MAC Address" labelSize='form-label-nowrap col-xs-4' inputSize='col-xs-6' value=selectedProfile.nicMacAddress cols="40" placeholder="unspecified" rows="2" isRequired=true}}
+                                      {{textarea-f label="NIC MAC Address" labelSize='form-label-nowrap col-xs-4' inputSize='col-xs-6' value=selectedNode.nicMacAddress cols="40" placeholder="unspecified" rows="2" isRequired=true}}
                                   </fieldset>
                                   <fieldset>
                                       <legend>Hardware</legend>
-                                      {{select-simple-f label="Architecture" labelSize='form-label-nowrap col-xs-4' inputSize='col-xs-6' content=architectures selection=selectedProfile.architecture prompt='unspecified' isRequired=true}}
-                                      {{text-f label="CPUs" type='number' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedProfile.cpu isRequired=true unitsSize="input-units-label col-xs-2 muted" unitsLabel="cores"}}
-                                      {{text-f label="Memory" type='number' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedProfile.ram isRequired=true unitsSize="input-units-label col-xs-2 muted" unitsLabel="MB"}}
-                                      {{text-f label="Local Disk" type='number' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedProfile.ram isRequired=true unitsSize="input-units-label col-xs-2 muted" unitsLabel="GB"}}
+                                      {{select-simple-f label="Architecture" labelSize='form-label-nowrap col-xs-4' inputSize='col-xs-6' content=architectures selection=selectedNode.architecture prompt='unspecified' isRequired=true}}
+                                      {{text-f label="CPUs" type='number' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedNode.cpu isRequired=true unitsSize="input-units-label col-xs-2 muted" unitsLabel="cores"}}
+                                      {{text-f label="Memory" type='number' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedNode.ram isRequired=true unitsSize="input-units-label col-xs-2 muted" unitsLabel="MB"}}
+                                      {{text-f label="Local Disk" type='number' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedNode.disk isRequired=true unitsSize="input-units-label col-xs-2 muted" unitsLabel="GB"}}
                                   </fieldset>
                               </div>
                           </div>

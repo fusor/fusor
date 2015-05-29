@@ -6,23 +6,68 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
   needs: ['deployment'],
 
   init: function() {
-    this.Profile = Ember.Object.extend({
-      name: null,
+    this._super();
+    this.Node = Ember.Object.extend({
+      name: function () {
+        var ipAddress = this.get('ipAddress');
+        if (!Ember.isEmpty(ipAddress))
+        {
+          return ipAddress;
+        }
+        else
+        {
+          return 'Undefined node';
+        }
+      }.property('ipAddress'),
       driver: null,
       ipAddress: null,
       ipmiUsername: '',
       ipmiPassword: '',
       nicMacAddress: '',
       architecture: null,
-      cpu: null,
-      ram: null,
-      disk: null,
-      totalNodes: 0,
+      cpu: 0,
+      ram: 0,
+      disk: 0,
+
+      isActiveClass: 'inactive',
+      isError: false,
+      errorMessage: ''
+    });
+
+    this.Profile = Ember.Object.extend({
+      init: function() {
+        this._super();
+        this.set('assignedNodes', []);
+      },
+      name: function() {
+        if (!Ember.isEmpty(this.get('_name'))) {
+          return this.get('name');
+        }
+        else {
+          return this.get('cpu') + '_cpus_' + this.get('ram') + 'MB_Memory_' + this.get('disk') + 'GB_Disk';
+        }
+      }.property('_name', 'cpu', 'ram', 'disk'),
+
+      assignedNodes: [],
 
       controllerNodes: 0,
       computeNodes: 0,
       blockNodes: 0,
       objectNodes: 0,
+
+      cpu: 0,
+      ram: 0,
+      disk: 0,
+
+      addNode: function(node) {
+        this.get('assignedNodes').pushObject(node);
+        console.log('Adding node number: '  + this.get('assignedNodes').length + ' to ' + this.get('name'));
+      },
+
+      totalNodes: function() {
+        console.log(this.get('name') + "has " + this.get('assignedNodes').length + ' total nodes');
+        return this.get('assignedNodes').length;
+      }.property('assignedNodes', 'assignedNodes.length'),
 
       freeNodes: function() {
         return this.get('totalNodes') - this.get('controllerNodes') - this.get('computeNodes') - this.get('blockNodes') - this.get('objectNodes');
@@ -42,35 +87,32 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
       isObjectStorage: function() {
         return this.get('objectNodes') > 0;
-      }.property('objectNodes'),
-
-      isActiveClass: 'inactive',
-      isError: false,
-      errorMessage: ''
+      }.property('objectNodes')
     });
 
   },
 
-  newProfiles: [],
-  errorProfiles: [],
-  edittedProfiles: [],
+  newNodes: [],
+  errorNodes: [],
+  edittedNodes: [],
 
   drivers: ['IPMI Driver', 'PXE + SSH'],
   architectures: ['amd64', 'x86', 'x86_64'],
-  selectedProfile: null,
+  selectedNode: null,
 
 
   registrationInProgress: false,
   registerNodesModalOpened: false,
   registerNodesModalClosed: true,
   modalOpen: false,
+  uploadFile: null,
 
   registrationError: function() {
-    return this.get('errorProfiles').length > 0;
-  }.property('errorProfiles', 'errorProfiles.length'),
+    return this.get('errorNodes').length > 0;
+  }.property('errorNodes', 'errorNodes.length'),
 
   registrationErrorMessage: function() {
-    var count = this.get('errorProfiles').length;
+    var count = this.get('errorNodes').length;
     if (count === 1) {
       return '1 node not registered';
     }
@@ -80,33 +122,33 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     else {
       return '';
     }
-  }.property('errorProfiles.length'),
+  }.property('errorNodes.length'),
 
   registrationErrorTip: function() {
     var tip = '';
-    var errorProfiles = this.get('errorProfiles');
+    var errorNodes = this.get('errorNodes');
 
-    errorProfiles.forEach(function(item, index) {
+    errorNodes.forEach(function(item, index) {
       if (index > 0) {
         tip += '\n';
       }
       tip += item.errorMessage;
     });
     return tip;
-  }.property('errorProfiles', 'errorProfiles.length'),
+  }.property('errorNodes', 'errorNodes.length'),
 
   preRegistered: 0,
   nodeRegComplete: function() {
-    return  this.get('model.nodeProfiles').length + this.get('errorProfiles').length - this.get('preRegistered');
-  }.property('model.nodeProfiles.length', 'errorProfiles.length', 'preRegistered'),
+    return  this.get('model.nodes').length + this.get('errorNodes').length - this.get('preRegistered');
+  }.property('model.nodes.length', 'errorNodes.length', 'preRegistered'),
 
   nodeRegTotal: function() {
-    var total = this.get('nodeRegComplete') + this.get('newProfiles').length;
+    var total = this.get('nodeRegComplete') + this.get('newNodes').length;
     if (this.get('registrationInProgress') && !this.get('registrationPaused')) {
       total++;
     }
     return total;
-  }.property('nodeRegComplete', 'newProfiles.length', 'registrationInProgress', 'registrationPaused'),
+  }.property('nodeRegComplete', 'newNodes.length', 'registrationInProgress', 'registrationPaused'),
 
   nodeRegPercentComplete: function() {
     var nodeRegComplete = this.get('nodeRegComplete');
@@ -115,25 +157,25 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
   }.property('nodeRegComplete', 'nodeRegTotal'),
 
   noRegisteredNodes: function() {
-      return (this.get('model.nodeProfiles').length < 1);
-  }.property('model.nodeProfiles', 'model.nodeProfiles.length'),
+      return (this.get('model.nodes').length < 1);
+  }.property('model.nodes', 'model.nodes.length'),
 
-  hasSelectedProfile: function() {
-    return this.get('selectedProfile') != null;
-  }.property('selectedProfile'),
+  hasSelectedNode: function() {
+    return this.get('selectedNode') != null;
+  }.property('selectedNode'),
 
   nodeFormStyle:function() {
-    if (this.get('edittedProfiles').length > 0 && this.get('hasSelectedProfile') === true)
+    if (this.get('edittedNodes').length > 0 && this.get('hasSelectedNode') === true)
     {
       return 'visibility:visible;';
     }
     else {
       return 'visibility:hidden;';
     }
-  }.property('edittedProfiles.length', 'hasSelectedProfile'),
+  }.property('edittedNodes.length', 'hasSelectedNode'),
 
-  updateProfileSelection: function(profile) {
-    var oldSelection = this.get('selectedProfile');
+  updateNodeSelection: function(profile) {
+    var oldSelection = this.get('selectedNode');
     if (oldSelection) {
       oldSelection.set('isActiveClass', 'inactive');
     }
@@ -142,7 +184,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     {
       profile.set('isActiveClass', 'active');
     }
-    this.set('selectedProfile', profile);
+    this.set('selectedNode', profile);
   },
 
   openRegDialog: function() {
@@ -159,38 +201,46 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   actions: {
     showNodeRegistrationModal: function() {
-      var newProfiles = this.get('newProfiles');
-      var errorProfiles = this.get('errorProfiles');
-      var edittedProfiles = this.get('edittedProfiles');
+      var newNodes = this.get('newNodes');
+      var errorNodes = this.get('errorNodes');
+      var edittedNodes = this.get('edittedNodes');
 
-      edittedProfiles.setObjects(errorProfiles);
-      newProfiles.forEach(function(item) {
-        edittedProfiles.pushObject(item);
+      edittedNodes.setObjects(errorNodes);
+      newNodes.forEach(function(item) {
+        edittedNodes.pushObject(item);
       });
-      this.set('edittedProfiles', edittedProfiles);
-      this.updateProfileSelection(edittedProfiles[0]);
+
+      // Always start with at least one profile
+      if (edittedNodes.length === 0) {
+        var newNode = this.Node.create({});
+        edittedNodes.pushObject(newNode);
+      }
+
+      this.set('edittedNodes', edittedNodes);
+      this.updateNodeSelection(edittedNodes[0]);
       this.openRegDialog();
     },
 
     registerNodes: function() {
       this.closeRegDialog();
-      var edittedProfiles = this.get('edittedProfiles');
-      var errorProfiles = this.get('errorProfiles');
-      var newProfiles = this.get('newProfiles');
-      edittedProfiles.forEach(function(item) {
+      var edittedNodes = this.get('edittedNodes');
+      var errorNodes = this.get('errorNodes');
+      var newNodes = this.get('newNodes');
+      edittedNodes.forEach(function(item) {
         item.isError = false;
         item.errorMessage = '';
-        errorProfiles.removeObject(item);
+        errorNodes.removeObject(item);
       });
-      newProfiles.setObjects(edittedProfiles);
-      this.set('edittedProfiles', []);
-      this.set('newProfiles', newProfiles);
+
+      newNodes.setObjects(edittedNodes);
+      this.set('edittedNodes', []);
+      this.set('newNodes', newNodes);
       this.registerNewNodes();
     },
 
     cancelRegisterNodes: function() {
       this.closeRegDialog();
-      this.set('edittedProfiles', []);
+      this.set('edittedNodes', []);
       // Unpause if necessary
       if (this.get('registrationPaused'))
       {
@@ -198,50 +248,92 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       }
     },
 
-    selectProfile: function(profile) {
-      this.updateProfileSelection(profile);
+    selectNode: function(node) {
+      this.updateNodeSelection(node);
     },
 
-    addProfile: function() {
-      var edittedProfiles = this.get('edittedProfiles');
-      var nodeCount = edittedProfiles.length + this.get('model.nodeProfiles').length + this.get('errorProfiles').length;
-      if (this.get('registrationInProgress') && !this.get('registrationPaused')) {
-        nodeCount++;
+    addNode: function() {
+      var edittedNodes = this.get('edittedNodes');
+      var newNode = this.Node.create({});
+      edittedNodes.insertAt(0, newNode);
+      this.updateNodeSelection(newNode);
+    },
+
+    removeNode: function(node) {
+      var nodes = this.get('edittedNodes');
+      nodes.removeObject(node);
+      this.set('edittedNodes', nodes);
+
+      if (this.get('selectedNode') === node) {
+        this.updateNodeSelection(nodes[0]);
       }
-      var newProfile = this.Profile.create({
-        name: 'Node ' + (nodeCount + 1),
-        totalNodes: 5
-      });
-      edittedProfiles.insertAt(0, newProfile);
-      this.updateProfileSelection(newProfile);
     },
 
-    removeProfile: function(profile) {
-      var profiles = this.get('edittedProfiles');
-      profiles.removeObject(profile);
-      this.set('edittedProfiles', profiles);
+    readCSVFile: function(file, fileInput) {
+      var me = this;
+      if (file) {
+        var reader = new FileReader();
+        reader.onload = function() {
+          var text = reader.result;
+          var data = $.csv.toArrays(text);
+          var edittedNodes = me.get('edittedNodes');
 
-      if (this.get('selectedProfile') === profile) {
-        this.updateProfileSelection(profiles[0]);
+          for (var row in data) {
+            var node_data = data[row];
+            if (Array.isArray(node_data) && node_data.length >=9) {
+              var memory_mb = parseInt(node_data[0]);
+              var local_gb = parseInt(node_data[1]);
+              var cpus = parseInt(node_data[2]);
+              var cpu_arch = node_data[3].trim();
+              var driver = node_data[4].trim();
+              var ipmi_address = node_data[5].trim();
+              var ipmi_username = node_data[6].trim();
+              var ipmi_password = node_data[7].trim();
+              var mac_address = node_data[8].trim();
+
+              var newNode = me.Node.create({
+                driver: driver,
+                ipAddress: ipmi_address,
+                ipmiUsername: ipmi_username,
+                ipmiPassword: ipmi_password,
+                nicMacAddress: mac_address,
+                architecture: cpu_arch,
+                cpu: cpus,
+                ram: memory_mb,
+                disk: local_gb
+              });
+              edittedNodes.insertAt(0, newNode);
+              me.updateNodeSelection(newNode);
+            }
+          }
+          fileInput.value = null;
+        };
+        reader.onloadend = function() {
+          if (reader.error) {
+            console.log(reader.error.message);
+          }
+        };
+
+        reader.readAsText(file);
       }
     }
   },
 
   disableRegisterNodesNext: function() {
-    var freeNodeCount = 0;
-    var profiles = this.get('model.nodeProfiles');
+    var nodeCount = 0;
+    var profiles = this.get('model.profiles');
     for (var i = 0; i < profiles.length; i++ ) {
-      freeNodeCount += profiles[i].freeNodes;
+      nodeCount += profiles[i].totalNodes;
     }
-    return (freeNodeCount < 4);
-  }.property('model.nodeProfiles', 'model.nodeProfiles.length'),
+    return (nodeCount < 4);
+  }.property('model.profiles', 'model.profiles.length'),
 
   registerNewNodes: function() {
-    var newProfiles = this.get('newProfiles');
-    if (newProfiles && newProfiles.length > 0) {
+    var newNodes = this.get('newNodes');
+    if (newNodes && newNodes.length > 0) {
       if (!this.get('registrationInProgress'))
       {
-        this.set('preRegistered', this.get('model.nodeProfiles.length'));
+        this.set('preRegistered', this.get('model.nodes.length'));
         this.doNextNodeRegistration();
       }
       else if (this.get('registrationPaused')) {
@@ -258,13 +350,13 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     {
       this.set('registrationPaused', false);
 
-      var remaining = this.get('newProfiles');
+      var remaining = this.get('newNodes');
       if (remaining && remaining.length > 0)
       {
         this.set('registrationInProgress', true);
         var lastIndex = remaining.length - 1;
         var nextNode = remaining[lastIndex];
-        this.set('newProfiles', remaining.slice(0, lastIndex));
+        this.set('newNodes', remaining.slice(0, lastIndex));
         this.registerNode(nextNode);
       }
       else
@@ -296,22 +388,46 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
         var randomPercent = Math.round(Math.random() * 100);
         if (randomPercent <= 5) {
           node.isError = true;
-          node.errorMessage = node.name + " was not registered: node username/password is invalid.";
+          node.errorMessage = node.get('name') + " was not registered: node username/password is invalid.";
         }
         else if (randomPercent <= 10) {
           node.isError = true;
-          node.errorMessage = node.name + " was not registered: node IP address is invalid.";
+          node.errorMessage = node.get('name') + " was not registered: node IP address is invalid.";
         }
 
         if (node.isError) {
-          var errorProfiles = me.get('errorProfiles');
-          errorProfiles.pushObject(node);
-          me.set('errorProfiles', errorProfiles);
+          var errorNodes = me.get('errorNodes');
+          errorNodes.pushObject(node);
+          me.set('errorNodes', errorNodes);
         }
         else {
-          var nodeProfiles = me.get('model.nodeProfiles');
-          nodeProfiles.pushObject(node);
-          me.set('model.nodeProfiles', nodeProfiles);
+          var nodes = me.get('model.nodes');
+          nodes.pushObject(node);
+          var nodeProfiles = me.get('model.profiles');
+          var assigned = false;
+          var index = 0;
+          while(!assigned && index < nodeProfiles.length) {
+            var nextProfile = nodeProfiles[index++];
+            if ((nextProfile.get('cpu') === node.get('cpu')) &&
+                (nextProfile.get('ram') === node.get('ram')) &&
+                (nextProfile.get('disk') === node.get('disk'))) {
+              console.log("Adding to existing profile");
+              nextProfile.addNode(node);
+              assigned = true;
+            }
+          }
+          if (!assigned) {
+            var newProfile = me.Profile.create({
+              cpu: node.get('cpu'),
+              ram: node.get('ram'),
+              disk: node.get('disk')
+            });
+            console.dir(node);
+            console.log("New Profile has " + newProfile.get('totalNodes') + ' nodes assigned');
+            console.log("Adding to new profile");
+            newProfile.addNode(node);
+            nodeProfiles.pushObject(newProfile);
+          }
         }
         me.doNextNodeRegistration();
       }

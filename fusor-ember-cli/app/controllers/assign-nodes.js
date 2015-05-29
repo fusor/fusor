@@ -111,13 +111,13 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
   }.property('controllerAssigned','computeAssigned', 'blockAssigned', 'objectAssigned'),
 
   nodeProfiles:function() {
-    return this.get('register').get('model.nodeProfiles');
-  }.property('register.model.nodeProfiles', 'register.model.nodeProfiles.length'),
+    return this.get('register').get('model.profiles');
+  }.property('register.model.profiles', 'register.model.profiles.length'),
 
   numProfiles: function() {
-    var profiles = this.get('register.model.nodeProfiles');
+    var profiles = this.get('register.model.profiles');
     return profiles.length;
-  }.property('model.nodeProfiles', 'model.nodeProfiles.length'),
+  }.property('model.profiles', 'model.profiles.length'),
 
   removeRoleFromProfile: function(profile, roleType) {
     if (roleType === 'controller') {
