@@ -18,32 +18,31 @@
             {{/if}}
             <div class="row register-nodes-formset" id="formset-register_nodes">
                 <div class="col-xs-5">
-                    <ul class="nav nav-tabs nav-node-registration" role="tablist" id="add-nodes">
-                        <li role="presentation" class="active">
-                            <a href="#upload-nodes" aria-controls="upload-nodes" role="tab" data-toggle="tab" title="Upload node">
+                    <div class="row">
+                        <div class="col-xs-12 column" style="padding-bottom: 5px;">
+                            <h3 class="col-xs-6 nodes-registered-count">{{edittedNodes.length}} Nodes</h3>
+                            <a class="col-xs-2  nodes-add-button add-node-link" title="Upload from CSV" {{action "toggleUploadVisibility"}}>
                                 <i class="fa fa-upload"></i>
                             </a>
-                        </li>
-                        <li role="presentation">
-                            <a class="add-node-link" title="Add node" {{action "addNode"}}>
+                            <a class="col-xs-2  nodes-add-button add-node-link" title="Add node" {{action "addNode"}}>
                                 <i class="fa fa-plus"></i>
                             </a>
-                        </li>
-                    </ul>
-                    <h3 class="nodes-registered-count">{{edittedNodes.length}} Nodes</h3>
-                    <div class="modal-tab-content">
-                        <div role="tabpanel" class="tab-pane active upload-nodes" id="upload-nodes">
-                            <!--
-                          {{file-upload url="/upload"}}
--->
-                            {{file-upload-form fileChooserButtonId='id_csv_file' selectedFile=uploadFile accept='text/csv' fileChooserButtonName='csv_file' uploadButtonTitle='Upload Nodes' doUpload='readCSVFile'}}
                         </div>
                     </div>
+                    {{#if isUploadVisible}}
+                        <div class="modal-tab-content">
+                            <div role="tabpanel" class="tab-pane active upload-nodes" id="upload-nodes">
+                              {{file-upload-form accept='text/csv' uploadButtonTitle='Upload Nodes' doUpload='readCSVFile' doCancel='cancelUpload'}}
+                            </div>
+                        </div>
+                    {{/if}}
                     <ul class="nav nav-pills nav-stacked nav-registered-nodes">
                         {{#each node in edittedNodes}}
                             <li {{bind-attr class=node.isActiveClass}}>
                                 <a {{action "selectNode" node}}>{{node.name}}</a>
-                                <i class="fa fa-trash-o" {{action "removeNode" node}}></i>
+                              {{#if node.isSelected}}
+                                  <i class="fa fa-trash-o" {{action "removeNode" node}}></i>
+                              {{/if}}
                             </li>
                         {{/each}}
                     </ul>
@@ -51,7 +50,7 @@
                 <form>
                       <div class="col-xs-7" {{bind-attr style=nodeFormStyle}}>
                           <div>
-                              <h4>Node Detail - {{selectedNode.name}}</h4>
+                              <h4>Node Detail</h4>
                               <div class="form-horizontal">
                                   <fieldset>
                                       <legend>Management</legend>
