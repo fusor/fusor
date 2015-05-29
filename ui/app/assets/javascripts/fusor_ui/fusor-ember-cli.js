@@ -2705,10 +2705,6 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember'], function (ex
     step3RouteName: Ember['default'].computed.alias('controllers.deployment.step3RouteName'),
     isCloudForms: Ember['default'].computed.alias('controllers.deployment.isCloudForms'),
 
-    //defaults
-    rhev_storage_type: 'NFS',
-    rhev_gluster_ssh_port: 22,
-
     isNFS: (function () {
       return this.get('rhev_storage_type') === 'NFS';
     }).property('rhev_storage_type'),
@@ -5302,6 +5298,12 @@ define('fusor-ember-cli/routes/storage', ['exports', 'ember'], function (exports
   exports['default'] = Ember['default'].Route.extend({
     deactivate: function deactivate() {
       return this.send('saveDeployment', null);
+    },
+
+    setupController: function setupController(controller, model) {
+      controller.set('model', model);
+      controller.set('rhev_storage_type', 'NFS');
+      controller.set('rhev_gluster_ssh_port', 22);
     } });
 
 });
@@ -29947,25 +29949,6 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n\n");
         dom.appendChild(el0, el1);
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("span");
-        dom.setAttribute(el1,"class","disabled-color");
-        var el2 = dom.createTextNode("Only show subscriptions that match this Satellite Organization");
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("br");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("br");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n\n");
-        dom.appendChild(el0, el1);
         var el1 = dom.createElement("table");
         dom.setAttribute(el1,"class","table table-bordered small");
         var el2 = dom.createTextNode("\n  ");
@@ -30100,24 +30083,22 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
           fragment = this.build(dom);
         }
         var element0 = dom.childAt(fragment, [6]);
-        var element1 = dom.childAt(fragment, [30]);
+        var element1 = dom.childAt(fragment, [22]);
         var element2 = dom.childAt(element1, [1]);
         var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
         var morph1 = dom.createMorphAt(fragment,4,4,contextualElement);
         var attrMorph0 = dom.createAttrMorph(element0, 'class');
-        var morph2 = dom.createMorphAt(fragment,12,12,contextualElement);
-        var morph3 = dom.createMorphAt(dom.childAt(fragment, [20, 3]),1,1);
-        var morph4 = dom.createMorphAt(fragment,24,24,contextualElement);
-        var morph5 = dom.createMorphAt(element1,3,3);
+        var morph2 = dom.createMorphAt(dom.childAt(fragment, [12, 3]),1,1);
+        var morph3 = dom.createMorphAt(fragment,16,16,contextualElement);
+        var morph4 = dom.createMorphAt(element1,3,3);
         dom.insertBoundary(fragment, 0);
         block(env, morph0, context, "if", [get(env, context, "showAttachedSuccessMessage")], {}, child0, null);
         inline(env, morph1, context, "input", [], {"type": "checkbox", "name": "enableAnalytics", "disabled": true, "checked": get(env, context, "enableAnalytics")});
         attribute(env, attrMorph0, element0, "class", get(env, context, "analyticsColor"));
-        inline(env, morph2, context, "input", [], {"type": "checkbox", "name": "isOnlyShowSubscriptions", "checked": get(env, context, "isOnlyShowSubscriptions"), "disabled": true});
-        block(env, morph3, context, "each", [get(env, context, "model")], {"itemController": "subscription", "keyword": "subscription"}, child1, null);
-        inline(env, morph4, context, "button-f", [], {"class": "btn btn-success", "disabled": get(env, context, "disableAttachButton"), "title": get(env, context, "buttonAttachTitle"), "action": "attachSubscriptions"});
+        block(env, morph2, context, "each", [get(env, context, "model")], {"itemController": "subscription", "keyword": "subscription"}, child1, null);
+        inline(env, morph3, context, "button-f", [], {"class": "btn btn-success", "disabled": get(env, context, "disableAttachButton"), "title": get(env, context, "buttonAttachTitle"), "action": "attachSubscriptions"});
         element(env, element2, context, "action", ["showModal", "cancel-modal"], {});
-        block(env, morph5, context, "link-to", ["review.installation"], {"class": "btn btn-primary", "disabled": get(env, context, "disableSubscriptionsNext")}, child2, null);
+        block(env, morph4, context, "link-to", ["review.installation"], {"class": "btn btn-primary", "disabled": get(env, context, "disableSubscriptionsNext")}, child2, null);
         return fragment;
       }
     };
@@ -31538,7 +31519,7 @@ define('fusor-ember-cli/tests/controllers/storage.jshint', function () {
 
   module('JSHint - controllers');
   test('controllers/storage.js should pass jshint', function() { 
-    ok(false, 'controllers/storage.js should pass jshint.\ncontrollers/storage.js: line 14, col 20, Duplicate key \'rhev_storage_type\'.\n\n1 error'); 
+    ok(true, 'controllers/storage.js should pass jshint.'); 
   });
 
 });
@@ -38520,13 +38501,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.f68eaaa7"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.b8213434"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.f68eaaa7"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.b8213434"});
 }
 
 /* jshint ignore:end */
