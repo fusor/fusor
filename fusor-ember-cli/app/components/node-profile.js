@@ -123,6 +123,15 @@ export default Ember.Component.extend({
     this.set('assignMenuOpenClass', '');
   },
 
+  assignClass: function() {
+    if (this.doAssign) {
+      return "";
+    }
+    else {
+      return "nodes-coalescing";
+    }
+  }.property('doAssign'),
+
   actions: {
     showAssignMenu: function() {
       if (this.get('freeNodes') > 0) {
