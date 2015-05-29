@@ -9,6 +9,7 @@
 # NON-INFRINGEMENT, or FITNESS FOR A PARTICULAR PURPOSE. You should
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
+require 'net/scp'
 
 module Actions
   module Fusor
@@ -37,12 +38,19 @@ module Actions
           deployment = ::Fusor::Deployment.find(deployment_id)
 
           if is_rhev_up()
+            # copy the cfme to the rhev host
+            # host should be deployment
+            Rails.logger.warn "XXX scp file"
+            scp_image_file("10.8.101.181", "dog8code", find_image_file())
+            Rails.logger.warn "XXX scp file DONE"
+
             status, output = upload_image(deployment.cfme_install_loc)
             if status > 0
               Rails.logger.warn "XXX image uploaded"
             else
               Rails.logger.error "XXX There was a problem with running the command. Status: #{status}. \nOutput: #{output}"
             end
+
 
             # TODO: the following call needs to pass in the IP address of the cloudforms VM that is created above
             #add_rhev_provider(deployment, "10.8.101.247")
@@ -101,6 +109,17 @@ module Actions
                      }
 
           Utils::CloudForms::Provider.add(cfme_ip, provider)
+        end
+
+        def find_image_file
+          return "/tmp/cfme-rhevm-5.3-47.x86_64.rhevm.ova"
+        end
+
+        def scp_image_file(rhev_host, password, image_file)
+          # scp the cfme file over to the rhev host, assume root user
+          Net::SCP.start(rhev_host, "root", :password => password) do |scp|
+            scp.upload!(image_file, "/root")
+          end
         end
       end
     end
