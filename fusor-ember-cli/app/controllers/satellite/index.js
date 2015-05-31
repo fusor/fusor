@@ -21,4 +21,6 @@ export default Ember.Controller.extend(SatelliteControllerMixin, {
   idSatName: 'deployment_sat_name',
   idSatDesc: 'deployment_sat_desc',
 
+  backRouteNameOnSatIndex: 'deployment.start',
+
 });
