@@ -12,9 +12,12 @@ export default Ember.Route.extend({
     var lifecycleEnvironments = this.store.find('lifecycle-environment', {organization_id: organization.get('id')});
     lifecycleEnvironments.then(function(results){
       controller.set('lifecycleEnvironments', results);
-      // nullify environment if organization has no environments, it gives validation error if trying to save with no environment
+      // nullify environment if organization has no environments
       if (results.get('length') === 0) {
-        return controller.set('model', null);
+        return controller.set('selectedEnvironment', null);
+      // default to Library if it is only env that exists
+      } else if (results.get('length') === 1) {
+        return controller.set('selectedEnvironment', results.get('firstObject'));
       }
     });
   },

@@ -10,6 +10,8 @@ export default Ember.Mixin.create({
     return this.get('libraryEnvironments').get('firstObject');
   }.property('libraryEnvironments'),
 
+  priorLibraryEnvironments: Ember.computed.filterBy('lifecycleEnvironments', 'library', true),
+
   fields_env: {},
 
   showAlertMessage: false,
@@ -20,5 +22,13 @@ export default Ember.Mixin.create({
     }
   }.property('name'),
   label: Ember.computed.alias("envLabelName"),
+
+  hasNoEnvironments: function() {
+    return Ember.isEmpty(this.get('lifecycleEnvironments'));
+  }.property('lifecycleEnvironments.@each.[]'),
+
+  hasOnlyLibraryEnvironment: function() {
+    return (this.get('lifecycleEnvironments.length') === 1);
+  }.property('lifecycleEnvironments.@each.[]')
 
 });
