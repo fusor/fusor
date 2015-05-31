@@ -52,7 +52,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       return false;
     }
     var retVal = false;
-    profiles.forEach(function(item, index) {
+    profiles.forEach(function(item) {
       if (item.get('isControl')) {
         retVal = true;
       }
@@ -66,7 +66,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       return false;
     }
     var retVal = false;
-    profiles.forEach(function(item, index) {
+    profiles.forEach(function(item) {
       if (item.get('isCompute')) {
         retVal = true;
       }
@@ -80,7 +80,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       return false;
     }
     var retVal = false;
-    profiles.forEach(function(item, index) {
+    profiles.forEach(function(item) {
       if (item.get('isBlockStorage')) {
         retVal = true;
       }
@@ -94,7 +94,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       return false;
     }
     var retVal = false;
-    profiles.forEach(function(item, index) {
+    profiles.forEach(function(item) {
       if (item.get('isObjectStorage')) {
         retVal = true;
       }
@@ -111,13 +111,13 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
   }.property('controllerAssigned','computeAssigned', 'blockAssigned', 'objectAssigned'),
 
   nodeProfiles:function() {
-    return this.get('register').get('model.nodeProfiles');
-  }.property('register.model.nodeProfiles', 'register.model.nodeProfiles.length'),
+    return this.get('register').get('model.profiles');
+  }.property('register.model.profiles', 'register.model.profiles.length'),
 
   numProfiles: function() {
-    var profiles = this.get('register.model.nodeProfiles');
+    var profiles = this.get('register.model.profiles');
     return profiles.length;
-  }.property('model.nodeProfiles', 'model.nodeProfiles.length'),
+  }.property('model.profiles', 'model.profiles.length'),
 
   removeRoleFromProfile: function(profile, roleType) {
     if (roleType === 'controller') {
@@ -136,11 +136,12 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   actions: {
     editRole: function(roleType) {
+      log("EDIT: " + roleType);
     },
 
     assignRole: function(profile, roleType) {
       if (roleType === 'controller') {
-        profile.set('controllerNodes', 1)
+        profile.set('controllerNodes', 1);
       }
       else if (roleType === 'compute') {
         profile.set('computeNodes', 1);

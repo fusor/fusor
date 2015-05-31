@@ -51,7 +51,7 @@ export default Ember.Component.extend({
     var assignedNodes = this.get('assignedNodes');
     var roleType = this.get('role-type');
     var increment = 1;
-    if (roleType == 'controller') {
+    if (roleType === 'controller') {
       increment = 2;
     }
 
