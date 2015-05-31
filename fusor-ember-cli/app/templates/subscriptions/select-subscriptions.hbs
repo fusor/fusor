@@ -36,13 +36,8 @@ Default subscription selections have been made for the components of your RHCI d
   </tbody>
 </table>
 
-<br />
-{{button-f class='btn btn-success' disabled=disableAttachButton title=buttonAttachTitle action="attachSubscriptions"}}
-
-<br />
-<br />
-
-<div style='text-align:right'>
-  <button {{action 'showModal' 'cancel-modal'}} class='btn btn-default'>Cancel</button>
-  {{#link-to 'review.installation' class='btn btn-primary' disabled=disableSubscriptionsNext}}Next{{/link-to}}
-</div>
+{{cancel-back-next backRouteName='subscriptions.management-application'
+                   disableBack=false
+                   nextRouteName='review'
+                   disableNext=false
+                   parentController=controller}}
