@@ -2,13 +2,11 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
   classNames: ['rhci-item'],
-  classNameBindings: ['isChecked:rhci-item-selected:rhci-item-deselected', 'isHover:rhci-item-hover'],
+  classNameBindings: ['isChecked:rhci-item-selected'],
 
   click: function() {
     this.set('isChecked', this.toggleProperty('isChecked'));
   },
-
-  isHover: false,
 
   showMsgToSelect: function() {
     return ( (this.get('isHover')) && (!(this.get('isChecked'))) );
