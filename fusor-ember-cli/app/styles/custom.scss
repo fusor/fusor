@@ -187,60 +187,91 @@ li.disabled a {
   color: #999 !important;
 }
 
-.disabled {
-  color: #999 !important;
+
+/* WIZARD stuff */
+
+.wizard-block {
+  display: inline-block;
 }
 
-.no_subscriptions {
-  text-align: center;
-  padding: 10px 0px 5px;
+.wizard-line {
+  border-top: solid 3px #ddd;
+  margin-top:15px;
 }
 
-.disabledImage {
-  opacity: 0.5;
+/*.white-wizard-line {
+  border-top: solid 3px red;
+  margin-bottom:-18px;
+  z-index: 114000;
+}
+*/
+.wizard-item {
+  font-weight: bold;
+  font-size: 110%;
+  color: #555;
 }
 
-.ident-radio {
-  padding-left: 15px;
+.deployment-wizard li {
+  padding: 7px 7px 10px;
+  margin-right: 5px;
+  margin-bottom: 30px;
+  background: #fff;
+  position: relative;
+  display: inline-block;
 }
 
-.spinner-text {
-  font-size: 20px;
+.deployment-wizard li.disabled {
+  color: #ddd !important;
 }
 
-.rhev-searchbar {
-  background-color: #f6f6f6;
-  padding: 5px 0px;
-  border-top: 1px solid #d1d1d1;
-  border-right: 1px solid #d1d1d1;
-  border-left: 1px solid #d1d1d1;
-  margin-right: 1px;
+.deployment-wizard .badge {
+  margin: 0 5px 0 18px;
+  position: relative;
+  top: -1px;
+}
+.deployment-wizard a:first-child .badge {
+  margin-left: 0;
+}
+.deployment-wizard .active {
+  color: #007ACC !important;
 }
 
-.rhev-search-box {
-  margin-left: -15px;
+.deployment-wizard .active > .full-circle {
+  background-color: #007ACC !important;
 }
 
-.rhev-search-input {
-  width: 200px !important;
+.full-circle {
+ background-color: #999;
+ height: 8px;
+ -moz-border-radius:4px;
+ -webkit-border-radius: 4px;
+ width: 8px;
+ margin-top: -41px;
 }
 
-.not-selected {
-  font-style: italic;
-  color: #555 !important;
+.disable-circle {
+  background-color: #ddd !important;
 }
 
-.rhev-search-button {
-  display:inline;
-  margin-left:-3px;
+.disabled-color {
+  color: gray   !important;
 }
 
-table.fusor-table {
-  table-layout: fixed;
+.tabbed_side_nav_form {
+  .tab-content {
+    min-height: 600px;
+    border-left: 1px solid #999;
+    background: #fff;
+    /*box-shadow: -3px 0px 4px -3px rgba(50, 50, 50, 0.75);*/
+  }
 }
 
-.rhev-checkbox {
-  width: 3%;
+.green-circle {
+  color: green;
+ }
+
+.errorForValidation {
+  color: red;
 }
 
 .rhev-hostname {
@@ -292,8 +323,8 @@ table.fusor-table {
   padding-left: 15px !important;
 }
 
-.rhci-review-product-name {
-  white-space: nowrap;
+li.disabled a {
+  color: #ddd !important;
 }
 
 .input-units-label {
