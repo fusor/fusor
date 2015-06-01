@@ -11,12 +11,13 @@ export default Ember.Route.extend({
     var orgID = this.modelFor('deployment').get('organization.id')
     var url = '/katello/api/v2/organizations/' + orgID;
     $.getJSON(url).then(function(results) {
+      if (Ember.isPresent(results.owner_details.upstreamConsumer)) {
         controller.set('organizationUpstreamConsumerUUID', results.owner_details.upstreamConsumer.uuid);
         controller.set('organizationUpstreamConsumerName', results.owner_details.upstreamConsumer.name);
-        // if (Ember.isBlank(upstream_consumer_uuid)) {
-        //   controller.set('upstream_consumer_uuid', results.owner_details.upstreamConsumer.uuid)
-        //   controller.set('upstream_consumer_name', results.owner_details.upstreamConsumer.name)
-        // }
+      } else {
+        controller.set('organizationUpstreamConsumerUUID', null);
+        controller.set('organizationUpstreamConsumerName', null);
+      }
     });
   },
 
@@ -26,13 +27,14 @@ export default Ember.Route.extend({
       return true;
     },
 
-    loginPortal: function() {
+  loginPortal: function() {
       var self = this;
       var controller = this.controllerFor('subscriptions/credentials')
       var identification = controller.get('identification');
       var password = controller.get('password');
       var token = $('meta[name="csrf-token"]').attr('content');
-
+      controller.set('nextButtonTitle', "Logging in ...");
+      controller.set('disableCredentialsNext', true);
       return new Ember.RSVP.Promise(function (resolve, reject) {
         Ember.$.ajax({
             url: '/customer_portal/login/',
@@ -49,6 +51,8 @@ export default Ember.Route.extend({
             },
             error: function(response){
               console.log('error on loginPortal');
+              controller.set('nextButtonTitle', "Next");
+              controller.set('disableCredentialsNext', false);
               return self.send('error');
             }
         });
@@ -100,6 +104,8 @@ export default Ember.Route.extend({
           return self.send('authenticatePortal');
       }, function(response) {
           console.log('error saving session-portal');
+          controller.set('nextButtonTitle', "Next");
+          controller.set('disableCredentialsNext', false);
           return self.send('error');
       });
     },
@@ -131,14 +137,20 @@ export default Ember.Route.extend({
               sessionPortal.set('isAuthenticated', true);
               sessionPortal.save().then(function(result) {
                   console.log('saved ownerKey in session-portal')
+                  controller.set('nextButtonTitle', "Next");
+                  controller.set('disableCredentialsNext', false);
                   return self.transitionTo('subscriptions.management-application');
               }, function(response) {
+                  controller.set('nextButtonTitle', "Next");
+                  controller.set('disableCredentialsNext', false);
                   console.log('error saving ownerKey session-portal');
               });
             },
 
             error: function(response){
                 console.log('error on authenticatePortal');
+                controller.set('nextButtonTitle', "Next");
+                controller.set('disableCredentialsNext', false);
                 controller.setProperties({'showErrorMessage': true,
                                           'errorMsg': 'Your username or password is incorrect. Please try again.'
                                           })
@@ -146,8 +158,12 @@ export default Ember.Route.extend({
         });
       });
 
+    },
+
+    redirectToManagementApplication: function() {
+      return this.transitionTo('subscriptions.management-application')
     }
 
   }
-});
 
+});

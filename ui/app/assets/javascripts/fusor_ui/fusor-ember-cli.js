@@ -2787,7 +2787,17 @@ define('fusor-ember-cli/controllers/subscriptions/credentials', ['exports', 'emb
       } else {
         return 'configure-environment';
       }
-    }).property('isRhev', 'isOpenStack', 'isCloudForms') });
+    }).property('isRhev', 'isOpenStack', 'isCloudForms'),
+
+    nextButtonTitle: 'Next',
+
+    actionCredentialsNext: (function () {
+      if (this.get('model.isAuthenticated')) {
+        return 'redirectToManagementApplication';
+      } else {
+        return 'loginPortal';
+      }
+    }).property('model.isAuthenticated') });
 
 });
 define('fusor-ember-cli/controllers/subscriptions/management-application', ['exports', 'ember'], function (exports, Ember) {
@@ -5374,12 +5384,13 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
       var orgID = this.modelFor('deployment').get('organization.id');
       var url = '/katello/api/v2/organizations/' + orgID;
       $.getJSON(url).then(function (results) {
-        controller.set('organizationUpstreamConsumerUUID', results.owner_details.upstreamConsumer.uuid);
-        controller.set('organizationUpstreamConsumerName', results.owner_details.upstreamConsumer.name);
-        // if (Ember.isBlank(upstream_consumer_uuid)) {
-        //   controller.set('upstream_consumer_uuid', results.owner_details.upstreamConsumer.uuid)
-        //   controller.set('upstream_consumer_name', results.owner_details.upstreamConsumer.name)
-        // }
+        if (Ember['default'].isPresent(results.owner_details.upstreamConsumer)) {
+          controller.set('organizationUpstreamConsumerUUID', results.owner_details.upstreamConsumer.uuid);
+          controller.set('organizationUpstreamConsumerName', results.owner_details.upstreamConsumer.name);
+        } else {
+          controller.set('organizationUpstreamConsumerUUID', null);
+          controller.set('organizationUpstreamConsumerName', null);
+        }
       });
     },
 
@@ -5395,7 +5406,8 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
         var identification = controller.get('identification');
         var password = controller.get('password');
         var token = $('meta[name="csrf-token"]').attr('content');
-
+        controller.set('nextButtonTitle', 'Logging in ...');
+        controller.set('disableCredentialsNext', true);
         return new Ember['default'].RSVP.Promise(function (resolve, reject) {
           Ember['default'].$.ajax({
             url: '/customer_portal/login/',
@@ -5411,6 +5423,8 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
             },
             error: function error(response) {
               console.log('error on loginPortal');
+              controller.set('nextButtonTitle', 'Next');
+              controller.set('disableCredentialsNext', false);
               return self.send('error');
             }
           });
@@ -5461,6 +5475,8 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
           return self.send('authenticatePortal');
         }, function (response) {
           console.log('error saving session-portal');
+          controller.set('nextButtonTitle', 'Next');
+          controller.set('disableCredentialsNext', false);
           return self.send('error');
         });
       },
@@ -5491,23 +5507,34 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
               sessionPortal.set('isAuthenticated', true);
               sessionPortal.save().then(function (result) {
                 console.log('saved ownerKey in session-portal');
+                controller.set('nextButtonTitle', 'Next');
+                controller.set('disableCredentialsNext', false);
                 return self.transitionTo('subscriptions.management-application');
               }, function (response) {
+                controller.set('nextButtonTitle', 'Next');
+                controller.set('disableCredentialsNext', false);
                 console.log('error saving ownerKey session-portal');
               });
             },
 
             error: function error(response) {
               console.log('error on authenticatePortal');
+              controller.set('nextButtonTitle', 'Next');
+              controller.set('disableCredentialsNext', false);
               controller.setProperties({ 'showErrorMessage': true,
                 'errorMsg': 'Your username or password is incorrect. Please try again.'
               });
             }
           });
         });
+      },
+
+      redirectToManagementApplication: function redirectToManagementApplication() {
+        return this.transitionTo('subscriptions.management-application');
       }
 
     }
+
   });
 
 });
@@ -7488,6 +7515,8 @@ define('fusor-ember-cli/templates/components/button-f', ['exports'], function (e
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
         return el0;
       },
       render: function render(context, env, contextualElement) {
@@ -7511,8 +7540,11 @@ define('fusor-ember-cli/templates/components/button-f', ['exports'], function (e
           fragment = this.build(dom);
         }
         var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+        var morph1 = dom.createMorphAt(fragment,2,2,contextualElement);
+        dom.insertBoundary(fragment, null);
         dom.insertBoundary(fragment, 0);
         content(env, morph0, context, "title");
+        content(env, morph1, context, "yield");
         return fragment;
       }
     };
@@ -29036,11 +29068,11 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
           } else {
             fragment = this.build(dom);
           }
-          var element2 = dom.childAt(fragment, [1, 1, 1]);
-          var element3 = dom.childAt(element2, [9]);
-          var morph0 = dom.createMorphAt(dom.childAt(element2, [3]),0,0);
+          var element1 = dom.childAt(fragment, [1, 1, 1]);
+          var element2 = dom.childAt(element1, [9]);
+          var morph0 = dom.createMorphAt(dom.childAt(element1, [3]),0,0);
           content(env, morph0, context, "identification");
-          element(env, element3, context, "action", ["logoutPortal"], {});
+          element(env, element2, context, "action", ["logoutPortal"], {});
           return fragment;
         }
       };
@@ -29228,10 +29260,10 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
           } else {
             fragment = this.build(dom);
           }
-          var element1 = dom.childAt(fragment, [1, 1, 3]);
-          var morph0 = dom.createMorphAt(element1,1,1);
-          var morph1 = dom.createMorphAt(element1,3,3);
-          var morph2 = dom.createMorphAt(element1,5,5);
+          var element0 = dom.childAt(fragment, [1, 1, 3]);
+          var morph0 = dom.createMorphAt(element0,1,1);
+          var morph1 = dom.createMorphAt(element0,3,3);
+          var morph2 = dom.createMorphAt(element0,5,5);
           inline(env, morph0, context, "text-f", [], {"label": "Red Hat login", "value": get(env, context, "identification")});
           inline(env, morph1, context, "text-f", [], {"label": "Password", "value": get(env, context, "password"), "type": "password"});
           block(env, morph2, context, "base-f", [], {}, child0, null);
@@ -29240,6 +29272,54 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
       };
     }());
     var child5 = (function() {
+      var child0 = (function() {
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode(" ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("i");
+            dom.setAttribute(el1,"class","fa fa-angle-right");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, content = hooks.content;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
+            content(env, morph0, context, "nextButtonTitle");
+            return fragment;
+          }
+        };
+      }());
       return {
         isHTMLBars: true,
         revision: "Ember@1.11.1",
@@ -29248,25 +29328,13 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
         hasRendered: false,
         build: function build(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("    ");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createElement("button");
-          dom.setAttribute(el1,"class","btn btn-primary");
-          var el2 = dom.createTextNode("\n        Next ");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createElement("i");
-          dom.setAttribute(el2,"class","fa fa-angle-right");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createTextNode("\n    ");
-          dom.appendChild(el1, el2);
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n");
+          var el1 = dom.createComment("");
           dom.appendChild(el0, el1);
           return el0;
         },
         render: function render(context, env, contextualElement) {
           var dom = env.dom;
-          var hooks = env.hooks, element = hooks.element, get = hooks.get;
+          var hooks = env.hooks, get = hooks.get, block = hooks.block;
           dom.detectNamespace(contextualElement);
           var fragment;
           if (env.useFragmentCache && dom.canClone) {
@@ -29284,9 +29352,10 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
           } else {
             fragment = this.build(dom);
           }
-          var element0 = dom.childAt(fragment, [1]);
-          element(env, element0, context, "action", ["loginPortal"], {});
-          element(env, element0, context, "bind-attr", [], {"disabled": get(env, context, "disableCredentialsNext")});
+          var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+          dom.insertBoundary(fragment, null);
+          dom.insertBoundary(fragment, 0);
+          block(env, morph0, context, "button-f", [], {"disabled": get(env, context, "disableCredentialsNext"), "action": get(env, context, "actionCredentialsNext")}, child0, null);
           return fragment;
         }
       };
@@ -32575,7 +32644,7 @@ define('fusor-ember-cli/tests/routes/subscriptions/credentials.jshint', function
 
   module('JSHint - routes/subscriptions');
   test('routes/subscriptions/credentials.js should pass jshint', function() { 
-    ok(false, 'routes/subscriptions/credentials.js should pass jshint.\nroutes/subscriptions/credentials.js: line 11, col 67, Missing semicolon.\nroutes/subscriptions/credentials.js: line 31, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 60, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 89, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 93, col 60, Missing semicolon.\nroutes/subscriptions/credentials.js: line 95, col 27, \'sessionPortal\' is already defined.\nroutes/subscriptions/credentials.js: line 98, col 46, Missing semicolon.\nroutes/subscriptions/credentials.js: line 99, col 51, Missing semicolon.\nroutes/subscriptions/credentials.js: line 109, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 133, col 66, Missing semicolon.\nroutes/subscriptions/credentials.js: line 144, col 45, Missing semicolon.\nroutes/subscriptions/credentials.js: line 13, col 5, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 34, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 61, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 112, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 8, col 9, \'sessionPortal\' is defined but never used.\nroutes/subscriptions/credentials.js: line 9, col 9, \'upstream_consumer_uuid\' is defined but never used.\nroutes/subscriptions/credentials.js: line 24, col 29, \'transition\' is defined but never used.\nroutes/subscriptions/credentials.js: line 24, col 21, \'reason\' is defined but never used.\nroutes/subscriptions/credentials.js: line 36, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 36, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 46, col 31, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 50, col 29, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 60, col 11, \'controller\' is defined but never used.\nroutes/subscriptions/credentials.js: line 63, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 63, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 72, col 31, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 80, col 29, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 97, col 42, \'result\' is defined but never used.\nroutes/subscriptions/credentials.js: line 101, col 19, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 111, col 11, \'password\' is defined but never used.\nroutes/subscriptions/credentials.js: line 116, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 116, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 132, col 50, \'result\' is defined but never used.\nroutes/subscriptions/credentials.js: line 135, col 27, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 140, col 29, \'response\' is defined but never used.\n\n36 errors'); 
+    ok(false, 'routes/subscriptions/credentials.js should pass jshint.\nroutes/subscriptions/credentials.js: line 11, col 67, Missing semicolon.\nroutes/subscriptions/credentials.js: line 32, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 64, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 93, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 97, col 60, Missing semicolon.\nroutes/subscriptions/credentials.js: line 99, col 27, \'sessionPortal\' is already defined.\nroutes/subscriptions/credentials.js: line 102, col 46, Missing semicolon.\nroutes/subscriptions/credentials.js: line 103, col 51, Missing semicolon.\nroutes/subscriptions/credentials.js: line 115, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 139, col 66, Missing semicolon.\nroutes/subscriptions/credentials.js: line 156, col 45, Missing semicolon.\nroutes/subscriptions/credentials.js: line 164, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 13, col 5, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 35, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 65, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 118, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 8, col 9, \'sessionPortal\' is defined but never used.\nroutes/subscriptions/credentials.js: line 9, col 9, \'upstream_consumer_uuid\' is defined but never used.\nroutes/subscriptions/credentials.js: line 25, col 29, \'transition\' is defined but never used.\nroutes/subscriptions/credentials.js: line 25, col 21, \'reason\' is defined but never used.\nroutes/subscriptions/credentials.js: line 38, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 38, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 48, col 31, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 52, col 29, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 64, col 11, \'controller\' is defined but never used.\nroutes/subscriptions/credentials.js: line 67, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 67, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 76, col 31, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 84, col 29, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 101, col 42, \'result\' is defined but never used.\nroutes/subscriptions/credentials.js: line 105, col 19, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 117, col 11, \'password\' is defined but never used.\nroutes/subscriptions/credentials.js: line 122, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 122, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 138, col 50, \'result\' is defined but never used.\nroutes/subscriptions/credentials.js: line 143, col 27, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 150, col 29, \'response\' is defined but never used.\n\n37 errors'); 
   });
 
 });

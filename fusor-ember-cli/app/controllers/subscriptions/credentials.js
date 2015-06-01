@@ -39,4 +39,15 @@ export default Ember.Controller.extend({
     }
   }.property('isRhev', 'isOpenStack', 'isCloudForms'),
 
+  nextButtonTitle: 'Next',
+
+  actionCredentialsNext: function() {
+    if (this.get('model.isAuthenticated')) {
+      return 'redirectToManagementApplication';
+    } else {
+      return 'loginPortal';
+    }
+  }.property('model.isAuthenticated'),
+
+
 });
