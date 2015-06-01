@@ -1,53 +1,4 @@
-/* CUSTOM APP *****************************/
-
-/***Changes caused by going from Bootstrap 3.0.3 in foreman to version used by ember-cli-bootstrap-sass*****/
-
-/*.navbar-inner {
-  padding-bottom: 0px;
-  margin-bottom: 0px;
-  border-bottom: none;
-  clear: left;
-  left: 0;
-  min-height: 40px;
-  max-height: 40px;
-  position: absolute;
-  right: 0;
-  top: 25px;
-  z-index: 10000;
-}
-
-.navbar-outer {
-  padding-bottom: 0px;
-  margin-bottom: 0px;
-  height: 25px;
-  min-height: 0;
-  z-index: 10000;
-}
-
-.navbar-inner-upstream {
-  border-top: 1px solid #0187b6 !important;
-  background: #0072a0 !important;
-}
-
-.navbar-outer-upstream {
-  border: 1px solid #00445d !important;
-  background-color: #005C7E !important;
-}
-
-.navbar-brand {
-  float: left;
-  padding: 0px 0px;
-  font-size: 18px;
-  line-height: 20px;
-}
-*/
-/*.navbar-brand img {
-  height: 34px;
-  padding-top: 0px !important;
-  margin-top: 0px !important;
-  margin-bottom: -10px;
-}*/
-/********/
+/* custom.scss */
 
 .rhci-footer {
   padding: 20px 10px 10px 10px;
@@ -102,30 +53,10 @@ i.fa-check {
   padding-left: 12px;
 }
 
-.rhci-item-deselected {
-/*  border: solid 3px #999;
-  opacity: 0.5;
-*/
-}
-
-.rhci-item-hover {
-  /*opacity: 0.8;*/
-}
-
 .rhci-item-text {
   padding:10px;
 }
 
-/*table {
-  table-layout: fixed !important;
-}
-
-td {
-  word-wrap: break-word;
-  word-break: break-all;
-  overflow: wrap;
-}
-*/
 .highlight {
   background-color: yellow !important;
 }
@@ -150,12 +81,6 @@ td {
   text-align:center;
 }
 
-.fontwhite {
-  color:#fff !important;
-  font-weight:bold;
-  /*font-size:120%;*/
-}
-
 a {
   cursor: pointer;
 }
@@ -164,180 +89,10 @@ li {
   cursor: pointer;
 }
 
-.ember-menu-link {
-  color:red !important;;
-
-}
-
 td a.active {
   font-weight:bold;
   font-size:120%;
   background-color:#eee;
-}
-
-
-/* off canvas */
-
-.uxnotes {
-  position: fixed;
-  right:25px;
-  top: 150px;
-  width: 100px;
-  text-align: center;
-  margin:0;
-  padding:0;
-  z-index: 1000;
-  border: 1px #cc0000 solid;
-  padding:5px;
-  background-color: #cc0000;
-  color: #fff;
-}
-
-a.uxnotes:hover{
-  color: #fff;
-}
-
-.toggle_updown {
-  position: fixed;
-  right:25px;
-  top: 75px;
-  margin:0;
-  padding:0;
-  z-index: 800;
-  border: 1px black solid;
-}
-
-.updown {
-  padding:5px;
-}
-
-.active_upstream {
-  background-color: #000;
-}
-
-.nonactive_upstream {
-  background-color: #fff;
-}
-
-.active_downstream {
-  background-color: #000;
-}
-
-.nonactive_downstream {
-  background-color: #fff;
-}
-
-.active_upstream a{
-  color: #fff;
-}
-.nonactive_upstream a{
-  color: #000;
-}
-.active_downstream a{
-  color: #fff;
-}
-.nonactive_downstream a{
-  color: #000;
-}
-a.nav-expander {
-  color: #ff4 !important;
-/*  display: block;
-  font-size: 15px;
-  font-weight: 400;
-  height: 0px;
-  margin-right: 0;
-  padding: 1em 1.6em 2em;
-  position: absolute;
-  right: 150px;
-  text-decoration: none;
-  text-transform: uppercase;
-  top: 39px;
-  transition: right 0.3s ease-in-out 0s;
-  width: 200px;
-  z-index: 12;
-  border:0px solid #000;
-
-  transition: right 0.3s ease-in-out 0s;
-  -webkit-transition: right 0.3s ease-in-out 0s;
-  -moz-transition: right 0.3s ease-in-out 0s;
-  -o-transition: right 0.3s ease-in-out 0s;
-
-*/}
-
-a.nav-expander:hover {
-  cursor: pointer;
-}
-
-a.nav-expander.fixed {
-  position: fixed;
-}
-
-.nav-expanded a.nav-expander.fixed {
-    right: 250px;
-}
-
-/*nav {
-  background: #fff;
-  display: block;
-  height: 100%;
-  overflow: auto;
-  position: fixed;
-  right: -1000px;
-  font-size: 15px;
-  top: 0px;
-  width: 1000px;
-  margin-top: 65px;
-  z-index: 4000;
-  color: #fff;
-  transition: right 0.3s ease-in-out 0s;
-  -webkit-transition: right 0.3s ease-in-out 0s;
-  -moz-transition: right 0.3s ease-in-out 0s;
-  -o-transition: right 0.3s ease-in-out 0s;
-
-}*/
-.nav-expanded nav {
-  right: 0;
-}
-
-.nav-expanded {
-  margin-left: 0em;
-  transition: right 0.4s ease-in-out 0s;
-  -webkit-transition: right 0.4s ease-in-out 0s;
-  -moz-transition: right 0.4s ease-in-out 0s;
-  -o-transition: right 0.4s ease-in-out 0s;
-}
-
-#nav-close {
-  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-  font-weight: 300;
-  font-size: 24px;
-  padding-right: 10px;
-  position: absolute;
-  right: 10px;
-  text-decoration: none;
-  top: 10px;
-
-}
-
-.notepad {
- width: 100%;
- height: 100%;
- padding: 5px 10px;
- color:#000;
-}
-
-/*iframe {
-    position: absolute;
-    top:0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-*/
-
-.draggable-object {
-   display: inline-block;
-   padding: 0px 7px;
 }
 
 /* ACTIVE */
@@ -351,85 +106,6 @@ label.env_path_active {
 }
 label.env_path_active:after {
   border-left: 15px solid #00a8d6 !important;
-}
-
-
-/* WIZARD stuff */
-
-.wizard-block {
-  display: inline-block;
-}
-
-.wizard-line {
-  border-top: solid 3px #ddd;
-  margin-top:15px;
-}
-
-/*.white-wizard-line {
-  border-top: solid 3px red;
-  margin-bottom:-18px;
-  z-index: 114000;
-}
-*/
-.wizard-item {
-  font-weight: bold;
-  font-size: 110%;
-  color: #555;
-}
-
-.deployment-wizard li {
-  padding: 7px 7px 10px;
-  margin-right: 5px;
-  margin-bottom: 30px;
-  background: #fff;
-  position: relative;
-  display: inline-block;
-}
-
-.deployment-wizard li.disabled {
-  color: #ddd !important;
-}
-
-.deployment-wizard .badge {
-  margin: 0 5px 0 18px;
-  position: relative;
-  top: -1px;
-}
-.deployment-wizard a:first-child .badge {
-  margin-left: 0;
-}
-.deployment-wizard .active {
-  color: #007ACC !important;
-}
-
-.deployment-wizard .active > .full-circle {
-  background-color: #007ACC !important;
-}
-
-.full-circle {
- background-color: #999;
- height: 8px;
- -moz-border-radius:4px;
- -webkit-border-radius: 4px;
- width: 8px;
- margin-top: -41px;
-}
-
-.disable-circle {
-  background-color: #ddd !important;
-}
-
-.disabled-color {
-  color: gray   !important;
-}
-
-.tabbed_side_nav_form {
-  .tab-content {
-    min-height: 600px;
-    border-left: 1px solid #999;
-    background: #fff;
-    /*box-shadow: -3px 0px 4px -3px rgba(50, 50, 50, 0.75);*/
-  }
 }
 
 .green-circle {
