@@ -48,7 +48,7 @@
           </ul>
         </div>
     {{else}}
-      {{#each env in nonLibraryEnvironments}}
+      {{#each env in priorLibraryEnvironments}}
         <div class="path-selector">
           <ul class="path-list">
             {{env-path-list-item env=libraryEnv

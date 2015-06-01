@@ -1423,7 +1423,7 @@ define('fusor-ember-cli/controllers/configure-environment', ['exports', 'ember',
         var environment = this.store.createRecord('lifecycle-environment', this.get('fields_env'));
         environment.save().then(function (result) {
           //success
-          self.get('nonLibraryEnvironments').pushObject(result);
+          self.get('lifecycleEnvironments').addObject(result);
           self.set('selectedEnvironment', environment);
           self.get('controllers.deployment').set('lifecycle_environment', environment);
           return self.set('showAlertMessage', true);
@@ -1544,7 +1544,7 @@ define('fusor-ember-cli/controllers/deployment-new/satellite/configure-environme
         var environment = this.store.createRecord('lifecycle-environment', this.get('fields_env'));
         environment.save().then(function (result) {
           //success
-          self.get('nonLibraryEnvironments').pushObject(result);
+          self.get('lifecycleEnvironments').addObject(result);
           self.set('selectedEnvironment', environment);
           self.get('controllers.deployment-new').set('lifecycle_environment', environment);
           return self.set('showAlertMessage', true);
@@ -3180,6 +3180,10 @@ define('fusor-ember-cli/mixins/configure-environment-mixin', ['exports', 'ember'
       return this.get('libraryEnvironments').get('firstObject');
     }).property('libraryEnvironments'),
 
+    priorLibraryEnvironments: Ember['default'].computed.filter('lifecycleEnvironments', function (item, index, array) {
+      return item.get('prior_id') === 1;
+    }).property('lifecycleEnvironments.@each.[]', 'libraryEnv'),
+
     fields_env: {},
 
     showAlertMessage: false,
@@ -3189,7 +3193,17 @@ define('fusor-ember-cli/mixins/configure-environment-mixin', ['exports', 'ember'
         return this.get('name').underscore();
       }
     }).property('name'),
-    label: Ember['default'].computed.alias('envLabelName') });
+    label: Ember['default'].computed.alias('envLabelName'),
+
+    hasNoEnvironments: (function () {
+      return Ember['default'].isEmpty(this.get('lifecycleEnvironments'));
+    }).property('lifecycleEnvironments.@each.[]'),
+
+    hasOnlyLibraryEnvironment: (function () {
+      return this.get('lifecycleEnvironments.length') === 1;
+    }).property('lifecycleEnvironments.@each.[]')
+
+  });
 
 });
 define('fusor-ember-cli/mixins/configure-organization-mixin', ['exports', 'ember'], function (exports, Ember) {
@@ -3993,6 +4007,7 @@ define('fusor-ember-cli/models/lifecycle-environment', ['exports', 'ember-data']
     description: DS['default'].attr('string'),
     library: DS['default'].attr('boolean'),
     prior: DS['default'].attr('number'),
+    prior_id: DS['default'].attr('number'),
     created_at: DS['default'].attr('date'),
     updated_at: DS['default'].attr('date'),
     organization: DS['default'].belongsTo('organization', { async: true })
@@ -4362,9 +4377,12 @@ define('fusor-ember-cli/routes/configure-environment', ['exports', 'ember'], fun
       var lifecycleEnvironments = this.store.find('lifecycle-environment', { organization_id: organization.get('id') });
       lifecycleEnvironments.then(function (results) {
         controller.set('lifecycleEnvironments', results);
-        // nullify environment if organization has no environments, it gives validation error if trying to save with no environment
+        // nullify environment if organization has no environments
         if (results.get('length') === 0) {
-          return controller.set('model', null);
+          return controller.set('selectedEnvironment', null);
+          // default to Library if it is only env that exists
+        } else if (results.get('length') === 1) {
+          return controller.set('selectedEnvironment', results.get('firstObject'));
         }
       });
     },
@@ -4464,9 +4482,12 @@ define('fusor-ember-cli/routes/deployment-new/satellite/configure-environment', 
       var lifecycleEnvironments = this.store.find('lifecycle-environment', { organization_id: organization.get('id') });
       lifecycleEnvironments.then(function (results) {
         controller.set('lifecycleEnvironments', results);
-        // nullify environment if organization has no environments, it gives validation error if trying to save with no environment
+        // nullify environment if organization has no environments
         if (results.get('length') === 0) {
-          return controller.set('model', null);
+          return controller.set('selectedEnvironment', null);
+          // default to Library if it is only env that exists
+        } else if (results.get('length') === 1) {
+          return controller.set('selectedEnvironment', results.get('firstObject'));
         }
       });
     } });
@@ -15057,95 +15078,17 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
           hasRendered: false,
           build: function build(dom) {
             var el0 = dom.createDocumentFragment();
-            var el1 = dom.createTextNode("    ");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createElement("div");
-            dom.setAttribute(el1,"class","path-selector");
-            var el2 = dom.createTextNode("\n      ");
-            dom.appendChild(el1, el2);
-            var el2 = dom.createElement("ul");
-            dom.setAttribute(el2,"class","path-list");
-            var el3 = dom.createTextNode("\n        ");
-            dom.appendChild(el2, el3);
-            var el3 = dom.createComment("");
-            dom.appendChild(el2, el3);
-            var el3 = dom.createTextNode("\n        ");
-            dom.appendChild(el2, el3);
-            var el3 = dom.createComment("");
-            dom.appendChild(el2, el3);
-            var el3 = dom.createTextNode("\n        ");
-            dom.appendChild(el2, el3);
-            var el3 = dom.createElement("li");
-            dom.setAttribute(el3,"class","path-list-item");
-            var el4 = dom.createTextNode("\n          ");
-            dom.appendChild(el3, el4);
-            var el4 = dom.createElement("label");
-            dom.setAttribute(el4,"class","path-list-item-label");
-            var el5 = dom.createTextNode("\n             \n          ");
-            dom.appendChild(el4, el5);
-            dom.appendChild(el3, el4);
-            var el4 = dom.createTextNode("\n        ");
-            dom.appendChild(el3, el4);
-            dom.appendChild(el2, el3);
-            var el3 = dom.createTextNode("\n      ");
-            dom.appendChild(el2, el3);
-            dom.appendChild(el1, el2);
-            var el2 = dom.createTextNode("\n    ");
-            dom.appendChild(el1, el2);
-            dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("\n");
-            dom.appendChild(el0, el1);
-            return el0;
-          },
-          render: function render(context, env, contextualElement) {
-            var dom = env.dom;
-            var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
-            dom.detectNamespace(contextualElement);
-            var fragment;
-            if (env.useFragmentCache && dom.canClone) {
-              if (this.cachedFragment === null) {
-                fragment = this.build(dom);
-                if (this.hasRendered) {
-                  this.cachedFragment = fragment;
-                } else {
-                  this.hasRendered = true;
-                }
-              }
-              if (this.cachedFragment) {
-                fragment = dom.cloneNode(this.cachedFragment, true);
-              }
-            } else {
-              fragment = this.build(dom);
-            }
-            var element1 = dom.childAt(fragment, [1, 1]);
-            var morph0 = dom.createMorphAt(element1,1,1);
-            var morph1 = dom.createMorphAt(element1,3,3);
-            inline(env, morph0, context, "env-path-list-item", [], {"env": get(env, context, "libraryEnv"), "selectedEnvironment": get(env, context, "selectedEnvironment"), "action": "selectEnvironment"});
-            inline(env, morph1, context, "env-path-list-item", [], {"env": get(env, context, "env"), "selectedEnvironment": get(env, context, "selectedEnvironment"), "action": "selectEnvironment"});
-            return fragment;
-          }
-        };
-      }());
-      var child1 = (function() {
-        return {
-          isHTMLBars: true,
-          revision: "Ember@1.11.1",
-          blockParams: 0,
-          cachedFragment: null,
-          hasRendered: false,
-          build: function build(dom) {
-            var el0 = dom.createDocumentFragment();
-            var el1 = dom.createTextNode("      ");
+            var el1 = dom.createTextNode("        ");
             dom.appendChild(el0, el1);
             var el1 = dom.createElement("div");
             dom.setAttribute(el1,"class","alert alert-info");
-            var el2 = dom.createTextNode("\n        No lifecycle environments are in organization ");
+            var el2 = dom.createTextNode("\n          No lifecycle environments are in organization ");
             dom.appendChild(el1, el2);
             var el2 = dom.createElement("strong");
             var el3 = dom.createComment("");
             dom.appendChild(el2, el3);
             dom.appendChild(el1, el2);
-            var el2 = dom.createTextNode("\n      ");
+            var el2 = dom.createTextNode("\n        ");
             dom.appendChild(el1, el2);
             dom.appendChild(el0, el1);
             var el1 = dom.createTextNode("\n");
@@ -15174,6 +15117,238 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
             }
             var morph0 = dom.createMorphAt(dom.childAt(fragment, [1, 1]),0,0);
             content(env, morph0, context, "selectedOrganization.name");
+            return fragment;
+          }
+        };
+      }());
+      var child1 = (function() {
+        var child0 = (function() {
+          return {
+            isHTMLBars: true,
+            revision: "Ember@1.11.1",
+            blockParams: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            build: function build(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("        ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createElement("div");
+              dom.setAttribute(el1,"class","path-selector");
+              var el2 = dom.createTextNode("\n          ");
+              dom.appendChild(el1, el2);
+              var el2 = dom.createElement("ul");
+              dom.setAttribute(el2,"class","path-list");
+              var el3 = dom.createTextNode("\n            ");
+              dom.appendChild(el2, el3);
+              var el3 = dom.createComment("");
+              dom.appendChild(el2, el3);
+              var el3 = dom.createTextNode("\n            ");
+              dom.appendChild(el2, el3);
+              var el3 = dom.createElement("li");
+              dom.setAttribute(el3,"class","path-list-item");
+              var el4 = dom.createTextNode("\n              ");
+              dom.appendChild(el3, el4);
+              var el4 = dom.createElement("label");
+              dom.setAttribute(el4,"class","path-list-item-label");
+              var el5 = dom.createTextNode("\n                 \n              ");
+              dom.appendChild(el4, el5);
+              dom.appendChild(el3, el4);
+              var el4 = dom.createTextNode("\n            ");
+              dom.appendChild(el3, el4);
+              dom.appendChild(el2, el3);
+              var el3 = dom.createTextNode("\n          ");
+              dom.appendChild(el2, el3);
+              dom.appendChild(el1, el2);
+              var el2 = dom.createTextNode("\n        ");
+              dom.appendChild(el1, el2);
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            render: function render(context, env, contextualElement) {
+              var dom = env.dom;
+              var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
+              dom.detectNamespace(contextualElement);
+              var fragment;
+              if (env.useFragmentCache && dom.canClone) {
+                if (this.cachedFragment === null) {
+                  fragment = this.build(dom);
+                  if (this.hasRendered) {
+                    this.cachedFragment = fragment;
+                  } else {
+                    this.hasRendered = true;
+                  }
+                }
+                if (this.cachedFragment) {
+                  fragment = dom.cloneNode(this.cachedFragment, true);
+                }
+              } else {
+                fragment = this.build(dom);
+              }
+              var morph0 = dom.createMorphAt(dom.childAt(fragment, [1, 1]),1,1);
+              inline(env, morph0, context, "env-path-list-item", [], {"env": get(env, context, "libraryEnv"), "selectedEnvironment": get(env, context, "selectedEnvironment"), "action": "selectEnvironment"});
+              return fragment;
+            }
+          };
+        }());
+        var child1 = (function() {
+          var child0 = (function() {
+            return {
+              isHTMLBars: true,
+              revision: "Ember@1.11.1",
+              blockParams: 0,
+              cachedFragment: null,
+              hasRendered: false,
+              build: function build(dom) {
+                var el0 = dom.createDocumentFragment();
+                var el1 = dom.createTextNode("        ");
+                dom.appendChild(el0, el1);
+                var el1 = dom.createElement("div");
+                dom.setAttribute(el1,"class","path-selector");
+                var el2 = dom.createTextNode("\n          ");
+                dom.appendChild(el1, el2);
+                var el2 = dom.createElement("ul");
+                dom.setAttribute(el2,"class","path-list");
+                var el3 = dom.createTextNode("\n            ");
+                dom.appendChild(el2, el3);
+                var el3 = dom.createComment("");
+                dom.appendChild(el2, el3);
+                var el3 = dom.createTextNode("\n            ");
+                dom.appendChild(el2, el3);
+                var el3 = dom.createComment("");
+                dom.appendChild(el2, el3);
+                var el3 = dom.createTextNode("\n            ");
+                dom.appendChild(el2, el3);
+                var el3 = dom.createElement("li");
+                dom.setAttribute(el3,"class","path-list-item");
+                var el4 = dom.createTextNode("\n              ");
+                dom.appendChild(el3, el4);
+                var el4 = dom.createElement("label");
+                dom.setAttribute(el4,"class","path-list-item-label");
+                var el5 = dom.createTextNode("\n                 \n              ");
+                dom.appendChild(el4, el5);
+                dom.appendChild(el3, el4);
+                var el4 = dom.createTextNode("\n            ");
+                dom.appendChild(el3, el4);
+                dom.appendChild(el2, el3);
+                var el3 = dom.createTextNode("\n          ");
+                dom.appendChild(el2, el3);
+                dom.appendChild(el1, el2);
+                var el2 = dom.createTextNode("\n        ");
+                dom.appendChild(el1, el2);
+                dom.appendChild(el0, el1);
+                var el1 = dom.createTextNode("\n");
+                dom.appendChild(el0, el1);
+                return el0;
+              },
+              render: function render(context, env, contextualElement) {
+                var dom = env.dom;
+                var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
+                dom.detectNamespace(contextualElement);
+                var fragment;
+                if (env.useFragmentCache && dom.canClone) {
+                  if (this.cachedFragment === null) {
+                    fragment = this.build(dom);
+                    if (this.hasRendered) {
+                      this.cachedFragment = fragment;
+                    } else {
+                      this.hasRendered = true;
+                    }
+                  }
+                  if (this.cachedFragment) {
+                    fragment = dom.cloneNode(this.cachedFragment, true);
+                  }
+                } else {
+                  fragment = this.build(dom);
+                }
+                var element1 = dom.childAt(fragment, [1, 1]);
+                var morph0 = dom.createMorphAt(element1,1,1);
+                var morph1 = dom.createMorphAt(element1,3,3);
+                inline(env, morph0, context, "env-path-list-item", [], {"env": get(env, context, "libraryEnv"), "selectedEnvironment": get(env, context, "selectedEnvironment"), "action": "selectEnvironment"});
+                inline(env, morph1, context, "env-path-list-item", [], {"env": get(env, context, "env"), "selectedEnvironment": get(env, context, "selectedEnvironment"), "action": "selectEnvironment"});
+                return fragment;
+              }
+            };
+          }());
+          return {
+            isHTMLBars: true,
+            revision: "Ember@1.11.1",
+            blockParams: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            build: function build(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("    ");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            render: function render(context, env, contextualElement) {
+              var dom = env.dom;
+              var hooks = env.hooks, get = hooks.get, block = hooks.block;
+              dom.detectNamespace(contextualElement);
+              var fragment;
+              if (env.useFragmentCache && dom.canClone) {
+                if (this.cachedFragment === null) {
+                  fragment = this.build(dom);
+                  if (this.hasRendered) {
+                    this.cachedFragment = fragment;
+                  } else {
+                    this.hasRendered = true;
+                  }
+                }
+                if (this.cachedFragment) {
+                  fragment = dom.cloneNode(this.cachedFragment, true);
+                }
+              } else {
+                fragment = this.build(dom);
+              }
+              var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+              dom.insertBoundary(fragment, 0);
+              block(env, morph0, context, "each", [get(env, context, "priorLibraryEnvironments")], {"keyword": "env"}, child0, null);
+              return fragment;
+            }
+          };
+        }());
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, get = hooks.get, block = hooks.block;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+            dom.insertBoundary(fragment, null);
+            dom.insertBoundary(fragment, 0);
+            block(env, morph0, context, "if", [get(env, context, "hasOnlyLibraryEnvironment")], {}, child0, child1);
             return fragment;
           }
         };
@@ -15276,7 +15451,7 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
           var element2 = dom.childAt(fragment, [0, 1]);
           var morph0 = dom.createMorphAt(element2,1,1);
           var morph1 = dom.createMorphAt(dom.childAt(element2, [3]),1,1);
-          block(env, morph0, context, "each", [get(env, context, "nonLibraryEnvironments")], {"keyword": "env"}, child0, child1);
+          block(env, morph0, context, "if", [get(env, context, "hasNoEnvironments")], {}, child0, child1);
           block(env, morph1, context, "em-modal-toggler", [], {"modal-id": "newLifecycleEnvironmentModal", "class": "btn btn-default"}, child2, null);
           return fragment;
         }
@@ -15788,7 +15963,7 @@ define('fusor-ember-cli/templates/configure-organization', ['exports'], function
         var morph3 = dom.createMorphAt(fragment,12,12,contextualElement);
         var morph4 = dom.createMorphAt(fragment,14,14,contextualElement);
         block(env, morph0, context, "if", [get(env, context, "showAlertMessage")], {}, child0, null);
-        block(env, morph1, context, "em-modal-toggler", [], {"modal-id": "newOrganizationModal", "class": "btn btn-primary"}, child1, null);
+        block(env, morph1, context, "em-modal-toggler", [], {"modal-id": "newOrganizationModal", "class": "btn btn-primary", "disabled": true}, child1, null);
         block(env, morph2, context, "each", [get(env, context, "organizations")], {"keyword": "org"}, child2, null);
         inline(env, morph3, context, "partial", ["new-organization"], {});
         inline(env, morph4, context, "cancel-back-next", [], {"backRouteName": get(env, context, "satelliteTabRouteName"), "disableBack": false, "nextRouteName": get(env, context, "lifecycleEnvironmentTabRouteName"), "disableNext": get(env, context, "disableNextOnConfigureOrganization"), "parentController": get(env, context, "controller")});
@@ -31672,7 +31847,7 @@ define('fusor-ember-cli/tests/mixins/configure-environment-mixin.jshint', functi
 
   module('JSHint - mixins');
   test('mixins/configure-environment-mixin.js should pass jshint', function() { 
-    ok(true, 'mixins/configure-environment-mixin.js should pass jshint.'); 
+    ok(false, 'mixins/configure-environment-mixin.js should pass jshint.\nmixins/configure-environment-mixin.js: line 13, col 98, \'array\' is defined but never used.\nmixins/configure-environment-mixin.js: line 13, col 91, \'index\' is defined but never used.\n\n2 errors'); 
   });
 
 });
@@ -38517,13 +38692,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.18f46f19"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.3ce97c65"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.18f46f19"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.3ce97c65"});
 }
 
 /* jshint ignore:end */
