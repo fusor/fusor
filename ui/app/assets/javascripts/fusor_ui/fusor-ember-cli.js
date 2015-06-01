@@ -784,7 +784,9 @@ define('fusor-ember-cli/components/rchi-item', ['exports', 'ember'], function (e
     classNameBindings: ['isChecked:rhci-item-selected'],
 
     click: function click() {
-      this.set('isChecked', this.toggleProperty('isChecked'));
+      if (!this.get('isDisabled')) {
+        this.set('isChecked', this.toggleProperty('isChecked'));
+      }
     },
 
     showMsgToSelect: (function () {
@@ -11722,7 +11724,6 @@ define('fusor-ember-cli/templates/components/rchi-item', ['exports'], function (
         var el2 = dom.createTextNode("\n  ");
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("img");
-        dom.setAttribute(el2,"class","img-responsive");
         dom.appendChild(el1, el2);
         var el2 = dom.createTextNode("\n\n  ");
         dom.appendChild(el1, el2);
@@ -11772,6 +11773,7 @@ define('fusor-ember-cli/templates/components/rchi-item', ['exports'], function (
         var morph0 = dom.createMorphAt(dom.childAt(element2, [1]),1,1);
         element(env, element0, context, "bind-attr", [], {"id": get(env, context, "cssId")});
         element(env, element1, context, "bind-attr", [], {"src": get(env, context, "srcImage")});
+        element(env, element1, context, "bind-attr", [], {"class": ":img-responsive isDisabled:disabledImage"});
         element(env, element2, context, "bind-attr", [], {"class": ":rhci-footer isChecked:rhci-footer-selected:rhci-footer-unselected"});
         block(env, morph0, context, "if", [get(env, context, "isChecked")], {}, child0, null);
         return fragment;
@@ -12530,7 +12532,7 @@ define('fusor-ember-cli/templates/components/rhci-start', ['exports'], function 
         var morph6 = dom.createMorphAt(element1,3,3);
         content(env, morph0, context, "nameRedHat");
         inline(env, morph1, context, "rchi-item", [], {"srcImage": get(env, context, "imgRhev"), "isChecked": get(env, context, "isRhev"), "name": get(env, context, "nameRhev"), "cssId": "is_rhev"});
-        inline(env, morph2, context, "rchi-item", [], {"srcImage": get(env, context, "imgOpenStack"), "isChecked": get(env, context, "isOpenStack"), "name": get(env, context, "nameOpenStack"), "cssId": "is_openstack"});
+        inline(env, morph2, context, "rchi-item", [], {"srcImage": get(env, context, "imgOpenStack"), "isChecked": get(env, context, "isOpenStack"), "name": get(env, context, "nameOpenStack"), "cssId": "is_openstack", "isDisabled": true});
         inline(env, morph3, context, "rchi-item", [], {"srcImage": get(env, context, "imgCloudForms"), "isChecked": get(env, context, "isCloudForms"), "name": get(env, context, "nameCloudForms"), "cssId": "is_cloudforms"});
         block(env, morph4, context, "unless", [get(env, context, "isUpstream")], {}, child0, null);
         block(env, morph5, context, "link-to", ["deployments"], {"class": "btn btn-default"}, child1, null);
@@ -38732,13 +38734,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.0a4f662b"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.b3b56fbd"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.0a4f662b"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.b3b56fbd"});
 }
 
 /* jshint ignore:end */
