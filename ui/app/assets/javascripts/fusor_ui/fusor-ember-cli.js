@@ -12245,7 +12245,7 @@ define('fusor-ember-cli/templates/components/rhci-start', ['exports'], function 
           var el3 = dom.createTextNode(" Check your account in the ");
           dom.appendChild(el2, el3);
           var el3 = dom.createElement("a");
-          dom.setAttribute(el3,"href","https://access.redhat.com/home");
+          dom.setAttribute(el3,"href","https://idp.redhat.com/idp/");
           dom.setAttribute(el3,"target","_blank");
           var el4 = dom.createTextNode("Red Hat Customer Portal");
           dom.appendChild(el3, el4);
@@ -30139,6 +30139,70 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
         }
       };
     }());
+    var child2 = (function() {
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("tr");
+          var el2 = dom.createTextNode("\n      ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("td");
+          dom.setAttribute(el2,"colspan","8");
+          var el3 = dom.createTextNode("\n        ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createElement("p");
+          dom.setAttribute(el3,"class","no_subscriptions");
+          var el4 = dom.createTextNode("\n          No subscriptions found. Check your account in in the ");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createElement("a");
+          dom.setAttribute(el4,"href","https://idp.redhat.com/idp/");
+          dom.setAttribute(el4,"target","_blank");
+          var el5 = dom.createTextNode("Red Hat Customer Portal");
+          dom.appendChild(el4, el5);
+          dom.appendChild(el3, el4);
+          var el4 = dom.createTextNode(" to verify you have subscriptions available.\n        ");
+          dom.appendChild(el3, el4);
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n      ");
+          dom.appendChild(el2, el3);
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n    ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          return fragment;
+        }
+      };
+    }());
     return {
       isHTMLBars: true,
       revision: "Ember@1.11.1",
@@ -30288,7 +30352,7 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
         block(env, morph0, context, "if", [get(env, context, "showAttachedSuccessMessage")], {}, child0, null);
         inline(env, morph1, context, "input", [], {"type": "checkbox", "name": "enableAnalytics", "disabled": true, "checked": get(env, context, "enableAnalytics")});
         attribute(env, attrMorph0, element0, "class", get(env, context, "analyticsColor"));
-        block(env, morph2, context, "each", [get(env, context, "model")], {"itemController": "subscription", "keyword": "subscription"}, child1, null);
+        block(env, morph2, context, "each", [get(env, context, "model")], {"itemController": "subscription", "keyword": "subscription"}, child1, child2);
         inline(env, morph3, context, "cancel-back-next", [], {"backRouteName": "subscriptions.management-application", "disableBack": false, "nextRouteName": "review", "disableNext": false, "parentController": get(env, context, "controller")});
         return fragment;
       }
@@ -38692,13 +38756,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.3ce97c65"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.0a4f662b"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.3ce97c65"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.0a4f662b"});
 }
 
 /* jshint ignore:end */

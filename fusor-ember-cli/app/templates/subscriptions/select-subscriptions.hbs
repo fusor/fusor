@@ -32,6 +32,14 @@ Default subscription selections have been made for the components of your RHCI d
   <tbody>
   {{#each subscription in model itemController="subscription"}}
     {{tr-subscription subscription=subscription}}
+  {{else}}
+    <tr>
+      <td colspan="8">
+        <p class='no_subscriptions'>
+          No subscriptions found. Check your account in in the <a href='https://idp.redhat.com/idp/' target='_blank'>Red Hat Customer Portal</a> to verify you have subscriptions available.
+        </p>
+      </td>
+    </tr>
   {{/each}}
   </tbody>
 </table>
