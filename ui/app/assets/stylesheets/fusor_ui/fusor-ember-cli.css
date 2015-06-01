@@ -309,6 +309,9 @@ li.disabled a {
   text-align: center;
   padding: 10px 0px 5px; }
 
+.disabledImage {
+  opacity: 0.5; }
+
 /* wizard.scss */
 .rhci-steps {
   color: #999999;
