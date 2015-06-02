@@ -6,34 +6,142 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
   needs: ['deployment', 'register-nodes'],
   register: Ember.computed.alias("controllers.register-nodes"),
 
-  availableRoles: function() {
+  roles: [],
+  init: function() {
+    this._super();
     var roles = [];
-    if (!this.get('controllerAssigned')) {
-      roles.pushObject(Ember.Object.create({
-        roleType: 'controller',
-        roleLabel: 'Controller'
-      }));
+    var me = this;
+
+    this.DeploymentRole = Ember.Object.extend({
+      name: function () {
+        var roleType = this.get('roleType');
+        if (roleType === 'controller') {
+          var roleName = 'Controller';
+          if (this.get('numNodes') > 1) {
+            roleName += ' (HA)';
+          }
+          return roleName;
+        }
+        if (roleType === 'compute') {
+          return 'Compute';
+        }
+        if (roleType === 'block') {
+          return 'Block Storage';
+        }
+        if (roleType === 'object') {
+          return 'Object Storage';
+        }
+      }.property('roleType', 'numNodes'),
+
+      roleType: '',
+      profile: null,
+      image: '',
+      numNodes: 0,
+      isDraggingObject: false,
+      watchForDrag: function() {
+        me.set('isDraggingRole', this.get('isDraggingObject'));
+      }.observes('isDraggingObject')
+    });
+
+    roles.pushObject(this.DeploymentRole.create({
+      roleType: 'controller'
+    }));
+    roles.pushObject(this.DeploymentRole.create({
+      roleType: 'compute'
+    }));
+    roles.pushObject(this.DeploymentRole.create({
+      roleType: 'block'
+    }));
+    roles.pushObject(this.DeploymentRole.create({
+      roleType: 'object'
+    }));
+
+    this.set('roles', roles);
+  },
+
+
+  getRoleByType: function(roleType) {
+    var roles = this.get('roles');
+    if (!roles || !roles.length) {
+      return null;
     }
-    if (!this.get('computeAssigned')) {
-      roles.pushObject(Ember.Object.create({
-        roleType: 'compute',
-        roleLabel: 'Compute'
-      }));
+
+    for (var i=0; i<roles.length; i++) {
+      if (roles[i].roleType === roleType) {
+        return roles[i];
+      }
     }
-    if (!this.get('blockAssigned')) {
-      roles.pushObject(Ember.Object.create({
-        roleType: 'block',
-        roleLabel: 'Block Storage'
-      }));
+
+    return null;
+  },
+
+  availableRoles: function() {
+    var available = [];
+    var roles = this.get('roles');
+    if (!roles || !roles.length)
+    {
+      return available;
     }
-    if (!this.get('objectAssigned')) {
-      roles.pushObject(Ember.Object.create({
-        roleType: 'object',
-        roleLabel: 'Object Storage'
-      }));
+
+    for (var i = 0; i < roles.length; i++)
+    {
+      if (roles[i].numNodes <= 0)
+      {
+        available.pushObject(roles[i]);
+      }
     }
-    return roles;
-  }.property('controllerAssigned', 'computeAssigned', 'blockAssigned', 'objectAssigned'),
+
+    return available;
+  }.property('roles', 'roles.@each.numNodes'),
+
+  controllerAssigned: function() {
+    var role = this.getRoleByType('controller');
+    return (role && role.numNodes > 0);
+  }.property('roles','roles.@each.numNodes'),
+
+  computeAssigned: function() {
+    var role = this.getRoleByType('compute');
+    return (role && role.numNodes > 0);
+  }.property('roles','roles.@each.numNodes'),
+
+  blockAssigned: function() {
+    var role = this.getRoleByType('block');
+    return (role && role.numNodes > 0);
+  }.property('roles','roles.@each.numNodes'),
+
+  objectAssigned: function() {
+    var role = this.getRoleByType('object');
+    return (role && role.numNodes > 0);
+  }.property('roles','roles.@each.numNodes'),
+
+  allAssigned: function() {
+    return this.get('controllerAssigned') && this.get('computeAssigned') && this.get('blockAssigned') && this.get('objectAssigned');
+  }.property('controllerAssigned','computeAssigned', 'blockAssigned', 'objectAssigned'),
+
+  noneAssigned: function() {
+    return !this.get('controllerAssigned') && !this.get('computeAssigned') && !this.get('blockAssigned') && !this.get('objectAssigned');
+  }.property('controllerAssigned','computeAssigned', 'blockAssigned', 'objectAssigned'),
+
+  profiles:function() {
+    return this.get('register').get('model.profiles');
+  }.property('register.model.profiles', 'register.model.profiles.length'),
+
+  numProfiles: function() {
+    var profiles = this.get('register.model.profiles');
+    return profiles.length;
+  }.property('model.profiles', 'model.profiles.length'),
+
+  removeRoleFromProfile: function(profile, roleType) {
+    var role = this.getRoleByType(roleType);
+    if (profile !== null && profile !== undefined)
+    {
+      profile.unassignRole(role);
+    }
+    if (role) {
+      role.set('profile', null);
+      role.set('numNodes', 0);
+    }
+  },
 
   isDraggingRole: false,
 
@@ -46,92 +154,10 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     }
   }.property('isDraggingRole'),
 
-  controllerAssigned: function() {
-    var profiles = this.get('nodeProfiles');
-    if (!profiles) {
-      return false;
-    }
-    var retVal = false;
-    profiles.forEach(function(item) {
-      if (item.get('isControl')) {
-        retVal = true;
-      }
-    });
-    return retVal;
-  }.property('nodeProfiles','nodeProfiles.@each.isControl'),
-
-  computeAssigned: function() {
-    var profiles = this.get('nodeProfiles');
-    if (!profiles) {
-      return false;
-    }
-    var retVal = false;
-    profiles.forEach(function(item) {
-      if (item.get('isCompute')) {
-        retVal = true;
-      }
-    });
-    return retVal;
-  }.property('nodeProfiles.@each.isCompute'),
-
-  blockAssigned: function() {
-    var profiles = this.get('nodeProfiles');
-    if (!profiles) {
-      return false;
-    }
-    var retVal = false;
-    profiles.forEach(function(item) {
-      if (item.get('isBlockStorage')) {
-        retVal = true;
-      }
-    });
-    return retVal;
-  }.property('nodeProfiles.@each.isBlockStorage'),
-
-  objectAssigned: function() {
-    var profiles = this.get('nodeProfiles');
-    if (!profiles) {
-      return false;
-    }
-    var retVal = false;
-    profiles.forEach(function(item) {
-      if (item.get('isObjectStorage')) {
-        retVal = true;
-      }
-    });
-    return retVal;
-  }.property('nodeProfiles.@each.isObjectStorage'),
-
-  allAssigned: function() {
-    return this.get('controllerAssigned') && this.get('computeAssigned') && this.get('blockAssigned') && this.get('objectAssigned');
-  }.property('controllerAssigned','computeAssigned', 'blockAssigned', 'objectAssigned'),
-
-  noneAssigned: function() {
-    return !this.get('controllerAssigned') && !this.get('computeAssigned') && !this.get('blockAssigned') && !this.get('objectAssigned');
-  }.property('controllerAssigned','computeAssigned', 'blockAssigned', 'objectAssigned'),
-
-  nodeProfiles:function() {
-    return this.get('register').get('model.profiles');
-  }.property('register.model.profiles', 'register.model.profiles.length'),
-
-  numProfiles: function() {
-    var profiles = this.get('register.model.profiles');
-    return profiles.length;
-  }.property('model.profiles', 'model.profiles.length'),
-
-  removeRoleFromProfile: function(profile, roleType) {
-    if (roleType === 'controller') {
-      profile.set('controllerNodes', 0);
-    }
-    else if (roleType === 'compute') {
-      profile.set('computeNodes', 0);
-    }
-    else if (roleType === 'block') {
-      profile.set('blockNodes', 0);
-    }
-    else if (roleType === 'object') {
-      profile.set('objectNodes', 0);
-    }
+  doAssignRole: function(profile, role) {
+    role.set('numNodes', 1);
+    role.set('profile', profile);
+    profile.assignRole(role);
   },
 
   actions: {
@@ -139,19 +165,13 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       log("EDIT: " + roleType);
     },
 
-    assignRole: function(profile, roleType) {
-      if (roleType === 'controller') {
-        profile.set('controllerNodes', 1);
-      }
-      else if (roleType === 'compute') {
-        profile.set('computeNodes', 1);
-      }
-      else if (roleType === 'block') {
-        profile.set('blockNodes', 1);
-      }
-      else if (roleType === 'object') {
-        profile.set('objectNodes', 1);
-      }
+    assignRoleType: function(profile, roleType) {
+      var role = this.getRoleByType(roleType);
+      this.doAssignRole(profile, role);
+    },
+
+    assignRole: function(profile, role) {
+      this.doAssignRole(profile, role);
     },
 
     removeRole: function(profile, roleType) {
@@ -163,25 +183,25 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       this.removeRoleFromProfile(role.profile, role.roleType);
     },
 
-    startDrag:function() {
-      this.set('isDraggingRole', true);
+    doShowSettings: function() {
+      this.set('showSettings', true);
     },
 
-    stopDrag:function() {
-      this.set('isDraggingRole', false);
+    doShowConfig: function() {
+      this.set('showSettings', false);
     }
   },
 
   disableAssignNodesNext: function() {
     var freeNodeCount = 0;
-    var profiles = this.get('nodeProfiles');
+    var profiles = this.get('profiles');
     if (profiles) {
       for (var i = 0; i < profiles.length; i++ ) {
         freeNodeCount += profiles[i].freeNodes;
       }
     }
     return (freeNodeCount < 4);
-  }.property('nodeProfiles'),
+  }.property('profiles'),
 
   nextStepRouteName: function() {
     return ('');
