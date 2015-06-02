@@ -6,7 +6,7 @@ export default Ember.Component.extend({
       return ('role-assigned');
     }
     else {
-      return '';
+      return 'role-unassigned';
     }
   }.property('role-assigned'),
 

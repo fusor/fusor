@@ -105,7 +105,6 @@
   margin-left: -12px;
   padding-left: 12px;
   padding-top: 10px;
-  display: inline-block;
 }
 .deployment-roles.deployment-roles-unassigned.deployment-roles-active {
   border-color: #7b7b7b;
@@ -279,8 +278,10 @@
 .deployment-roles li .role-option.edit {
   top: 4px;
 }
-.deployment-roles .draggable-object {
+.deployment-roles-unassigned .draggable-object {
+  float: left;
   padding: 0;
+  display: block;
 }
 .deployment-roles-assigned .draggable-object {
   padding: 0;
