@@ -12,8 +12,6 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
 
   step2RouteName: Ember.computed.alias("controllers.deployment.step2RouteName"),
 
-  useDefaultOrgViewForEnv: Ember.computed.alias("controllers.deployment.useDefaultOrgViewForEnv"),
-
   nullifyLifecycleEnvIfSelected: function(){
     if (this.get('useDefaultOrgViewForEnv')) {
       this.set('selectedEnvironment', null);

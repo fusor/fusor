@@ -43,10 +43,6 @@ export default DS.Model.extend({
   created_at: DS.attr('date'),
   updated_at: DS.attr('date'),
 
-  useDefaultOrgViewForEnv: function() {
-    return !!(this.get('discovered_host.id'));
-  }.property('discovered_host'),
-
   // has one Engine
   discovered_host: DS.belongsTo('discovered-host', {inverse: 'deployment', async: true}),
 
