@@ -26995,52 +26995,32 @@ define('fusor-ember-cli/templates/rhev-setup', ['exports'], function (exports) {
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("div");
         dom.setAttribute(el2,"class","col-md-9");
-        var el3 = dom.createTextNode("\n    Select the setup type.\n  ");
+        var el3 = dom.createTextNode("\n    ");
         dom.appendChild(el2, el3);
-        dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\n");
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("div");
-        dom.setAttribute(el1,"class","row");
-        var el2 = dom.createTextNode("\n  ");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createElement("div");
-        dom.setAttribute(el2,"class","col-md-8 col-md-offset-1");
-        var el3 = dom.createTextNode("\n\n    ");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createElement("div");
-        dom.setAttribute(el3,"class","row");
-        var el4 = dom.createTextNode("\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("h3");
-        var el5 = dom.createTextNode("\n");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createComment("");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("      ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n    ");
+        var el3 = dom.createElement("p");
+        var el4 = dom.createTextNode("\n      Select the setup type.\n    ");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n\n    ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("div");
-        dom.setAttribute(el3,"class","row");
-        var el4 = dom.createTextNode("\n      ");
+        dom.setAttribute(el3,"class","ident-radio");
+        var el4 = dom.createTextNode("\n");
         dom.appendChild(el3, el4);
-        var el4 = dom.createElement("h3");
-        var el5 = dom.createTextNode("\n");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createComment("");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("      ");
-        dom.appendChild(el4, el5);
+        var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n    ");
+        var el4 = dom.createTextNode("    ");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n\n    ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","ident-radio");
+        var el4 = dom.createTextNode("\n");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("    ");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n\n  ");
@@ -27081,10 +27061,10 @@ define('fusor-ember-cli/templates/rhev-setup', ['exports'], function (exports) {
         } else {
           fragment = this.build(dom);
         }
-        var element0 = dom.childAt(fragment, [2, 1]);
-        var morph0 = dom.createMorphAt(dom.childAt(element0, [1, 1]),1,1);
-        var morph1 = dom.createMorphAt(dom.childAt(element0, [3, 1]),1,1);
-        var morph2 = dom.createMorphAt(fragment,6,6,contextualElement);
+        var element0 = dom.childAt(fragment, [0, 1]);
+        var morph0 = dom.createMorphAt(dom.childAt(element0, [3]),1,1);
+        var morph1 = dom.createMorphAt(dom.childAt(element0, [5]),1,1);
+        var morph2 = dom.createMorphAt(fragment,4,4,contextualElement);
         block(env, morph0, context, "radio-button", [], {"value": "selfhost", "groupValue": get(env, context, "rhevSetup"), "changed": "rhevSetupChanged", "id": "selfhost"}, child0, null);
         block(env, morph1, context, "radio-button", [], {"value": "rhevhost", "groupValue": get(env, context, "rhevSetup"), "changed": "rhevSetupChanged", "id": "rhevhost"}, child1, null);
         inline(env, morph2, context, "cancel-back-next", [], {"backRouteName": "configure-environment", "disableBack": false, "nextRouteName": "engine.discovered-host", "disableNext": false});
@@ -30640,42 +30620,6 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
 
   exports['default'] = Ember.HTMLBars.template((function() {
     var child0 = (function() {
-      var child0 = (function() {
-        return {
-          isHTMLBars: true,
-          revision: "Ember@1.11.1",
-          blockParams: 0,
-          cachedFragment: null,
-          hasRendered: false,
-          build: function build(dom) {
-            var el0 = dom.createDocumentFragment();
-            var el1 = dom.createTextNode("            Install CloudForms on Red Hat Enterprise Virtualization\n");
-            dom.appendChild(el0, el1);
-            return el0;
-          },
-          render: function render(context, env, contextualElement) {
-            var dom = env.dom;
-            dom.detectNamespace(contextualElement);
-            var fragment;
-            if (env.useFragmentCache && dom.canClone) {
-              if (this.cachedFragment === null) {
-                fragment = this.build(dom);
-                if (this.hasRendered) {
-                  this.cachedFragment = fragment;
-                } else {
-                  this.hasRendered = true;
-                }
-              }
-              if (this.cachedFragment) {
-                fragment = dom.cloneNode(this.cachedFragment, true);
-              }
-            } else {
-              fragment = this.build(dom);
-            }
-            return fragment;
-          }
-        };
-      }());
       return {
         isHTMLBars: true,
         revision: "Ember@1.11.1",
@@ -30684,13 +30628,19 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
         hasRendered: false,
         build: function build(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createComment("");
+          var el1 = dom.createTextNode("        ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("span");
+          var el2 = dom.createTextNode("\n          Install CloudForms on Red Hat Enterprise Virtualization\n        ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
           dom.appendChild(el0, el1);
           return el0;
         },
         render: function render(context, env, contextualElement) {
           var dom = env.dom;
-          var hooks = env.hooks, get = hooks.get, block = hooks.block;
+          var hooks = env.hooks, element = hooks.element;
           dom.detectNamespace(contextualElement);
           var fragment;
           if (env.useFragmentCache && dom.canClone) {
@@ -30708,55 +30658,13 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
           } else {
             fragment = this.build(dom);
           }
-          var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
-          dom.insertBoundary(fragment, null);
-          dom.insertBoundary(fragment, 0);
-          block(env, morph0, context, "radio-button", [], {"value": "RHEV", "groupValue": get(env, context, "cfme_install_loc"), "changed": "cfmeLocationChanged", "id": "install_on_rhev"}, child0, null);
+          var element1 = dom.childAt(fragment, [1]);
+          element(env, element1, context, "bind-attr", [], {"class": "disableRHEV:disabled"});
           return fragment;
         }
       };
     }());
     var child1 = (function() {
-      var child0 = (function() {
-        return {
-          isHTMLBars: true,
-          revision: "Ember@1.11.1",
-          blockParams: 0,
-          cachedFragment: null,
-          hasRendered: false,
-          build: function build(dom) {
-            var el0 = dom.createDocumentFragment();
-            var el1 = dom.createTextNode("            Install CloudForms on OpenStack");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createElement("br");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("\n            Able to split virtualization workloads across multiple controller nodes\n");
-            dom.appendChild(el0, el1);
-            return el0;
-          },
-          render: function render(context, env, contextualElement) {
-            var dom = env.dom;
-            dom.detectNamespace(contextualElement);
-            var fragment;
-            if (env.useFragmentCache && dom.canClone) {
-              if (this.cachedFragment === null) {
-                fragment = this.build(dom);
-                if (this.hasRendered) {
-                  this.cachedFragment = fragment;
-                } else {
-                  this.hasRendered = true;
-                }
-              }
-              if (this.cachedFragment) {
-                fragment = dom.cloneNode(this.cachedFragment, true);
-              }
-            } else {
-              fragment = this.build(dom);
-            }
-            return fragment;
-          }
-        };
-      }());
       return {
         isHTMLBars: true,
         revision: "Ember@1.11.1",
@@ -30765,13 +30673,23 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
         hasRendered: false,
         build: function build(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createComment("");
+          var el1 = dom.createTextNode("        ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("span");
+          var el2 = dom.createTextNode("\n          Install CloudForms on OpenStack");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("br");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n              Able to split virtualization workloads across multiple controller nodes\n        ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
           dom.appendChild(el0, el1);
           return el0;
         },
         render: function render(context, env, contextualElement) {
           var dom = env.dom;
-          var hooks = env.hooks, get = hooks.get, block = hooks.block;
+          var hooks = env.hooks, element = hooks.element;
           dom.detectNamespace(contextualElement);
           var fragment;
           if (env.useFragmentCache && dom.canClone) {
@@ -30789,10 +30707,8 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
           } else {
             fragment = this.build(dom);
           }
-          var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
-          dom.insertBoundary(fragment, null);
-          dom.insertBoundary(fragment, 0);
-          block(env, morph0, context, "radio-button", [], {"value": "OpenStack", "groupValue": get(env, context, "cfme_install_loc"), "changed": "cfmeLocationChanged", "id": "install_on_openstack"}, child0, null);
+          var element0 = dom.childAt(fragment, [1]);
+          element(env, element0, context, "bind-attr", [], {"class": ":inline-block disableOpenStack:disabled"});
           return fragment;
         }
       };
@@ -30810,39 +30726,33 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
         var el2 = dom.createTextNode("\n  ");
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("div");
-        dom.setAttribute(el2,"class","col-md-8 col-md-offset-1");
+        dom.setAttribute(el2,"class","col-md-9");
         var el3 = dom.createTextNode("\n\n    ");
         dom.appendChild(el2, el3);
-        var el3 = dom.createElement("div");
-        dom.setAttribute(el3,"class","row");
-        var el4 = dom.createTextNode("\n      Select a product to create and manage virtual machines.\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("h3");
-        var el5 = dom.createTextNode("\n");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createComment("");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("      ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n    ");
+        var el3 = dom.createElement("p");
+        var el4 = dom.createTextNode("\n      Select a product to create and manage virtual machines.\n    ");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n\n    ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("div");
-        dom.setAttribute(el3,"class","row");
-        var el4 = dom.createTextNode("\n      ");
+        dom.setAttribute(el3,"class","ident-radio");
+        var el4 = dom.createTextNode("\n");
         dom.appendChild(el3, el4);
-        var el4 = dom.createElement("h3");
-        var el5 = dom.createTextNode("\n");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createComment("");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("      ");
-        dom.appendChild(el4, el5);
+        var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n    ");
+        var el4 = dom.createTextNode("    ");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n\n    ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","ident-radio");
+        var el4 = dom.createTextNode("\n");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("    ");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n\n  ");
@@ -30879,12 +30789,12 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
         } else {
           fragment = this.build(dom);
         }
-        var element0 = dom.childAt(fragment, [0, 1]);
-        var morph0 = dom.createMorphAt(dom.childAt(element0, [1, 1]),1,1);
-        var morph1 = dom.createMorphAt(dom.childAt(element0, [3, 1]),1,1);
+        var element2 = dom.childAt(fragment, [0, 1]);
+        var morph0 = dom.createMorphAt(dom.childAt(element2, [3]),1,1);
+        var morph1 = dom.createMorphAt(dom.childAt(element2, [5]),1,1);
         var morph2 = dom.createMorphAt(fragment,2,2,contextualElement);
-        block(env, morph0, context, "unless", [get(env, context, "disableRHEV")], {}, child0, null);
-        block(env, morph1, context, "unless", [get(env, context, "disableOpenStack")], {}, child1, null);
+        block(env, morph0, context, "radio-button", [], {"value": "RHEV", "groupValue": get(env, context, "cfme_install_loc"), "changed": "cfmeLocationChanged", "id": "install_on_rhev", "disabled": get(env, context, "disableRHEV")}, child0, null);
+        block(env, morph1, context, "radio-button", [], {"value": "OpenStack", "groupValue": get(env, context, "cfme_install_loc"), "changed": "cfmeLocationChanged", "id": "install_on_openstack", "disabled": get(env, context, "disableOpenStack")}, child1, null);
         inline(env, morph2, context, "cancel-back-next", [], {"backRouteName": get(env, context, "backRouteName"), "disableBack": false, "nextRouteName": "cloudforms.cfme-configuration", "disableNext": false});
         return fragment;
       }
@@ -38730,13 +38640,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.619af1d9"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.d88b4856"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.619af1d9"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.d88b4856"});
 }
 
 /* jshint ignore:end */

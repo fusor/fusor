@@ -1,26 +1,25 @@
 <div class='row'>
-  <div class='col-md-8 col-md-offset-1'>
+  <div class='col-md-9'>
 
-    <div class='row'>
+    <p>
       Select a product to create and manage virtual machines.
-      <h3>
-        {{#unless disableRHEV}}
-          {{#radio-button value="RHEV" groupValue=cfme_install_loc changed="cfmeLocationChanged" id="install_on_rhev"}}
-            Install CloudForms on Red Hat Enterprise Virtualization
-          {{/radio-button}}
-        {{/unless}}
-      </h3>
+    </p>
+
+    <div class='ident-radio'>
+      {{#radio-button value="RHEV" groupValue=cfme_install_loc changed="cfmeLocationChanged" id="install_on_rhev" disabled=disableRHEV}}
+        <span {{bind-attr class="disableRHEV:disabled"}}>
+          Install CloudForms on Red Hat Enterprise Virtualization
+        </span>
+      {{/radio-button}}
     </div>
 
-    <div class='row'>
-      <h3>
-        {{#unless disableOpenStack}}
-          {{#radio-button value="OpenStack" groupValue=cfme_install_loc changed="cfmeLocationChanged" id="install_on_openstack"}}
-            Install CloudForms on OpenStack<br />
-            Able to split virtualization workloads across multiple controller nodes
-          {{/radio-button}}
-        {{/unless}}
-      </h3>
+    <div class='ident-radio'>
+      {{#radio-button value="OpenStack" groupValue=cfme_install_loc changed="cfmeLocationChanged" id="install_on_openstack" disabled=disableOpenStack}}
+        <span {{bind-attr class=":inline-block disableOpenStack:disabled"}}>
+          Install CloudForms on OpenStack<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;Able to split virtualization workloads across multiple controller nodes
+        </span>
+      {{/radio-button}}
     </div>
 
   </div>
