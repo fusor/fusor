@@ -18913,19 +18913,34 @@ define('fusor-ember-cli/templates/loading', ['exports'], function (exports) {
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
-        var el1 = dom.createElement("h2");
-        var el2 = dom.createTextNode("\n");
+        var el1 = dom.createElement("br");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("br");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("br");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","spinner spinner-md spinner-inline");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("span");
+        dom.setAttribute(el1,"class","spinner-text");
+        var el2 = dom.createTextNode("\n  Loading ....\n");
         dom.appendChild(el1, el2);
-        var el2 = dom.createComment("");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\nLoading ....\n");
-        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
         return el0;
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, inline = hooks.inline;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -18943,8 +18958,6 @@ define('fusor-ember-cli/templates/loading', ['exports'], function (exports) {
         } else {
           fragment = this.build(dom);
         }
-        var morph0 = dom.createMorphAt(dom.childAt(fragment, [2]),1,1);
-        inline(env, morph0, context, "fa-icon", ["spinner"], {"spin": true});
         return fragment;
       }
     };
@@ -26353,6 +26366,170 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
         hasRendered: false,
         build: function build(dom) {
           var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("        ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("i");
+          dom.setAttribute(el1,"class","fa fa-check-circle-o green-circle");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode(" \n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          return fragment;
+        }
+      };
+    }());
+    var child1 = (function() {
+      var child0 = (function() {
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("i");
+            dom.setAttribute(el1,"class","fa fa-exclamation-triangle errorForValidation");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode(" \n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            return fragment;
+          }
+        };
+      }());
+      var child1 = (function() {
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("div");
+            dom.setAttribute(el1,"class","spinner spinner-xs spinner-inline");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n      ");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            return fragment;
+          }
+        };
+      }());
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, get = hooks.get, block = hooks.block;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+          dom.insertBoundary(fragment, null);
+          dom.insertBoundary(fragment, 0);
+          block(env, morph0, context, "if", [get(env, context, "isError")], {}, child0, child1);
+          return fragment;
+        }
+      };
+    }());
+    var child2 = (function() {
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
           var el1 = dom.createElement("div");
           dom.setAttribute(el1,"class","row");
           var el2 = dom.createTextNode("\n  ");
@@ -26444,7 +26621,7 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
         }
       };
     }());
-    var child1 = (function() {
+    var child3 = (function() {
       return {
         isHTMLBars: true,
         revision: "Ember@1.11.1",
@@ -26628,11 +26805,11 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("div");
         dom.setAttribute(el3,"class","progress-bar-label");
-        var el4 = dom.createTextNode("\n      ");
+        var el4 = dom.createTextNode("\n");
         dom.appendChild(el3, el4);
         var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n       ");
+        var el4 = dom.createTextNode("      ");
         dom.appendChild(el3, el4);
         var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
@@ -26642,10 +26819,6 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
         dom.setAttribute(el4,"class","no-bold");
         var el5 = dom.createComment("");
         dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode(" ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
         var el4 = dom.createTextNode(" ");
         dom.appendChild(el3, el4);
@@ -26699,7 +26872,7 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, get = hooks.get, inline = hooks.inline, content = hooks.content, attribute = hooks.attribute, block = hooks.block;
+        var hooks = env.hooks, get = hooks.get, block = hooks.block, content = hooks.content, attribute = hooks.attribute;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -26724,25 +26897,23 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
         var morph1 = dom.createMorphAt(element1,3,3);
         var morph2 = dom.createMorphAt(dom.childAt(element1, [5]),0,0);
         var morph3 = dom.createMorphAt(element1,7,7);
-        var morph4 = dom.createMorphAt(element1,9,9);
-        var morph5 = dom.createMorphAt(dom.childAt(element1, [11]),1,1);
+        var morph4 = dom.createMorphAt(dom.childAt(element1, [9]),1,1);
         var attrMorph0 = dom.createAttrMorph(element2, 'class');
         var attrMorph1 = dom.createAttrMorph(element2, 'aria-valuenow');
         var attrMorph2 = dom.createAttrMorph(element2, 'style');
-        var morph6 = dom.createMorphAt(fragment,4,4,contextualElement);
-        var morph7 = dom.createMorphAt(fragment,6,6,contextualElement);
+        var morph5 = dom.createMorphAt(fragment,4,4,contextualElement);
+        var morph6 = dom.createMorphAt(fragment,6,6,contextualElement);
         dom.insertBoundary(fragment, null);
-        inline(env, morph0, context, "fa-icon", ["spinner"], {"spin": get(env, context, "isSpin")});
+        block(env, morph0, context, "if", [get(env, context, "isFinished")], {}, child0, child1);
         content(env, morph1, context, "progressBarMsg");
         content(env, morph2, context, "controller.progressBarSubMsg");
         content(env, morph3, context, "model.humanized_errors");
-        content(env, morph4, context, "model.humanized_errors");
-        content(env, morph5, context, "controller.percentProgress");
+        content(env, morph4, context, "controller.percentProgress");
         attribute(env, attrMorph0, element2, "class", get(env, context, "progressBarClass"));
         attribute(env, attrMorph1, element2, "aria-valuenow", get(env, context, "controller.percentProgressInt"));
         attribute(env, attrMorph2, element2, "style", get(env, context, "controller.styleWidth"));
-        block(env, morph6, context, "if", [false], {}, child0, null);
-        block(env, morph7, context, "if", [false], {}, child1, null);
+        block(env, morph5, context, "if", [false], {}, child2, null);
+        block(env, morph6, context, "if", [false], {}, child3, null);
         return fragment;
       }
     };
@@ -29620,15 +29791,22 @@ define('fusor-ember-cli/templates/subscriptions/loading', ['exports'], function 
       hasRendered: false,
       build: function build(dom) {
         var el0 = dom.createDocumentFragment();
-        var el1 = dom.createComment("");
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","spinner spinner-md spinner-inline");
         dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\nLoading from Red Hat Customer Portal ...\n");
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("span");
+        dom.setAttribute(el1,"class","spinner-text");
+        var el2 = dom.createTextNode("\n  Loading from Red Hat Customer Portal ...\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
         return el0;
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, inline = hooks.inline;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -29646,9 +29824,6 @@ define('fusor-ember-cli/templates/subscriptions/loading', ['exports'], function 
         } else {
           fragment = this.build(dom);
         }
-        var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
-        dom.insertBoundary(fragment, 0);
-        inline(env, morph0, context, "fa-icon", ["spinner"], {"spin": true});
         return fragment;
       }
     };
@@ -38640,13 +38815,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.d88b4856"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.7d4eb9f3"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.d88b4856"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.7d4eb9f3"});
 }
 
 /* jshint ignore:end */
