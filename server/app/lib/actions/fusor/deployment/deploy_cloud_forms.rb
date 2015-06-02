@@ -79,7 +79,12 @@ module Actions
           api_host = "10.8.101.181" # deployment.rhev_engine_host.facts['ipaddress']
           data_center = "Default" # not sure if this comes from some place or not
 
-          cmd = "ovirt_get_datacenter_status.py --api_user #{api_user} --api_host #{api_host} --api_pass #{api_password} --data_center #{data_center}"
+          cmd = "#{@script_dir}ovirt_get_datacenter_status.py "\
+                "--api_user #{api_user} "\
+                "--api_host #{api_host} "\
+                "--api_pass #{api_password} "\
+                "--data_center #{data_center}"
+
           status, output = run_command(cmd)
 
           if status == 0 and "up" == output.first.rstrip
@@ -150,20 +155,13 @@ module Actions
         end
 
         def upload_image(deployment, image_file_name)
+          # ssh to engine node and upload the image in the home directory
+          # engine-image-uploader -N cfme-rhevm-5.3-47 -e export -v -m upload ./cfme-rhevm-5.3-47.x86_64.rhevm.ova
+          #
           # -N new image name
           # -e export domain TODO: where do we get the export domain
           # -v verbose
           # -m do not remove network interfaces from image
-          #
-          # # ssh to engine node and upload the image in the home directory
-          # # engine-image-uploader -N cfme-rhevm-5.3-47 -e export -v -m upload ./cfme-rhevm-5.3-47.x86_64.rhevm.ova
-          # engine_image_upload_cmd = "engine-image-uploader -u %s -p \'%s\' -N %s -e %s -m upload ~/%s" % (username, password, imported_template_name, export_domain_name, cfme_image_file)
-          # cmd = "ssh root@%s -o \'StrictHostKeyChecking no\' -C '%s'" % (ip, engine_image_upload_cmd)
-          # status, out, err = run_command(cmd)
-          # if status:
-          #    print "Error running:  %s" % (cmd)
-          #    print err
-          #    sys.exit()
 
           imported_template_name = "#{deployment.name}-cfme-template"
           username = "admin@internal"
@@ -172,7 +170,8 @@ module Actions
           cfme_image_file = "/root/#{image_file_name}" # can't use find_image_file without doing filename magic :(
 
           # NOTE: the image file found locally is DIFFERENT than the one on
-          # the rhev engine host.
+          # the rhev engine host. Also note this uses /usr/bin/ because it is on
+          # rhev engine NOT locally. Do not change this to @script_dir.
           cmd = "/usr/bin/engine-image-uploader "\
                 "-u #{username} "\
                 "-p \'#{deployment.rhev_engine_admin_password}\' "\
@@ -182,7 +181,6 @@ module Actions
 
           # RHEV-host username password
           puts "XXX connecting to host"
-          #client = Utils::Fusor::SSHConnection.new(deployment.rhev_engine_host, username, password)
           client = Utils::Fusor::SSHConnection.new(@api_host, ssh_username, deployment.rhev_root_password)
           client.on_complete(lambda { upload_image_completed })
           client.on_failure(lambda { upload_image_failed })
@@ -226,7 +224,7 @@ module Actions
           ssh_user = "root"
           ssh_password = "smartvm" # TODO: need to update to use deployment.cfme_root_password; however, that means it must also be set on VM during/after creation
 
-          cmd = "miq_run_appliance_console.py "\
+          cmd = "#{@script_dir}miq_run_appliance_console.py "\
                 "--miq_ip #{vm_ip} "\
                 "--ssh_user #{ssh_user} "\
                 "--ssh_pass #{ssh_password} "\
