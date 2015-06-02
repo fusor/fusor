@@ -77,9 +77,22 @@ module Actions
 
         private
 
-        def is_rhev_up
-           # TODO: figure out how to detect if rhev is running.
-           return true
+        def is_rhev_up(deployment)
+          api_user = "admin@internal"
+          api_password = "dog8code" # deployment.rhev_engine_admin_password
+          api_host = "10.8.101.181" # deployment.rhev_engine_host.facts['ipaddress']
+          data_center = "Default" # not sure if this comes from some place or not
+
+          cmd = "ovirt_get_datacenter_status.py --api_user #{api_user} --api_host #{api_host} --api_pass #{api_password} --data_center #{data_center}"
+          status, output = run_command(cmd)
+
+          if status == 0 and "up" == output.first.rstrip
+            return true
+            # thought about failing if it isn't up, but figured I'll let the
+            # caller fail if this returns false
+          end
+
+          return false
         end
 
         # TODO: fill in appropriate parameters for each of these commands
