@@ -4,58 +4,16 @@ export default Ember.Component.extend({
   assignMenuOpenClass: '',
 
   profile: null,
-  nodeProfiles: null,
+  profiles: null,
 
   assignedRoles: function() {
-    var roles = [];
     var profile = this.get('profile');
-    var me = this;
-
-    var Role = Ember.Object.extend({
-      roleType: '',
-      roleLabel: '',
-      profile: profile,
-      isDraggingObject: false,
-      watchForDrag: function() {
-
-        if (this.get('isDraggingObject')) {
-          me.sendAction("startDrag", this);
-        }
-        else {
-          me.sendAction("stopDrag", this);
-        }
-      }.observes('isDraggingObject')
-    });
-
-    if (profile.get('isControl')) {
-      roles.pushObject(Role.create({
-        roleType: 'controller',
-        roleLabel: 'Controller'
-      }));
-    }
-    if (profile.get('isCompute')) {
-      roles.pushObject(Role.create({
-        roleType: 'compute',
-        roleLabel: 'Compute'
-      }));
-    }
-    if (profile.get('isBlockStorage')) {
-      roles.pushObject(Role.create({
-        roleType: 'block',
-        roleLabel: 'Block Storage'
-      }));
-    }
-    if (profile.get('isObjectStorage')) {
-      roles.pushObject(Role.create({
-        roleType: 'object',
-        roleLabel: 'Object Storage'
-      }));
-    }
+    var roles = profile.get('assignedRoles');
     return roles;
-  }.property('profile.isCompute', 'profile.isControl', 'profile.isBlockStorage', 'profile.isObjectStorage'),
+  }.property('profile', 'profile.assignedRoles'),
 
   controllerAssigned: function() {
-    var profiles = this.get('nodeProfiles');
+    var profiles = this.get('profiles');
     if (!profiles) {
       return false;
     }
@@ -66,10 +24,10 @@ export default Ember.Component.extend({
       }
     });
     return retVal;
-  }.property('nodeProfiles','nodeProfiles.@each.isControl'),
+  }.property('profiles','profiles.@each.isControl'),
 
   computeAssigned: function() {
-    var profiles = this.get('nodeProfiles');
+    var profiles = this.get('profiles');
     if (!profiles) {
       return false;
     }
@@ -80,10 +38,10 @@ export default Ember.Component.extend({
       }
     });
     return retVal;
-  }.property('nodeProfiles.@each.isCompute'),
+  }.property('profiles.@each.isCompute'),
 
   blockAssigned: function() {
-    var profiles = this.get('nodeProfiles');
+    var profiles = this.get('profiles');
     if (!profiles) {
       return false;
     }
@@ -94,10 +52,10 @@ export default Ember.Component.extend({
       }
     });
     return retVal;
-  }.property('nodeProfiles.@each.isBlockStorage'),
+  }.property('profiles.@each.isBlockStorage'),
 
   objectAssigned: function() {
-    var profiles = this.get('nodeProfiles');
+    var profiles = this.get('profiles');
     if (!profiles) {
       return false;
     }
@@ -108,7 +66,7 @@ export default Ember.Component.extend({
       }
     });
     return retVal;
-  }.property('nodeProfiles.@each.isObjectStorage'),
+  }.property('profiles.@each.isObjectStorage'),
 
   freeNodes: function() {
     var profile = this.get('profile');
@@ -138,21 +96,27 @@ export default Ember.Component.extend({
         this.set('assignMenuOpenClass', 'open');
       }
     },
-    assignRole: function(roleType) {
+    assignRoleType: function(roleType) {
       this.set('assignMenuOpenClass', '');
-      this.sendAction('assignRole', this.get('profile'), roleType);
+      this.sendAction('assignRoleType', this.get('profile'), roleType);
     },
     assignDroppedRole: function(role) {
       role.set('isDraggingObject', false);
-      if (role.profile !== this.get('profile')) {
-        if (role.profile) {
-          this.sendAction('removeRole', role.profile, role.roleType);
+      var profile = this.get('profile');
+      if (profile.get('freeNodes') > 0)
+      {
+        if (role.get('profile') !== this.get('profile'))
+        {
+          this.sendAction('unassignRole', role);
+          this.sendAction('assignRole', this.get('profile'), role);
         }
-        this.sendAction('assignRole', this.get('profile'), role.roleType);
       }
     },
-    removeRole: function(roleType) {
-      this.sendAction('removeRole', this.get('profile'), roleType);
+    removeRole: function(role) {
+      this.sendAction('unassignRole', role);
+    },
+    editRole: function(role) {
+      this.sendAction('editRole', role);
     }
   },
   didInsertElement: function() {

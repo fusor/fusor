@@ -36,7 +36,8 @@
                     <ul class="deployment-roles deployment-roles-assigned">
                       {{#each role in assignedRoles}}
                         {{#draggable-object content=role}}
-                          {{deployment-role profile=profile role-type=role.roleType role-label=role.roleLabel role-assigned=true edit="editRole" remove="removeRole"}}
+                          {{deployment-role role=role profile=profile edit="editRole" remove="removeRole"}}
+
                         {{/draggable-object}}
                       {{/each}}
                       {{#unless allAssigned}}
@@ -47,16 +48,16 @@
                                 </a>
                                 <ul class="dropdown-menu" role="menu" aria-labelledby="role-target-dropdown-1">
                                   {{#unless controllerAssigned}}
-                                      <a class="roles-menu-item role-controller" {{action "assignRole" 'controller'}}>Controller</a>
+                                      <a class="roles-menu-item role-controller" {{action "assignRoleType" 'controller'}}>Controller</a>
                                   {{/unless}}
                                   {{#unless computeAssigned}}
-                                      <a class="roles-menu-item  role-compute" {{action "assignRole" 'compute'}}>Compute</a>
+                                      <a class="roles-menu-item  role-compute" {{action "assignRoleType" 'compute'}}>Compute</a>
                                   {{/unless}}
                                   {{#unless blockAssigned}}
-                                      <a class="roles-menu-item  role-block" {{action "assignRole" 'block'}}>Block Storage</a>
+                                      <a class="roles-menu-item  role-block" {{action "assignRoleType" 'block'}}>Block Storage</a>
                                   {{/unless}}
                                   {{#unless objectAssigned}}
-                                      <a class="roles-menu-item  role-object" {{action "assignRole" 'object'}}>Object Storage</a>
+                                      <a class="roles-menu-item  role-object" {{action "assignRoleType" 'object'}}>Object Storage</a>
                                   {{/unless}}
                                 </ul>
                             </li>

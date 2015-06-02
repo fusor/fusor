@@ -2,28 +2,28 @@
     <div class="col-md-12">
         <h2>Available Deployment Roles</h2>
         {{#draggable-object-target action="unassignRole"}}
-            <ul class="deployment-roles deployment-roles-unassigned deployment-roles-assignable {{droppableClass}}">
+            <div class="row deployment-roles deployment-roles-unassigned deployment-roles-assignable {{droppableClass}}">
               {{#each role in availableRoles}}
                 {{#draggable-object content=role}}
-                  {{deployment-role role-type=role.roleType role-label=role.roleLabel role-assigned=false edit="editRole"}}
+                  {{deployment-role role=role edit="editRole"}}
                 {{/draggable-object}}
               {{/each}}
               {{#unless noneAssigned}}
                 {{#draggable-object content=role}}
-                  {{deployment-role role-type='hidden' role-assigned=false}}
+                  {{deployment-role role-assigned=false}}
                 {{/draggable-object}}
               {{/unless}}
-            </ul>
+            </div>
         {{/draggable-object-target}}
     </div><!-- /col -->
 </div><!-- /row -->
 <div class="row">
     <div class="col-md-12">
         <h2>Node Profiles</h2>
-        {{#each profile in nodeProfiles}}
+        {{#each profile in profiles}}
             <div class="row">
                 <div class='col-md-7'>
-                  {{node-profile profile=profile nodeProfiles=nodeProfiles doAssign=true assignRole="assignRole" startDrag="startDrag" stopDrag="stopDrag" edit="editRole" removeRole="removeRole"}}
+                  {{node-profile profile=profile profiles=profiles doAssign=true assignRole="assignRole" assignRoleType="assignRoleType" unassignRole="unassignRole" editRole="editRole"}}
                 </div>
             </div>
         {{/each}}

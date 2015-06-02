@@ -1,8 +1,25 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
+  role: null,
+  profile: null,
+
+  assignedNodes: function() {
+    var role = this.get('role');
+    if (role && role.numNodes) {
+      return role.numNodes;
+    }
+    else {
+      return 0;
+    }
+  }.property('role', 'role.numNodes'),
+
+  roleAssigned: function() {
+    return this.get('profile') !== null;
+  }.property('profile'),
+
   assignedClass: function() {
-    if (this.get('role-assigned')) {
+    if (this.get('roleAssigned')) {
       return ('role-assigned');
     }
     else {
@@ -10,35 +27,15 @@ export default Ember.Component.extend({
     }
   }.property('role-assigned'),
 
-  roleLabel: function() {
-    var roleLabel = this.get('role-label');
-    var roleType = this.get('role-type');
-    if ((roleType === 'controller') && (this.get('assignedNodes') > 1)) {
-      roleLabel += ' (HA)';
+  roleType: function() {
+    var role = this.get('role');
+    if (role) {
+      return role.get('roleType');
     }
-    return roleLabel;
-  }.property('role-label', 'role-type', 'assignedNodes'),
-
-  assignedNodes: function() {
-    var roleType = this.get('role-type');
-    var profile = this.get('profile');
-    if (!this.get('role-assigned')) {
-      return 0;
+    else {
+      return 'hidden';
     }
-
-    if (roleType === 'controller') {
-      return profile.get('controllerNodes');
-    }
-    else if (roleType === 'compute') {
-      return profile.get('computeNodes');
-    }
-    else if (roleType === 'block') {
-      return profile.get('blockNodes');
-    }
-    else if (roleType === 'object') {
-      return profile.get('objectNodes');
-    }
-  }.property('profile', 'profile.controllerNodes', 'profile.computeNodes', 'profile.blockNodes', 'profile.objectNodes'),
+  }.property('role', 'role.roleType'),
 
   maxToAssign: function() {
     var numNodes = this.get('assignedNodes');
@@ -49,10 +46,14 @@ export default Ember.Component.extend({
   availableOptions: function() {
     var avail = [];
     var assignedNodes = this.get('assignedNodes');
-    var roleType = this.get('role-type');
     var increment = 1;
-    if (roleType === 'controller') {
-      increment = 2;
+    try {
+      var roleType = this.get('role').get('roleType');
+      if (roleType === 'controller') {
+        increment = 2;
+      }
+    }
+    catch (e) {
     }
 
     for (var i=1; i <= this.get('maxToAssign'); i = i + increment) {
@@ -65,33 +66,26 @@ export default Ember.Component.extend({
     }
 
     return avail;
-  }.property('maxToAssign', 'assignedNodes', 'profile.freeNodes'),
+  }.property('maxToAssign', 'assignedNodes', 'profile.freeNodes', 'role.roleType'),
 
   actions: {
     assignNodes: function() {
       var newCount = parseInt(this.$('select').val());
-      var roleType = this.get('role-type');
+      var role = this.get('role');
+      role.set('numNodes', newCount);
+
       var profile = this.get('profile');
-      if (roleType === 'controller') {
-        profile.set('controllerNodes', newCount);
-      }
-      else if (roleType === 'compute') {
-        profile.set('computeNodes', newCount);
-      }
-      else if (roleType === 'block') {
-        profile.set('blockNodes', newCount);
-      }
-      else if (roleType === 'object') {
-        profile.set('objectNodes', newCount);
+      if (!profile.getAssignedRole(role.get('roleType'))) {
+        profile.assignRole(role);
       }
     },
 
-    editRole: function(roleType) {
-      this.sendAction('edit', roleType);
+    editRole: function() {
+      this.sendAction('edit', this.get('role'));
     },
 
-    removeRole: function(roleType) {
-      this.sendAction('remove', roleType);
+    removeRole: function() {
+      this.sendAction('remove', this.get('role'));
     }
   }
 });

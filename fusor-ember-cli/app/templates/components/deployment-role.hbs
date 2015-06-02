@@ -1,8 +1,8 @@
-<li class="role role-{{role-type}} {{assignedClass}}">
+<li class="role role-{{roleType}} {{assignedClass}}">
     <div class="deployment-role-label">
-        {{roleLabel}}
+        {{role.name}}
     </div>
-    {{#if role-assigned}}
+    {{#if roleAssigned}}
         <select class="selectpicker"  {{action "assignNodes" this on="change"}}>
             {{#each option in availableOptions}}
                 {{#if option.selected}}
@@ -14,9 +14,9 @@
         </select>
     {{/if}}
     <a class="role-option delete">
-        <i class="fa fa-times" {{action "removeRole" role-type}}></i>
+        <i class="fa fa-times" {{action "removeRole"}}></i>
     </a>
     <a class="role-option edit" >
-        <i class="fa fa-pencil" {{action "editRole" role-type}}></i>
+        <i class="fa fa-pencil" {{action "editRole"}}></i>
     </a>
 </li>

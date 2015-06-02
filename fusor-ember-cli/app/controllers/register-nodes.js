@@ -48,6 +48,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       init: function() {
         this._super();
         this.set('assignedNodes', []);
+        this.set('assignedRoles', []);
       },
       name: function() {
         if (!Ember.isEmpty(this.get('_name'))) {
@@ -58,24 +59,91 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
         }
       }.property('_name', 'cpu', 'ram', 'disk'),
 
-      assignedNodes: [],
-
-      controllerNodes: 0,
-      computeNodes: 0,
-      blockNodes: 0,
-      objectNodes: 0,
-
       cpu: 0,
       ram: 0,
       disk: 0,
 
+      assignedNodes: [],
+      assignedRoles: [],
+
+      assignRole: function(role) {
+        var assignedRoles = this.getWithDefault('assignedRoles', []);
+        assignedRoles.pushObject(role);
+      },
+
+      unassignRole: function(role) {
+        var assignedRoles = this.getWithDefault('assignedRoles', []);
+        var newRoles = [];
+        var roleType = role.get('roleType');
+
+        for (var i = 0; i<assignedRoles.length; i++) {
+          if (assignedRoles[i].roleType !== role.roleType) {
+            newRoles.pushObject(assignedRoles[i]);
+          }
+        }
+        this.set('assignedRoles', newRoles);
+      },
+
+      getAssignedRole: function(roleType) {
+        var roles = this.get('assignedRoles');
+        if (!roles || !roles.length) {
+          return null;
+        }
+
+        for (var i=0; i<roles.length; i++) {
+          if (roles[i].roleType === roleType) {
+            return roles[i];
+          }
+        }
+
+        return null;
+      },
+
+      controllerNodes: function() {
+        var role = this.getAssignedRole('controller');
+        if (role !== null) {
+          return role.numNodes;
+        }
+        else {
+          return 0;
+        }
+      }.property('assignedRoles', 'assignedRoles.@each.numNodes'),
+
+      computeNodes: function() {
+        var role = this.getAssignedRole('compute');
+        if (role !== null) {
+          return role.numNodes;
+        }
+        else {
+          return 0;
+        }
+      }.property('assignedRoles', 'assignedRoles.@each.numNodes'),
+
+      blockNodes: function() {
+        var role = this.getAssignedRole('block');
+        if (role !== null) {
+          return role.numNodes;
+        }
+        else {
+          return 0;
+        }
+      }.property('assignedRoles', 'assignedRoles.@each.numNodes'),
+
+      objectNodes: function() {
+        var role = this.getAssignedRole('object');
+        if (role !== null) {
+          return role.numNodes;
+        }
+        else {
+          return 0;
+        }
+      }.property('assignedRoles', 'assignedRoles.@each.numNodes'),
+
       addNode: function(node) {
         this.get('assignedNodes').pushObject(node);
-        console.log('Adding node number: '  + this.get('assignedNodes').length + ' to ' + this.get('name'));
       },
 
       totalNodes: function() {
-        console.log(this.get('name') + "has " + this.get('assignedNodes').length + ' total nodes');
         return this.get('assignedNodes').length;
       }.property('assignedNodes', 'assignedNodes.length'),
 
@@ -440,15 +508,14 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
         else {
           var nodes = me.get('model.nodes');
           nodes.pushObject(node);
-          var nodeProfiles = me.get('model.profiles');
+          var profiles = me.get('model.profiles');
           var assigned = false;
           var index = 0;
-          while(!assigned && index < nodeProfiles.length) {
-            var nextProfile = nodeProfiles[index++];
+          while(!assigned && index < profiles.length) {
+            var nextProfile = profiles[index++];
             if ((nextProfile.get('cpu') === node.get('cpu')) &&
                 (nextProfile.get('ram') === node.get('ram')) &&
                 (nextProfile.get('disk') === node.get('disk'))) {
-              console.log("Adding to existing profile");
               nextProfile.addNode(node);
               assigned = true;
             }
@@ -459,11 +526,8 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
               ram: node.get('ram'),
               disk: node.get('disk')
             });
-            console.dir(node);
-            console.log("New Profile has " + newProfile.get('totalNodes') + ' nodes assigned');
-            console.log("Adding to new profile");
             newProfile.addNode(node);
-            nodeProfiles.pushObject(newProfile);
+            profiles.pushObject(newProfile);
           }
         }
         me.doNextNodeRegistration();
