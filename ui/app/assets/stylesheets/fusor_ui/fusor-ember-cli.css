@@ -318,6 +318,9 @@ li.disabled a {
 .ident-radio {
   padding-left: 15px; }
 
+.spinner-text {
+  font-size: 20px; }
+
 /* wizard.scss */
 .rhci-steps {
   color: #999999;
