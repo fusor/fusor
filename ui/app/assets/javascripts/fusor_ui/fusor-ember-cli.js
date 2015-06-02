@@ -1391,8 +1391,6 @@ define('fusor-ember-cli/controllers/configure-environment', ['exports', 'ember',
 
     step2RouteName: Ember['default'].computed.alias('controllers.deployment.step2RouteName'),
 
-    useDefaultOrgViewForEnv: Ember['default'].computed.alias('controllers.deployment.useDefaultOrgViewForEnv'),
-
     nullifyLifecycleEnvIfSelected: (function () {
       if (this.get('useDefaultOrgViewForEnv')) {
         this.set('selectedEnvironment', null);
@@ -1511,8 +1509,6 @@ define('fusor-ember-cli/controllers/deployment-new/satellite/configure-environme
     selectedOrganization: Ember['default'].computed.alias('controllers.deployment-new.organization'),
 
     step2RouteName: Ember['default'].computed.alias('controllers.deployment-new.step2RouteName'),
-
-    useDefaultOrgViewForEnv: Ember['default'].computed.alias('controllers.deployment-new.useDefaultOrgViewForEnv'),
 
     nullifyLifecycleEnvIfSelected: (function () {
       if (this.get('useDefaultOrgViewForEnv')) {
@@ -3176,6 +3172,10 @@ define('fusor-ember-cli/mixins/configure-environment-mixin', ['exports', 'ember'
 
     selectedEnvironment: Ember['default'].computed.alias('model'),
 
+    useDefaultOrgViewForEnv: (function () {
+      return Ember['default'].isBlank(this.get('selectedEnvironment'));
+    }).property('selectedEnvironment'),
+
     nonLibraryEnvironments: Ember['default'].computed.filterBy('lifecycleEnvironments', 'library', false),
     libraryEnvironments: Ember['default'].computed.filterBy('lifecycleEnvironments', 'library', true),
     libraryEnv: (function () {
@@ -3881,10 +3881,6 @@ define('fusor-ember-cli/models/deployment', ['exports', 'ember-data'], function 
 
     created_at: DS['default'].attr('date'),
     updated_at: DS['default'].attr('date'),
-
-    useDefaultOrgViewForEnv: (function () {
-      return !!this.get('discovered_host.id');
-    }).property('discovered_host'),
 
     // has one Engine
     discovered_host: DS['default'].belongsTo('discovered-host', { inverse: 'deployment', async: true }),
@@ -31312,7 +31308,7 @@ define('fusor-ember-cli/tests/controllers/configure-environment.jshint', functio
 
   module('JSHint - controllers');
   test('controllers/configure-environment.js should pass jshint', function() { 
-    ok(false, 'controllers/configure-environment.js should pass jshint.\ncontrollers/configure-environment.js: line 37, col 66, Missing semicolon.\ncontrollers/configure-environment.js: line 53, col 19, \'response\' is defined but never used.\n\n2 errors'); 
+    ok(false, 'controllers/configure-environment.js should pass jshint.\ncontrollers/configure-environment.js: line 35, col 66, Missing semicolon.\ncontrollers/configure-environment.js: line 51, col 19, \'response\' is defined but never used.\n\n2 errors'); 
   });
 
 });
@@ -31352,7 +31348,7 @@ define('fusor-ember-cli/tests/controllers/deployment-new/satellite/configure-env
 
   module('JSHint - controllers/deployment-new/satellite');
   test('controllers/deployment-new/satellite/configure-environment.js should pass jshint', function() { 
-    ok(false, 'controllers/deployment-new/satellite/configure-environment.js should pass jshint.\ncontrollers/deployment-new/satellite/configure-environment.js: line 36, col 66, Missing semicolon.\ncontrollers/deployment-new/satellite/configure-environment.js: line 52, col 19, \'response\' is defined but never used.\n\n2 errors'); 
+    ok(false, 'controllers/deployment-new/satellite/configure-environment.js should pass jshint.\ncontrollers/deployment-new/satellite/configure-environment.js: line 34, col 66, Missing semicolon.\ncontrollers/deployment-new/satellite/configure-environment.js: line 50, col 19, \'response\' is defined but never used.\n\n2 errors'); 
   });
 
 });
@@ -31889,7 +31885,7 @@ define('fusor-ember-cli/tests/mixins/configure-environment-mixin.jshint', functi
 
   module('JSHint - mixins');
   test('mixins/configure-environment-mixin.js should pass jshint', function() { 
-    ok(false, 'mixins/configure-environment-mixin.js should pass jshint.\nmixins/configure-environment-mixin.js: line 13, col 98, \'array\' is defined but never used.\nmixins/configure-environment-mixin.js: line 13, col 91, \'index\' is defined but never used.\n\n2 errors'); 
+    ok(false, 'mixins/configure-environment-mixin.js should pass jshint.\nmixins/configure-environment-mixin.js: line 17, col 98, \'array\' is defined but never used.\nmixins/configure-environment-mixin.js: line 17, col 91, \'index\' is defined but never used.\n\n2 errors'); 
   });
 
 });
@@ -38734,13 +38730,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.b3b56fbd"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.619af1d9"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.b3b56fbd"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.619af1d9"});
 }
 
 /* jshint ignore:end */

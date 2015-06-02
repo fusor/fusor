@@ -4,6 +4,10 @@ export default Ember.Mixin.create({
 
   selectedEnvironment: Ember.computed.alias("model"),
 
+  useDefaultOrgViewForEnv: function() {
+    return Ember.isBlank(this.get('selectedEnvironment'));
+  }.property('selectedEnvironment'),
+
   nonLibraryEnvironments: Ember.computed.filterBy('lifecycleEnvironments', 'library', false),
   libraryEnvironments: Ember.computed.filterBy('lifecycleEnvironments', 'library', true),
   libraryEnv: function() {
