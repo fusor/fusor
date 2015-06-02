@@ -44,12 +44,22 @@ module Actions
             puts "XXX scp file"
             Rails.logger.warn "XXX scp file"
 
-            scp_image_file("10.8.101.181", "dog8code", find_image_file(repository, input[:image_file_name]))
+            # need rhev-engine host id
+            api_host = "10.8.101.181" # deployment.rhev_engine_host.facts['ipaddress']
+            root_password = "dog8code" # deployment.rhev_root_password
+            scp_image_file(api_host, root_password, find_image_file(repository, input[:image_file_name]))
 
             puts "XXX scp file DONE"
             Rails.logger.warn "XXX scp file DONE"
 
             status, output = upload_image(deployment)
+            if status > 0
+              Rails.logger.warn "XXX image uploaded"
+            else
+              Rails.logger.error "XXX There was a problem with running the command. Status: #{status}. \nOutput: #{output}"
+            end
+
+            status, output = import_template()
             if status > 0
               Rails.logger.warn "XXX image uploaded"
             else
@@ -120,9 +130,10 @@ module Actions
 
             imported_template_name = "cfme-rhevm-5.3-47-#{Time.now.to_i}"
             username = "admin@internal"
-            password = "dog8code"
+            password = "dog8code" # deployment.rhev_engine_admin_password
+            api_host = "10.8.101.181" # deployment.rhev_engine_host.facts['ipaddress']
             ssh_username = "root"
-            ssh_password = "dog8code"
+            ssh_password = "dog8code" # deployment.rhev_root_password
             export_domain_name =  "export"
             cfme_image_file = "/root/cfme-rhevm-5.3-47.x86_64.rhevm.ova" # can't use find_image_file without doing filename magic :(
 
@@ -132,7 +143,7 @@ module Actions
             # RHEV-host username password
             puts "XXX connecting to host"
             #client = Utils::Fusor::SSHConnection.new(deployment.rhev_engine_host, username, password)
-            client = Utils::Fusor::SSHConnection.new("10.8.101.181", ssh_username, ssh_password)
+            client = Utils::Fusor::SSHConnection.new(api_host, ssh_username, ssh_password)
             client.on_complete(lambda { ssh_completed })
             client.on_failure(lambda { ssh_failed })
 
@@ -141,6 +152,15 @@ module Actions
             Rails.logger.warn "XXX we're going to run [#{cmd}]"
 
             return client.execute(cmd)
+        end
+
+        def import_template(deployment)
+          api_user = "admin@internal"
+          api_password = "dog8code" # deployment.rhev_engine_admin_password
+          api_host = "10.8.101.181" # deployment.rhev_engine_host.facts['ipaddress']
+          template_name = "#{deployment.name}-cfme-template"
+          cmd = "ovirt_import_template.py --api_user '#{api_user}' --api_pass #{api_password} --api_host #{api_host} --vm_template_name #{template_name}"
+          return run_command(cmd)
         end
 
         def apply_puppet_param(param, node)
