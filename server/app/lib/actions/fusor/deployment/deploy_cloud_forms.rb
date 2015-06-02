@@ -19,7 +19,7 @@ module Actions
           _("Deploy CloudForms Management Engine")
         end
 
-        def plan(deployment, repository, image_file_name)
+        def plan(deployment, repository, image_file_name = nil)
           Rails.logger.warn "XXX ================ Planning CFME Deployment ===================="
 
           fail _("CloudForms repository has not been provided.") unless repository
@@ -29,50 +29,46 @@ module Actions
           #  fail _("Unable to locate a CFME Engine Host") unless deployment.rhev_engine_host
           #end
 
-          plan_self(deployment_id: deployment.id, repository_id: repository.id, image_file_name: image_file_name)
+          plan_self(deployment_id: deployment.id,
+                    repository_id: repository.id,
+                    image_file_name: image_file_name,
+                    user_id: ::User.current.id)
         end
 
         def run
-          Rails.logger.warn "XXX ================ Deploy CFME finalize method ===================="
+          Rails.logger.warn "XXX ================ Deploy CFME run method ===================="
+
+          # Note: user_id is being passed in and then used to set User.current to address an error
+          # that could occur when we later attempt to access ::Katello.pulp_server indirectly through
+          # this action.  In the future, we may want to see if there are alternatives to this approach.
+          ::User.current = ::User.find(input[:user_id])
 
           deployment = ::Fusor::Deployment.find(input[:deployment_id])
           repository = ::Katello::Repository.find(input[:repository_id])
 
           if is_rhev_up
-            # copy the cfme to the rhev host
-            # host should be deployment
-            puts "XXX scp file"
-            Rails.logger.warn "XXX scp file"
+            @api_host = "10.8.101.181" # TODO: replace this with deployment.rhev_engine_host.ip everywhere used
+            @script_dir = "/usr/share/fusor/bin/"
 
-            # need rhev-engine host id
-            api_host = "10.8.101.181" # deployment.rhev_engine_host.facts['ipaddress']
-            root_password = "dog8code" # deployment.rhev_root_password
-            scp_image_file(api_host, root_password, find_image_file(repository, input[:image_file_name]))
+            image_full_path, image_file_name = find_image_details(repository, input[:image_file_name])
+            scp_image_file(deployment, image_full_path)
+            template_name = upload_image(deployment, image_file_name)
+            import_template(deployment, template_name)
 
-            puts "XXX scp file DONE"
-            Rails.logger.warn "XXX scp file DONE"
+            vm_id = create_vm_from_template(deployment, template_name)
+            add_disk_to_vm(deployment, vm_id)
+            start_vm(deployment, vm_id)
+            vm_ip = get_vm_ip(deployment, vm_id)
 
-            status, output = upload_image(deployment)
-            if status > 0
-              Rails.logger.warn "XXX image uploaded"
-            else
-              Rails.logger.error "XXX There was a problem with running the command. Status: #{status}. \nOutput: #{output}"
-            end
-
-            status, output = import_template()
-            if status > 0
-              Rails.logger.warn "XXX image uploaded"
-            else
-              Rails.logger.error "XXX There was a problem with running the command. Status: #{status}. \nOutput: #{output}"
-            end
-
-            # TODO: the following call needs to pass in the IP address of the cloudforms VM that is created above
-            #add_rhev_provider(deployment, "10.8.101.247")
+            run_appliance_console(vm_ip)
+            add_rhev_provider(deployment, vm_ip)
           end
 
           Rails.logger.warn "XXX #{deployment.id}"
 
-          Rails.logger.warn "XXX ================ Leaving CFME  finalize method ===================="
+          Rails.logger.warn "XXX ================ Leaving CFME run method ===================="
+        ensure
+          ::User.current = nil
         end
 
         private
@@ -95,99 +91,173 @@ module Actions
           return false
         end
 
-        # TODO: fill in appropriate parameters for each of these commands
-        def create_vm_from_template()
-          cmd = "ovirt_create_vm_from_template.py --api_host 10.8.101.181 --api_pass dog8code --vm_template_name jwm_cfme-rhevm-5.3-47_1432673130.7 --cluster_name \"Default\" --vm_name jwm_may29_13_09m"
-          return run_command(cmd)
+        def create_vm_from_template(deployment, template_name)
+          vm_name = "#{deployment.name}-cfme" # TODO: we may need to be more descriptive in the name of the VM
+
+          cmd = "#{@script_dir}ovirt_create_vm_from_template.py "\
+                "--api_host #{@api_host} "\
+                "--api_pass #{deployment.rhev_engine_admin_password} "\
+                "--vm_template_name #{template_name} "\
+                "--cluster_name #{deployment.rhev_cluster_name} "\
+                "--vm_name #{vm_name}"
+
+          status, output = run_command(cmd)
+          unless status == 0
+            fail _("Unable to create virtual machine from template: %{output}") % { :output => output.join('; ') }
+          end
+          sleep 10 # TODO: pause for a few seconds so that the vm creation completes
+          return output.first.rstrip # vm_id
         end
 
-        def add_disk_to_vm
-          cmd ="ovirt_add_disk_to_vm.py --api_host 10.8.101.181 --api_pass dog8code --size_gb 20 --storage_domain VMs --vm_id 76659ab3-d431-4542-bda1-6dac2e04060a"
-          return run_command(cmd)
+        def add_disk_to_vm(deployment, vm_id)
+          storage_size = "20" # TODO: should this be configurable on the deployment?
+          cmd = "#{@script_dir}ovirt_add_disk_to_vm.py "\
+                "--api_host #{@api_host} "\
+                "--api_pass #{deployment.rhev_engine_admin_password} "\
+                "--size_gb #{storage_size} "\
+                "--storage_domain #{deployment.rhev_storage_name} "\
+                "--vm_id #{vm_id}"
+
+          status, output = run_command(cmd)
+          unless status == 0
+            fail _("Unable to add disk to virtual machine: %{output}") % { :output => output.join('; ') }
+          end
         end
 
-        def start_vm
-          cmd = "ovirt_start_vm.py  --api_host 10.8.101.181 --api_pass dog8code  --vm_id 76659ab3-d431-4542-bda1-6dac2e04060a"
-          return run_command(cmd)
+        def start_vm(deployment, vm_id)
+          cmd = "#{@script_dir}ovirt_start_vm.py "\
+                "--api_host #{@api_host} "\
+                "--api_pass #{deployment.rhev_engine_admin_password} "\
+                "--vm_id #{vm_id}"
+
+          status, output = run_command(cmd)
+          unless status == 0
+            fail _("Unable to start virtual machine: %{output}") % { :output => output.join('; ') }
+          end
         end
 
-        def get_vm_ip
-          cmd = "ovirt_get_ip_of_vm.py  --api_host 10.8.101.181 --api_pass dog8code  --vm_id 76659ab3-d431-4542-bda1-6dac2e04060a"
-          return run_command(cmd)
+        def get_vm_ip(deployment, vm_id)
+          cmd = "#{@script_dir}ovirt_get_ip_of_vm.py "\
+                "--api_host #{@api_host} "\
+                "--api_pass #{deployment.rhev_engine_admin_password} "\
+                "--vm_id #{vm_id}"
+
+          status, output = run_command(cmd)
+          unless status == 0
+            fail _("Unable to get virtual machine ip address: %{output}") % { :output => output.join('; ') }
+          end
+          return output.first.rstrip # vm_ip
         end
 
-        def run_command(cmd)
-          status, output = Utils::Fusor::ComandUtils.run_command(cmd)
-          puts status
-          puts output
-          return status, output
+        def upload_image(deployment, image_file_name)
+          # -N new image name
+          # -e export domain TODO: where do we get the export domain
+          # -v verbose
+          # -m do not remove network interfaces from image
+          #
+          # # ssh to engine node and upload the image in the home directory
+          # # engine-image-uploader -N cfme-rhevm-5.3-47 -e export -v -m upload ./cfme-rhevm-5.3-47.x86_64.rhevm.ova
+          # engine_image_upload_cmd = "engine-image-uploader -u %s -p \'%s\' -N %s -e %s -m upload ~/%s" % (username, password, imported_template_name, export_domain_name, cfme_image_file)
+          # cmd = "ssh root@%s -o \'StrictHostKeyChecking no\' -C '%s'" % (ip, engine_image_upload_cmd)
+          # status, out, err = run_command(cmd)
+          # if status:
+          #    print "Error running:  %s" % (cmd)
+          #    print err
+          #    sys.exit()
+
+          imported_template_name = "#{deployment.name}-cfme-template"
+          username = "admin@internal"
+          ssh_username = "root"
+          export_domain_name =  "export"
+          cfme_image_file = "/root/#{image_file_name}" # can't use find_image_file without doing filename magic :(
+
+          # NOTE: the image file found locally is DIFFERENT than the one on
+          # the rhev engine host.
+          cmd = "/usr/bin/engine-image-uploader "\
+                "-u #{username} "\
+                "-p \'#{deployment.rhev_engine_admin_password}\' "\
+                "-N #{imported_template_name} "\
+                "-e #{export_domain_name} "\
+                "-v -m upload #{cfme_image_file}"
+
+          # RHEV-host username password
+          puts "XXX connecting to host"
+          #client = Utils::Fusor::SSHConnection.new(deployment.rhev_engine_host, username, password)
+          client = Utils::Fusor::SSHConnection.new(@api_host, ssh_username, deployment.rhev_root_password)
+          client.on_complete(lambda { upload_image_completed })
+          client.on_failure(lambda { upload_image_failed })
+          client.execute(cmd)
+
+          return imported_template_name
         end
 
-        # TODO : ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-        def upload_image(deployment)
-            # -N new image name
-            # -e export domain TODO: where do we get the export domain
-            # -v verbose
-            # -m do not remove network interfaces from image
-            #
-            # # ssh to engine node and upload the image in the home directory
-            # # engine-image-uploader -N cfme-rhevm-5.3-47 -e export -v -m upload ./cfme-rhevm-5.3-47.x86_64.rhevm.ova
-            # engine_image_upload_cmd = "engine-image-uploader -u %s -p \'%s\' -N %s -e %s -m upload ~/%s" % (username, password, imported_template_name, export_domain_name, cfme_image_file)
-            # cmd = "ssh root@%s -o \'StrictHostKeyChecking no\' -C '%s'" % (ip, engine_image_upload_cmd)
-            # status, out, err = run_command(cmd)
-            # if status:
-            #    print "Error running:  %s" % (cmd)
-            #    print err
-            #    sys.exit()
-
-            imported_template_name = "cfme-rhevm-5.3-47-#{Time.now.to_i}"
-            username = "admin@internal"
-            password = "dog8code" # deployment.rhev_engine_admin_password
-            api_host = "10.8.101.181" # deployment.rhev_engine_host.facts['ipaddress']
-            ssh_username = "root"
-            ssh_password = "dog8code" # deployment.rhev_root_password
-            export_domain_name =  "export"
-            cfme_image_file = "/root/cfme-rhevm-5.3-47.x86_64.rhevm.ova" # can't use find_image_file without doing filename magic :(
-
-            # NOTE: the image file found locally is DIFFERENT than the one on
-            # the rhev engine host.
-            cmd = "/usr/bin/engine-image-uploader -u #{username} -p \'#{password}\' -N #{imported_template_name} -e #{export_domain_name} -v -m upload #{cfme_image_file}"
-            # RHEV-host username password
-            puts "XXX connecting to host"
-            #client = Utils::Fusor::SSHConnection.new(deployment.rhev_engine_host, username, password)
-            client = Utils::Fusor::SSHConnection.new(api_host, ssh_username, ssh_password)
-            client.on_complete(lambda { ssh_completed })
-            client.on_failure(lambda { ssh_failed })
-
-
-            puts "XXX we're going to run [#{cmd}]"
-            Rails.logger.warn "XXX we're going to run [#{cmd}]"
-
-            return client.execute(cmd)
+        def upload_image_completed
+          Rails.logger.warn "XXX image uploaded"
         end
 
-        def import_template(deployment)
+        def upload_image_failed
+          fail _("Unable to upload image")
+        end
+
+        def import_template(deployment, template_name)
           api_user = "admin@internal"
-          api_password = "dog8code" # deployment.rhev_engine_admin_password
-          api_host = "10.8.101.181" # deployment.rhev_engine_host.facts['ipaddress']
-          template_name = "#{deployment.name}-cfme-template"
-          cmd = "ovirt_import_template.py --api_user '#{api_user}' --api_pass #{api_password} --api_host #{api_host} --vm_template_name #{template_name}"
-          return run_command(cmd)
+          cmd = "#{@script_dir}ovirt_import_template.py "\
+                "--api_user '#{api_user}' "\
+                "--api_pass #{deployment.rhev_engine_admin_password} "\
+                "--api_host #{@api_host} "\
+                "--vm_template_name #{template_name}"
+
+          status, output = run_command(cmd)
+          if status == 0
+            Rails.logger.warn "XXX template imported"
+          else
+            fail _("Unable to import template: Status: %{status}. Output: %{output}") % { :status => status, :output => output }
+          end
         end
 
         def apply_puppet_param(param, node)
           Rails.logger.warn "XXX applying #{param} on #{node}"
         end
 
-        def run_appliance_console(host, ssh_user, ssh_password, db_password)
+        def run_appliance_console(vm_ip)
           Rails.logger.warn "XXX running the appliance console on the node"
-          # use SSH command from the OSP code
-          client = Utils::Fusor::SSHConnection.new(host, ssh_user, ssh_password)
-          cmd = "appliance_console_cli --region 1 --internal --force-key -p #{db_password}"
-          # need to deal with errors and return codes
-          client.execute(cmd)
+
+          db_password = "changeme" # TODO: we may want to make this configurable in the future
+          ssh_user = "root"
+          ssh_password = "smartvm" # TODO: need to update to use deployment.cfme_root_password; however, that means it must also be set on VM during/after creation
+
+          cmd = "miq_run_appliance_console.py "\
+                "--miq_ip #{vm_ip} "\
+                "--ssh_user #{ssh_user} "\
+                "--ssh_pass #{ssh_password} "\
+                "--db_password #{db_password}"
+
+          status, output = run_command(cmd)
+          if status == 0
+            sleep 300
+          else
+            fail _("Unable to run appliance console: %{output}") % { :output => output.join('; ') }
+          end
+
+          # TODO: observing issues with running the appliance console using SSHConnection; therefore, temporarily
+          # commenting out and using the approach above which will run it from a python script
+          #client = Utils::Fusor::SSHConnection.new(vm_ip, ssh_user, ssh_password)
+          #client.on_complete(lambda { run_appliance_console_completed })
+          #client.on_failure(lambda { run_appliance_console_failed })
+          #cmd = "appliance_console_cli --region 1 --internal --force-key -p #{db_password} --verbose"
+          #client.execute(cmd)
         end
+
+        # TODO: temporarily commenting out the SSHConnection callbacks.  See above.
+        #def run_appliance_console_completed
+        #  Rails.logger.warn "XXX the appliance console successfully ran on the node"
+        #  puts "XXX the appliance console successfully ran on the node"
+        #  sleep 300 # TODO: pause while the appliance web ui comes up...
+        #end
+        #
+        #def run_appliance_console_failed
+        #  fail _("Failed to run appliance console")
+        #end
 
         def is_cloudforms_up
           # possibly make a GET call to the webui
@@ -205,33 +275,39 @@ module Actions
           Utils::CloudForms::Provider.add(cfme_ip, provider)
         end
 
-        def find_image_file(repository, image_file_name)
+        def find_image_details(repository, image_file_name)
           images = ::Katello.pulp_server.extensions.repository.unit_search(repository.pulp_id)
 
           if image_file_name
-            image_file = images.find{ |image| image[:metadata][:name] == image_file_name }
-            image_file = image_file[:metadata][:_storage_path] if image_file
+            image_name = images.find{ |image| image[:metadata][:name] == image_file_name }
+            image_path = image_file[:metadata][:_storage_path] if image_name
           else
             images = images.find_all{ |image| image[:metadata][:name].starts_with?("cfme-rhevm") }
-            image_file = images.compact.sort_by{ |k| k[:name] }.last[:metadata][:_storage_path]
+            image_name = images.compact.sort_by{ |k| k[:name] }.last[:metadata][:name]
+            image_path = images.compact.sort_by{ |k| k[:name] }.last[:metadata][:_storage_path]
           end
 
-          return image_file
+          return image_path, image_name
         end
 
-        def scp_image_file(rhev_host, password, image_file)
+        def scp_image_file(deployment, image_file)
+          puts "XXX scp file"
+          Rails.logger.warn "XXX scp file"
+
           # scp the cfme file over to the rhev host, assume root user
-          Net::SCP.start(rhev_host, "root", :password => password) do |scp|
+          Net::SCP.start(@api_host, "root", :password => deployment.rhev_root_password) do |scp|
             scp.upload!(image_file, "/root")
           end
+
+          puts "XXX scp file DONE"
+          Rails.logger.warn "XXX scp file DONE"
         end
 
-        def ssh_completed
-          puts "XXX ssh completed"
-        end
-
-        def ssh_failed
-          puts "XXX ssh failed"
+        def run_command(cmd)
+          status, output = Utils::Fusor::CommandUtils.run_command(cmd)
+          puts status
+          puts output
+          return status, output
         end
       end
     end
