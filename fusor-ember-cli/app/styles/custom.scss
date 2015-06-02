@@ -171,6 +171,10 @@ li.disabled a {
   color: #ddd !important;
 }
 
+.disabled {
+  color: #ddd !important;
+}
+
 .no_subscriptions {
   text-align: center;
   padding: 10px 0px 5px;
@@ -178,4 +182,8 @@ li.disabled a {
 
 .disabledImage {
   opacity: 0.5;
+}
+
+.ident-radio {
+  padding-left: 15px;
 }
