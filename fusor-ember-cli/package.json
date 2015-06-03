@@ -40,6 +40,7 @@
     "ember-idx-forms": "0.5.1",
     "ember-idx-modal": "0.1.4",
     "ember-localstorage-adapter": "0.5.3",
+    "ember-moment": "1.1.1",
     "ember-radio-button": "~1.0.1",
     "express": "~4.12.3",
     "glob": "^4.4.2",
