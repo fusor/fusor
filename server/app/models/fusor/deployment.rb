@@ -21,14 +21,13 @@ module Fusor
     validates :cfme_root_password, :allow_blank => true, :length => {:minimum => 8, :message => _('should be 8 characters or more')}
 
     belongs_to :rhev_engine_host, :class_name => "::Host::Base", :foreign_key => :rhev_engine_host_id
-    has_many :rhev_hypervisor_hosts, :class_name => "::Host::Base", :through => :deployment_hosts
+    has_many :rhev_hypervisor_hosts, :class_name => "::Host::Base", :through => :deployment_hosts, :source => :discovered_host
     validates_with ::Katello::Validators::KatelloNameFormatValidator, :attributes => :name
 
 
     belongs_to :discovered_host, :class_name => "::Host::Base", :foreign_key => :rhev_engine_host_id
-    has_many :deployment_hosts, :class_name => "Fusor::DeploymentHost", :foreign_key => :deployment_id
+    has_many :deployment_hosts, :class_name => "Fusor::DeploymentHost", :foreign_key => :deployment_id, :inverse_of => :deployment
     has_many :discovered_hosts, :through => :deployment_hosts, :foreign_key => :discovered_host_id, :source => :discovered_host
-    has_many :rhev_hypervisor_hosts, :through => :deployment_hosts, :class_name => "::Host::Base"
     alias_attribute :discovered_host_id, :rhev_engine_host_id
 
   end

@@ -781,13 +781,13 @@ define('fusor-ember-cli/components/rchi-item', ['exports', 'ember'], function (e
 
   exports['default'] = Ember['default'].Component.extend({
     classNames: ['rhci-item'],
-    classNameBindings: ['isChecked:rhci-item-selected:rhci-item-deselected', 'isHover:rhci-item-hover'],
+    classNameBindings: ['isChecked:rhci-item-selected'],
 
     click: function click() {
-      this.set('isChecked', this.toggleProperty('isChecked'));
+      if (!this.get('isDisabled')) {
+        this.set('isChecked', this.toggleProperty('isChecked'));
+      }
     },
-
-    isHover: false,
 
     showMsgToSelect: (function () {
       return this.get('isHover') && !this.get('isChecked');
@@ -1391,8 +1391,6 @@ define('fusor-ember-cli/controllers/configure-environment', ['exports', 'ember',
 
     step2RouteName: Ember['default'].computed.alias('controllers.deployment.step2RouteName'),
 
-    useDefaultOrgViewForEnv: Ember['default'].computed.alias('controllers.deployment.useDefaultOrgViewForEnv'),
-
     nullifyLifecycleEnvIfSelected: (function () {
       if (this.get('useDefaultOrgViewForEnv')) {
         this.set('selectedEnvironment', null);
@@ -1425,7 +1423,7 @@ define('fusor-ember-cli/controllers/configure-environment', ['exports', 'ember',
         var environment = this.store.createRecord('lifecycle-environment', this.get('fields_env'));
         environment.save().then(function (result) {
           //success
-          self.get('nonLibraryEnvironments').pushObject(result);
+          self.get('lifecycleEnvironments').addObject(result);
           self.set('selectedEnvironment', environment);
           self.get('controllers.deployment').set('lifecycle_environment', environment);
           return self.set('showAlertMessage', true);
@@ -1493,7 +1491,9 @@ define('fusor-ember-cli/controllers/deployment-new/satellite', ['exports', 'embe
 
     disableTabDeploymentName: Ember['default'].computed.alias('controllers.deployment-new.disableTabDeploymentName'),
     disableTabConfigureOrganization: Ember['default'].computed.alias('controllers.deployment-new.disableTabConfigureOrganization'),
-    disableTabLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment-new.disableTabLifecycleEnvironment') });
+    disableTabLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment-new.disableTabLifecycleEnvironment'),
+
+    backRouteNameOnSatIndex: 'deployment-new.start' });
 
 });
 define('fusor-ember-cli/controllers/deployment-new/satellite/configure-environment', ['exports', 'ember', 'fusor-ember-cli/mixins/configure-environment-mixin'], function (exports, Ember, ConfigureEnvironmentMixin) {
@@ -1509,8 +1509,6 @@ define('fusor-ember-cli/controllers/deployment-new/satellite/configure-environme
     selectedOrganization: Ember['default'].computed.alias('controllers.deployment-new.organization'),
 
     step2RouteName: Ember['default'].computed.alias('controllers.deployment-new.step2RouteName'),
-
-    useDefaultOrgViewForEnv: Ember['default'].computed.alias('controllers.deployment-new.useDefaultOrgViewForEnv'),
 
     nullifyLifecycleEnvIfSelected: (function () {
       if (this.get('useDefaultOrgViewForEnv')) {
@@ -1544,7 +1542,7 @@ define('fusor-ember-cli/controllers/deployment-new/satellite/configure-environme
         var environment = this.store.createRecord('lifecycle-environment', this.get('fields_env'));
         environment.save().then(function (result) {
           //success
-          self.get('nonLibraryEnvironments').pushObject(result);
+          self.get('lifecycleEnvironments').addObject(result);
           self.set('selectedEnvironment', environment);
           self.get('controllers.deployment-new').set('lifecycle_environment', environment);
           return self.set('showAlertMessage', true);
@@ -1600,7 +1598,9 @@ define('fusor-ember-cli/controllers/deployment-new/satellite/index', ['exports',
     disableNextOnDeploymentName: Ember['default'].computed.alias('controllers.deployment-new.disableNextOnDeploymentName'),
 
     idSatName: 'deployment_new_sat_name',
-    idSatDesc: 'deployment_new_sat_desc' });
+    idSatDesc: 'deployment_new_sat_desc',
+
+    backRouteNameOnSatIndex: 'deployment-new.start' });
 
 });
 define('fusor-ember-cli/controllers/deployment-new/start', ['exports', 'ember', 'fusor-ember-cli/mixins/start-controller-mixin'], function (exports, Ember, StartControllerMixin) {
@@ -2646,7 +2646,9 @@ define('fusor-ember-cli/controllers/satellite/index', ['exports', 'ember', 'fuso
     disableNextOnDeploymentName: Ember['default'].computed.alias('controllers.deployment.disableNextOnDeploymentName'),
 
     idSatName: 'deployment_sat_name',
-    idSatDesc: 'deployment_sat_desc' });
+    idSatDesc: 'deployment_sat_desc',
+
+    backRouteNameOnSatIndex: 'deployment.start' });
 
 });
 define('fusor-ember-cli/controllers/satellite/subscription', ['exports', 'ember'], function (exports, Ember) {
@@ -2705,10 +2707,6 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember'], function (ex
     step3RouteName: Ember['default'].computed.alias('controllers.deployment.step3RouteName'),
     isCloudForms: Ember['default'].computed.alias('controllers.deployment.isCloudForms'),
 
-    //defaults
-    rhev_storage_type: 'NFS',
-    rhev_gluster_ssh_port: 22,
-
     isNFS: (function () {
       return this.get('rhev_storage_type') === 'NFS';
     }).property('rhev_storage_type'),
@@ -2755,6 +2753,10 @@ define('fusor-ember-cli/controllers/subscriptions/credentials', ['exports', 'emb
     upstream_consumer_uuid: Ember['default'].computed.alias('controllers.deployment.upstream_consumer_uuid'),
     upstream_consumer_name: Ember['default'].computed.alias('controllers.deployment.upstream_consumer_name'),
 
+    isRhev: Ember['default'].computed.alias('controllers.deployment.deploy_rhev'),
+    isOpenStack: Ember['default'].computed.alias('controllers.deployment.deploy_openstack'),
+    isCloudForms: Ember['default'].computed.alias('controllers.deployment.deploy_cfme'),
+
     //overwritten by setupController
     organizationUpstreamConsumerUUID: null,
     organizationUpstreamConsumerName: null,
@@ -2769,7 +2771,29 @@ define('fusor-ember-cli/controllers/subscriptions/credentials', ['exports', 'emb
 
     hasOrganizationUpstreamConsumerUUID: (function () {
       return Ember['default'].isPresent(this.get('organizationUpstreamConsumerUUID'));
-    }).property('organizationUpstreamConsumerUUID') });
+    }).property('organizationUpstreamConsumerUUID'),
+
+    backRouteNameonCredentials: (function () {
+      if (this.get('isCloudForms')) {
+        return 'cloudforms.cfme-configuration';
+      } else if (this.get('isOpenStack')) {
+        return 'assign-nodes';
+      } else if (this.get('isRhev')) {
+        return 'storage';
+      } else {
+        return 'configure-environment';
+      }
+    }).property('isRhev', 'isOpenStack', 'isCloudForms'),
+
+    nextButtonTitle: 'Next',
+
+    actionCredentialsNext: (function () {
+      if (this.get('model.isAuthenticated')) {
+        return 'redirectToManagementApplication';
+      } else {
+        return 'loginPortal';
+      }
+    }).property('model.isAuthenticated') });
 
 });
 define('fusor-ember-cli/controllers/subscriptions/management-application', ['exports', 'ember'], function (exports, Ember) {
@@ -3148,11 +3172,19 @@ define('fusor-ember-cli/mixins/configure-environment-mixin', ['exports', 'ember'
 
     selectedEnvironment: Ember['default'].computed.alias('model'),
 
+    useDefaultOrgViewForEnv: (function () {
+      return Ember['default'].isBlank(this.get('selectedEnvironment'));
+    }).property('selectedEnvironment'),
+
     nonLibraryEnvironments: Ember['default'].computed.filterBy('lifecycleEnvironments', 'library', false),
     libraryEnvironments: Ember['default'].computed.filterBy('lifecycleEnvironments', 'library', true),
     libraryEnv: (function () {
       return this.get('libraryEnvironments').get('firstObject');
     }).property('libraryEnvironments'),
+
+    priorLibraryEnvironments: Ember['default'].computed.filter('lifecycleEnvironments', function (item, index, array) {
+      return item.get('prior_id') === 1;
+    }).property('lifecycleEnvironments.@each.[]', 'libraryEnv'),
 
     fields_env: {},
 
@@ -3163,7 +3195,17 @@ define('fusor-ember-cli/mixins/configure-environment-mixin', ['exports', 'ember'
         return this.get('name').underscore();
       }
     }).property('name'),
-    label: Ember['default'].computed.alias('envLabelName') });
+    label: Ember['default'].computed.alias('envLabelName'),
+
+    hasNoEnvironments: (function () {
+      return Ember['default'].isEmpty(this.get('lifecycleEnvironments'));
+    }).property('lifecycleEnvironments.@each.[]'),
+
+    hasOnlyLibraryEnvironment: (function () {
+      return this.get('lifecycleEnvironments.length') === 1;
+    }).property('lifecycleEnvironments.@each.[]')
+
+  });
 
 });
 define('fusor-ember-cli/mixins/configure-organization-mixin', ['exports', 'ember'], function (exports, Ember) {
@@ -3840,10 +3882,6 @@ define('fusor-ember-cli/models/deployment', ['exports', 'ember-data'], function 
     created_at: DS['default'].attr('date'),
     updated_at: DS['default'].attr('date'),
 
-    useDefaultOrgViewForEnv: (function () {
-      return !!this.get('discovered_host.id');
-    }).property('discovered_host'),
-
     // has one Engine
     discovered_host: DS['default'].belongsTo('discovered-host', { inverse: 'deployment', async: true }),
 
@@ -3967,6 +4005,7 @@ define('fusor-ember-cli/models/lifecycle-environment', ['exports', 'ember-data']
     description: DS['default'].attr('string'),
     library: DS['default'].attr('boolean'),
     prior: DS['default'].attr('number'),
+    prior_id: DS['default'].attr('number'),
     created_at: DS['default'].attr('date'),
     updated_at: DS['default'].attr('date'),
     organization: DS['default'].belongsTo('organization', { async: true })
@@ -4336,9 +4375,12 @@ define('fusor-ember-cli/routes/configure-environment', ['exports', 'ember'], fun
       var lifecycleEnvironments = this.store.find('lifecycle-environment', { organization_id: organization.get('id') });
       lifecycleEnvironments.then(function (results) {
         controller.set('lifecycleEnvironments', results);
-        // nullify environment if organization has no environments, it gives validation error if trying to save with no environment
+        // nullify environment if organization has no environments
         if (results.get('length') === 0) {
-          return controller.set('model', null);
+          return controller.set('selectedEnvironment', null);
+          // default to Library if it is only env that exists
+        } else if (results.get('length') === 1) {
+          return controller.set('selectedEnvironment', results.get('firstObject'));
         }
       });
     },
@@ -4438,9 +4480,12 @@ define('fusor-ember-cli/routes/deployment-new/satellite/configure-environment', 
       var lifecycleEnvironments = this.store.find('lifecycle-environment', { organization_id: organization.get('id') });
       lifecycleEnvironments.then(function (results) {
         controller.set('lifecycleEnvironments', results);
-        // nullify environment if organization has no environments, it gives validation error if trying to save with no environment
+        // nullify environment if organization has no environments
         if (results.get('length') === 0) {
-          return controller.set('model', null);
+          return controller.set('selectedEnvironment', null);
+          // default to Library if it is only env that exists
+        } else if (results.get('length') === 1) {
+          return controller.set('selectedEnvironment', results.get('firstObject'));
         }
       });
     } });
@@ -4486,13 +4531,11 @@ define('fusor-ember-cli/routes/deployment-new/start', ['exports', 'ember'], func
     setupController: function setupController(controller, model) {
       controller.set('model', model);
       controller.set('satelliteTabRouteName', 'deployment-new.satellite.index');
+      controller.set('deploy_rhev', true);
     },
 
     activate: function activate() {
       this.controllerFor('deployment-new').set('isHideWizard', true);
-      this.controllerFor('deployment-new').set('deploy_rhev', true);
-      this.controllerFor('deployment-new').set('deploy_openstack', false);
-      this.controllerFor('deployment-new').set('deploy_cfme', false);
     },
 
     deactivate: function deactivate() {
@@ -5302,6 +5345,12 @@ define('fusor-ember-cli/routes/storage', ['exports', 'ember'], function (exports
   exports['default'] = Ember['default'].Route.extend({
     deactivate: function deactivate() {
       return this.send('saveDeployment', null);
+    },
+
+    setupController: function setupController(controller, model) {
+      controller.set('model', model);
+      controller.set('rhev_storage_type', 'NFS');
+      controller.set('rhev_gluster_ssh_port', 22);
     } });
 
 });
@@ -5352,12 +5401,13 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
       var orgID = this.modelFor('deployment').get('organization.id');
       var url = '/katello/api/v2/organizations/' + orgID;
       $.getJSON(url).then(function (results) {
-        controller.set('organizationUpstreamConsumerUUID', results.owner_details.upstreamConsumer.uuid);
-        controller.set('organizationUpstreamConsumerName', results.owner_details.upstreamConsumer.name);
-        // if (Ember.isBlank(upstream_consumer_uuid)) {
-        //   controller.set('upstream_consumer_uuid', results.owner_details.upstreamConsumer.uuid)
-        //   controller.set('upstream_consumer_name', results.owner_details.upstreamConsumer.name)
-        // }
+        if (Ember['default'].isPresent(results.owner_details.upstreamConsumer)) {
+          controller.set('organizationUpstreamConsumerUUID', results.owner_details.upstreamConsumer.uuid);
+          controller.set('organizationUpstreamConsumerName', results.owner_details.upstreamConsumer.name);
+        } else {
+          controller.set('organizationUpstreamConsumerUUID', null);
+          controller.set('organizationUpstreamConsumerName', null);
+        }
       });
     },
 
@@ -5373,7 +5423,8 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
         var identification = controller.get('identification');
         var password = controller.get('password');
         var token = $('meta[name="csrf-token"]').attr('content');
-
+        controller.set('nextButtonTitle', 'Logging in ...');
+        controller.set('disableCredentialsNext', true);
         return new Ember['default'].RSVP.Promise(function (resolve, reject) {
           Ember['default'].$.ajax({
             url: '/customer_portal/login/',
@@ -5389,6 +5440,8 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
             },
             error: function error(response) {
               console.log('error on loginPortal');
+              controller.set('nextButtonTitle', 'Next');
+              controller.set('disableCredentialsNext', false);
               return self.send('error');
             }
           });
@@ -5439,6 +5492,8 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
           return self.send('authenticatePortal');
         }, function (response) {
           console.log('error saving session-portal');
+          controller.set('nextButtonTitle', 'Next');
+          controller.set('disableCredentialsNext', false);
           return self.send('error');
         });
       },
@@ -5469,23 +5524,34 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
               sessionPortal.set('isAuthenticated', true);
               sessionPortal.save().then(function (result) {
                 console.log('saved ownerKey in session-portal');
+                controller.set('nextButtonTitle', 'Next');
+                controller.set('disableCredentialsNext', false);
                 return self.transitionTo('subscriptions.management-application');
               }, function (response) {
+                controller.set('nextButtonTitle', 'Next');
+                controller.set('disableCredentialsNext', false);
                 console.log('error saving ownerKey session-portal');
               });
             },
 
             error: function error(response) {
               console.log('error on authenticatePortal');
+              controller.set('nextButtonTitle', 'Next');
+              controller.set('disableCredentialsNext', false);
               controller.setProperties({ 'showErrorMessage': true,
                 'errorMsg': 'Your username or password is incorrect. Please try again.'
               });
             }
           });
         });
+      },
+
+      redirectToManagementApplication: function redirectToManagementApplication() {
+        return this.transitionTo('subscriptions.management-application');
       }
 
     }
+
   });
 
 });
@@ -7466,6 +7532,8 @@ define('fusor-ember-cli/templates/components/button-f', ['exports'], function (e
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
         return el0;
       },
       render: function render(context, env, contextualElement) {
@@ -7489,8 +7557,11 @@ define('fusor-ember-cli/templates/components/button-f', ['exports'], function (e
           fragment = this.build(dom);
         }
         var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+        var morph1 = dom.createMorphAt(fragment,2,2,contextualElement);
+        dom.insertBoundary(fragment, null);
         dom.insertBoundary(fragment, 0);
         content(env, morph0, context, "title");
+        content(env, morph1, context, "yield");
         return fragment;
       }
     };
@@ -11649,7 +11720,6 @@ define('fusor-ember-cli/templates/components/rchi-item', ['exports'], function (
         var el2 = dom.createTextNode("\n  ");
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("img");
-        dom.setAttribute(el2,"class","img-responsive");
         dom.appendChild(el1, el2);
         var el2 = dom.createTextNode("\n\n  ");
         dom.appendChild(el1, el2);
@@ -11699,6 +11769,7 @@ define('fusor-ember-cli/templates/components/rchi-item', ['exports'], function (
         var morph0 = dom.createMorphAt(dom.childAt(element2, [1]),1,1);
         element(env, element0, context, "bind-attr", [], {"id": get(env, context, "cssId")});
         element(env, element1, context, "bind-attr", [], {"src": get(env, context, "srcImage")});
+        element(env, element1, context, "bind-attr", [], {"class": ":img-responsive isDisabled:disabledImage"});
         element(env, element2, context, "bind-attr", [], {"class": ":rhci-footer isChecked:rhci-footer-selected:rhci-footer-unselected"});
         block(env, morph0, context, "if", [get(env, context, "isChecked")], {}, child0, null);
         return fragment;
@@ -12172,7 +12243,7 @@ define('fusor-ember-cli/templates/components/rhci-start', ['exports'], function 
           var el3 = dom.createTextNode(" Check your account in the ");
           dom.appendChild(el2, el3);
           var el3 = dom.createElement("a");
-          dom.setAttribute(el3,"href","https://access.redhat.com/home");
+          dom.setAttribute(el3,"href","https://idp.redhat.com/idp/");
           dom.setAttribute(el3,"target","_blank");
           var el4 = dom.createTextNode("Red Hat Customer Portal");
           dom.appendChild(el3, el4);
@@ -12457,7 +12528,7 @@ define('fusor-ember-cli/templates/components/rhci-start', ['exports'], function 
         var morph6 = dom.createMorphAt(element1,3,3);
         content(env, morph0, context, "nameRedHat");
         inline(env, morph1, context, "rchi-item", [], {"srcImage": get(env, context, "imgRhev"), "isChecked": get(env, context, "isRhev"), "name": get(env, context, "nameRhev"), "cssId": "is_rhev"});
-        inline(env, morph2, context, "rchi-item", [], {"srcImage": get(env, context, "imgOpenStack"), "isChecked": get(env, context, "isOpenStack"), "name": get(env, context, "nameOpenStack"), "cssId": "is_openstack"});
+        inline(env, morph2, context, "rchi-item", [], {"srcImage": get(env, context, "imgOpenStack"), "isChecked": get(env, context, "isOpenStack"), "name": get(env, context, "nameOpenStack"), "cssId": "is_openstack", "isDisabled": true});
         inline(env, morph3, context, "rchi-item", [], {"srcImage": get(env, context, "imgCloudForms"), "isChecked": get(env, context, "isCloudForms"), "name": get(env, context, "nameCloudForms"), "cssId": "is_cloudforms"});
         block(env, morph4, context, "unless", [get(env, context, "isUpstream")], {}, child0, null);
         block(env, morph5, context, "link-to", ["deployments"], {"class": "btn btn-default"}, child1, null);
@@ -13749,12 +13820,6 @@ define('fusor-ember-cli/templates/components/tr-engine', ['exports'], function (
         var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
         var el1 = dom.createElement("td");
-        var el2 = dom.createTextNode("  ");
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("td");
         var el2 = dom.createTextNode(" ");
         dom.appendChild(el1, el2);
         var el2 = dom.createComment("");
@@ -13828,11 +13893,11 @@ define('fusor-ember-cli/templates/components/tr-engine', ['exports'], function (
         var morph1 = dom.createMorphAt(dom.childAt(fragment, [2]),1,1);
         var morph2 = dom.createMorphAt(dom.childAt(fragment, [4]),1,1);
         var morph3 = dom.createMorphAt(dom.childAt(fragment, [6]),1,1);
-        var morph4 = dom.createMorphAt(dom.childAt(fragment, [10]),1,1);
-        var morph5 = dom.createMorphAt(dom.childAt(fragment, [12]),1,1);
-        var morph6 = dom.createMorphAt(dom.childAt(fragment, [14]),1,1);
-        var morph7 = dom.createMorphAt(dom.childAt(fragment, [16]),1,1);
-        var morph8 = dom.createMorphAt(dom.childAt(fragment, [18]),1,1);
+        var morph4 = dom.createMorphAt(dom.childAt(fragment, [8]),1,1);
+        var morph5 = dom.createMorphAt(dom.childAt(fragment, [10]),1,1);
+        var morph6 = dom.createMorphAt(dom.childAt(fragment, [12]),1,1);
+        var morph7 = dom.createMorphAt(dom.childAt(fragment, [14]),1,1);
+        var morph8 = dom.createMorphAt(dom.childAt(fragment, [16]),1,1);
         inline(env, morph0, context, "radio-button", [], {"value": get(env, context, "host.model"), "groupValue": get(env, context, "selectedRhevEngineHost"), "changed": "engineHostChanged", "id": get(env, context, "host.cssIdHostId")});
         block(env, morph1, context, "if", [get(env, context, "host.isSelectedAsEngine")], {}, child0, null);
         content(env, morph2, context, "host.mac");
@@ -13943,12 +14008,6 @@ define('fusor-ember-cli/templates/components/tr-hypervisor', ['exports'], functi
         var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
         var el1 = dom.createElement("td");
-        var el2 = dom.createTextNode("  ");
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("td");
         var el2 = dom.createTextNode(" ");
         dom.appendChild(el1, el2);
         var el2 = dom.createComment("");
@@ -14022,11 +14081,11 @@ define('fusor-ember-cli/templates/components/tr-hypervisor', ['exports'], functi
         var morph1 = dom.createMorphAt(dom.childAt(fragment, [2]),1,1);
         var morph2 = dom.createMorphAt(dom.childAt(fragment, [4]),1,1);
         var morph3 = dom.createMorphAt(dom.childAt(fragment, [6]),1,1);
-        var morph4 = dom.createMorphAt(dom.childAt(fragment, [10]),1,1);
-        var morph5 = dom.createMorphAt(dom.childAt(fragment, [12]),1,1);
-        var morph6 = dom.createMorphAt(dom.childAt(fragment, [14]),1,1);
-        var morph7 = dom.createMorphAt(dom.childAt(fragment, [16]),1,1);
-        var morph8 = dom.createMorphAt(dom.childAt(fragment, [18]),1,1);
+        var morph4 = dom.createMorphAt(dom.childAt(fragment, [8]),1,1);
+        var morph5 = dom.createMorphAt(dom.childAt(fragment, [10]),1,1);
+        var morph6 = dom.createMorphAt(dom.childAt(fragment, [12]),1,1);
+        var morph7 = dom.createMorphAt(dom.childAt(fragment, [14]),1,1);
+        var morph8 = dom.createMorphAt(dom.childAt(fragment, [16]),1,1);
         inline(env, morph0, context, "input", [], {"type": "checkbox", "name": "isSelectedAsHypervisor", "checked": get(env, context, "host.isSelectedAsHypervisor"), "id": get(env, context, "host.cssIdHostId")});
         block(env, morph1, context, "if", [get(env, context, "host.isSelectedAsHypervisor")], {}, child0, null);
         content(env, morph2, context, "host.mac");
@@ -15005,95 +15064,17 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
           hasRendered: false,
           build: function build(dom) {
             var el0 = dom.createDocumentFragment();
-            var el1 = dom.createTextNode("    ");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createElement("div");
-            dom.setAttribute(el1,"class","path-selector");
-            var el2 = dom.createTextNode("\n      ");
-            dom.appendChild(el1, el2);
-            var el2 = dom.createElement("ul");
-            dom.setAttribute(el2,"class","path-list");
-            var el3 = dom.createTextNode("\n        ");
-            dom.appendChild(el2, el3);
-            var el3 = dom.createComment("");
-            dom.appendChild(el2, el3);
-            var el3 = dom.createTextNode("\n        ");
-            dom.appendChild(el2, el3);
-            var el3 = dom.createComment("");
-            dom.appendChild(el2, el3);
-            var el3 = dom.createTextNode("\n        ");
-            dom.appendChild(el2, el3);
-            var el3 = dom.createElement("li");
-            dom.setAttribute(el3,"class","path-list-item");
-            var el4 = dom.createTextNode("\n          ");
-            dom.appendChild(el3, el4);
-            var el4 = dom.createElement("label");
-            dom.setAttribute(el4,"class","path-list-item-label");
-            var el5 = dom.createTextNode("\n             \n          ");
-            dom.appendChild(el4, el5);
-            dom.appendChild(el3, el4);
-            var el4 = dom.createTextNode("\n        ");
-            dom.appendChild(el3, el4);
-            dom.appendChild(el2, el3);
-            var el3 = dom.createTextNode("\n      ");
-            dom.appendChild(el2, el3);
-            dom.appendChild(el1, el2);
-            var el2 = dom.createTextNode("\n    ");
-            dom.appendChild(el1, el2);
-            dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("\n");
-            dom.appendChild(el0, el1);
-            return el0;
-          },
-          render: function render(context, env, contextualElement) {
-            var dom = env.dom;
-            var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
-            dom.detectNamespace(contextualElement);
-            var fragment;
-            if (env.useFragmentCache && dom.canClone) {
-              if (this.cachedFragment === null) {
-                fragment = this.build(dom);
-                if (this.hasRendered) {
-                  this.cachedFragment = fragment;
-                } else {
-                  this.hasRendered = true;
-                }
-              }
-              if (this.cachedFragment) {
-                fragment = dom.cloneNode(this.cachedFragment, true);
-              }
-            } else {
-              fragment = this.build(dom);
-            }
-            var element1 = dom.childAt(fragment, [1, 1]);
-            var morph0 = dom.createMorphAt(element1,1,1);
-            var morph1 = dom.createMorphAt(element1,3,3);
-            inline(env, morph0, context, "env-path-list-item", [], {"env": get(env, context, "libraryEnv"), "selectedEnvironment": get(env, context, "selectedEnvironment"), "action": "selectEnvironment"});
-            inline(env, morph1, context, "env-path-list-item", [], {"env": get(env, context, "env"), "selectedEnvironment": get(env, context, "selectedEnvironment"), "action": "selectEnvironment"});
-            return fragment;
-          }
-        };
-      }());
-      var child1 = (function() {
-        return {
-          isHTMLBars: true,
-          revision: "Ember@1.11.1",
-          blockParams: 0,
-          cachedFragment: null,
-          hasRendered: false,
-          build: function build(dom) {
-            var el0 = dom.createDocumentFragment();
-            var el1 = dom.createTextNode("      ");
+            var el1 = dom.createTextNode("        ");
             dom.appendChild(el0, el1);
             var el1 = dom.createElement("div");
             dom.setAttribute(el1,"class","alert alert-info");
-            var el2 = dom.createTextNode("\n        No lifecycle environments are in organization ");
+            var el2 = dom.createTextNode("\n          No lifecycle environments are in organization ");
             dom.appendChild(el1, el2);
             var el2 = dom.createElement("strong");
             var el3 = dom.createComment("");
             dom.appendChild(el2, el3);
             dom.appendChild(el1, el2);
-            var el2 = dom.createTextNode("\n      ");
+            var el2 = dom.createTextNode("\n        ");
             dom.appendChild(el1, el2);
             dom.appendChild(el0, el1);
             var el1 = dom.createTextNode("\n");
@@ -15122,6 +15103,238 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
             }
             var morph0 = dom.createMorphAt(dom.childAt(fragment, [1, 1]),0,0);
             content(env, morph0, context, "selectedOrganization.name");
+            return fragment;
+          }
+        };
+      }());
+      var child1 = (function() {
+        var child0 = (function() {
+          return {
+            isHTMLBars: true,
+            revision: "Ember@1.11.1",
+            blockParams: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            build: function build(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("        ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createElement("div");
+              dom.setAttribute(el1,"class","path-selector");
+              var el2 = dom.createTextNode("\n          ");
+              dom.appendChild(el1, el2);
+              var el2 = dom.createElement("ul");
+              dom.setAttribute(el2,"class","path-list");
+              var el3 = dom.createTextNode("\n            ");
+              dom.appendChild(el2, el3);
+              var el3 = dom.createComment("");
+              dom.appendChild(el2, el3);
+              var el3 = dom.createTextNode("\n            ");
+              dom.appendChild(el2, el3);
+              var el3 = dom.createElement("li");
+              dom.setAttribute(el3,"class","path-list-item");
+              var el4 = dom.createTextNode("\n              ");
+              dom.appendChild(el3, el4);
+              var el4 = dom.createElement("label");
+              dom.setAttribute(el4,"class","path-list-item-label");
+              var el5 = dom.createTextNode("\n                 \n              ");
+              dom.appendChild(el4, el5);
+              dom.appendChild(el3, el4);
+              var el4 = dom.createTextNode("\n            ");
+              dom.appendChild(el3, el4);
+              dom.appendChild(el2, el3);
+              var el3 = dom.createTextNode("\n          ");
+              dom.appendChild(el2, el3);
+              dom.appendChild(el1, el2);
+              var el2 = dom.createTextNode("\n        ");
+              dom.appendChild(el1, el2);
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            render: function render(context, env, contextualElement) {
+              var dom = env.dom;
+              var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
+              dom.detectNamespace(contextualElement);
+              var fragment;
+              if (env.useFragmentCache && dom.canClone) {
+                if (this.cachedFragment === null) {
+                  fragment = this.build(dom);
+                  if (this.hasRendered) {
+                    this.cachedFragment = fragment;
+                  } else {
+                    this.hasRendered = true;
+                  }
+                }
+                if (this.cachedFragment) {
+                  fragment = dom.cloneNode(this.cachedFragment, true);
+                }
+              } else {
+                fragment = this.build(dom);
+              }
+              var morph0 = dom.createMorphAt(dom.childAt(fragment, [1, 1]),1,1);
+              inline(env, morph0, context, "env-path-list-item", [], {"env": get(env, context, "libraryEnv"), "selectedEnvironment": get(env, context, "selectedEnvironment"), "action": "selectEnvironment"});
+              return fragment;
+            }
+          };
+        }());
+        var child1 = (function() {
+          var child0 = (function() {
+            return {
+              isHTMLBars: true,
+              revision: "Ember@1.11.1",
+              blockParams: 0,
+              cachedFragment: null,
+              hasRendered: false,
+              build: function build(dom) {
+                var el0 = dom.createDocumentFragment();
+                var el1 = dom.createTextNode("        ");
+                dom.appendChild(el0, el1);
+                var el1 = dom.createElement("div");
+                dom.setAttribute(el1,"class","path-selector");
+                var el2 = dom.createTextNode("\n          ");
+                dom.appendChild(el1, el2);
+                var el2 = dom.createElement("ul");
+                dom.setAttribute(el2,"class","path-list");
+                var el3 = dom.createTextNode("\n            ");
+                dom.appendChild(el2, el3);
+                var el3 = dom.createComment("");
+                dom.appendChild(el2, el3);
+                var el3 = dom.createTextNode("\n            ");
+                dom.appendChild(el2, el3);
+                var el3 = dom.createComment("");
+                dom.appendChild(el2, el3);
+                var el3 = dom.createTextNode("\n            ");
+                dom.appendChild(el2, el3);
+                var el3 = dom.createElement("li");
+                dom.setAttribute(el3,"class","path-list-item");
+                var el4 = dom.createTextNode("\n              ");
+                dom.appendChild(el3, el4);
+                var el4 = dom.createElement("label");
+                dom.setAttribute(el4,"class","path-list-item-label");
+                var el5 = dom.createTextNode("\n                 \n              ");
+                dom.appendChild(el4, el5);
+                dom.appendChild(el3, el4);
+                var el4 = dom.createTextNode("\n            ");
+                dom.appendChild(el3, el4);
+                dom.appendChild(el2, el3);
+                var el3 = dom.createTextNode("\n          ");
+                dom.appendChild(el2, el3);
+                dom.appendChild(el1, el2);
+                var el2 = dom.createTextNode("\n        ");
+                dom.appendChild(el1, el2);
+                dom.appendChild(el0, el1);
+                var el1 = dom.createTextNode("\n");
+                dom.appendChild(el0, el1);
+                return el0;
+              },
+              render: function render(context, env, contextualElement) {
+                var dom = env.dom;
+                var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
+                dom.detectNamespace(contextualElement);
+                var fragment;
+                if (env.useFragmentCache && dom.canClone) {
+                  if (this.cachedFragment === null) {
+                    fragment = this.build(dom);
+                    if (this.hasRendered) {
+                      this.cachedFragment = fragment;
+                    } else {
+                      this.hasRendered = true;
+                    }
+                  }
+                  if (this.cachedFragment) {
+                    fragment = dom.cloneNode(this.cachedFragment, true);
+                  }
+                } else {
+                  fragment = this.build(dom);
+                }
+                var element1 = dom.childAt(fragment, [1, 1]);
+                var morph0 = dom.createMorphAt(element1,1,1);
+                var morph1 = dom.createMorphAt(element1,3,3);
+                inline(env, morph0, context, "env-path-list-item", [], {"env": get(env, context, "libraryEnv"), "selectedEnvironment": get(env, context, "selectedEnvironment"), "action": "selectEnvironment"});
+                inline(env, morph1, context, "env-path-list-item", [], {"env": get(env, context, "env"), "selectedEnvironment": get(env, context, "selectedEnvironment"), "action": "selectEnvironment"});
+                return fragment;
+              }
+            };
+          }());
+          return {
+            isHTMLBars: true,
+            revision: "Ember@1.11.1",
+            blockParams: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            build: function build(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("    ");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            render: function render(context, env, contextualElement) {
+              var dom = env.dom;
+              var hooks = env.hooks, get = hooks.get, block = hooks.block;
+              dom.detectNamespace(contextualElement);
+              var fragment;
+              if (env.useFragmentCache && dom.canClone) {
+                if (this.cachedFragment === null) {
+                  fragment = this.build(dom);
+                  if (this.hasRendered) {
+                    this.cachedFragment = fragment;
+                  } else {
+                    this.hasRendered = true;
+                  }
+                }
+                if (this.cachedFragment) {
+                  fragment = dom.cloneNode(this.cachedFragment, true);
+                }
+              } else {
+                fragment = this.build(dom);
+              }
+              var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+              dom.insertBoundary(fragment, 0);
+              block(env, morph0, context, "each", [get(env, context, "priorLibraryEnvironments")], {"keyword": "env"}, child0, null);
+              return fragment;
+            }
+          };
+        }());
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, get = hooks.get, block = hooks.block;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+            dom.insertBoundary(fragment, null);
+            dom.insertBoundary(fragment, 0);
+            block(env, morph0, context, "if", [get(env, context, "hasOnlyLibraryEnvironment")], {}, child0, child1);
             return fragment;
           }
         };
@@ -15224,7 +15437,7 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
           var element2 = dom.childAt(fragment, [0, 1]);
           var morph0 = dom.createMorphAt(element2,1,1);
           var morph1 = dom.createMorphAt(dom.childAt(element2, [3]),1,1);
-          block(env, morph0, context, "each", [get(env, context, "nonLibraryEnvironments")], {"keyword": "env"}, child0, child1);
+          block(env, morph0, context, "if", [get(env, context, "hasNoEnvironments")], {}, child0, child1);
           block(env, morph1, context, "em-modal-toggler", [], {"modal-id": "newLifecycleEnvironmentModal", "class": "btn btn-default"}, child2, null);
           return fragment;
         }
@@ -15736,7 +15949,7 @@ define('fusor-ember-cli/templates/configure-organization', ['exports'], function
         var morph3 = dom.createMorphAt(fragment,12,12,contextualElement);
         var morph4 = dom.createMorphAt(fragment,14,14,contextualElement);
         block(env, morph0, context, "if", [get(env, context, "showAlertMessage")], {}, child0, null);
-        block(env, morph1, context, "em-modal-toggler", [], {"modal-id": "newOrganizationModal", "class": "btn btn-primary"}, child1, null);
+        block(env, morph1, context, "em-modal-toggler", [], {"modal-id": "newOrganizationModal", "class": "btn btn-primary", "disabled": true}, child1, null);
         block(env, morph2, context, "each", [get(env, context, "organizations")], {"keyword": "org"}, child2, null);
         inline(env, morph3, context, "partial", ["new-organization"], {});
         inline(env, morph4, context, "cancel-back-next", [], {"backRouteName": get(env, context, "satelliteTabRouteName"), "disableBack": false, "nextRouteName": get(env, context, "lifecycleEnvironmentTabRouteName"), "disableNext": get(env, context, "disableNextOnConfigureOrganization"), "parentController": get(env, context, "controller")});
@@ -17695,12 +17908,6 @@ define('fusor-ember-cli/templates/engine/discovered-host', ['exports'], function
         var el4 = dom.createTextNode("\n      ");
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("th");
-        var el5 = dom.createTextNode(" Vendor ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("th");
         var el5 = dom.createTextNode(" CPU ");
         dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
@@ -18507,12 +18714,6 @@ define('fusor-ember-cli/templates/hypervisor/discovered-host', ['exports'], func
         var el4 = dom.createTextNode("\n      ");
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("th");
-        var el5 = dom.createTextNode(" Vendor ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("th");
         var el5 = dom.createTextNode(" CPU ");
         dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
@@ -18712,19 +18913,34 @@ define('fusor-ember-cli/templates/loading', ['exports'], function (exports) {
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
-        var el1 = dom.createElement("h2");
-        var el2 = dom.createTextNode("\n");
+        var el1 = dom.createElement("br");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("br");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("br");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","spinner spinner-md spinner-inline");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("span");
+        dom.setAttribute(el1,"class","spinner-text");
+        var el2 = dom.createTextNode("\n  Loading ....\n");
         dom.appendChild(el1, el2);
-        var el2 = dom.createComment("");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\nLoading ....\n");
-        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
         return el0;
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, inline = hooks.inline;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -18742,8 +18958,6 @@ define('fusor-ember-cli/templates/loading', ['exports'], function (exports) {
         } else {
           fragment = this.build(dom);
         }
-        var morph0 = dom.createMorphAt(dom.childAt(fragment, [2]),1,1);
-        inline(env, morph0, context, "fa-icon", ["spinner"], {"spin": true});
         return fragment;
       }
     };
@@ -26152,6 +26366,170 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
         hasRendered: false,
         build: function build(dom) {
           var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("        ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("i");
+          dom.setAttribute(el1,"class","fa fa-check-circle-o green-circle");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode(" \n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          return fragment;
+        }
+      };
+    }());
+    var child1 = (function() {
+      var child0 = (function() {
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("i");
+            dom.setAttribute(el1,"class","fa fa-exclamation-triangle errorForValidation");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode(" \n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            return fragment;
+          }
+        };
+      }());
+      var child1 = (function() {
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("div");
+            dom.setAttribute(el1,"class","spinner spinner-xs spinner-inline");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n      ");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            return fragment;
+          }
+        };
+      }());
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, get = hooks.get, block = hooks.block;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+          dom.insertBoundary(fragment, null);
+          dom.insertBoundary(fragment, 0);
+          block(env, morph0, context, "if", [get(env, context, "isError")], {}, child0, child1);
+          return fragment;
+        }
+      };
+    }());
+    var child2 = (function() {
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
           var el1 = dom.createElement("div");
           dom.setAttribute(el1,"class","row");
           var el2 = dom.createTextNode("\n  ");
@@ -26243,7 +26621,7 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
         }
       };
     }());
-    var child1 = (function() {
+    var child3 = (function() {
       return {
         isHTMLBars: true,
         revision: "Ember@1.11.1",
@@ -26427,11 +26805,11 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("div");
         dom.setAttribute(el3,"class","progress-bar-label");
-        var el4 = dom.createTextNode("\n      ");
+        var el4 = dom.createTextNode("\n");
         dom.appendChild(el3, el4);
         var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n       ");
+        var el4 = dom.createTextNode("      ");
         dom.appendChild(el3, el4);
         var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
@@ -26441,10 +26819,6 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
         dom.setAttribute(el4,"class","no-bold");
         var el5 = dom.createComment("");
         dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode(" ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
         var el4 = dom.createTextNode(" ");
         dom.appendChild(el3, el4);
@@ -26498,7 +26872,7 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, get = hooks.get, inline = hooks.inline, content = hooks.content, attribute = hooks.attribute, block = hooks.block;
+        var hooks = env.hooks, get = hooks.get, block = hooks.block, content = hooks.content, attribute = hooks.attribute;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -26523,25 +26897,23 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
         var morph1 = dom.createMorphAt(element1,3,3);
         var morph2 = dom.createMorphAt(dom.childAt(element1, [5]),0,0);
         var morph3 = dom.createMorphAt(element1,7,7);
-        var morph4 = dom.createMorphAt(element1,9,9);
-        var morph5 = dom.createMorphAt(dom.childAt(element1, [11]),1,1);
+        var morph4 = dom.createMorphAt(dom.childAt(element1, [9]),1,1);
         var attrMorph0 = dom.createAttrMorph(element2, 'class');
         var attrMorph1 = dom.createAttrMorph(element2, 'aria-valuenow');
         var attrMorph2 = dom.createAttrMorph(element2, 'style');
-        var morph6 = dom.createMorphAt(fragment,4,4,contextualElement);
-        var morph7 = dom.createMorphAt(fragment,6,6,contextualElement);
+        var morph5 = dom.createMorphAt(fragment,4,4,contextualElement);
+        var morph6 = dom.createMorphAt(fragment,6,6,contextualElement);
         dom.insertBoundary(fragment, null);
-        inline(env, morph0, context, "fa-icon", ["spinner"], {"spin": get(env, context, "isSpin")});
+        block(env, morph0, context, "if", [get(env, context, "isFinished")], {}, child0, child1);
         content(env, morph1, context, "progressBarMsg");
         content(env, morph2, context, "controller.progressBarSubMsg");
         content(env, morph3, context, "model.humanized_errors");
-        content(env, morph4, context, "model.humanized_errors");
-        content(env, morph5, context, "controller.percentProgress");
+        content(env, morph4, context, "controller.percentProgress");
         attribute(env, attrMorph0, element2, "class", get(env, context, "progressBarClass"));
         attribute(env, attrMorph1, element2, "aria-valuenow", get(env, context, "controller.percentProgressInt"));
         attribute(env, attrMorph2, element2, "style", get(env, context, "controller.styleWidth"));
-        block(env, morph6, context, "if", [false], {}, child0, null);
-        block(env, morph7, context, "if", [false], {}, child1, null);
+        block(env, morph5, context, "if", [false], {}, child2, null);
+        block(env, morph6, context, "if", [false], {}, child3, null);
         return fragment;
       }
     };
@@ -26794,52 +27166,32 @@ define('fusor-ember-cli/templates/rhev-setup', ['exports'], function (exports) {
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("div");
         dom.setAttribute(el2,"class","col-md-9");
-        var el3 = dom.createTextNode("\n    Select the setup type.\n  ");
+        var el3 = dom.createTextNode("\n    ");
         dom.appendChild(el2, el3);
-        dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\n");
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("div");
-        dom.setAttribute(el1,"class","row");
-        var el2 = dom.createTextNode("\n  ");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createElement("div");
-        dom.setAttribute(el2,"class","col-md-8 col-md-offset-1");
-        var el3 = dom.createTextNode("\n\n    ");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createElement("div");
-        dom.setAttribute(el3,"class","row");
-        var el4 = dom.createTextNode("\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("h3");
-        var el5 = dom.createTextNode("\n");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createComment("");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("      ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n    ");
+        var el3 = dom.createElement("p");
+        var el4 = dom.createTextNode("\n      Select the setup type.\n    ");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n\n    ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("div");
-        dom.setAttribute(el3,"class","row");
-        var el4 = dom.createTextNode("\n      ");
+        dom.setAttribute(el3,"class","ident-radio");
+        var el4 = dom.createTextNode("\n");
         dom.appendChild(el3, el4);
-        var el4 = dom.createElement("h3");
-        var el5 = dom.createTextNode("\n");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createComment("");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("      ");
-        dom.appendChild(el4, el5);
+        var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n    ");
+        var el4 = dom.createTextNode("    ");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n\n    ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","ident-radio");
+        var el4 = dom.createTextNode("\n");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("    ");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n\n  ");
@@ -26880,10 +27232,10 @@ define('fusor-ember-cli/templates/rhev-setup', ['exports'], function (exports) {
         } else {
           fragment = this.build(dom);
         }
-        var element0 = dom.childAt(fragment, [2, 1]);
-        var morph0 = dom.createMorphAt(dom.childAt(element0, [1, 1]),1,1);
-        var morph1 = dom.createMorphAt(dom.childAt(element0, [3, 1]),1,1);
-        var morph2 = dom.createMorphAt(fragment,6,6,contextualElement);
+        var element0 = dom.childAt(fragment, [0, 1]);
+        var morph0 = dom.createMorphAt(dom.childAt(element0, [3]),1,1);
+        var morph1 = dom.createMorphAt(dom.childAt(element0, [5]),1,1);
+        var morph2 = dom.createMorphAt(fragment,4,4,contextualElement);
         block(env, morph0, context, "radio-button", [], {"value": "selfhost", "groupValue": get(env, context, "rhevSetup"), "changed": "rhevSetupChanged", "id": "selfhost"}, child0, null);
         block(env, morph1, context, "radio-button", [], {"value": "rhevhost", "groupValue": get(env, context, "rhevSetup"), "changed": "rhevSetupChanged", "id": "rhevhost"}, child1, null);
         inline(env, morph2, context, "cancel-back-next", [], {"backRouteName": "configure-environment", "disableBack": false, "nextRouteName": "engine.discovered-host", "disableNext": false});
@@ -27512,7 +27864,7 @@ define('fusor-ember-cli/templates/satellite/index', ['exports'], function (expor
         var el2 = dom.createTextNode("\n");
         dom.appendChild(el1, el2);
         dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n");
+        var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
         var el1 = dom.createComment("");
         dom.appendChild(el0, el1);
@@ -27546,7 +27898,7 @@ define('fusor-ember-cli/templates/satellite/index', ['exports'], function (expor
         var morph2 = dom.createMorphAt(fragment,2,2,contextualElement);
         inline(env, morph0, context, "text-f", [], {"label": "Name", "value": get(env, context, "name"), "inputSize": "col-md-5", "errors": get(env, context, "errors"), "cssId": get(env, context, "idSatName"), "isRequired": true});
         inline(env, morph1, context, "textarea-f", [], {"label": "Description (Optional)", "value": get(env, context, "description"), "inputSize": "col-md-5", "cssId": get(env, context, "idSatDesc")});
-        inline(env, morph2, context, "cancel-back-next", [], {"backRouteName": "", "disableBack": true, "nextRouteName": get(env, context, "organizationTabRouteName"), "disableNext": get(env, context, "disableNextOnDeploymentName"), "parentController": get(env, context, "controller")});
+        inline(env, morph2, context, "cancel-back-next", [], {"backRouteName": get(env, context, "backRouteNameOnSatIndex"), "disableBack": false, "nextRouteName": get(env, context, "organizationTabRouteName"), "disableNext": get(env, context, "disableNextOnDeploymentName"), "parentController": get(env, context, "controller")});
         return fragment;
       }
     };
@@ -29014,11 +29366,11 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
           } else {
             fragment = this.build(dom);
           }
-          var element2 = dom.childAt(fragment, [1, 1, 1]);
-          var element3 = dom.childAt(element2, [9]);
-          var morph0 = dom.createMorphAt(dom.childAt(element2, [3]),0,0);
+          var element1 = dom.childAt(fragment, [1, 1, 1]);
+          var element2 = dom.childAt(element1, [9]);
+          var morph0 = dom.createMorphAt(dom.childAt(element1, [3]),0,0);
           content(env, morph0, context, "identification");
-          element(env, element3, context, "action", ["logoutPortal"], {});
+          element(env, element2, context, "action", ["logoutPortal"], {});
           return fragment;
         }
       };
@@ -29206,10 +29558,10 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
           } else {
             fragment = this.build(dom);
           }
-          var element1 = dom.childAt(fragment, [1, 1, 3]);
-          var morph0 = dom.createMorphAt(element1,1,1);
-          var morph1 = dom.createMorphAt(element1,3,3);
-          var morph2 = dom.createMorphAt(element1,5,5);
+          var element0 = dom.childAt(fragment, [1, 1, 3]);
+          var morph0 = dom.createMorphAt(element0,1,1);
+          var morph1 = dom.createMorphAt(element0,3,3);
+          var morph2 = dom.createMorphAt(element0,5,5);
           inline(env, morph0, context, "text-f", [], {"label": "Red Hat login", "value": get(env, context, "identification")});
           inline(env, morph1, context, "text-f", [], {"label": "Password", "value": get(env, context, "password"), "type": "password"});
           block(env, morph2, context, "base-f", [], {}, child0, null);
@@ -29218,6 +29570,54 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
       };
     }());
     var child5 = (function() {
+      var child0 = (function() {
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode(" ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("i");
+            dom.setAttribute(el1,"class","fa fa-angle-right");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, content = hooks.content;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
+            content(env, morph0, context, "nextButtonTitle");
+            return fragment;
+          }
+        };
+      }());
       return {
         isHTMLBars: true,
         revision: "Ember@1.11.1",
@@ -29226,25 +29626,13 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
         hasRendered: false,
         build: function build(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("    ");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createElement("button");
-          dom.setAttribute(el1,"class","btn btn-primary");
-          var el2 = dom.createTextNode("\n        Next ");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createElement("i");
-          dom.setAttribute(el2,"class","fa fa-angle-right");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createTextNode("\n    ");
-          dom.appendChild(el1, el2);
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n");
+          var el1 = dom.createComment("");
           dom.appendChild(el0, el1);
           return el0;
         },
         render: function render(context, env, contextualElement) {
           var dom = env.dom;
-          var hooks = env.hooks, element = hooks.element, get = hooks.get;
+          var hooks = env.hooks, get = hooks.get, block = hooks.block;
           dom.detectNamespace(contextualElement);
           var fragment;
           if (env.useFragmentCache && dom.canClone) {
@@ -29262,9 +29650,10 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
           } else {
             fragment = this.build(dom);
           }
-          var element0 = dom.childAt(fragment, [1]);
-          element(env, element0, context, "action", ["loginPortal"], {});
-          element(env, element0, context, "bind-attr", [], {"disabled": get(env, context, "disableCredentialsNext")});
+          var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+          dom.insertBoundary(fragment, null);
+          dom.insertBoundary(fragment, 0);
+          block(env, morph0, context, "button-f", [], {"disabled": get(env, context, "disableCredentialsNext"), "action": get(env, context, "actionCredentialsNext")}, child0, null);
           return fragment;
         }
       };
@@ -29334,7 +29723,7 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
         block(env, morph2, context, "if", [get(env, context, "model.isAuthenticated")], {}, child2, null);
         block(env, morph3, context, "if", [get(env, context, "showErrorMessage")], {}, child3, null);
         block(env, morph4, context, "unless", [get(env, context, "model.isAuthenticated")], {}, child4, null);
-        block(env, morph5, context, "cancel-back-next", [], {"backRouteName": "", "disableBack": true, "parentController": get(env, context, "controller")}, child5, null);
+        block(env, morph5, context, "cancel-back-next", [], {"backRouteName": get(env, context, "backRouteNameonCredentials"), "disableBack": false, "parentController": get(env, context, "controller")}, child5, null);
         return fragment;
       }
     };
@@ -29402,15 +29791,22 @@ define('fusor-ember-cli/templates/subscriptions/loading', ['exports'], function 
       hasRendered: false,
       build: function build(dom) {
         var el0 = dom.createDocumentFragment();
-        var el1 = dom.createComment("");
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","spinner spinner-md spinner-inline");
         dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\nLoading from Red Hat Customer Portal ...\n");
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("span");
+        dom.setAttribute(el1,"class","spinner-text");
+        var el2 = dom.createTextNode("\n  Loading from Red Hat Customer Portal ...\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
         return el0;
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, inline = hooks.inline;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -29428,9 +29824,6 @@ define('fusor-ember-cli/templates/subscriptions/loading', ['exports'], function 
         } else {
           fragment = this.build(dom);
         }
-        var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
-        dom.insertBoundary(fragment, 0);
-        inline(env, morph0, context, "fa-icon", ["spinner"], {"spin": true});
         return fragment;
       }
     };
@@ -29884,7 +30277,35 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
         hasRendered: false,
         build: function build(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("Next");
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("tr");
+          var el2 = dom.createTextNode("\n      ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("td");
+          dom.setAttribute(el2,"colspan","8");
+          var el3 = dom.createTextNode("\n        ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createElement("p");
+          dom.setAttribute(el3,"class","no_subscriptions");
+          var el4 = dom.createTextNode("\n          No subscriptions found. Check your account in in the ");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createElement("a");
+          dom.setAttribute(el4,"href","https://idp.redhat.com/idp/");
+          dom.setAttribute(el4,"target","_blank");
+          var el5 = dom.createTextNode("Red Hat Customer Portal");
+          dom.appendChild(el4, el5);
+          dom.appendChild(el3, el4);
+          var el4 = dom.createTextNode(" to verify you have subscriptions available.\n        ");
+          dom.appendChild(el3, el4);
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n      ");
+          dom.appendChild(el2, el3);
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n    ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
           dom.appendChild(el0, el1);
           return el0;
         },
@@ -29946,25 +30367,6 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
         var el1 = dom.createElement("br");
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("span");
-        dom.setAttribute(el1,"class","disabled-color");
-        var el2 = dom.createTextNode("Only show subscriptions that match this Satellite Organization");
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("br");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("br");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n\n");
         dom.appendChild(el0, el1);
         var el1 = dom.createElement("table");
         dom.setAttribute(el1,"class","table table-bordered small");
@@ -30043,37 +30445,7 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n\n");
         dom.appendChild(el0, el1);
-        var el1 = dom.createElement("br");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
         var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("br");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("br");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("div");
-        dom.setAttribute(el1,"style","text-align:right");
-        var el2 = dom.createTextNode("\n  ");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createElement("button");
-        dom.setAttribute(el2,"class","btn btn-default");
-        var el3 = dom.createTextNode("Cancel");
-        dom.appendChild(el2, el3);
-        dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\n  ");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createComment("");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\n");
-        dom.appendChild(el1, el2);
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
@@ -30081,7 +30453,7 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, get = hooks.get, block = hooks.block, inline = hooks.inline, attribute = hooks.attribute, element = hooks.element;
+        var hooks = env.hooks, get = hooks.get, block = hooks.block, inline = hooks.inline, attribute = hooks.attribute;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -30100,24 +30472,17 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
           fragment = this.build(dom);
         }
         var element0 = dom.childAt(fragment, [6]);
-        var element1 = dom.childAt(fragment, [30]);
-        var element2 = dom.childAt(element1, [1]);
         var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
         var morph1 = dom.createMorphAt(fragment,4,4,contextualElement);
         var attrMorph0 = dom.createAttrMorph(element0, 'class');
-        var morph2 = dom.createMorphAt(fragment,12,12,contextualElement);
-        var morph3 = dom.createMorphAt(dom.childAt(fragment, [20, 3]),1,1);
-        var morph4 = dom.createMorphAt(fragment,24,24,contextualElement);
-        var morph5 = dom.createMorphAt(element1,3,3);
+        var morph2 = dom.createMorphAt(dom.childAt(fragment, [12, 3]),1,1);
+        var morph3 = dom.createMorphAt(fragment,14,14,contextualElement);
         dom.insertBoundary(fragment, 0);
         block(env, morph0, context, "if", [get(env, context, "showAttachedSuccessMessage")], {}, child0, null);
         inline(env, morph1, context, "input", [], {"type": "checkbox", "name": "enableAnalytics", "disabled": true, "checked": get(env, context, "enableAnalytics")});
         attribute(env, attrMorph0, element0, "class", get(env, context, "analyticsColor"));
-        inline(env, morph2, context, "input", [], {"type": "checkbox", "name": "isOnlyShowSubscriptions", "checked": get(env, context, "isOnlyShowSubscriptions"), "disabled": true});
-        block(env, morph3, context, "each", [get(env, context, "model")], {"itemController": "subscription", "keyword": "subscription"}, child1, null);
-        inline(env, morph4, context, "button-f", [], {"class": "btn btn-success", "disabled": get(env, context, "disableAttachButton"), "title": get(env, context, "buttonAttachTitle"), "action": "attachSubscriptions"});
-        element(env, element2, context, "action", ["showModal", "cancel-modal"], {});
-        block(env, morph5, context, "link-to", ["review.installation"], {"class": "btn btn-primary", "disabled": get(env, context, "disableSubscriptionsNext")}, child2, null);
+        block(env, morph2, context, "each", [get(env, context, "model")], {"itemController": "subscription", "keyword": "subscription"}, child1, child2);
+        inline(env, morph3, context, "cancel-back-next", [], {"backRouteName": "subscriptions.management-application", "disableBack": false, "nextRouteName": "review", "disableNext": false, "parentController": get(env, context, "controller")});
         return fragment;
       }
     };
@@ -30430,42 +30795,6 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
 
   exports['default'] = Ember.HTMLBars.template((function() {
     var child0 = (function() {
-      var child0 = (function() {
-        return {
-          isHTMLBars: true,
-          revision: "Ember@1.11.1",
-          blockParams: 0,
-          cachedFragment: null,
-          hasRendered: false,
-          build: function build(dom) {
-            var el0 = dom.createDocumentFragment();
-            var el1 = dom.createTextNode("            Install CloudForms on Red Hat Enterprise Virtualization\n");
-            dom.appendChild(el0, el1);
-            return el0;
-          },
-          render: function render(context, env, contextualElement) {
-            var dom = env.dom;
-            dom.detectNamespace(contextualElement);
-            var fragment;
-            if (env.useFragmentCache && dom.canClone) {
-              if (this.cachedFragment === null) {
-                fragment = this.build(dom);
-                if (this.hasRendered) {
-                  this.cachedFragment = fragment;
-                } else {
-                  this.hasRendered = true;
-                }
-              }
-              if (this.cachedFragment) {
-                fragment = dom.cloneNode(this.cachedFragment, true);
-              }
-            } else {
-              fragment = this.build(dom);
-            }
-            return fragment;
-          }
-        };
-      }());
       return {
         isHTMLBars: true,
         revision: "Ember@1.11.1",
@@ -30474,13 +30803,19 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
         hasRendered: false,
         build: function build(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createComment("");
+          var el1 = dom.createTextNode("        ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("span");
+          var el2 = dom.createTextNode("\n          Install CloudForms on Red Hat Enterprise Virtualization\n        ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
           dom.appendChild(el0, el1);
           return el0;
         },
         render: function render(context, env, contextualElement) {
           var dom = env.dom;
-          var hooks = env.hooks, get = hooks.get, block = hooks.block;
+          var hooks = env.hooks, element = hooks.element;
           dom.detectNamespace(contextualElement);
           var fragment;
           if (env.useFragmentCache && dom.canClone) {
@@ -30498,55 +30833,13 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
           } else {
             fragment = this.build(dom);
           }
-          var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
-          dom.insertBoundary(fragment, null);
-          dom.insertBoundary(fragment, 0);
-          block(env, morph0, context, "radio-button", [], {"value": "RHEV", "groupValue": get(env, context, "cfme_install_loc"), "changed": "cfmeLocationChanged", "id": "install_on_rhev"}, child0, null);
+          var element1 = dom.childAt(fragment, [1]);
+          element(env, element1, context, "bind-attr", [], {"class": "disableRHEV:disabled"});
           return fragment;
         }
       };
     }());
     var child1 = (function() {
-      var child0 = (function() {
-        return {
-          isHTMLBars: true,
-          revision: "Ember@1.11.1",
-          blockParams: 0,
-          cachedFragment: null,
-          hasRendered: false,
-          build: function build(dom) {
-            var el0 = dom.createDocumentFragment();
-            var el1 = dom.createTextNode("            Install CloudForms on OpenStack");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createElement("br");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("\n            Able to split virtualization workloads across multiple controller nodes\n");
-            dom.appendChild(el0, el1);
-            return el0;
-          },
-          render: function render(context, env, contextualElement) {
-            var dom = env.dom;
-            dom.detectNamespace(contextualElement);
-            var fragment;
-            if (env.useFragmentCache && dom.canClone) {
-              if (this.cachedFragment === null) {
-                fragment = this.build(dom);
-                if (this.hasRendered) {
-                  this.cachedFragment = fragment;
-                } else {
-                  this.hasRendered = true;
-                }
-              }
-              if (this.cachedFragment) {
-                fragment = dom.cloneNode(this.cachedFragment, true);
-              }
-            } else {
-              fragment = this.build(dom);
-            }
-            return fragment;
-          }
-        };
-      }());
       return {
         isHTMLBars: true,
         revision: "Ember@1.11.1",
@@ -30555,13 +30848,23 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
         hasRendered: false,
         build: function build(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createComment("");
+          var el1 = dom.createTextNode("        ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("span");
+          var el2 = dom.createTextNode("\n          Install CloudForms on OpenStack");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("br");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n              Able to split virtualization workloads across multiple controller nodes\n        ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
           dom.appendChild(el0, el1);
           return el0;
         },
         render: function render(context, env, contextualElement) {
           var dom = env.dom;
-          var hooks = env.hooks, get = hooks.get, block = hooks.block;
+          var hooks = env.hooks, element = hooks.element;
           dom.detectNamespace(contextualElement);
           var fragment;
           if (env.useFragmentCache && dom.canClone) {
@@ -30579,10 +30882,8 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
           } else {
             fragment = this.build(dom);
           }
-          var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
-          dom.insertBoundary(fragment, null);
-          dom.insertBoundary(fragment, 0);
-          block(env, morph0, context, "radio-button", [], {"value": "OpenStack", "groupValue": get(env, context, "cfme_install_loc"), "changed": "cfmeLocationChanged", "id": "install_on_openstack"}, child0, null);
+          var element0 = dom.childAt(fragment, [1]);
+          element(env, element0, context, "bind-attr", [], {"class": ":inline-block disableOpenStack:disabled"});
           return fragment;
         }
       };
@@ -30600,39 +30901,33 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
         var el2 = dom.createTextNode("\n  ");
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("div");
-        dom.setAttribute(el2,"class","col-md-8 col-md-offset-1");
+        dom.setAttribute(el2,"class","col-md-9");
         var el3 = dom.createTextNode("\n\n    ");
         dom.appendChild(el2, el3);
-        var el3 = dom.createElement("div");
-        dom.setAttribute(el3,"class","row");
-        var el4 = dom.createTextNode("\n      Select a product to create and manage virtual machines.\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("h3");
-        var el5 = dom.createTextNode("\n");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createComment("");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("      ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n    ");
+        var el3 = dom.createElement("p");
+        var el4 = dom.createTextNode("\n      Select a product to create and manage virtual machines.\n    ");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n\n    ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("div");
-        dom.setAttribute(el3,"class","row");
-        var el4 = dom.createTextNode("\n      ");
+        dom.setAttribute(el3,"class","ident-radio");
+        var el4 = dom.createTextNode("\n");
         dom.appendChild(el3, el4);
-        var el4 = dom.createElement("h3");
-        var el5 = dom.createTextNode("\n");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createComment("");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("      ");
-        dom.appendChild(el4, el5);
+        var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n    ");
+        var el4 = dom.createTextNode("    ");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n\n    ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","ident-radio");
+        var el4 = dom.createTextNode("\n");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("    ");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n\n  ");
@@ -30669,12 +30964,12 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
         } else {
           fragment = this.build(dom);
         }
-        var element0 = dom.childAt(fragment, [0, 1]);
-        var morph0 = dom.createMorphAt(dom.childAt(element0, [1, 1]),1,1);
-        var morph1 = dom.createMorphAt(dom.childAt(element0, [3, 1]),1,1);
+        var element2 = dom.childAt(fragment, [0, 1]);
+        var morph0 = dom.createMorphAt(dom.childAt(element2, [3]),1,1);
+        var morph1 = dom.createMorphAt(dom.childAt(element2, [5]),1,1);
         var morph2 = dom.createMorphAt(fragment,2,2,contextualElement);
-        block(env, morph0, context, "unless", [get(env, context, "disableRHEV")], {}, child0, null);
-        block(env, morph1, context, "unless", [get(env, context, "disableOpenStack")], {}, child1, null);
+        block(env, morph0, context, "radio-button", [], {"value": "RHEV", "groupValue": get(env, context, "cfme_install_loc"), "changed": "cfmeLocationChanged", "id": "install_on_rhev", "disabled": get(env, context, "disableRHEV")}, child0, null);
+        block(env, morph1, context, "radio-button", [], {"value": "OpenStack", "groupValue": get(env, context, "cfme_install_loc"), "changed": "cfmeLocationChanged", "id": "install_on_openstack", "disabled": get(env, context, "disableOpenStack")}, child1, null);
         inline(env, morph2, context, "cancel-back-next", [], {"backRouteName": get(env, context, "backRouteName"), "disableBack": false, "nextRouteName": "cloudforms.cfme-configuration", "disableNext": false});
         return fragment;
       }
@@ -31098,7 +31393,7 @@ define('fusor-ember-cli/tests/controllers/configure-environment.jshint', functio
 
   module('JSHint - controllers');
   test('controllers/configure-environment.js should pass jshint', function() { 
-    ok(false, 'controllers/configure-environment.js should pass jshint.\ncontrollers/configure-environment.js: line 37, col 66, Missing semicolon.\ncontrollers/configure-environment.js: line 53, col 19, \'response\' is defined but never used.\n\n2 errors'); 
+    ok(false, 'controllers/configure-environment.js should pass jshint.\ncontrollers/configure-environment.js: line 35, col 66, Missing semicolon.\ncontrollers/configure-environment.js: line 51, col 19, \'response\' is defined but never used.\n\n2 errors'); 
   });
 
 });
@@ -31138,7 +31433,7 @@ define('fusor-ember-cli/tests/controllers/deployment-new/satellite/configure-env
 
   module('JSHint - controllers/deployment-new/satellite');
   test('controllers/deployment-new/satellite/configure-environment.js should pass jshint', function() { 
-    ok(false, 'controllers/deployment-new/satellite/configure-environment.js should pass jshint.\ncontrollers/deployment-new/satellite/configure-environment.js: line 36, col 66, Missing semicolon.\ncontrollers/deployment-new/satellite/configure-environment.js: line 52, col 19, \'response\' is defined but never used.\n\n2 errors'); 
+    ok(false, 'controllers/deployment-new/satellite/configure-environment.js should pass jshint.\ncontrollers/deployment-new/satellite/configure-environment.js: line 34, col 66, Missing semicolon.\ncontrollers/deployment-new/satellite/configure-environment.js: line 50, col 19, \'response\' is defined but never used.\n\n2 errors'); 
   });
 
 });
@@ -31538,7 +31833,7 @@ define('fusor-ember-cli/tests/controllers/storage.jshint', function () {
 
   module('JSHint - controllers');
   test('controllers/storage.js should pass jshint', function() { 
-    ok(false, 'controllers/storage.js should pass jshint.\ncontrollers/storage.js: line 14, col 20, Duplicate key \'rhev_storage_type\'.\n\n1 error'); 
+    ok(true, 'controllers/storage.js should pass jshint.'); 
   });
 
 });
@@ -31675,7 +31970,7 @@ define('fusor-ember-cli/tests/mixins/configure-environment-mixin.jshint', functi
 
   module('JSHint - mixins');
   test('mixins/configure-environment-mixin.js should pass jshint', function() { 
-    ok(true, 'mixins/configure-environment-mixin.js should pass jshint.'); 
+    ok(false, 'mixins/configure-environment-mixin.js should pass jshint.\nmixins/configure-environment-mixin.js: line 17, col 98, \'array\' is defined but never used.\nmixins/configure-environment-mixin.js: line 17, col 91, \'index\' is defined but never used.\n\n2 errors'); 
   });
 
 });
@@ -32645,7 +32940,7 @@ define('fusor-ember-cli/tests/routes/subscriptions/credentials.jshint', function
 
   module('JSHint - routes/subscriptions');
   test('routes/subscriptions/credentials.js should pass jshint', function() { 
-    ok(false, 'routes/subscriptions/credentials.js should pass jshint.\nroutes/subscriptions/credentials.js: line 11, col 67, Missing semicolon.\nroutes/subscriptions/credentials.js: line 31, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 60, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 89, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 93, col 60, Missing semicolon.\nroutes/subscriptions/credentials.js: line 95, col 27, \'sessionPortal\' is already defined.\nroutes/subscriptions/credentials.js: line 98, col 46, Missing semicolon.\nroutes/subscriptions/credentials.js: line 99, col 51, Missing semicolon.\nroutes/subscriptions/credentials.js: line 109, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 133, col 66, Missing semicolon.\nroutes/subscriptions/credentials.js: line 144, col 45, Missing semicolon.\nroutes/subscriptions/credentials.js: line 13, col 5, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 34, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 61, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 112, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 8, col 9, \'sessionPortal\' is defined but never used.\nroutes/subscriptions/credentials.js: line 9, col 9, \'upstream_consumer_uuid\' is defined but never used.\nroutes/subscriptions/credentials.js: line 24, col 29, \'transition\' is defined but never used.\nroutes/subscriptions/credentials.js: line 24, col 21, \'reason\' is defined but never used.\nroutes/subscriptions/credentials.js: line 36, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 36, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 46, col 31, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 50, col 29, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 60, col 11, \'controller\' is defined but never used.\nroutes/subscriptions/credentials.js: line 63, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 63, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 72, col 31, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 80, col 29, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 97, col 42, \'result\' is defined but never used.\nroutes/subscriptions/credentials.js: line 101, col 19, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 111, col 11, \'password\' is defined but never used.\nroutes/subscriptions/credentials.js: line 116, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 116, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 132, col 50, \'result\' is defined but never used.\nroutes/subscriptions/credentials.js: line 135, col 27, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 140, col 29, \'response\' is defined but never used.\n\n36 errors'); 
+    ok(false, 'routes/subscriptions/credentials.js should pass jshint.\nroutes/subscriptions/credentials.js: line 11, col 67, Missing semicolon.\nroutes/subscriptions/credentials.js: line 32, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 64, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 93, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 97, col 60, Missing semicolon.\nroutes/subscriptions/credentials.js: line 99, col 27, \'sessionPortal\' is already defined.\nroutes/subscriptions/credentials.js: line 102, col 46, Missing semicolon.\nroutes/subscriptions/credentials.js: line 103, col 51, Missing semicolon.\nroutes/subscriptions/credentials.js: line 115, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 139, col 66, Missing semicolon.\nroutes/subscriptions/credentials.js: line 156, col 45, Missing semicolon.\nroutes/subscriptions/credentials.js: line 164, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 13, col 5, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 35, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 65, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 118, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 8, col 9, \'sessionPortal\' is defined but never used.\nroutes/subscriptions/credentials.js: line 9, col 9, \'upstream_consumer_uuid\' is defined but never used.\nroutes/subscriptions/credentials.js: line 25, col 29, \'transition\' is defined but never used.\nroutes/subscriptions/credentials.js: line 25, col 21, \'reason\' is defined but never used.\nroutes/subscriptions/credentials.js: line 38, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 38, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 48, col 31, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 52, col 29, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 64, col 11, \'controller\' is defined but never used.\nroutes/subscriptions/credentials.js: line 67, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 67, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 76, col 31, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 84, col 29, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 101, col 42, \'result\' is defined but never used.\nroutes/subscriptions/credentials.js: line 105, col 19, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 117, col 11, \'password\' is defined but never used.\nroutes/subscriptions/credentials.js: line 122, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 122, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 138, col 50, \'result\' is defined but never used.\nroutes/subscriptions/credentials.js: line 143, col 27, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 150, col 29, \'response\' is defined but never used.\n\n37 errors'); 
   });
 
 });
@@ -38520,13 +38815,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.f68eaaa7"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.7d4eb9f3"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.f68eaaa7"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.7d4eb9f3"});
 }
 
 /* jshint ignore:end */

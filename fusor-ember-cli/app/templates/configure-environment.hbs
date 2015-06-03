@@ -30,27 +30,42 @@
 <div class="row">
   <div class='col-md-9'>
 
-    {{#each env in nonLibraryEnvironments}}
-    <div class="path-selector">
-      <ul class="path-list">
-        {{env-path-list-item env=libraryEnv
-                             selectedEnvironment=selectedEnvironment
-                             action="selectEnvironment"}}
-        {{env-path-list-item env=env
-                             selectedEnvironment=selectedEnvironment
-                             action="selectEnvironment"}}
-        <li class="path-list-item">
-          <label class="path-list-item-label">
-            &nbsp;
-          </label>
-        </li>
-      </ul>
-    </div>
+    {{#if hasNoEnvironments}}
+        <div class='alert alert-info'>
+          No lifecycle environments are in organization <strong>{{selectedOrganization.name}}</strong>
+        </div>
+    {{else if hasOnlyLibraryEnvironment}}
+        <div class="path-selector">
+          <ul class="path-list">
+            {{env-path-list-item env=libraryEnv
+                                 selectedEnvironment=selectedEnvironment
+                                 action="selectEnvironment"}}
+            <li class="path-list-item">
+              <label class="path-list-item-label">
+                &nbsp;
+              </label>
+            </li>
+          </ul>
+        </div>
     {{else}}
-      <div class='alert alert-info'>
-        No lifecycle environments are in organization <strong>{{selectedOrganization.name}}</strong>
-      </div>
-    {{/each}}
+      {{#each env in priorLibraryEnvironments}}
+        <div class="path-selector">
+          <ul class="path-list">
+            {{env-path-list-item env=libraryEnv
+                                 selectedEnvironment=selectedEnvironment
+                                 action="selectEnvironment"}}
+            {{env-path-list-item env=env
+                                 selectedEnvironment=selectedEnvironment
+                                 action="selectEnvironment"}}
+            <li class="path-list-item">
+              <label class="path-list-item-label">
+                &nbsp;
+              </label>
+            </li>
+          </ul>
+        </div>
+      {{/each}}
+    {{/if}}
 
     <div style='margin-top:15px;'>
       {{#em-modal-toggler modal-id="newLifecycleEnvironmentModal" class="btn btn-default"}}

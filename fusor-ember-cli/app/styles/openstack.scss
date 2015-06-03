@@ -9,90 +9,6 @@
   white-space:nowrap;
 }
 
-.deployment-checklist {
-  background: #ffffff;
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid #eeeeee;
-  min-width: 200px;
-  padding: 10px;
-  position: absolute;
-  right: 0;
-  top: -5px;
-  z-index: 999;
-}
-@media (min-width: 1010px) {
-  .deployment-checklist.affix {
-    position: fixed;
-    right: 20px;
-    top: 10px;
-  }
-  .deployment-checklist.affix-top {
-    position: absolute;
-  }
-}
-.deployment-checklist #deployment-steps {
-  padding-left: 31px;
-  margin-top: -5px;
-}
-.deployment-checklist #deployment-steps .active {
-  font-weight: 600;
-}
-.deployment-checklist #deployment-steps .complete {
-  list-style: none;
-  color: #555555;
-}
-.deployment-checklist #deployment-steps .complete:before {
-  color: #3f9c35;
-  content: '\f00c';
-  font-family: "FontAwesome";
-  left: -18px;
-  position: absolute;
-  top: 1px;
-}
-.deployment-checklist #deployment-steps li {
-  margin-bottom: 5px;
-  position: relative;
-}
-.deployment-checklist #deployment-steps ul {
-  padding-left: 6px;
-  padding-top: 5px;
-}
-.deployment-checklist .deployment-steps-status {
-  font-weight: 600;
-}
-.deployment-checklist .deployment-steps-status a {
-  color: #555555;
-  padding-left: 14px;
-  position: relative;
-}
-.deployment-checklist .deployment-steps-status a:before {
-  border: 4px solid transparent;
-  border-top-color: #555555;
-  content: '';
-  height: 0;
-  left: 1px;
-  position: absolute;
-  top: 7px;
-  width: 0;
-}
-.deployment-checklist .deployment-steps-status a.collapsed:before {
-  border-left-color: #555555;
-  border-top-color: transparent;
-  left: 3px;
-  top: 5px;
-}
-.deployment-checklist .deployment-steps-status a:focus,
-.deployment-checklist .deployment-steps-status a:hover {
-  color: #555555;
-  text-decoration: none;
-}
-.deployment-checklist h2 {
-  margin-top: 0;
-}
-.deployment-checklist-wrapper {
-  clear: left;
-  position: relative;
-}
 .deployment-roles {
   float: left;
   font-weight: 600;
@@ -105,6 +21,7 @@
   margin-left: -12px;
   padding-left: 12px;
   padding-top: 10px;
+  display: inline-block;
 }
 .deployment-roles.deployment-roles-unassigned.deployment-roles-active {
   border-color: #7b7b7b;
@@ -278,10 +195,8 @@
 .deployment-roles li .role-option.edit {
   top: 4px;
 }
-.deployment-roles-unassigned .draggable-object {
-  float: left;
+.deployment-roles .draggable-object {
   padding: 0;
-  display: block;
 }
 .deployment-roles-assigned .draggable-object {
   padding: 0;

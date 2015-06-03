@@ -50,16 +50,6 @@
 .rhci-steps li.completed:after {
   background-color: #999999;
 }
-.rhci-steps li.completed a {
-  color: #555555;
-  padding-top: 20px;
-}
-.rhci-steps li.completed a:hover {
-  text-decoration: none;
-}
-.rhci-steps li.future a {
-  color: #999999;
-}
 .rhci-steps-buttons {
   margin-bottom: 20px;
   margin-top: 20px;

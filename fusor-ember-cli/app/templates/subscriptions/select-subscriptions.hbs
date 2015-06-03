@@ -32,17 +32,20 @@ Default subscription selections have been made for the components of your RHCI d
   <tbody>
   {{#each subscription in model itemController="subscription"}}
     {{tr-subscription subscription=subscription}}
+  {{else}}
+    <tr>
+      <td colspan="8">
+        <p class='no_subscriptions'>
+          No subscriptions found. Check your account in in the <a href='https://idp.redhat.com/idp/' target='_blank'>Red Hat Customer Portal</a> to verify you have subscriptions available.
+        </p>
+      </td>
+    </tr>
   {{/each}}
   </tbody>
 </table>
 
-<br />
-{{button-f class='btn btn-success' disabled=disableAttachButton title=buttonAttachTitle action="attachSubscriptions"}}
-
-<br />
-<br />
-
-<div style='text-align:right'>
-  <button {{action 'showModal' 'cancel-modal'}} class='btn btn-default'>Cancel</button>
-  {{#link-to 'review.installation' class='btn btn-primary' disabled=disableSubscriptionsNext}}Next{{/link-to}}
-</div>
+{{cancel-back-next backRouteName='subscriptions.management-application'
+                   disableBack=false
+                   nextRouteName='review'
+                   disableNext=false
+                   parentController=controller}}

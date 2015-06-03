@@ -5,7 +5,9 @@ export default Ember.Component.extend({
   classNameBindings: ['isChecked:rhci-item-selected'],
 
   click: function() {
-    this.set('isChecked', this.toggleProperty('isChecked'));
+    if (!this.get('isDisabled')) {
+      this.set('isChecked', this.toggleProperty('isChecked'));
+    }
   },
 
   showMsgToSelect: function() {
