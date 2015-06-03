@@ -850,3 +850,24 @@ li.disabled a {
   margin: 0 0 15px;
   padding: 15px 0 0;
 }
+
+.disabled {
+  color: #ddd !important;
+}
+
+.no_subscriptions {
+  text-align: center;
+  padding: 10px 0px 5px;
+}
+
+.disabledImage {
+  opacity: 0.5;
+}
+
+.ident-radio {
+  padding-left: 15px;
+}
+
+.spinner-text {
+  font-size: 20px;
+}

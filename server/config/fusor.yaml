@@ -58,6 +58,15 @@
     - :name: "ovirt::engine::run_vm"
     - :name: "ovirt::hypervisor::packages"
 
+  :puppet_classes:
+    - :name: "ovirt"
+    - :name: "ovirt::engine::config"
+    - :name: "ovirt::engine::packages"
+    - :name: "ovirt::engine::setup"
+    - :name: "ovirt::engine::import_template"
+    - :name: "ovirt::engine::run_vm"
+    - :name: "ovirt::hypervisor::packages"
+
   :host_groups:
     :rhev:
      :root_name: "Fusor Base" # seeded by the fusor-installer

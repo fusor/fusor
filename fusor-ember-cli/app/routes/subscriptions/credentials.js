@@ -47,7 +47,7 @@ export default Ember.Route.extend({
       return true;
     },
 
-    loginPortal: function() {
+  loginPortal: function() {
       var self = this;
       var controller = this.controllerFor('subscriptions/credentials');
       var identification = controller.get('model.identification');
