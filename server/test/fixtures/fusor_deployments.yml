@@ -13,6 +13,7 @@ rhev:
   deploy_rhev: true
   name: rhev
   organization_id: 1
+  lifecycle_environment_id: 1
 
 another_rhev:
   rhev_root_password: redhat1234
@@ -27,6 +28,7 @@ another_rhev:
   deploy_rhev: true
   name: another_rhev
   organization_id: 1
+  lifecycle_environment_id: 1
 
 rhev_and_cfme:
   rhev_root_password: redhat1234
@@ -43,3 +45,4 @@ rhev_and_cfme:
   organization_id: 1
   cfme_root_password: redhat1234
   cfme_install_loc: RHEV
+  lifecycle_environment_id: 1
