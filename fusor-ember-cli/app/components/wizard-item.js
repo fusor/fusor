@@ -3,7 +3,7 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   tagName: 'li',
 
-  classNameBindings: ['active', 'completed'],
+  classNameBindings: ['active', 'completed', 'future'],
 
   active: function () {
     return this.get('childViews').isAny('active');
@@ -11,6 +11,10 @@ export default Ember.Component.extend({
 
   completed: function() {
     return (this.get('num') < this.get('currentStepNumber'));
+  }.property('num', 'currentStepNumber'),
+
+  future: function() {
+    return (this.get('num') > this.get('currentStepNumber'));
   }.property('num', 'currentStepNumber'),
 
   // isReviewTab: function() {
