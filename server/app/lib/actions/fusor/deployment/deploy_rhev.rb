@@ -22,13 +22,15 @@ module Actions
           fail _("Unable to locate a RHEV Engine Host") unless deployment.rhev_engine_host
 
           sequence do
+            deployment.discovered_hosts.each do |host|
+              plan_action(::Actions::Fusor::Host::TriggerProvisioning,
+                          deployment,
+                          "RHEV-Hypervisor",
+                          host)
+            end
+
             concurrence do
               deployment.discovered_hosts.each do |host|
-                plan_action(::Actions::Fusor::Host::TriggerProvisioning,
-                            deployment,
-                            "RHEV-Hypervisor",
-                            host)
-
                 plan_action(::Actions::Fusor::Host::WaitUntilProvisioned,
                             host)
               end
