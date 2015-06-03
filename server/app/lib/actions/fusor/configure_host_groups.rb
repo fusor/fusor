@@ -172,6 +172,13 @@ module Actions
               :puppet_classes =>
               [
                 {
+                  :name => "ovirt",
+                  :parameters =>
+                  [
+                    { :name => "deploy_cfme", :value => deployment.deploy_cfme }
+                  ]
+                },
+                {
                   :name => "ovirt::engine::config",
                   :parameters =>
                   [
