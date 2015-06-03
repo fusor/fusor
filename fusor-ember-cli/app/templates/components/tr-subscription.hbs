@@ -4,8 +4,8 @@
 <td> {{subscription.productName}} </td>
 <td> {{subscription.contractNumber}} </td>
 <td> {{systemType}} </td>
-<td> {{subscription.startDate}} </td>
-<td> {{subscription.endDate}} </td>
+<td> {{moment subscription.startDate 'll'}} </td>
+<td> {{moment subscription.endDate 'll'}} </td>
 <td> {{subscription.qtyAvailable}} </td>
 <td class='black-font'>
   {{input type="input" name='qtyToAttach' value=subscription.qtyToAttach size=5 maxlength=5 class='center'}}

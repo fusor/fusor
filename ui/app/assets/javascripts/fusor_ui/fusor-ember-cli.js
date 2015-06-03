@@ -1094,7 +1094,7 @@ define('fusor-ember-cli/components/wizard-item', ['exports', 'ember'], function 
   exports['default'] = Ember['default'].Component.extend({
     tagName: 'li',
 
-    classNameBindings: ['active', 'completed'],
+    classNameBindings: ['active', 'completed', 'future'],
 
     active: (function () {
       return this.get('childViews').isAny('active');
@@ -1102,6 +1102,10 @@ define('fusor-ember-cli/components/wizard-item', ['exports', 'ember'], function 
 
     completed: (function () {
       return this.get('num') < this.get('currentStepNumber');
+    }).property('num', 'currentStepNumber'),
+
+    future: (function () {
+      return this.get('num') > this.get('currentStepNumber');
     }).property('num', 'currentStepNumber') });
 
   // isReviewTab: function() {
@@ -3139,6 +3143,36 @@ define('fusor-ember-cli/initializers/ember-idx-modal', ['exports', 'ember', 'emb
             };
         }
     };
+
+});
+define('fusor-ember-cli/initializers/ember-moment', ['exports', 'ember-moment/helpers/moment', 'ember-moment/helpers/ago', 'ember-moment/helpers/duration', 'ember'], function (exports, moment, ago, duration, Ember) {
+
+  'use strict';
+
+  var initialize = function initialize() {
+    var registerHelper;
+
+    if (Ember['default'].HTMLBars) {
+      registerHelper = function (helperName, fn) {
+        Ember['default'].HTMLBars._registerHelper(helperName, Ember['default'].HTMLBars.makeBoundHelper(fn));
+      };
+    } else {
+      registerHelper = Ember['default'].Handlebars.helper;
+    };
+
+    registerHelper('moment', moment['default']);
+    registerHelper('ago', ago['default']);
+    registerHelper('duration', duration['default']);
+  };
+
+  exports['default'] = {
+    name: 'ember-moment',
+
+    initialize: initialize
+  };
+  /* container, app */
+
+  exports.initialize = initialize;
 
 });
 define('fusor-ember-cli/initializers/export-application-global', ['exports', 'ember', 'fusor-ember-cli/config/environment'], function (exports, Ember, config) {
@@ -14395,8 +14429,8 @@ define('fusor-ember-cli/templates/components/tr-subscription', ['exports'], func
         content(env, morph1, context, "subscription.productName");
         content(env, morph2, context, "subscription.contractNumber");
         content(env, morph3, context, "systemType");
-        content(env, morph4, context, "subscription.startDate");
-        content(env, morph5, context, "subscription.endDate");
+        inline(env, morph4, context, "moment", [get(env, context, "subscription.startDate"), "ll"], {});
+        inline(env, morph5, context, "moment", [get(env, context, "subscription.endDate"), "ll"], {});
         content(env, morph6, context, "subscription.qtyAvailable");
         inline(env, morph7, context, "input", [], {"type": "input", "name": "qtyToAttach", "value": get(env, context, "subscription.qtyToAttach"), "size": 5, "maxlength": 5, "class": "center"});
         return fragment;
@@ -38815,13 +38849,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.7d4eb9f3"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.14e3f5a7"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.7d4eb9f3"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.14e3f5a7"});
 }
 
 /* jshint ignore:end */
