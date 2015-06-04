@@ -257,8 +257,26 @@ module Actions
         #  fail _("Failed to run appliance console")
         #end
 
-        def is_cloudforms_up
+        def is_cloudforms_up(web_ip)
           # possibly make a GET call to the webui
+          begin
+            output = open(smart_add_url_protocol(web_ip), {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE})
+            if output.status.first == "200"
+                return true
+            end
+          rescue Exception => e
+            Rails.logger.warn e
+            return false
+          end
+
+          return false
+        end
+
+        def smart_add_url_protocol(url)
+          unless url[/\Ahttp:\/\//] || url[/\Ahttps:\/\//]
+            url = "https://#{url}"
+          end
+          return url
         end
 
         def add_rhev_provider(deployment, cfme_ip)
