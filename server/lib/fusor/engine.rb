@@ -64,6 +64,17 @@ module Fusor
       ::Host::Managed.send :include, Fusor::Concerns::HostOrchestrationBuildHook
       # The following line disabled CSRF and should only be uncommented in development environments
       # ::ActionController::Base.send :include, Fusor::Concerns::ApplicationControllerExtension
+  
+      # preload all the Foreman's lib files but only in production
+      #   Based on workaround Staypuft identified, related to race condition of loading certain foreman modules
+      #   https://github.com/theforeman/foreman/pull/1577#issuecomment-48703612
+      if Rails.env.production?
+        Dir.glob(File.join(Rails.root, 'lib', '**', '*.rb')).
+            map { |p| p.to_s.gsub "#{Rails.root}/lib/", '' }.
+            map { |v| v.gsub /\.rb$/, '' }.
+            sort_by { |v| v.scan('/').size }. # ordered by the directory depth
+            map { |v| require_dependency v }
+      end
     end
 
     rake_tasks do
