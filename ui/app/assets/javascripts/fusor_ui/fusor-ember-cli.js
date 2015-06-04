@@ -1468,6 +1468,10 @@ define('fusor-ember-cli/controllers/deployment-new', ['exports', 'ember', 'fusor
 
   exports['default'] = Ember['default'].ObjectController.extend(DeploymentControllerMixin['default'], DisableTabMixin['default'], {
 
+    needs: ["deployment-new/satellite/configure-environment"],
+
+    useDefaultOrgViewForEnv: Ember['default'].computed.alias("controllers.deployment-new/satellite/configure-environment.useDefaultOrgViewForEnv"),
+
     // these tabs will always be disabled within deployment-new
     isDisabledRhev: true,
     isDisabledOpenstack: true,
@@ -1626,6 +1630,10 @@ define('fusor-ember-cli/controllers/deployment', ['exports', 'ember', 'fusor-emb
   'use strict';
 
   exports['default'] = Ember['default'].ObjectController.extend(DeploymentControllerMixin['default'], DisableTabMixin['default'], {
+
+    needs: ["configure-environment"],
+
+    useDefaultOrgViewForEnv: Ember['default'].computed.alias("controllers.configure-environment.useDefaultOrgViewForEnv"),
 
     // disable Steps 2, 3, 4, etc on wizard
     isDisabledRhev: Ember['default'].computed.alias("satelliteInvalid"),
@@ -3207,8 +3215,8 @@ define('fusor-ember-cli/mixins/configure-environment-mixin', ['exports', 'ember'
     selectedEnvironment: Ember['default'].computed.alias('model'),
 
     useDefaultOrgViewForEnv: (function () {
-      return Ember['default'].isBlank(this.get('selectedEnvironment'));
-    }).property('selectedEnvironment'),
+      return Ember['default'].isBlank(this.get('model'));
+    }).property('model'),
 
     nonLibraryEnvironments: Ember['default'].computed.filterBy('lifecycleEnvironments', 'library', false),
     libraryEnvironments: Ember['default'].computed.filterBy('lifecycleEnvironments', 'library', true),
@@ -4520,6 +4528,8 @@ define('fusor-ember-cli/routes/deployment-new/satellite/configure-environment', 
           // default to Library if it is only env that exists
         } else if (results.get('length') === 1) {
           return controller.set('selectedEnvironment', results.get('firstObject'));
+        } else {
+          return controller.set('useDefaultOrgViewForEnv', false);
         }
       });
     } });
@@ -38849,13 +38859,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.14e3f5a7"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.51d74037"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.14e3f5a7"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.51d74037"});
 }
 
 /* jshint ignore:end */
