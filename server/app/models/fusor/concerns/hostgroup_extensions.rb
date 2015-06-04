@@ -28,15 +28,17 @@ module Fusor::Concerns::HostgroupExtensions
   end
 
   def set_param_value_if_changed(puppetclass, key, value)
-    lookup_key         = puppetclass.class_params.where(:key => key).first
-    lookup_value_value = current_param_value(lookup_key)[0]
-    current_value      = lookup_key.value_before_type_cast(lookup_value_value).to_s.chomp
-    if current_value != value
-      lookup       = LookupValue.where(:match         => hostgroup.send(:lookup_value_match),
-                                       :lookup_key_id => lookup_key.id).first_or_initialize
-      lookup.value = value
-      lookup.use_puppet_default = value.blank? ? true : false
-      lookup.save!
+    if puppetclass
+      lookup_key         = puppetclass.class_params.where(:key => key).first
+      lookup_value_value = current_param_value(lookup_key)[0]
+      current_value      = lookup_key.value_before_type_cast(lookup_value_value).to_s.chomp
+      if current_value != value
+        lookup       = LookupValue.where(:match         => hostgroup.send(:lookup_value_match),
+                                         :lookup_key_id => lookup_key.id).first_or_initialize
+        lookup.value = value
+        lookup.use_puppet_default = value.blank? ? true : false
+        lookup.save!
+      end
     end
   end
 end

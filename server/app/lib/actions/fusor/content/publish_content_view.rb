@@ -59,7 +59,20 @@ module Actions
                           composite_view.version(deployment.organization.library),
                           deployment.lifecycle_environment)
             end
+
+            plan_self(:content_view_id => composite_view.id,
+                      :environment_id => deployment.lifecycle_environment.id)
           end
+        end
+
+        def run
+          content_view = ::Katello::ContentView.find(input[:content_view_id])
+          environment  = ::Katello::KTEnvironment.find(input[:environment_id])
+
+          # The foreman puppet environment is typically updated in the finalize phase
+          # of content publish/promotion; however, we need this to occur earlier,
+          # since we'll need the puppet classes created by the update.
+          ::Katello::Foreman.update_puppet_environment(content_view, environment)
         end
 
         private
