@@ -1,10 +1,26 @@
 <div class="row">
   <div class='col-md-12'>
 
-    <h4 style='padding-left:15px;'>Select one or more target machines to be hypervisors.</h4>
+    <p>
+      Select one or more target machines to be hypervisors.
+    </p>
 
-    <div class="col-md-12">
-        {{outlet}}
-    </div>
+    <form class="form-inline">
+      <div class="form-group">
+        Host naming scheme &nbsp; {{view "select" content=namingOptions
+                                                  value=host_naming_scheme
+                                                  class='form-control'}}
+
+        {{#if isCustomScheme}}
+          <span class='prepend-host-names'>
+            Prepend host names with {{input type='text' value=custom_preprend_name}}
+          </span>
+        {{/if}}
+      </div>
+    </form>
+
+    <br />
+
+    {{outlet}}
   </div>
 </div>

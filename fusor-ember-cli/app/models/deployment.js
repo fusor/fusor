@@ -40,6 +40,10 @@ export default DS.Model.extend({
   rhev_gluster_ssh_port: DS.attr('string'),
   rhev_gluster_root_password: DS.attr('string'),
 
+  host_naming_scheme: DS.attr('string'),
+  custom_preprend_name: DS.attr('string'),
+  enable_access_insights: DS.attr('boolean'),
+
   created_at: DS.attr('date'),
   updated_at: DS.attr('date'),
 
