@@ -19,6 +19,8 @@ export default Ember.Route.extend(DeploymentNewSatelliteRouteMixin, {
       // default to Library if it is only env that exists
       } else if (results.get('length') === 1) {
         return controller.set('selectedEnvironment', results.get('firstObject'));
+      } else {
+        return controller.set('useDefaultOrgViewForEnv', false);
       }
     });
   },
