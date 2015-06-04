@@ -9,7 +9,7 @@ export default Ember.ArrayController.extend({
   stepNumberSubscriptions: Ember.computed.alias("controllers.deployment.stepNumberSubscriptions"),
 
   isOnlyShowSubscriptions: true,
-  enableAnalytics: false, // TODO should be set by setupController using API call
+  enableAnalytics: true,
 
   buttonAttachTitle: function() {
     if (this.get('attachingInProgress')) {

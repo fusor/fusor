@@ -28,4 +28,25 @@ export default Ember.Controller.extend({
     return !(hypervisorsIds.contains(item.get('id')));
   }).property('selectedHypervisors', 'allDiscoveredHosts'),
 
+  filteredHosts: function(){
+    var searchString = this.get('searchString');
+    var rx = new RegExp(searchString, 'gi');
+    var model = this.get('availableHosts');
+
+    if (model.get('length') > 0) {
+      return model.filter(function(record) {
+        return (record.get('name').match(rx) || record.get('memory_human_size').match(rx) ||
+                record.get('disks_human_size').match(rx) || record.get('subnet_to_s').match(rx) ||
+                record.get('mac').match(rx)
+               );
+      });
+    } else {
+      return model;
+    }
+  }.property('availableHosts', 'searchString'),
+
+  numSelected: function() {
+    return (this.get('model.id')) ? 1 : 0;
+  }.property('model'),
+
 });

@@ -14,6 +14,7 @@ module Fusor
                :rhev_is_self_hosted, :cfme_install_loc,
                :foreman_task_uuid, :upstream_consumer_uuid, :upstream_consumer_name,
                :rhev_root_password, :cfme_root_password,
+               :host_naming_scheme, :custom_preprend_name, :enable_access_insights,
                :created_at, :updated_at
 
     has_one :organization, serializer: ::OrganizationSerializer

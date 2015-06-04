@@ -1,32 +1,68 @@
-{{!model.length}}
-{{!availableHosts.length}}
-{{!model}}
-{{!isAllChecked}}
-<strong>{{model.length}}</strong> of <strong>{{availableHosts.length}}</strong>
-available hosts selected {{idsChecked}}
-<br />
-<br />
-<table class="table table-bordered table-striped small">
-  <thead>
-    <tr>
-      <th> {{!input type="checkbox" checked=allChecked TODO}}</th>
-      <th> Host Name </th>
-      <th> MAC Address </th>
-      <th> Host Type </th>
-      <th> CPU </th>
-      <th> Memory </th>
-      <th> # Disks </th>
-      <th> Disk Space </th>
-      <th> Network </th>
-    </tr>
-  </thead>
+<div class='row'>
+  <div class='col-md-11'>
 
-  <tbody>
-  {{#each host in availableHosts itemController='discovered-host'}}
-     {{tr-hypervisor host=host}}
-  {{/each}}
-  </tbody>
-</table>
+    <div class="rhev-searchbar clearfix">
+      <form class="form-inline">
+        <div class='col-md-7'>
+          <div class="form-group">
+            <div class='rhev-search-box'>
+                {{input type='text' class='form-control rhev-hostnam22e'
+                             placeholder=' Search ...'
+                             value=searchString}}
+                <button class='rhev-search-button'>
+                  <i class="fa fa-search"></i>
+                </button>
+            </div>
+          </div>
+        </div>
+
+        <div class='col-md-5 text-right'>
+
+          {{model.length}} selected
+
+          <span class='rhev-select-all'>
+            {{#if isAllChecked}}
+              <a {{action 'setUncheckAll'}}>Deselect all ({{availableHosts.length}})</a>
+            {{else}}
+              <a {{action 'setCheckAll'}}>Select all ({{availableHosts.length}})</a>
+            {{/if}}
+          </span>
+
+          <button class='btn btn-default btn-sm' {{action 'refreshModel'}}>Refresh Data</button>
+        </div>
+
+      </form>
+    </div>
+
+    <table class="table table-bordered small fusor-table">
+      <thead>
+        <tr>
+          <th class='rhev-checkbox'> {{!input type="checkbox" checked=allChecked}}</th>
+          <th class='rhev-hostname'> Host Name </th>
+          <th> MAC Address </th>
+          <th> Host Type </th>
+          <th class='rhev-cpu text-center'> CPU </th>
+          <th class='rhev-memory text-center'> Memory </th>
+          <th class='rhev-disks text-center'> # Disks </th>
+          <th class='rhev-diskspace text-center'> Disk Space </th>
+          <th class='rhev-network'> Network </th>
+        </tr>
+      </thead>
+
+      <tbody>
+      {{#each host in filteredHosts itemController='discovered-host'}}
+         {{tr-hypervisor host=host isCustomScheme=isCustomScheme
+                                   isMac=isMac
+                                   isHypervisorN=isHypervisorN
+                                   custom_preprend_name=custom_preprend_name
+                                   isFreeform=isFreeform
+                                   num=host.id}}
+      {{/each}}
+      </tbody>
+    </table>
+
+  </div>
+</div>
 
 {{#cancel-back-next backRouteName=hypervisorBackRouteName
                     disableBack=false

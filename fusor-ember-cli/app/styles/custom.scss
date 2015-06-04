@@ -191,3 +191,65 @@ li.disabled a {
 .spinner-text {
   font-size: 20px;
 }
+
+.rhev-searchbar {
+  background-color: #f6f6f6;
+  padding: 5px 0px;
+  border-top: 1px solid #d1d1d1;
+  border-right: 1px solid #d1d1d1;
+  border-left: 1px solid #d1d1d1;
+  margin-right: 1px;
+}
+
+.rhev-search-box {
+  margin-left: -15px;
+}
+
+.not-selected {
+  font-style: italic;
+  color: #555 !important;
+}
+
+.rhev-search-button {
+  display:inline;
+  margin-left:-3px;
+}
+
+table.fusor-table {
+  table-layout: fixed;
+}
+
+.rhev-checkbox {
+  width: 3%;
+}
+
+.rhev-hostname {
+  width: 20%;
+}
+
+.rhev-memory {
+  width: 5%;
+}
+
+.rhev-disks {
+  width: 5%;
+}
+
+.rhev-cpu {
+  width: 5%;
+}
+
+.rhev-diskspace {
+  width: 7%;
+}
+.rhev-network {
+  width: 20%;
+}
+
+.rhev-select-all {
+  padding: 0px 20px;
+}
+
+.prepend-host-names {
+  padding: 0 2px 0 35px;
+}
