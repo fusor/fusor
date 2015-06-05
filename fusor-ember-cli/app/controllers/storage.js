@@ -7,6 +7,11 @@ export default Ember.Controller.extend({
   rhev_storage_type: Ember.computed.alias("controllers.deployment.rhev_storage_type"),
   rhev_storage_address: Ember.computed.alias("controllers.deployment.rhev_storage_address"),
   rhev_share_path: Ember.computed.alias("controllers.deployment.rhev_share_path"),
+
+  rhev_export_domain_name: Ember.computed.alias("controllers.deployment.rhev_export_domain_name"),
+  rhev_export_domain_address: Ember.computed.alias("controllers.deployment.rhev_export_domain_address"),
+  rhev_export_domain_path: Ember.computed.alias("controllers.deployment.rhev_export_domain_path"),
+
   step3RouteName: Ember.computed.alias("controllers.deployment.step3RouteName"),
   isCloudForms: Ember.computed.alias("controllers.deployment.isCloudForms"),
 
