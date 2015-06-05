@@ -47,7 +47,7 @@ module Actions
           repository = ::Katello::Repository.find(input[:repository_id])
 
           if is_rhev_up
-            @api_host = "10.8.101.181" # TODO: replace this with deployment.rhev_engine_host.ip everywhere used
+            @api_host = deployment.rhev_engine_host.facts['ipaddress']
             @script_dir = "/usr/share/fusor/bin/"
 
             image_full_path, image_file_name = find_image_details(repository, input[:image_file_name])
@@ -60,7 +60,9 @@ module Actions
             start_vm(deployment, vm_id)
             vm_ip = get_vm_ip(deployment, vm_id)
 
-            run_appliance_console(vm_ip)
+            #if is_cloudforms_up(vm_ip), I guess we want to wait for it to come
+            #up instead of being a simple true/false
+            run_appliance_console(deployment, vm_ip)
             add_rhev_provider(deployment, vm_ip)
           end
 
@@ -75,9 +77,10 @@ module Actions
 
         def is_rhev_up(deployment)
           api_user = "admin@internal"
-          api_password = "dog8code" # deployment.rhev_engine_admin_password
-          api_host = "10.8.101.181" # deployment.rhev_engine_host.facts['ipaddress']
-          data_center = "Default" # not sure if this comes from some place or not
+          api_password = deployment.rhev_engine_admin_password
+          api_host = deployment.rhev_engine_host.facts['ipaddress']
+          # if db name is empty or nil, use Default
+          data_center = deployment.rhev_database_name.to_s[/.+/m] || "Default"
 
           cmd = "#{@script_dir}ovirt_get_datacenter_status.py "\
                 "--api_user #{api_user} "\
@@ -166,7 +169,8 @@ module Actions
           imported_template_name = "#{deployment.name}-cfme-template"
           username = "admin@internal"
           ssh_username = "root"
-          export_domain_name =  "export"
+          export_domain_name = deployment.rhev_export_domain_name.to_s[/.+/m] || "export"
+
           cfme_image_file = "/root/#{image_file_name}" # can't use find_image_file without doing filename magic :(
 
           # NOTE: the image file found locally is DIFFERENT than the one on
@@ -217,12 +221,13 @@ module Actions
           Rails.logger.warn "XXX applying #{param} on #{node}"
         end
 
-        def run_appliance_console(vm_ip)
+        def run_appliance_console(deployment, vm_ip)
           Rails.logger.warn "XXX running the appliance console on the node"
 
           db_password = "changeme" # TODO: we may want to make this configurable in the future
           ssh_user = "root"
-          ssh_password = "smartvm" # TODO: need to update to use deployment.cfme_root_password; however, that means it must also be set on VM during/after creation
+          #ssh_password = "smartvm" # TODO: need to update to use deployment.cfme_root_password; however, that means it must also be set on VM during/after creation
+          ssh_password = deployment.cfme_root_password
 
           cmd = "#{@script_dir}miq_run_appliance_console.py "\
                 "--miq_ip #{vm_ip} "\
