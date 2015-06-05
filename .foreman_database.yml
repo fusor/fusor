@@ -1,0 +1,23 @@
+development:
+  adapter: postgresql
+  database: katello
+  username: postgres
+  host: localhost
+  encoding: UTF8
+  template: template0
+
+test:
+  adapter: postgresql
+  database: katello_test
+  username: postgres
+  host: localhost
+  encoding: UTF8
+  template: template0
+
+production:
+  adapter: postgresql
+  database: katello
+  username: postgres
+  host: localhost
+  encoding: UTF8
+  template: template0

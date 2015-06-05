@@ -1,0 +1,26 @@
+language: ruby
+
+rvm:
+  - 1.9.3
+
+branches:
+ only:
+ - master
+
+notifications:
+ email: false
+
+sudo: required
+
+# we break the entire process up into smaller bits to avoid travisci timing out
+before_install:
+ - sudo apt-get update -qq
+ - sudo apt-get install libvirt-dev libxml2-dev libxslt1-dev ruby-dev libmysqld-dev libpq-dev postgresql postgresql-contrib -y
+ 
+install: ./.travis.sh install
+
+before_script: ./.travis.sh migrate
+
+script: 
+ - cd ../foreman
+ - rake test:fusor
