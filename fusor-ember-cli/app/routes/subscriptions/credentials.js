@@ -19,6 +19,18 @@ export default Ember.Route.extend({
         controller.set('organizationUpstreamConsumerName', null);
       }
     });
+
+    if (model.get('isAuthenticated')) {
+      // verify isAuthenticated: true is accurate, since Satellite session may have changed.
+      var urlVerify = '/customer_portal/users/' + model.get('identification') + "/owners";
+      $.getJSON(urlVerify).then(function(results) {
+        //do nothing
+      }, function(results) {
+        model.set('isAuthenticated', false);
+        model.save();
+      });
+    }
+
   },
 
   actions: {
@@ -27,7 +39,7 @@ export default Ember.Route.extend({
       return true;
     },
 
-  loginPortal: function() {
+    loginPortal: function() {
       var self = this;
       var controller = this.controllerFor('subscriptions/credentials')
       var identification = controller.get('identification');
@@ -88,6 +100,7 @@ export default Ember.Route.extend({
         });
       });
     },
+
     saveCredentials: function() {
       var self = this;
       var controller = this.controllerFor('subscriptions/credentials')

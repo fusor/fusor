@@ -5566,6 +5566,15 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
           controller.set('organizationUpstreamConsumerName', null);
         }
       });
+
+      if (model.get('isAuthenticated')) {
+        // verify isAuthenticated: true is accurate, since Satellite session may have changed.
+        var urlVerify = '/customer_portal/users/' + model.get('identification') + '/owners';
+        $.getJSON(urlVerify).then(function (results) {}, function (results) {
+          model.set('isAuthenticated', false);
+          model.save();
+        });
+      }
     },
 
     actions: {
@@ -5633,6 +5642,7 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
           });
         });
       },
+
       saveCredentials: function saveCredentials() {
         var self = this;
         var controller = this.controllerFor('subscriptions/credentials');
@@ -5710,6 +5720,8 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
     }
 
   });
+
+  //do nothing
 
 });
 define('fusor-ember-cli/routes/subscriptions/index', ['exports', 'ember'], function (exports, Ember) {
@@ -33580,7 +33592,7 @@ define('fusor-ember-cli/tests/routes/subscriptions/credentials.jshint', function
 
   module('JSHint - routes/subscriptions');
   test('routes/subscriptions/credentials.js should pass jshint', function() { 
-    ok(false, 'routes/subscriptions/credentials.js should pass jshint.\nroutes/subscriptions/credentials.js: line 11, col 67, Missing semicolon.\nroutes/subscriptions/credentials.js: line 32, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 64, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 93, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 97, col 60, Missing semicolon.\nroutes/subscriptions/credentials.js: line 99, col 27, \'sessionPortal\' is already defined.\nroutes/subscriptions/credentials.js: line 102, col 46, Missing semicolon.\nroutes/subscriptions/credentials.js: line 103, col 51, Missing semicolon.\nroutes/subscriptions/credentials.js: line 115, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 139, col 66, Missing semicolon.\nroutes/subscriptions/credentials.js: line 156, col 45, Missing semicolon.\nroutes/subscriptions/credentials.js: line 164, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 13, col 5, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 35, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 65, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 118, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 8, col 9, \'sessionPortal\' is defined but never used.\nroutes/subscriptions/credentials.js: line 9, col 9, \'upstream_consumer_uuid\' is defined but never used.\nroutes/subscriptions/credentials.js: line 25, col 29, \'transition\' is defined but never used.\nroutes/subscriptions/credentials.js: line 25, col 21, \'reason\' is defined but never used.\nroutes/subscriptions/credentials.js: line 38, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 38, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 48, col 31, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 52, col 29, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 64, col 11, \'controller\' is defined but never used.\nroutes/subscriptions/credentials.js: line 67, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 67, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 76, col 31, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 84, col 29, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 101, col 42, \'result\' is defined but never used.\nroutes/subscriptions/credentials.js: line 105, col 19, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 117, col 11, \'password\' is defined but never used.\nroutes/subscriptions/credentials.js: line 122, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 122, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 138, col 50, \'result\' is defined but never used.\nroutes/subscriptions/credentials.js: line 143, col 27, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 150, col 29, \'response\' is defined but never used.\n\n37 errors'); 
+    ok(false, 'routes/subscriptions/credentials.js should pass jshint.\nroutes/subscriptions/credentials.js: line 11, col 67, Missing semicolon.\nroutes/subscriptions/credentials.js: line 44, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 76, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 106, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 110, col 60, Missing semicolon.\nroutes/subscriptions/credentials.js: line 112, col 27, \'sessionPortal\' is already defined.\nroutes/subscriptions/credentials.js: line 115, col 46, Missing semicolon.\nroutes/subscriptions/credentials.js: line 116, col 51, Missing semicolon.\nroutes/subscriptions/credentials.js: line 128, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 152, col 66, Missing semicolon.\nroutes/subscriptions/credentials.js: line 169, col 45, Missing semicolon.\nroutes/subscriptions/credentials.js: line 177, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 13, col 5, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 26, col 7, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 47, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 77, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 131, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 8, col 9, \'sessionPortal\' is defined but never used.\nroutes/subscriptions/credentials.js: line 9, col 9, \'upstream_consumer_uuid\' is defined but never used.\nroutes/subscriptions/credentials.js: line 26, col 42, \'results\' is defined but never used.\nroutes/subscriptions/credentials.js: line 28, col 19, \'results\' is defined but never used.\nroutes/subscriptions/credentials.js: line 37, col 29, \'transition\' is defined but never used.\nroutes/subscriptions/credentials.js: line 37, col 21, \'reason\' is defined but never used.\nroutes/subscriptions/credentials.js: line 50, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 50, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 60, col 31, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 64, col 29, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 76, col 11, \'controller\' is defined but never used.\nroutes/subscriptions/credentials.js: line 79, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 79, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 88, col 31, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 96, col 29, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 114, col 42, \'result\' is defined but never used.\nroutes/subscriptions/credentials.js: line 118, col 19, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 130, col 11, \'password\' is defined but never used.\nroutes/subscriptions/credentials.js: line 135, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 135, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 151, col 50, \'result\' is defined but never used.\nroutes/subscriptions/credentials.js: line 156, col 27, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 163, col 29, \'response\' is defined but never used.\n\n40 errors'); 
   });
 
 });
@@ -39455,13 +39467,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.e9438d76"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.1b1a00c0"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.e9438d76"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.1b1a00c0"});
 }
 
 /* jshint ignore:end */
