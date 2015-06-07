@@ -9,6 +9,7 @@ export default Ember.Route.extend(DeploymentNewSatelliteRouteMixin, {
 
   setupController: function(controller, model) {
     controller.set('model', model);
+    var self = this;
     var organization = this.modelFor('deployment-new').get('organization');
     var lifecycleEnvironments = this.store.find('lifecycle-environment', {organization_id: organization.get('id')});
     lifecycleEnvironments.then(function(results){
@@ -18,7 +19,9 @@ export default Ember.Route.extend(DeploymentNewSatelliteRouteMixin, {
         return controller.set('selectedEnvironment', null);
       // default to Library if it is only env that exists
       } else if (results.get('length') === 1) {
-        return controller.set('selectedEnvironment', results.get('firstObject'));
+        var libraryEnv = results.get('firstObject');
+        self.controllerFor('deployment-new').set('lifecycle_environment', libraryEnv);
+        return controller.set('selectedEnvironment', libraryEnv);
       } else {
         return controller.set('useDefaultOrgViewForEnv', false);
       }
