@@ -70,6 +70,10 @@ export default Ember.Controller.extend({
   rhev_engine_host: Ember.computed.alias("controllers.deployment.discovered_host"),
   selectedRhevEngine: Ember.computed.alias("controllers.deployment.discovered_host"),
 
+  engineNamePlusDomain: function() {
+    return (this.get("selectedRhevEngine.name") + ".rhci.redhat.com");
+  }.property('selectedRhevEngine.name'),
+
   nameRHCI: Ember.computed.alias("controllers.rhci.nameRHCI"),
   nameRhev: Ember.computed.alias("controllers.rhci.nameRhev"),
   nameOpenStack: Ember.computed.alias("controllers.rhci.nameOpenStack"),
