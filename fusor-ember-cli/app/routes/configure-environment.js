@@ -15,9 +15,8 @@ export default Ember.Route.extend({
       // nullify environment if organization has no environments
       if (results.get('length') === 0) {
         return controller.set('selectedEnvironment', null);
-      // default to Library if it is only env that exists
-      } else if (results.get('length') === 1) {
-        return controller.set('selectedEnvironment', results.get('firstObject'));
+      } else if (model.get('id')) {
+        return controller.set('selectedEnvironment', model);
       }
     });
   },
