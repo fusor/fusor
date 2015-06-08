@@ -108,9 +108,17 @@ label.env_path_active:after {
   border-left: 15px solid #00a8d6 !important;
 }
 
+label.env_path_disabled {
+  background: #999 !important;
+  color:#fff !important;
+}
+label.env_path_disabled:after {
+  border-left: 15px solid #999 !important;
+}
+
 .green-circle {
   color: green;
- }
+}
 
 .errorForValidation {
   color: red;

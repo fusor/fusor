@@ -13,7 +13,8 @@
 <div class="row">
   <div class='col-md-9'>
     <div class='pull-right'>
-      {{#em-modal-toggler modal-id="registerNewSatellite" class="btn btn-primary"}}
+      {{#em-modal-toggler modal-id="registerNewSatellite" class="btn btn-primary"
+                          disabled=controllers.deployment.isStarted}}
         Register a New Satellite
       {{/em-modal-toggler}}
     </div>
@@ -35,7 +36,8 @@
         {{#each managementApp in model}}
           {{tr-management-app managementApp=managementApp
                               consumerUUID=sessionPortal.consumerUUID
-                              action="selectManagementApp"}}
+                              action="selectManagementApp"
+                              disabled=controllers.deployment.isStarted}}
         {{/each}}
       </tbody>
     </table>
@@ -48,4 +50,5 @@
                    disableBack=false
                    nextRouteName='subscriptions.select-subscriptions'
                    disableNext=disableNextOnManagementApp
-                   parentController=controller}}
+                   parentController=controller
+                   disableCancel=controllers.deployment.isStarted}}

@@ -106,7 +106,8 @@
 
 {{#cancel-back-next backRouteName=''
                     disableBack=false
-                    parentController=controller}}
+                    parentController=controller
+                    disableCancel=controllers.deployment.isStarted}}
       {{button-f disabled=buttonDeployDisabled title=buttonDeployTitle action="installDeployment"}}
       <br />
       {{input type="checkbox" name="skipContent" checked=skipContent}} Skip Content (DEV ONLY)

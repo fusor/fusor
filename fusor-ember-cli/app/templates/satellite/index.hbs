@@ -3,9 +3,11 @@
     <br />
     <form class="form-horizontal" role="form">
 
-      {{text-f label="Name" value=name inputSize='col-md-5' errors=errors cssId=idSatName isRequired=true}}
+      {{text-f label="Name" value=name inputSize='col-md-5' errors=errors cssId=idSatName
+               isRequired=true disabled=controllers.deployment.isStarted}}
 
-      {{textarea-f label="Description (Optional)" value=description inputSize='col-md-5' cssId=idSatDesc}}
+      {{textarea-f label="Description (Optional)" value=description inputSize='col-md-5' cssId=idSatDesc
+                   disabled=controllers.deployment.isStarted }}
 
     </form>
   </div>
@@ -14,7 +16,8 @@
                    disableBack=false
                    nextRouteName=organizationTabRouteName
                    disableNext=disableNextOnDeploymentName
-                   parentController=controller}}
+                   parentController=controller
+                   disableCancel=controllers.deployment.isStarted}}
 
 
 

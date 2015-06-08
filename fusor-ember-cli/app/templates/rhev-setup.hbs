@@ -5,13 +5,13 @@
     </p>
 
     <div class='ident-radio'>
-      {{#radio-button value="selfhost" groupValue=rhevSetup changed="rhevSetupChanged" id='selfhost'}}
+      {{#radio-button value="selfhost" groupValue=rhevSetup changed="rhevSetupChanged" id='selfhost' disabled=controllers.deployment.isStarted}}
         Self-hosted
       {{/radio-button}}
     </div>
 
     <div class='ident-radio'>
-      {{#radio-button value="rhevhost" groupValue=rhevSetup changed="rhevSetupChanged" id='rhevhost'}}
+      {{#radio-button value="rhevhost" groupValue=rhevSetup changed="rhevSetupChanged" id='rhevhost' disabled=controllers.deployment.isStarted}}
         Hypervisor + engine
       {{/radio-button}}
     </div>
@@ -24,5 +24,7 @@
 {{cancel-back-next backRouteName='configure-environment'
                    disableBack=false
                    nextRouteName='engine.discovered-host'
-                   disableNext=false}}
+                   disableNext=false
+                   parentController=controller
+                   disableCancel=controllers.deployment.isStarted}}
 

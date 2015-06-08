@@ -9,19 +9,23 @@ export default Ember.Component.extend({
   }.property('selectedEnvironment', 'env'),
 
   bgColor: function () {
-    if (this.get('isChecked')) {
+    if (this.get('isChecked') && this.get('disabled')) {
+      return 'env_path_disabled';
+    } else if (this.get('isChecked')) {
       return 'env_path_active';
     } else {
       return null;
     }
-  }.property('isChecked'),
+  }.property('isChecked', 'disabled'),
 
   envCssId: function () {
     return ('env_' + this.get('env.id'));
   }.property('env'),
 
   click: function(event) {
-    this.sendAction('action', this.get('env'));
+    if (!this.get('disabled')) {
+      return this.sendAction('action', this.get('env'));
+    }
   }
 
 });

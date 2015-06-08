@@ -56,7 +56,8 @@
                                    isHypervisorN=isHypervisorN
                                    custom_preprend_name=custom_preprend_name
                                    isFreeform=isFreeform
-                                   num=host.id}}
+                                   num=host.id
+                                   disabled=controllers.deployment.isStarted}}
       {{/each}}
       </tbody>
     </table>
@@ -66,6 +67,7 @@
 
 {{#cancel-back-next backRouteName=hypervisorBackRouteName
                     disableBack=false
-                    parentController=controller}}
+                    parentController=controller
+                    disableCancel=controllers.deployment.isStarted}}
   <button {{action 'saveHyperVisors' 'rhev-options'}} class='btn btn-primary'>Next</button>
 {{/cancel-back-next}}

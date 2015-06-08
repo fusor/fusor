@@ -22,7 +22,8 @@
 <br />
 
 <div class='default_org_view'>
-  {{input type="checkbox" name="skipContent" checked=useDefaultOrgViewForEnv}}
+  {{input type="checkbox" name="useDefaultOrgViewForEnv" checked=useDefaultOrgViewForEnv
+          disabled=controllers.deployment.isStarted}}
   Use Default Organization View
 </div>
 
@@ -39,7 +40,8 @@
           <ul class="path-list">
             {{env-path-list-item env=libraryEnv
                                  selectedEnvironment=selectedEnvironment
-                                 action="selectEnvironment"}}
+                                 action="selectEnvironment"
+                                 disabled=controllers.deployment.isStarted}}
             <li class="path-list-item">
               <label class="path-list-item-label">
                 &nbsp;
@@ -53,10 +55,12 @@
           <ul class="path-list">
             {{env-path-list-item env=libraryEnv
                                  selectedEnvironment=selectedEnvironment
-                                 action="selectEnvironment"}}
+                                 action="selectEnvironment"
+                                 disabled=controllers.deployment.isStarted}}
             {{env-path-list-item env=env
                                  selectedEnvironment=selectedEnvironment
-                                 action="selectEnvironment"}}
+                                 action="selectEnvironment"
+                                 disabled=controllers.deployment.isStarted}}
             <li class="path-list-item">
               <label class="path-list-item-label">
                 &nbsp;
@@ -68,7 +72,7 @@
     {{/if}}
 
     <div style='margin-top:15px;'>
-      {{#em-modal-toggler modal-id="newLifecycleEnvironmentModal" class="btn btn-default"}}
+      {{#em-modal-toggler modal-id="newLifecycleEnvironmentModal" class="btn btn-default" disabled=controllers.deployment.isStarted}}
         New Environment Path
       {{/em-modal-toggler}}
     </div>
@@ -84,10 +88,13 @@
 
 {{#cancel-back-next backRouteName=organizationTabRouteName
                     disableBack=false
-                    parentController=controller}}
+                    parentController=controller
+                    disableCancel=controllers.deployment.isStarted}}
     <button {{action 'saveDeployment' step2RouteName}}
             {{bind-attr disabled=disableNextOnLifecycleEnvironment}}
             class='btn btn-primary'>
         Next <i class="fa fa-angle-right"></i>
     </button>
 {{/cancel-back-next}}
+
+
