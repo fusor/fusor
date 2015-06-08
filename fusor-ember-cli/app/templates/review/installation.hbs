@@ -11,41 +11,45 @@
 {{/if}}
 
 <div class='row'>
-  <div class='col-md-11 col-md-offset-1'>
+  <div class='col-md-12'>
 
-    {{#accordion-item name=controllers.deployment.nameSatellite isOpen=true}}
-      Name: {{#link-to 'satellite'}}{{controllers.deployment.name}}{{/link-to}} <br />
+    {{#accordion-item name="Red Hat Satellite" isOpen=true}}
+      {{review-link label='Name' routeName='satellite' isRequired=true
+                        value=controllers.deployment.name}}
 
-      Organization: {{#link-to 'configure-organization'}}{{controllers.deployment.organization.name}}{{/link-to}} <br />
+      {{review-link label='Organization' routeName='configure-organization' isRequired=true
+                        value=controllers.deployment.organization.name}}
 
-      Environment: {{#link-to 'configure-environment'}}{{controllers.deployment.lifecycle_environment.name}}{{/link-to}}  <br />
-
+      {{review-link label='Environment' routeName='satellite'
+                        value=controllers.deployment.lifecycle_environment.name}}
     {{/accordion-item}}
 
   {{#if isRhev}}
-    {{#accordion-item name=controllers.deployment.nameRhev isOpen=isRhevOpen}}
+    {{#accordion-item name="Red Hat Enterprise Virtualization" isOpen=isRhevOpen}}
 
-      Setup Type: {{#link-to 'rhev-setup'}} {{controllers.rhev-setup.rhevSetupTitle}} {{/link-to}}
-      <br />
+      {{review-link label='Setup Type' routeName='rhev-setup' isRequired=true
+                        value=controllers.rhev-setup.rhevSetupTitle}}
       {{#if isSelfHosted}}
           {{review-link label='Hypervisor/Engine' routeName='engine.discovered-host' isRequired=true
-                        value=selectedRhevEngine.name}}
+                        value=engineNamePlusDomain}}
       {{else}}
-          {{review-link label='Engine' routeName='engine.discovered-host' isRequired=true
-                        value=selectedRhevEngine.name}}
+          {{review-link label='Engine Host Name' routeName='engine.discovered-host' isRequired=true
+                        value=engineNamePlusDomain}}
 
-          {{#review-link label='Hypervisor(s)' routeName='hypervisor.discovered-host' isRequired=true
+          {{#review-link label='Hypervisor Host Name' routeName='hypervisor.discovered-host' isRequired=true
                          value=selectedHypervisorHosts useYieldInstead=true}}
-              <br />
               {{#each host in selectedHypervisorHosts}}
-                  {{#link-to 'hypervisor.discovered-host'}} {{host.name}}.rhci.redhat.com {{/link-to}}<br />
+                  {{#link-to 'hypervisor.discovered-host'}}
+                      {{host.name}}.rhci.redhat.com
+                  {{/link-to}}
+                  <br />
               {{/each}}
           {{/review-link}}
       {{/if}}
 
       <br />
 
-      {{review-link label='Root password for Engine and Hypervisor(s)' routeName='rhev-options' isRequired=true
+      {{review-link label='Root password for Engine & Hypervisor' routeName='rhev-options' isRequired=true
                     isPassword=true value=controllers.deployment.rhev_root_password }}
 
       {{review-link label='Engine admin password' routeName='rhev-options' isRequired=true isPassword=true
@@ -77,34 +81,54 @@
   {{/if}}
 
   {{#if isOpenStack}}
-    {{#accordion-item name=controllers.deployment.nameOpenStack isOpen=isOpenStackOpen}}
+    {{#accordion-item name="Red Hat OpenStack Platform" isOpen=isOpenStackOpen}}
     {{/accordion-item}}
   {{/if}}
 
   {{#if isCloudForms}}
-    {{#accordion-item name=controllers.deployment.nameCloudForms isOpen=isCloudFormsOpen}}
-      Installation Location:
-        {{#link-to 'where-install'}}
-          {{controllers.deployment.cfme_install_loc}}
-        {{/link-to}}
-      <br />
-      {{review-link label='CFME Root password' routeName='cloudforms.cfme-configuration' isRequired=true
+    {{#accordion-item name="CloudForms Management Engine" isOpen=isCloudFormsOpen}}
+        {{review-link label='Installation Location' routeName='where-install' isRequired=true
+                      value=controllers.deployment.cfme_install_loc }}
+        {{review-link label='CFME Root password' routeName='cloudforms.cfme-configuration' isRequired=true
                     isPassword=true value=controllers.deployment.cfme_root_password }}
-      <br />
     {{/accordion-item}}
   {{/if}}
 
   {{#if isSubscriptions}}
     {{#accordion-item name='Subscriptions' isOpen=isSubscriptionsOpen}}
-      Subscription Management Application:
-        {{#link-to 'subscriptions.management-application'}}
-          {{controllers.deployment.upstream_consumer_name}}
-        {{/link-to}}
-      <br />
+        {{review-link label='Subscription Management Application'
+                      routeName='subscriptions.management-application' isRequired=true
+                      value=controllers.deployment.upstream_consumer_name }}
+        {{review-link label='Red Hat Analytics'
+                      routeName='subscriptions.select-subscriptions'
+                      value=controllers.subscriptions/select-subscriptions.enableAnalytics }}
+
+
+        {{#each sub in controllers.subscriptions/select-subscriptions.model}}
+            {{#if sub.isSelectedSubscription}}
+              {{review-link label='Subscription Name'
+                            routeName='subscriptions.select-subscriptions'
+                            value=sub.productName }}
+              {{review-link label='Contract Number'
+                            routeName='subscriptions.select-subscriptions'
+                            value=sub.contractNumber }}
+              {{review-link label='Quantity'
+                            routeName='subscriptions.select-subscriptions'
+                            value=sub.qtyToAttach }}
+            {{/if}}
+        {{else}}
+              {{review-link label='Quantity'
+                            routeName='subscriptions.select-subscriptions'
+                            value="0 - no new subscriptions to attach" }}
+        {{/each}}
+
     {{/accordion-item}}
   {{/if}}
 
-{{#cancel-back-next backRouteName=''
+  </div>
+</div>
+
+{{#cancel-back-next backRouteName=backRouteNameonReviewInstallation
                     disableBack=false
                     parentController=controller
                     disableCancel=controllers.deployment.isStarted}}
@@ -112,10 +136,3 @@
       <br />
       {{input type="checkbox" name="skipContent" checked=skipContent}} Skip Content (DEV ONLY)
 {{/cancel-back-next}}
-
-
-
-  </div>
-</div>
-
-{{outlet}}

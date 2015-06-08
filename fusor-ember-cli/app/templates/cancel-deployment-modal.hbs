@@ -7,18 +7,18 @@
     {{/em-modal-title}}
 
     {{#em-modal-body}}
-        Are you sure that you want to cancel this deployment?
+        What would you like to do with this deployment?
     {{/em-modal-body}}
 
     {{#em-modal-footer}}
         <button type="submit" {{action 'cancelAndDeleteDeployment'}} class="btn btn-default">
-          Yes, Exit and Delete Deployment
+          Exit and Delete
         </button>
         <button type="submit" {{action 'saveAndCancelDeployment'}} class="btn btn-default">
-          Yes, Save Deployment and Exit
+          Exit and Save
         </button>
         {{#em-modal-toggler class="btn btn-primary"}}
-          No, Continue Working on This Deployment
+          Continue Working
         {{/em-modal-toggler}}
     {{/em-modal-footer}}
     {{isNew}}

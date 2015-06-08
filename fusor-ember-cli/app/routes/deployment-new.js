@@ -12,6 +12,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     controller.set('satelliteTabRouteName', 'deployment-new.satellite.index');
     controller.set('organizationTabRouteName', 'deployment-new.satellite.configure-organization');
     controller.set('lifecycleEnvironmentTabRouteName', 'deployment-new.satellite.configure-environment');
+    controller.set('enable_access_insights', true);
   },
 
   // rollback if new deployment not saved

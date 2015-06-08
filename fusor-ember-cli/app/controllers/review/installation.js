@@ -5,7 +5,7 @@ export default Ember.Controller.extend({
           'configure-environment', 'rhev-setup', 'hypervisor', 'hypervisor/discovered-host',
           'engine/discovered-host', 'storage',
           'networking', 'rhev-options', 'where-install',
-          'cloudforms-storage-domain', 'cloudforms-vm', 'review'],
+          'cloudforms-storage-domain', 'cloudforms-vm', 'review', 'subscriptions/select-subscriptions'],
 
   // TODO - DRY and update while deployment is finished and button should say "Deployed"
   buttonDeployTitle: function() {
@@ -70,10 +70,32 @@ export default Ember.Controller.extend({
   rhev_engine_host: Ember.computed.alias("controllers.deployment.discovered_host"),
   selectedRhevEngine: Ember.computed.alias("controllers.deployment.discovered_host"),
 
+  engineNamePlusDomain: function() {
+    return (this.get("selectedRhevEngine.name") + ".rhci.redhat.com");
+  }.property('selectedRhevEngine.name'),
+
   nameRHCI: Ember.computed.alias("controllers.rhci.nameRHCI"),
   nameRhev: Ember.computed.alias("controllers.rhci.nameRhev"),
   nameOpenStack: Ember.computed.alias("controllers.rhci.nameOpenStack"),
   nameCloudForms: Ember.computed.alias("controllers.rhci.nameCloudForms"),
   nameSatellite: Ember.computed.alias("controllers.rhci.nameSatellite"),
+
+  backRouteNameonReviewInstallation: function() {
+    if (this.get('isSubscriptions')) {
+      if (Ember.isPresent(this.get('controllers.deployment.upstream_consumer_uuid'))) {
+        return 'subscriptions.select-subscriptions';
+      } else {
+        return 'subscriptions.credentials';
+      }
+    } else {
+      if (this.get('isCloudForms')) {
+        return 'cloudforms/cfme-configuration';
+      } else if (this.get('isOpenStack')) {
+        // TODO
+      } else if (this.get('isRhev')) {
+        return 'storage';
+      }
+    }
+  }.property('isSubscriptions', 'isRhev', 'isOpenStack', 'isCloudForms'),
 
 });

@@ -176,11 +176,11 @@ th {
 }
 
 li.disabled a {
-  color: #ddd !important;
+  color: #999 !important;
 }
 
 .disabled {
-  color: #ddd !important;
+  color: #999 !important;
 }
 
 .no_subscriptions {
@@ -250,6 +250,7 @@ table.fusor-table {
 .rhev-diskspace {
   width: 7%;
 }
+
 .rhev-network {
   width: 20%;
 }
@@ -260,4 +261,12 @@ table.fusor-table {
 
 .prepend-host-names {
   padding: 0 2px 0 35px;
+}
+
+.org-radio-btn {
+  width: 3%;
+}
+
+.accordion-item {
+  padding-bottom: 10px;
 }
