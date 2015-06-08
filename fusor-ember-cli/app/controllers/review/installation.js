@@ -46,9 +46,9 @@ export default Ember.Controller.extend({
   skipContent: Ember.computed.alias("controllers.deployment.skipContent"),
 
   isRhevOpen: true,
-  isOpenStackOpen: false,
-  isCloudFormsOpen: false,
-  isSubscriptionsOpen: false,
+  isOpenStackOpen: true,
+  isCloudFormsOpen: true,
+  isSubscriptionsOpen: true,
 
   engineHostAddressDefault: 'ovirt-hypervisor.rhci.redhat.com',
   hostAddress: Ember.computed.alias("controllers.rhev-options.hostAddress"),

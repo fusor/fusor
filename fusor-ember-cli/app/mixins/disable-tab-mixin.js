@@ -10,7 +10,7 @@ export default Ember.Mixin.create({
   hasNoName: Ember.computed.not('hasName'),
 
   hasOrganization: function() {
-    return !!(this.get('organization').get('id')); // without .get('id') returns promise that is true
+    return !!(this.get('organization.id'));
   }.property('organization'),
   hasNoOrganization: Ember.computed.not('hasOrganization'),
 

@@ -41,12 +41,14 @@ export default Ember.Route.extend({
       var orgID = this.modelFor('deployment').get('organization.id')
       var url = '/katello/api/v2/organizations/' + orgID;
       $.getJSON(url).then(function(results) {
-          sessionPortal.set('consumerUUID', results.owner_details.upstreamConsumer.uuid);
-          sessionPortal.save()
-          controller.set('sessionPortal', sessionPortal)
-          controller.set('upstream_consumer_uuid', results.owner_details.upstreamConsumer.uuid);
-          controller.set('upstream_consumer_name', results.owner_details.upstreamConsumer.name);
-          });
+          if (Ember.isPresent(results.owner_details.upstreamConsumer)) {
+            sessionPortal.set('consumerUUID', results.owner_details.upstreamConsumer.uuid);
+            sessionPortal.save()
+            controller.set('sessionPortal', sessionPortal)
+            controller.set('upstream_consumer_uuid', results.owner_details.upstreamConsumer.uuid);
+            controller.set('upstream_consumer_name', results.owner_details.upstreamConsumer.name);
+          }
+        });
     }
   },
 

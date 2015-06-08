@@ -1,8 +1,18 @@
-{{text-f label="CFME Root password" type='password' value=cfme_root_password cssId='cfme_root_password' isRequired=true disabled=controllers.deployment.isStarted}}
+<div class='row'>
+  <div class='col-md-12'>
+    <form class="form form-horizontal">
+      {{text-f label="CFME Root password" type='password' value=cfme_root_password
+               cssId='cfme_root_password'
+               isRequired=true disabled=controllers.deployment.isStarted
+               help-inline='must be 8 or more characters'
+               placeholder='must be 8 or more characters'}}
+    </form>
+  </div>
+</div>
 
 {{cancel-back-next backRouteName='where-install'
                    disableBack=false
                    nextRouteName=nextRouteNameAfterCFME
-                   disableNext=false
+                   disableNext=controllers.cloudforms.hasNoCFRootPassword
                    parentController=controller
                    disableCancel=controllers.deployment.isStarted}}

@@ -58,6 +58,6 @@
 {{cancel-back-next backRouteName='rhev-setup'
                    disableBack=false
                    nextRouteName=engineNextRouteName
-                   disableNext=false
+                   disableNext=controllers.rhev.hasNoEngine
                    parentController=controller
                    disableCancel=controllers.deployment.isStarted}}

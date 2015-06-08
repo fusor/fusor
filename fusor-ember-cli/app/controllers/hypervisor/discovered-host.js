@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.ArrayController.extend({
-  needs: ['deployment', 'hypervisor'],
+  needs: ['deployment', 'hypervisor', 'rhev'],
 
   itemController: ['discovered-host'],
 

@@ -10,12 +10,12 @@ export default Ember.Component.extend({
   }.property('childViews.@each.active'),
 
   completed: function() {
-    return (this.get('num') < this.get('currentStepNumber'));
-  }.property('num', 'currentStepNumber'),
+    return (!this.get('isDisabled') && !this.get('active'));
+  }.property('isDisabled', 'active'),
 
   future: function() {
-    return (this.get('num') > this.get('currentStepNumber'));
-  }.property('num', 'currentStepNumber'),
+    return this.get('isDisabled')
+  }.property('isDisabled'),
 
   // isReviewTab: function() {
   //   return (this.get('routeName') == 'review')

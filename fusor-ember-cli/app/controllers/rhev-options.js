@@ -12,7 +12,6 @@ export default Ember.Controller.extend({
   rhev_cpu_type: Ember.computed.alias("controllers.deployment.rhev_cpu_type"),
   rhev_is_self_hosted: Ember.computed.alias("controllers.deployment.rhev_is_self_hosted"),
 
-
   optionsBackRouteName: function() {
     if (this.get('rhev_is_self_hosted')) {
       return 'engine.discovered-host';
@@ -40,5 +39,16 @@ export default Ember.Controller.extend({
        }
   ],
 
+  disableNextRhevOptions: function() {
+    return (Ember.isBlank(this.get('rhev_root_password')) ||
+            Ember.isBlank(this.get('rhev_engine_admin_password')) ||
+            this.get('rhev_root_password.length') < 8 ||
+            this.get('rhev_engine_admin_password.length') < 8
+           );
+  }.property('rhev_root_password', 'rhev_engine_admin_password'),
+
+  validRhevOptions: Ember.computed.not('disableNextRhevOptions'),
+
 });
+
 

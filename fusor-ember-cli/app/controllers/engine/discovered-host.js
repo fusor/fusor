@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
-  needs: ['deployment', 'hypervisor/discovered-host'],
+  needs: ['deployment', 'hypervisor/discovered-host', 'rhev'],
 
   selectedRhevEngineHost: Ember.computed.alias("model"),
   hypervisorModelIds: Ember.computed.alias("controllers.hypervisor/discovered-host.hypervisorModelIds"),

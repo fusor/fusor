@@ -27,4 +27,19 @@ export default Ember.Controller.extend({
     return (this.get('rhev_storage_type') === 'Gluster');
   }.property('rhev_storage_type'),
 
+  disableNextStorage: function () {
+    if (this.get('isCloudForms')) {
+      return (Ember.isBlank(this.get('rhev_storage_type')) ||
+              Ember.isBlank(this.get('rhev_export_domain_name')) ||
+              Ember.isBlank(this.get('rhev_export_domain_address')) ||
+              Ember.isBlank(this.get('rhev_export_domain_path'))
+             );
+    } else {
+      return Ember.isBlank(this.get('rhev_storage_type'));
+    }
+  }.property('isCloudForms', 'rhev_storage_type', 'rhev_export_domain_name', 'rhev_export_domain_address', 'rhev_export_domain_path'),
+
+  validRhevStorage: Ember.computed.not('disableNextStorage'),
+
 });
+
