@@ -145,6 +145,18 @@ define('fusor-ember-cli/components/cancel-back-next', ['exports', 'ember'], func
   });
 
 });
+define('fusor-ember-cli/components/delete-deployment-button', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].Component.extend({
+    tagName: 'span',
+
+    click: function click(event) {
+      this.sendAction('action', this.get('deployment'));
+    } });
+
+});
 define('fusor-ember-cli/components/deployment-role', ['exports', 'ember'], function (exports, Ember) {
 
   'use strict';
@@ -1680,9 +1692,12 @@ define('fusor-ember-cli/controllers/deployment', ['exports', 'ember', 'fusor-emb
 
   exports['default'] = Ember['default'].ObjectController.extend(DeploymentControllerMixin['default'], DisableTabMixin['default'], {
 
-    needs: ["configure-environment"],
+    needs: ["configure-environment", "deployments"],
 
     useDefaultOrgViewForEnv: Ember['default'].computed.alias("controllers.configure-environment.useDefaultOrgViewForEnv"),
+
+    isOpenModal: Ember['default'].computed.alias("controllers.deployments.isOpenModal"),
+    deploymentInModal: Ember['default'].computed.alias("controllers.deployments.deploymentInModal"),
 
     // disable Steps 2, 3, 4, etc on wizard
     isDisabledRhev: Ember['default'].computed.alias("satelliteInvalid"),
@@ -1743,16 +1758,29 @@ define('fusor-ember-cli/controllers/deployments', ['exports', 'ember'], function
     filteredDeployments: (function () {
       var searchDeploymentString = this.get('searchDeploymentString');
       var rx = new RegExp(searchDeploymentString, 'gi');
-      var model = this.get('sortedDeployments');
+      var sortedDeployments = this.get('sortedDeployments');
 
-      if (model.get('length') > 0) {
-        return model.filter(function (record) {
-          return record.get('name').match(rx);
+      if (sortedDeployments.get('length') > 1) {
+        return sortedDeployments.filter(function (record) {
+          if (Ember['default'].isPresent(record.get('name'))) {
+            return record.get('name').match(rx);
+          }
         });
       } else {
-        return model;
+        return sortedDeployments;
       }
-    }).property('sortedDeployments', 'searchDeploymentString') });
+    }).property('sortedDeployments', 'searchDeploymentString', 'model.[]'),
+
+    // related to deleted-deployment-modal
+    isOpenModal: false,
+    deploymentInModal: null,
+
+    actions: {
+      openDeploymentModal: function openDeploymentModal(item) {
+        this.set('deploymentInModal', item);
+        return this.set('isOpenModal', true);
+      } }
+  });
 
 });
 define('fusor-ember-cli/controllers/discovered-host', ['exports', 'ember'], function (exports, Ember) {
@@ -4872,7 +4900,18 @@ define('fusor-ember-cli/routes/deployments', ['exports', 'ember'], function (exp
   exports['default'] = Ember['default'].Route.extend({
     model: function model() {
       return this.store.find('deployment');
-    }
+    },
+
+    actions: {
+      deleteDeployment: function deleteDeployment(item) {
+        this.controllerFor('deployments').set('isCloseModal', true);
+        var self = this;
+        return this.store.find('deployment', item.get('id')).then(function (deployment) {
+          deployment.deleteRecord();
+          return deployment.save();
+        });
+      } }
+
   });
 
 });
@@ -8000,6 +8039,53 @@ define('fusor-ember-cli/templates/components/cancel-back-next', ['exports'], fun
         block(env, morph1, context, "link-to", [get(env, context, "backRouteName")], {"disabled": get(env, context, "disableBack"), "role": "button", "class": "btn btn-default"}, child1, null);
         block(env, morph2, context, "if", [get(env, context, "nextRouteName")], {}, child2, child3);
         inline(env, morph3, context, "partial", ["cancel-deployment-modal"], {});
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('fusor-ember-cli/templates/components/delete-deployment-button', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      revision: "Ember@1.11.1",
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createElement("button");
+        dom.setAttribute(el1,"class","btn btn-sm btn-danger");
+        var el2 = dom.createTextNode("Delete");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
         return fragment;
       }
     };
@@ -16706,6 +16792,340 @@ define('fusor-ember-cli/templates/debug-deployment', ['exports'], function (expo
   }()));
 
 });
+define('fusor-ember-cli/templates/delete-deployment-modal', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    var child0 = (function() {
+      var child0 = (function() {
+        var child0 = (function() {
+          return {
+            isHTMLBars: true,
+            revision: "Ember@1.11.1",
+            blockParams: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            build: function build(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("            ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createElement("span");
+              dom.setAttribute(el1,"aria-hidden","true");
+              var el2 = dom.createTextNode("×");
+              dom.appendChild(el1, el2);
+              dom.appendChild(el0, el1);
+              var el1 = dom.createElement("span");
+              dom.setAttribute(el1,"class","sr-only");
+              var el2 = dom.createTextNode("Close");
+              dom.appendChild(el1, el2);
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            render: function render(context, env, contextualElement) {
+              var dom = env.dom;
+              dom.detectNamespace(contextualElement);
+              var fragment;
+              if (env.useFragmentCache && dom.canClone) {
+                if (this.cachedFragment === null) {
+                  fragment = this.build(dom);
+                  if (this.hasRendered) {
+                    this.cachedFragment = fragment;
+                  } else {
+                    this.hasRendered = true;
+                  }
+                }
+                if (this.cachedFragment) {
+                  fragment = dom.cloneNode(this.cachedFragment, true);
+                }
+              } else {
+                fragment = this.build(dom);
+              }
+              return fragment;
+            }
+          };
+        }());
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("h4");
+            dom.setAttribute(el1,"class","modal-title");
+            var el2 = dom.createTextNode("Delete RHCI Deployment - ");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createComment("");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createTextNode(" ");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, block = hooks.block, content = hooks.content;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+            var morph1 = dom.createMorphAt(dom.childAt(fragment, [2]),1,1);
+            dom.insertBoundary(fragment, 0);
+            block(env, morph0, context, "em-modal-toggler", [], {"class": "close"}, child0, null);
+            content(env, morph1, context, "deploymentInModal.name");
+            return fragment;
+          }
+        };
+      }());
+      var child1 = (function() {
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("        Are you sure that you want to delete this deployment - ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("?\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, content = hooks.content;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
+            content(env, morph0, context, "deploymentInModal.name");
+            return fragment;
+          }
+        };
+      }());
+      var child2 = (function() {
+        var child0 = (function() {
+          return {
+            isHTMLBars: true,
+            revision: "Ember@1.11.1",
+            blockParams: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            build: function build(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("          No\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            render: function render(context, env, contextualElement) {
+              var dom = env.dom;
+              dom.detectNamespace(contextualElement);
+              var fragment;
+              if (env.useFragmentCache && dom.canClone) {
+                if (this.cachedFragment === null) {
+                  fragment = this.build(dom);
+                  if (this.hasRendered) {
+                    this.cachedFragment = fragment;
+                  } else {
+                    this.hasRendered = true;
+                  }
+                }
+                if (this.cachedFragment) {
+                  fragment = dom.cloneNode(this.cachedFragment, true);
+                }
+              } else {
+                fragment = this.build(dom);
+              }
+              return fragment;
+            }
+          };
+        }());
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("button");
+            dom.setAttribute(el1,"type","submit");
+            dom.setAttribute(el1,"class","btn btn-danger");
+            var el2 = dom.createTextNode("Yes, Delete Deployment");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, block = hooks.block, get = hooks.get, element = hooks.element;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var element0 = dom.childAt(fragment, [2]);
+            var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+            dom.insertBoundary(fragment, 0);
+            block(env, morph0, context, "em-modal-toggler", [], {"class": "btn btn-default"}, child0, null);
+            element(env, element0, context, "action", ["deleteDeployment", get(env, context, "deploymentInModal")], {});
+            return fragment;
+          }
+        };
+      }());
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, block = hooks.block;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+          var morph1 = dom.createMorphAt(fragment,2,2,contextualElement);
+          var morph2 = dom.createMorphAt(fragment,4,4,contextualElement);
+          dom.insertBoundary(fragment, null);
+          dom.insertBoundary(fragment, 0);
+          block(env, morph0, context, "em-modal-title", [], {}, child0, null);
+          block(env, morph1, context, "em-modal-body", [], {}, child1, null);
+          block(env, morph2, context, "em-modal-footer", [], {}, child2, null);
+          return fragment;
+        }
+      };
+    }());
+    return {
+      isHTMLBars: true,
+      revision: "Ember@1.11.1",
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, get = hooks.get, block = hooks.block;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+        dom.insertBoundary(fragment, null);
+        dom.insertBoundary(fragment, 0);
+        block(env, morph0, context, "em-modal", [], {"configName": "bs", "id": "deleteDeploymentModal", "open-if": get(env, context, "isOpenModal"), "close-if": get(env, context, "isCloseModal")}, child0, null);
+        return fragment;
+      }
+    };
+  }()));
+
+});
 define('fusor-ember-cli/templates/deployment-new', ['exports'], function (exports) {
 
   'use strict';
@@ -17437,6 +17857,49 @@ define('fusor-ember-cli/templates/deployments', ['exports'], function (exports) 
           }
         };
       }());
+      var child2 = (function() {
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("              ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
+            inline(env, morph0, context, "delete-deployment-button", [], {"deployment": get(env, context, "deployment"), "action": "openDeploymentModal"});
+            return fragment;
+          }
+        };
+      }());
       return {
         isHTMLBars: true,
         revision: "Ember@1.11.1",
@@ -17479,9 +17942,15 @@ define('fusor-ember-cli/templates/deployments', ['exports'], function (exports) 
           var el2 = dom.createTextNode("\n      ");
           dom.appendChild(el1, el2);
           var el2 = dom.createElement("td");
-          var el3 = dom.createTextNode(" ");
+          var el3 = dom.createTextNode("\n          ");
           dom.appendChild(el2, el3);
           var el3 = dom.createComment("");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createComment("");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("      ");
           dom.appendChild(el2, el3);
           dom.appendChild(el1, el2);
           var el2 = dom.createTextNode("\n    ");
@@ -17512,14 +17981,17 @@ define('fusor-ember-cli/templates/deployments', ['exports'], function (exports) 
             fragment = this.build(dom);
           }
           var element0 = dom.childAt(fragment, [1]);
+          var element1 = dom.childAt(element0, [7]);
           var morph0 = dom.createMorphAt(dom.childAt(element0, [1]),1,1);
           var morph1 = dom.createMorphAt(dom.childAt(element0, [3]),1,1);
           var morph2 = dom.createMorphAt(dom.childAt(element0, [5]),1,1);
-          var morph3 = dom.createMorphAt(dom.childAt(element0, [7]),1,1);
+          var morph3 = dom.createMorphAt(element1,1,1);
+          var morph4 = dom.createMorphAt(element1,3,3);
           block(env, morph0, context, "link-to", ["deployment", get(env, context, "deployment")], {}, child0, null);
           content(env, morph1, context, "deployment.lifecycle_environment.name");
           content(env, morph2, context, "deployment.organization.name");
-          block(env, morph3, context, "link-to", ["deployment", get(env, context, "deployment")], {"class": "btn btn-default"}, child1, null);
+          block(env, morph3, context, "link-to", ["deployment", get(env, context, "deployment")], {"class": "btn btn-sm btn-default"}, child1, null);
+          block(env, morph4, context, "unless", [get(env, context, "isStarted")], {}, child2, null);
           return fragment;
         }
       };
@@ -17670,6 +18142,10 @@ define('fusor-ember-cli/templates/deployments', ['exports'], function (exports) 
         dom.appendChild(el0, el1);
         var el1 = dom.createComment("");
         dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
         return el0;
@@ -17694,19 +18170,21 @@ define('fusor-ember-cli/templates/deployments', ['exports'], function (exports) 
         } else {
           fragment = this.build(dom);
         }
-        var element1 = dom.childAt(fragment, [14]);
+        var element2 = dom.childAt(fragment, [14]);
         var morph0 = dom.createMorphAt(dom.childAt(fragment, [2, 1]),0,0);
         var morph1 = dom.createMorphAt(dom.childAt(fragment, [6, 1, 1, 1]),1,1);
         var morph2 = dom.createMorphAt(dom.childAt(fragment, [10, 3]),1,1);
-        var morph3 = dom.createMorphAt(element1,0,0);
-        var morph4 = dom.createMorphAt(element1,2,2);
+        var morph3 = dom.createMorphAt(element2,0,0);
+        var morph4 = dom.createMorphAt(element2,2,2);
         var morph5 = dom.createMorphAt(fragment,16,16,contextualElement);
+        var morph6 = dom.createMorphAt(fragment,18,18,contextualElement);
         block(env, morph0, context, "link-to", ["deployment-new.start"], {"class": "btn btn-success"}, child0, null);
         inline(env, morph1, context, "input", [], {"type": "text", "class": "form-control", "placeholder": "Filter ...", "value": get(env, context, "searchDeploymentString")});
         block(env, morph2, context, "each", [get(env, context, "filteredDeployments")], {"itemController": "deployment", "keyword": "deployment"}, child1, null);
         content(env, morph3, context, "filteredDeployments.length");
         content(env, morph4, context, "model.length");
         content(env, morph5, context, "outlet");
+        inline(env, morph6, context, "partial", ["delete-deployment-modal"], {});
         return fragment;
       }
     };
@@ -31719,6 +32197,16 @@ define('fusor-ember-cli/tests/components/cancel-back-next.jshint', function () {
   });
 
 });
+define('fusor-ember-cli/tests/components/delete-deployment-button.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - components');
+  test('components/delete-deployment-button.js should pass jshint', function() { 
+    ok(false, 'components/delete-deployment-button.js should pass jshint.\ncomponents/delete-deployment-button.js: line 6, col 19, \'event\' is defined but never used.\n\n1 error'); 
+  });
+
+});
 define('fusor-ember-cli/tests/components/deployment-role.jshint', function () {
 
   'use strict';
@@ -32145,7 +32633,7 @@ define('fusor-ember-cli/tests/controllers/deployments.jshint', function () {
 
   module('JSHint - controllers');
   test('controllers/deployments.js should pass jshint', function() { 
-    ok(false, 'controllers/deployments.js should pass jshint.\ncontrollers/deployments.js: line 19, col 44, Missing semicolon.\n\n1 error'); 
+    ok(false, 'controllers/deployments.js should pass jshint.\ncontrollers/deployments.js: line 20, col 46, Missing semicolon.\n\n1 error'); 
   });
 
 });
@@ -33102,7 +33590,7 @@ define('fusor-ember-cli/tests/routes/deployments.jshint', function () {
 
   module('JSHint - routes');
   test('routes/deployments.js should pass jshint', function() { 
-    ok(true, 'routes/deployments.js should pass jshint.'); 
+    ok(false, 'routes/deployments.js should pass jshint.\nroutes/deployments.js: line 11, col 11, \'self\' is defined but never used.\n\n1 error'); 
   });
 
 });
@@ -33990,6 +34478,39 @@ define('fusor-ember-cli/tests/unit/components/cancel-back-next-test.jshint', fun
   module('JSHint - unit/components');
   test('unit/components/cancel-back-next-test.js should pass jshint', function() { 
     ok(true, 'unit/components/cancel-back-next-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/components/delete-deployment-button-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForComponent('delete-deployment-button', 'Unit | Component | delete deployment button', {
+    // Specify the other units that are required for this test
+    // needs: ['component:foo', 'helper:bar'],
+    unit: true
+  });
+
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
+
+});
+define('fusor-ember-cli/tests/unit/components/delete-deployment-button-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/delete-deployment-button-test.js should pass jshint', function() { 
+    ok(true, 'unit/components/delete-deployment-button-test.js should pass jshint.'); 
   });
 
 });
@@ -39467,13 +39988,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.1b1a00c0"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.2ae0f3e7"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.1b1a00c0"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.2ae0f3e7"});
 }
 
 /* jshint ignore:end */

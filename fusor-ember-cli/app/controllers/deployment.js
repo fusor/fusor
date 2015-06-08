@@ -4,9 +4,12 @@ import DisableTabMixin from "../mixins/disable-tab-mixin";
 
 export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableTabMixin, {
 
-  needs: ['configure-environment'],
+  needs: ['configure-environment', 'deployments'],
 
   useDefaultOrgViewForEnv: Ember.computed.alias("controllers.configure-environment.useDefaultOrgViewForEnv"),
+
+  isOpenModal: Ember.computed.alias("controllers.deployments.isOpenModal"),
+  deploymentInModal: Ember.computed.alias("controllers.deployments.deploymentInModal"),
 
   // disable Steps 2, 3, 4, etc on wizard
   isDisabledRhev: Ember.computed.alias("satelliteInvalid"),

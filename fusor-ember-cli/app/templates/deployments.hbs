@@ -32,7 +32,13 @@
       <td> {{#link-to 'deployment' deployment}} {{deployment.name}} {{/link-to}}</td>
       <td> {{deployment.lifecycle_environment.name}} </td>
       <td> {{deployment.organization.name}} </td>
-      <td> {{#link-to 'deployment' deployment class='btn btn-default'}} Edit {{/link-to}}</td>
+      <td>
+          {{#link-to 'deployment' deployment class='btn btn-sm btn-default'}} Edit {{/link-to}}
+          {{#unless isStarted}}
+              {{delete-deployment-button deployment=deployment
+                                         action="openDeploymentModal"}}
+          {{/unless}}
+      </td>
     </tr>
   {{/each}}
   </tbody>
@@ -42,3 +48,5 @@
 Displaying <strong>{{filteredDeployments.length}} of {{model.length}}</strong> entries
 
 {{outlet}}
+
+{{partial 'delete-deployment-modal'}}
