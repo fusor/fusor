@@ -11,8 +11,17 @@ export default Ember.ObjectController.extend({
   organizationTabRouteName: Ember.computed.alias("controllers.deployment.organizationTabRouteName"),
   lifecycleEnvironmentTabRouteName: Ember.computed.alias("controllers.deployment.lifecycleEnvironmentTabRouteName"),
 
+  // overwritten by setupController
   disableRHEV: false,
   disableOpenStack: false,
+
+  disableRHEVradio: function () {
+    return (this.get('disableRHEV') || this.get('controllers.deployment.isStarted'));
+  }.property('disableRHEV', 'controllers.deployment.isStarted'),
+
+  disableOpenstackradio: function () {
+    return (this.get('disableRHEV') || this.get('controllers.deployment.isStarted'));
+  }.property('disableRHEV', 'controllers.deployment.isStarted'),
 
   backRouteName: function() {
     if (this.get('isOpenStack')) {

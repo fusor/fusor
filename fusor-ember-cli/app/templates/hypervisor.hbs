@@ -9,11 +9,13 @@
       <div class="form-group">
         Host naming scheme &nbsp; {{view "select" content=namingOptions
                                                   value=host_naming_scheme
-                                                  class='form-control'}}
+                                                  class='form-control'
+                                                  disabled=controllers.deployment.isStarted}}
 
         {{#if isCustomScheme}}
           <span class='prepend-host-names'>
-            Prepend host names with {{input type='text' value=custom_preprend_name}}
+            Prepend host names with {{input type='text' value=custom_preprend_name
+                                                        disabled=controllers.deployment.isStarted}}
           </span>
         {{/if}}
       </div>

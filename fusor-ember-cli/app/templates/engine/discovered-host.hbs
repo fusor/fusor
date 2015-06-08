@@ -46,7 +46,8 @@
 
       <tbody>
       {{#each host in filteredHosts itemController='discovered-host'}}
-         {{tr-engine host=host selectedRhevEngineHost=selectedRhevEngineHost}}
+         {{tr-engine host=host selectedRhevEngineHost=selectedRhevEngineHost
+                               disabled=controllers.deployment.isStarted}}
       {{/each}}
       </tbody>
     </table>
@@ -57,4 +58,6 @@
 {{cancel-back-next backRouteName='rhev-setup'
                    disableBack=false
                    nextRouteName=engineNextRouteName
-                   disableNext=false}}
+                   disableNext=false
+                   parentController=controller
+                   disableCancel=controllers.deployment.isStarted}}

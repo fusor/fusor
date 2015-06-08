@@ -4,25 +4,25 @@
 
 <div class="col-sm-4 col-md-3 col-lg-2 col-sm-pull-8 col-md-pull-9 col-lg-pull-10 sidebar-pf sidebar-pf-left">
   <ul class="nav nav-pills nav-stacked">
-      {{#link-to 'rhev-setup' tagName='li'}}
+      {{#link-to 'rhev-setup' tagName='li' disabled=disableTabRhevSetupType}}
         <a>2A. Setup Type</a>
       {{/link-to}}
 
-      {{#link-to 'engine' tagName='li'}}
+      {{#link-to 'engine' tagName='li' disabled=disableTabRhevEngine}}
         <a>2B. {{engineTabName}}</a>
       {{/link-to}}
 
       {{#unless isSelfHost}}
-      {{#link-to 'hypervisor' tagName='li'}}
+      {{#link-to 'hypervisor' tagName='li' disabled=disableTabRhevHypervisors}}
         <a>2C. Hypervisors</a>
       {{/link-to}}
       {{/unless}}
 
-      {{#link-to 'rhev-options' tagName='li'}}
+      {{#link-to 'rhev-options' tagName='li' disabled=disableTabRhevConfiguration}}
         <a>{{if isSelfHost '2C' '2D'}}. Configuration</a>
       {{/link-to}}
 
-      {{#link-to 'storage' tagName='li'}}
+      {{#link-to 'storage' tagName='li' disabled=disableTabRhevStorage}}
         <a>{{if isSelfHost '2D' '2E'}}. Storage</a>
       {{/link-to}}
   </ul>

@@ -1,6 +1,8 @@
-{{text-f label="CFME Root password" type='password' value=cfme_root_password cssId='cfme_root_password' isRequired=true}}
+{{text-f label="CFME Root password" type='password' value=cfme_root_password cssId='cfme_root_password' isRequired=true disabled=controllers.deployment.isStarted}}
 
 {{cancel-back-next backRouteName='where-install'
                    disableBack=false
                    nextRouteName=nextRouteNameAfterCFME
-                   disableNext=false}}
+                   disableNext=false
+                   parentController=controller
+                   disableCancel=controllers.deployment.isStarted}}

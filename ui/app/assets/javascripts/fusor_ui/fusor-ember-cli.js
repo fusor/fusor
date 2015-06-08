@@ -479,19 +479,23 @@ define('fusor-ember-cli/components/env-path-list-item', ['exports', 'ember'], fu
     }).property('selectedEnvironment', 'env'),
 
     bgColor: (function () {
-      if (this.get('isChecked')) {
+      if (this.get('isChecked') && this.get('disabled')) {
+        return 'env_path_disabled';
+      } else if (this.get('isChecked')) {
         return 'env_path_active';
       } else {
         return null;
       }
-    }).property('isChecked'),
+    }).property('isChecked', 'disabled'),
 
     envCssId: (function () {
       return 'env_' + this.get('env.id');
     }).property('env'),
 
     click: function click(event) {
-      this.sendAction('action', this.get('env'));
+      if (!this.get('disabled')) {
+        return this.sendAction('action', this.get('env'));
+      }
     }
 
   });
@@ -3076,8 +3080,17 @@ define('fusor-ember-cli/controllers/where-install', ['exports', 'ember'], functi
     organizationTabRouteName: Ember['default'].computed.alias('controllers.deployment.organizationTabRouteName'),
     lifecycleEnvironmentTabRouteName: Ember['default'].computed.alias('controllers.deployment.lifecycleEnvironmentTabRouteName'),
 
+    // overwritten by setupController
     disableRHEV: false,
     disableOpenStack: false,
+
+    disableRHEVradio: (function () {
+      return this.get('disableRHEV') || this.get('controllers.deployment.isStarted');
+    }).property('disableRHEV', 'controllers.deployment.isStarted'),
+
+    disableOpenstackradio: (function () {
+      return this.get('disableRHEV') || this.get('controllers.deployment.isStarted');
+    }).property('disableRHEV', 'controllers.deployment.isStarted'),
 
     backRouteName: (function () {
       if (this.get('isOpenStack')) {
@@ -7253,7 +7266,7 @@ define('fusor-ember-cli/templates/cloudforms', ['exports'], function (exports) {
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, content = hooks.content, block = hooks.block;
+        var hooks = env.hooks, content = hooks.content, get = hooks.get, block = hooks.block;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -7276,8 +7289,8 @@ define('fusor-ember-cli/templates/cloudforms', ['exports'], function (exports) {
         var morph1 = dom.createMorphAt(element0,1,1);
         var morph2 = dom.createMorphAt(element0,2,2);
         content(env, morph0, context, "outlet");
-        block(env, morph1, context, "link-to", ["where-install"], {"tagName": "li"}, child0, null);
-        block(env, morph2, context, "link-to", ["cloudforms.cfme-configuration"], {"tagName": "li"}, child1, null);
+        block(env, morph1, context, "link-to", ["where-install"], {"tagName": "li", "disabled": get(env, context, "disableTabCFWhere")}, child0, null);
+        block(env, morph2, context, "link-to", ["cloudforms.cfme-configuration"], {"tagName": "li", "disabled": get(env, context, "disableTabCFConfiguration")}, child1, null);
         return fragment;
       }
     };
@@ -7330,8 +7343,8 @@ define('fusor-ember-cli/templates/cloudforms/cfme-configuration', ['exports'], f
         var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
         var morph1 = dom.createMorphAt(fragment,2,2,contextualElement);
         dom.insertBoundary(fragment, 0);
-        inline(env, morph0, context, "text-f", [], {"label": "CFME Root password", "type": "password", "value": get(env, context, "cfme_root_password"), "cssId": "cfme_root_password", "isRequired": true});
-        inline(env, morph1, context, "cancel-back-next", [], {"backRouteName": "where-install", "disableBack": false, "nextRouteName": get(env, context, "nextRouteNameAfterCFME"), "disableNext": false});
+        inline(env, morph0, context, "text-f", [], {"label": "CFME Root password", "type": "password", "value": get(env, context, "cfme_root_password"), "cssId": "cfme_root_password", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted")});
+        inline(env, morph1, context, "cancel-back-next", [], {"backRouteName": "where-install", "disableBack": false, "nextRouteName": get(env, context, "nextRouteNameAfterCFME"), "disableNext": false, "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
         return fragment;
       }
     };
@@ -8008,7 +8021,7 @@ define('fusor-ember-cli/templates/components/cancel-back-next', ['exports'], fun
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, block = hooks.block, get = hooks.get, inline = hooks.inline;
+        var hooks = env.hooks, get = hooks.get, block = hooks.block, inline = hooks.inline;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -8031,7 +8044,7 @@ define('fusor-ember-cli/templates/components/cancel-back-next', ['exports'], fun
         var morph1 = dom.createMorphAt(element0,2,2);
         var morph2 = dom.createMorphAt(element0,3,3);
         var morph3 = dom.createMorphAt(fragment,2,2,contextualElement);
-        block(env, morph0, context, "em-modal-toggler", [], {"modal-id": "cancelDeploymentModal", "class": "btn btn-default"}, child0, null);
+        block(env, morph0, context, "em-modal-toggler", [], {"modal-id": "cancelDeploymentModal", "class": "btn btn-default", "disabled": get(env, context, "disableCancel")}, child0, null);
         block(env, morph1, context, "link-to", [get(env, context, "backRouteName")], {"disabled": get(env, context, "disableBack"), "role": "button", "class": "btn btn-default"}, child1, null);
         block(env, morph2, context, "if", [get(env, context, "nextRouteName")], {}, child2, child3);
         inline(env, morph3, context, "partial", ["cancel-deployment-modal"], {});
@@ -13744,7 +13757,7 @@ define('fusor-ember-cli/templates/components/text-f', ['exports'], function (exp
           var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
           var morph1 = dom.createMorphAt(fragment,3,3,contextualElement);
           var morph2 = dom.createMorphAt(fragment,5,5,contextualElement);
-          inline(env, morph0, context, "input", [], {"class": "form-control", "value": get(env, context, "value"), "placeholder": get(env, context, "placeholder"), "type": get(env, context, "typeInput"), "focus-out": "showErrors", "id": get(env, context, "cssId")});
+          inline(env, morph0, context, "input", [], {"class": "form-control", "value": get(env, context, "value"), "placeholder": get(env, context, "placeholder"), "type": get(env, context, "typeInput"), "focus-out": "showErrors", "id": get(env, context, "cssId"), "disabled": get(env, context, "disabled")});
           block(env, morph1, context, "if", [get(env, context, "showError")], {}, child0, null);
           content(env, morph2, context, "yield");
           return fragment;
@@ -13838,7 +13851,7 @@ define('fusor-ember-cli/templates/components/textarea-f', ['exports'], function 
               fragment = this.build(dom);
             }
             var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
-            inline(env, morph0, context, "textarea", [], {"class": "form-control", "value": get(env, context, "value"), "placeholder": get(env, context, "placeholder"), "rows": get(env, context, "numRows"), "id": get(env, context, "cssId")});
+            inline(env, morph0, context, "textarea", [], {"class": "form-control", "value": get(env, context, "value"), "placeholder": get(env, context, "placeholder"), "rows": get(env, context, "numRows"), "id": get(env, context, "cssId"), "disabled": get(env, context, "disabled")});
             return fragment;
           }
         };
@@ -13881,7 +13894,7 @@ define('fusor-ember-cli/templates/components/textarea-f', ['exports'], function 
               fragment = this.build(dom);
             }
             var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
-            inline(env, morph0, context, "textarea", [], {"class": "form-control", "value": get(env, context, "value"), "placeholder": get(env, context, "placeholder"), "id": get(env, context, "cssId")});
+            inline(env, morph0, context, "textarea", [], {"class": "form-control", "value": get(env, context, "value"), "placeholder": get(env, context, "placeholder"), "id": get(env, context, "cssId"), "disabled": get(env, context, "disabled")});
             return fragment;
           }
         };
@@ -14153,7 +14166,7 @@ define('fusor-ember-cli/templates/components/tr-engine', ['exports'], function (
         var morph6 = dom.createMorphAt(dom.childAt(fragment, [12]),1,1);
         var morph7 = dom.createMorphAt(dom.childAt(fragment, [14]),1,1);
         var morph8 = dom.createMorphAt(dom.childAt(fragment, [16]),1,1);
-        inline(env, morph0, context, "radio-button", [], {"value": get(env, context, "host.model"), "groupValue": get(env, context, "selectedRhevEngineHost"), "changed": "engineHostChanged", "id": get(env, context, "host.cssIdHostId")});
+        inline(env, morph0, context, "radio-button", [], {"value": get(env, context, "host.model"), "groupValue": get(env, context, "selectedRhevEngineHost"), "changed": "engineHostChanged", "id": get(env, context, "host.cssIdHostId"), "disabled": get(env, context, "disabled")});
         block(env, morph1, context, "if", [get(env, context, "host.isSelectedAsEngine")], {}, child0, null);
         content(env, morph2, context, "host.mac");
         content(env, morph3, context, "host.hostType");
@@ -14466,7 +14479,7 @@ define('fusor-ember-cli/templates/components/tr-hypervisor', ['exports'], functi
         var morph6 = dom.createMorphAt(dom.childAt(fragment, [12]),1,1);
         var morph7 = dom.createMorphAt(dom.childAt(fragment, [14]),1,1);
         var morph8 = dom.createMorphAt(dom.childAt(fragment, [16]),1,1);
-        inline(env, morph0, context, "input", [], {"type": "checkbox", "name": "isSelectedAsHypervisor", "checked": get(env, context, "host.isSelectedAsHypervisor"), "id": get(env, context, "host.cssIdHostId")});
+        inline(env, morph0, context, "input", [], {"type": "checkbox", "name": "isSelectedAsHypervisor", "checked": get(env, context, "host.isSelectedAsHypervisor"), "id": get(env, context, "host.cssIdHostId"), "disabled": get(env, context, "disabled")});
         element(env, element0, context, "bind-attr", [], {"class": "host.isSelectedAsHypervisor:black-font:not-selected"});
         block(env, morph1, context, "if", [get(env, context, "host.isSelectedAsHypervisor")], {}, child0, child1);
         content(env, morph2, context, "host.mac");
@@ -14562,7 +14575,7 @@ define('fusor-ember-cli/templates/components/tr-management-app', ['exports'], fu
         var morph1 = dom.createMorphAt(dom.childAt(fragment, [2]),1,1);
         var morph2 = dom.createMorphAt(dom.childAt(fragment, [4]),1,1);
         var morph3 = dom.createMorphAt(dom.childAt(fragment, [6]),1,1);
-        inline(env, morph0, context, "radio-button", [], {"value": get(env, context, "managementApp.uuid"), "groupValue": get(env, context, "consumerUUID"), "changed": "changeManagementApp", "id": get(env, context, "org.id")});
+        inline(env, morph0, context, "radio-button", [], {"value": get(env, context, "managementApp.uuid"), "groupValue": get(env, context, "consumerUUID"), "changed": "changeManagementApp", "id": get(env, context, "org.id"), "disabled": get(env, context, "disabled")});
         content(env, morph1, context, "managementApp.name");
         content(env, morph2, context, "managementApp.entitlementCount");
         content(env, morph3, context, "managementApp.uuid");
@@ -14640,7 +14653,7 @@ define('fusor-ember-cli/templates/components/tr-organization', ['exports'], func
         var morph0 = dom.createMorphAt(dom.childAt(fragment, [0]),1,1);
         var morph1 = dom.createMorphAt(dom.childAt(fragment, [2]),1,1);
         var morph2 = dom.createMorphAt(dom.childAt(fragment, [4]),1,1);
-        inline(env, morph0, context, "radio-button", [], {"value": get(env, context, "org"), "groupValue": get(env, context, "selectedOrganization"), "changed": "organizationChanged", "id": get(env, context, "org.id")});
+        inline(env, morph0, context, "radio-button", [], {"value": get(env, context, "org"), "groupValue": get(env, context, "selectedOrganization"), "changed": "organizationChanged", "id": get(env, context, "org.id"), "disabled": get(env, context, "disabled")});
         content(env, morph1, context, "org.name");
         content(env, morph2, context, "org.description");
         return fragment;
@@ -15556,7 +15569,7 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
                 fragment = this.build(dom);
               }
               var morph0 = dom.createMorphAt(dom.childAt(fragment, [1, 1]),1,1);
-              inline(env, morph0, context, "env-path-list-item", [], {"env": get(env, context, "libraryEnv"), "selectedEnvironment": get(env, context, "selectedEnvironment"), "action": "selectEnvironment"});
+              inline(env, morph0, context, "env-path-list-item", [], {"env": get(env, context, "libraryEnv"), "selectedEnvironment": get(env, context, "selectedEnvironment"), "action": "selectEnvironment", "disabled": get(env, context, "controllers.deployment.isStarted")});
               return fragment;
             }
           };
@@ -15634,8 +15647,8 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
                 var element1 = dom.childAt(fragment, [1, 1]);
                 var morph0 = dom.createMorphAt(element1,1,1);
                 var morph1 = dom.createMorphAt(element1,3,3);
-                inline(env, morph0, context, "env-path-list-item", [], {"env": get(env, context, "libraryEnv"), "selectedEnvironment": get(env, context, "selectedEnvironment"), "action": "selectEnvironment"});
-                inline(env, morph1, context, "env-path-list-item", [], {"env": get(env, context, "env"), "selectedEnvironment": get(env, context, "selectedEnvironment"), "action": "selectEnvironment"});
+                inline(env, morph0, context, "env-path-list-item", [], {"env": get(env, context, "libraryEnv"), "selectedEnvironment": get(env, context, "selectedEnvironment"), "action": "selectEnvironment", "disabled": get(env, context, "controllers.deployment.isStarted")});
+                inline(env, morph1, context, "env-path-list-item", [], {"env": get(env, context, "env"), "selectedEnvironment": get(env, context, "selectedEnvironment"), "action": "selectEnvironment", "disabled": get(env, context, "controllers.deployment.isStarted")});
                 return fragment;
               }
             };
@@ -15820,7 +15833,7 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
           var morph0 = dom.createMorphAt(element2,1,1);
           var morph1 = dom.createMorphAt(dom.childAt(element2, [3]),1,1);
           block(env, morph0, context, "if", [get(env, context, "hasNoEnvironments")], {}, child0, child1);
-          block(env, morph1, context, "em-modal-toggler", [], {"modal-id": "newLifecycleEnvironmentModal", "class": "btn btn-default"}, child2, null);
+          block(env, morph1, context, "em-modal-toggler", [], {"modal-id": "newLifecycleEnvironmentModal", "class": "btn btn-default", "disabled": get(env, context, "controllers.deployment.isStarted")}, child2, null);
           return fragment;
         }
       };
@@ -15946,6 +15959,8 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
         dom.appendChild(el0, el1);
         var el1 = dom.createComment("");
         dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n\n");
+        dom.appendChild(el0, el1);
         return el0;
       },
       render: function render(context, env, contextualElement) {
@@ -15973,12 +15988,11 @@ define('fusor-ember-cli/templates/configure-environment', ['exports'], function 
         var morph2 = dom.createMorphAt(fragment,10,10,contextualElement);
         var morph3 = dom.createMorphAt(fragment,16,16,contextualElement);
         var morph4 = dom.createMorphAt(fragment,18,18,contextualElement);
-        dom.insertBoundary(fragment, null);
         block(env, morph0, context, "if", [get(env, context, "showAlertMessage")], {}, child0, null);
-        inline(env, morph1, context, "input", [], {"type": "checkbox", "name": "skipContent", "checked": get(env, context, "useDefaultOrgViewForEnv")});
+        inline(env, morph1, context, "input", [], {"type": "checkbox", "name": "useDefaultOrgViewForEnv", "checked": get(env, context, "useDefaultOrgViewForEnv"), "disabled": get(env, context, "controllers.deployment.isStarted")});
         block(env, morph2, context, "unless", [get(env, context, "useDefaultOrgViewForEnv")], {}, child1, null);
         inline(env, morph3, context, "partial", ["new-environment"], {});
-        block(env, morph4, context, "cancel-back-next", [], {"backRouteName": get(env, context, "organizationTabRouteName"), "disableBack": false, "parentController": get(env, context, "controller")}, child2, null);
+        block(env, morph4, context, "cancel-back-next", [], {"backRouteName": get(env, context, "organizationTabRouteName"), "disableBack": false, "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")}, child2, null);
         return fragment;
       }
     };
@@ -16175,7 +16189,7 @@ define('fusor-ember-cli/templates/configure-organization', ['exports'], function
             fragment = this.build(dom);
           }
           var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
-          inline(env, morph0, context, "tr-organization", [], {"org": get(env, context, "org"), "selectedOrganization": get(env, context, "selectedOrganization"), "action": "selectOrganization"});
+          inline(env, morph0, context, "tr-organization", [], {"org": get(env, context, "org"), "selectedOrganization": get(env, context, "selectedOrganization"), "action": "selectOrganization", "disabled": get(env, context, "controllers.deployment.isStarted")});
           return fragment;
         }
       };
@@ -16334,7 +16348,7 @@ define('fusor-ember-cli/templates/configure-organization', ['exports'], function
         block(env, morph1, context, "em-modal-toggler", [], {"modal-id": "newOrganizationModal", "class": "btn btn-primary", "disabled": true}, child1, null);
         block(env, morph2, context, "each", [get(env, context, "organizations")], {"keyword": "org"}, child2, null);
         inline(env, morph3, context, "partial", ["new-organization"], {});
-        inline(env, morph4, context, "cancel-back-next", [], {"backRouteName": get(env, context, "satelliteTabRouteName"), "disableBack": false, "nextRouteName": get(env, context, "lifecycleEnvironmentTabRouteName"), "disableNext": get(env, context, "disableNextOnConfigureOrganization"), "parentController": get(env, context, "controller")});
+        inline(env, morph4, context, "cancel-back-next", [], {"backRouteName": get(env, context, "satelliteTabRouteName"), "disableBack": false, "nextRouteName": get(env, context, "lifecycleEnvironmentTabRouteName"), "disableNext": get(env, context, "disableNextOnConfigureOrganization"), "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
         return fragment;
       }
     };
@@ -18622,7 +18636,7 @@ define('fusor-ember-cli/templates/engine/discovered-host', ['exports'], function
             fragment = this.build(dom);
           }
           var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
-          inline(env, morph0, context, "tr-engine", [], {"host": get(env, context, "host"), "selectedRhevEngineHost": get(env, context, "selectedRhevEngineHost")});
+          inline(env, morph0, context, "tr-engine", [], {"host": get(env, context, "host"), "selectedRhevEngineHost": get(env, context, "selectedRhevEngineHost"), "disabled": get(env, context, "controllers.deployment.isStarted")});
           return fragment;
         }
       };
@@ -18853,7 +18867,7 @@ define('fusor-ember-cli/templates/engine/discovered-host', ['exports'], function
         content(env, morph1, context, "numSelected");
         element(env, element3, context, "action", ["refreshModel"], {});
         block(env, morph2, context, "each", [get(env, context, "filteredHosts")], {"itemController": "discovered-host", "keyword": "host"}, child0, null);
-        inline(env, morph3, context, "cancel-back-next", [], {"backRouteName": "rhev-setup", "disableBack": false, "nextRouteName": get(env, context, "engineNextRouteName"), "disableNext": false});
+        inline(env, morph3, context, "cancel-back-next", [], {"backRouteName": "rhev-setup", "disableBack": false, "nextRouteName": get(env, context, "engineNextRouteName"), "disableNext": false, "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
         return fragment;
       }
     };
@@ -19396,7 +19410,7 @@ define('fusor-ember-cli/templates/hypervisor', ['exports'], function (exports) {
             fragment = this.build(dom);
           }
           var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),1,1);
-          inline(env, morph0, context, "input", [], {"type": "text", "value": get(env, context, "custom_preprend_name")});
+          inline(env, morph0, context, "input", [], {"type": "text", "value": get(env, context, "custom_preprend_name"), "disabled": get(env, context, "controllers.deployment.isStarted")});
           return fragment;
         }
       };
@@ -19486,7 +19500,7 @@ define('fusor-ember-cli/templates/hypervisor', ['exports'], function (exports) {
         var morph0 = dom.createMorphAt(element1,1,1);
         var morph1 = dom.createMorphAt(element1,3,3);
         var morph2 = dom.createMorphAt(element0,7,7);
-        inline(env, morph0, context, "view", ["select"], {"content": get(env, context, "namingOptions"), "value": get(env, context, "host_naming_scheme"), "class": "form-control"});
+        inline(env, morph0, context, "view", ["select"], {"content": get(env, context, "namingOptions"), "value": get(env, context, "host_naming_scheme"), "class": "form-control", "disabled": get(env, context, "controllers.deployment.isStarted")});
         block(env, morph1, context, "if", [get(env, context, "isCustomScheme")], {}, child0, null);
         content(env, morph2, context, "outlet");
         return fragment;
@@ -19640,7 +19654,7 @@ define('fusor-ember-cli/templates/hypervisor/discovered-host', ['exports'], func
             fragment = this.build(dom);
           }
           var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
-          inline(env, morph0, context, "tr-hypervisor", [], {"host": get(env, context, "host"), "isCustomScheme": get(env, context, "isCustomScheme"), "isMac": get(env, context, "isMac"), "isHypervisorN": get(env, context, "isHypervisorN"), "custom_preprend_name": get(env, context, "custom_preprend_name"), "isFreeform": get(env, context, "isFreeform"), "num": get(env, context, "host.id")});
+          inline(env, morph0, context, "tr-hypervisor", [], {"host": get(env, context, "host"), "isCustomScheme": get(env, context, "isCustomScheme"), "isMac": get(env, context, "isMac"), "isHypervisorN": get(env, context, "isHypervisorN"), "custom_preprend_name": get(env, context, "custom_preprend_name"), "isFreeform": get(env, context, "isFreeform"), "num": get(env, context, "host.id"), "disabled": get(env, context, "controllers.deployment.isStarted")});
           return fragment;
         }
       };
@@ -19922,7 +19936,7 @@ define('fusor-ember-cli/templates/hypervisor/discovered-host', ['exports'], func
         block(env, morph2, context, "if", [get(env, context, "isAllChecked")], {}, child0, child1);
         element(env, element6, context, "action", ["refreshModel"], {});
         block(env, morph3, context, "each", [get(env, context, "filteredHosts")], {"itemController": "discovered-host", "keyword": "host"}, child2, null);
-        block(env, morph4, context, "cancel-back-next", [], {"backRouteName": get(env, context, "hypervisorBackRouteName"), "disableBack": false, "parentController": get(env, context, "controller")}, child3, null);
+        block(env, morph4, context, "cancel-back-next", [], {"backRouteName": get(env, context, "hypervisorBackRouteName"), "disableBack": false, "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")}, child3, null);
         return fragment;
       }
     };
@@ -25990,7 +26004,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
         block(env, morph3, context, "if", [get(env, context, "isOpenStack")], {}, child3, null);
         block(env, morph4, context, "if", [get(env, context, "isCloudForms")], {}, child4, null);
         block(env, morph5, context, "if", [get(env, context, "isSubscriptions")], {}, child5, null);
-        block(env, morph6, context, "cancel-back-next", [], {"backRouteName": "", "disableBack": false, "parentController": get(env, context, "controller")}, child6, null);
+        block(env, morph6, context, "cancel-back-next", [], {"backRouteName": "", "disableBack": false, "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")}, child6, null);
         content(env, morph7, context, "outlet");
         return fragment;
       }
@@ -28188,13 +28202,13 @@ define('fusor-ember-cli/templates/rhev-options', ['exports'], function (exports)
         var morph4 = dom.createMorphAt(element0,9,9);
         var morph5 = dom.createMorphAt(element0,11,11);
         var morph6 = dom.createMorphAt(fragment,4,4,contextualElement);
-        inline(env, morph0, context, "text-f", [], {"label": "Root password for Engine and Hypervisor(s)", "type": "password", "value": get(env, context, "rhev_root_password"), "cssId": "rhev_root_password", "isRequired": true});
-        inline(env, morph1, context, "text-f", [], {"label": "Engine admin password", "type": "password", "value": get(env, context, "rhev_engine_admin_password"), "cssId": "rhev_engine_admin_password", "isRequired": true});
-        inline(env, morph2, context, "text-f", [], {"label": "Datacenter Name", "value": get(env, context, "rhev_database_name"), "placeholder": "Leave blank for default", "cssId": "rhev_database_name"});
-        inline(env, morph3, context, "text-f", [], {"label": "Cluster Name", "value": get(env, context, "rhev_cluster_name"), "placeholder": "Leave blank for default", "cssId": "rhev_cluster_name"});
-        inline(env, morph4, context, "text-f", [], {"label": "Storage name", "value": get(env, context, "rhev_storage_name"), "placeholder": "Leave blank for default", "cssId": "rhev_storage_name"});
-        inline(env, morph5, context, "text-f", [], {"label": "CPU Type", "value": get(env, context, "rhev_cpu_type"), "placeholder": "Leave blank for default", "help-inline": "", "cssId": "rhev_cpu_type"});
-        inline(env, morph6, context, "cancel-back-next", [], {"backRouteName": get(env, context, "optionsBackRouteName"), "disableBack": false, "nextRouteName": "storage", "disableNext": false});
+        inline(env, morph0, context, "text-f", [], {"label": "Root password for Engine and Hypervisor(s)", "type": "password", "value": get(env, context, "rhev_root_password"), "cssId": "rhev_root_password", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted")});
+        inline(env, morph1, context, "text-f", [], {"label": "Engine admin password", "type": "password", "value": get(env, context, "rhev_engine_admin_password"), "cssId": "rhev_engine_admin_password", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted")});
+        inline(env, morph2, context, "text-f", [], {"label": "Datacenter Name", "value": get(env, context, "rhev_database_name"), "placeholder": "Leave blank for default", "cssId": "rhev_database_name", "disabled": get(env, context, "controllers.deployment.isStarted")});
+        inline(env, morph3, context, "text-f", [], {"label": "Cluster Name", "value": get(env, context, "rhev_cluster_name"), "placeholder": "Leave blank for default", "cssId": "rhev_cluster_name", "disabled": get(env, context, "controllers.deployment.isStarted")});
+        inline(env, morph4, context, "text-f", [], {"label": "Storage name", "value": get(env, context, "rhev_storage_name"), "placeholder": "Leave blank for default", "cssId": "rhev_storage_name", "disabled": get(env, context, "controllers.deployment.isStarted")});
+        inline(env, morph5, context, "text-f", [], {"label": "CPU Type", "value": get(env, context, "rhev_cpu_type"), "placeholder": "Leave blank for default", "help-inline": "", "cssId": "rhev_cpu_type", "disabled": get(env, context, "controllers.deployment.isStarted")});
+        inline(env, morph6, context, "cancel-back-next", [], {"backRouteName": get(env, context, "optionsBackRouteName"), "disableBack": false, "nextRouteName": "storage", "disableNext": false, "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
         return fragment;
       }
     };
@@ -28362,9 +28376,9 @@ define('fusor-ember-cli/templates/rhev-setup', ['exports'], function (exports) {
         var morph0 = dom.createMorphAt(dom.childAt(element0, [3]),1,1);
         var morph1 = dom.createMorphAt(dom.childAt(element0, [5]),1,1);
         var morph2 = dom.createMorphAt(fragment,4,4,contextualElement);
-        block(env, morph0, context, "radio-button", [], {"value": "selfhost", "groupValue": get(env, context, "rhevSetup"), "changed": "rhevSetupChanged", "id": "selfhost"}, child0, null);
-        block(env, morph1, context, "radio-button", [], {"value": "rhevhost", "groupValue": get(env, context, "rhevSetup"), "changed": "rhevSetupChanged", "id": "rhevhost"}, child1, null);
-        inline(env, morph2, context, "cancel-back-next", [], {"backRouteName": "configure-environment", "disableBack": false, "nextRouteName": "engine.discovered-host", "disableNext": false});
+        block(env, morph0, context, "radio-button", [], {"value": "selfhost", "groupValue": get(env, context, "rhevSetup"), "changed": "rhevSetupChanged", "id": "selfhost", "disabled": get(env, context, "controllers.deployment.isStarted")}, child0, null);
+        block(env, morph1, context, "radio-button", [], {"value": "rhevhost", "groupValue": get(env, context, "rhevSetup"), "changed": "rhevSetupChanged", "id": "rhevhost", "disabled": get(env, context, "controllers.deployment.isStarted")}, child1, null);
+        inline(env, morph2, context, "cancel-back-next", [], {"backRouteName": "configure-environment", "disableBack": false, "nextRouteName": "engine.discovered-host", "disableNext": false, "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
         return fragment;
       }
     };
@@ -28522,7 +28536,7 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
         },
         render: function render(context, env, contextualElement) {
           var dom = env.dom;
-          var hooks = env.hooks, block = hooks.block;
+          var hooks = env.hooks, get = hooks.get, block = hooks.block;
           dom.detectNamespace(contextualElement);
           var fragment;
           if (env.useFragmentCache && dom.canClone) {
@@ -28543,7 +28557,7 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
           var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
           dom.insertBoundary(fragment, null);
           dom.insertBoundary(fragment, 0);
-          block(env, morph0, context, "link-to", ["hypervisor"], {"tagName": "li"}, child0, null);
+          block(env, morph0, context, "link-to", ["hypervisor"], {"tagName": "li", "disabled": get(env, context, "disableTabRhevHypervisors")}, child0, null);
           return fragment;
         }
       };
@@ -28699,7 +28713,7 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, content = hooks.content, block = hooks.block, get = hooks.get;
+        var hooks = env.hooks, content = hooks.content, get = hooks.get, block = hooks.block;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -28725,11 +28739,11 @@ define('fusor-ember-cli/templates/rhev', ['exports'], function (exports) {
         var morph4 = dom.createMorphAt(element0,7,7);
         var morph5 = dom.createMorphAt(element0,9,9);
         content(env, morph0, context, "outlet");
-        block(env, morph1, context, "link-to", ["rhev-setup"], {"tagName": "li"}, child0, null);
-        block(env, morph2, context, "link-to", ["engine"], {"tagName": "li"}, child1, null);
+        block(env, morph1, context, "link-to", ["rhev-setup"], {"tagName": "li", "disabled": get(env, context, "disableTabRhevSetupType")}, child0, null);
+        block(env, morph2, context, "link-to", ["engine"], {"tagName": "li", "disabled": get(env, context, "disableTabRhevEngine")}, child1, null);
         block(env, morph3, context, "unless", [get(env, context, "isSelfHost")], {}, child2, null);
-        block(env, morph4, context, "link-to", ["rhev-options"], {"tagName": "li"}, child3, null);
-        block(env, morph5, context, "link-to", ["storage"], {"tagName": "li"}, child4, null);
+        block(env, morph4, context, "link-to", ["rhev-options"], {"tagName": "li", "disabled": get(env, context, "disableTabRhevConfiguration")}, child3, null);
+        block(env, morph5, context, "link-to", ["storage"], {"tagName": "li", "disabled": get(env, context, "disableTabRhevStorage")}, child4, null);
         return fragment;
       }
     };
@@ -29022,9 +29036,9 @@ define('fusor-ember-cli/templates/satellite/index', ['exports'], function (expor
         var morph0 = dom.createMorphAt(element0,1,1);
         var morph1 = dom.createMorphAt(element0,3,3);
         var morph2 = dom.createMorphAt(fragment,2,2,contextualElement);
-        inline(env, morph0, context, "text-f", [], {"label": "Name", "value": get(env, context, "name"), "inputSize": "col-md-5", "errors": get(env, context, "errors"), "cssId": get(env, context, "idSatName"), "isRequired": true});
-        inline(env, morph1, context, "textarea-f", [], {"label": "Description (Optional)", "value": get(env, context, "description"), "inputSize": "col-md-5", "cssId": get(env, context, "idSatDesc")});
-        inline(env, morph2, context, "cancel-back-next", [], {"backRouteName": get(env, context, "backRouteNameOnSatIndex"), "disableBack": false, "nextRouteName": get(env, context, "organizationTabRouteName"), "disableNext": get(env, context, "disableNextOnDeploymentName"), "parentController": get(env, context, "controller")});
+        inline(env, morph0, context, "text-f", [], {"label": "Name", "value": get(env, context, "name"), "inputSize": "col-md-5", "errors": get(env, context, "errors"), "cssId": get(env, context, "idSatName"), "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted")});
+        inline(env, morph1, context, "textarea-f", [], {"label": "Description (Optional)", "value": get(env, context, "description"), "inputSize": "col-md-5", "cssId": get(env, context, "idSatDesc"), "disabled": get(env, context, "controllers.deployment.isStarted")});
+        inline(env, morph2, context, "cancel-back-next", [], {"backRouteName": get(env, context, "backRouteNameOnSatIndex"), "disableBack": false, "nextRouteName": get(env, context, "organizationTabRouteName"), "disableNext": get(env, context, "disableNextOnDeploymentName"), "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
         return fragment;
       }
     };
@@ -29650,7 +29664,7 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
           var morph1 = dom.createMorphAt(fragment,3,3,contextualElement);
           var morph2 = dom.createMorphAt(fragment,5,5,contextualElement);
           dom.insertBoundary(fragment, null);
-          block(env, morph0, context, "radio-button", [], {"value": "NFS", "groupValue": get(env, context, "rhev_storage_type"), "id": "nfs"}, child0, null);
+          block(env, morph0, context, "radio-button", [], {"value": "NFS", "groupValue": get(env, context, "rhev_storage_type"), "id": "nfs", "disabled": get(env, context, "controllers.deployment.isStarted")}, child0, null);
           block(env, morph1, context, "radio-button", [], {"value": "Local", "groupValue": get(env, context, "rhev_storage_type"), "id": "local", "disabled": true}, child1, null);
           block(env, morph2, context, "radio-button", [], {"value": "Gluster", "groupValue": get(env, context, "rhev_storage_type"), "id": "gluster", "disabled": true}, child2, null);
           return fragment;
@@ -29700,8 +29714,8 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
           }
           var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
           var morph1 = dom.createMorphAt(fragment,3,3,contextualElement);
-          inline(env, morph0, context, "text-f", [], {"label": "Storage Address", "value": get(env, context, "rhev_storage_address"), "placeholder": "Leave blank for default (Ex. 1.2.3.4)", "cssId": "rhev_storage_address"});
-          inline(env, morph1, context, "text-f", [], {"label": "Share Path", "value": get(env, context, "rhev_share_path"), "placeholder": "Leave blank for default (Ex. /nfs_data/rhev_storage)", "cssId": "rhev_share_path"});
+          inline(env, morph0, context, "text-f", [], {"label": "Storage Address", "value": get(env, context, "rhev_storage_address"), "placeholder": "Leave blank for default (Ex. 1.2.3.4)", "cssId": "rhev_storage_address", "disabled": get(env, context, "controllers.deployment.isStarted")});
+          inline(env, morph1, context, "text-f", [], {"label": "Share Path", "value": get(env, context, "rhev_share_path"), "placeholder": "Leave blank for default (Ex. /nfs_data/rhev_storage)", "cssId": "rhev_share_path", "disabled": get(env, context, "controllers.deployment.isStarted")});
           return fragment;
         }
       };
@@ -29745,7 +29759,7 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
               fragment = this.build(dom);
             }
             var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
-            inline(env, morph0, context, "text-f", [], {"label": "Storage Path", "value": get(env, context, "rhev_local_storage_path"), "placeholder": "Ex. /rhev/data_storage", "isRequired": true, "cssId": "rhev_local_storage_path", "help-inline": "This path will be created and given appropriate permissions - chown 36:36;chmod 0755, etc"});
+            inline(env, morph0, context, "text-f", [], {"label": "Storage Path", "value": get(env, context, "rhev_local_storage_path"), "placeholder": "Ex. /rhev/data_storage", "isRequired": true, "cssId": "rhev_local_storage_path", "help-inline": "This path will be created and given appropriate permissions - chown 36:36;chmod 0755, etc", "disabled": get(env, context, "controllers.deployment.isStarted")});
             return fragment;
           }
         };
@@ -29804,10 +29818,10 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
               var morph1 = dom.createMorphAt(fragment,3,3,contextualElement);
               var morph2 = dom.createMorphAt(fragment,5,5,contextualElement);
               var morph3 = dom.createMorphAt(fragment,7,7,contextualElement);
-              inline(env, morph0, context, "text-f", [], {"label": "Node Name", "value": get(env, context, "rhev_gluster_node_name"), "placeholder": "Ex. node.example.com", "isRequired": true, "cssId": "rhev_gluster_node_name", "isRequired": true});
-              inline(env, morph1, context, "text-f", [], {"label": "Node Address", "value": get(env, context, "rhev_gluster_node_address"), "placeholder": "Ex. 1.2.3.4", "isRequired": true, "cssId": "rhev_gluster_node_address"});
-              inline(env, morph2, context, "text-f", [], {"label": "SSH Port", "value": get(env, context, "rhev_gluster_ssh_port"), "isRequired": true, "cssId": "rhev_gluster_ssh_port"});
-              inline(env, morph3, context, "text-f", [], {"label": "Root Password", "value": get(env, context, "rhev_gluster_root_password"), "isRequired": true, "cssId": "rhev_gluster_root_password", "type": "password"});
+              inline(env, morph0, context, "text-f", [], {"label": "Node Name", "value": get(env, context, "rhev_gluster_node_name"), "placeholder": "Ex. node.example.com", "isRequired": true, "cssId": "rhev_gluster_node_name", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted")});
+              inline(env, morph1, context, "text-f", [], {"label": "Node Address", "value": get(env, context, "rhev_gluster_node_address"), "placeholder": "Ex. 1.2.3.4", "isRequired": true, "cssId": "rhev_gluster_node_address", "disabled": get(env, context, "controllers.deployment.isStarted")});
+              inline(env, morph2, context, "text-f", [], {"label": "SSH Port", "value": get(env, context, "rhev_gluster_ssh_port"), "isRequired": true, "cssId": "rhev_gluster_ssh_port", "disabled": get(env, context, "controllers.deployment.isStarted")});
+              inline(env, morph3, context, "text-f", [], {"label": "Root Password", "value": get(env, context, "rhev_gluster_root_password"), "isRequired": true, "cssId": "rhev_gluster_root_password", "type": "password", "disabled": get(env, context, "controllers.deployment.isStarted")});
               return fragment;
             }
           };
@@ -29954,9 +29968,9 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
           var morph0 = dom.createMorphAt(element0,1,1);
           var morph1 = dom.createMorphAt(element0,3,3);
           var morph2 = dom.createMorphAt(element0,5,5);
-          inline(env, morph0, context, "text-f", [], {"label": "Storage Domain Name", "value": get(env, context, "rhev_export_domain_name"), "cssId": "rhev_export_domain_name", "isRequired": true});
-          inline(env, morph1, context, "text-f", [], {"label": "Storage Address", "value": get(env, context, "rhev_export_domain_address"), "cssId": "rhev_export_domain_address", "isRequired": true});
-          inline(env, morph2, context, "text-f", [], {"label": "Share Path", "value": get(env, context, "rhev_export_domain_path"), "cssId": "rhev_export_domain_path", "isRequired": true});
+          inline(env, morph0, context, "text-f", [], {"label": "Storage Domain Name", "value": get(env, context, "rhev_export_domain_name"), "cssId": "rhev_export_domain_name", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted")});
+          inline(env, morph1, context, "text-f", [], {"label": "Storage Address", "value": get(env, context, "rhev_export_domain_address"), "cssId": "rhev_export_domain_address", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted")});
+          inline(env, morph2, context, "text-f", [], {"label": "Share Path", "value": get(env, context, "rhev_export_domain_path"), "cssId": "rhev_export_domain_path", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted")});
           return fragment;
         }
       };
@@ -30043,7 +30057,7 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
         block(env, morph1, context, "base-f", [], {"label": "Storage Type", "isRequired": true}, child1, null);
         block(env, morph2, context, "if", [get(env, context, "isNFS")], {}, child2, child3);
         block(env, morph3, context, "if", [get(env, context, "isCloudForms")], {}, child4, null);
-        inline(env, morph4, context, "cancel-back-next", [], {"backRouteName": "rhev-options", "disableBack": false, "nextRouteName": get(env, context, "step3RouteName"), "disableNext": false});
+        inline(env, morph4, context, "cancel-back-next", [], {"backRouteName": "rhev-options", "disableBack": false, "nextRouteName": get(env, context, "step3RouteName"), "disableNext": false, "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
         return fragment;
       }
     };
@@ -30241,7 +30255,7 @@ define('fusor-ember-cli/templates/subscriptions', ['exports'], function (exports
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, content = hooks.content, block = hooks.block, get = hooks.get;
+        var hooks = env.hooks, content = hooks.content, get = hooks.get, block = hooks.block;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -30265,7 +30279,7 @@ define('fusor-ember-cli/templates/subscriptions', ['exports'], function (exports
         var morph2 = dom.createMorphAt(element0,2,2);
         var morph3 = dom.createMorphAt(element0,3,3);
         content(env, morph0, context, "outlet");
-        block(env, morph1, context, "link-to", ["subscriptions.credentials"], {"tagName": "li"}, child0, null);
+        block(env, morph1, context, "link-to", ["subscriptions.credentials"], {"tagName": "li", "disabled": get(env, context, "disableTabCredentials")}, child0, null);
         block(env, morph2, context, "link-to", ["subscriptions.management-application"], {"tagName": "li", "disabled": get(env, context, "disableTabManagementApplication")}, child1, null);
         block(env, morph3, context, "link-to", ["subscriptions.select-subscriptions"], {"tagName": "li", "disabled": get(env, context, "disableTabSelectSubsciptions")}, child2, null);
         return fragment;
@@ -30849,7 +30863,7 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
         block(env, morph2, context, "if", [get(env, context, "model.isAuthenticated")], {}, child2, null);
         block(env, morph3, context, "if", [get(env, context, "showErrorMessage")], {}, child3, null);
         block(env, morph4, context, "unless", [get(env, context, "model.isAuthenticated")], {}, child4, null);
-        block(env, morph5, context, "cancel-back-next", [], {"backRouteName": get(env, context, "backRouteNameonCredentials"), "disableBack": false, "parentController": get(env, context, "controller")}, child5, null);
+        block(env, morph5, context, "cancel-back-next", [], {"backRouteName": get(env, context, "backRouteNameonCredentials"), "disableBack": false, "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")}, child5, null);
         return fragment;
       }
     };
@@ -31104,7 +31118,7 @@ define('fusor-ember-cli/templates/subscriptions/management-application', ['expor
             fragment = this.build(dom);
           }
           var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
-          inline(env, morph0, context, "tr-management-app", [], {"managementApp": get(env, context, "managementApp"), "consumerUUID": get(env, context, "sessionPortal.consumerUUID"), "action": "selectManagementApp"});
+          inline(env, morph0, context, "tr-management-app", [], {"managementApp": get(env, context, "managementApp"), "consumerUUID": get(env, context, "sessionPortal.consumerUUID"), "action": "selectManagementApp", "disabled": get(env, context, "controllers.deployment.isStarted")});
           return fragment;
         }
       };
@@ -31246,10 +31260,10 @@ define('fusor-ember-cli/templates/subscriptions/management-application', ['expor
         var morph4 = dom.createMorphAt(fragment,10,10,contextualElement);
         dom.insertBoundary(fragment, 0);
         block(env, morph0, context, "if", [get(env, context, "showAlertMessage")], {}, child0, null);
-        block(env, morph1, context, "em-modal-toggler", [], {"modal-id": "registerNewSatellite", "class": "btn btn-primary"}, child1, null);
+        block(env, morph1, context, "em-modal-toggler", [], {"modal-id": "registerNewSatellite", "class": "btn btn-primary", "disabled": get(env, context, "controllers.deployment.isStarted")}, child1, null);
         block(env, morph2, context, "each", [get(env, context, "model")], {"keyword": "managementApp"}, child2, null);
         inline(env, morph3, context, "partial", ["new-satellite"], {});
-        inline(env, morph4, context, "cancel-back-next", [], {"backRouteName": "subscriptions.credentials", "disableBack": false, "nextRouteName": "subscriptions.select-subscriptions", "disableNext": get(env, context, "disableNextOnManagementApp"), "parentController": get(env, context, "controller")});
+        inline(env, morph4, context, "cancel-back-next", [], {"backRouteName": "subscriptions.credentials", "disableBack": false, "nextRouteName": "subscriptions.select-subscriptions", "disableNext": get(env, context, "disableNextOnManagementApp"), "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
         return fragment;
       }
     };
@@ -31608,7 +31622,7 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
         inline(env, morph1, context, "input", [], {"type": "checkbox", "name": "enableAnalytics", "disabled": false, "checked": get(env, context, "enableAnalytics")});
         attribute(env, attrMorph0, element0, "class", get(env, context, "analyticsColor"));
         block(env, morph2, context, "each", [get(env, context, "model")], {"itemController": "subscription", "keyword": "subscription"}, child1, child2);
-        inline(env, morph3, context, "cancel-back-next", [], {"backRouteName": "subscriptions.management-application", "disableBack": false, "nextRouteName": "review", "disableNext": false, "parentController": get(env, context, "controller")});
+        inline(env, morph3, context, "cancel-back-next", [], {"backRouteName": "subscriptions.management-application", "disableBack": false, "nextRouteName": "review", "disableNext": false, "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
         return fragment;
       }
     };
@@ -32094,9 +32108,9 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
         var morph0 = dom.createMorphAt(dom.childAt(element2, [3]),1,1);
         var morph1 = dom.createMorphAt(dom.childAt(element2, [5]),1,1);
         var morph2 = dom.createMorphAt(fragment,2,2,contextualElement);
-        block(env, morph0, context, "radio-button", [], {"value": "RHEV", "groupValue": get(env, context, "cfme_install_loc"), "changed": "cfmeLocationChanged", "id": "install_on_rhev", "disabled": get(env, context, "disableRHEV")}, child0, null);
-        block(env, morph1, context, "radio-button", [], {"value": "OpenStack", "groupValue": get(env, context, "cfme_install_loc"), "changed": "cfmeLocationChanged", "id": "install_on_openstack", "disabled": get(env, context, "disableOpenStack")}, child1, null);
-        inline(env, morph2, context, "cancel-back-next", [], {"backRouteName": get(env, context, "backRouteName"), "disableBack": false, "nextRouteName": "cloudforms.cfme-configuration", "disableNext": false});
+        block(env, morph0, context, "radio-button", [], {"value": "RHEV", "groupValue": get(env, context, "cfme_install_loc"), "changed": "cfmeLocationChanged", "id": "install_on_rhev", "disabled": get(env, context, "disableRHEVradio")}, child0, null);
+        block(env, morph1, context, "radio-button", [], {"value": "OpenStack", "groupValue": get(env, context, "cfme_install_loc"), "changed": "cfmeLocationChanged", "id": "install_on_openstack", "disabled": get(env, context, "disableOpenstackradio")}, child1, null);
+        inline(env, morph2, context, "cancel-back-next", [], {"backRouteName": get(env, context, "backRouteName"), "disableBack": false, "nextRouteName": "cloudforms.cfme-configuration", "disableNext": false, "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
         return fragment;
       }
     };
@@ -32219,7 +32233,7 @@ define('fusor-ember-cli/tests/components/env-path-list-item.jshint', function ()
 
   module('JSHint - components');
   test('components/env-path-list-item.js should pass jshint', function() { 
-    ok(false, 'components/env-path-list-item.js should pass jshint.\ncomponents/env-path-list-item.js: line 23, col 19, \'event\' is defined but never used.\n\n1 error'); 
+    ok(false, 'components/env-path-list-item.js should pass jshint.\ncomponents/env-path-list-item.js: line 25, col 19, \'event\' is defined but never used.\n\n1 error'); 
   });
 
 });
@@ -39984,13 +39998,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.ee796d72"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.f9e60177"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.ee796d72"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.f9e60177"});
 }
 
 /* jshint ignore:end */

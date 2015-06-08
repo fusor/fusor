@@ -4,15 +4,15 @@
   <div class='col-md-12'>
     <br />
     <form class="form form-horizontal">
-      {{text-f label="Root password for Engine and Hypervisor(s)" type='password' value=rhev_root_password cssId='rhev_root_password' isRequired=true}}
+      {{text-f label="Root password for Engine and Hypervisor(s)" type='password' value=rhev_root_password cssId='rhev_root_password' isRequired=true disabled=controllers.deployment.isStarted}}
 
-      {{text-f label="Engine admin password" type='password' value=rhev_engine_admin_password cssId='rhev_engine_admin_password' isRequired=true}}
+      {{text-f label="Engine admin password" type='password' value=rhev_engine_admin_password cssId='rhev_engine_admin_password' isRequired=true disabled=controllers.deployment.isStarted}}
 
-      {{text-f label="Datacenter Name" value=rhev_database_name placeholder='Leave blank for default' cssId='rhev_database_name'}}
-      {{text-f label="Cluster Name" value=rhev_cluster_name placeholder='Leave blank for default' cssId='rhev_cluster_name'}}
-      {{text-f label="Storage name" value=rhev_storage_name placeholder='Leave blank for default' cssId='rhev_storage_name'}}
+      {{text-f label="Datacenter Name" value=rhev_database_name placeholder='Leave blank for default' cssId='rhev_database_name' disabled=controllers.deployment.isStarted}}
+      {{text-f label="Cluster Name" value=rhev_cluster_name placeholder='Leave blank for default' cssId='rhev_cluster_name' disabled=controllers.deployment.isStarted}}
+      {{text-f label="Storage name" value=rhev_storage_name placeholder='Leave blank for default' cssId='rhev_storage_name' disabled=controllers.deployment.isStarted}}
 
-      {{text-f label="CPU Type" value=rhev_cpu_type placeholder='Leave blank for default' help-inline='' cssId='rhev_cpu_type'}}
+      {{text-f label="CPU Type" value=rhev_cpu_type placeholder='Leave blank for default' help-inline='' cssId='rhev_cpu_type' disabled=controllers.deployment.isStarted}}
     </form>
   </div>
 </div>
@@ -20,5 +20,7 @@
 {{cancel-back-next backRouteName=optionsBackRouteName
                    disableBack=false
                    nextRouteName='storage'
-                   disableNext=false}}
+                   disableNext=false
+                   parentController=controller
+                   disableCancel=controllers.deployment.isStarted}}
 
