@@ -76,4 +76,22 @@ export default Ember.Controller.extend({
   nameCloudForms: Ember.computed.alias("controllers.rhci.nameCloudForms"),
   nameSatellite: Ember.computed.alias("controllers.rhci.nameSatellite"),
 
+  backRouteNameonReviewInstallation: function() {
+    if (this.get('isSubscriptions')) {
+      if (Ember.isPresent(this.get('controllers.deployment.upstream_consumer_uuid'))) {
+        return 'subscriptions.select-subscriptions';
+      } else {
+        return 'subscriptions.credentials';
+      }
+    } else {
+      if (this.get('isCloudForms')) {
+        return 'cloudforms/cfme-configuration';
+      } else if (this.get('isOpenStack')) {
+        // TODO
+      } else if (this.get('isRhev')) {
+        return 'storage';
+      }
+    }
+  }.property('isSubscriptions', 'isRhev', 'isOpenStack', 'isCloudForms'),
+
 });
