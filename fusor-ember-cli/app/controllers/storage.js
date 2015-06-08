@@ -5,6 +5,7 @@ export default Ember.Controller.extend({
   needs: ['deployment'],
 
   rhev_storage_type: Ember.computed.alias("controllers.deployment.rhev_storage_type"),
+  rhev_storage_name: Ember.computed.alias("controllers.deployment.rhev_storage_name"),
   rhev_storage_address: Ember.computed.alias("controllers.deployment.rhev_storage_address"),
   rhev_share_path: Ember.computed.alias("controllers.deployment.rhev_share_path"),
 

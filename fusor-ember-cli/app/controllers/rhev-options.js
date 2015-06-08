@@ -8,7 +8,6 @@ export default Ember.Controller.extend({
   rhev_engine_admin_password: Ember.computed.alias("controllers.deployment.rhev_engine_admin_password"),
   rhev_database_name: Ember.computed.alias("controllers.deployment.rhev_database_name"),
   rhev_cluster_name: Ember.computed.alias("controllers.deployment.rhev_cluster_name"),
-  rhev_storage_name: Ember.computed.alias("controllers.deployment.rhev_storage_name"),
   rhev_cpu_type: Ember.computed.alias("controllers.deployment.rhev_cpu_type"),
   rhev_is_self_hosted: Ember.computed.alias("controllers.deployment.rhev_is_self_hosted"),
 

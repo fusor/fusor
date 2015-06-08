@@ -2735,7 +2735,6 @@ define('fusor-ember-cli/controllers/rhev-options', ['exports', 'ember'], functio
     rhev_engine_admin_password: Ember['default'].computed.alias('controllers.deployment.rhev_engine_admin_password'),
     rhev_database_name: Ember['default'].computed.alias('controllers.deployment.rhev_database_name'),
     rhev_cluster_name: Ember['default'].computed.alias('controllers.deployment.rhev_cluster_name'),
-    rhev_storage_name: Ember['default'].computed.alias('controllers.deployment.rhev_storage_name'),
     rhev_cpu_type: Ember['default'].computed.alias('controllers.deployment.rhev_cpu_type'),
     rhev_is_self_hosted: Ember['default'].computed.alias('controllers.deployment.rhev_is_self_hosted'),
 
@@ -2947,6 +2946,7 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember'], function (ex
     needs: ['deployment'],
 
     rhev_storage_type: Ember['default'].computed.alias('controllers.deployment.rhev_storage_type'),
+    rhev_storage_name: Ember['default'].computed.alias('controllers.deployment.rhev_storage_name'),
     rhev_storage_address: Ember['default'].computed.alias('controllers.deployment.rhev_storage_address'),
     rhev_share_path: Ember['default'].computed.alias('controllers.deployment.rhev_share_path'),
 
@@ -28176,10 +28176,6 @@ define('fusor-ember-cli/templates/rhev-options', ['exports'], function (exports)
         dom.appendChild(el3, el4);
         var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createComment("");
-        dom.appendChild(el3, el4);
         var el4 = dom.createTextNode("\n    ");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
@@ -28223,15 +28219,13 @@ define('fusor-ember-cli/templates/rhev-options', ['exports'], function (exports)
         var morph2 = dom.createMorphAt(element0,5,5);
         var morph3 = dom.createMorphAt(element0,7,7);
         var morph4 = dom.createMorphAt(element0,9,9);
-        var morph5 = dom.createMorphAt(element0,11,11);
-        var morph6 = dom.createMorphAt(fragment,4,4,contextualElement);
+        var morph5 = dom.createMorphAt(fragment,4,4,contextualElement);
         inline(env, morph0, context, "text-f", [], {"label": "Root password for Engine & Hypervisor", "type": "password", "value": get(env, context, "rhev_root_password"), "cssId": "rhev_root_password", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted"), "help-inline": "must be 8 or more characters", "placeholder": "must be 8 or more characters"});
         inline(env, morph1, context, "text-f", [], {"label": "Engine admin password", "type": "password", "value": get(env, context, "rhev_engine_admin_password"), "cssId": "rhev_engine_admin_password", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted"), "help-inline": "must be 8 or more characters", "placeholder": "must be 8 or more characters"});
         inline(env, morph2, context, "text-f", [], {"label": "Datacenter Name", "value": get(env, context, "rhev_database_name"), "placeholder": "Leave blank for default", "cssId": "rhev_database_name", "disabled": get(env, context, "controllers.deployment.isStarted")});
         inline(env, morph3, context, "text-f", [], {"label": "Cluster Name", "value": get(env, context, "rhev_cluster_name"), "placeholder": "Leave blank for default", "cssId": "rhev_cluster_name", "disabled": get(env, context, "controllers.deployment.isStarted")});
-        inline(env, morph4, context, "text-f", [], {"label": "Storage name", "value": get(env, context, "rhev_storage_name"), "placeholder": "Leave blank for default", "cssId": "rhev_storage_name", "disabled": get(env, context, "controllers.deployment.isStarted")});
-        inline(env, morph5, context, "text-f", [], {"label": "CPU Type", "value": get(env, context, "rhev_cpu_type"), "placeholder": "Leave blank for default", "help-inline": "", "cssId": "rhev_cpu_type", "disabled": get(env, context, "controllers.deployment.isStarted")});
-        inline(env, morph6, context, "cancel-back-next", [], {"backRouteName": get(env, context, "optionsBackRouteName"), "disableBack": false, "nextRouteName": "storage", "disableNext": get(env, context, "disableNextRhevOptions"), "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
+        inline(env, morph4, context, "text-f", [], {"label": "CPU Type", "value": get(env, context, "rhev_cpu_type"), "placeholder": "Leave blank for default", "help-inline": "", "cssId": "rhev_cpu_type", "disabled": get(env, context, "controllers.deployment.isStarted")});
+        inline(env, morph5, context, "cancel-back-next", [], {"backRouteName": get(env, context, "optionsBackRouteName"), "disableBack": false, "nextRouteName": "storage", "disableNext": get(env, context, "disableNextRhevOptions"), "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
         return fragment;
       }
     };
@@ -29711,6 +29705,10 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
           dom.appendChild(el0, el1);
           var el1 = dom.createComment("");
           dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n          ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
           var el1 = dom.createTextNode("\n\n");
           dom.appendChild(el0, el1);
           return el0;
@@ -29737,8 +29735,10 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
           }
           var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
           var morph1 = dom.createMorphAt(fragment,3,3,contextualElement);
-          inline(env, morph0, context, "text-f", [], {"label": "Storage Address", "value": get(env, context, "rhev_storage_address"), "placeholder": "Leave blank for default (Ex. 1.2.3.4)", "cssId": "rhev_storage_address", "disabled": get(env, context, "controllers.deployment.isStarted")});
-          inline(env, morph1, context, "text-f", [], {"label": "Share Path", "value": get(env, context, "rhev_share_path"), "placeholder": "Leave blank for default (Ex. /nfs_data/rhev_storage)", "cssId": "rhev_share_path", "disabled": get(env, context, "controllers.deployment.isStarted")});
+          var morph2 = dom.createMorphAt(fragment,5,5,contextualElement);
+          inline(env, morph0, context, "text-f", [], {"label": "Data Domain Name", "value": get(env, context, "rhev_storage_name"), "placeholder": "Leave blank for default", "cssId": "rhev_storage_name", "disabled": get(env, context, "controllers.deployment.isStarted")});
+          inline(env, morph1, context, "text-f", [], {"label": "Storage Address", "value": get(env, context, "rhev_storage_address"), "placeholder": "Leave blank for default (Ex. 1.2.3.4)", "cssId": "rhev_storage_address", "disabled": get(env, context, "controllers.deployment.isStarted")});
+          inline(env, morph2, context, "text-f", [], {"label": "Share Path", "value": get(env, context, "rhev_share_path"), "placeholder": "Leave blank for default (Ex. /nfs_data/rhev_storage)", "cssId": "rhev_share_path", "disabled": get(env, context, "controllers.deployment.isStarted")});
           return fragment;
         }
       };
@@ -29991,7 +29991,7 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
           var morph0 = dom.createMorphAt(element0,1,1);
           var morph1 = dom.createMorphAt(element0,3,3);
           var morph2 = dom.createMorphAt(element0,5,5);
-          inline(env, morph0, context, "text-f", [], {"label": "Storage Domain Name", "value": get(env, context, "rhev_export_domain_name"), "cssId": "rhev_export_domain_name", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted")});
+          inline(env, morph0, context, "text-f", [], {"label": "Export Domain Name", "value": get(env, context, "rhev_export_domain_name"), "cssId": "rhev_export_domain_name", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted")});
           inline(env, morph1, context, "text-f", [], {"label": "Storage Address", "value": get(env, context, "rhev_export_domain_address"), "cssId": "rhev_export_domain_address", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted")});
           inline(env, morph2, context, "text-f", [], {"label": "Share Path", "value": get(env, context, "rhev_export_domain_path"), "cssId": "rhev_export_domain_path", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted")});
           return fragment;
@@ -40021,13 +40021,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.80a64e19"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.50a26d78"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.80a64e19"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.50a26d78"});
 }
 
 /* jshint ignore:end */
