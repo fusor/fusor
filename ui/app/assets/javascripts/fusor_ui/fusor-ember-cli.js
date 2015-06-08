@@ -4558,9 +4558,8 @@ define('fusor-ember-cli/routes/configure-environment', ['exports', 'ember'], fun
         // nullify environment if organization has no environments
         if (results.get('length') === 0) {
           return controller.set('selectedEnvironment', null);
-          // default to Library if it is only env that exists
-        } else if (results.get('length') === 1) {
-          return controller.set('selectedEnvironment', results.get('firstObject'));
+        } else if (model.get('id')) {
+          return controller.set('selectedEnvironment', model);
         }
       });
     },
@@ -4743,9 +4742,6 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cl
       controller.set('satelliteTabRouteName', 'satellite.index');
       controller.set('organizationTabRouteName', 'configure-organization');
       controller.set('lifecycleEnvironmentTabRouteName', 'configure-environment');
-      if (Ember['default'].isBlank(model.get('lifecycle_environment_id'))) {
-        controller.set('useDefaultOrgViewForEnv', true);
-      }
     },
 
     actions: {
@@ -33560,7 +33556,7 @@ define('fusor-ember-cli/tests/routes/deployment.jshint', function () {
 
   module('JSHint - routes');
   test('routes/deployment.js should pass jshint', function() { 
-    ok(false, 'routes/deployment.js should pass jshint.\nroutes/deployment.js: line 53, col 17, Missing semicolon.\nroutes/deployment.js: line 24, col 19, \'$\' is not defined.\nroutes/deployment.js: line 84, col 19, \'$\' is not defined.\nroutes/deployment.js: line 21, col 33, \'options\' is defined but never used.\nroutes/deployment.js: line 81, col 32, \'options\' is defined but never used.\nroutes/deployment.js: line 104, col 19, \'deployment\' is defined but never used.\n\n6 errors'); 
+    ok(false, 'routes/deployment.js should pass jshint.\nroutes/deployment.js: line 50, col 17, Missing semicolon.\nroutes/deployment.js: line 21, col 19, \'$\' is not defined.\nroutes/deployment.js: line 81, col 19, \'$\' is not defined.\nroutes/deployment.js: line 18, col 33, \'options\' is defined but never used.\nroutes/deployment.js: line 78, col 32, \'options\' is defined but never used.\nroutes/deployment.js: line 101, col 19, \'deployment\' is defined but never used.\n\n6 errors'); 
   });
 
 });
@@ -39988,13 +39984,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.2ae0f3e7"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.ee796d72"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.2ae0f3e7"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.ee796d72"});
 }
 
 /* jshint ignore:end */
