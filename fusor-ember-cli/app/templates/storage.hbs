@@ -24,6 +24,7 @@
       {{/base-f}}
 
       {{#if isNFS}}
+          {{text-f label="Data Domain Name" value=rhev_storage_name placeholder='Leave blank for default' cssId='rhev_storage_name' disabled=controllers.deployment.isStarted}}
           {{text-f label="Storage Address" value=rhev_storage_address placeholder='Leave blank for default (Ex. 1.2.3.4)' cssId='rhev_storage_address' disabled=controllers.deployment.isStarted}}
           {{text-f label="Share Path" value=rhev_share_path placeholder='Leave blank for default (Ex. /nfs_data/rhev_storage)' cssId='rhev_share_path' disabled=controllers.deployment.isStarted}}
 
@@ -44,7 +45,7 @@
 
     <form class="form form-horizontal">
 
-      {{text-f label="Storage Domain Name" value=rhev_export_domain_name cssId='rhev_export_domain_name' isRequired=true disabled=controllers.deployment.isStarted}}
+      {{text-f label="Export Domain Name" value=rhev_export_domain_name cssId='rhev_export_domain_name' isRequired=true disabled=controllers.deployment.isStarted}}
       {{text-f label="Storage Address" value=rhev_export_domain_address cssId='rhev_export_domain_address' isRequired=true disabled=controllers.deployment.isStarted}}
       {{text-f label="Share Path" value=rhev_export_domain_path cssId='rhev_export_domain_path' isRequired=true disabled=controllers.deployment.isStarted}}
 
