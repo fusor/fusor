@@ -54,10 +54,10 @@ module Actions
 
           deployment = ::Fusor::Deployment.find(input[:deployment_id])
           repository = ::Katello::Repository.find(input[:repository_id])
+          @script_dir = "/usr/share/fusor_ovirt/bin/"
 
-          if is_rhev_up
+          if is_rhev_up(deployment)
             @api_host = deployment.rhev_engine_host.facts['ipaddress']
-            @script_dir = "/usr/share/fusor/bin/"
 
             image_full_path, image_file_name = find_image_details(repository, input[:image_file_name])
             scp_image_file(deployment, image_full_path)
