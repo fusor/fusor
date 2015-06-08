@@ -99,6 +99,26 @@
         {{review-link label='Subscription Management Application'
                       routeName='subscriptions.management-application' isRequired=true
                       value=controllers.deployment.upstream_consumer_name }}
+
+
+        {{#each sub in controllers.subscriptions/select-subscriptions.model}}
+            {{#if sub.isSelectedSubscription}}
+              {{review-link label='Subscription Name'
+                            routeName='subscriptions.select-subscriptions'
+                            value=sub.productName }}
+              {{review-link label='Contract Number'
+                            routeName='subscriptions.select-subscriptions'
+                            value=sub.contractNumber }}
+              {{review-link label='Quantity'
+                            routeName='subscriptions.select-subscriptions'
+                            value=sub.qtyToAttach }}
+            {{/if}}
+        {{else}}
+              {{review-link label='Quantity'
+                            routeName='subscriptions.select-subscriptions'
+                            value="0 - no new subscriptions to attach" }}
+        {{/each}}
+
     {{/accordion-item}}
   {{/if}}
 

@@ -5,7 +5,7 @@ export default Ember.Controller.extend({
           'configure-environment', 'rhev-setup', 'hypervisor', 'hypervisor/discovered-host',
           'engine/discovered-host', 'storage',
           'networking', 'rhev-options', 'where-install',
-          'cloudforms-storage-domain', 'cloudforms-vm', 'review'],
+          'cloudforms-storage-domain', 'cloudforms-vm', 'review', 'subscriptions/select-subscriptions'],
 
   // TODO - DRY and update while deployment is finished and button should say "Deployed"
   buttonDeployTitle: function() {
