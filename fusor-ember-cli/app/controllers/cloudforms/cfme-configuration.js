@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
-  needs: ['deployment'],
+  needs: ['deployment', 'cloudforms'],
 
   cfme_root_password: Ember.computed.alias("controllers.deployment.cfme_root_password"),
   isSubscriptions: Ember.computed.alias("controllers.deployment.isSubscriptions"),

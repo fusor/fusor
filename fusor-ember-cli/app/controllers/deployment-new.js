@@ -16,7 +16,7 @@ export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableT
   isDisabledReview: true,
 
   hasLifecycleEnvironment: function() {
-    return (!!(this.get('lifecycle_environment').get('id')) || this.get('useDefaultOrgViewForEnv')); // without .get('id') returns promise that is true
+    return (!!(this.get('lifecycle_environment.id')) || this.get('useDefaultOrgViewForEnv'));
   }.property('lifecycle_environment', 'useDefaultOrgViewForEnv'),
   hasNoLifecycleEnvironment: Ember.computed.not('hasLifecycleEnvironment'),
 

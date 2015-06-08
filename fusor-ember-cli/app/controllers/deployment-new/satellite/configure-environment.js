@@ -3,7 +3,7 @@ import ConfigureEnvironmentMixin from "../../../mixins/configure-environment-mix
 
 export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
 
-  needs: ['deployment-new'],
+  needs: ['deployment-new', 'deployment'],
 
   organizationTabRouteName: Ember.computed.alias("controllers.deployment-new.organizationTabRouteName"),
 

@@ -4,9 +4,13 @@
   <div class='col-md-12'>
     <br />
     <form class="form form-horizontal">
-      {{text-f label="Root password for Engine and Hypervisor(s)" type='password' value=rhev_root_password cssId='rhev_root_password' isRequired=true disabled=controllers.deployment.isStarted}}
+      {{text-f label="Root password for Engine and Hypervisor(s)" type='password' value=rhev_root_password cssId='rhev_root_password' isRequired=true disabled=controllers.deployment.isStarted
+      help-inline='must be 8 or more characters'
+      placeholder='must be 8 or more characters'}}
 
-      {{text-f label="Engine admin password" type='password' value=rhev_engine_admin_password cssId='rhev_engine_admin_password' isRequired=true disabled=controllers.deployment.isStarted}}
+      {{text-f label="Engine admin password" type='password' value=rhev_engine_admin_password cssId='rhev_engine_admin_password' isRequired=true disabled=controllers.deployment.isStarted
+      help-inline='must be 8 or more characters'
+      placeholder='must be 8 or more characters'}}
 
       {{text-f label="Datacenter Name" value=rhev_database_name placeholder='Leave blank for default' cssId='rhev_database_name' disabled=controllers.deployment.isStarted}}
       {{text-f label="Cluster Name" value=rhev_cluster_name placeholder='Leave blank for default' cssId='rhev_cluster_name' disabled=controllers.deployment.isStarted}}
@@ -20,7 +24,7 @@
 {{cancel-back-next backRouteName=optionsBackRouteName
                    disableBack=false
                    nextRouteName='storage'
-                   disableNext=false
+                   disableNext=disableNextRhevOptions
                    parentController=controller
                    disableCancel=controllers.deployment.isStarted}}
 

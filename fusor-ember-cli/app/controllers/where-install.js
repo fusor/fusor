@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.ObjectController.extend({
 
-  needs: ['deployment'],
+  needs: ['deployment', 'cloudforms'],
 
   cfme_install_loc: Ember.computed.alias("controllers.deployment.cfme_install_loc"),
   isRhev: Ember.computed.alias("controllers.deployment.isRhev"),

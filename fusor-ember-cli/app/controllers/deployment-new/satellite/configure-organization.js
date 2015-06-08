@@ -3,7 +3,7 @@ import ConfigureOrganizationMixin from "../../../mixins/configure-organization-m
 
 export default Ember.Controller.extend(ConfigureOrganizationMixin, {
 
-  needs: ['deployment-new'],
+  needs: ['deployment-new', 'deployment'],
 
   organization: Ember.computed.alias("controllers.deployment-new.organization"),
 
