@@ -22,12 +22,21 @@ module Actions
         def plan(deployment, repository, image_file_name = nil)
           Rails.logger.warn "XXX ================ Planning CFME Deployment ===================="
 
+          # if by some miracle we arrive here without having selected
+          # deploy_cfme, log the warning and just return.
+          if not deployment.deploy_cfme
+            Rails.logger.warn "Deploy Cloud Forms scheduled but deploy_cfme was NOT selected. Please file a bug."
+            return
+          end
+
           fail _("CloudForms repository has not been provided.") unless repository
 
           # VERIFY PARAMS HERE
-          #if deployment.deploy_cfme
-          #  fail _("Unable to locate a CFME Engine Host") unless deployment.rhev_engine_host
-          #end
+          if deployment.deploy_cfme
+            fail _("Unable to locate a RHEV export domain") unless deployment.rhev_export_domain_name
+            fail _("Unable to locate a suitable host for CloudForms deployment") unless deployment.rhev_engine_host
+            fail _("RHEV engine admin password not configured properly") unless deployment.rhev_engine_admin_password
+          end
 
           plan_self(deployment_id: deployment.id,
                     repository_id: repository.id,
@@ -169,7 +178,7 @@ module Actions
           imported_template_name = "#{deployment.name}-cfme-template"
           username = "admin@internal"
           ssh_username = "root"
-          export_domain_name = deployment.rhev_export_domain_name.to_s[/.+/m] || "export"
+          export_domain_name = deployment.rhev_export_domain_name
 
           cfme_image_file = "/root/#{image_file_name}" # can't use find_image_file without doing filename magic :(
 
