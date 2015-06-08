@@ -99,6 +99,9 @@
         {{review-link label='Subscription Management Application'
                       routeName='subscriptions.management-application' isRequired=true
                       value=controllers.deployment.upstream_consumer_name }}
+        {{review-link label='Red Hat Analytics'
+                      routeName='subscriptions.select-subscriptions'
+                      value=controllers.subscriptions/select-subscriptions.enableAnalytics }}
 
 
         {{#each sub in controllers.subscriptions/select-subscriptions.model}}

@@ -7,9 +7,11 @@ export default Ember.ArrayController.extend({
 
   isUpstream: Ember.computed.alias("controllers.application.isUpstream"),
   stepNumberSubscriptions: Ember.computed.alias("controllers.deployment.stepNumberSubscriptions"),
+  enable_access_insights: Ember.computed.alias("controllers.deployment.enable_access_insights"),
 
-  isOnlyShowSubscriptions: true,
-  enableAnalytics: true,
+  enableAnalytics: function() {
+    if (this.get('enable_access_insights')) { return 'Enabled'; } else { return 'Disabled'; }
+  }.property('enable_access_insights'),
 
   buttonAttachTitle: function() {
     if (this.get('attachingInProgress')) {
