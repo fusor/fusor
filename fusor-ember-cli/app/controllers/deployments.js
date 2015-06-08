@@ -12,15 +12,27 @@ export default Ember.ArrayController.extend({
   filteredDeployments: function(){
     var searchDeploymentString = this.get('searchDeploymentString');
     var rx = new RegExp(searchDeploymentString, 'gi');
-    var model = this.get('sortedDeployments');
+    var sortedDeployments = this.get('sortedDeployments');
 
-    if (model.get('length') > 0) {
-      return model.filter(function(record) {
-        return record.get('name').match(rx)
+    if (sortedDeployments.get('length') > 1) {
+      return sortedDeployments.filter(function(record) {
+        if (Ember.isPresent(record.get('name'))) {
+          return record.get('name').match(rx)
+        }
       });
     } else {
-      return model;
+      return sortedDeployments;
     }
-  }.property('sortedDeployments', 'searchDeploymentString'),
+  }.property('sortedDeployments', 'searchDeploymentString', 'model.[]'),
 
+  // related to deleted-deployment-modal
+  isOpenModal: false,
+  deploymentInModal: null,
+
+  actions: {
+    openDeploymentModal: function (item) {
+      this.set('deploymentInModal', item);
+      return this.set('isOpenModal', true);
+    },
+  }
 });
