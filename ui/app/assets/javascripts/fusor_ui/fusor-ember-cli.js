@@ -1560,6 +1560,8 @@ define('fusor-ember-cli/controllers/deployment-new', ['exports', 'ember', 'fusor
 
     needs: ["deployment-new/satellite/configure-environment"],
 
+    routeNameSatellite: "deployment-new.satellite",
+
     useDefaultOrgViewForEnv: Ember['default'].computed.alias("controllers.deployment-new/satellite/configure-environment.useDefaultOrgViewForEnv"),
 
     // these tabs will always be disabled within deployment-new
@@ -1722,6 +1724,8 @@ define('fusor-ember-cli/controllers/deployment', ['exports', 'ember', 'fusor-emb
   exports['default'] = Ember['default'].ObjectController.extend(DeploymentControllerMixin['default'], DisableTabMixin['default'], {
 
     needs: ["configure-environment", "deployments", "rhev", "cloudforms", "subscriptions/credentials"],
+
+    routeNameSatellite: "satellite",
 
     useDefaultOrgViewForEnv: Ember['default'].computed.alias("controllers.configure-environment.useDefaultOrgViewForEnv"),
 
@@ -13243,7 +13247,7 @@ define('fusor-ember-cli/templates/components/rhci-wizard', ['exports'], function
         var morph7 = dom.createMorphAt(element2,11,11);
         content(env, morph0, context, "nameRHCI");
         content(env, morph1, context, "name");
-        inline(env, morph2, context, "wizard-item", [], {"num": 1, "name": get(env, context, "nameSatellite"), "routeName": "satellite", "isDisabled": false, "currentStepNumber": get(env, context, "currentStepNumber")});
+        inline(env, morph2, context, "wizard-item", [], {"num": 1, "name": get(env, context, "nameSatellite"), "routeName": get(env, context, "routeNameSatellite"), "isDisabled": false, "currentStepNumber": get(env, context, "currentStepNumber")});
         block(env, morph3, context, "if", [get(env, context, "isRhev")], {}, child0, null);
         block(env, morph4, context, "if", [get(env, context, "isOpenStack")], {}, child1, null);
         block(env, morph5, context, "if", [get(env, context, "isCloudForms")], {}, child2, null);
@@ -17799,7 +17803,7 @@ define('fusor-ember-cli/templates/deployment', ['exports'], function (exports) {
             fragment = this.build(dom);
           }
           var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
-          inline(env, morph0, context, "rhci-wizard", [], {"name": get(env, context, "name"), "nameRHCI": get(env, context, "nameRHCI"), "nameSatellite": get(env, context, "nameSatellite"), "nameRhev": get(env, context, "nameRhev"), "nameOpenStack": get(env, context, "nameOpenStack"), "nameCloudForms": get(env, context, "nameCloudForms"), "stepNumberRhev": get(env, context, "stepNumberRhev"), "stepNumberOpenstack": get(env, context, "stepNumberOpenstack"), "stepNumberCloudForms": get(env, context, "stepNumberCloudForms"), "stepNumberSubscriptions": get(env, context, "stepNumberSubscriptions"), "stepNumberReview": get(env, context, "stepNumberReview"), "isDisabledRhev": get(env, context, "isDisabledRhev"), "isDisabledOpenstack": get(env, context, "isDisabledOpenstack"), "isDisabledCloudForms": get(env, context, "isDisabledCloudForms"), "isDisabledSubscriptions": get(env, context, "isDisabledSubscriptions"), "isDisabledReview": get(env, context, "isDisabledReview"), "isRhev": get(env, context, "isRhev"), "isOpenStack": get(env, context, "isOpenStack"), "isCloudForms": get(env, context, "isCloudForms"), "isSubscriptions": get(env, context, "isSubscriptions"), "currentStepNumber": get(env, context, "currentStepNumber")});
+          inline(env, morph0, context, "rhci-wizard", [], {"name": get(env, context, "name"), "nameRHCI": get(env, context, "nameRHCI"), "nameSatellite": get(env, context, "nameSatellite"), "routeNameSatellite": get(env, context, "routeNameSatellite"), "nameRhev": get(env, context, "nameRhev"), "nameOpenStack": get(env, context, "nameOpenStack"), "nameCloudForms": get(env, context, "nameCloudForms"), "stepNumberRhev": get(env, context, "stepNumberRhev"), "stepNumberOpenstack": get(env, context, "stepNumberOpenstack"), "stepNumberCloudForms": get(env, context, "stepNumberCloudForms"), "stepNumberSubscriptions": get(env, context, "stepNumberSubscriptions"), "stepNumberReview": get(env, context, "stepNumberReview"), "isDisabledRhev": get(env, context, "isDisabledRhev"), "isDisabledOpenstack": get(env, context, "isDisabledOpenstack"), "isDisabledCloudForms": get(env, context, "isDisabledCloudForms"), "isDisabledSubscriptions": get(env, context, "isDisabledSubscriptions"), "isDisabledReview": get(env, context, "isDisabledReview"), "isRhev": get(env, context, "isRhev"), "isOpenStack": get(env, context, "isOpenStack"), "isCloudForms": get(env, context, "isCloudForms"), "isSubscriptions": get(env, context, "isSubscriptions"), "currentStepNumber": get(env, context, "currentStepNumber")});
           return fragment;
         }
       };
@@ -40021,13 +40025,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.50a26d78"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.f87595bb"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.50a26d78"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.f87595bb"});
 }
 
 /* jshint ignore:end */

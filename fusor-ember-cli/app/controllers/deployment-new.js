@@ -6,6 +6,8 @@ export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableT
 
   needs: ['deployment-new/satellite/configure-environment'],
 
+  routeNameSatellite: 'deployment-new.satellite',
+
   useDefaultOrgViewForEnv: Ember.computed.alias("controllers.deployment-new/satellite/configure-environment.useDefaultOrgViewForEnv"),
 
   // these tabs will always be disabled within deployment-new

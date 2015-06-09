@@ -2,7 +2,7 @@
   <div class="col-md-12 page-header page-header-rhci">
     <h1>New {{nameRHCI}} Deployment:  {{name}}</h1>
     <ol class="rhci-steps">
-      {{wizard-item num=1 name=nameSatellite routeName='satellite' isDisabled=false currentStepNumber=currentStepNumber}}
+      {{wizard-item num=1 name=nameSatellite routeName=routeNameSatellite isDisabled=false currentStepNumber=currentStepNumber}}
 
       {{#if isRhev}}
         {{wizard-item num=stepNumberRhev name=nameRhev routeName='rhev' isDisabled=isDisabledRhev currentStepNumber=currentStepNumber}}
