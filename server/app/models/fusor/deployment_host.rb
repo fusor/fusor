@@ -12,7 +12,8 @@
 
 module Fusor
   class DeploymentHost < ActiveRecord::Base
-    validates :discovered_host_id, uniqueness: { :message => _('This Host is already a RHEV Hypervisor for a different deployment') }
+    # if we want to envorce discovered host uniqueness uncomment this line
+    #validates :discovered_host_id, uniqueness: { :message => _('This Host is already a RHEV Hypervisor for a different deployment') }
     belongs_to :discovered_host, :class_name => "::Host::Base"
     belongs_to :deployment, :class_name => "Fusor::Deployment"
   end
