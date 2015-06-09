@@ -40,7 +40,8 @@
                          value=selectedHypervisorHosts useYieldInstead=true}}
               {{#each host in selectedHypervisorHosts}}
                   {{#link-to 'hypervisor.discovered-host'}}
-                      {{host.name}}.rhci.redhat.com
+                      {{!TODO - get hostgroup.name from fusor engine hostgroup}}
+                      {{host.name}}.example.com
                   {{/link-to}}
                   <br />
               {{/each}}
