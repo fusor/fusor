@@ -25,28 +25,35 @@ module Fusor
             deployment.errors[:rhev_storage_type] << _('RHEV deployments must specify a valid storage type (NFS, Local, Gluster)')
           end
 
-          if deployment.rhev_storage_type == 'NFS' and deployment.rhev_storage_address.empty?
-            deployment.errors[:rhev_storage_address] << _('NFS share specified but missing address of NFS server')
+          if deployment.rhev_storage_type == 'NFS' 
+            if deployment.rhev_storage_address.empty?
+              deployment.errors[:rhev_storage_address] << _('NFS share specified but missing address of NFS server')
+            end
+
+            if deployment.rhev_share_path.empty?
+              deployment.errors[:rhev_share_path] << _('NFS share specified but missing path to the share')
+            end
           end
 
-          if deployment.rhev_storage_type == 'NFS' and deployment.rhev_share_path.empty?
-            deployment.errors[:rhev_share_path] << _('NFS share specified but missing path to the share')
+
+          if deployment.rhev_storage_type == 'Local' 
+            if deployment.rhev_local_storage_path.empty?
+              deployment.errors[:rhev_local_storage_path] << _('Local storage specified but missing local storage path')
+            end
           end
 
-          if deployment.rhev_storage_type == 'Local' and deployment.rhev_local_storage_path.empty?
-            deployment.errors[:rhev_local_storage_path] << _('Local storage specified but missing local storage path')
-          end
+          if deployment.rhev_storage_type == 'Gluster'
+            if deployment.rhev_gluster_node_name.empty?
+              deployment.errors[:rhev_gluster_node_name] << _('Gluster storage specified but missing Gluster node name')
+            end
 
-          if deployment.rhev_storage_type == 'Gluster' and deployment.rhev_gluster_node_name.empty?
-            deployment.errors[:rhev_gluster_node_name] << _('Gluster storage specified but missing Gluster node name')
-          end
+            if deployment.rhev_gluster_node_address.empty?
+              deployment.errors[:rhev_gluster_node_address] << _('Gluster storage specified but missing Gluster node address')
+            end
 
-          if deployment.rhev_storage_type == 'Gluster' and deployment.rhev_gluster_node_address.empty?
-            deployment.errors[:rhev_gluster_node_address] << _('Gluster storage specified but missing Gluster node address')
-          end
-
-          if deployment.rhev_storage_type == 'Gluster' and deployment.rhev_gluster_root_password.empty?
-            deployment.errors[:rhev_gluster_root_password] << _('Gluster storage specified but missing Gluster root password')
+            if deployment.rhev_gluster_root_password.empty?
+              deployment.errors[:rhev_gluster_root_password] << _('Gluster storage specified but missing Gluster root password')
+            end
           end
 
           if deployment.rhev_engine_host_id.nil?
