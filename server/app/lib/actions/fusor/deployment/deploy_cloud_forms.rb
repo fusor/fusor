@@ -303,10 +303,10 @@ module Actions
         def add_rhev_provider(deployment, cfme_ip)
           provider = { :name => deployment.name,
                        :type => "rhevm",
-                       :hostname => "deployment.rhev_engine_host.name",
-                       :ip => "deployment.rhev_engine_host.ip",
+                       :hostname => deployment.rhev_engine_host.name,
+                       :ip => deployment.rhev_engine_host.ip,
                        :username => "admin@internal", # TODO: perhaps make configurable, in future
-                       :password => "deployment.rhev_engine_admin_password"
+                       :password => deployment.rhev_engine_admin_password
                      }
 
           Utils::CloudForms::Provider.add(cfme_ip, provider)
