@@ -71,7 +71,8 @@ export default Ember.Controller.extend({
   selectedRhevEngine: Ember.computed.alias("controllers.deployment.discovered_host"),
 
   engineNamePlusDomain: function() {
-    return (this.get("selectedRhevEngine.name") + ".rhci.redhat.com");
+    //TODO - get hostgroup.name from fusor engine hostgroup
+    return (this.get("selectedRhevEngine.name") + ".example.com");
   }.property('selectedRhevEngine.name'),
 
   nameRHCI: Ember.computed.alias("controllers.rhci.nameRHCI"),
