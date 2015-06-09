@@ -6,6 +6,8 @@ export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableT
 
   needs: ['configure-environment', 'deployments', 'rhev', 'cloudforms', 'subscriptions/credentials'],
 
+  routeNameSatellite: 'satellite',
+
   useDefaultOrgViewForEnv: Ember.computed.alias("controllers.configure-environment.useDefaultOrgViewForEnv"),
 
   isOpenModal: Ember.computed.alias("controllers.deployments.isOpenModal"),
