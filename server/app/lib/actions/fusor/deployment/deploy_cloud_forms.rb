@@ -216,6 +216,9 @@ module Actions
                 "--api_user '#{api_user}' "\
                 "--api_pass #{deployment.rhev_engine_admin_password} "\
                 "--api_host #{@api_host} "\
+                "--cluster_name #{deployment.rhev_cluster_name} "\
+                "--export_domain_name #{deployment.rhev_export_domain_name} " \
+                "--storage_domain_name #{deployment.rhev_storage_name} "\
                 "--vm_template_name #{template_name}"
 
           status, output = run_command(cmd)
@@ -235,8 +238,12 @@ module Actions
 
           db_password = "changeme" # TODO: we may want to make this configurable in the future
           ssh_user = "root"
-          #ssh_password = "smartvm" # TODO: need to update to use deployment.cfme_root_password; however, that means it must also be set on VM during/after creation
-          ssh_password = deployment.cfme_root_password
+          #
+          # JWM 6/9/2015, We are not yet setting the CloudForms VM root password
+          # We need to use the default password of 'smartvm' until we add support.
+          #
+          ssh_password = "smartvm" # TODO: need to update to use deployment.cfme_root_password; however, that means it must also be set on VM during/after creation
+          #ssh_password = deployment.cfme_root_password
 
           cmd = "#{@script_dir}miq_run_appliance_console.py "\
                 "--miq_ip #{vm_ip} "\
@@ -334,6 +341,7 @@ module Actions
         end
 
         def run_command(cmd)
+          Rails.logger.info "Running: #{cmd}"
           status, output = Utils::Fusor::CommandUtils.run_command(cmd)
           puts status
           puts output
