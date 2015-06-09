@@ -29,6 +29,7 @@ class DeploymentTest < ActiveSupport::TestCase
   end
 
   test "should not save rhev deployment with duplicate rhev engine host" do
+    skip # If we want to enable this test delete this line
     rhev_d = fusor_deployments(:rhev)
     rhev_d2 = fusor_deployments(:another_rhev)
     rhev_d2.rhev_engine_host = rhev_d.rhev_engine_host
@@ -52,6 +53,7 @@ class DeploymentTest < ActiveSupport::TestCase
   end
 
   test "should not save rhev deployment if hypervisor is used as rhev engine somewhere else" do
+    skip # If we want to enable this test delete this line
     rhev_d = fusor_deployments(:rhev)
     assert rhev_d.deploy_rhev, "Is not a rhev deployment"
     rhev_d2 = fusor_deployments(:another_rhev)
@@ -61,6 +63,7 @@ class DeploymentTest < ActiveSupport::TestCase
   end
 
   test "should not save rhev deployment if engine is used as hypervisor somewhere else" do
+    skip # If we want to enable this test delete this line
     rhev_d = fusor_deployments(:rhev)
     assert rhev_d.deploy_rhev, "Is not a rhev deployment"
     rhev_d2 = fusor_deployments(:another_rhev)

@@ -12,6 +12,7 @@
 
 module Fusor
   class Deployment < ActiveRecord::Base
+    validates_with Fusor::Validators::DeploymentValidator
     belongs_to :organization
     belongs_to :lifecycle_environment, :class_name => "Katello::KTEnvironment"
 
@@ -21,6 +22,8 @@ module Fusor
     validates :cfme_root_password, :allow_blank => true, :length => {:minimum => 8, :message => _('should be 8 characters or more')}
 
     belongs_to :rhev_engine_host, :class_name => "::Host::Base", :foreign_key => :rhev_engine_host_id
+    # if we want to envorce discovered host uniqueness uncomment this line
+    #validates :rhev_engine_host_id, uniqueness: { :message => _('This Host is already a RHEV Engine for a different deployment') }
     has_many :rhev_hypervisor_hosts, :class_name => "::Host::Base", :through => :deployment_hosts, :source => :discovered_host
     validates_with ::Katello::Validators::KatelloNameFormatValidator, :attributes => :name
 
