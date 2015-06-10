@@ -10146,6 +10146,7 @@ td > .progress:first-child:last-child {
   }
   .sidebar-pf.sidebar-pf-left {
     border-right: 1px solid #d0d0d0;
+    min-height: 850px;
   }
   .sidebar-pf.sidebar-pf-right {
     border-left: 1px solid #d0d0d0;
@@ -10868,14 +10869,7 @@ h2,
   margin: 0;
   padding: 5px 0 0;
 }
-.page-header-rhci {
-  background: #fafafa;
-  border-bottom-color: #d0d0d0;
-  float: left;
-  margin-bottom: -1px;
-  margin-top: 0;
-  width: 100%;
-}
+
 .progress-description .tooltip {
   white-space: normal;
 }

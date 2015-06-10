@@ -62,20 +62,33 @@
       {{review-link label='Cluster Name' routeName='rhev-options' isDefault=true
                     value=controllers.deployment.rhev_cluster_name}}
 
-      {{review-link label='Storage Name' routeName='rhev-options' isDefault=true
-                    value=controllers.deployment.rhev_storage_name}}
-
       {{review-link label='CPU Type' routeName='rhev-options' isDefault=true
                     value=controllers.deployment.rhev_cpu_type}}
 
       {{review-link label='Storage Type' routeName='storage' isRequired=true
                     value=controllers.deployment.rhev_storage_type}}
 
-      {{review-link label='Storage Address' routeName='storage' isDefault=true
+      {{review-link label='Data Domain Name' routeName='storage' isDefault=true
+                    value=controllers.deployment.rhev_storage_name}}
+
+      {{review-link label='Data Storage Address' routeName='storage' isDefault=true
                     value=controllers.deployment.rhev_storage_address}}
 
-      {{review-link label='Storage Path' routeName='storage' isDefault=true
+      {{review-link label='Data Storage Path' routeName='storage' isDefault=true
                     value=controllers.deployment.rhev_share_path}}
+
+      {{#if isCloudForms}}
+
+          {{review-link label='Export Domain Name' routeName='storage' isDefault=true
+                        value=controllers.deployment.rhev_export_domain_name}}
+
+          {{review-link label='Export Storage Address' routeName='storage' isDefault=true
+                        value=controllers.deployment.rhev_export_domain_address}}
+
+          {{review-link label='Export Storage Path' routeName='storage' isDefault=true
+                        value=controllers.deployment.rhev_export_domain_path}}
+
+      {{/if}}
 
       <br />
     {{/accordion-item}}

@@ -6,6 +6,7 @@
 {{!discovered_hosts}}
 {{#unless isHideWizard}}
 
+<div class="row">
   {{rhci-wizard name=name
                 nameRHCI=nameRHCI
                 nameSatellite=nameSatellite
@@ -29,6 +30,7 @@
                 isSubscriptions=isSubscriptions
                 currentStepNumber=currentStepNumber
                 }}
+</div>
 {{/unless}}
 
 <div class="row row-eq-height parent-sidebar-pf rhci-parent-sidebar">
