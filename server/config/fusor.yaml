@@ -50,6 +50,7 @@
       - :product_name: "Red Hat CloudForms"
         :repository_set_name: "Red Hat CloudForms Management Engine 5.3 (Files)"
         :basearch: "x86_64"
+        #:image_file_name: "cfme-rhevm-5.3-54.x86_64.rhevm.ova" # Default behavior uses the 'latest' image file.
 
   :puppet_classes:
     - :name: "ovirt"

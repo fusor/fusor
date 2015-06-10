@@ -66,13 +66,18 @@ module Actions
                             product_types[index],
                             products_host_groups[index])
               end
-            end
-          end
 
-          if deployment.deploy_rhev
-            Rails.logger.debug "XXX RHEV is enabled, planning deployment of rhev"
-            plan_action(::Actions::Fusor::Deployment::DeployRhev, deployment)
-            Rails.logger.debug"XXX Deployment action planned"
+              case product_types[index]
+                when :rhev
+                  plan_action(::Actions::Fusor::Deployment::DeployRhev,
+                              deployment)
+                when :cfme
+                  plan_action(::Actions::Fusor::Deployment::DeployCloudForms,
+                              deployment,
+                              file_repositories(repositories).first,
+                              image_file_name(products_content[index]))
+              end
+            end
           end
         end
       end
@@ -91,6 +96,15 @@ module Actions
         repos = []
         product_content.each { |details| repos << find_repository(organization, details) }
         repos
+      end
+
+      def image_file_name(product_content)
+        product = product_content.find{ |content| !content[:image_file_name].nil? }
+        product[:image_file_name] if product
+      end
+
+      def file_repositories(repositories)
+        repositories.select{ |repo| repo.content_type == ::Katello::Repository::FILE_TYPE }
       end
 
       def yum_repositories(repositories)
