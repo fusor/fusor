@@ -1,8 +1,13 @@
-{{#if showAttachedSuccessMessage}}
-  <div class='alert alert-success'>
-    <i class="fa fa-2x fa-check-circle-o green-circle"></i>
-    &nbsp;
-    Yeah! Successfully attached subscriptions! Attach more if you want.
+{{#if showErrorMessage}}
+  <div class="row">
+    <div class='col-md-9'>
+      <div class='alert alert-danger'>
+          <i class="fa fa-2x fa-exclamation-triangle errorForValidation"></i>
+          &nbsp;
+          {{!errorMsg}}
+          Quantity should be greater than zero and should not exceed the number of available subscriptions for this product.
+      </div>
+    </div>
   </div>
 {{/if}}
 
@@ -24,6 +29,7 @@ Default subscription selections have been made for the components of your RHCI d
       <th> System Type </th>
       <th> Start Date </th>
       <th> End Date </th>
+      <th> Attached </th>
       <th> Available </th>
       <th> Quantity </th>
     </tr>
@@ -31,7 +37,7 @@ Default subscription selections have been made for the components of your RHCI d
 
   <tbody>
   {{#each subscription in model itemController="subscription"}}
-    {{tr-subscription subscription=subscription}}
+    {{tr-subscription subscription=subscription numSubscriptionsRequired=numSubscriptionsRequired}}
   {{else}}
     <tr>
       <td colspan="8">
@@ -47,6 +53,6 @@ Default subscription selections have been made for the components of your RHCI d
 {{cancel-back-next backRouteName='subscriptions.management-application'
                    disableBack=false
                    nextRouteName='review'
-                   disableNext=false
+                   disableNext=disableNextOnSelectSubscriptions
                    parentController=controller
                    disableCancel=controllers.deployment.isStarted}}

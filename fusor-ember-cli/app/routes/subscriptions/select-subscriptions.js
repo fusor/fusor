@@ -6,27 +6,26 @@ export default Ember.Route.extend({
     // Use UUID from consumer (management application) to get subscriptions
     // GET /customer_portal/consumers/#{CONSUMER['uuid']}/entitlements
     var self = this;
-    var consumerUUID = this.modelFor('subscriptions').get('consumerUUID');
-    var urlEntitlements = ('/customer_portal/consumers/' + consumerUUID + '/entitlements');
-    var urlAllPools     = ('/customer_portal/pools?consumer=' + consumerUUID + '&listall=false');
-    var entitlementsResults = $.getJSON(urlEntitlements)
-    var allPoolsResults     = $.getJSON(urlAllPools)
+    var consumerUUID        = this.modelFor('subscriptions').get('consumerUUID');
+    var urlEntitlements     = ('/customer_portal/consumers/' + consumerUUID + '/entitlements');
+    var urlAllPools         = ('/customer_portal/pools?consumer=' + consumerUUID + '&listall=false');
+    var entitlementsResults = $.getJSON(urlEntitlements);
+    var allPoolsResults     = $.getJSON(urlAllPools);
 
     return Ember.RSVP.Promise.all([entitlementsResults, allPoolsResults]).then(function(results) {
       console.log(results[0]);
       console.log(results[1]);
       self.modelFor('subscriptions').set('isAuthenticated', true); // in case go to this route from URL
       results[1].forEach(function(item){
-          // default to 0 of
-          item['qtyAvailable'] = "0 of " + item.quantity;
-          item['qtyAttached'] = 0;
-          item['qtyToAttach'] = 1; //default TODO calculate this based on deployment
 
-          // overwrite availableQty if row exists in model
+          item['qtyTotal'] = item.quantity;
+          item['qtyAvailable'] = item.quantity - item.consumed;
+          item['qtyAvailableOfTotal'] = item['qtyAvailable'] + ' of ' + item['qtyTotal'];
+
+          item['qtyAttached'] = 0 //default for loop
           results[0].forEach(function(entitlementItem) {
             if (entitlementItem.pool.id === item.id) {
               item['qtyAttached'] = item['qtyAttached'] + entitlementItem.quantity;
-              item['qtyAvailable'] = item['qtyAttached'] + ' of ' + item.quantity;
             }
           });
       });
@@ -53,7 +52,6 @@ export default Ember.Route.extend({
         var self = this;
         var controller = this.controllerFor('subscriptions/select-subscriptions');
         var subscriptions = this.controllerFor('subscriptions/select-subscriptions').get('model');
-
 
         subscriptions.forEach(function(item){
           // default to 0 of
