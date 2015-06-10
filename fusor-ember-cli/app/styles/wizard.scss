@@ -1,5 +1,13 @@
 /* wizard.scss */
 
+.rhci-parent-sidebar {
+  display: webkit-box;
+  display: webkit-flex;
+  display: ms-flexbox;
+  display: flex;
+  padding-bottom: 5px;
+}
+
 .rhci-steps {
   color: #999999;
   font-size: 15px;
@@ -61,9 +69,11 @@
   color: #999999;
 }
 .rhci-steps-buttons {
-  margin-bottom: 20px;
-  margin-top: 20px;
+  border-top: 1px solid #d0d0d0;
   text-align: right;
+  background-color: #f5f5f5;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 .rhci-steps-buttons .btn {
   margin-left: 5px;
@@ -73,4 +83,18 @@
 }
 .rhci-steps-buttons .btn > .fa-angle-right {
   margin-left: 5px;
+}
+
+.rhci-page {
+  border-top: 1px solid #d0d0d0;
+  border-bottom: 1px solid #d0d0d0;
+  margin-left: -2px;
+}
+.sidebar-pf-left {
+  border: 1px solid #d0d0d0;
+  background-color:  #f5f5f5;
+}
+
+.sidebar-pf .nav-stacked {
+  margin-top: 0px;
 }
