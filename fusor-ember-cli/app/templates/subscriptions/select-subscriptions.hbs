@@ -11,44 +11,50 @@
   </div>
 {{/if}}
 
-<p>
-Default subscription selections have been made for the components of your RHCI deployment. If the selections need to be adjusted, please do so before proceeding.
-</p>
+<div class="row">
+  <div class='col-md-9'>
 
-{{input type="checkbox" name="enable_access_insights" disabled=false checked=enable_access_insights}}
-<span class={{analyticsColor}}>Enable Red Hat Analytics for all hosts</span>
-<br />
-<br />
+    <p>
+    Default subscription selections have been made for the components of your RHCI deployment. If the selections need to be adjusted, please do so before proceeding.
+    </p>
 
-<table class="table table-bordered small">
-  <thead>
-    <tr>
-      <th> </th>
-      <th> Subscription Name </th>
-      <th> Contract Number </th>
-      <th> System Type </th>
-      <th> Start Date </th>
-      <th> End Date </th>
-      <th> Attached </th>
-      <th> Available </th>
-      <th> Quantity </th>
-    </tr>
-    </thead>
+    {{input type="checkbox" name="enable_access_insights" disabled=false checked=enable_access_insights}}
+    <span class={{analyticsColor}}>Enable Red Hat Analytics for all hosts</span>
+    <br />
+    <br />
 
-  <tbody>
-  {{#each subscription in model itemController="subscription"}}
-    {{tr-subscription subscription=subscription numSubscriptionsRequired=numSubscriptionsRequired}}
-  {{else}}
-    <tr>
-      <td colspan="8">
-        <p class='no_subscriptions'>
-          No subscriptions found. Check your account in in the <a href='https://idp.redhat.com/idp/' target='_blank'>Red Hat Customer Portal</a> to verify you have subscriptions available.
-        </p>
-      </td>
-    </tr>
-  {{/each}}
-  </tbody>
-</table>
+
+    <table class="table table-bordered small">
+      <thead>
+        <tr>
+          <th> </th>
+          <th> Subscription Name </th>
+          <th> Contract Number </th>
+          <th> System Type </th>
+          <th> Start Date </th>
+          <th> End Date </th>
+          <th> Attached </th>
+          <th> Available </th>
+          <th> Quantity </th>
+        </tr>
+        </thead>
+
+      <tbody>
+      {{#each subscription in model itemController="subscription"}}
+        {{tr-subscription subscription=subscription numSubscriptionsRequired=numSubscriptionsRequired}}
+      {{else}}
+        <tr>
+          <td colspan="8">
+            <p class='no_subscriptions'>
+              No subscriptions found. Check your account in in the <a href='https://idp.redhat.com/idp/' target='_blank'>Red Hat Customer Portal</a> to verify you have subscriptions available.
+            </p>
+          </td>
+        </tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
 
 {{cancel-back-next backRouteName='subscriptions.management-application'
                    disableBack=false

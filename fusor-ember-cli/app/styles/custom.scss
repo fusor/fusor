@@ -213,6 +213,10 @@ li.disabled a {
   margin-left: -15px;
 }
 
+.rhev-search-input {
+  width: 200px !important;
+}
+
 .not-selected {
   font-style: italic;
   color: #555 !important;
@@ -236,19 +240,19 @@ table.fusor-table {
 }
 
 .rhev-memory {
-  width: 5%;
+  width: 8%;
 }
 
 .rhev-disks {
-  width: 5%;
+  width: 7%;
 }
 
 .rhev-cpu {
-  width: 5%;
+  width: 7%;
 }
 
 .rhev-diskspace {
-  width: 7%;
+  width: 8%;
 }
 
 .rhev-network {
@@ -273,8 +277,4 @@ table.fusor-table {
 
 .invalid-input {
   border:2px solid red;
-}
-
-.rhci-steps  > li > a.active {
-  text-decoration: none;
 }

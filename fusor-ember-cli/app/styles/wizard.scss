@@ -1,11 +1,12 @@
 /* wizard.scss */
 
-.rhci-parent-sidebar {
-  display: webkit-box;
-  display: webkit-flex;
-  display: ms-flexbox;
-  display: flex;
-  padding-bottom: 5px;
+.page-header-rhci {
+  background: #fafafa;
+  border-bottom-color: #d0d0d0;
+  float: left;
+  margin-bottom: -1px;
+  margin-top: 0;
+  width: 100%;
 }
 
 .rhci-steps {
@@ -85,16 +86,175 @@
   margin-left: 5px;
 }
 
-.rhci-page {
-  border-top: 1px solid #d0d0d0;
-  border-bottom: 1px solid #d0d0d0;
-  margin-left: -2px;
+.sidebar-header {
+  border-bottom: 1px solid #e9e9e9;
+  padding-bottom: 11px;
+  margin: 50px 0 20px;
 }
-.sidebar-pf-left {
-  border: 1px solid #d0d0d0;
-  background-color:  #f5f5f5;
+.sidebar-header .actions {
+  margin-top: -2px;
+}
+.sidebar-pf .sidebar-header + .list-group {
+  border-top: 0;
+  margin-top: -10px;
+}
+.sidebar-pf .sidebar-header + .list-group .list-group-item {
+  background: transparent;
+  border-color: #e9e9e9;
+  padding-left: 0;
+}
+.sidebar-pf .sidebar-header + .list-group .list-group-item-heading {
+  font-size: 12px;
+}
+.sidebar-pf .nav-category h2 {
+  color: #999999;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 21px;
+  margin: 0;
+  padding: 8px 0;
+}
+.sidebar-pf .nav-category + .nav-category {
+  margin-top: 10px;
+}
+.sidebar-pf .nav-pills > li.active > a {
+  background: #0099d3 !important;
+  border-color: #0076b7 !important;
+  color: #fff;
+}
+@media (min-width: 768px) {
+  .sidebar-pf .nav-pills > li.active > a:after {
+    content: "\f105";
+    font-family: "FontAwesome";
+    display: block;
+    position: absolute;
+    right: 10px;
+    top: 1px;
+  }
+}
+.sidebar-pf .nav-pills > li.active > a .fa {
+  color: #fff;
+}
+.sidebar-pf .nav-pills > li > a {
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  border-top: 1px solid transparent;
+  color: #333333;
+  font-size: 13px;
+  line-height: 21px;
+  padding: 1px 20px;
+}
+.sidebar-pf .nav-pills > li > a:hover {
+  background: #d4edfa;
+  border-color: #b3d3e7;
+}
+.sidebar-pf .nav-pills > li > a .fa {
+  color: #6a7079;
+  font-size: 15px;
+  margin-right: 10px;
+  text-align: center;
+  vertical-align: middle;
+  width: 15px;
+}
+.sidebar-pf .nav-stacked {
+  margin-left: -20px;
+  margin-right: -20px;
+}
+.sidebar-pf .nav-stacked li + li {
+  margin-top: 0;
+}
+.sidebar-pf .panel {
+  background: transparent;
+}
+.sidebar-pf .panel-body {
+  padding: 6px 20px;
+}
+.sidebar-pf .panel-body .nav-pills > li > a {
+  padding-left: 37px;
+}
+.sidebar-pf .panel-heading {
+  padding: 9px 20px;
+}
+.sidebar-pf .panel-title {
+  font-size: 12px;
+}
+.sidebar-pf .panel-title > a:before {
+  display: inline-block;
+  margin-left: 1px;
+  margin-right: 4px;
+  width: 9px;
+}
+.sidebar-pf .panel-title > a.collapsed:before {
+  margin-left: 3px;
+  margin-right: 2px;
+}
+@media (min-width: 767px) {
+  .sidebar-header-bleed-left {
+    margin-left: -20px;
+  }
+  .sidebar-header-bleed-left > h2 {
+    margin-left: 20px;
+  }
+  .sidebar-header-bleed-right {
+    margin-right: -20px;
+  }
+  .sidebar-header-bleed-right .actions {
+    margin-right: 20px;
+  }
+  .sidebar-header-bleed-right > h2 {
+    margin-right: 20px;
+  }
+  .sidebar-header-bleed-right + .list-group {
+    margin-right: -20px;
+  }
+  .sidebar-pf .panel-group .panel-default,
+  .sidebar-pf .treeview {
+    border-left: 0;
+    border-right: 0;
+    margin-left: -20px;
+    margin-right: -20px;
+  }
+  .sidebar-pf .treeview {
+    margin-top: 5px;
+  }
+  .sidebar-pf .treeview .list-group-item {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .sidebar-pf .treeview .list-group-item.node-selected:after {
+    content: "\f105";
+    font-family: "FontAwesome";
+    display: block;
+    position: absolute;
+    right: 10px;
+    top: 1px;
+  }
+}
+@media (min-width: 768px) {
+  .sidebar-pf {
+    background: #fafafa;
+  }
+  .sidebar-pf.sidebar-pf-left {
+    border-right: 1px solid #d0d0d0;
+  }
+  .sidebar-pf.sidebar-pf-right {
+    border-left: 1px solid #d0d0d0;
+  }
+  .sidebar-pf > .nav-category,
+  .sidebar-pf > .nav-stacked {
+    margin-top: 5px;
+  }
 }
 
-.sidebar-pf .nav-stacked {
-  margin-top: 0px;
+/***** Joseph added from below ****/
+.rhci-steps  > li > a.active {
+  text-decoration: none;
+}
+
+.sidebar-pf-right {
+  padding-top: 20px;
+}
+
+.sidebar-pf.sidebar-pf-left {
+  min-height: 850px;  /* to expand left bar to be gray -- temp fix rather than calculating page height  in jQuery*/
 }
