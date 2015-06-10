@@ -54,7 +54,9 @@ module Actions::Fusor
     test "there is no run method for Deploy Actions" do
       action = plan_action(@deploy, fusor_deployments(:rhev_and_cfme))
       assert_raises(NoMethodError) {
-        run_action action
+        silence_stream(STDOUT) do
+          run_action action
+        end
       }
     end
 

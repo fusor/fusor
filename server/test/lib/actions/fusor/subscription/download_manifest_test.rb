@@ -21,7 +21,9 @@ module Actions::Fusor::Subscription
       Dynflow::Action.any_instance.expects(:plan_self).never
       @credentials.delete :username
       assert_raises(RuntimeError) {
-        plan_action @action, @deployment, @credentials, @path
+        silence_stream(STDOUT) do
+          plan_action @action, @deployment, @credentials, @path
+        end
       }
     end
 
@@ -29,7 +31,9 @@ module Actions::Fusor::Subscription
       Dynflow::Action.any_instance.expects(:plan_self).never
       @credentials.delete :password
       assert_raises(RuntimeError) {
-        plan_action @action, @deployment, @credentials, @path
+        silence_stream(STDOUT) do
+          plan_action @action, @deployment, @credentials, @path
+        end
       }
     end
 
@@ -37,7 +41,9 @@ module Actions::Fusor::Subscription
       Dynflow::Action.any_instance.expects(:plan_self).never
       @deployment.upstream_consumer_uuid = nil
       assert_raises(RuntimeError) {
-        plan_action @action, @deployment, @credentials, @path
+        silence_stream(STDOUT) do
+          plan_action @action, @deployment, @credentials, @path
+        end
       }
     end
 

@@ -39,7 +39,9 @@ module Actions::Fusor::Subscription
       @deployment.organization.stubs(:owner_details => {'upstreamConsumer' => ''})
       plan = plan_action @action, @deployment, @credentials
       assert_raises(NoMethodError) {
-        run_action plan
+        silence_stream(STDOUT) do
+          run_action plan
+        end
       }
     end
 
