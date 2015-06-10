@@ -330,7 +330,7 @@ module Actions
         end
 
         def run_command(cmd)
-          Rails.logger.debug "Running: #{cmd}"
+          Rails.logger.info "Running: #{cmd}"
           status, output = Utils::Fusor::CommandUtils.run_command(cmd)
           Rails.logger.debug "Status: #{status}, output: #{output}"
           return status, output
