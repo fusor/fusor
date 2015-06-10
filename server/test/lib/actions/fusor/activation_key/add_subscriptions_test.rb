@@ -6,10 +6,8 @@ module Actions::Fusor::ActivationKey
     def setup
       @deployment = fusor_deployments(:rhev)
       @repositories = [ katello_repositories(:fedora_17_x86_64) ]
-      id = stub(:id => 1)
-      @deployment.stubs(:organization).returns(id)
-      ::User.stubs(:current).returns(id)
       @action = create_action AddSubscriptions
+      set_user
     end
 
     test "plan call should call plan_self" do

@@ -37,6 +37,13 @@ if [ $1 == "install" ]; then
   echo "gem 'less-rails'" >> bundler.d/local.rb
   echo "gem 'logger'" >> bundler.d/local.rb
   bundle install
+
+  # hacky, find a better way to do this...
+  # rails only supports loading fixtures from one directory, so link the
+  # katello / fusor fixtures in to forman so they all will be loaded
+  cd test/fixtures
+  ln -s ../../../fusor/server/test/fixtures/* .
+  ln -s ln -s ../../../katello/test/fixtures/models/* .
 else
   cd ../foreman
   rake db:create
