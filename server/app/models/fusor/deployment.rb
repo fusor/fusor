@@ -12,7 +12,9 @@
 
 module Fusor
   class Deployment < ActiveRecord::Base
-    validates_with Fusor::Validators::DeploymentValidator
+    # can't use simple validates_with, need to save empty object and validate
+    # before deploy
+    #validates_with Fusor::Validators::DeploymentValidator
     belongs_to :organization
     belongs_to :lifecycle_environment, :class_name => "Katello::KTEnvironment"
 
