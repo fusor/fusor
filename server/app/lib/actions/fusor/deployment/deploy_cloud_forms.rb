@@ -20,7 +20,7 @@ module Actions
         end
 
         def plan(deployment, repository, image_file_name = nil)
-          Rails.logger.warn "XXX ================ Planning CFME Deployment ===================="
+          Rails.logger.info "================ Planning CFME Deployment ===================="
 
           # if by some miracle we arrive here without having selected
           # deploy_cfme, log the warning and just return.
@@ -45,7 +45,7 @@ module Actions
         end
 
         def run
-          Rails.logger.warn "XXX ================ Deploy CFME run method ===================="
+          Rails.logger.info "================ Deploy CFME run method ===================="
 
           # Note: user_id is being passed in and then used to set User.current to address an error
           # that could occur when we later attempt to access ::Katello.pulp_server indirectly through
@@ -75,9 +75,7 @@ module Actions
             add_rhev_provider(deployment, vm_ip)
           end
 
-          Rails.logger.warn "XXX #{deployment.id}"
-
-          Rails.logger.warn "XXX ================ Leaving CFME run method ===================="
+          Rails.logger.info "================ Leaving CFME run method ===================="
         ensure
           ::User.current = nil
         end
@@ -193,7 +191,6 @@ module Actions
                 "-v -m upload #{cfme_image_file}"
 
           # RHEV-host username password
-          puts "XXX connecting to host"
           client = Utils::Fusor::SSHConnection.new(@api_host, ssh_username, deployment.rhev_root_password)
           client.on_complete(lambda { upload_image_completed })
           client.on_failure(lambda { upload_image_failed })
@@ -203,7 +200,7 @@ module Actions
         end
 
         def upload_image_completed
-          Rails.logger.warn "XXX image uploaded"
+          Rails.logger.info "image uploaded"
         end
 
         def upload_image_failed
@@ -222,9 +219,7 @@ module Actions
                 "--vm_template_name #{template_name}"
 
           status, output = run_command(cmd)
-          if status == 0
-            Rails.logger.warn "XXX template imported"
-          else
+          if status != 0
             fail _("Unable to import template: Status: %{status}. Output: %{output}") % { :status => status, :output => output }
           end
         end
@@ -328,23 +323,16 @@ module Actions
         end
 
         def scp_image_file(deployment, image_file)
-          puts "XXX scp file"
-          Rails.logger.warn "XXX scp file"
-
           # scp the cfme file over to the rhev host, assume root user
           Net::SCP.start(@api_host, "root", :password => deployment.rhev_root_password) do |scp|
             scp.upload!(image_file, "/root")
           end
-
-          puts "XXX scp file DONE"
-          Rails.logger.warn "XXX scp file DONE"
         end
 
         def run_command(cmd)
-          Rails.logger.info "Running: #{cmd}"
+          Rails.logger.debug "Running: #{cmd}"
           status, output = Utils::Fusor::CommandUtils.run_command(cmd)
-          puts status
-          puts output
+          Rails.logger.debug "Status: #{status}, output: #{output}"
           return status, output
         end
       end
