@@ -6,7 +6,17 @@
 <td> {{systemType}} </td>
 <td> {{moment subscription.startDate 'll'}} </td>
 <td> {{moment subscription.endDate 'll'}} </td>
-<td> {{subscription.qtyAvailable}} </td>
-<td class='black-font'>
-  {{input type="input" name='qtyToAttach' value=subscription.qtyToAttach size=5 maxlength=5 class='center'}}
+<td> {{subscription.qtyAttached}} </td>
+<td> {{subscription.qtyAvailableOfTotal}}</td>
+<td {{bind-attr class="subscription.isSelectedSubscription:black-font:not-selected"}}>
+  {{#if subscription.isSelectedSubscription}}
+     {{input type="input" name='qtyToAttach'
+                          value=subscription.qtyToAttach
+                          size=5
+                          maxlength=5
+                          classBinding=":center isQtyInValid:invalid-input"
+                          disabled=disableQty}}
+  {{else}}
+    Not Selected
+  {{/if}}
 </td>

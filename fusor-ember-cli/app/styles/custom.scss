@@ -270,3 +270,11 @@ table.fusor-table {
 .accordion-item {
   padding-bottom: 10px;
 }
+
+.invalid-input {
+  border:2px solid red;
+}
+
+.rhci-steps  > li > a.active {
+  text-decoration: none;
+}

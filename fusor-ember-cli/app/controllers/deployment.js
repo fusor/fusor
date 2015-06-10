@@ -4,7 +4,8 @@ import DisableTabMixin from "../mixins/disable-tab-mixin";
 
 export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableTabMixin, {
 
-  needs: ['configure-environment', 'deployments', 'rhev', 'cloudforms', 'subscriptions/credentials'],
+  needs: ['configure-environment', 'deployments', 'rhev', 'cloudforms',
+          'subscriptions/credentials', 'subscriptions/select-subscriptions'],
 
   routeNameSatellite: 'satellite',
 
@@ -36,8 +37,8 @@ export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableT
   }.property('controllers.subscriptions/credentials.organizationUpstreamConsumerUUID', 'upstream_consumer_uuid'),
 
   isDisabledReview: function() {
-    return (this.get('isDisabledSubscriptions') || !this.get("hasSubscriptionUUID"));
-  }.property('isDisabledSubscriptions', 'hasSubscriptionUUID'),
+    return (this.get('isDisabledSubscriptions') || !this.get("hasSubscriptionUUID") || this.get('controllers.subscriptions/select-subscriptions.disableNextOnSelectSubscriptions'));
+  }.property('isDisabledSubscriptions', 'hasSubscriptionUUID', 'controllers.subscriptions/select-subscriptions.disableNextOnSelectSubscriptions'),
 
   hasLifecycleEnvironment: function() {
     return (!!(this.get('lifecycle_environment.id')) || this.get('useDefaultOrgViewForEnv'));
@@ -60,5 +61,17 @@ export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableT
   isStarted: function() {
     return !!(this.get('model.foreman_task_uuid'));
   }.property('model.foreman_task_uuid'),
+
+  numSubscriptionsRequired: function() {
+    var num = 0;
+    if (this.get('isRhev')) {
+      num = num + 1 + this.get('discovered_hosts.length'); // 1 is for engine
+    }
+    if (this.get('isCloudForms')) {
+      num = num + 1;
+    }
+    return num;
+  }.property('isRhev', 'isOpenStack', 'isCloudForms', 'discovered_hosts'),
+
 
 });

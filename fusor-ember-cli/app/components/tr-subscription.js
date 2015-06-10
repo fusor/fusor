@@ -28,4 +28,22 @@ export default Ember.Component.extend({
     return ('env_' + this.get('env.id'));
   }.property('env'),
 
+  isQtyValid: function() {
+    if ((this.get('subscription.qtyToAttach') > 0) && (this.get('subscription.qtyAvailable') > 0)) {
+      return (this.get('subscription.qtyToAttach') <= this.get('subscription.qtyAvailable'));
+    }
+  }.property('subscription.qtyAvailable', 'subscription.qtyToAttach'),
+  isQtyInValid: Ember.computed.not('isQtyValid'),
+
+  disableQty: function() {
+    return (this.get('subscription.qtyAvailable') === 0);
+  }.property('subscription.qtyAvailable'),
+
+  setDefaultQtyToAttach: function() {
+    this.get('subscription').set('qtyToAttach', this.get("numSubscriptionsRequired"));
+    if (this.get('isQtyInValid')) {
+      this.get('subscription').set('qtyToAttach', this.get("subscription.qtyAvailable"));
+    }
+  }.on('didInsertElement'),
+
 });
