@@ -3,7 +3,7 @@ import SatelliteControllerMixin from "../../mixins/satellite-controller-mixin";
 
 export default Ember.Controller.extend(SatelliteControllerMixin, {
 
-  needs: ['satellite', 'deployment'],
+  needs: ['satellite', 'deployment', 'application'],
 
   validations: {
     name: {

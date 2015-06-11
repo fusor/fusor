@@ -4,7 +4,7 @@ import DisableTabMixin from "../mixins/disable-tab-mixin";
 
 export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableTabMixin, {
 
-  needs: ['deployment-new/satellite/configure-environment'],
+  needs: ['deployment-new/satellite/configure-environment', 'application'],
 
   routeNameSatellite: 'deployment-new.satellite',
 

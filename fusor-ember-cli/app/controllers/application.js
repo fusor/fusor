@@ -23,6 +23,19 @@ export default Ember.Controller.extend({
   nameSatellite: Ember.computed.alias("controllers.deployment.nameSatellite"),
   logoPath: Ember.computed.alias("controllers.deployment.logoPath"),
 
+  isStarted: function() {
+    return !!(this.get('controllers.deployment.foreman_task_uuid'));
+  }.property('controllers.deployment.foreman_task_uuid.foreman_task_uuid'),
+
+  isNewDeployment: false,
+  deploymentIsStarted: function() {
+    if (this.get('isNewDeployment')) {
+      return false;
+    } else {
+      return this.get('isStarted')
+    }
+  }.property('isStarted', 'isNewDeployment'),
+
   actions: {
     invalidate: function(data) {
       return this.transitionTo('login');
