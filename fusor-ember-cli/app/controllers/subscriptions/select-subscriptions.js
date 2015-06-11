@@ -28,6 +28,11 @@ export default Ember.ArrayController.extend({
     return this.get('model').filterBy('isSelectedSubscription', true);
   }.property('model.@each.isSelectedSubscription'),
 
+  hasSubscriptionsToAttach: function(key){
+    var model = this.get('model');
+    return (model && model.isAny('isSelectedSubscription'));
+  }.property('model.@each.isSelectedSubscription'),
+
   allQuantitiesValid: function() {
     var allValid = true;
     this.get('selectedSubscriptions').forEach(function(item) {

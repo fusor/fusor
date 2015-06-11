@@ -45,6 +45,10 @@ export default Ember.Controller.extend({
   foremanTasksURL: null,
   skipContent: Ember.computed.alias("controllers.deployment.skipContent"),
 
+  showSpinner: false,
+  spinnerTextMessage: null,
+  hasSubscriptionsToAttach: Ember.computed.alias("controllers.subscriptions/select-subscriptions.hasSubscriptionsToAttach"),
+
   isRhevOpen: true,
   isOpenStackOpen: true,
   isCloudFormsOpen: true,
@@ -98,5 +102,22 @@ export default Ember.Controller.extend({
       }
     }
   }.property('isSubscriptions', 'isRhev', 'isOpenStack', 'isCloudForms'),
+
+  lifecycleEnvironmentName: function() {
+    var name = this.get('controllers.deployment.lifecycle_environment.name')
+    if (name) {
+      return name;
+    } else {
+      return "Default Organization View";
+    }
+  }.property('controllers.deployment.lifecycle_environment.name'),
+
+  deploymentButtonAction: function() {
+    if (this.get('hasSubscriptionsToAttach')) {
+      return "attachSubscriptions";
+    } else {
+      return "installDeployment"
+    }
+  }.property('hasSubscriptionsToAttach'),
 
 });

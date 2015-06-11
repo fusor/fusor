@@ -1,152 +1,162 @@
-{{#if showErrorMessage}}
-  <div class="row">
-    <div class='col-md-9'>
-      <div class='alert alert-danger'>
-          <i class="fa fa-2x fa-exclamation-triangle errorForValidation"></i>
-          &nbsp;
-          {{errorMsg}}
+{{#unless showSpinner}}
+
+  {{#if showErrorMessage}}
+    <div class="row">
+      <div class='col-md-9'>
+        <div class='alert alert-danger rhci-alert'>
+            <i class="fa fa-2x fa-exclamation-triangle errorForValidation"></i>
+            &nbsp;
+            {{errorMsg}}
+        </div>
       </div>
     </div>
-  </div>
-{{/if}}
-
-<div class='row'>
-  <div class='col-md-12'>
-
-    {{#accordion-item name="Red Hat Satellite" isOpen=true}}
-      {{review-link label='Name' routeName='satellite' isRequired=true
-                        value=controllers.deployment.name}}
-
-      {{review-link label='Organization' routeName='configure-organization' isRequired=true
-                        value=controllers.deployment.organization.name}}
-
-      {{review-link label='Environment' routeName='satellite'
-                        value=controllers.deployment.lifecycle_environment.name}}
-    {{/accordion-item}}
-
-  {{#if isRhev}}
-    {{#accordion-item name="Red Hat Enterprise Virtualization" isOpen=isRhevOpen}}
-
-      {{review-link label='Setup Type' routeName='rhev-setup' isRequired=true
-                        value=controllers.rhev-setup.rhevSetupTitle}}
-      {{#if isSelfHosted}}
-          {{review-link label='Hypervisor/Engine' routeName='engine.discovered-host' isRequired=true
-                        value=engineNamePlusDomain}}
-      {{else}}
-          {{review-link label='Engine Host Name' routeName='engine.discovered-host' isRequired=true
-                        value=engineNamePlusDomain}}
-
-          {{#review-link label='Hypervisor Host Name' routeName='hypervisor.discovered-host' isRequired=true
-                         value=selectedHypervisorHosts useYieldInstead=true}}
-              {{#each host in selectedHypervisorHosts}}
-                  {{#link-to 'hypervisor.discovered-host'}}
-                      {{!TODO - get hostgroup.name from fusor engine hostgroup}}
-                      {{host.name}}.example.com
-                  {{/link-to}}
-                  <br />
-              {{/each}}
-          {{/review-link}}
-      {{/if}}
-
-      <br />
-
-      {{review-link label='Root password for Engine & Hypervisor' routeName='rhev-options' isRequired=true
-                    isPassword=true value=controllers.deployment.rhev_root_password }}
-
-      {{review-link label='Engine admin password' routeName='rhev-options' isRequired=true isPassword=true
-                    value=controllers.deployment.rhev_engine_admin_password }}
-
-      {{review-link label='Datacenter Name' routeName='rhev-options' isDefault=true
-                    value=controllers.deployment.rhev_database_name}}
-
-      {{review-link label='Cluster Name' routeName='rhev-options' isDefault=true
-                    value=controllers.deployment.rhev_cluster_name}}
-
-      {{review-link label='CPU Type' routeName='rhev-options' isDefault=true
-                    value=controllers.deployment.rhev_cpu_type}}
-
-      {{review-link label='Storage Type' routeName='storage' isRequired=true
-                    value=controllers.deployment.rhev_storage_type}}
-
-      {{review-link label='Data Domain Name' routeName='storage' isDefault=true
-                    value=controllers.deployment.rhev_storage_name}}
-
-      {{review-link label='Data Storage Address' routeName='storage' isDefault=true
-                    value=controllers.deployment.rhev_storage_address}}
-
-      {{review-link label='Data Storage Path' routeName='storage' isDefault=true
-                    value=controllers.deployment.rhev_share_path}}
-
-      {{#if isCloudForms}}
-
-          {{review-link label='Export Domain Name' routeName='storage' isDefault=true
-                        value=controllers.deployment.rhev_export_domain_name}}
-
-          {{review-link label='Export Storage Address' routeName='storage' isDefault=true
-                        value=controllers.deployment.rhev_export_domain_address}}
-
-          {{review-link label='Export Storage Path' routeName='storage' isDefault=true
-                        value=controllers.deployment.rhev_export_domain_path}}
-
-      {{/if}}
-
-      <br />
-    {{/accordion-item}}
   {{/if}}
 
-  {{#if isOpenStack}}
-    {{#accordion-item name="Red Hat OpenStack Platform" isOpen=isOpenStackOpen}}
-    {{/accordion-item}}
-  {{/if}}
+  <div class='row'>
+    <div class='col-md-12'>
 
-  {{#if isCloudForms}}
-    {{#accordion-item name="CloudForms Management Engine" isOpen=isCloudFormsOpen}}
-        {{review-link label='Installation Location' routeName='where-install' isRequired=true
-                      value=controllers.deployment.cfme_install_loc }}
-        {{review-link label='CFME Root password' routeName='cloudforms.cfme-configuration' isRequired=true
-                    isPassword=true value=controllers.deployment.cfme_root_password }}
-    {{/accordion-item}}
-  {{/if}}
+      {{#accordion-item name="Red Hat Satellite" isOpen=true}}
+        {{review-link label='Name' routeName='satellite' isRequired=true
+                          value=controllers.deployment.name}}
 
-  {{#if isSubscriptions}}
-    {{#accordion-item name='Subscriptions' isOpen=isSubscriptionsOpen}}
-        {{review-link label='Subscription Management Application'
-                      routeName='subscriptions.management-application' isRequired=true
-                      value=controllers.deployment.upstream_consumer_name }}
-        {{review-link label='Red Hat Analytics'
-                      routeName='subscriptions.select-subscriptions'
-                      value=controllers.subscriptions/select-subscriptions.enableAnalytics }}
+        {{review-link label='Organization' routeName='configure-organization' isRequired=true
+                          value=controllers.deployment.organization.name}}
 
+        {{review-link label='Environment' routeName='configure-environment'
+                          value=lifecycleEnvironmentName}}
+      {{/accordion-item}}
 
-        {{#each sub in controllers.subscriptions/select-subscriptions.model}}
-            {{#if sub.isSelectedSubscription}}
-              {{review-link label='Subscription Name'
-                            routeName='subscriptions.select-subscriptions'
-                            value=sub.productName }}
-              {{review-link label='Contract Number'
-                            routeName='subscriptions.select-subscriptions'
-                            value=sub.contractNumber }}
-              {{review-link label='Quantity'
-                            routeName='subscriptions.select-subscriptions'
-                            value=sub.qtyToAttach }}
-            {{/if}}
+    {{#if isRhev}}
+      {{#accordion-item name="Red Hat Enterprise Virtualization" isOpen=isRhevOpen}}
+
+        {{review-link label='Setup Type' routeName='rhev-setup' isRequired=true
+                          value=controllers.rhev-setup.rhevSetupTitle}}
+        {{#if isSelfHosted}}
+            {{review-link label='Hypervisor/Engine' routeName='engine.discovered-host' isRequired=true
+                          value=engineNamePlusDomain}}
         {{else}}
-              {{review-link label='Quantity'
-                            routeName='subscriptions.select-subscriptions'
-                            value="0 - no new subscriptions to attach" }}
-        {{/each}}
+            {{review-link label='Engine Host Name' routeName='engine.discovered-host' isRequired=true
+                          value=engineNamePlusDomain}}
 
-    {{/accordion-item}}
-  {{/if}}
+            {{#review-link label='Hypervisor Host Name' routeName='hypervisor.discovered-host' isRequired=true
+                           value=selectedHypervisorHosts useYieldInstead=true}}
+                {{#each host in selectedHypervisorHosts}}
+                    {{#link-to 'hypervisor.discovered-host'}}
+                        {{!TODO - get hostgroup.name from fusor engine hostgroup}}
+                        {{host.name}}.example.com
+                    {{/link-to}}
+                    <br />
+                {{/each}}
+            {{/review-link}}
+        {{/if}}
 
+        <br />
+
+        {{review-link label='Root password for Engine & Hypervisor' routeName='rhev-options' isRequired=true
+                      isPassword=true value=controllers.deployment.rhev_root_password }}
+
+        {{review-link label='Engine admin password' routeName='rhev-options' isRequired=true isPassword=true
+                      value=controllers.deployment.rhev_engine_admin_password }}
+
+        {{review-link label='Datacenter Name' routeName='rhev-options' isDefault=true
+                      value=controllers.deployment.rhev_database_name}}
+
+        {{review-link label='Cluster Name' routeName='rhev-options' isDefault=true
+                      value=controllers.deployment.rhev_cluster_name}}
+
+        {{review-link label='CPU Type' routeName='rhev-options' isDefault=true
+                      value=controllers.deployment.rhev_cpu_type}}
+
+        {{review-link label='Storage Type' routeName='storage' isRequired=true
+                      value=controllers.deployment.rhev_storage_type}}
+
+        {{review-link label='Data Domain Name' routeName='storage' isDefault=true
+                      value=controllers.deployment.rhev_storage_name}}
+
+        {{review-link label='Data Storage Address' routeName='storage' isDefault=true
+                      value=controllers.deployment.rhev_storage_address}}
+
+        {{review-link label='Data Storage Path' routeName='storage' isDefault=true
+                      value=controllers.deployment.rhev_share_path}}
+
+        {{#if isCloudForms}}
+
+            {{review-link label='Export Domain Name' routeName='storage' isDefault=true
+                          value=controllers.deployment.rhev_export_domain_name}}
+
+            {{review-link label='Export Storage Address' routeName='storage' isDefault=true
+                          value=controllers.deployment.rhev_export_domain_address}}
+
+            {{review-link label='Export Storage Path' routeName='storage' isDefault=true
+                          value=controllers.deployment.rhev_export_domain_path}}
+
+        {{/if}}
+
+        <br />
+      {{/accordion-item}}
+    {{/if}}
+
+    {{#if isOpenStack}}
+      {{#accordion-item name="Red Hat OpenStack Platform" isOpen=isOpenStackOpen}}
+      {{/accordion-item}}
+    {{/if}}
+
+    {{#if isCloudForms}}
+      {{#accordion-item name="CloudForms Management Engine" isOpen=isCloudFormsOpen}}
+          {{review-link label='Installation Location' routeName='where-install' isRequired=true
+                        value=controllers.deployment.cfme_install_loc }}
+          {{review-link label='CFME Root password' routeName='cloudforms.cfme-configuration' isRequired=true
+                      isPassword=true value=controllers.deployment.cfme_root_password }}
+      {{/accordion-item}}
+    {{/if}}
+
+    {{#if isSubscriptions}}
+      {{#accordion-item name='Subscriptions' isOpen=isSubscriptionsOpen}}
+          {{review-link label='Subscription Management Application'
+                        routeName='subscriptions.management-application' isRequired=true
+                        value=controllers.deployment.managementApplicationName }}
+          {{review-link label='Red Hat Analytics'
+                        routeName='subscriptions.select-subscriptions'
+                        value=controllers.subscriptions/select-subscriptions.enableAnalytics }}
+
+
+          {{#each sub in controllers.subscriptions/select-subscriptions.model}}
+              {{#if sub.isSelectedSubscription}}
+                {{review-link label='Subscription Name'
+                              routeName='subscriptions.select-subscriptions'
+                              value=sub.productName }}
+                {{review-link label='Contract Number'
+                              routeName='subscriptions.select-subscriptions'
+                              value=sub.contractNumber }}
+                {{review-link label='Quantity'
+                              routeName='subscriptions.select-subscriptions'
+                              value=sub.qtyToAttach }}
+              {{/if}}
+          {{else}}
+                {{review-link label='Quantity'
+                              routeName='subscriptions.select-subscriptions'
+                              value="0 - no new subscriptions to attach" }}
+          {{/each}}
+
+      {{/accordion-item}}
+    {{/if}}
+
+    </div>
   </div>
-</div>
 
-{{#cancel-back-next backRouteName=backRouteNameonReviewInstallation
-                    disableBack=false
-                    parentController=controller
-                    disableCancel=controllers.deployment.isStarted}}
-      {{button-f disabled=buttonDeployDisabled title=buttonDeployTitle action="installDeployment"}}
-      <br />
-      {{input type="checkbox" name="skipContent" checked=skipContent}} Skip Content (DEV ONLY)
-{{/cancel-back-next}}
+  {{#cancel-back-next backRouteName=backRouteNameonReviewInstallation
+                      disableBack=false
+                      parentController=controller
+                      disableCancel=controllers.deployment.isStarted}}
+        {{button-f disabled=buttonDeployDisabled title=buttonDeployTitle action=deploymentButtonAction}}
+  {{/cancel-back-next}}
+
+
+{{else}}
+
+  <div class="spinner spinner-md spinner-inline"></div>
+  <span class='spinner-text'>
+      {{spinnerTextMessage}}
+  </span>
+
+{{/unless}}

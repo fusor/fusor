@@ -1,7 +1,7 @@
 {{#if showAlertMessage}}
 <div class="row">
   <div class='col-md-9'>
-    <div class='alert alert-success'>
+    <div class='alert alert-success rhci-alert'>
         <i class="fa fa-2x fa-check-circle-o green-circle"></i>
         &nbsp;
         {{selectedEnvironment.name}} added successfully.
@@ -31,7 +31,7 @@
   <div class='col-md-9'>
 
     {{#if hasNoEnvironments}}
-        <div class='alert alert-info'>
+        <div class='alert alert-info rhci-alert'>
           No lifecycle environments are in organization <strong>{{selectedOrganization.name}}</strong>
         </div>
     {{else if hasOnlyLibraryEnvironment}}

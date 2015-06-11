@@ -1,11 +1,5 @@
-{{!rhev_engine_host}}
-{{!rhev_engine_host.id}}
-{{!selectedRhevEngine}}
-{{!selectedRhevEngine.name}}
-{{!discovered_hosts.length}}
-{{!discovered_hosts}}
 {{#unless isHideWizard}}
-
+<br />
 <div class="row">
   {{rhci-wizard name=name
                 nameRHCI=nameRHCI
@@ -33,6 +27,6 @@
 </div>
 {{/unless}}
 
-<div class="row row-eq-height parent-sidebar-pf rhci-parent-sidebar">
+<div class="row parent-sidebar-pf">
  {{outlet}}
 </div>

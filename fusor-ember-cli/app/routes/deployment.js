@@ -20,9 +20,14 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       var deployment = this.controllerFor('deployment');
       var token = $('meta[name="csrf-token"]').attr('content');
 
+      var controller = this.controllerFor('review/installation');
+
       // change button text to "Deploying ..." and disable it
-      this.controllerFor('review.installation').set('buttonDeployTitle', 'Deploying ...');
-      this.controllerFor('review.installation').set('buttonDeployDisabled', true);
+      controller.set('buttonDeployTitle', 'Deploying ...');
+      controller.set('buttonDeployDisabled', true);
+
+      controller.set('spinnerTextMessage', 'Building task list');
+      controller.set('showSpinner', true);
 
       return new Ember.RSVP.Promise(function (resolve, reject) {
         Ember.$.ajax({
@@ -43,23 +48,83 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
               deployment.save().then(function () {
                 return self.transitionTo('review.progress.overview');
               }, function () {
-                self.controllerFor('review.installation').set('errorMsg', 'Error is saving UUID of deployment task.');
-                self.controllerFor('review.installation').set('showErrorMessage', true);
-                self.controllerFor('review.installation').set('buttonDeployTitle', 'Deploy');
-                self.controllerFor('review.installation').set('buttonDeployDisabled', false);
+                controller.set('errorMsg', 'Error in saving UUID of deployment task.');
+                controller.set('showErrorMessage', true);
+                controller.set('buttonDeployTitle', 'Deploy');
+                controller.set('buttonDeployDisabled', false);
               })
             },
 
             error: function(response){
+              controller.set('showSpinner', false);
               console.log(response);
               var errorMsg = response.responseJSON.displayMessage;
-              self.controllerFor('review.installation').set('errorMsg', errorMsg);
-              self.controllerFor('review.installation').set('showErrorMessage', true);
-              self.controllerFor('review.installation').set('buttonDeployTitle', 'Deploy');
-              self.controllerFor('review.installation').set('buttonDeployDisabled', false);
+              controller.set('errorMsg', errorMsg);
+              controller.set('showErrorMessage', true);
+              controller.set('buttonDeployTitle', 'Deploy');
+              controller.set('buttonDeployDisabled', false);
               reject(response);
             }
         });
+      });
+    },
+
+    attachSubscriptions: function() {
+      var self = this;
+      var token = $('meta[name="csrf-token"]').attr('content');
+      var sessionPortal = this.modelFor('subscriptions');
+      var ownerKey = sessionPortal.get('ownerKey');
+      var consumerUUID = sessionPortal.get('consumerUUID');
+      var self = this;
+      var deployment = this.controllerFor('deployment');
+      var subscriptions = this.controllerFor('subscriptions/select-subscriptions').get('model');
+
+      var controller = this.controllerFor('review/installation');
+
+      // change button text to "Deploying ..." and disable it
+      controller.set('buttonDeployTitle', 'Deploying ...');
+      controller.set('buttonDeployDisabled', true);
+
+      controller.set('spinnerTextMessage', 'Attaching Subscriptions in Red Hat Customer Portal');
+      controller.set('showSpinner', true);
+
+      subscriptions.forEach(function(item){
+        console.log(item);
+        console.log('qtyToAttach is');
+        console.log(item.qtyToAttach);
+        console.log('pool ID is');
+        console.log(item.id);
+        console.log('isSelectedSubscription is');
+        console.log(item.isSelectedSubscription);
+
+        if (item.isSelectedSubscription) {
+
+          // POST /customer_portal/consumers/#{CONSUMER['uuid']}/entitlements?pool=#{POOL['id']}&quantity=#{QUANTITY}
+          var url = '/customer_portal/consumers/' + consumerUUID + "/entitlements?pool=" + item.id + "&quantity=" + item.qtyToAttach;
+
+          return new Ember.RSVP.Promise(function (resolve, reject) {
+            Ember.$.ajax({
+                url: url,
+                type: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "X-CSRF-Token": token,
+                },
+
+                success: function(response) {
+                  console.log('successfully attached ' + item.qtyToAttach + ' subscription for pool ' + item.id);
+                  self.send('installDeployment');
+                },
+
+                error: function(response){
+                  console.log('error on attachSubscriptions');
+                  return self.send('error');
+                }
+            });
+          });
+
+        }
       });
     },
 
@@ -75,54 +140,10 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       });
     },
 
-    loginCredentials: function(options) {
-      var self = this;
-      var deployment = this.controllerFor('deployment');
-      var token = $('meta[name="csrf-token"]').attr('content');
-
-      // change button text to "Deploying ..." and disable it
-      this.controllerFor('subscriptions.credentials').set('buttonLoginTitle', 'Logging in ...');
-      this.controllerFor('subscriptions.credentials').set('disableCredentialsNext', true);
-
-      return new Ember.RSVP.Promise(function (resolve, reject) {
-        Ember.$.ajax({
-            url: '/fusor/api/v21/deployments/' + deployment.get('id'),
-            type: "GET",
-            //data: JSON.stringify({'skip_content': deployment.get('skipContent') }),
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "X-CSRF-Token": token,
-                "Authorization": "Basic " + self.get('session.basicAuthToken')
-            },
-            success: function(response) {
-              resolve(response);
-              //var uuid = response.id;
-              var deployment = self.modelFor('deployment');
-              // deployment.set('foreman_task_uuid', uuid);
-              // deployment.save().then(function () {
-              //   return self.transitionTo('review.progress.overview');
-              // }, function () {
-                self.controllerFor('subscriptions.credentials').set('showErrorMessage', false);
-                self.controllerFor('subscriptions.credentials').set('buttonLoginTitle', 'Logged In');
-                self.controllerFor('subscriptions.credentials').set('buttonDeployDisabled', true);
-                self.transitionTo('subscriptions.management-application');
-              //})
-            },
-
-            error: function(response){
-              console.log(response);
-              var errorMsg = response.responseJSON.displayMessage;
-              self.controllerFor('subscriptions.credentials').set('errorMsg', errorMsg);
-              self.controllerFor('subscriptions.credentials').set('showErrorMessage', true);
-              self.controllerFor('subscriptions.credentials').set('buttonDeployTitle', 'Deploy');
-              self.controllerFor('subscriptions.credentials').set('buttonDeployDisabled', false);
-              reject(response);
-            }
-        });
-      });
+    error: function(reason, transition) {
+      console.log(reason);
+      alert(reason.statusText);
     },
-
 
   }
 
