@@ -23,6 +23,8 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
   hasNoLifecycleEnvironment: Ember.computed.alias("controllers.deployment.hasNoLifecycleEnvironment"),
   disableNextOnLifecycleEnvironment: Ember.computed.alias("controllers.deployment.disableNextOnLifecycleEnvironment"),
 
+  deployment: Ember.computed.alias("controllers.deployment"),
+
   actions: {
     selectEnvironment: function(environment) {
       this.set('showAlertMessage', false);

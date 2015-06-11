@@ -7,7 +7,11 @@ export default Ember.Route.extend({
 
   setupController: function(controller, model) {
     controller.set('model', model);
-    controller.set('allDiscoveredHosts', this.store.find('discovered-host'));
+    controller.set('isLoadingHosts', true);
+    this.store.find('discovered-host').then(function(results) {
+      controller.set('allDiscoveredHosts', results);
+      controller.set('isLoadingHosts', false);
+    });
   },
 
   deactivate: function() {

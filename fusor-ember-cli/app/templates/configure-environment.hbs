@@ -89,11 +89,22 @@
                     disableBack=false
                     parentController=controller
                     disableCancel=controllers.deployment.isStarted}}
-    <button {{action 'saveDeployment' step2RouteName}}
-            {{bind-attr disabled=disableNextOnLifecycleEnvironment}}
-            class='btn btn-primary'>
-        Next <i class="fa fa-angle-right"></i>
-    </button>
+    {{#if deployment.isNew}}
+      <button {{action 'saveDeployment' step2RouteName}}
+              {{bind-attr disabled=disableNextOnLifecycleEnvironment}}
+              class='btn btn-primary'>
+          {{#if deployment.isSaving}}
+            Loading ... <i class="fa fa-angle-right"></i>
+          {{else}}
+            Next <i class="fa fa-angle-right"></i>
+          {{/if}}
+      </button>
+    {{else}}
+      <button {{action 'saveDeployment' step2RouteName}}
+              {{bind-attr disabled=disableNextOnLifecycleEnvironment}}
+              class='btn btn-primary'>
+          Next <i class="fa fa-angle-right"></i>
+      </button>
+
+      {{/if}}
 {{/cancel-back-next}}
-
-
