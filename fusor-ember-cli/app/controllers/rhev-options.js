@@ -11,6 +11,11 @@ export default Ember.Controller.extend({
   rhev_cpu_type: Ember.computed.alias("controllers.deployment.rhev_cpu_type"),
   rhev_is_self_hosted: Ember.computed.alias("controllers.deployment.rhev_is_self_hosted"),
 
+  cpuTypes: ['Intel Conroe Family', 'Intel Penryn Family', 'Intel Nehalem Family',
+             'Intel Westmere Family', 'Intel SandyBridge Family', 'Intel Haswell',
+             'AMD Opteron G1', 'AMD Opteron G2', 'AMD Opteron G3', 'AMD Opteron G4',
+             'AMD Opteron G5', 'IBM POWER 8'],
+
   optionsBackRouteName: function() {
     if (this.get('rhev_is_self_hosted')) {
       return 'engine.discovered-host';
