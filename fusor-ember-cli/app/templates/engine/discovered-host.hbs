@@ -1,53 +1,62 @@
 <div class='row'>
   <div class='col-md-9'>
 
-    <div class="rhev-searchbar clearfix">
-      <form class="form-inline">
-        <div class='col-md-9'>
-          <div class="form-group">
-            <div class='rhev-search-box'>
-                {{input type='text' class='form-control rhev-search-input'
-                             placeholder=' Search ...'
-                             value=searchString}}
+    {{#if isLoadingHosts}}
+      <div class="spinner spinner-md spinner-inline"></div>
+      <span class='spinner-text'>
+        Loading ....
+      </span>
+
+    {{else}}
+
+      <div class="rhev-searchbar clearfix">
+        <form class="form-inline">
+          <div class='col-md-9'>
+            <div class="form-group">
+              <div class='rhev-search-box'>
+                  {{input type='text' class='form-control rhev-search-input'
+                               placeholder=' Search ...'
+                               value=searchString}}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class='col-md-3 text-right'>
+          <div class='col-md-3 text-right'>
 
-          {{numSelected}} selected
+            {{numSelected}} selected
 
-          <span class='rhev-select-all'>
-          </span>
+            <span class='rhev-select-all'>
+            </span>
 
-          <button class='btn btn-default btn-sm' {{action 'refreshModel'}}>Refresh Data</button>
-        </div>
+            <button class='btn btn-default btn-sm' {{action 'refreshModel'}}>Refresh Data</button>
+          </div>
 
-      </form>
-    </div>
+        </form>
+      </div>
 
-    <table class="table table-bordered small fusor-table">
-      <thead>
-        <tr>
-          <th class='rhev-checkbox'> {{!input type="checkbox" checked=allChecked}}</th>
-          <th class='rhev-hostname'> Host Name </th>
-          <th> MAC Address </th>
-          <th> Host Type </th>
-          <th class='rhev-cpu text-center'> CPU </th>
-          <th class='rhev-memory text-center'> Memory </th>
-          <th class='rhev-disks text-center'> # Disks </th>
-          <th class='rhev-diskspace text-center'> Disk Space </th>
-          <th class='rhev-network'> Network </th>
-        </tr>
-      </thead>
+      <table class="table table-bordered small fusor-table">
+        <thead>
+          <tr>
+            <th class='rhev-checkbox'> {{!input type="checkbox" checked=allChecked}}</th>
+            <th class='rhev-hostname'> Host Name </th>
+            <th> MAC Address </th>
+            <th> Host Type </th>
+            <th class='rhev-cpu text-center'> CPU </th>
+            <th class='rhev-memory text-center'> Memory </th>
+            <th class='rhev-disks text-center'> # Disks </th>
+            <th class='rhev-diskspace text-center'> Disk Space </th>
+            <th class='rhev-network'> Network </th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each host in filteredHosts itemController='discovered-host'}}
+             {{tr-engine host=host selectedRhevEngineHost=selectedRhevEngineHost
+                                   disabled=controllers.deployment.isStarted}}
+          {{/each}}
+        </tbody>
+      </table>
 
-      <tbody>
-      {{#each host in filteredHosts itemController='discovered-host'}}
-         {{tr-engine host=host selectedRhevEngineHost=selectedRhevEngineHost
-                               disabled=controllers.deployment.isStarted}}
-      {{/each}}
-      </tbody>
-    </table>
+    {{/if}}
 
   </div>
 </div>
