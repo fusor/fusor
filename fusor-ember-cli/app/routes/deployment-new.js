@@ -17,6 +17,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     controller.set('rhev_storage_name', 'my_storage');
     controller.set('rhev_export_domain_name', 'my_export');
     controller.set('rhev_database_name', 'Default');
+    this.controllerFor('application').set('isNewDeployment', true);
   },
 
   // rollback if new deployment not saved
