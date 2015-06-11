@@ -28,7 +28,6 @@ module Fusor
 
     def create
       @deployment = Deployment.new(params[:deployment])
-      @deployment.save
       if @deployment.save
         render :json => @deployment, :serializer => Fusor::DeploymentSerializer
       else
@@ -37,11 +36,12 @@ module Fusor
     end
 
     def update
-      if @deployment.update_attributes(params[:deployment])
-        render :json => @deployment, :serializer => Fusor::DeploymentSerializer
-      else
-        render json: {errors: @deployment.errors}, status: 422
+      # update_attribute does not call validation, which is desired, while
+      # update_attributes does. Horay consistency!
+      for name, value in params[:deployment]
+        @deployment.update_attribute(name, value)
       end
+      render :json => @deployment, :serializer => Fusor::DeploymentSerializer
     end
 
     def destroy
@@ -51,7 +51,11 @@ module Fusor
 
     def deploy
       # just inherit from V2
-      super
+      begin
+        super
+      rescue ::ActiveRecord::RecordInvalid
+        render json: {errors: @deployment.errors}, status: 422
+      end
     end
 
     private

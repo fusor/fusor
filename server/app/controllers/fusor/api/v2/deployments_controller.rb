@@ -24,12 +24,19 @@ module Fusor
     end
 
     def create
+      # Note: we have set validator to not run on create. This is desired,
+      # because we create an empty object and fill it in as we go.
       @deployment = Deployment.create!(params[:deployment])
       respond_for_show :resource => @deployment
     end
 
     def update
-      @deployment.update_attributes!(params[:deployment])
+      # Note: update_attribute does not call validation. This is desired,
+      # because we might not be done building the deployment object yet.
+      #@deployment.update_attributes!(params[:deployment])
+      for name, value in params[:deployment]
+        @deployment.update_attribute(name, value)
+      end
       respond_for_show :resource => @deployment
     end
 
@@ -39,6 +46,12 @@ module Fusor
     end
 
     def deploy
+      # If we're deploying then the deployment object needs to be valid.
+      # This should be the only time we run the DeploymentValidator.
+      if @deployment.invalid?
+        raise ::ActiveRecord::RecordInvalid.new @deployment
+      end
+
       sync_task(::Actions::Fusor::Subscription::ManageManifest,
                 @deployment,
                 customer_portal_credentials)
