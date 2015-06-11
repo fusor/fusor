@@ -278,3 +278,8 @@ table.fusor-table {
 .invalid-input {
   border:2px solid red;
 }
+
+/* override alert padding in Sat6 that is 34px */
+.rhci-alert {
+  padding-left: 15px !important;
+}

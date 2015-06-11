@@ -43,64 +43,9 @@ export default Ember.Route.extend({
   },
 
   actions: {
-
-      attachSubscriptions: function() {
-        var token = $('meta[name="csrf-token"]').attr('content');
-        var sessionPortal = this.modelFor('subscriptions');
-        var ownerKey = sessionPortal.get('ownerKey');
-        var consumerUUID = sessionPortal.get('consumerUUID');
-        var self = this;
-        var controller = this.controllerFor('subscriptions/select-subscriptions');
-        var subscriptions = this.controllerFor('subscriptions/select-subscriptions').get('model');
-
-        subscriptions.forEach(function(item){
-          // default to 0 of
-          controller.set('attachingInProgress', true);
-          controller.set('showAttachedSuccessMessage', false);
-
-          console.log(item);
-          console.log('qtyToAttach is');
-          console.log(item.qtyToAttach);
-          console.log('pool ID is');
-          console.log(item.id);
-          console.log('isSelectedSubscription is');
-          console.log(item.isSelectedSubscription);
-
-          if (item.isSelectedSubscription) {
-
-            // POST /customer_portal/consumers/#{CONSUMER['uuid']}/entitlements?pool=#{POOL['id']}&quantity=#{QUANTITY}
-            var url = '/customer_portal/consumers/' + consumerUUID + "/entitlements?pool=" + item.id + "&quantity=" + item.qtyToAttach;
-
-            return new Ember.RSVP.Promise(function (resolve, reject) {
-              Ember.$.ajax({
-                  url: url,
-                  type: "POST",
-                  headers: {
-                      "Accept": "application/json",
-                      "Content-Type": "application/json",
-                      "X-CSRF-Token": token,
-                  },
-
-                  success: function(response) {
-                    controller.set('attachingInProgress', false);
-                    controller.set('showAttachedSuccessMessage', true);
-                    console.log('successfully attached ' + item.qtyToAttach + ' subscription for pool ' + item.id);
-                  },
-
-                  error: function(response){
-                    console.log('error on attachSubscriptions');
-                    return self.send('error');
-                  }
-              });
-            });
-
-          }
-        });
-      },
-
       error: function(reason, transition) {
         console.log(reason);
-        //alert(reason.statusText);
+        alert(reason.statusText);
       },
   }
 

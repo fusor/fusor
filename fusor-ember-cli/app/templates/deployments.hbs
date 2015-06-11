@@ -34,7 +34,7 @@
       <td> {{deployment.organization.name}} </td>
       <td>
           {{#link-to 'deployment' deployment class='btn btn-sm btn-default'}} Edit {{/link-to}}
-          {{#unless isStarted}}
+          {{#unless deployment.isStarted}}
               {{delete-deployment-button deployment=deployment
                                          action="openDeploymentModal"}}
           {{/unless}}

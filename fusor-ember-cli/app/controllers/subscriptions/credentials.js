@@ -15,9 +15,14 @@ export default Ember.Controller.extend({
   organizationUpstreamConsumerUUID: null,
   organizationUpstreamConsumerName: null,
 
-  disableCredentialsNext: function() {
-    return !(Ember.isPresent(this.get('identification')) && Ember.isPresent(this.get('password')) || Ember.isPresent(this.get('model.isAuthenticated')));
-  }.property('username', 'password', 'model.isAuthenticated'),
+  validCredentials: function() {
+    return (Ember.isPresent(this.get('identification')) && Ember.isPresent(this.get('password')));
+  }.property('username', 'password'),
+
+  enableCredentialsNext: function() {
+    return this.get('validCredentials') || this.get('model.isAuthenticated');
+  }.property('validCredentials', 'model.isAuthenticated'),
+  disableCredentialsNext: Ember.computed.not('enableCredentialsNext'),
 
   hasUpstreamConsumerUuid: function() {
     return Ember.isPresent(this.get('upstream_consumer_uuid'));
