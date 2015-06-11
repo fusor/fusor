@@ -20,8 +20,8 @@ export default Ember.ObjectController.extend({
   }.property('disableRHEV', 'controllers.deployment.isStarted'),
 
   disableOpenstackradio: function () {
-    return (this.get('disableRHEV') || this.get('controllers.deployment.isStarted'));
-  }.property('disableRHEV', 'controllers.deployment.isStarted'),
+    return (this.get('disableOpenStack') || this.get('controllers.deployment.isStarted'));
+  }.property('disableOpenStack', 'controllers.deployment.isStarted'),
 
   backRouteName: function() {
     if (this.get('isOpenStack')) {

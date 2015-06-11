@@ -15,11 +15,13 @@
   <div class='col-md-9'>
 
     <p>
-    Default subscription selections have been made for the components of your RHCI deployment. If the selections need to be adjusted, please do so before proceeding.
+    If you need to attach more subscriptions to <strong>{{controllers.deployment.upstream_consumer_name}}</strong> for the components of your RHCI deployment, please do so before proceeding.
     </p>
 
     {{input type="checkbox" name="enable_access_insights" disabled=false checked=enable_access_insights}}
-    <span class={{analyticsColor}}>Enable Red Hat Analytics for all hosts</span>
+    <span class={{analyticsColor}}>
+      Enable Red Hat Access Insights for this deployment
+    </span>
     <br />
     <br />
 
