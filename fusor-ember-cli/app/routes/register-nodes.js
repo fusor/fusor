@@ -1,13 +1,11 @@
 import Ember from 'ember';
 
 export default Ember.Route.extend({
-  myModel: {
-    nodes: [],
-    profiles: []
-  },
-
   model: function () {
-      return this.myModel;
+      return {
+	  nodes: [1,2],
+	  profiles: this.store.find('flavor')
+      };
   },
 
   setupController: function(controller, model) {
