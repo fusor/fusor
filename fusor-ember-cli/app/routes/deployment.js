@@ -22,10 +22,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
 
       var controller = this.controllerFor('review/installation');
 
-      // change button text to "Deploying ..." and disable it
-      controller.set('buttonDeployTitle', 'Deploying ...');
       controller.set('buttonDeployDisabled', true);
-
       controller.set('spinnerTextMessage', 'Building task list');
       controller.set('showSpinner', true);
 
@@ -50,7 +47,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
               }, function () {
                 controller.set('errorMsg', 'Error in saving UUID of deployment task.');
                 controller.set('showErrorMessage', true);
-                controller.set('buttonDeployTitle', 'Deploy');
                 controller.set('buttonDeployDisabled', false);
               })
             },
@@ -61,7 +57,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
               var errorMsg = response.responseJSON.displayMessage;
               controller.set('errorMsg', errorMsg);
               controller.set('showErrorMessage', true);
-              controller.set('buttonDeployTitle', 'Deploy');
               controller.set('buttonDeployDisabled', false);
               reject(response);
             }
@@ -81,10 +76,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
 
       var controller = this.controllerFor('review/installation');
 
-      // change button text to "Deploying ..." and disable it
-      controller.set('buttonDeployTitle', 'Deploying ...');
       controller.set('buttonDeployDisabled', true);
-
       controller.set('spinnerTextMessage', 'Attaching Subscriptions in Red Hat Customer Portal');
       controller.set('showSpinner', true);
 
