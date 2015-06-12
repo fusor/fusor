@@ -7,14 +7,7 @@ export default Ember.Controller.extend({
           'networking', 'rhev-options', 'where-install',
           'cloudforms-storage-domain', 'cloudforms-vm', 'review', 'subscriptions/select-subscriptions'],
 
-  // TODO - DRY and update while deployment is finished and button should say "Deployed"
-  buttonDeployTitle: function() {
-    if (this.get('controllers.deployment.isStarted')) {
-      return 'Deploying ...';
-    } else {
-      return 'Deploy';
-    }
-  }.property('controllers.deployment.isStarted'),
+  buttonDeployTitle: 'Deploy',
 
   rhevValidated: function() {
     if (this.get('isRhev')) {

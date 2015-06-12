@@ -89,4 +89,8 @@ export default Ember.Mixin.create({
     }
   }.property('deploymentStatus', 'model.result'),
 
+  isFinished: function() {
+    return (this.get('model.progress') === 1);
+  }.property('model.progress'),
+
 });

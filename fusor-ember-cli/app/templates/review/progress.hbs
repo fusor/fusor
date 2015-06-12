@@ -25,13 +25,16 @@
         {{outlet}}
     </div>
 
-    <br />
-    <br />
-    <div class='pull-right'>
-      <br />
-      <button {{action 'showModal' 'cancelDeploymentModal'}} class='btn btn-default'>Cancel</button>
-      {{button-f disabled=buttonDeployDisabled title=buttonDeployTitle action="installDeployment"}}
-    </div>
-
   </div>
 </div>
+
+{{#cancel-back-next backRouteName='review.installation'
+                    disableBack=false
+                    parentController=controller
+                    disableCancel=controllers.deployment.isStarted}}
+  {{#if isFinished}}
+    {{#link-to 'deployments' class='btn btn-primary'}}View Deployments{{/link-to}}
+  {{else}}
+    <button class='btn btn-primary' disabled=true>Deploying</button>
+  {{/if}}
+{{/cancel-back-next}}

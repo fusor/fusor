@@ -10,14 +10,7 @@ export default Ember.Controller.extend({
   isSubscriptionsOpen: false,
   foremanTasksURL: null,
 
-  // TODO - DRY and update while deployment is finished and button should say "Deployed"
-  buttonDeployTitle: function() {
-    if (this.get('controllers.deployment.isStarted')) {
-      return 'Deploying ...';
-    } else {
-      return 'Deploy';
-    }
-  }.property('controllers.deployment.isStarted'),
+  buttonDeployTitle: 'Deploy',
 
   buttonDeployDisabled: function() {
     return this.get('controllers.deployment.isStarted');
