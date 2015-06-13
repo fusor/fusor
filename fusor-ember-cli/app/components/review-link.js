@@ -7,6 +7,7 @@ export default Ember.Component.extend({
   isDefault: false,
   useYieldInstead: false,
   isPassword: false,
+  isExternalURL: false,
   validationMessage: 'required field',
   defaultMessage: 'default',
 
@@ -24,6 +25,10 @@ export default Ember.Component.extend({
     } else {
       return this.get('value');
     }
-  }.property('isPassword', 'value')
+  }.property('isPassword', 'value'),
+
+  isNotALink: function() {
+    return (Ember.isBlank(this.get('routeName')) && !(this.get('isExternalURL')));
+  }.property('isExternalURL', 'routeName'),
 
 });

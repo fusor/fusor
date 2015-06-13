@@ -22,7 +22,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
 
       var controller = this.controllerFor('review/installation');
 
-      controller.set('buttonDeployDisabled', true);
       controller.set('spinnerTextMessage', 'Building task list');
       controller.set('showSpinner', true);
 
@@ -47,7 +46,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
               }, function () {
                 controller.set('errorMsg', 'Error in saving UUID of deployment task.');
                 controller.set('showErrorMessage', true);
-                controller.set('buttonDeployDisabled', false);
               })
             },
 
@@ -57,7 +55,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
               var errorMsg = response.responseJSON.displayMessage;
               controller.set('errorMsg', errorMsg);
               controller.set('showErrorMessage', true);
-              controller.set('buttonDeployDisabled', false);
               reject(response);
             }
         });

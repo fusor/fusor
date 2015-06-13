@@ -102,7 +102,7 @@
     {{/if}}
 
     {{#if isCloudForms}}
-      {{#accordion-item name="CloudForms Management Engine" isOpen=isCloudFormsOpen}}
+      {{#accordion-item name="Cloud Forms Management Engine" isOpen=isCloudFormsOpen}}
           {{review-link label='Installation Location' routeName='where-install' isRequired=true
                         value=controllers.deployment.cfme_install_loc }}
           {{review-link label='CFME Root password' routeName='cloudforms.cfme-configuration' isRequired=true
@@ -148,7 +148,15 @@
                       disableBack=false
                       parentController=controller
                       disableCancel=controllers.deployment.isStarted}}
-        {{button-f disabled=buttonDeployDisabled title=buttonDeployTitle action=deploymentButtonAction}}
+      {{#if controllers.deployment.isStarted}}
+          {{#link-to 'review.progress.overview' role="button" class='btn btn-primary'}}
+            Next <i class="fa fa-angle-right"></i>
+          {{/link-to}}
+      {{else}}
+          {{#button-f disabled=buttonDeployDisabled action=deploymentButtonAction}}
+             {{buttonDeployTitle}} <i class="fa fa-angle-right"></i>
+          {{/button-f}}
+      {{/if}}
   {{/cancel-back-next}}
 
 
