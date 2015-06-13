@@ -2,19 +2,13 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
-  needs: ['deployment'],
+  needs: ['deployment', 'review/progress/overview'],
 
   isRhevOpen: true,
   isOpenStackOpen: false,
   isCloudFormsOpen: false,
   isSubscriptionsOpen: false,
   foremanTasksURL: null,
-
-  buttonDeployTitle: 'Deploy',
-
-  buttonDeployDisabled: function() {
-    return this.get('controllers.deployment.isStarted');
-  }.property('controllers.deployment.isStarted'),
 
   showErrorMessage: false,
   errorMsg: null, // this should be overwritten by API response
@@ -23,5 +17,7 @@ export default Ember.Controller.extend({
   prog: 1,
 
   incrementBy: 20,
+
+  isFinished: Ember.computed.alias("controllers.review/progress/overview.isFinished"),
 
 });

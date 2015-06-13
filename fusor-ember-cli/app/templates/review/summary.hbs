@@ -1,0 +1,36 @@
+
+<div class='row'>
+  <div class='col-md-12'>
+
+    {{#if isRhev}}
+      {{#accordion-item name="Red Hat Enterprise Virtualization" isOpen=true}}
+
+        {{review-link label='URL' isExternalURL=true value=rhevEngineUrl}}
+
+        {{review-link label='Username' value='admin'}}
+
+      {{/accordion-item}}
+    {{/if}}
+
+    {{#if isCloudForms}}
+      {{#accordion-item name="Cloud Forms Management Engine" isOpen=true}}
+
+        {{review-link label='URL' isExternalURL=true                         value='https://cloudforms-demo.example.com/'}}
+
+        {{review-link label='Username' value='admin'}}
+
+      {{/accordion-item}}
+    {{/if}}
+
+  </div>
+</div>
+
+{{#cancel-back-next backRouteName='review.progress.overview'
+                    disableBack=false
+                    parentController=controller
+                    disableCancel=true}}
+    {{#link-to 'deployments' role="button" class='btn btn-primary'}}
+        View Deployments
+    {{/link-to}}
+{{/cancel-back-next}}
+

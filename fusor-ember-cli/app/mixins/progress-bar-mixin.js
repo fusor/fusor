@@ -30,7 +30,11 @@ export default Ember.Mixin.create({
   // END REFRESH
 
   percentProgress: function() {
-    return (this.get('model.progress') * 100).toFixed(1);
+    if (this.get('model.progress') === 1) {
+      return 100
+    } else {
+      return (this.get('model.progress') * 100).toFixed(1);
+    }
   }.property('model.progress'),
 
   percentProgressInt: function() {
@@ -72,25 +76,25 @@ export default Ember.Mixin.create({
   }.property('deploymentStatus', 'model.result'),
 
   progressBarMsg: function() {
-    if ((this.get('deploymentStatus') === 'In Process') && (this.get('model.result') === 'pending')) {
-      return "Downloading";
-    } else if (this.get('deploymentStatus') === 'Finished') {
+    if (this.get('isFinished')) {
       return "Deployment successful";
+    } else if ((this.get('deploymentStatus') === 'In Process') && (this.get('model.result') === 'pending')) {
+      return "Downloading";
     } else if (this.get('model.result') === 'error') {
       return "Error";
     } else if (this.get('model.result') === 'warning') {
       return "Warning";
     }
-  }.property('deploymentStatus', 'model.result'),
+  }.property('deploymentStatus', 'model.result', 'isFinished'),
 
   progressBarSubMsg: function() {
-    if ((this.get('deploymentStatus') === 'In Process') && (this.get('model.result') === 'pending')) {
-      return "Installing components";
+    if (!this.get('isFinished')) {
+      return ": Installing components";
     }
-  }.property('deploymentStatus', 'model.result'),
+  }.property('isFinished'),
 
   isFinished: function() {
-    return (this.get('model.progress') === 1);
+    return(this.get('model.progress') == 1);  // TODO Why is === 1 false???
   }.property('model.progress'),
 
 });

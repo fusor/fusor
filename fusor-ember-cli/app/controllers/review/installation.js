@@ -7,8 +7,6 @@ export default Ember.Controller.extend({
           'networking', 'rhev-options', 'where-install',
           'cloudforms-storage-domain', 'cloudforms-vm', 'review', 'subscriptions/select-subscriptions'],
 
-  buttonDeployTitle: 'Deploy',
-
   rhevValidated: function() {
     if (this.get('isRhev')) {
       return Ember.isPresent(this.get('controllers.deployment.rhev_engine_admin_password')) &&
@@ -29,9 +27,17 @@ export default Ember.Controller.extend({
     }
   }.property('controllers.deployment.cfme_install_loc'),
 
+  buttonDeployTitle: function() {
+    if (this.get('controllers.deployment.isStarted')) {
+      return 'Next';
+    } else {
+      return 'Deploy';
+    }
+  }.property('controllers.deployment.isStarted'),
+
   buttonDeployDisabled: function() {
-    return (this.get('controllers.deployment.isStarted') || !(this.get('rhevValidated')) || !(this.get('cfmeValidated')));
-  }.property('controllers.deployment.isStarted', 'rhevValidated', 'cfmeValidated'),
+    return (!(this.get('rhevValidated')) || !(this.get('cfmeValidated')));
+  }.property('rhevValidated', 'cfmeValidated'),
 
   showErrorMessage: false,
   errorMsg: null,

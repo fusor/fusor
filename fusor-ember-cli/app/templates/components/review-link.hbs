@@ -4,13 +4,19 @@
   </div>
 
   <div class='col-md-10'>
-    {{#link-to routeName}}
-        {{#if useYieldInstead}}
-          {{yield}}
-        {{else}}
-          {{valueFormatted}}
-        {{/if}}
-    {{/link-to}}
+    {{#if isExternalURL}}
+      <a href={{value}} target="_blank">{{value}}</a>
+    {{else if isNotALink}}
+      {{value}}
+    {{else}}
+      {{#link-to routeName}}
+          {{#if useYieldInstead}}
+            {{yield}}
+          {{else}}
+            {{valueFormatted}}
+          {{/if}}
+      {{/link-to}}
+    {{/if}}
 
     {{#if showValidationMessage}}
       <span class='errorForValidation'>

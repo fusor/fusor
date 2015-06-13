@@ -22,7 +22,6 @@
   <div class='col-md-1'>
     {{deploymentProductNames}}
   </div>
-
   <div class='col-md-8'>
     <div class='progress-bar-label'>
       {{#if isFinished}}
@@ -32,7 +31,7 @@
       {{else}}
         <div class="spinner spinner-xs spinner-inline"></div>
       {{/if}}
-      {{progressBarMsg}}: <span class='no-bold'>{{controller.progressBarSubMsg}}</span> {{model.humanized_errors}}
+      {{progressBarMsg}}<span class='no-bold'>{{controller.progressBarSubMsg}}</span> {{!model.humanized_errors !!!temporary commented this out}}
       <div class='pull-right'>
         {{controller.percentProgress}}%
       </div>
