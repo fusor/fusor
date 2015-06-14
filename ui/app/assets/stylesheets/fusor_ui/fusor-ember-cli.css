@@ -291,6 +291,9 @@ label.env_path_disabled:after {
 .no-bold {
   font-weight: normal !important; }
 
+.bold {
+  font-weight: bold !important; }
+
 th {
   padding-left: 10px; }
 
@@ -392,6 +395,9 @@ table.fusor-table {
 /* override alert padding in Sat6 that is 34px */
 .rhci-alert {
   padding-left: 15px !important; }
+
+.rhci-review-product-name {
+  white-space: nowrap; }
 
 /* wizard.scss */
 .page-header-rhci {
