@@ -38,5 +38,10 @@ module FusorUi
       ]
     end
 
+    config.to_prepare do
+      #Controller extensions
+      ::DashboardController.send :include, FusorUi::Concerns::DashboardControllerExtensions
+    end
+
   end
 end
