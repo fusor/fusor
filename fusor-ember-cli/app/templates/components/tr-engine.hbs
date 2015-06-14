@@ -1,9 +1,11 @@
 <td>
     {{radio-button value=host.model groupValue=selectedRhevEngineHost changed="engineHostChanged" id=host.cssIdHostId disabled=disabled}}
 </td>
-<td>
+<td {{bind-attr class="host.isSelectedAsEngine:black-font:not-selected"}}>
     {{#if host.isSelectedAsEngine}}
       {{input type="text" value=host.name class='form-control' focus-out='saveHostname' id=host.cssHostHostId}}
+    {{else}}
+      Not Selected
     {{/if}}
 </td>
 <td> {{host.mac}} </td>
