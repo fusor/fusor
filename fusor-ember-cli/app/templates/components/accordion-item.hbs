@@ -1,9 +1,9 @@
 <div class='row'>
   <div class='col-md-12'>
-    <h4 {{action 'openItem'}}>
-    <i {{bind-attr class=":fa :fa-play isOpen:fa-rotate-90"}}></i>
-      {{name}}
-    </h4>
+    <h3 {{action 'openItem'}}>
+    <i {{bind-attr class=":fa isOpen:fa-angle-down:fa-angle-right"}}></i>
+      &nbsp;{{name}}
+    </h3>
     {{#if isOpen}}
       {{yield}}
     {{/if}}

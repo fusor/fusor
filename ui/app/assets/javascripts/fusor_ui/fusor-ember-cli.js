@@ -7736,12 +7736,12 @@ define('fusor-ember-cli/templates/components/accordion-item', ['exports'], funct
         dom.setAttribute(el2,"class","col-md-12");
         var el3 = dom.createTextNode("\n    ");
         dom.appendChild(el2, el3);
-        var el3 = dom.createElement("h4");
+        var el3 = dom.createElement("h3");
         var el4 = dom.createTextNode("\n    ");
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("i");
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n      ");
+        var el4 = dom.createTextNode("\n       ");
         dom.appendChild(el3, el4);
         var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
@@ -7788,7 +7788,7 @@ define('fusor-ember-cli/templates/components/accordion-item', ['exports'], funct
         var morph0 = dom.createMorphAt(element1,3,3);
         var morph1 = dom.createMorphAt(element0,3,3);
         element(env, element1, context, "action", ["openItem"], {});
-        element(env, element2, context, "bind-attr", [], {"class": ":fa :fa-play isOpen:fa-rotate-90"});
+        element(env, element2, context, "bind-attr", [], {"class": ":fa isOpen:fa-angle-down:fa-angle-right"});
         content(env, morph0, context, "name");
         block(env, morph1, context, "if", [get(env, context, "isOpen")], {}, child0, null);
         return fragment;
@@ -12814,7 +12814,7 @@ define('fusor-ember-cli/templates/components/review-link', ['exports'], function
         var el2 = dom.createTextNode("\n  ");
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("div");
-        dom.setAttribute(el2,"class","col-md-2 text-right");
+        dom.setAttribute(el2,"class","col-md-2 text-right bold");
         var el3 = dom.createTextNode("\n    ");
         dom.appendChild(el2, el3);
         var el3 = dom.createComment("");
@@ -26259,7 +26259,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
               var morph11 = dom.createMorphAt(fragment,25,25,contextualElement);
               inline(env, morph0, context, "review-link", [], {"label": "Setup Type", "routeName": "rhev-setup", "isRequired": true, "value": get(env, context, "controllers.rhev-setup.rhevSetupTitle")});
               block(env, morph1, context, "if", [get(env, context, "isSelfHosted")], {}, child0, child1);
-              inline(env, morph2, context, "review-link", [], {"label": "Root password for Engine & Hypervisor", "routeName": "rhev-options", "isRequired": true, "isPassword": true, "value": get(env, context, "controllers.deployment.rhev_root_password")});
+              inline(env, morph2, context, "review-link", [], {"label": "Root password Engine & Hypervisor", "routeName": "rhev-options", "isRequired": true, "isPassword": true, "value": get(env, context, "controllers.deployment.rhev_root_password")});
               inline(env, morph3, context, "review-link", [], {"label": "Engine admin password", "routeName": "rhev-options", "isRequired": true, "isPassword": true, "value": get(env, context, "controllers.deployment.rhev_engine_admin_password")});
               inline(env, morph4, context, "review-link", [], {"label": "Datacenter Name", "routeName": "rhev-options", "isDefault": true, "value": get(env, context, "controllers.deployment.rhev_database_name")});
               inline(env, morph5, context, "review-link", [], {"label": "Cluster Name", "routeName": "rhev-options", "isDefault": true, "value": get(env, context, "controllers.deployment.rhev_cluster_name")});
@@ -28999,8 +28999,14 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
         var el2 = dom.createTextNode("\n  ");
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("div");
-        dom.setAttribute(el2,"class","col-md-1");
-        var el3 = dom.createTextNode("\n    Satellite\n  ");
+        dom.setAttribute(el2,"class","col-md-1 rhci-review-product-name");
+        var el3 = dom.createTextNode("\n    ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("h3");
+        var el4 = dom.createTextNode("Satellite");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n  ");
         dom.appendChild(el2, el3);
         dom.appendChild(el1, el2);
         var el2 = dom.createTextNode("\n  ");
@@ -29058,10 +29064,12 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
         var el2 = dom.createTextNode("\n  ");
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("div");
-        dom.setAttribute(el2,"class","col-md-1");
+        dom.setAttribute(el2,"class","col-md-1 rhci-review-product-name");
         var el3 = dom.createTextNode("\n    ");
         dom.appendChild(el2, el3);
-        var el3 = dom.createComment("");
+        var el3 = dom.createElement("h3");
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n  ");
         dom.appendChild(el2, el3);
@@ -29157,7 +29165,7 @@ define('fusor-ember-cli/templates/review/progress/overview', ['exports'], functi
         var element1 = dom.childAt(element0, [3]);
         var element2 = dom.childAt(element1, [1]);
         var element3 = dom.childAt(element1, [3, 1]);
-        var morph0 = dom.createMorphAt(dom.childAt(element0, [1]),1,1);
+        var morph0 = dom.createMorphAt(dom.childAt(element0, [1, 1]),0,0);
         var morph1 = dom.createMorphAt(element2,1,1);
         var morph2 = dom.createMorphAt(element2,3,3);
         var morph3 = dom.createMorphAt(dom.childAt(element2, [4]),0,0);
@@ -41588,13 +41596,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.e1817cb4"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.ef178a62"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.e1817cb4"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.ef178a62"});
 }
 
 /* jshint ignore:end */
