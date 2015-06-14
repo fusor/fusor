@@ -3112,12 +3112,13 @@ define('fusor-ember-cli/controllers/subscriptions', ['exports', 'ember'], functi
   'use strict';
 
   exports['default'] = Ember['default'].Controller.extend({
-    needs: ['deployment', 'subscriptions/credentials'],
+    needs: ['deployment', 'subscriptions/credentials', 'subscriptions/management-application'],
 
     stepNumberSubscriptions: Ember['default'].computed.alias('controllers.deployment.stepNumberSubscriptions'),
 
     disableTabManagementApplication: Ember['default'].computed.not('model.isAuthenticated'),
-    disableTabSelectSubsciptions: Ember['default'].computed.not('model.isAuthenticated') });
+
+    disableTabSelectSubsciptions: Ember['default'].computed.alias('controllers.subscriptions/management-application.disableNextOnManagementApp') });
 
 });
 define('fusor-ember-cli/controllers/subscriptions/credentials', ['exports', 'ember'], function (exports, Ember) {
@@ -3194,8 +3195,8 @@ define('fusor-ember-cli/controllers/subscriptions/management-application', ['exp
     showAlertMessage: false,
 
     disableNextOnManagementApp: (function () {
-      return Ember['default'].isBlank(this.get('sessionPortal.consumerUUID'));
-    }).property('sessionPortal.consumerUUID'),
+      return Ember['default'].isBlank(this.get('upstream_consumer_uuid'));
+    }).property('upstream_consumer_uuid'),
 
     actions: {
       selectManagementApp: function selectManagementApp(managementApp) {
@@ -14200,7 +14201,7 @@ define('fusor-ember-cli/templates/components/text-f', ['exports'], function (exp
           var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
           var morph1 = dom.createMorphAt(fragment,3,3,contextualElement);
           var morph2 = dom.createMorphAt(fragment,5,5,contextualElement);
-          inline(env, morph0, context, "input", [], {"class": "form-control", "value": get(env, context, "value"), "placeholder": get(env, context, "placeholder"), "type": get(env, context, "typeInput"), "focus-out": "showErrors", "id": get(env, context, "cssId"), "disabled": get(env, context, "disabled")});
+          inline(env, morph0, context, "input", [], {"class": "form-control", "value": get(env, context, "value"), "placeholder": get(env, context, "placeholder"), "type": get(env, context, "typeInput"), "focus-out": "showErrors", "id": get(env, context, "cssId"), "disabled": get(env, context, "disabled"), "autocomplete": "off"});
           block(env, morph1, context, "if", [get(env, context, "showError")], {}, child0, null);
           content(env, morph2, context, "yield");
           return fragment;
@@ -14480,6 +14481,42 @@ define('fusor-ember-cli/templates/components/tr-engine', ['exports'], function (
         }
       };
     }());
+    var child1 = (function() {
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("      Not Selected\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          return fragment;
+        }
+      };
+    }());
     return {
       isHTMLBars: true,
       revision: "Ember@1.11.1",
@@ -14582,7 +14619,7 @@ define('fusor-ember-cli/templates/components/tr-engine', ['exports'], function (
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, get = hooks.get, inline = hooks.inline, block = hooks.block, content = hooks.content;
+        var hooks = env.hooks, get = hooks.get, inline = hooks.inline, element = hooks.element, block = hooks.block, content = hooks.content;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -14600,8 +14637,9 @@ define('fusor-ember-cli/templates/components/tr-engine', ['exports'], function (
         } else {
           fragment = this.build(dom);
         }
+        var element0 = dom.childAt(fragment, [2]);
         var morph0 = dom.createMorphAt(dom.childAt(fragment, [0]),1,1);
-        var morph1 = dom.createMorphAt(dom.childAt(fragment, [2]),1,1);
+        var morph1 = dom.createMorphAt(element0,1,1);
         var morph2 = dom.createMorphAt(dom.childAt(fragment, [4]),1,1);
         var morph3 = dom.createMorphAt(dom.childAt(fragment, [6]),1,1);
         var morph4 = dom.createMorphAt(dom.childAt(fragment, [8]),1,1);
@@ -14610,7 +14648,8 @@ define('fusor-ember-cli/templates/components/tr-engine', ['exports'], function (
         var morph7 = dom.createMorphAt(dom.childAt(fragment, [14]),1,1);
         var morph8 = dom.createMorphAt(dom.childAt(fragment, [16]),1,1);
         inline(env, morph0, context, "radio-button", [], {"value": get(env, context, "host.model"), "groupValue": get(env, context, "selectedRhevEngineHost"), "changed": "engineHostChanged", "id": get(env, context, "host.cssIdHostId"), "disabled": get(env, context, "disabled")});
-        block(env, morph1, context, "if", [get(env, context, "host.isSelectedAsEngine")], {}, child0, null);
+        element(env, element0, context, "bind-attr", [], {"class": "host.isSelectedAsEngine:black-font:not-selected"});
+        block(env, morph1, context, "if", [get(env, context, "host.isSelectedAsEngine")], {}, child0, child1);
         content(env, morph2, context, "host.mac");
         content(env, morph3, context, "host.hostType");
         content(env, morph4, context, "host.cpus");
@@ -32142,6 +32181,21 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
           dom.setAttribute(el3,"class","form form-horizontal");
           var el4 = dom.createTextNode("\n      ");
           dom.appendChild(el3, el4);
+          var el4 = dom.createComment(" invisble input password is hack to remove chrome autocomplete ");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createTextNode("\n      ");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createElement("input");
+          dom.setAttribute(el4,"style","display:none");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createTextNode("\n      ");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createElement("input");
+          dom.setAttribute(el4,"type","password");
+          dom.setAttribute(el4,"style","display:none");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createTextNode("\n      ");
+          dom.appendChild(el3, el4);
           var el4 = dom.createComment("");
           dom.appendChild(el3, el4);
           var el4 = dom.createTextNode("\n      ");
@@ -32186,9 +32240,9 @@ define('fusor-ember-cli/templates/subscriptions/credentials', ['exports'], funct
             fragment = this.build(dom);
           }
           var element0 = dom.childAt(fragment, [1, 1, 3]);
-          var morph0 = dom.createMorphAt(element0,1,1);
-          var morph1 = dom.createMorphAt(element0,3,3);
-          var morph2 = dom.createMorphAt(element0,5,5);
+          var morph0 = dom.createMorphAt(element0,7,7);
+          var morph1 = dom.createMorphAt(element0,9,9);
+          var morph2 = dom.createMorphAt(element0,11,11);
           inline(env, morph0, context, "text-f", [], {"label": "Red Hat login", "value": get(env, context, "identification")});
           inline(env, morph1, context, "text-f", [], {"label": "Password", "value": get(env, context, "password"), "type": "password"});
           block(env, morph2, context, "base-f", [], {}, child0, null);
@@ -41596,13 +41650,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.ef178a62"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.7fc730a6"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.ef178a62"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.7fc730a6"});
 }
 
 /* jshint ignore:end */

@@ -11,8 +11,8 @@ export default Ember.Controller.extend({
   showAlertMessage: false,
 
   disableNextOnManagementApp: function() {
-    return (Ember.isBlank(this.get('sessionPortal.consumerUUID')));
-  }.property('sessionPortal.consumerUUID'),
+    return (Ember.isBlank(this.get('upstream_consumer_uuid')));
+  }.property('upstream_consumer_uuid'),
 
   actions: {
     selectManagementApp: function(managementApp) {
