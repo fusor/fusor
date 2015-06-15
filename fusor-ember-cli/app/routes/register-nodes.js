@@ -3,7 +3,7 @@ import Ember from 'ember';
 export default Ember.Route.extend({
   model: function () {
       return {
-	  nodes: [1,2],
+	  nodes: this.store.find('node'),
 	  profiles: this.store.find('flavor')
       };
   },
