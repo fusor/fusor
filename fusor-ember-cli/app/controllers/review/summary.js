@@ -9,6 +9,8 @@ export default Ember.Controller.extend({
   isCloudForms: Ember.computed.alias('controllers.deployment.isCloudForms'),
 
   rhevEngineUrl: function() {
-    return ('https://' + this.get('controllers.review/installation.engineNamePlusDomain') + '/ovirt-engine/');
-  }.property('controllers.review/installation.engineNamePlusDomain'),
+    return ('https://' +
+            this.get('controllers.review/installation.selectedRhevEngine.name') +
+            '/ovirt-engine/');
+  }.property('controllers.review/installation.selectedRhevEngine.name'),
 });

@@ -2701,11 +2701,16 @@ define('fusor-ember-cli/controllers/review/installation', ['exports', 'ember'], 
 
     rhev_engine_host: Ember['default'].computed.alias('controllers.deployment.discovered_host'),
     selectedRhevEngine: Ember['default'].computed.alias('controllers.deployment.discovered_host'),
+    isStarted: Ember['default'].computed.alias('controllers.deployment.isStarted'),
 
     engineNamePlusDomain: (function () {
-      //TODO - get hostgroup.name from fusor engine hostgroup
-      return this.get('selectedRhevEngine.name') + '.example.com';
-    }).property('selectedRhevEngine.name'),
+      if (this.get('isStarted')) {
+        return this.get('selectedRhevEngine.name');
+      } else {
+        //TODO - get hostgroup.name from fusor engine hostgroup
+        return this.get('selectedRhevEngine.name') + '.example.com';
+      }
+    }).property('selectedRhevEngine.name', 'isStarted'),
 
     nameRHCI: Ember['default'].computed.alias('controllers.rhci.nameRHCI'),
     nameRhev: Ember['default'].computed.alias('controllers.rhci.nameRhev'),
@@ -2828,8 +2833,8 @@ define('fusor-ember-cli/controllers/review/summary', ['exports', 'ember'], funct
     isCloudForms: Ember['default'].computed.alias('controllers.deployment.isCloudForms'),
 
     rhevEngineUrl: (function () {
-      return 'https://' + this.get('controllers.review/installation.engineNamePlusDomain') + '/ovirt-engine/';
-    }).property('controllers.review/installation.engineNamePlusDomain') });
+      return 'https://' + this.get('controllers.review/installation.selectedRhevEngine.name') + '/ovirt-engine/';
+    }).property('controllers.review/installation.selectedRhevEngine.name') });
 
 });
 define('fusor-ember-cli/controllers/rhci', ['exports', 'ember'], function (exports, Ember) {
@@ -25968,6 +25973,42 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
             var child0 = (function() {
               var child0 = (function() {
                 var child0 = (function() {
+                  var child0 = (function() {
+                    return {
+                      isHTMLBars: true,
+                      revision: "Ember@1.11.1",
+                      blockParams: 0,
+                      cachedFragment: null,
+                      hasRendered: false,
+                      build: function build(dom) {
+                        var el0 = dom.createDocumentFragment();
+                        var el1 = dom.createTextNode(".example.com");
+                        dom.appendChild(el0, el1);
+                        return el0;
+                      },
+                      render: function render(context, env, contextualElement) {
+                        var dom = env.dom;
+                        dom.detectNamespace(contextualElement);
+                        var fragment;
+                        if (env.useFragmentCache && dom.canClone) {
+                          if (this.cachedFragment === null) {
+                            fragment = this.build(dom);
+                            if (this.hasRendered) {
+                              this.cachedFragment = fragment;
+                            } else {
+                              this.hasRendered = true;
+                            }
+                          }
+                          if (this.cachedFragment) {
+                            fragment = dom.cloneNode(this.cachedFragment, true);
+                          }
+                        } else {
+                          fragment = this.build(dom);
+                        }
+                        return fragment;
+                      }
+                    };
+                  }());
                   return {
                     isHTMLBars: true,
                     revision: "Ember@1.11.1",
@@ -25980,13 +26021,15 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
                       dom.appendChild(el0, el1);
                       var el1 = dom.createComment("");
                       dom.appendChild(el0, el1);
-                      var el1 = dom.createTextNode(".example.com\n");
+                      var el1 = dom.createComment("");
+                      dom.appendChild(el0, el1);
+                      var el1 = dom.createTextNode("\n");
                       dom.appendChild(el0, el1);
                       return el0;
                     },
                     render: function render(context, env, contextualElement) {
                       var dom = env.dom;
-                      var hooks = env.hooks, content = hooks.content;
+                      var hooks = env.hooks, content = hooks.content, get = hooks.get, block = hooks.block;
                       dom.detectNamespace(contextualElement);
                       var fragment;
                       if (env.useFragmentCache && dom.canClone) {
@@ -26005,7 +26048,9 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
                         fragment = this.build(dom);
                       }
                       var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
+                      var morph1 = dom.createMorphAt(fragment,2,2,contextualElement);
                       content(env, morph0, context, "host.name");
+                      block(env, morph1, context, "unless", [get(env, context, "isStarted")], {}, child0, null);
                       return fragment;
                     }
                   };
@@ -34435,7 +34480,7 @@ define('fusor-ember-cli/tests/controllers/review/installation.jshint', function 
 
   module('JSHint - controllers/review');
   test('controllers/review/installation.js should pass jshint', function() { 
-    ok(false, 'controllers/review/installation.js should pass jshint.\ncontrollers/review/installation.js: line 106, col 77, Missing semicolon.\ncontrollers/review/installation.js: line 118, col 33, Missing semicolon.\n\n2 errors'); 
+    ok(false, 'controllers/review/installation.js should pass jshint.\ncontrollers/review/installation.js: line 111, col 77, Missing semicolon.\ncontrollers/review/installation.js: line 123, col 33, Missing semicolon.\n\n2 errors'); 
   });
 
 });
@@ -41651,13 +41696,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.e5904fe3"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.7ed34196"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.e5904fe3"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.7ed34196"});
 }
 
 /* jshint ignore:end */
