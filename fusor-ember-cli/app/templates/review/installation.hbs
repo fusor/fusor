@@ -43,7 +43,7 @@
                 {{#each host in selectedHypervisorHosts}}
                     {{#link-to 'hypervisor.discovered-host'}}
                         {{!TODO - get hostgroup.name from fusor engine hostgroup}}
-                        {{host.name}}.example.com
+                        {{host.name}}{{#unless isStarted}}.example.com{{/unless}}
                     {{/link-to}}
                     <br />
                 {{/each}}
