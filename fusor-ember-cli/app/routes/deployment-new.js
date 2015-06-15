@@ -12,6 +12,16 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     controller.set('satelliteTabRouteName', 'deployment-new.satellite.index');
     controller.set('organizationTabRouteName', 'deployment-new.satellite.configure-organization');
     controller.set('lifecycleEnvironmentTabRouteName', 'deployment-new.satellite.configure-environment');
+
+    // set temp defaults for openstack 'develop' branch only
+    controller.set('deploy_rhev', false);
+    controller.set('deploy_cfme', false);
+    controller.set('deploy_openstack', true);
+    controller.set('name', 'deploy'+ Date.now());
+    this.store.find('organization', 1).then(function(result) {
+      console.log(result.get('name'));
+      model.set('organization', result);
+    })
   },
 
   // rollback if new deployment not saved

@@ -2,6 +2,10 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
 
+  afterModel: function() {
+    this.transitionTo('deployment-new.satellite.configure-environment');
+  },
+
   setupController: function(controller, model) {
     controller.set('model', model);
     controller.set('satelliteTabRouteName', 'deployment-new.satellite.index');
