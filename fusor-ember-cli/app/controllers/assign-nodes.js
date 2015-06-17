@@ -59,40 +59,20 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     this.set('roles', roles);
   },
 
-
   getRoleByType: function(roleType) {
-    var roles = this.get('roles');
+    var roles = this.get('model.plan.roles');
     if (!roles || !roles.length) {
       return null;
     }
 
     for (var i=0; i<roles.length; i++) {
-      if (roles[i].roleType === roleType) {
+      if (roles[i].name === roleType) {
         return roles[i];
       }
     }
 
     return null;
   },
-
-  availableRoles: function() {
-    var available = [];
-    var roles = this.get('roles');
-    if (!roles || !roles.length)
-    {
-      return available;
-    }
-
-    for (var i = 0; i < roles.length; i++)
-    {
-      if (roles[i].numNodes <= 0)
-      {
-        available.pushObject(roles[i]);
-      }
-    }
-
-    return available;
-  }.property('roles', 'roles.@each.numNodes'),
 
   controllerAssigned: function() {
     var role = this.getRoleByType('controller');
