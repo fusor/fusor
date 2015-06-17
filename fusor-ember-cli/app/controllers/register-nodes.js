@@ -425,12 +425,8 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
   },
 
   disableRegisterNodesNext: function() {
-    var nodeCount = 0;
-    var profiles = this.get('model.profiles');
-    for (var i = 0; i < profiles.length; i++ ) {
-      nodeCount += profiles[i].totalNodes;
-    }
-    return (nodeCount < 4);
+    var nodeCount = this.get('model.nodes.length');
+    return (nodeCount < 2);
   }.property('model.profiles', 'model.profiles.length'),
 
   registerNewNodes: function() {
