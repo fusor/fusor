@@ -36,29 +36,19 @@
                     <ul class="deployment-roles deployment-roles-assigned">
                       {{#each role in assignedRoles}}
                         {{#draggable-object content=role}}
-                          {{deployment-role role=role profile=profile edit="editRole" remove="removeRole"}}
-
+                          {{deployment-role role=role profile=profile plan=plan edit="editRole" remove="removeRole"}}
                         {{/draggable-object}}
                       {{/each}}
-                      {{#unless allAssigned}}
+                      {{#unless allRolesAssigned}}
                         {{#draggable-object-target action='assignDroppedRole'}}
                             <li class="role-target {{assignMenuOpenClass}}  dropdown">
                                 <a id="role-target-dropdown-1" {{action "showAssignMenu" profile bubbles=false}} data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="fa fa-plus"></i> Assign Role
                                 </a>
                                 <ul class="dropdown-menu" role="menu" aria-labelledby="role-target-dropdown-1">
-                                  {{#unless controllerAssigned}}
-                                      <a class="roles-menu-item role-controller" {{action "assignRoleType" 'controller'}}>Controller</a>
-                                  {{/unless}}
-                                  {{#unless computeAssigned}}
-                                      <a class="roles-menu-item  role-compute" {{action "assignRoleType" 'compute'}}>Compute</a>
-                                  {{/unless}}
-                                  {{#unless blockAssigned}}
-                                      <a class="roles-menu-item  role-block" {{action "assignRoleType" 'block'}}>Block Storage</a>
-                                  {{/unless}}
-                                  {{#unless objectAssigned}}
-                                      <a class="roles-menu-item  role-object" {{action "assignRoleType" 'object'}}>Object Storage</a>
-                                  {{/unless}}
+				  {{#each role in unassignedRoles}}
+                                    <a class="roles-menu-item role-controller" {{action "assignRoleType" role.name}}>{{role.name}}</a>
+                                  {{/each}}
                                 </ul>
                             </li>
                         {{/draggable-object-target}}

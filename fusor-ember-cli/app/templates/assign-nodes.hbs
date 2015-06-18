@@ -23,7 +23,7 @@
         {{#each profile in profiles}}
             <div class="row">
                 <div class='col-md-7'>
-                  {{node-profile profile=profile profiles=profiles doAssign=true assignRole="assignRole" assignRoleType="assignRoleType" unassignRole="unassignRole" editRole="editRole"}}
+                  {{node-profile profile=profile plan=model doAssign=true assignRole="assignRole" assignRoleType="assignRoleType" unassignRole="unassignRole" editRole="editRole"}}
                 </div>
             </div>
         {{/each}}

@@ -3,16 +3,20 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   role: null,
   profile: null,
+  plan: null,
 
-  assignedNodes: function() {
-    var role = this.get('role');
-    if (role && role.numNodes) {
-      return role.numNodes;
+  getParamValue: function(paramName, params) {
+    var paramValue = null;
+    var numParams = params.get('length');
+    for (var i=0; i<numParams; i++) {
+      var param = params.objectAt(i);
+      if (param.get('id') == paramName) {
+        paramValue = param.get('value');
+        break;
+      }
     }
-    else {
-      return 0;
-    }
-  }.property('role', 'role.numNodes'),
+    return paramValue;
+  },
 
   roleAssigned: function() {
     return this.get('profile') !== null;
@@ -27,46 +31,32 @@ export default Ember.Component.extend({
     }
   }.property('role-assigned'),
 
-  roleType: function() {
+  roleNodeCount: function() {
     var role = this.get('role');
-    if (role) {
-      return role.get('roleType');
-    }
-    else {
-      return 'hidden';
-    }
-  }.property('role', 'role.roleType'),
+    var params = this.get('plan.parameters')
+    return this.getParamValue(role.get('countParameterName'), params);
+  }.property('role', 'plan.parameters'),
 
-  maxToAssign: function() {
-    var numNodes = this.get('assignedNodes');
-    var freeNodes = this.get('profile').get('freeNodes');
-    return freeNodes + numNodes;
-  }.property('profile', 'profile.freeNodes', 'assignedNodes'),
+  profileNodes: function() {
+    var totalNodes = 10;
+    return totalNodes;
+  }.property('totalNodes'),
 
   availableOptions: function() {
     var avail = [];
-    var assignedNodes = this.get('assignedNodes');
     var increment = 1;
-    try {
-      var roleType = this.get('role').get('roleType');
-      if (roleType === 'controller') {
-        increment = 2;
-      }
-    }
-    catch (e) {
-    }
 
-    for (var i=1; i <= this.get('maxToAssign'); i = i + increment) {
+    for (var i=0; i <= this.get('profileNodes'); i = i + increment) {
       var nextOption = Ember.Object.create({
         label: '' + i,
         value: i,
-        selected: (i === assignedNodes)
+        selected: (i == this.get('roleNodeCount'))
       });
       avail.pushObject(nextOption);
     }
 
     return avail;
-  }.property('maxToAssign', 'assignedNodes', 'profile.freeNodes', 'role.roleType'),
+  }.property('roleNodeCount', 'profileNodesAvailable'),
 
   actions: {
     assignNodes: function() {

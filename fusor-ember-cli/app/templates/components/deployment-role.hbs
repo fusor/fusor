@@ -1,7 +1,8 @@
-<li class="role role-{{roleType}} {{assignedClass}}">
+<li class="role role-{{role.name}} {{assignedClass}}">
     <div class="deployment-role-label">
         {{role.name}}
     </div>
+    <b>{{role.name}}</b>
     {{#if roleAssigned}}
         <select class="selectpicker"  {{action "assignNodes" this on="change"}}>
             {{#each option in availableOptions}}
