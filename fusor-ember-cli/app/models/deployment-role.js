@@ -6,5 +6,8 @@ export default DS.Model.extend({
 
   countParameterName: function() {
       return this.get('name') + '-' + this.get('version') + '::count'
+  }.property('name', 'version'),
+  flavorParameterName: function() {
+      return this.get('name') + '-' + this.get('version') + '::Flavor'
   }.property('name', 'version')
 });

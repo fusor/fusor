@@ -3,12 +3,12 @@
         <h2>Available Deployment Roles</h2>
         {{#draggable-object-target action="unassignRole"}}
             <div class="row deployment-roles deployment-roles-unassigned deployment-roles-assignable {{droppableClass}}">
-              {{#each role in model.plan.roles}}
+              {{#each role in unassignedRoles}}
                 {{#draggable-object content=role}}
                   {{deployment-role role=role edit="editRole"}}
                 {{/draggable-object}}
               {{/each}}
-              {{#unless noneAssigned}}
+              {{#unless noRolesAssigned}}
                 {{#draggable-object content=role}}
                   {{deployment-role role-assigned=false}}
                 {{/draggable-object}}
