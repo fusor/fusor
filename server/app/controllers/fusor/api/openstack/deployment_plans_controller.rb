@@ -15,16 +15,11 @@ require 'egon'
 module Fusor
   module Api
     module Openstack
-      class FlavorsController < Api::V2::BaseController
-        
-        def index
-          h = Overcloud::UndercloudHandle.new('admin','a20a4b1d3b337bed7cd111714e9adbb814100ac7','192.0.2.1', 5001)
-          render :json => h.list_flavors
-        end
+      class DeploymentPlansController < Api::V2::BaseController
         
         def show
           h = Overcloud::UndercloudHandle.new('admin','a20a4b1d3b337bed7cd111714e9adbb814100ac7','192.0.2.1', 5001)
-          render :json => {:flavor => h.get_flavor(params[:id])}
+          render :json => {:deployment_plan => h.get_plan(params[:id])}
         end
         
       end
