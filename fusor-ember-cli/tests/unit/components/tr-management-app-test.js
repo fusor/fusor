@@ -1,11 +1,9 @@
-import {
-  moduleForComponent,
-  test
-} from 'ember-qunit';
+import { moduleForComponent, test } from 'ember-qunit';
 
-moduleForComponent('tr-management-app', {
+moduleForComponent('tr-management-app', 'Unit | Component | tr management app', {
   // Specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  needs: ['component:radio-button'],
+  unit: true
 });
 
 test('it renders', function(assert) {

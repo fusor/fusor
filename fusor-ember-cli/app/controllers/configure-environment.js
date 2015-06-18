@@ -34,7 +34,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
 
     createEnvironment: function() {
       var self = this;
-      var selectedOrganization = this.get('selectedOrganization')
+      var selectedOrganization = this.get('selectedOrganization');
       this.set('fields_env.name', this.get('name'));
       this.set('fields_env.label', this.get('label'));
       this.set('fields_env.description', this.get('description'));
@@ -50,7 +50,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
         self.set('selectedEnvironment', environment);
         self.get('controllers.deployment').set('lifecycle_environment', environment);
         return self.set('showAlertMessage', true);
-      }, function(response) {
+      }, function() {
         alert('error saving environment');
       });
 

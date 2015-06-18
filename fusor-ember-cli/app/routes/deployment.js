@@ -15,7 +15,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
   },
 
   actions: {
-    installDeployment: function(options) {
+    installDeployment: function() {
       var self = this;
       var deployment = this.controllerFor('deployment');
       var token = $('meta[name="csrf-token"]').attr('content');
@@ -46,7 +46,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
               }, function () {
                 controller.set('errorMsg', 'Error in saving UUID of deployment task.');
                 controller.set('showErrorMessage', true);
-              })
+              });
             },
 
             error: function(response){
@@ -65,10 +65,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       var self = this;
       var token = $('meta[name="csrf-token"]').attr('content');
       var sessionPortal = this.modelFor('subscriptions');
-      var ownerKey = sessionPortal.get('ownerKey');
       var consumerUUID = sessionPortal.get('consumerUUID');
-      var self = this;
-      var deployment = this.controllerFor('deployment');
       var subscriptions = this.controllerFor('subscriptions/select-subscriptions').get('model');
 
       var controller = this.controllerFor('review/installation');
@@ -101,12 +98,12 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
                     "X-CSRF-Token": token,
                 },
 
-                success: function(response) {
+                success: function() {
                   console.log('successfully attached ' + item.qtyToAttach + ' subscription for pool ' + item.id);
                   self.send('installDeployment');
                 },
 
-                error: function(response){
+                error: function(){
                   console.log('error on attachSubscriptions');
                   return self.send('error');
                 }
@@ -129,7 +126,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       });
     },
 
-    error: function(reason, transition) {
+    error: function(reason) {
       console.log(reason);
       alert(reason.statusText);
     },

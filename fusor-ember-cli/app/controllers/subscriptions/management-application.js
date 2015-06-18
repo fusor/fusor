@@ -23,7 +23,7 @@ export default Ember.Controller.extend({
       this.set('upstream_consumer_name', managementApp.name);
     },
 
-    createSatellite: function(params) {
+    createSatellite: function() {
       var token = $('meta[name="csrf-token"]').attr('content');
       var newSatelliteName = this.get('newSatelliteName');
       var ownerKey = this.get('sessionPortal').get('ownerKey');
@@ -52,7 +52,7 @@ export default Ember.Controller.extend({
               console.log(response);
               resolve(response);
             },
-            error: function(response){
+            error: function(){
               console.log('error on createSatellite');
               return self.send('error');
             }

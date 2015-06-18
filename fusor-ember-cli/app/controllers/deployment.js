@@ -75,7 +75,7 @@ export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableT
 
   managementApplicationName: function() {
     if (Ember.isPresent(this.get('upstream_consumer_name'))) {
-      return this.get('upstream_consumer_name')
+      return this.get('upstream_consumer_name');
     } else {
       return this.get('controllers.subscriptions/credentials.organizationUpstreamConsumerName');
     }

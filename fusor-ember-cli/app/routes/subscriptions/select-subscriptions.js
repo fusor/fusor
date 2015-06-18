@@ -22,7 +22,7 @@ export default Ember.Route.extend({
           item['qtyAvailable'] = item.quantity - item.consumed;
           item['qtyAvailableOfTotal'] = item['qtyAvailable'] + ' of ' + item['qtyTotal'];
 
-          item['qtyAttached'] = 0 //default for loop
+          item['qtyAttached'] = 0; //default for loop
           results[0].forEach(function(entitlementItem) {
             if (entitlementItem.pool.id === item.id) {
               item['qtyAttached'] = item['qtyAttached'] + entitlementItem.quantity;
@@ -31,7 +31,7 @@ export default Ember.Route.extend({
       });
       return Ember.A(results[1]);
     }, function() {
-         self.modelFor('subscriptions').set('isAuthenticated')
+         self.modelFor('subscriptions').set('isAuthenticated');
          self.modelFor('subscriptions').save().then(function() {
            self.controllerFor('subscriptions.credentials').setProperties({
                                                                'showErrorMessage': true,
@@ -43,7 +43,7 @@ export default Ember.Route.extend({
   },
 
   actions: {
-      error: function(reason, transition) {
+      error: function(reason) {
         console.log(reason);
         alert(reason.statusText);
       },

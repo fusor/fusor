@@ -108,7 +108,7 @@ export default Ember.Controller.extend({
   }.property('isSubscriptions', 'isRhev', 'isOpenStack', 'isCloudForms'),
 
   lifecycleEnvironmentName: function() {
-    var name = this.get('controllers.deployment.lifecycle_environment.name')
+    var name = this.get('controllers.deployment.lifecycle_environment.name');
     if (name) {
       return name;
     } else {
@@ -120,7 +120,7 @@ export default Ember.Controller.extend({
     if (this.get('hasSubscriptionsToAttach')) {
       return "attachSubscriptions";
     } else {
-      return "installDeployment"
+      return "installDeployment";
     }
   }.property('hasSubscriptionsToAttach'),
 

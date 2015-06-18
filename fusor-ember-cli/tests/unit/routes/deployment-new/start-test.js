@@ -1,14 +1,11 @@
-import {
-  moduleFor,
-  test
-} from 'ember-qunit';
+import { moduleFor, test } from 'ember-qunit';
 
-moduleFor('route:deployment-new/start', 'DeploymentNewStartRoute', {
+moduleFor('route:deployment-new/start', 'Unit | Route | deployment new/start', {
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
 });
 
-test('it exists', function() {
+test('it exists', function(assert) {
   var route = this.subject();
-  ok(route);
+  assert.ok(route);
 });

@@ -1,15 +1,12 @@
-import {
-  moduleForModel,
-  test
-} from 'ember-qunit';
+import { moduleForModel, test } from 'ember-qunit';
 
-moduleForModel('organization', 'Organization', {
+moduleForModel('organization', 'Unit | Model | organization', {
   // Specify the other units that are required for this test.
-  needs: []
+  needs: ['model:lifecycle-environment']
 });
 
-test('it exists', function() {
+test('it exists', function(assert) {
   var model = this.subject();
   // var store = this.store();
-  ok(!!model);
+  assert.ok(!!model);
 });

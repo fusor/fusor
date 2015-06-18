@@ -14,7 +14,9 @@ export default Ember.Component.extend({
   }.property('isDisabled', 'active'),
 
   future: function() {
-    return this.get('isDisabled')
+    return this.get('isDisabled');
+
+
   }.property('isDisabled'),
 
   // isReviewTab: function() {

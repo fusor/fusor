@@ -1,9 +1,6 @@
-import {
-  moduleFor,
-  test
-} from 'ember-qunit';
+import { moduleFor, test } from 'ember-qunit';
 
-moduleFor('route:cloudforms/cfme-configuration', {
+moduleFor('route:cloudforms/cfme-configuration', 'Unit | Route | cloudforms/cfme configuration', {
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
 });

@@ -28,12 +28,12 @@ define('fusor-ember-cli/adapters/deployment', ['exports', 'ember-data'], functio
     });
 
 });
-define('fusor-ember-cli/adapters/foreman-task', ['exports'], function (exports) {
+define('fusor-ember-cli/adapters/foreman-task', ['exports', 'ember-data'], function (exports, DS) {
 
     'use strict';
 
     var token = $('meta[name="csrf-token"]').attr('content');
-    exports['default'] = DS.ActiveModelAdapter.extend({
+    exports['default'] = DS['default'].ActiveModelAdapter.extend({
         namespace: 'api/v21',
         headers: {
             'X-CSRF-Token': token
@@ -155,7 +155,7 @@ define('fusor-ember-cli/components/delete-deployment-button', ['exports', 'ember
   exports['default'] = Ember['default'].Component.extend({
     tagName: 'span',
 
-    click: function click(event) {
+    click: function click() {
       this.sendAction('action', this.get('deployment'));
     } });
 
@@ -495,7 +495,7 @@ define('fusor-ember-cli/components/env-path-list-item', ['exports', 'ember'], fu
       return 'env_' + this.get('env.id');
     }).property('env'),
 
-    click: function click(event) {
+    click: function click() {
       if (!this.get('disabled')) {
         return this.sendAction('action', this.get('env'));
       }
@@ -516,36 +516,6 @@ define('fusor-ember-cli/components/markdown-to-html', ['exports', 'ember-cli-sho
 	'use strict';
 
 	exports['default'] = MarkdownToHtml['default'];
-
-});
-define('fusor-ember-cli/components/modal-confirm', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports['default'] = Ember['default'].Component.extend({
-
-    dismissButtonLabel: (function () {
-      return this.getWithDefault('dismissLabel', 'Close');
-    }).property('dismissLabel'),
-
-    okButtonLabel: (function () {
-      return this.getWithDefault('okLabel', 'Yes');
-    }).property('okLabel'),
-
-    actions: {
-      ok: function ok() {
-        this.$('.modal').modal('hide');
-        this.sendAction('ok');
-      }
-    },
-
-    show: (function () {
-      this.$('.modal').modal().on('hidden.bs.modal', (function () {
-        this.sendAction('close');
-      }).bind(this));
-    }).on('didInsertElement')
-
-  });
 
 });
 define('fusor-ember-cli/components/node-profile', ['exports', 'ember'], function (exports, Ember) {
@@ -794,37 +764,6 @@ define('fusor-ember-cli/components/radio-button', ['exports', 'ember-radio-butto
 	exports['default'] = RadioButton['default'];
 
 });
-define('fusor-ember-cli/components/rchi-item', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports['default'] = Ember['default'].Component.extend({
-    classNames: ['rhci-item'],
-    classNameBindings: ['isChecked:rhci-item-selected'],
-
-    click: function click() {
-      if (!this.get('isDisabled')) {
-        this.set('isChecked', this.toggleProperty('isChecked'));
-      }
-    },
-
-    showMsgToSelect: (function () {
-      return this.get('isHover') && !this.get('isChecked');
-    }).property('isHover', 'isChecked'),
-
-    showMsgToDeselect: (function () {
-      return this.get('isHover') && this.get('isChecked');
-    }).property('isHover', 'isChecked'),
-
-    mouseEnter: function mouseEnter() {
-      this.set('isHover', true);
-    },
-
-    mouseLeave: function mouseLeave() {
-      this.set('isHover', false);
-    } });
-
-});
 define('fusor-ember-cli/components/review-link', ['exports', 'ember'], function (exports, Ember) {
 
   'use strict';
@@ -867,6 +806,37 @@ define('fusor-ember-cli/components/rhci-hover-text', ['exports', 'ember'], funct
 
   exports['default'] = Ember['default'].Component.extend({
     classNames: ['rhci-footer-hover'] });
+
+});
+define('fusor-ember-cli/components/rhci-item', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].Component.extend({
+    classNames: ['rhci-item'],
+    classNameBindings: ['isChecked:rhci-item-selected'],
+
+    click: function click() {
+      if (!this.get('isDisabled')) {
+        this.set('isChecked', this.toggleProperty('isChecked'));
+      }
+    },
+
+    showMsgToSelect: (function () {
+      return this.get('isHover') && !this.get('isChecked');
+    }).property('isHover', 'isChecked'),
+
+    showMsgToDeselect: (function () {
+      return this.get('isHover') && this.get('isChecked');
+    }).property('isHover', 'isChecked'),
+
+    mouseEnter: function mouseEnter() {
+      this.set('isHover', true);
+    },
+
+    mouseLeave: function mouseLeave() {
+      this.set('isHover', false);
+    } });
 
 });
 define('fusor-ember-cli/components/rhci-start', ['exports', 'ember'], function (exports, Ember) {
@@ -1052,7 +1022,7 @@ define('fusor-ember-cli/components/tr-management-app', ['exports', 'ember'], fun
     }).property('isChecked'),
 
     actions: {
-      changeManagementApp: function changeManagementApp(event) {
+      changeManagementApp: function changeManagementApp() {
         this.sendAction('action', this.get('managementApp'));
       }
     }
@@ -1071,7 +1041,7 @@ define('fusor-ember-cli/components/tr-organization', ['exports', 'ember'], funct
     classNameBindings: ['bgColor'],
 
     isChecked: (function () {
-      return this.get('selectedOrganization') == this.get('org');
+      return this.get('selectedOrganization') === this.get('org');
     }).property('selectedOrganization', 'org'),
 
     bgColor: (function () {
@@ -1081,7 +1051,7 @@ define('fusor-ember-cli/components/tr-organization', ['exports', 'ember'], funct
     }).property('isChecked'),
 
     actions: {
-      organizationChanged: function organizationChanged(event) {
+      organizationChanged: function organizationChanged() {
         this.sendAction('action', this.get('org'));
       }
     }
@@ -1158,25 +1128,6 @@ define('fusor-ember-cli/components/traffic-type', ['exports', 'ember'], function
   });
 
 });
-define('fusor-ember-cli/components/upstream-downstream', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports['default'] = Ember['default'].Component.extend({
-    classNames: ['pull-left', 'toggle_updown'],
-
-    actions: {
-
-      showUpstream: function showUpstream() {
-        this.set('isUpstream', true);
-      },
-
-      showDownstream: function showDownstream() {
-        this.set('isUpstream', false);
-      } }
-  });
-
-});
 define('fusor-ember-cli/components/vertical-tab', ['exports', 'ember'], function (exports, Ember) {
 
   'use strict';
@@ -1217,16 +1168,13 @@ define('fusor-ember-cli/controllers/application', ['exports', 'ember'], function
   'use strict';
 
   exports['default'] = Ember['default'].Controller.extend({
-    needs: ['side-menu', 'deployment'],
+    needs: ['deployment'],
 
     deployAsPlugin: true,
     isEmberCliMode: Ember['default'].computed.not('deployAsPlugin'),
     isUpstream: false,
 
     isContainer: Ember['default'].computed.alias('isUpstream'),
-
-    showMainMenu: Ember['default'].computed.and('isLoggedIn', 'isEmberCliMode'),
-    showSideMenu: Ember['default'].computed.alias('controllers.side-menu.showSideMenu'),
 
     isLoggedIn: true, //Ember.computed.alias("session.isAuthenticated"),
 
@@ -1253,7 +1201,7 @@ define('fusor-ember-cli/controllers/application', ['exports', 'ember'], function
     }).property('isStarted', 'isNewDeployment'),
 
     actions: {
-      invalidate: function invalidate(data) {
+      invalidate: function invalidate() {
         return this.transitionTo('login');
       },
 
@@ -1317,7 +1265,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'fusor-e
         return false;
       }
       var retVal = false;
-      profiles.forEach(function (item, index) {
+      profiles.forEach(function (item) {
         if (item.get('isControl')) {
           retVal = true;
         }
@@ -1331,7 +1279,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'fusor-e
         return false;
       }
       var retVal = false;
-      profiles.forEach(function (item, index) {
+      profiles.forEach(function (item) {
         if (item.get('isCompute')) {
           retVal = true;
         }
@@ -1345,7 +1293,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'fusor-e
         return false;
       }
       var retVal = false;
-      profiles.forEach(function (item, index) {
+      profiles.forEach(function (item) {
         if (item.get('isBlockStorage')) {
           retVal = true;
         }
@@ -1359,7 +1307,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'fusor-e
         return false;
       }
       var retVal = false;
-      profiles.forEach(function (item, index) {
+      profiles.forEach(function (item) {
         if (item.get('isObjectStorage')) {
           retVal = true;
         }
@@ -1443,15 +1391,6 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'fusor-e
     nextStepRouteName: (function () {
       return '';
     }).property('step2RoutName', 'step3RouteName')
-  });
-
-});
-define('fusor-ember-cli/controllers/cloudforms-storage-domain', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports['default'] = Ember['default'].Controller.extend({
-    nfsShare: '/export/export_domain'
   });
 
 });
@@ -1559,7 +1498,7 @@ define('fusor-ember-cli/controllers/configure-environment', ['exports', 'ember',
           self.set('selectedEnvironment', environment);
           self.get('controllers.deployment').set('lifecycle_environment', environment);
           return self.set('showAlertMessage', true);
-        }, function (response) {
+        }, function () {
           alert('error saving environment');
         });
       } }
@@ -1686,7 +1625,7 @@ define('fusor-ember-cli/controllers/deployment-new/satellite/configure-environme
           self.set('selectedEnvironment', environment);
           self.get('controllers.deployment-new').set('lifecycle_environment', environment);
           return self.set('showAlertMessage', true);
-        }, function (response) {
+        }, function () {
           alert('error saving environment');
         });
       } }
@@ -2026,13 +1965,6 @@ define('fusor-ember-cli/controllers/host', ['exports', 'ember'], function (expor
 	exports['default'] = Ember['default'].ObjectController.extend({});
 
 });
-define('fusor-ember-cli/controllers/hostgroup', ['exports', 'ember'], function (exports, Ember) {
-
-	'use strict';
-
-	exports['default'] = Ember['default'].ObjectController.extend({});
-
-});
 define('fusor-ember-cli/controllers/hypervisor', ['exports', 'ember'], function (exports, Ember) {
 
   'use strict';
@@ -2082,7 +2014,7 @@ define('fusor-ember-cli/controllers/hypervisor/discovered-host', ['exports', 'em
 
     // Filter out hosts selected as Hypervisor
     availableHosts: Ember['default'].computed.filter('allDiscoveredHosts', function (host, index, array) {
-      return host.get('id') != this.get('selectedRhevEngine.id');
+      return host.get('id') !== this.get('selectedRhevEngine.id');
     }).property('allDiscoveredHosts', 'selectedRhevEngine'),
 
     filteredHosts: (function () {
@@ -2451,7 +2383,7 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'fusor
         var edittedProfiles = this.get('edittedProfiles');
 
         edittedProfiles.setObjects(errorProfiles);
-        newProfiles.forEach(function (item, index) {
+        newProfiles.forEach(function (item) {
           edittedProfiles.pushObject(item);
         });
         this.set('edittedProfiles', edittedProfiles);
@@ -2464,7 +2396,7 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'fusor
         var edittedProfiles = this.get('edittedProfiles');
         var errorProfiles = this.get('errorProfiles');
         var newProfiles = this.get('newProfiles');
-        edittedProfiles.forEach(function (item, index) {
+        edittedProfiles.forEach(function (item) {
           item.isError = false;
           item.errorMessage = '';
           errorProfiles.removeObject(item);
@@ -2536,7 +2468,7 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'fusor
 
     doNextNodeRegistration: function doNextNodeRegistration() {
       if (this.get('modalOpen') === true) {
-        ;this.set('registrationPaused', true);
+        this.set('registrationPaused', true);
       } else {
         this.set('registrationPaused', false);
 
@@ -2911,7 +2843,7 @@ define('fusor-ember-cli/controllers/rhev-setup', ['exports', 'ember'], function 
     }).property('rhevSetup'),
 
     actions: {
-      rhevSetupChanged: function rhevSetupChanged(value) {
+      rhevSetupChanged: function rhevSetupChanged() {
         return this.get('controllers.deployment').set('rhev_is_self_hosted', this.get('isSelfHosted'));
       }
     }
@@ -3028,36 +2960,6 @@ define('fusor-ember-cli/controllers/satellite/subscription', ['exports', 'ember'
     registerOnParent: (function () {
       this.send('registerToggle', this);
     }).on('init') });
-
-});
-define('fusor-ember-cli/controllers/side-menu', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports['default'] = Ember['default'].Controller.extend({
-    showSideMenu: false,
-
-    uxDefaultNote: 'Note: Please write notes on [etherpad](http://rhci.pad.engineering.redhat.com/wireframe-mtg-10-30-2014), since this pad is ready-only and will note save anything.\n\n',
-    uxHeaderNote: '\n\n\n**UX Notes / Specs** for this route\n\n',
-    uxHeaderTodo: '\n\n\n\n\n\n\n**UX Todos / Questions** for this route\n\n',
-    uxNotes: 'none', //this should be overwritten by controller
-    uxTodos: 'none', //this should be overwritten by controller
-    uxNotesDisplay: (function () {
-      return this.get('uxDefaultNote') + this.get('uxHeaderNote') + this.get('uxNotes') + this.get('uxHeaderTodo') + this.get('uxTodos');
-    }).property('uxNotes'),
-
-    etherpadBaseUrl: 'http://rhci.pad.engineering.redhat.com/',
-    etherpadName: '',
-    etherpadUrl: (function () {
-      return this.get('etherpadBaseUrl') + this.get('etherpadName');
-    }).property('etherpadName'),
-
-    actions: {
-      toggleSideMenu: function toggleSideMenu() {
-        this.set('showSideMenu', this.toggleProperty('showSideMenu'));
-      }
-    }
-  });
 
 });
 define('fusor-ember-cli/controllers/storage', ['exports', 'ember'], function (exports, Ember) {
@@ -3212,7 +3114,7 @@ define('fusor-ember-cli/controllers/subscriptions/management-application', ['exp
         this.set('upstream_consumer_name', managementApp.name);
       },
 
-      createSatellite: function createSatellite(params) {
+      createSatellite: function createSatellite() {
         var token = $('meta[name="csrf-token"]').attr('content');
         var newSatelliteName = this.get('newSatelliteName');
         var ownerKey = this.get('sessionPortal').get('ownerKey');
@@ -3240,7 +3142,7 @@ define('fusor-ember-cli/controllers/subscriptions/management-application', ['exp
               console.log(response);
               resolve(response);
             },
-            error: function error(response) {
+            error: function error() {
               console.log('error on createSatellite');
               return self.send('error');
             }
@@ -3291,7 +3193,7 @@ define('fusor-ember-cli/controllers/subscriptions/select-subscriptions', ['expor
       return this.get('model').filterBy('isSelectedSubscription', true);
     }).property('model.@each.isSelectedSubscription'),
 
-    hasSubscriptionsToAttach: (function (key) {
+    hasSubscriptionsToAttach: (function () {
       var model = this.get('model');
       return model && model.isAny('isSelectedSubscription');
     }).property('model.@each.isSelectedSubscription'),
@@ -3464,19 +3366,6 @@ define('fusor-ember-cli/helpers/log', ['exports'], function (exports) {
 	//console.debug(str);
 
 });
-define('fusor-ember-cli/helpers/raw-text', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports.rawText = rawText;
-
-  function rawText(input) {
-    return new Handlebars.SafeString(input);
-  }
-
-  exports['default'] = Ember['default'].Handlebars.makeBoundHelper(rawText);
-
-});
 define('fusor-ember-cli/initialize', ['exports', 'ember', 'ember-idx-utils/config'], function (exports, Em, IdxConfig) {
 
   'use strict';
@@ -3620,7 +3509,7 @@ define('fusor-ember-cli/mixins/configure-environment-mixin', ['exports', 'ember'
       return this.get('libraryEnvironments').get('firstObject');
     }).property('libraryEnvironments'),
 
-    priorLibraryEnvironments: Ember['default'].computed.filter('lifecycleEnvironments', function (item, index, array) {
+    priorLibraryEnvironments: Ember['default'].computed.filter('lifecycleEnvironments', function (item) {
       return item.get('prior_id') === 1;
     }).property('lifecycleEnvironments.@each.[]', 'libraryEnv'),
 
@@ -4427,24 +4316,6 @@ define('fusor-ember-cli/models/host', ['exports', 'ember-data'], function (expor
     vendor: DS['default'].attr('string') });
 
 });
-define('fusor-ember-cli/models/hostgroup', ['exports', 'ember-data'], function (exports, DS) {
-
-  'use strict';
-
-  exports['default'] = DS['default'].Model.extend({
-    name: DS['default'].attr('string') });
-
-  // hostgroup: DS.attr('string'),
-  // mac: DS.attr('string'),
-  // domain: DS.attr('string'),
-  // subnet: DS.attr('string'),
-  // operatingsystem: DS.attr('string'),
-  // environment: DS.attr('string'),
-  // model: DS.attr('string'),
-  // location: DS.attr('string'),
-  // organization: DS.attr('string')
-
-});
 define('fusor-ember-cli/models/lifecycle-environment', ['exports', 'ember-data'], function (exports, DS) {
 
   'use strict';
@@ -4615,24 +4486,6 @@ define('fusor-ember-cli/models/traffic-type', ['exports', 'ember-data'], functio
   });
 
 });
-define('fusor-ember-cli/models/user', ['exports', 'ember-data'], function (exports, DS) {
-
-  'use strict';
-
-  exports['default'] = DS['default'].Model.extend({
-    login: DS['default'].attr('string'),
-    mail: DS['default'].attr('string'),
-    firstname: DS['default'].attr('string'),
-    lastname: DS['default'].attr('string'),
-    admin: DS['default'].attr('boolean'),
-    auth_source_id: DS['default'].attr('number'),
-    lastLoginOn: DS['default'].attr('date'),
-    fullName: (function () {
-      return this.get('firstname') + ' ' + this.get('lastname');
-    }).property('firstname', 'lastname')
-  });
-
-});
 define('fusor-ember-cli/router', ['exports', 'ember', 'fusor-ember-cli/config/environment'], function (exports, Ember, config) {
 
   'use strict';
@@ -4680,9 +4533,7 @@ define('fusor-ember-cli/router', ['exports', 'ember', 'fusor-ember-cli/config/en
         this.resource('engine', function () {
           this.route('discovered-host');
         });
-        this.resource('hypervisor', function () {
-          this.route('discovered-host');
-        });
+        this.resource('hypervisor', function () {});
         this.resource('rhev-options', { path: 'configuration' });
         this.resource('storage');
       });
@@ -4694,15 +4545,12 @@ define('fusor-ember-cli/router', ['exports', 'ember', 'fusor-ember-cli/config/en
       this.resource('cloudforms', function () {
         this.resource('where-install');
         this.route('cfme-configuration', { path: 'configuration' });
-        this.resource('cloudforms-storage-domain', { path: 'storage-domain' });
-        this.resource('cloudforms-vm', { path: 'vm' });
       });
       this.resource('subscriptions', function () {
         this.route('credentials');
         this.route('management-application');
         this.route('select-subscriptions', { path: 'select' });
       });
-      this.resource('products');
       this.resource('review', function () {
         this.route('installation');
         this.route('progress', function () {
@@ -4718,17 +4566,6 @@ define('fusor-ember-cli/router', ['exports', 'ember', 'fusor-ember-cli/config/en
         });
         this.route('summary');
       });
-    });
-
-    this.resource('hostgroups', function () {
-      this.resource('hostgroup', { path: '/:hostgroup_id' }, function () {
-        this.route('edit');
-      });
-    });
-
-    this.route('hostgroup/edit');
-    this.resource('discovered-hosts', function () {
-      this.resource('discovered-host', { path: '/:discovered_hosts_id' });
     });
   });
 
@@ -4759,20 +4596,6 @@ define('fusor-ember-cli/routes/assign-nodes', ['exports', 'ember', 'fusor-ember-
 	'use strict';
 
 	exports['default'] = Ember['default'].Route.extend(DeploymentRouteMixin['default'], {});
-
-});
-define('fusor-ember-cli/routes/cloudforms-storage-domain', ['exports', 'ember'], function (exports, Ember) {
-
-	'use strict';
-
-	exports['default'] = Ember['default'].Route.extend({});
-
-});
-define('fusor-ember-cli/routes/cloudforms-vm', ['exports', 'ember'], function (exports, Ember) {
-
-	'use strict';
-
-	exports['default'] = Ember['default'].Route.extend({});
 
 });
 define('fusor-ember-cli/routes/cloudforms', ['exports', 'ember'], function (exports, Ember) {
@@ -5023,7 +4846,7 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cl
     },
 
     actions: {
-      installDeployment: function installDeployment(options) {
+      installDeployment: function installDeployment() {
         var self = this;
         var deployment = this.controllerFor('deployment');
         var token = $('meta[name="csrf-token"]').attr('content');
@@ -5073,10 +4896,7 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cl
         var self = this;
         var token = $('meta[name="csrf-token"]').attr('content');
         var sessionPortal = this.modelFor('subscriptions');
-        var ownerKey = sessionPortal.get('ownerKey');
         var consumerUUID = sessionPortal.get('consumerUUID');
-        var self = this;
-        var deployment = this.controllerFor('deployment');
         var subscriptions = this.controllerFor('subscriptions/select-subscriptions').get('model');
 
         var controller = this.controllerFor('review/installation');
@@ -5108,12 +4928,12 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cl
                   'Content-Type': 'application/json',
                   'X-CSRF-Token': token },
 
-                success: function success(response) {
+                success: function success() {
                   console.log('successfully attached ' + item.qtyToAttach + ' subscription for pool ' + item.id);
                   self.send('installDeployment');
                 },
 
-                error: function error(response) {
+                error: function error() {
                   console.log('error on attachSubscriptions');
                   return self.send('error');
                 }
@@ -5135,7 +4955,7 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cl
         });
       },
 
-      error: function error(reason, transition) {
+      error: function error(reason) {
         console.log(reason);
         alert(reason.statusText);
       } }
@@ -5188,7 +5008,6 @@ define('fusor-ember-cli/routes/deployments', ['exports', 'ember'], function (exp
     actions: {
       deleteDeployment: function deleteDeployment(item) {
         this.controllerFor('deployments').set('isCloseModal', true);
-        var self = this;
         return this.store.find('deployment', item.get('id')).then(function (deployment) {
           deployment.deleteRecord();
           return deployment.save();
@@ -5196,20 +5015,6 @@ define('fusor-ember-cli/routes/deployments', ['exports', 'ember'], function (exp
       } }
 
   });
-
-});
-define('fusor-ember-cli/routes/discovered-host', ['exports', 'ember'], function (exports, Ember) {
-
-	'use strict';
-
-	exports['default'] = Ember['default'].Route.extend({});
-
-});
-define('fusor-ember-cli/routes/discovered-hosts', ['exports', 'ember'], function (exports, Ember) {
-
-	'use strict';
-
-	exports['default'] = Ember['default'].Route.extend({});
 
 });
 define('fusor-ember-cli/routes/engine', ['exports', 'ember'], function (exports, Ember) {
@@ -5250,91 +5055,6 @@ define('fusor-ember-cli/routes/engine/discovered-host', ['exports', 'ember'], fu
     } });
 
 });
-define('fusor-ember-cli/routes/engine/existing-host', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports['default'] = Ember['default'].Route.extend({
-    model: function model() {
-      return this.store.find('host', { type: 'Host::Managed' });
-    }
-  });
-
-});
-define('fusor-ember-cli/routes/engine/hypervisor', ['exports', 'ember'], function (exports, Ember) {
-
-	'use strict';
-
-	exports['default'] = Ember['default'].Route.extend({});
-
-});
-define('fusor-ember-cli/routes/engine/new-host', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports['default'] = Ember['default'].Route.extend({
-
-    setupController: function setupController(controller, model) {
-      controller.set('model', model);
-      controller.set('organizations', this.store.find('organization'));
-      controller.set('locations', this.store.find('location'));
-      controller.set('environments', this.store.find('environment'));
-      controller.set('hostgroups', this.store.find('hostgroup'));
-    },
-
-    activate: function activate() {
-      this.controllerFor('side-menu').set('etherpadName', '48'); //route-engine-new-host
-    },
-
-    deactivate: function deactivate() {
-      this.controllerFor('side-menu').set('etherpadName', '');
-    }
-  });
-
-});
-define('fusor-ember-cli/routes/hostgroup', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports['default'] = Ember['default'].Route.extend({
-    model: function model(params) {
-      return this.store.find('hostgroup', params.hostgroup_id);
-    },
-    activate: function activate() {
-      console.log('entered hostgroup route');
-      this.controllerFor('hostgroups').set('onShowPage', true);
-    },
-
-    deactivate: function deactivate() {
-      console.log('left hostgroup route');
-      this.controllerFor('hostgroups').set('onShowPage', false);
-    },
-
-    setupController: function setupController(controller, model) {
-      controller.set('model', model);
-      // TODO - how to make parent_id dynamic
-      controller.set('parent_hostgroup', this.store.find('hostgroup', 1));
-    } });
-
-});
-define('fusor-ember-cli/routes/hostgroup/edit', ['exports', 'ember'], function (exports, Ember) {
-
-	'use strict';
-
-	exports['default'] = Ember['default'].Route.extend({});
-
-});
-define('fusor-ember-cli/routes/hostgroups', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports['default'] = Ember['default'].Route.extend({
-    model: function model() {
-      return this.store.find('hostgroup');
-    }
-  });
-
-});
 define('fusor-ember-cli/routes/hypervisor', ['exports', 'ember'], function (exports, Ember) {
 
   'use strict';
@@ -5365,7 +5085,6 @@ define('fusor-ember-cli/routes/hypervisor/discovered-host', ['exports', 'ember']
     },
 
     deactivate: function deactivate() {
-      var model = this.modelFor('deployment');
       return this.send('saveHyperVisors', null);
     },
 
@@ -5405,32 +5124,6 @@ define('fusor-ember-cli/routes/hypervisor/discovered-host', ['exports', 'ember']
   });
 
 });
-define('fusor-ember-cli/routes/hypervisor/existing-host', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports['default'] = Ember['default'].Route.extend({
-    model: function model() {
-      return this.store.find('host', { type: 'Host::Managed' });
-    }
-  });
-
-});
-define('fusor-ember-cli/routes/hypervisor/new-host', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports['default'] = Ember['default'].Route.extend({
-    setupController: function setupController(controller, model) {
-      controller.set('model', model);
-      controller.set('organizations', this.store.find('organization'));
-      controller.set('locations', this.store.find('location'));
-      controller.set('environments', this.store.find('environment'));
-      controller.set('hostgroups', this.store.find('hostgroup'));
-    }
-  });
-
-});
 define('fusor-ember-cli/routes/index', ['exports', 'ember'], function (exports, Ember) {
 
   'use strict';
@@ -5441,48 +5134,6 @@ define('fusor-ember-cli/routes/index', ['exports', 'ember'], function (exports, 
       return this.transitionTo('deployment-new');
     }
 
-  });
-
-});
-define('fusor-ember-cli/routes/loggedin', ['exports', 'ember'], function (exports, Ember) {
-
-	'use strict';
-
-	exports['default'] = Ember['default'].Route.extend({});
-
-});
-define('fusor-ember-cli/routes/login', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports['default'] = Ember['default'].Route.extend({
-
-    beforeModel: function beforeModel(transition) {
-      if (this.controllerFor('application').get('deployAsPlugin') || this.get('session.isAuthenticated')) {
-        return this.transitionTo('deployment-new.start');
-      };
-    },
-
-    setupController: function setupController(controller, model) {
-      controller.set('model', model);
-      controller.set('errorMessage', null);
-    }
-
-  });
-
-});
-define('fusor-ember-cli/routes/networking', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports['default'] = Ember['default'].Route.extend({
-    activate: function activate() {
-      this.controllerFor('side-menu').set('etherpadName', '51'); //route-rhev-networking
-    },
-
-    deactivate: function deactivate() {
-      this.controllerFor('side-menu').set('etherpadName', '');
-    }
   });
 
 });
@@ -5538,18 +5189,6 @@ define('fusor-ember-cli/routes/openstack/index', ['exports', 'ember'], function 
     beforeModel: function beforeModel() {
       this.transitionTo('register-nodes');
     }
-  });
-
-});
-define('fusor-ember-cli/routes/products', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports['default'] = Ember['default'].Route.extend({
-    model: function model() {
-      return this.store.find('product');
-    }
-
   });
 
 });
@@ -5630,7 +5269,7 @@ define('fusor-ember-cli/routes/review/progress/details', ['exports', 'ember'], f
   'use strict';
 
   exports['default'] = Ember['default'].Route.extend({
-    model: function model(params) {
+    model: function model() {
       //return Ember.$.getJSON('/api/v21/foreman_tasks');
       //var uud = this.modelFor()
       // return this.store.find('foreman-task', {uuid: 'db25a76f-e344-48ba-ac77-f29303586dbe'});
@@ -5808,37 +5447,6 @@ define('fusor-ember-cli/routes/satellite/index', ['exports', 'ember'], function 
   });
 
 });
-define('fusor-ember-cli/routes/setpassword', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports['default'] = Ember['default'].Route.extend({
-    beforeModel: function beforeModel() {
-      if (this.controllerFor('application').get('isPasswordSet')) {
-        this.transitionTo('deployment-new.start');
-      }
-    },
-    actions: {
-      updatePassword: function updatePassword() {
-        this.controllerFor('application').set('isPasswordSet', true);
-        this.transitionTo('deployment-new.start');
-      }
-    }
-
-  });
-
-});
-define('fusor-ember-cli/routes/single-deployment', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports['default'] = Ember['default'].Route.extend({
-    model: function model(params) {
-      return this.store.find('deployment', params.deployment_id);
-    }
-  });
-
-});
 define('fusor-ember-cli/routes/storage', ['exports', 'ember'], function (exports, Ember) {
 
   'use strict';
@@ -5879,7 +5487,7 @@ define('fusor-ember-cli/routes/subscriptions', ['exports', 'ember'], function (e
     },
 
     actions: {
-      error: function error(reason, transition) {
+      error: function error(reason) {
         console.log(reason);
         alert(reason.statusText);
       }
@@ -5897,8 +5505,6 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
       controller.set('model', model);
       controller.set('showErrorMessage', false);
 
-      var sessionPortal = this.modelFor('subscriptions');
-      var upstream_consumer_uuid = this.modelFor('deployment').get('upstream_consumer_uuid');
       // check if org has upstream UUID using Katello V2 API
       var orgID = this.modelFor('deployment').get('organization.id');
       var url = '/katello/api/v2/organizations/' + orgID;
@@ -5970,7 +5576,6 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
 
       logoutPortal: function logoutPortal() {
         var self = this;
-        var controller = this.controllerFor('subscriptions/credentials');
         var token = $('meta[name="csrf-token"]').attr('content');
 
         return new Ember['default'].RSVP.Promise(function (resolve, reject) {
@@ -6005,7 +5610,7 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
         if (sessionPortal) {
           sessionPortal.set('identification', identification);
         } else {
-          var sessionPortal = self.store.createRecord('session-portal', { identification: identification });
+          sessionPortal = self.store.createRecord('session-portal', { identification: identification });
         }
         sessionPortal.save().then(function (result) {
           console.log('saved session-portal');
@@ -6023,7 +5628,6 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
 
         var controller = this.controllerFor('subscriptions/credentials');
         var identification = controller.get('identification');
-        var password = controller.get('password');
         var token = $('meta[name="csrf-token"]').attr('content');
         var self = this;
         var url = '/customer_portal/users/' + identification + '/owners';
@@ -6210,7 +5814,7 @@ define('fusor-ember-cli/routes/subscriptions/select-subscriptions', ['exports', 
     },
 
     actions: {
-      error: function error(reason, transition) {
+      error: function error(reason) {
         console.log(reason);
         alert(reason.statusText);
       } }
@@ -6257,22 +5861,6 @@ define('fusor-ember-cli/serializers/foreman-task', ['exports', 'ember-data'], fu
       humanized: { embedded: 'always' }
     }
   });
-
-});
-define('fusor-ember-cli/serializers/puppetclass', ['exports', 'ember-data'], function (exports, DS) {
-
-   'use strict';
-
-   exports['default'] = DS['default'].RESTSerializer.extend({
-      extractArray: function extractArray(store, type, payload) {
-         // 'foreman-experimental-ui@model:setting:'
-         var wrapped_payload = {};
-         var model_name = type.toString().split(':')[1];
-         wrapped_payload[model_name] = $.map(payload['results'], function (v) {
-            return v;
-         });
-         return this._super(store, type, wrapped_payload);
-      } });
 
 });
 define('fusor-ember-cli/services/validations', ['exports', 'ember'], function (exports, Ember) {
@@ -13260,9 +12848,9 @@ define('fusor-ember-cli/templates/components/rhci-start', ['exports'], function 
         var morph5 = dom.createMorphAt(element1,1,1);
         var morph6 = dom.createMorphAt(element1,3,3);
         content(env, morph0, context, "nameRedHat");
-        inline(env, morph1, context, "rchi-item", [], {"srcImage": get(env, context, "imgRhev"), "isChecked": get(env, context, "isRhev"), "name": get(env, context, "nameRhev"), "cssId": "is_rhev"});
-        inline(env, morph2, context, "rchi-item", [], {"srcImage": get(env, context, "imgOpenStack"), "isChecked": get(env, context, "isOpenStack"), "name": get(env, context, "nameOpenStack"), "cssId": "is_openstack", "isDisabled": true});
-        inline(env, morph3, context, "rchi-item", [], {"srcImage": get(env, context, "imgCloudForms"), "isChecked": get(env, context, "isCloudForms"), "name": get(env, context, "nameCloudForms"), "cssId": "is_cloudforms"});
+        inline(env, morph1, context, "rhci-item", [], {"srcImage": get(env, context, "imgRhev"), "isChecked": get(env, context, "isRhev"), "name": get(env, context, "nameRhev"), "cssId": "is_rhev"});
+        inline(env, morph2, context, "rhci-item", [], {"srcImage": get(env, context, "imgOpenStack"), "isChecked": get(env, context, "isOpenStack"), "name": get(env, context, "nameOpenStack"), "cssId": "is_openstack", "isDisabled": true});
+        inline(env, morph3, context, "rhci-item", [], {"srcImage": get(env, context, "imgCloudForms"), "isChecked": get(env, context, "isCloudForms"), "name": get(env, context, "nameCloudForms"), "cssId": "is_cloudforms"});
         block(env, morph4, context, "unless", [get(env, context, "isUpstream")], {}, child0, null);
         block(env, morph5, context, "link-to", ["deployments"], {"class": "btn btn-default"}, child1, null);
         block(env, morph6, context, "link-to", [get(env, context, "satelliteTabRouteName")], {"class": "btn btn-primary", "disabled": get(env, context, "disableNextOnStart")}, child2, null);
@@ -19183,102 +18771,6 @@ define('fusor-ember-cli/templates/devonly', ['exports'], function (exports) {
   }()));
 
 });
-define('fusor-ember-cli/templates/discovered-host', ['exports'], function (exports) {
-
-  'use strict';
-
-  exports['default'] = Ember.HTMLBars.template((function() {
-    return {
-      isHTMLBars: true,
-      revision: "Ember@1.11.1",
-      blockParams: 0,
-      cachedFragment: null,
-      hasRendered: false,
-      build: function build(dom) {
-        var el0 = dom.createDocumentFragment();
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        return el0;
-      },
-      render: function render(context, env, contextualElement) {
-        var dom = env.dom;
-        var hooks = env.hooks, content = hooks.content;
-        dom.detectNamespace(contextualElement);
-        var fragment;
-        if (env.useFragmentCache && dom.canClone) {
-          if (this.cachedFragment === null) {
-            fragment = this.build(dom);
-            if (this.hasRendered) {
-              this.cachedFragment = fragment;
-            } else {
-              this.hasRendered = true;
-            }
-          }
-          if (this.cachedFragment) {
-            fragment = dom.cloneNode(this.cachedFragment, true);
-          }
-        } else {
-          fragment = this.build(dom);
-        }
-        var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
-        dom.insertBoundary(fragment, 0);
-        content(env, morph0, context, "outlet");
-        return fragment;
-      }
-    };
-  }()));
-
-});
-define('fusor-ember-cli/templates/discovered-hosts', ['exports'], function (exports) {
-
-  'use strict';
-
-  exports['default'] = Ember.HTMLBars.template((function() {
-    return {
-      isHTMLBars: true,
-      revision: "Ember@1.11.1",
-      blockParams: 0,
-      cachedFragment: null,
-      hasRendered: false,
-      build: function build(dom) {
-        var el0 = dom.createDocumentFragment();
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        return el0;
-      },
-      render: function render(context, env, contextualElement) {
-        var dom = env.dom;
-        var hooks = env.hooks, content = hooks.content;
-        dom.detectNamespace(contextualElement);
-        var fragment;
-        if (env.useFragmentCache && dom.canClone) {
-          if (this.cachedFragment === null) {
-            fragment = this.build(dom);
-            if (this.hasRendered) {
-              this.cachedFragment = fragment;
-            } else {
-              this.hasRendered = true;
-            }
-          }
-          if (this.cachedFragment) {
-            fragment = dom.cloneNode(this.cachedFragment, true);
-          }
-        } else {
-          fragment = this.build(dom);
-        }
-        var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
-        dom.insertBoundary(fragment, 0);
-        content(env, morph0, context, "outlet");
-        return fragment;
-      }
-    };
-  }()));
-
-});
 define('fusor-ember-cli/templates/engine', ['exports'], function (exports) {
 
   'use strict';
@@ -21476,42 +20968,6 @@ define('fusor-ember-cli/templates/logout-modal', ['exports'], function (exports)
   'use strict';
 
   exports['default'] = Ember.HTMLBars.template((function() {
-    var child0 = (function() {
-      return {
-        isHTMLBars: true,
-        revision: "Ember@1.11.1",
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("  Are you sure you want to logout?\n");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          return fragment;
-        }
-      };
-    }());
     return {
       isHTMLBars: true,
       revision: "Ember@1.11.1",
@@ -21520,13 +20976,10 @@ define('fusor-ember-cli/templates/logout-modal', ['exports'], function (exports)
       hasRendered: false,
       build: function build(dom) {
         var el0 = dom.createDocumentFragment();
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
         return el0;
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, block = hooks.block;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -21544,10 +20997,6 @@ define('fusor-ember-cli/templates/logout-modal', ['exports'], function (exports)
         } else {
           fragment = this.build(dom);
         }
-        var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
-        dom.insertBoundary(fragment, null);
-        dom.insertBoundary(fragment, 0);
-        block(env, morph0, context, "modal-confirm", [], {"title": "Logout", "ok": "logout", "close": "removeModal"}, child0, null);
         return fragment;
       }
     };
@@ -24372,347 +23821,6 @@ define('fusor-ember-cli/templates/openstack/index', ['exports'], function (expor
         var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
         dom.insertBoundary(fragment, 0);
         content(env, morph0, context, "outlet");
-        return fragment;
-      }
-    };
-  }()));
-
-});
-define('fusor-ember-cli/templates/products', ['exports'], function (exports) {
-
-  'use strict';
-
-  exports['default'] = Ember.HTMLBars.template((function() {
-    var child0 = (function() {
-      return {
-        isHTMLBars: true,
-        revision: "Ember@1.11.1",
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("  Syncronizing content (");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createComment("");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("% complete)\n  ");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createComment("");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          var hooks = env.hooks, content = hooks.content, inline = hooks.inline;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
-          var morph1 = dom.createMorphAt(fragment,3,3,contextualElement);
-          content(env, morph0, context, "prog");
-          inline(env, morph1, context, "bs-progress", [], {"progressBinding": "prog", "type": "success", "stripped": true, "animated": true});
-          return fragment;
-        }
-      };
-    }());
-    var child1 = (function() {
-      return {
-        isHTMLBars: true,
-        revision: "Ember@1.11.1",
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("  ");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createElement("div");
-          dom.setAttribute(el1,"class","alert alert-success rhci-alert");
-          var el2 = dom.createTextNode("\n   Yeah! You successfully synced content!\n  ");
-          dom.appendChild(el1, el2);
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          return fragment;
-        }
-      };
-    }());
-    var child2 = (function() {
-      return {
-        isHTMLBars: true,
-        revision: "Ember@1.11.1",
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("    ");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createElement("tr");
-          var el2 = dom.createTextNode("\n      ");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createElement("td");
-          var el3 = dom.createTextNode(" + ");
-          dom.appendChild(el2, el3);
-          dom.appendChild(el1, el2);
-          var el2 = dom.createTextNode("\n      ");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createElement("td");
-          var el3 = dom.createTextNode(" ");
-          dom.appendChild(el2, el3);
-          var el3 = dom.createComment("");
-          dom.appendChild(el2, el3);
-          var el3 = dom.createTextNode(" ");
-          dom.appendChild(el2, el3);
-          dom.appendChild(el1, el2);
-          var el2 = dom.createTextNode("\n      ");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createElement("td");
-          var el3 = dom.createTextNode(" ");
-          dom.appendChild(el2, el3);
-          var el3 = dom.createComment("");
-          dom.appendChild(el2, el3);
-          var el3 = dom.createTextNode(" ");
-          dom.appendChild(el2, el3);
-          dom.appendChild(el1, el2);
-          var el2 = dom.createTextNode("\n      ");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createElement("td");
-          var el3 = dom.createTextNode(" ");
-          dom.appendChild(el2, el3);
-          var el3 = dom.createComment("");
-          dom.appendChild(el2, el3);
-          var el3 = dom.createTextNode(" ");
-          dom.appendChild(el2, el3);
-          dom.appendChild(el1, el2);
-          var el2 = dom.createTextNode("\n      ");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createElement("td");
-          var el3 = dom.createTextNode(" ");
-          dom.appendChild(el2, el3);
-          var el3 = dom.createComment("");
-          dom.appendChild(el2, el3);
-          var el3 = dom.createTextNode(" ");
-          dom.appendChild(el2, el3);
-          dom.appendChild(el1, el2);
-          var el2 = dom.createTextNode("\n      ");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createElement("td");
-          var el3 = dom.createTextNode(" ");
-          dom.appendChild(el2, el3);
-          var el3 = dom.createComment("");
-          dom.appendChild(el2, el3);
-          var el3 = dom.createTextNode(" ");
-          dom.appendChild(el2, el3);
-          dom.appendChild(el1, el2);
-          var el2 = dom.createTextNode("\n    ");
-          dom.appendChild(el1, el2);
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          var hooks = env.hooks, content = hooks.content;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          var element0 = dom.childAt(fragment, [1]);
-          var morph0 = dom.createMorphAt(dom.childAt(element0, [3]),1,1);
-          var morph1 = dom.createMorphAt(dom.childAt(element0, [5]),1,1);
-          var morph2 = dom.createMorphAt(dom.childAt(element0, [7]),1,1);
-          var morph3 = dom.createMorphAt(dom.childAt(element0, [9]),1,1);
-          var morph4 = dom.createMorphAt(dom.childAt(element0, [11]),1,1);
-          content(env, morph0, context, "name");
-          content(env, morph1, context, "start_time");
-          content(env, morph2, context, "duration");
-          content(env, morph3, context, "size");
-          content(env, morph4, context, "result");
-          return fragment;
-        }
-      };
-    }());
-    return {
-      isHTMLBars: true,
-      revision: "Ember@1.11.1",
-      blockParams: 0,
-      cachedFragment: null,
-      hasRendered: false,
-      build: function build(dom) {
-        var el0 = dom.createDocumentFragment();
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n\n\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("br");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("table");
-        dom.setAttribute(el1,"class","table table-bordered table-striped small");
-        var el2 = dom.createTextNode("\n  ");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createElement("thead");
-        var el3 = dom.createTextNode("\n    ");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createElement("tr");
-        var el4 = dom.createTextNode("\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("th");
-        var el5 = dom.createTextNode(" ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("th");
-        var el5 = dom.createTextNode(" Product ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("th");
-        var el5 = dom.createTextNode(" Start Time ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("th");
-        var el5 = dom.createTextNode(" Duration ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("th");
-        var el5 = dom.createTextNode(" Size ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("th");
-        var el5 = dom.createTextNode(" Result ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n    ");
-        dom.appendChild(el3, el4);
-        dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("\n    ");
-        dom.appendChild(el2, el3);
-        dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\n\n  ");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createElement("tbody");
-        var el3 = dom.createTextNode("\n");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createComment("");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("  ");
-        dom.appendChild(el2, el3);
-        dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\n");
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("br");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("button");
-        dom.setAttribute(el1,"class","btn btn-success");
-        var el2 = dom.createTextNode("Sync Products");
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n");
-        dom.appendChild(el0, el1);
-        return el0;
-      },
-      render: function render(context, env, contextualElement) {
-        var dom = env.dom;
-        var hooks = env.hooks, get = hooks.get, block = hooks.block, element = hooks.element;
-        dom.detectNamespace(contextualElement);
-        var fragment;
-        if (env.useFragmentCache && dom.canClone) {
-          if (this.cachedFragment === null) {
-            fragment = this.build(dom);
-            if (this.hasRendered) {
-              this.cachedFragment = fragment;
-            } else {
-              this.hasRendered = true;
-            }
-          }
-          if (this.cachedFragment) {
-            fragment = dom.cloneNode(this.cachedFragment, true);
-          }
-        } else {
-          fragment = this.build(dom);
-        }
-        var element1 = dom.childAt(fragment, [10]);
-        var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
-        var morph1 = dom.createMorphAt(fragment,2,2,contextualElement);
-        var morph2 = dom.createMorphAt(dom.childAt(fragment, [6, 3]),1,1);
-        dom.insertBoundary(fragment, 0);
-        block(env, morph0, context, "if", [get(env, context, "syncingInProgress")], {}, child0, null);
-        block(env, morph1, context, "if", [get(env, context, "showSuccessMessage")], {}, child1, null);
-        block(env, morph2, context, "each", [get(env, context, "controller.model")], {"itemController": "satellite/product"}, child2, null);
-        element(env, element1, context, "bind-attr", [], {"disabled": get(env, context, "disableSyncButton")});
-        element(env, element1, context, "action", ["syncProducts"], {});
         return fragment;
       }
     };
@@ -30627,183 +29735,6 @@ define('fusor-ember-cli/templates/satellite/loading', ['exports'], function (exp
   }()));
 
 });
-define('fusor-ember-cli/templates/setpassword', ['exports'], function (exports) {
-
-  'use strict';
-
-  exports['default'] = Ember.HTMLBars.template((function() {
-    return {
-      isHTMLBars: true,
-      revision: "Ember@1.11.1",
-      blockParams: 0,
-      cachedFragment: null,
-      hasRendered: false,
-      build: function build(dom) {
-        var el0 = dom.createDocumentFragment();
-        var el1 = dom.createElement("br");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("h1");
-        var el2 = dom.createTextNode("Change Administrator Password");
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("br");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\nIt is required that you change the admin password the first time that you log in.\n\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("br");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("br");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n    ");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("div");
-        dom.setAttribute(el1,"class","col-sm-8 col-md-8 col-lg-8 login");
-        var el2 = dom.createTextNode("\n      ");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createElement("form");
-        dom.setAttribute(el2,"accept-charset","UTF-8");
-        dom.setAttribute(el2,"action","/users/login");
-        dom.setAttribute(el2,"class","form-horizontal");
-        dom.setAttribute(el2,"id","login-form");
-        dom.setAttribute(el2,"method","post");
-        var el3 = dom.createElement("div");
-        dom.setAttribute(el3,"style","margin:0;padding:0;display:inline");
-        var el4 = dom.createElement("input");
-        dom.setAttribute(el4,"name","utf8");
-        dom.setAttribute(el4,"type","hidden");
-        dom.setAttribute(el4,"value","✓");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("input");
-        dom.setAttribute(el4,"name","authenticity_token");
-        dom.setAttribute(el4,"type","hidden");
-        dom.setAttribute(el4,"value","1f770GegsrWb4ZJIC0UkSEkvBVG9MnRJ7jypTsrjeLU=");
-        dom.appendChild(el3, el4);
-        dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("\n          ");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createElement("div");
-        dom.setAttribute(el3,"class","form-group");
-        var el4 = dom.createTextNode("\n            ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("label");
-        dom.setAttribute(el4,"class","col-sm-3 control-label");
-        dom.setAttribute(el4,"for","login_login");
-        var el5 = dom.createTextNode("Password *");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n            ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("div");
-        dom.setAttribute(el4,"class","col-sm-9");
-        var el5 = dom.createTextNode("\n              ");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createElement("input");
-        dom.setAttribute(el5,"class","form-control");
-        dom.setAttribute(el5,"focus_on_load","true");
-        dom.setAttribute(el5,"id","login_login");
-        dom.setAttribute(el5,"name","login[login]");
-        dom.setAttribute(el5,"size","30");
-        dom.setAttribute(el5,"type","text");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("\n            ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n          ");
-        dom.appendChild(el3, el4);
-        dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("\n          ");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createElement("div");
-        dom.setAttribute(el3,"class","form-group");
-        var el4 = dom.createTextNode("\n            ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("label");
-        dom.setAttribute(el4,"class","col-sm-3 control-label");
-        dom.setAttribute(el4,"for","login_password");
-        var el5 = dom.createTextNode("Confirm Password *");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n            ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("div");
-        dom.setAttribute(el4,"class","col-sm-9");
-        var el5 = dom.createTextNode("\n              ");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createElement("input");
-        dom.setAttribute(el5,"class","form-control");
-        dom.setAttribute(el5,"id","login_password");
-        dom.setAttribute(el5,"name","login[password]");
-        dom.setAttribute(el5,"type","password");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("\n            ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n          ");
-        dom.appendChild(el3, el4);
-        dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("\n          ");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createElement("div");
-        dom.setAttribute(el3,"class","form-group");
-        var el4 = dom.createTextNode("\n            ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("div");
-        dom.setAttribute(el4,"class","col-xs-offset-8 col-xs-4 submit");
-        var el5 = dom.createTextNode("\n            ");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createElement("button");
-        dom.setAttribute(el5,"class","btn btn-primary");
-        var el6 = dom.createTextNode("Change Password");
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("\n            ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n          ");
-        dom.appendChild(el3, el4);
-        dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("\n      ");
-        dom.appendChild(el2, el3);
-        dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\n  ");
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n");
-        dom.appendChild(el0, el1);
-        return el0;
-      },
-      render: function render(context, env, contextualElement) {
-        var dom = env.dom;
-        var hooks = env.hooks, element = hooks.element;
-        dom.detectNamespace(contextualElement);
-        var fragment;
-        if (env.useFragmentCache && dom.canClone) {
-          if (this.cachedFragment === null) {
-            fragment = this.build(dom);
-            if (this.hasRendered) {
-              this.cachedFragment = fragment;
-            } else {
-              this.hasRendered = true;
-            }
-          }
-          if (this.cachedFragment) {
-            fragment = dom.cloneNode(this.cachedFragment, true);
-          }
-        } else {
-          fragment = this.build(dom);
-        }
-        var element0 = dom.childAt(fragment, [9, 1, 6, 1, 1]);
-        element(env, element0, context, "action", ["updatePassword"], {});
-        return fragment;
-      }
-    };
-  }()));
-
-});
 define('fusor-ember-cli/templates/side-menu', ['exports'], function (exports) {
 
   'use strict';
@@ -30922,66 +29853,6 @@ define('fusor-ember-cli/templates/side-menu.loading', ['exports'], function (exp
         } else {
           fragment = this.build(dom);
         }
-        return fragment;
-      }
-    };
-  }()));
-
-});
-define('fusor-ember-cli/templates/single-deployment', ['exports'], function (exports) {
-
-  'use strict';
-
-  exports['default'] = Ember.HTMLBars.template((function() {
-    return {
-      isHTMLBars: true,
-      revision: "Ember@1.11.1",
-      blockParams: 0,
-      cachedFragment: null,
-      hasRendered: false,
-      build: function build(dom) {
-        var el0 = dom.createDocumentFragment();
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode(" - ");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        return el0;
-      },
-      render: function render(context, env, contextualElement) {
-        var dom = env.dom;
-        var hooks = env.hooks, content = hooks.content;
-        dom.detectNamespace(contextualElement);
-        var fragment;
-        if (env.useFragmentCache && dom.canClone) {
-          if (this.cachedFragment === null) {
-            fragment = this.build(dom);
-            if (this.hasRendered) {
-              this.cachedFragment = fragment;
-            } else {
-              this.hasRendered = true;
-            }
-          }
-          if (this.cachedFragment) {
-            fragment = dom.cloneNode(this.cachedFragment, true);
-          }
-        } else {
-          fragment = this.build(dom);
-        }
-        var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
-        var morph1 = dom.createMorphAt(fragment,2,2,contextualElement);
-        var morph2 = dom.createMorphAt(fragment,4,4,contextualElement);
-        dom.insertBoundary(fragment, 0);
-        content(env, morph0, context, "id");
-        content(env, morph1, context, "name");
-        content(env, morph2, context, "outlet");
         return fragment;
       }
     };
@@ -33744,13 +32615,48 @@ define('fusor-ember-cli/templates/where-install', ['exports'], function (exports
   }()));
 
 });
+define('fusor-ember-cli/tests/acceptance/user-can-view-deployments-test', ['ember', 'qunit', 'fusor-ember-cli/tests/helpers/start-app'], function (Ember, qunit, startApp) {
+
+  'use strict';
+
+  var application;
+
+  qunit.module('Acceptance | user can view deployments', {
+    beforeEach: function beforeEach() {
+      application = startApp['default']();
+    },
+
+    afterEach: function afterEach() {
+      Ember['default'].run(application, 'destroy');
+    }
+  });
+
+  qunit.test('visiting /user-can-view-deployments', function (assert) {
+    visit('/deployments');
+
+    andThen(function () {
+      assert.equal(currentURL(), '/deployments');
+    });
+  });
+
+});
+define('fusor-ember-cli/tests/acceptance/user-can-view-deployments-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - acceptance');
+  test('acceptance/user-can-view-deployments-test.js should pass jshint', function() { 
+    ok(true, 'acceptance/user-can-view-deployments-test.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/adapters/application.jshint', function () {
 
   'use strict';
 
   module('JSHint - adapters');
   test('adapters/application.js should pass jshint', function() { 
-    ok(false, 'adapters/application.js should pass jshint.\nadapters/application.js: line 3, col 13, \'$\' is not defined.\n\n1 error'); 
+    ok(true, 'adapters/application.js should pass jshint.'); 
   });
 
 });
@@ -33760,7 +32666,7 @@ define('fusor-ember-cli/tests/adapters/deployment.jshint', function () {
 
   module('JSHint - adapters');
   test('adapters/deployment.js should pass jshint', function() { 
-    ok(false, 'adapters/deployment.js should pass jshint.\nadapters/deployment.js: line 3, col 13, \'$\' is not defined.\n\n1 error'); 
+    ok(true, 'adapters/deployment.js should pass jshint.'); 
   });
 
 });
@@ -33770,7 +32676,7 @@ define('fusor-ember-cli/tests/adapters/foreman-task.jshint', function () {
 
   module('JSHint - adapters');
   test('adapters/foreman-task.js should pass jshint', function() { 
-    ok(false, 'adapters/foreman-task.js should pass jshint.\nadapters/foreman-task.js: line 1, col 13, \'$\' is not defined.\nadapters/foreman-task.js: line 2, col 16, \'DS\' is not defined.\n\n2 errors'); 
+    ok(true, 'adapters/foreman-task.js should pass jshint.'); 
   });
 
 });
@@ -33840,7 +32746,7 @@ define('fusor-ember-cli/tests/components/delete-deployment-button.jshint', funct
 
   module('JSHint - components');
   test('components/delete-deployment-button.js should pass jshint', function() { 
-    ok(false, 'components/delete-deployment-button.js should pass jshint.\ncomponents/delete-deployment-button.js: line 6, col 19, \'event\' is defined but never used.\n\n1 error'); 
+    ok(true, 'components/delete-deployment-button.js should pass jshint.'); 
   });
 
 });
@@ -33850,7 +32756,7 @@ define('fusor-ember-cli/tests/components/deployment-role.jshint', function () {
 
   module('JSHint - components');
   test('components/deployment-role.js should pass jshint', function() { 
-    ok(false, 'components/deployment-role.js should pass jshint.\ncomponents/deployment-role.js: line 54, col 20, Expected \'===\' and instead saw \'==\'.\n\n1 error'); 
+    ok(true, 'components/deployment-role.js should pass jshint.'); 
   });
 
 });
@@ -33860,17 +32766,7 @@ define('fusor-ember-cli/tests/components/env-path-list-item.jshint', function ()
 
   module('JSHint - components');
   test('components/env-path-list-item.js should pass jshint', function() { 
-    ok(false, 'components/env-path-list-item.js should pass jshint.\ncomponents/env-path-list-item.js: line 25, col 19, \'event\' is defined but never used.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/components/modal-confirm.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - components');
-  test('components/modal-confirm.js should pass jshint', function() { 
-    ok(true, 'components/modal-confirm.js should pass jshint.'); 
+    ok(true, 'components/env-path-list-item.js should pass jshint.'); 
   });
 
 });
@@ -33880,7 +32776,7 @@ define('fusor-ember-cli/tests/components/node-profile.jshint', function () {
 
   module('JSHint - components');
   test('components/node-profile.js should pass jshint', function() { 
-    ok(false, 'components/node-profile.js should pass jshint.\ncomponents/node-profile.js: line 151, col 5, \'$\' is not defined.\ncomponents/node-profile.js: line 63, col 37, \'index\' is defined but never used.\ncomponents/node-profile.js: line 77, col 37, \'index\' is defined but never used.\ncomponents/node-profile.js: line 91, col 37, \'index\' is defined but never used.\ncomponents/node-profile.js: line 105, col 37, \'index\' is defined but never used.\ncomponents/node-profile.js: line 127, col 30, \'profile\' is defined but never used.\n\n6 errors'); 
+    ok(true, 'components/node-profile.js should pass jshint.'); 
   });
 
 });
@@ -33891,16 +32787,6 @@ define('fusor-ember-cli/tests/components/radio-button-f.jshint', function () {
   module('JSHint - components');
   test('components/radio-button-f.js should pass jshint', function() { 
     ok(true, 'components/radio-button-f.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/components/rchi-item.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - components');
-  test('components/rchi-item.js should pass jshint', function() { 
-    ok(true, 'components/rchi-item.js should pass jshint.'); 
   });
 
 });
@@ -33921,6 +32807,16 @@ define('fusor-ember-cli/tests/components/rhci-hover-text.jshint', function () {
   module('JSHint - components');
   test('components/rhci-hover-text.js should pass jshint', function() { 
     ok(true, 'components/rhci-hover-text.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/components/rhci-item.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - components');
+  test('components/rhci-item.js should pass jshint', function() { 
+    ok(true, 'components/rhci-item.js should pass jshint.'); 
   });
 
 });
@@ -34030,7 +32926,7 @@ define('fusor-ember-cli/tests/components/tr-management-app.jshint', function () 
 
   module('JSHint - components');
   test('components/tr-management-app.js should pass jshint', function() { 
-    ok(false, 'components/tr-management-app.js should pass jshint.\ncomponents/tr-management-app.js: line 20, col 35, \'event\' is defined but never used.\n\n1 error'); 
+    ok(true, 'components/tr-management-app.js should pass jshint.'); 
   });
 
 });
@@ -34040,7 +32936,7 @@ define('fusor-ember-cli/tests/components/tr-organization.jshint', function () {
 
   module('JSHint - components');
   test('components/tr-organization.js should pass jshint', function() { 
-    ok(false, 'components/tr-organization.js should pass jshint.\ncomponents/tr-organization.js: line 10, col 48, Expected \'===\' and instead saw \'==\'.\ncomponents/tr-organization.js: line 20, col 35, \'event\' is defined but never used.\n\n2 errors'); 
+    ok(true, 'components/tr-organization.js should pass jshint.'); 
   });
 
 });
@@ -34074,16 +32970,6 @@ define('fusor-ember-cli/tests/components/traffic-type.jshint', function () {
   });
 
 });
-define('fusor-ember-cli/tests/components/upstream-downstream.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - components');
-  test('components/upstream-downstream.js should pass jshint', function() { 
-    ok(true, 'components/upstream-downstream.js should pass jshint.'); 
-  });
-
-});
 define('fusor-ember-cli/tests/components/vertical-tab.jshint', function () {
 
   'use strict';
@@ -34100,7 +32986,7 @@ define('fusor-ember-cli/tests/components/wizard-item.jshint', function () {
 
   module('JSHint - components');
   test('components/wizard-item.js should pass jshint', function() { 
-    ok(false, 'components/wizard-item.js should pass jshint.\ncomponents/wizard-item.js: line 17, col 34, Missing semicolon.\n\n1 error'); 
+    ok(true, 'components/wizard-item.js should pass jshint.'); 
   });
 
 });
@@ -34110,7 +32996,7 @@ define('fusor-ember-cli/tests/controllers/application.jshint', function () {
 
   module('JSHint - controllers');
   test('controllers/application.js should pass jshint', function() { 
-    ok(false, 'controllers/application.js should pass jshint.\ncontrollers/application.js: line 35, col 35, Missing semicolon.\ncontrollers/application.js: line 40, col 26, \'data\' is defined but never used.\n\n2 errors'); 
+    ok(true, 'controllers/application.js should pass jshint.'); 
   });
 
 });
@@ -34120,17 +33006,7 @@ define('fusor-ember-cli/tests/controllers/assign-nodes.jshint', function () {
 
   module('JSHint - controllers');
   test('controllers/assign-nodes.js should pass jshint', function() { 
-    ok(false, 'controllers/assign-nodes.js should pass jshint.\ncontrollers/assign-nodes.js: line 143, col 42, Missing semicolon.\ncontrollers/assign-nodes.js: line 55, col 37, \'index\' is defined but never used.\ncontrollers/assign-nodes.js: line 69, col 37, \'index\' is defined but never used.\ncontrollers/assign-nodes.js: line 83, col 37, \'index\' is defined but never used.\ncontrollers/assign-nodes.js: line 97, col 37, \'index\' is defined but never used.\ncontrollers/assign-nodes.js: line 138, col 24, \'roleType\' is defined but never used.\n\n6 errors'); 
-  });
-
-});
-define('fusor-ember-cli/tests/controllers/cloudforms-storage-domain.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - controllers');
-  test('controllers/cloudforms-storage-domain.js should pass jshint', function() { 
-    ok(true, 'controllers/cloudforms-storage-domain.js should pass jshint.'); 
+    ok(true, 'controllers/assign-nodes.js should pass jshint.'); 
   });
 
 });
@@ -34170,7 +33046,7 @@ define('fusor-ember-cli/tests/controllers/configure-environment.jshint', functio
 
   module('JSHint - controllers');
   test('controllers/configure-environment.js should pass jshint', function() { 
-    ok(false, 'controllers/configure-environment.js should pass jshint.\ncontrollers/configure-environment.js: line 37, col 66, Missing semicolon.\ncontrollers/configure-environment.js: line 53, col 19, \'response\' is defined but never used.\n\n2 errors'); 
+    ok(true, 'controllers/configure-environment.js should pass jshint.'); 
   });
 
 });
@@ -34210,7 +33086,7 @@ define('fusor-ember-cli/tests/controllers/deployment-new/satellite/configure-env
 
   module('JSHint - controllers/deployment-new/satellite');
   test('controllers/deployment-new/satellite/configure-environment.js should pass jshint', function() { 
-    ok(false, 'controllers/deployment-new/satellite/configure-environment.js should pass jshint.\ncontrollers/deployment-new/satellite/configure-environment.js: line 36, col 66, Missing semicolon.\ncontrollers/deployment-new/satellite/configure-environment.js: line 52, col 19, \'response\' is defined but never used.\n\n2 errors'); 
+    ok(true, 'controllers/deployment-new/satellite/configure-environment.js should pass jshint.'); 
   });
 
 });
@@ -34250,7 +33126,7 @@ define('fusor-ember-cli/tests/controllers/deployment.jshint', function () {
 
   module('JSHint - controllers');
   test('controllers/deployment.js should pass jshint', function() { 
-    ok(false, 'controllers/deployment.js should pass jshint.\ncontrollers/deployment.js: line 78, col 48, Missing semicolon.\n\n1 error'); 
+    ok(true, 'controllers/deployment.js should pass jshint.'); 
   });
 
 });
@@ -34270,7 +33146,7 @@ define('fusor-ember-cli/tests/controllers/deployments.jshint', function () {
 
   module('JSHint - controllers');
   test('controllers/deployments.js should pass jshint', function() { 
-    ok(false, 'controllers/deployments.js should pass jshint.\ncontrollers/deployments.js: line 20, col 46, Missing semicolon.\n\n1 error'); 
+    ok(true, 'controllers/deployments.js should pass jshint.'); 
   });
 
 });
@@ -34280,7 +33156,7 @@ define('fusor-ember-cli/tests/controllers/discovered-host.jshint', function () {
 
   module('JSHint - controllers');
   test('controllers/discovered-host.js should pass jshint', function() { 
-    ok(false, 'controllers/discovered-host.js should pass jshint.\ncontrollers/discovered-host.js: line 34, col 78, Missing semicolon.\ncontrollers/discovered-host.js: line 35, col 50, Missing semicolon.\ncontrollers/discovered-host.js: line 37, col 19, Missing semicolon.\ncontrollers/discovered-host.js: line 55, col 11, \'engine_hostname\' is defined but never used.\n\n4 errors'); 
+    ok(true, 'controllers/discovered-host.js should pass jshint.'); 
   });
 
 });
@@ -34300,7 +33176,7 @@ define('fusor-ember-cli/tests/controllers/engine/discovered-host.jshint', functi
 
   module('JSHint - controllers/engine');
   test('controllers/engine/discovered-host.js should pass jshint', function() { 
-    ok(false, 'controllers/engine/discovered-host.js should pass jshint.\ncontrollers/engine/discovered-host.js: line 25, col 85, \'array\' is defined but never used.\ncontrollers/engine/discovered-host.js: line 25, col 78, \'index\' is defined but never used.\n\n2 errors'); 
+    ok(true, 'controllers/engine/discovered-host.js should pass jshint.'); 
   });
 
 });
@@ -34311,16 +33187,6 @@ define('fusor-ember-cli/tests/controllers/host.jshint', function () {
   module('JSHint - controllers');
   test('controllers/host.js should pass jshint', function() { 
     ok(true, 'controllers/host.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/controllers/hostgroup.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - controllers');
-  test('controllers/hostgroup.js should pass jshint', function() { 
-    ok(true, 'controllers/hostgroup.js should pass jshint.'); 
   });
 
 });
@@ -34340,7 +33206,7 @@ define('fusor-ember-cli/tests/controllers/hypervisor/discovered-host.jshint', fu
 
   module('JSHint - controllers/hypervisor');
   test('controllers/hypervisor/discovered-host.js should pass jshint', function() { 
-    ok(false, 'controllers/hypervisor/discovered-host.js should pass jshint.\ncontrollers/hypervisor/discovered-host.js: line 19, col 30, Expected \'!==\' and instead saw \'!=\'.\ncontrollers/hypervisor/discovered-host.js: line 18, col 85, \'array\' is defined but never used.\ncontrollers/hypervisor/discovered-host.js: line 18, col 78, \'index\' is defined but never used.\ncontrollers/hypervisor/discovered-host.js: line 58, col 31, \'row\' is defined but never used.\ncontrollers/hypervisor/discovered-host.js: line 67, col 24, \'key\' is defined but never used.\n\n5 errors'); 
+    ok(true, 'controllers/hypervisor/discovered-host.js should pass jshint.'); 
   });
 
 });
@@ -34460,7 +33326,7 @@ define('fusor-ember-cli/tests/controllers/register-nodes.jshint', function () {
 
   module('JSHint - controllers');
   test('controllers/register-nodes.js should pass jshint', function() { 
-    ok(false, 'controllers/register-nodes.js should pass jshint.\ncontrollers/register-nodes.js: line 224, col 41, Expected \'===\' and instead saw \'==\'.\ncontrollers/register-nodes.js: line 255, col 7, Unnecessary semicolon.\ncontrollers/register-nodes.js: line 255, col 44, Missing semicolon.\ncontrollers/register-nodes.js: line 283, col 30, Expected \'===\' and instead saw \'==\'.\ncontrollers/register-nodes.js: line 167, col 42, \'index\' is defined but never used.\ncontrollers/register-nodes.js: line 180, col 46, \'index\' is defined but never used.\n\n6 errors'); 
+    ok(true, 'controllers/register-nodes.js should pass jshint.'); 
   });
 
 });
@@ -34470,7 +33336,7 @@ define('fusor-ember-cli/tests/controllers/review.jshint', function () {
 
   module('JSHint - controllers');
   test('controllers/review.js should pass jshint', function() { 
-    ok(false, 'controllers/review.js should pass jshint.\ncontrollers/review.js: line 21, col 59, Missing semicolon.\n\n1 error'); 
+    ok(true, 'controllers/review.js should pass jshint.'); 
   });
 
 });
@@ -34480,7 +33346,7 @@ define('fusor-ember-cli/tests/controllers/review/installation.jshint', function 
 
   module('JSHint - controllers/review');
   test('controllers/review/installation.js should pass jshint', function() { 
-    ok(false, 'controllers/review/installation.js should pass jshint.\ncontrollers/review/installation.js: line 111, col 77, Missing semicolon.\ncontrollers/review/installation.js: line 123, col 33, Missing semicolon.\n\n2 errors'); 
+    ok(true, 'controllers/review/installation.js should pass jshint.'); 
   });
 
 });
@@ -34560,7 +33426,7 @@ define('fusor-ember-cli/tests/controllers/rhev-setup.jshint', function () {
 
   module('JSHint - controllers');
   test('controllers/rhev-setup.js should pass jshint', function() { 
-    ok(false, 'controllers/rhev-setup.js should pass jshint.\ncontrollers/rhev-setup.js: line 10, col 71, Missing semicolon.\ncontrollers/rhev-setup.js: line 14, col 79, Missing semicolon.\ncontrollers/rhev-setup.js: line 18, col 50, Missing semicolon.\ncontrollers/rhev-setup.js: line 22, col 32, \'value\' is defined but never used.\n\n4 errors'); 
+    ok(true, 'controllers/rhev-setup.js should pass jshint.'); 
   });
 
 });
@@ -34601,16 +33467,6 @@ define('fusor-ember-cli/tests/controllers/satellite/subscription.jshint', functi
   module('JSHint - controllers/satellite');
   test('controllers/satellite/subscription.js should pass jshint', function() { 
     ok(true, 'controllers/satellite/subscription.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/controllers/side-menu.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - controllers');
-  test('controllers/side-menu.js should pass jshint', function() { 
-    ok(true, 'controllers/side-menu.js should pass jshint.'); 
   });
 
 });
@@ -34660,7 +33516,7 @@ define('fusor-ember-cli/tests/controllers/subscriptions/management-application.j
 
   module('JSHint - controllers/subscriptions');
   test('controllers/subscriptions/management-application.js should pass jshint', function() { 
-    ok(false, 'controllers/subscriptions/management-application.js should pass jshint.\ncontrollers/subscriptions/management-application.js: line 27, col 19, \'$\' is not defined.\ncontrollers/subscriptions/management-application.js: line 26, col 31, \'params\' is defined but never used.\ncontrollers/subscriptions/management-application.js: line 35, col 56, \'reject\' is defined but never used.\ncontrollers/subscriptions/management-application.js: line 55, col 29, \'response\' is defined but never used.\n\n4 errors'); 
+    ok(true, 'controllers/subscriptions/management-application.js should pass jshint.'); 
   });
 
 });
@@ -34670,7 +33526,7 @@ define('fusor-ember-cli/tests/controllers/subscriptions/select-subscriptions.jsh
 
   module('JSHint - controllers/subscriptions');
   test('controllers/subscriptions/select-subscriptions.js should pass jshint', function() { 
-    ok(false, 'controllers/subscriptions/select-subscriptions.js should pass jshint.\ncontrollers/subscriptions/select-subscriptions.js: line 31, col 38, \'key\' is defined but never used.\n\n1 error'); 
+    ok(true, 'controllers/subscriptions/select-subscriptions.js should pass jshint.'); 
   });
 
 });
@@ -34681,16 +33537,6 @@ define('fusor-ember-cli/tests/controllers/where-install.jshint', function () {
   module('JSHint - controllers');
   test('controllers/where-install.js should pass jshint', function() { 
     ok(true, 'controllers/where-install.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/helpers/raw-text.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - helpers');
-  test('helpers/raw-text.js should pass jshint', function() { 
-    ok(false, 'helpers/raw-text.js should pass jshint.\nhelpers/raw-text.js: line 4, col 14, \'Handlebars\' is not defined.\n\n1 error'); 
   });
 
 });
@@ -34757,7 +33603,7 @@ define('fusor-ember-cli/tests/mixins/configure-environment-mixin.jshint', functi
 
   module('JSHint - mixins');
   test('mixins/configure-environment-mixin.js should pass jshint', function() { 
-    ok(false, 'mixins/configure-environment-mixin.js should pass jshint.\nmixins/configure-environment-mixin.js: line 17, col 98, \'array\' is defined but never used.\nmixins/configure-environment-mixin.js: line 17, col 91, \'index\' is defined but never used.\n\n2 errors'); 
+    ok(true, 'mixins/configure-environment-mixin.js should pass jshint.'); 
   });
 
 });
@@ -34777,7 +33623,7 @@ define('fusor-ember-cli/tests/mixins/deployment-controller-mixin.jshint', functi
 
   module('JSHint - mixins');
   test('mixins/deployment-controller-mixin.js should pass jshint', function() { 
-    ok(false, 'mixins/deployment-controller-mixin.js should pass jshint.\nmixins/deployment-controller-mixin.js: line 147, col 24, Missing semicolon.\nmixins/deployment-controller-mixin.js: line 155, col 24, Missing semicolon.\nmixins/deployment-controller-mixin.js: line 161, col 24, Missing semicolon.\n\n3 errors'); 
+    ok(true, 'mixins/deployment-controller-mixin.js should pass jshint.'); 
   });
 
 });
@@ -34837,7 +33683,7 @@ define('fusor-ember-cli/tests/mixins/progress-bar-mixin.jshint', function () {
 
   module('JSHint - mixins');
   test('mixins/progress-bar-mixin.js should pass jshint', function() { 
-    ok(false, 'mixins/progress-bar-mixin.js should pass jshint.\nmixins/progress-bar-mixin.js: line 19, col 31, Missing semicolon.\nmixins/progress-bar-mixin.js: line 34, col 17, Missing semicolon.\nmixins/progress-bar-mixin.js: line 97, col 41, Expected \'===\' and instead saw \'==\'.\n\n3 errors'); 
+    ok(true, 'mixins/progress-bar-mixin.js should pass jshint.'); 
   });
 
 });
@@ -34857,7 +33703,7 @@ define('fusor-ember-cli/tests/mixins/save-hostname-mixin.jshint', function () {
 
   module('JSHint - mixins');
   test('mixins/save-hostname-mixin.js should pass jshint', function() { 
-    ok(false, 'mixins/save-hostname-mixin.js should pass jshint.\nmixins/save-hostname-mixin.js: line 10, col 19, \'$\' is not defined.\n\n1 error'); 
+    ok(true, 'mixins/save-hostname-mixin.js should pass jshint.'); 
   });
 
 });
@@ -34918,16 +33764,6 @@ define('fusor-ember-cli/tests/models/host.jshint', function () {
   module('JSHint - models');
   test('models/host.js should pass jshint', function() { 
     ok(true, 'models/host.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/models/hostgroup.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - models');
-  test('models/hostgroup.js should pass jshint', function() { 
-    ok(true, 'models/hostgroup.js should pass jshint.'); 
   });
 
 });
@@ -35021,16 +33857,6 @@ define('fusor-ember-cli/tests/models/traffic-type.jshint', function () {
   });
 
 });
-define('fusor-ember-cli/tests/models/user.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - models');
-  test('models/user.js should pass jshint', function() { 
-    ok(true, 'models/user.js should pass jshint.'); 
-  });
-
-});
 define('fusor-ember-cli/tests/router.jshint', function () {
 
   'use strict';
@@ -35058,26 +33884,6 @@ define('fusor-ember-cli/tests/routes/assign-nodes.jshint', function () {
   module('JSHint - routes');
   test('routes/assign-nodes.js should pass jshint', function() { 
     ok(true, 'routes/assign-nodes.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/routes/cloudforms-storage-domain.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes');
-  test('routes/cloudforms-storage-domain.js should pass jshint', function() { 
-    ok(true, 'routes/cloudforms-storage-domain.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/routes/cloudforms-vm.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes');
-  test('routes/cloudforms-vm.js should pass jshint', function() { 
-    ok(true, 'routes/cloudforms-vm.js should pass jshint.'); 
   });
 
 });
@@ -35207,7 +34013,7 @@ define('fusor-ember-cli/tests/routes/deployment.jshint', function () {
 
   module('JSHint - routes');
   test('routes/deployment.js should pass jshint', function() { 
-    ok(false, 'routes/deployment.js should pass jshint.\nroutes/deployment.js: line 49, col 17, Missing semicolon.\nroutes/deployment.js: line 70, col 16, \'self\' is already defined.\nroutes/deployment.js: line 21, col 19, \'$\' is not defined.\nroutes/deployment.js: line 66, col 19, \'$\' is not defined.\nroutes/deployment.js: line 18, col 33, \'options\' is defined but never used.\nroutes/deployment.js: line 68, col 11, \'ownerKey\' is defined but never used.\nroutes/deployment.js: line 71, col 11, \'deployment\' is defined but never used.\nroutes/deployment.js: line 94, col 60, \'reject\' is defined but never used.\nroutes/deployment.js: line 94, col 51, \'resolve\' is defined but never used.\nroutes/deployment.js: line 104, col 35, \'response\' is defined but never used.\nroutes/deployment.js: line 109, col 33, \'response\' is defined but never used.\nroutes/deployment.js: line 132, col 29, \'transition\' is defined but never used.\n\n12 errors'); 
+    ok(true, 'routes/deployment.js should pass jshint.'); 
   });
 
 });
@@ -35237,27 +34043,7 @@ define('fusor-ember-cli/tests/routes/deployments.jshint', function () {
 
   module('JSHint - routes');
   test('routes/deployments.js should pass jshint', function() { 
-    ok(false, 'routes/deployments.js should pass jshint.\nroutes/deployments.js: line 11, col 11, \'self\' is defined but never used.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/routes/discovered-host.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes');
-  test('routes/discovered-host.js should pass jshint', function() { 
-    ok(true, 'routes/discovered-host.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/routes/discovered-hosts.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes');
-  test('routes/discovered-hosts.js should pass jshint', function() { 
-    ok(true, 'routes/discovered-hosts.js should pass jshint.'); 
+    ok(true, 'routes/deployments.js should pass jshint.'); 
   });
 
 });
@@ -35281,66 +34067,6 @@ define('fusor-ember-cli/tests/routes/engine/discovered-host.jshint', function ()
   });
 
 });
-define('fusor-ember-cli/tests/routes/engine/existing-host.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes/engine');
-  test('routes/engine/existing-host.js should pass jshint', function() { 
-    ok(true, 'routes/engine/existing-host.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/routes/engine/hypervisor.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes/engine');
-  test('routes/engine/hypervisor.js should pass jshint', function() { 
-    ok(true, 'routes/engine/hypervisor.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/routes/engine/new-host.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes/engine');
-  test('routes/engine/new-host.js should pass jshint', function() { 
-    ok(true, 'routes/engine/new-host.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/routes/hostgroup.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes');
-  test('routes/hostgroup.js should pass jshint', function() { 
-    ok(true, 'routes/hostgroup.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/routes/hostgroup/edit.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes/hostgroup');
-  test('routes/hostgroup/edit.js should pass jshint', function() { 
-    ok(true, 'routes/hostgroup/edit.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/routes/hostgroups.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes');
-  test('routes/hostgroups.js should pass jshint', function() { 
-    ok(true, 'routes/hostgroups.js should pass jshint.'); 
-  });
-
-});
 define('fusor-ember-cli/tests/routes/hypervisor.jshint', function () {
 
   'use strict';
@@ -35357,27 +34083,7 @@ define('fusor-ember-cli/tests/routes/hypervisor/discovered-host.jshint', functio
 
   module('JSHint - routes/hypervisor');
   test('routes/hypervisor/discovered-host.js should pass jshint', function() { 
-    ok(false, 'routes/hypervisor/discovered-host.js should pass jshint.\nroutes/hypervisor/discovered-host.js: line 18, col 44, Missing semicolon.\nroutes/hypervisor/discovered-host.js: line 27, col 19, \'$\' is not defined.\nroutes/hypervisor/discovered-host.js: line 18, col 9, \'model\' is defined but never used.\n\n3 errors'); 
-  });
-
-});
-define('fusor-ember-cli/tests/routes/hypervisor/existing-host.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes/hypervisor');
-  test('routes/hypervisor/existing-host.js should pass jshint', function() { 
-    ok(true, 'routes/hypervisor/existing-host.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/routes/hypervisor/new-host.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes/hypervisor');
-  test('routes/hypervisor/new-host.js should pass jshint', function() { 
-    ok(true, 'routes/hypervisor/new-host.js should pass jshint.'); 
+    ok(true, 'routes/hypervisor/discovered-host.js should pass jshint.'); 
   });
 
 });
@@ -35388,36 +34094,6 @@ define('fusor-ember-cli/tests/routes/index.jshint', function () {
   module('JSHint - routes');
   test('routes/index.js should pass jshint', function() { 
     ok(true, 'routes/index.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/routes/loggedin.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes');
-  test('routes/loggedin.js should pass jshint', function() { 
-    ok(true, 'routes/loggedin.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/routes/login.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes');
-  test('routes/login.js should pass jshint', function() { 
-    ok(false, 'routes/login.js should pass jshint.\nroutes/login.js: line 8, col 6, Unnecessary semicolon.\nroutes/login.js: line 5, col 25, \'transition\' is defined but never used.\n\n2 errors'); 
-  });
-
-});
-define('fusor-ember-cli/tests/routes/networking.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes');
-  test('routes/networking.js should pass jshint', function() { 
-    ok(true, 'routes/networking.js should pass jshint.'); 
   });
 
 });
@@ -35468,16 +34144,6 @@ define('fusor-ember-cli/tests/routes/openstack/index.jshint', function () {
   module('JSHint - routes/openstack');
   test('routes/openstack/index.js should pass jshint', function() { 
     ok(true, 'routes/openstack/index.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/routes/products.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes');
-  test('routes/products.js should pass jshint', function() { 
-    ok(true, 'routes/products.js should pass jshint.'); 
   });
 
 });
@@ -35537,7 +34203,7 @@ define('fusor-ember-cli/tests/routes/review/progress/details.jshint', function (
 
   module('JSHint - routes/review/progress');
   test('routes/review/progress/details.js should pass jshint', function() { 
-    ok(false, 'routes/review/progress/details.js should pass jshint.\nroutes/review/progress/details.js: line 4, col 19, \'params\' is defined but never used.\n\n1 error'); 
+    ok(true, 'routes/review/progress/details.js should pass jshint.'); 
   });
 
 });
@@ -35691,26 +34357,6 @@ define('fusor-ember-cli/tests/routes/satellite/index.jshint', function () {
   });
 
 });
-define('fusor-ember-cli/tests/routes/setpassword.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes');
-  test('routes/setpassword.js should pass jshint', function() { 
-    ok(true, 'routes/setpassword.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/routes/single-deployment.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - routes');
-  test('routes/single-deployment.js should pass jshint', function() { 
-    ok(true, 'routes/single-deployment.js should pass jshint.'); 
-  });
-
-});
 define('fusor-ember-cli/tests/routes/storage.jshint', function () {
 
   'use strict';
@@ -35727,7 +34373,7 @@ define('fusor-ember-cli/tests/routes/subscriptions.jshint', function () {
 
   module('JSHint - routes');
   test('routes/subscriptions.js should pass jshint', function() { 
-    ok(false, 'routes/subscriptions.js should pass jshint.\nroutes/subscriptions.js: line 23, col 29, \'transition\' is defined but never used.\n\n1 error'); 
+    ok(true, 'routes/subscriptions.js should pass jshint.'); 
   });
 
 });
@@ -35737,7 +34383,7 @@ define('fusor-ember-cli/tests/routes/subscriptions/credentials.jshint', function
 
   module('JSHint - routes/subscriptions');
   test('routes/subscriptions/credentials.js should pass jshint', function() { 
-    ok(false, 'routes/subscriptions/credentials.js should pass jshint.\nroutes/subscriptions/credentials.js: line 12, col 67, Missing semicolon.\nroutes/subscriptions/credentials.js: line 54, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 86, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 116, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 120, col 60, Missing semicolon.\nroutes/subscriptions/credentials.js: line 122, col 27, \'sessionPortal\' is already defined.\nroutes/subscriptions/credentials.js: line 125, col 46, Missing semicolon.\nroutes/subscriptions/credentials.js: line 126, col 51, Missing semicolon.\nroutes/subscriptions/credentials.js: line 138, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 162, col 66, Missing semicolon.\nroutes/subscriptions/credentials.js: line 179, col 45, Missing semicolon.\nroutes/subscriptions/credentials.js: line 187, col 71, Missing semicolon.\nroutes/subscriptions/credentials.js: line 14, col 5, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 32, col 7, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 57, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 87, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 141, col 19, \'$\' is not defined.\nroutes/subscriptions/credentials.js: line 9, col 9, \'sessionPortal\' is defined but never used.\nroutes/subscriptions/credentials.js: line 10, col 9, \'upstream_consumer_uuid\' is defined but never used.\nroutes/subscriptions/credentials.js: line 32, col 42, \'results\' is defined but never used.\nroutes/subscriptions/credentials.js: line 34, col 19, \'results\' is defined but never used.\nroutes/subscriptions/credentials.js: line 47, col 29, \'transition\' is defined but never used.\nroutes/subscriptions/credentials.js: line 47, col 21, \'reason\' is defined but never used.\nroutes/subscriptions/credentials.js: line 60, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 60, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 70, col 31, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 74, col 29, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 86, col 11, \'controller\' is defined but never used.\nroutes/subscriptions/credentials.js: line 89, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 89, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 98, col 31, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 106, col 29, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 124, col 42, \'result\' is defined but never used.\nroutes/subscriptions/credentials.js: line 128, col 19, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 140, col 11, \'password\' is defined but never used.\nroutes/subscriptions/credentials.js: line 145, col 56, \'reject\' is defined but never used.\nroutes/subscriptions/credentials.js: line 145, col 47, \'resolve\' is defined but never used.\nroutes/subscriptions/credentials.js: line 161, col 50, \'result\' is defined but never used.\nroutes/subscriptions/credentials.js: line 166, col 27, \'response\' is defined but never used.\nroutes/subscriptions/credentials.js: line 173, col 29, \'response\' is defined but never used.\n\n40 errors'); 
+    ok(true, 'routes/subscriptions/credentials.js should pass jshint.'); 
   });
 
 });
@@ -35757,7 +34403,7 @@ define('fusor-ember-cli/tests/routes/subscriptions/management-application.jshint
 
   module('JSHint - routes/subscriptions');
   test('routes/subscriptions/management-application.js should pass jshint', function() { 
-    ok(false, 'routes/subscriptions/management-application.js should pass jshint.\nroutes/subscriptions/management-application.js: line 23, col 64, Missing semicolon.\nroutes/subscriptions/management-application.js: line 41, col 69, Missing semicolon.\nroutes/subscriptions/management-application.js: line 13, col 12, \'$\' is not defined.\nroutes/subscriptions/management-application.js: line 43, col 7, \'$\' is not defined.\nroutes/subscriptions/management-application.js: line 54, col 21, \'results\' is defined but never used.\nroutes/subscriptions/management-application.js: line 66, col 31, \'transition\' is defined but never used.\nroutes/subscriptions/management-application.js: line 66, col 23, \'reason\' is defined but never used.\n\n7 errors'); 
+    ok(true, 'routes/subscriptions/management-application.js should pass jshint.'); 
   });
 
 });
@@ -35767,7 +34413,7 @@ define('fusor-ember-cli/tests/routes/subscriptions/select-subscriptions.jshint',
 
   module('JSHint - routes/subscriptions');
   test('routes/subscriptions/select-subscriptions.js should pass jshint', function() { 
-    ok(false, 'routes/subscriptions/select-subscriptions.js should pass jshint.\nroutes/subscriptions/select-subscriptions.js: line 25, col 34, Missing semicolon.\nroutes/subscriptions/select-subscriptions.js: line 34, col 63, Missing semicolon.\nroutes/subscriptions/select-subscriptions.js: line 12, col 31, \'$\' is not defined.\nroutes/subscriptions/select-subscriptions.js: line 13, col 31, \'$\' is not defined.\nroutes/subscriptions/select-subscriptions.js: line 46, col 31, \'transition\' is defined but never used.\n\n5 errors'); 
+    ok(true, 'routes/subscriptions/select-subscriptions.js should pass jshint.'); 
   });
 
 });
@@ -35791,16 +34437,6 @@ define('fusor-ember-cli/tests/serializers/foreman-task.jshint', function () {
   });
 
 });
-define('fusor-ember-cli/tests/serializers/puppetclass.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - serializers');
-  test('serializers/puppetclass.js should pass jshint', function() { 
-    ok(false, 'serializers/puppetclass.js should pass jshint.\nserializers/puppetclass.js: line 8, col 35, \'$\' is not defined.\n\n1 error'); 
-  });
-
-});
 define('fusor-ember-cli/tests/test-helper', ['fusor-ember-cli/tests/helpers/resolver', 'ember-qunit'], function (resolver, ember_qunit) {
 
 	'use strict';
@@ -35818,26 +34454,16 @@ define('fusor-ember-cli/tests/test-helper.jshint', function () {
   });
 
 });
-define('fusor-ember-cli/tests/torii-providers/foreman.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - torii-providers');
-  test('torii-providers/foreman.js should pass jshint', function() { 
-    ok(false, 'torii-providers/foreman.js should pass jshint.\ntorii-providers/foreman.js: line 1, col 16, \'Ember\' is not defined.\ntorii-providers/foreman.js: line 5, col 16, \'Ember\' is not defined.\ntorii-providers/foreman.js: line 7, col 7, \'exampleAsyncLogin\' is not defined.\ntorii-providers/foreman.js: line 14, col 11, \'Ember\' is not defined.\ntorii-providers/foreman.js: line 5, col 53, \'reject\' is defined but never used.\n\n5 errors'); 
-  });
-
-});
 define('fusor-ember-cli/tests/unit/adapters/application-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
 
-  ember_qunit.moduleFor('adapter:application', 'ApplicationAdapter', {});
+  ember_qunit.moduleFor('adapter:application', 'Unit | Adapter | application', {});
 
   // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var adapter = this.subject();
-    ok(adapter);
+    assert.ok(adapter);
   });
 
   // Specify the other units that are required for this test.
@@ -35850,15 +34476,15 @@ define('fusor-ember-cli/tests/unit/adapters/application-test.jshint', function (
 
   module('JSHint - unit/adapters');
   test('unit/adapters/application-test.js should pass jshint', function() { 
-    ok(false, 'unit/adapters/application-test.js should pass jshint.\nunit/adapters/application-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/adapters/application-test.js should pass jshint.'); 
   });
 
 });
-define('fusor-ember-cli/tests/unit/adapters/credential-test', ['ember-qunit'], function (ember_qunit) {
+define('fusor-ember-cli/tests/unit/adapters/deployment-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
 
-  ember_qunit.moduleFor('adapter:credential', 'CredentialAdapter', {});
+  ember_qunit.moduleFor('adapter:deployment', 'Unit | Adapter | deployment', {});
 
   // Replace this with your real tests.
   ember_qunit.test('it exists', function (assert) {
@@ -35870,13 +34496,13 @@ define('fusor-ember-cli/tests/unit/adapters/credential-test', ['ember-qunit'], f
   // needs: ['serializer:foo']
 
 });
-define('fusor-ember-cli/tests/unit/adapters/credential-test.jshint', function () {
+define('fusor-ember-cli/tests/unit/adapters/deployment-test.jshint', function () {
 
   'use strict';
 
   module('JSHint - unit/adapters');
-  test('unit/adapters/credential-test.js should pass jshint', function() { 
-    ok(true, 'unit/adapters/credential-test.js should pass jshint.'); 
+  test('unit/adapters/deployment-test.js should pass jshint', function() { 
+    ok(true, 'unit/adapters/deployment-test.js should pass jshint.'); 
   });
 
 });
@@ -35884,7 +34510,7 @@ define('fusor-ember-cli/tests/unit/adapters/foreman-task-test', ['ember-qunit'],
 
   'use strict';
 
-  ember_qunit.moduleFor('adapter:foreman-task', 'ForemanTaskAdapter', {});
+  ember_qunit.moduleFor('adapter:foreman-task', 'Unit | Adapter | foreman task', {});
 
   // Replace this with your real tests.
   ember_qunit.test('it exists', function (assert) {
@@ -35906,107 +34532,29 @@ define('fusor-ember-cli/tests/unit/adapters/foreman-task-test.jshint', function 
   });
 
 });
-define('fusor-ember-cli/tests/unit/adapters/hostgroup-test', ['ember-qunit'], function (ember_qunit) {
+define('fusor-ember-cli/tests/unit/adapters/session-portal-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
 
-  ember_qunit.moduleFor('adapter:hostgroup', 'HostgroupAdapter', {});
+  ember_qunit.moduleFor('adapter:session-portal', 'Unit | Adapter | session portal', {});
 
   // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var adapter = this.subject();
-    ok(adapter);
+    assert.ok(adapter);
   });
 
   // Specify the other units that are required for this test.
   // needs: ['serializer:foo']
 
 });
-define('fusor-ember-cli/tests/unit/adapters/hostgroup-test.jshint', function () {
+define('fusor-ember-cli/tests/unit/adapters/session-portal-test.jshint', function () {
 
   'use strict';
 
   module('JSHint - unit/adapters');
-  test('unit/adapters/hostgroup-test.js should pass jshint', function() { 
-    ok(false, 'unit/adapters/hostgroup-test.js should pass jshint.\nunit/adapters/hostgroup-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/adapters/lifecycle-environment-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('adapter:lifecycle-environment', 'LifecycleEnvironmentAdapter', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var adapter = this.subject();
-    ok(adapter);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['serializer:foo']
-
-});
-define('fusor-ember-cli/tests/unit/adapters/lifecycle-environment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/adapters');
-  test('unit/adapters/lifecycle-environment-test.js should pass jshint', function() { 
-    ok(false, 'unit/adapters/lifecycle-environment-test.js should pass jshint.\nunit/adapters/lifecycle-environment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/adapters/subscriptions-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('adapter:subscriptions', 'SubscriptionsAdapter', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var adapter = this.subject();
-    ok(adapter);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['serializer:foo']
-
-});
-define('fusor-ember-cli/tests/unit/adapters/subscriptions-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/adapters');
-  test('unit/adapters/subscriptions-test.js should pass jshint', function() { 
-    ok(false, 'unit/adapters/subscriptions-test.js should pass jshint.\nunit/adapters/subscriptions-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/adapters/traffic-type-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('adapter:traffic-type', 'TrafficTypeAdapter', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var adapter = this.subject();
-    ok(adapter);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['serializer:foo']
-
-});
-define('fusor-ember-cli/tests/unit/adapters/traffic-type-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/adapters');
-  test('unit/adapters/traffic-type-test.js should pass jshint', function() { 
-    ok(false, 'unit/adapters/traffic-type-test.js should pass jshint.\nunit/adapters/traffic-type-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  test('unit/adapters/session-portal-test.js should pass jshint', function() { 
+    ok(true, 'unit/adapters/session-portal-test.js should pass jshint.'); 
   });
 
 });
@@ -36014,22 +34562,23 @@ define('fusor-ember-cli/tests/unit/components/accordion-item-test', ['ember-quni
 
   'use strict';
 
-  ember_qunit.moduleForComponent('accordion-item', 'AccordionItemComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
+  ember_qunit.moduleForComponent('accordion-item', 'Unit | Component | accordion item', {
+    // Specify the other units that are required for this test
+    // needs: ['component:foo', 'helper:bar'],
+    unit: true
   });
 
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/accordion-item-test.jshint', function () {
@@ -36038,7 +34587,7 @@ define('fusor-ember-cli/tests/unit/components/accordion-item-test.jshint', funct
 
   module('JSHint - unit/components');
   test('unit/components/accordion-item-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/accordion-item-test.js should pass jshint.\nunit/components/accordion-item-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/accordion-item-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/accordion-item-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/components/accordion-item-test.js should pass jshint.'); 
   });
 
 });
@@ -36046,22 +34595,23 @@ define('fusor-ember-cli/tests/unit/components/base-f-test', ['ember-qunit'], fun
 
   'use strict';
 
-  ember_qunit.moduleForComponent('base-f', 'BaseFComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
+  ember_qunit.moduleForComponent('base-f', 'Unit | Component | base f', {
+    // Specify the other units that are required for this test
+    // needs: ['component:foo', 'helper:bar'],
+    unit: true
   });
 
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/base-f-test.jshint', function () {
@@ -36070,7 +34620,7 @@ define('fusor-ember-cli/tests/unit/components/base-f-test.jshint', function () {
 
   module('JSHint - unit/components');
   test('unit/components/base-f-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/base-f-test.js should pass jshint.\nunit/components/base-f-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/base-f-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/base-f-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/components/base-f-test.js should pass jshint.'); 
   });
 
 });
@@ -36078,22 +34628,23 @@ define('fusor-ember-cli/tests/unit/components/button-f-test', ['ember-qunit'], f
 
   'use strict';
 
-  ember_qunit.moduleForComponent('button-f', {});
+  ember_qunit.moduleForComponent('button-f', 'Unit | Component | button f', {
+    // Specify the other units that are required for this test
+    needs: ['component:radio-button'],
+    unit: true
+  });
 
   ember_qunit.test('it renders', function (assert) {
     assert.expect(2);
 
-    // creates the component instance
+    // Creates the component instance
     var component = this.subject();
     assert.equal(component._state, 'preRender');
 
-    // renders the component to the page
+    // Renders the component to the page
     this.render();
     assert.equal(component._state, 'inDOM');
   });
-
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
 
 });
 define('fusor-ember-cli/tests/unit/components/button-f-test.jshint', function () {
@@ -36110,22 +34661,23 @@ define('fusor-ember-cli/tests/unit/components/cancel-back-next-test', ['ember-qu
 
   'use strict';
 
-  ember_qunit.moduleForComponent('cancel-back-next', 'Unit | Component | cancel back next', {});
-
-  ember_qunit.test('it renders', function (assert) {
-    assert.expect(2);
-
-    // Creates the component instance
-    var component = this.subject();
-    assert.equal(component._state, 'preRender');
-
-    // Renders the component to the page
-    this.render();
-    assert.equal(component._state, 'inDOM');
+  ember_qunit.moduleForComponent('cancel-back-next', 'Unit | Component | cancel back next', {
+    // Specify the other units that are required for this test
+    needs: ['component:em-modal-toggler'],
+    unit: true
   });
 
-  // Specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  // TODO  Assertion Failed: Unable to find partial with name "cancel-deployment-modal"
+  //test('it renders', function(assert) {
+  //assert.expect(2);
+  // Creates the component instance
+  //var component = this.subject();
+  //assert.equal(component._state, 'preRender');
+
+  // Renders the component to the page
+  //this.render();
+  // assert.equal(component._state, 'inDOM');
+  //});
 
 });
 define('fusor-ember-cli/tests/unit/components/cancel-back-next-test.jshint', function () {
@@ -36171,139 +34723,15 @@ define('fusor-ember-cli/tests/unit/components/delete-deployment-button-test.jshi
   });
 
 });
-define('fusor-ember-cli/tests/unit/components/env-path-list-item-test', ['ember-qunit'], function (ember_qunit) {
+define('fusor-ember-cli/tests/unit/components/deployment-role-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
 
-  ember_qunit.moduleForComponent('env-path-list-item', 'EnvPathListItemComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
+  ember_qunit.moduleForComponent('deployment-role', 'Unit | Component | deployment role', {
+    // Specify the other units that are required for this test
+    // needs: ['component:foo', 'helper:bar'],
+    unit: true
   });
-
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
-
-});
-define('fusor-ember-cli/tests/unit/components/env-path-list-item-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/components');
-  test('unit/components/env-path-list-item-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/env-path-list-item-test.js should pass jshint.\nunit/components/env-path-list-item-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/env-path-list-item-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/env-path-list-item-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/components/modal-confirm-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleForComponent('model-confirm', 'ModelConfirmComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
-  });
-
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
-
-});
-define('fusor-ember-cli/tests/unit/components/modal-confirm-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/components');
-  test('unit/components/modal-confirm-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/modal-confirm-test.js should pass jshint.\nunit/components/modal-confirm-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/modal-confirm-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/modal-confirm-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/components/radio-button-f-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleForComponent('radio-button-f', 'RadioButtonFComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
-  });
-
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
-
-});
-define('fusor-ember-cli/tests/unit/components/radio-button-f-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/components');
-  test('unit/components/radio-button-f-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/radio-button-f-test.js should pass jshint.\nunit/components/radio-button-f-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/radio-button-f-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/radio-button-f-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/components/rchi-item-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleForComponent('rchi-item', 'RchiItemComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
-  });
-
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
-
-});
-define('fusor-ember-cli/tests/unit/components/rchi-item-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/components');
-  test('unit/components/rchi-item-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/rchi-item-test.js should pass jshint.\nunit/components/rchi-item-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/rchi-item-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/rchi-item-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/components/review-link-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleForComponent('review-link', {});
 
   ember_qunit.test('it renders', function (assert) {
     assert.expect(2);
@@ -36317,8 +34745,138 @@ define('fusor-ember-cli/tests/unit/components/review-link-test', ['ember-qunit']
     assert.equal(component._state, 'inDOM');
   });
 
-  // Specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+});
+define('fusor-ember-cli/tests/unit/components/deployment-role-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/deployment-role-test.js should pass jshint', function() { 
+    ok(true, 'unit/components/deployment-role-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/components/env-path-list-item-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForComponent('env-path-list-item', 'Unit | Component | env path list item', {
+    // Specify the other units that are required for this test
+    // needs: ['component:foo', 'helper:bar'],
+    unit: true
+  });
+
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
+
+});
+define('fusor-ember-cli/tests/unit/components/env-path-list-item-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/env-path-list-item-test.js should pass jshint', function() { 
+    ok(true, 'unit/components/env-path-list-item-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/components/node-profile-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForComponent('node-profile', 'Unit | Component | node profile', {
+    // Specify the other units that are required for this test
+    // needs: ['component:foo', 'helper:bar'],
+    unit: true
+  });
+
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
+
+});
+define('fusor-ember-cli/tests/unit/components/node-profile-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/node-profile-test.js should pass jshint', function() { 
+    ok(true, 'unit/components/node-profile-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/components/radio-button-f-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForComponent('radio-button-f', 'Unit | Component | radio button f', {
+    // Specify the other units that are required for this test
+    needs: ['component:radio-button'],
+    unit: true
+  });
+
+  //  Cannot set read-only property "checked" on object: <(subclass of Ember.Component):ember276>
+  //test('it renders', function(assert) {
+  // assert.expect(2);
+
+  // Creates the component instance
+  // var component = this.subject();
+  // assert.equal(component._state, 'preRender');
+
+  // Renders the component to the page
+  // this.render();
+  //  assert.equal(component._state, 'inDOM');
+  //});
+
+});
+define('fusor-ember-cli/tests/unit/components/radio-button-f-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/radio-button-f-test.js should pass jshint', function() { 
+    ok(true, 'unit/components/radio-button-f-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/components/review-link-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForComponent('review-link', 'Unit | Component | review link', {
+    // Specify the other units that are required for this test
+    // needs: ['component:foo', 'helper:bar'],
+    unit: true
+  });
+
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/review-link-test.jshint', function () {
@@ -36335,22 +34893,23 @@ define('fusor-ember-cli/tests/unit/components/rhci-hover-text-test', ['ember-qun
 
   'use strict';
 
-  ember_qunit.moduleForComponent('rhci-hover-text', 'RhciHoverTextComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
+  ember_qunit.moduleForComponent('rhci-hover-text', 'Unit | Component | rhci hover text', {
+    // Specify the other units that are required for this test
+    // needs: ['component:foo', 'helper:bar'],
+    unit: true
   });
 
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/rhci-hover-text-test.jshint', function () {
@@ -36359,7 +34918,40 @@ define('fusor-ember-cli/tests/unit/components/rhci-hover-text-test.jshint', func
 
   module('JSHint - unit/components');
   test('unit/components/rhci-hover-text-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/rhci-hover-text-test.js should pass jshint.\nunit/components/rhci-hover-text-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/rhci-hover-text-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/rhci-hover-text-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/components/rhci-hover-text-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/components/rhci-item-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForComponent('rhci-item', 'Unit | Component | rhci item', {
+    // Specify the other units that are required for this test
+    // needs: ['component:foo', 'helper:bar'],
+    unit: true
+  });
+
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
+
+});
+define('fusor-ember-cli/tests/unit/components/rhci-item-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/rhci-item-test.js should pass jshint', function() { 
+    ok(true, 'unit/components/rhci-item-test.js should pass jshint.'); 
   });
 
 });
@@ -36367,22 +34959,23 @@ define('fusor-ember-cli/tests/unit/components/rhci-start-test', ['ember-qunit'],
 
   'use strict';
 
-  ember_qunit.moduleForComponent('rhci-start', 'RhciStartComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
+  ember_qunit.moduleForComponent('rhci-start', 'Unit | Component | rhci start', {
+    // Specify the other units that are required for this test
+    needs: ['component:rhci-item'],
+    unit: true
   });
 
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/rhci-start-test.jshint', function () {
@@ -36391,7 +34984,7 @@ define('fusor-ember-cli/tests/unit/components/rhci-start-test.jshint', function 
 
   module('JSHint - unit/components');
   test('unit/components/rhci-start-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/rhci-start-test.js should pass jshint.\nunit/components/rhci-start-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/rhci-start-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/rhci-start-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/components/rhci-start-test.js should pass jshint.'); 
   });
 
 });
@@ -36399,22 +34992,23 @@ define('fusor-ember-cli/tests/unit/components/rhci-wizard-test', ['ember-qunit']
 
   'use strict';
 
-  ember_qunit.moduleForComponent('rhci-wizard', 'RhciWizardComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
+  ember_qunit.moduleForComponent('rhci-wizard', 'Unit | Component | rhci wizard', {
+    // Specify the other units that are required for this test
+    needs: ['component:wizard-item'],
+    unit: true
   });
 
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/rhci-wizard-test.jshint', function () {
@@ -36423,7 +35017,7 @@ define('fusor-ember-cli/tests/unit/components/rhci-wizard-test.jshint', function
 
   module('JSHint - unit/components');
   test('unit/components/rhci-wizard-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/rhci-wizard-test.js should pass jshint.\nunit/components/rhci-wizard-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/rhci-wizard-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/rhci-wizard-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/components/rhci-wizard-test.js should pass jshint.'); 
   });
 
 });
@@ -36431,22 +35025,23 @@ define('fusor-ember-cli/tests/unit/components/select-f-test', ['ember-qunit'], f
 
   'use strict';
 
-  ember_qunit.moduleForComponent('select-f', 'SelectFComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
+  ember_qunit.moduleForComponent('select-f', 'Unit | Component | select f', {
+    // Specify the other units that are required for this test
+    needs: ['component:base-f'],
+    unit: true
   });
 
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/select-f-test.jshint', function () {
@@ -36455,7 +35050,7 @@ define('fusor-ember-cli/tests/unit/components/select-f-test.jshint', function ()
 
   module('JSHint - unit/components');
   test('unit/components/select-f-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/select-f-test.js should pass jshint.\nunit/components/select-f-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/select-f-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/select-f-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/components/select-f-test.js should pass jshint.'); 
   });
 
 });
@@ -36463,22 +35058,23 @@ define('fusor-ember-cli/tests/unit/components/select-simple-f-test', ['ember-qun
 
   'use strict';
 
-  ember_qunit.moduleForComponent('select-simple-f', 'SelectSimpleFComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
+  ember_qunit.moduleForComponent('select-simple-f', 'Unit | Component | select simple f', {
+    // Specify the other units that are required for this test
+    needs: ['component:base-f'],
+    unit: true
   });
 
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/select-simple-f-test.jshint', function () {
@@ -36487,7 +35083,7 @@ define('fusor-ember-cli/tests/unit/components/select-simple-f-test.jshint', func
 
   module('JSHint - unit/components');
   test('unit/components/select-simple-f-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/select-simple-f-test.js should pass jshint.\nunit/components/select-simple-f-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/select-simple-f-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/select-simple-f-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/components/select-simple-f-test.js should pass jshint.'); 
   });
 
 });
@@ -36495,22 +35091,23 @@ define('fusor-ember-cli/tests/unit/components/step-number-test', ['ember-qunit']
 
   'use strict';
 
-  ember_qunit.moduleForComponent('step-number', 'StepNumberComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
+  ember_qunit.moduleForComponent('step-number', 'Unit | Component | step number', {
+    // Specify the other units that are required for this test
+    // needs: ['component:foo', 'helper:bar'],
+    unit: true
   });
 
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/step-number-test.jshint', function () {
@@ -36519,7 +35116,7 @@ define('fusor-ember-cli/tests/unit/components/step-number-test.jshint', function
 
   module('JSHint - unit/components');
   test('unit/components/step-number-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/step-number-test.js should pass jshint.\nunit/components/step-number-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/step-number-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/step-number-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/components/step-number-test.js should pass jshint.'); 
   });
 
 });
@@ -36527,22 +35124,23 @@ define('fusor-ember-cli/tests/unit/components/subnet-drop-area-test', ['ember-qu
 
   'use strict';
 
-  ember_qunit.moduleForComponent('subnet-drop-area', 'SubnetDropAreaComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
+  ember_qunit.moduleForComponent('subnet-drop-area', 'Unit | Component | subnet drop area', {
+    // Specify the other units that are required for this test
+    // needs: ['component:foo', 'helper:bar'],
+    unit: true
   });
 
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/subnet-drop-area-test.jshint', function () {
@@ -36551,7 +35149,7 @@ define('fusor-ember-cli/tests/unit/components/subnet-drop-area-test.jshint', fun
 
   module('JSHint - unit/components');
   test('unit/components/subnet-drop-area-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/subnet-drop-area-test.js should pass jshint.\nunit/components/subnet-drop-area-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/subnet-drop-area-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/subnet-drop-area-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/components/subnet-drop-area-test.js should pass jshint.'); 
   });
 
 });
@@ -36559,22 +35157,23 @@ define('fusor-ember-cli/tests/unit/components/text-f-test', ['ember-qunit'], fun
 
   'use strict';
 
-  ember_qunit.moduleForComponent('text-f', 'TextFComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
+  ember_qunit.moduleForComponent('text-f', 'Unit | Component | text f', {
+    // Specify the other units that are required for this test
+    needs: ['component:base-f'],
+    unit: true
   });
 
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/text-f-test.jshint', function () {
@@ -36583,7 +35182,7 @@ define('fusor-ember-cli/tests/unit/components/text-f-test.jshint', function () {
 
   module('JSHint - unit/components');
   test('unit/components/text-f-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/text-f-test.js should pass jshint.\nunit/components/text-f-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/text-f-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/text-f-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/components/text-f-test.js should pass jshint.'); 
   });
 
 });
@@ -36591,22 +35190,23 @@ define('fusor-ember-cli/tests/unit/components/textarea-f-test', ['ember-qunit'],
 
   'use strict';
 
-  ember_qunit.moduleForComponent('textarea-f', 'TextareaFComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
+  ember_qunit.moduleForComponent('textarea-f', 'Unit | Component | textarea f', {
+    // Specify the other units that are required for this test
+    needs: ['component:base-f'],
+    unit: true
   });
 
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/textarea-f-test.jshint', function () {
@@ -36615,7 +35215,7 @@ define('fusor-ember-cli/tests/unit/components/textarea-f-test.jshint', function 
 
   module('JSHint - unit/components');
   test('unit/components/textarea-f-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/textarea-f-test.js should pass jshint.\nunit/components/textarea-f-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/textarea-f-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/textarea-f-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/components/textarea-f-test.js should pass jshint.'); 
   });
 
 });
@@ -36623,22 +35223,23 @@ define('fusor-ember-cli/tests/unit/components/tr-engine-test', ['ember-qunit'], 
 
   'use strict';
 
-  ember_qunit.moduleForComponent('tr-engine', {});
+  ember_qunit.moduleForComponent('tr-engine', 'Unit | Component | tr engine', {
+    // Specify the other units that are required for this test
+    needs: ['component:radio-button'],
+    unit: true
+  });
 
   ember_qunit.test('it renders', function (assert) {
     assert.expect(2);
 
-    // creates the component instance
+    // Creates the component instance
     var component = this.subject();
     assert.equal(component._state, 'preRender');
 
-    // renders the component to the page
+    // Renders the component to the page
     this.render();
     assert.equal(component._state, 'inDOM');
   });
-
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
 
 });
 define('fusor-ember-cli/tests/unit/components/tr-engine-test.jshint', function () {
@@ -36655,22 +35256,23 @@ define('fusor-ember-cli/tests/unit/components/tr-hypervisor-test', ['ember-qunit
 
   'use strict';
 
-  ember_qunit.moduleForComponent('tr-hypervisor', {});
+  ember_qunit.moduleForComponent('tr-hypervisor', 'Unit | Component | tr hypervisor', {
+    // Specify the other units that are required for this test
+    // needs: ['component:foo', 'helper:bar'],
+    unit: true
+  });
 
   ember_qunit.test('it renders', function (assert) {
     assert.expect(2);
 
-    // creates the component instance
+    // Creates the component instance
     var component = this.subject();
     assert.equal(component._state, 'preRender');
 
-    // renders the component to the page
+    // Renders the component to the page
     this.render();
     assert.equal(component._state, 'inDOM');
   });
-
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
 
 });
 define('fusor-ember-cli/tests/unit/components/tr-hypervisor-test.jshint', function () {
@@ -36687,7 +35289,11 @@ define('fusor-ember-cli/tests/unit/components/tr-management-app-test', ['ember-q
 
   'use strict';
 
-  ember_qunit.moduleForComponent('tr-management-app', {});
+  ember_qunit.moduleForComponent('tr-management-app', 'Unit | Component | tr management app', {
+    // Specify the other units that are required for this test
+    needs: ['component:radio-button'],
+    unit: true
+  });
 
   ember_qunit.test('it renders', function (assert) {
     assert.expect(2);
@@ -36700,9 +35306,6 @@ define('fusor-ember-cli/tests/unit/components/tr-management-app-test', ['ember-q
     this.render();
     assert.equal(component._state, 'inDOM');
   });
-
-  // Specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
 
 });
 define('fusor-ember-cli/tests/unit/components/tr-management-app-test.jshint', function () {
@@ -36719,39 +35322,11 @@ define('fusor-ember-cli/tests/unit/components/tr-organization-test', ['ember-qun
 
   'use strict';
 
-  ember_qunit.moduleForComponent('tr-organization', 'TrOrganizationComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
+  ember_qunit.moduleForComponent('tr-organization', 'Unit | Component | tr organization', {
+    // Specify the other units that are required for this test
+    needs: ['component:radio-button'],
+    unit: true
   });
-
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
-
-});
-define('fusor-ember-cli/tests/unit/components/tr-organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/components');
-  test('unit/components/tr-organization-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/tr-organization-test.js should pass jshint.\nunit/components/tr-organization-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/tr-organization-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/tr-organization-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/components/tr-subscription-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleForComponent('tr-subscription', {});
 
   ember_qunit.test('it renders', function (assert) {
     assert.expect(2);
@@ -36765,8 +35340,38 @@ define('fusor-ember-cli/tests/unit/components/tr-subscription-test', ['ember-qun
     assert.equal(component._state, 'inDOM');
   });
 
-  // Specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+});
+define('fusor-ember-cli/tests/unit/components/tr-organization-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/components');
+  test('unit/components/tr-organization-test.js should pass jshint', function() { 
+    ok(true, 'unit/components/tr-organization-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/components/tr-subscription-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForComponent('tr-subscription', 'Unit | Component | tr subscription', {
+    // Specify the other units that are required for this test
+    needs: ['helper:moment'],
+    unit: true
+  });
+
+  // test('it renders', function(assert) {
+  //   assert.expect(2);
+
+  //   // Creates the component instance
+  //   var component = this.subject();
+  //   assert.equal(component._state, 'preRender');
+
+  //   // Renders the component to the page
+  //   this.render();
+  //   assert.equal(component._state, 'inDOM');
+  // });
 
 });
 define('fusor-ember-cli/tests/unit/components/tr-subscription-test.jshint', function () {
@@ -36783,7 +35388,11 @@ define('fusor-ember-cli/tests/unit/components/tr-task-test', ['ember-qunit'], fu
 
   'use strict';
 
-  ember_qunit.moduleForComponent('tr-task', {});
+  ember_qunit.moduleForComponent('tr-task', 'Unit | Component | tr task', {
+    // Specify the other units that are required for this test
+    // needs: ['component:foo', 'helper:bar'],
+    unit: true
+  });
 
   ember_qunit.test('it renders', function (assert) {
     assert.expect(2);
@@ -36796,9 +35405,6 @@ define('fusor-ember-cli/tests/unit/components/tr-task-test', ['ember-qunit'], fu
     this.render();
     assert.equal(component._state, 'inDOM');
   });
-
-  // Specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
 
 });
 define('fusor-ember-cli/tests/unit/components/tr-task-test.jshint', function () {
@@ -36815,22 +35421,23 @@ define('fusor-ember-cli/tests/unit/components/traffic-type-test', ['ember-qunit'
 
   'use strict';
 
-  ember_qunit.moduleForComponent('traffic-type', 'TrafficTypeComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
+  ember_qunit.moduleForComponent('traffic-type', 'Unit | Component | traffic type', {
+    // Specify the other units that are required for this test
+    // needs: ['component:foo', 'helper:bar'],
+    unit: true
   });
 
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/traffic-type-test.jshint', function () {
@@ -36839,39 +35446,7 @@ define('fusor-ember-cli/tests/unit/components/traffic-type-test.jshint', functio
 
   module('JSHint - unit/components');
   test('unit/components/traffic-type-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/traffic-type-test.js should pass jshint.\nunit/components/traffic-type-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/traffic-type-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/traffic-type-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/components/upstream-downstream-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleForComponent('upstream-downstream', 'UpstreamDownstreamComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
-  });
-
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
-
-});
-define('fusor-ember-cli/tests/unit/components/upstream-downstream-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/components');
-  test('unit/components/upstream-downstream-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/upstream-downstream-test.js should pass jshint.\nunit/components/upstream-downstream-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/upstream-downstream-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/upstream-downstream-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/components/traffic-type-test.js should pass jshint.'); 
   });
 
 });
@@ -36879,22 +35454,23 @@ define('fusor-ember-cli/tests/unit/components/vertical-tab-test', ['ember-qunit'
 
   'use strict';
 
-  ember_qunit.moduleForComponent('vertical-tab', 'VerticalTabComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
+  ember_qunit.moduleForComponent('vertical-tab', 'Unit | Component | vertical tab', {
+    // Specify the other units that are required for this test
+    // needs: ['component:foo', 'helper:bar'],
+    unit: true
   });
 
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/vertical-tab-test.jshint', function () {
@@ -36903,7 +35479,7 @@ define('fusor-ember-cli/tests/unit/components/vertical-tab-test.jshint', functio
 
   module('JSHint - unit/components');
   test('unit/components/vertical-tab-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/vertical-tab-test.js should pass jshint.\nunit/components/vertical-tab-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/vertical-tab-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/vertical-tab-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/components/vertical-tab-test.js should pass jshint.'); 
   });
 
 });
@@ -36911,22 +35487,23 @@ define('fusor-ember-cli/tests/unit/components/wizard-item-test', ['ember-qunit']
 
   'use strict';
 
-  ember_qunit.moduleForComponent('wizard-item', 'WizardItemComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
+  ember_qunit.moduleForComponent('wizard-item', 'Unit | Component | wizard item', {
+    // Specify the other units that are required for this test
+    // needs: ['component:foo', 'helper:bar'],
+    unit: true
   });
 
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  ember_qunit.test('it renders', function (assert) {
+    assert.expect(2);
+
+    // Creates the component instance
+    var component = this.subject();
+    assert.equal(component._state, 'preRender');
+
+    // Renders the component to the page
+    this.render();
+    assert.equal(component._state, 'inDOM');
+  });
 
 });
 define('fusor-ember-cli/tests/unit/components/wizard-item-test.jshint', function () {
@@ -36935,39 +35512,7 @@ define('fusor-ember-cli/tests/unit/components/wizard-item-test.jshint', function
 
   module('JSHint - unit/components');
   test('unit/components/wizard-item-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/wizard-item-test.js should pass jshint.\nunit/components/wizard-item-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/wizard-item-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/wizard-item-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/components/wrap-in-container-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleForComponent('wrap-in-container', 'WrapInContainerComponent', {});
-
-  ember_qunit.test('it renders', function () {
-    expect(2);
-
-    // creates the component instance
-    var component = this.subject();
-    equal(component._state, 'preRender');
-
-    // appends the component to the page
-    this.append();
-    equal(component._state, 'inDOM');
-  });
-
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
-
-});
-define('fusor-ember-cli/tests/unit/components/wrap-in-container-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/components');
-  test('unit/components/wrap-in-container-test.js should pass jshint', function() { 
-    ok(false, 'unit/components/wrap-in-container-test.js should pass jshint.\nunit/components/wrap-in-container-test.js: line 12, col 3, \'expect\' is not defined.\nunit/components/wrap-in-container-test.js: line 16, col 3, \'equal\' is not defined.\nunit/components/wrap-in-container-test.js: line 20, col 3, \'equal\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/components/wizard-item-test.js should pass jshint.'); 
   });
 
 });
@@ -36975,16 +35520,16 @@ define('fusor-ember-cli/tests/unit/controllers/application-test', ['ember-qunit'
 
   'use strict';
 
-  ember_qunit.moduleFor('controller:application', 'ApplicationController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
+  ember_qunit.moduleFor('controller:application', {
+    // Specify the other units that are required for this test.
+    needs: ['controller:deployment']
   });
 
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
+  // Replace this with your real tests.
+  ember_qunit.test('it exists', function (assert) {
+    var controller = this.subject();
+    assert.ok(controller);
+  });
 
 });
 define('fusor-ember-cli/tests/unit/controllers/application-test.jshint', function () {
@@ -36993,1654 +35538,45 @@ define('fusor-ember-cli/tests/unit/controllers/application-test.jshint', functio
 
   module('JSHint - unit/controllers');
   test('unit/controllers/application-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/application-test.js should pass jshint.\nunit/controllers/application-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/controllers/application-test.js should pass jshint.'); 
   });
 
 });
-define('fusor-ember-cli/tests/unit/controllers/cloudforms-storage-domain-test', ['ember-qunit'], function (ember_qunit) {
+define('fusor-ember-cli/tests/unit/mixins/configure-environment-mixin-test', ['ember', 'fusor-ember-cli/mixins/configure-environment-mixin', 'qunit'], function (Ember, ConfigureEnvironmentMixinMixin, qunit) {
 
   'use strict';
 
-  ember_qunit.moduleFor('controller:cloudforms-storage-domain', 'CloudformsStorageDomainController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/cloudforms-storage-domain-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/cloudforms-storage-domain-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/cloudforms-storage-domain-test.js should pass jshint.\nunit/controllers/cloudforms-storage-domain-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/cloudforms-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:cloudforms', 'CloudformsController', {});
+  qunit.module('Unit | Mixin | configure environment mixin');
 
   // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
+  qunit.test('it works', function (assert) {
+    var ConfigureEnvironmentMixinObject = Ember['default'].Object.extend(ConfigureEnvironmentMixinMixin['default']);
+    var subject = ConfigureEnvironmentMixinObject.create();
+    assert.ok(subject);
   });
 
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/cloudforms-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/cloudforms-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/cloudforms-test.js should pass jshint.\nunit/controllers/cloudforms-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/cloudforms-vm-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:cloudforms-vm', 'CloudformsVmController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/cloudforms-vm-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/cloudforms-vm-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/cloudforms-vm-test.js should pass jshint.\nunit/controllers/cloudforms-vm-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/cloudforms/cfme-configuration-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:cloudforms/cfme-configuration', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function (assert) {
-    var controller = this.subject();
-    assert.ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/cloudforms/cfme-configuration-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/cloudforms');
-  test('unit/controllers/cloudforms/cfme-configuration-test.js should pass jshint', function() { 
-    ok(true, 'unit/controllers/cloudforms/cfme-configuration-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/configure-environment-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:configure-environment', 'ConfigureEnvironmentController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/configure-environment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/configure-environment-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/configure-environment-test.js should pass jshint.\nunit/controllers/configure-environment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/configure-organization-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:configure-organization', 'ConfigureOrganizationController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/configure-organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/configure-organization-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/configure-organization-test.js should pass jshint.\nunit/controllers/configure-organization-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/configure/new-organization-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:configure/new-organization', 'ConfigureNewOrganizationController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/configure/new-organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/configure');
-  test('unit/controllers/configure/new-organization-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/configure/new-organization-test.js should pass jshint.\nunit/controllers/configure/new-organization-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployment-new-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:deployment-new', 'DeploymentNewController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployment-new-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/deployment-new-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/deployment-new-test.js should pass jshint.\nunit/controllers/deployment-new-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:deployment-new/satellite', 'DeploymentNewSatelliteController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/deployment-new');
-  test('unit/controllers/deployment-new/satellite-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/deployment-new/satellite-test.js should pass jshint.\nunit/controllers/deployment-new/satellite-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/configure-environment-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:deployment-new/satellite/configure-environment', 'DeploymentNewSatelliteConfigureEnvironmentController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/configure-environment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/deployment-new/satellite');
-  test('unit/controllers/deployment-new/satellite/configure-environment-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/deployment-new/satellite/configure-environment-test.js should pass jshint.\nunit/controllers/deployment-new/satellite/configure-environment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/configure-organization-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:deployment-new/satellite/configure-organization', 'DeploymentNewSatelliteConfigureOrganizationController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/configure-organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/deployment-new/satellite');
-  test('unit/controllers/deployment-new/satellite/configure-organization-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/deployment-new/satellite/configure-organization-test.js should pass jshint.\nunit/controllers/deployment-new/satellite/configure-organization-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/index-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:deployment-new/satellite/index', 'DeploymentNewSatelliteIndexController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployment-new/satellite/index-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/deployment-new/satellite');
-  test('unit/controllers/deployment-new/satellite/index-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/deployment-new/satellite/index-test.js should pass jshint.\nunit/controllers/deployment-new/satellite/index-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployment-new/start-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:deployment-new/start', 'DeploymentNewStartController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployment-new/start-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/deployment-new');
-  test('unit/controllers/deployment-new/start-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/deployment-new/start-test.js should pass jshint.\nunit/controllers/deployment-new/start-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployment-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:deployment', 'DeploymentController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/deployment-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/deployment-test.js should pass jshint.\nunit/controllers/deployment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployment/start-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:deployment/start', 'DeploymentStartController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployment/start-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/deployment');
-  test('unit/controllers/deployment/start-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/deployment/start-test.js should pass jshint.\nunit/controllers/deployment/start-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployments-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:deployments', 'DeploymentsController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/deployments-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/deployments-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/deployments-test.js should pass jshint.\nunit/controllers/deployments-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/discovered-host-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:discovered-host', 'DiscoveredHostController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/discovered-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/discovered-host-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/discovered-host-test.js should pass jshint.\nunit/controllers/discovered-host-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/engine-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:engine', 'EngineController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/engine-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/engine-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/engine-test.js should pass jshint.\nunit/controllers/engine-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/engine/discovered-host-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:engine/discovered-host', 'EngineDiscoveredHostController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/engine/discovered-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/engine');
-  test('unit/controllers/engine/discovered-host-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/engine/discovered-host-test.js should pass jshint.\nunit/controllers/engine/discovered-host-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/host-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:host', 'HostController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/host-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/host-test.js should pass jshint.\nunit/controllers/host-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/hostgroup-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:hostgroup', 'HostgroupController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/hostgroup-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/hostgroup-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/hostgroup-test.js should pass jshint.\nunit/controllers/hostgroup-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/hypervisor-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:hypervisor', 'HypervisorController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/hypervisor-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/hypervisor-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/hypervisor-test.js should pass jshint.\nunit/controllers/hypervisor-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/hypervisor/discovered-host-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:hypervisor/discovered-host', 'HypervisorDiscoveredHostController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/hypervisor/discovered-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/hypervisor');
-  test('unit/controllers/hypervisor/discovered-host-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/hypervisor/discovered-host-test.js should pass jshint.\nunit/controllers/hypervisor/discovered-host-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/lifecycle-environment-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:environment', 'EnvironmentController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/lifecycle-environment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/lifecycle-environment-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/lifecycle-environment-test.js should pass jshint.\nunit/controllers/lifecycle-environment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/lifecycle-environments-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:environments', 'EnvironmentsController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/lifecycle-environments-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/lifecycle-environments-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/lifecycle-environments-test.js should pass jshint.\nunit/controllers/lifecycle-environments-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/login-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:login', 'LoginController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/login-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/login-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/login-test.js should pass jshint.\nunit/controllers/login-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/logout-model-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:logout-model', 'LogoutModelController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/logout-model-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/logout-model-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/logout-model-test.js should pass jshint.\nunit/controllers/logout-model-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/networking-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:networking', 'NetworkingController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/networking-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/networking-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/networking-test.js should pass jshint.\nunit/controllers/networking-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/new-environment-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:new-environment', 'NewEnvironmentController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/new-environment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/new-environment-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/new-environment-test.js should pass jshint.\nunit/controllers/new-environment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/new-organization-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:new-organization', 'NewOrganizationController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/new-organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/new-organization-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/new-organization-test.js should pass jshint.\nunit/controllers/new-organization-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/openstack-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:openstack', 'OpenstackController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/openstack-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/openstack-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/openstack-test.js should pass jshint.\nunit/controllers/openstack-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/organization-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:organization', 'OrganizationController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/organization-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/organization-test.js should pass jshint.\nunit/controllers/organization-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/organizations-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:organizations', 'OrganizationsController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/organizations-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/organizations-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/organizations-test.js should pass jshint.\nunit/controllers/organizations-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/product-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:product', 'ProductController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/product-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/product-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/product-test.js should pass jshint.\nunit/controllers/product-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/products-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:products', 'ProductsController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/products-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/products-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/products-test.js should pass jshint.\nunit/controllers/products-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/review-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:review', 'ReviewController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/review-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/review-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/review-test.js should pass jshint.\nunit/controllers/review-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/review/installation-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:review/installation', 'ReviewInstallationController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/review/installation-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/review');
-  test('unit/controllers/review/installation-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/review/installation-test.js should pass jshint.\nunit/controllers/review/installation-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/review/progress-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:review/progress', 'ReviewProgressController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/review/progress-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/review');
-  test('unit/controllers/review/progress-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/review/progress-test.js should pass jshint.\nunit/controllers/review/progress-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/review/progress/details/task-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:review/progress/details/task', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function (assert) {
-    var controller = this.subject();
-    assert.ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/review/progress/details/task-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/review/progress/details');
-  test('unit/controllers/review/progress/details/task-test.js should pass jshint', function() { 
-    ok(true, 'unit/controllers/review/progress/details/task-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/review/progress/details/task/index-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:review/progress/details/task/index', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function (assert) {
-    var controller = this.subject();
-    assert.ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/review/progress/details/task/index-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/review/progress/details/task');
-  test('unit/controllers/review/progress/details/task/index-test.js should pass jshint', function() { 
-    ok(true, 'unit/controllers/review/progress/details/task/index-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/review/progress/overview-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:review/progress/overview', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function (assert) {
-    var controller = this.subject();
-    assert.ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/review/progress/overview-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/review/progress');
-  test('unit/controllers/review/progress/overview-test.js should pass jshint', function() { 
-    ok(true, 'unit/controllers/review/progress/overview-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/review/summary-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:review/summary', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function (assert) {
-    var controller = this.subject();
-    assert.ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/review/summary-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/review');
-  test('unit/controllers/review/summary-test.js should pass jshint', function() { 
-    ok(true, 'unit/controllers/review/summary-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/rhci-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:rhci', 'RhciController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/rhci-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/rhci-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/rhci-test.js should pass jshint.\nunit/controllers/rhci-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/rhev-options-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:rhev-options', 'RhevOptionsController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/rhev-options-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/rhev-options-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/rhev-options-test.js should pass jshint.\nunit/controllers/rhev-options-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/rhev-setup-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:rhev-setup', 'RhevSetupController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/rhev-setup-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/rhev-setup-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/rhev-setup-test.js should pass jshint.\nunit/controllers/rhev-setup-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/rhev-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:rhev', 'RhevController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/rhev-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/rhev-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/rhev-test.js should pass jshint.\nunit/controllers/rhev-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/rhev/index-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:rhev/index', 'RhevIndexController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/rhev/index-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/rhev');
-  test('unit/controllers/rhev/index-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/rhev/index-test.js should pass jshint.\nunit/controllers/rhev/index-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/satellite-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:satellite', 'SatelliteController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/satellite-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/satellite-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/satellite-test.js should pass jshint.\nunit/controllers/satellite-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/satellite/index-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:satellite/index', 'SatelliteIndexController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/satellite/index-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/satellite');
-  test('unit/controllers/satellite/index-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/satellite/index-test.js should pass jshint.\nunit/controllers/satellite/index-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/side-menu-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:side-menu', 'SideMenuController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/side-menu-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/side-menu-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/side-menu-test.js should pass jshint.\nunit/controllers/side-menu-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/storage-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:storage', 'StorageController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/storage-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/storage-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/storage-test.js should pass jshint.\nunit/controllers/storage-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/subscription-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:subscription', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function (assert) {
-    var controller = this.subject();
-    assert.ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/subscription-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/subscription-test.js should pass jshint', function() { 
-    ok(true, 'unit/controllers/subscription-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/subscriptions-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:subscriptions', 'SubscriptionsController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/subscriptions-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/subscriptions-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/subscriptions-test.js should pass jshint.\nunit/controllers/subscriptions-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/subscriptions/credentials-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:subscriptions/credentials', 'SubscriptionsCredentialsController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/subscriptions/credentials-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/subscriptions');
-  test('unit/controllers/subscriptions/credentials-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/subscriptions/credentials-test.js should pass jshint.\nunit/controllers/subscriptions/credentials-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/subscriptions/management-application-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:subscriptions/management-application', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function (assert) {
-    var controller = this.subject();
-    assert.ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/subscriptions/management-application-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/subscriptions');
-  test('unit/controllers/subscriptions/management-application-test.js should pass jshint', function() { 
-    ok(true, 'unit/controllers/subscriptions/management-application-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/subscriptions/select-subscriptions-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:subscriptions/select-subscriptions', 'SubscriptionsSelectSubscriptionsController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/subscriptions/select-subscriptions-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/subscriptions');
-  test('unit/controllers/subscriptions/select-subscriptions-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/subscriptions/select-subscriptions-test.js should pass jshint.\nunit/controllers/subscriptions/select-subscriptions-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/user-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:user', 'UserController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/user-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/user-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/user-test.js should pass jshint.\nunit/controllers/user-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/user/edit-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:user/edit', 'UserEditController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/user/edit-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/user');
-  test('unit/controllers/user/edit-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/user/edit-test.js should pass jshint.\nunit/controllers/user/edit-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/users-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:users', 'UsersController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/users-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/users-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/users-test.js should pass jshint.\nunit/controllers/users-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/users/new-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:users/new', 'UsersNewController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/users/new-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers/users');
-  test('unit/controllers/users/new-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/users/new-test.js should pass jshint.\nunit/controllers/users/new-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/controllers/where-install-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('controller:where-install', 'WhereInstallController', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var controller = this.subject();
-    ok(controller);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/controllers/where-install-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/controllers');
-  test('unit/controllers/where-install-test.js should pass jshint', function() { 
-    ok(false, 'unit/controllers/where-install-test.js should pass jshint.\nunit/controllers/where-install-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/helpers/raw-text-test', ['fusor-ember-cli/helpers/raw-text'], function (raw_text) {
-
-  'use strict';
-
-  module('RawTextHelper');
-
-  // Replace this with your real tests.
-  test('it works', function () {
-    var result = raw_text.rawText(42);
-    ok(result);
-  });
-
-});
-define('fusor-ember-cli/tests/unit/helpers/raw-text-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/helpers');
-  test('unit/helpers/raw-text-test.js should pass jshint', function() { 
-    ok(false, 'unit/helpers/raw-text-test.js should pass jshint.\nunit/helpers/raw-text-test.js: line 5, col 1, \'module\' is not defined.\nunit/helpers/raw-text-test.js: line 8, col 1, \'test\' is not defined.\nunit/helpers/raw-text-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/mixins/config-environment-mixin-test', ['ember', 'fusor-ember-cli/mixins/config-environment-mixin'], function (Ember, ConfigEnvironmentMixinMixin) {
-
-  'use strict';
-
-  module('ConfigEnvironmentMixinMixin');
-
-  // Replace this with your real tests.
-  test('it works', function () {
-    var ConfigEnvironmentMixinObject = Ember['default'].Object.extend(ConfigEnvironmentMixinMixin['default']);
-    var subject = ConfigEnvironmentMixinObject.create();
-    ok(subject);
-  });
-
 });
-define('fusor-ember-cli/tests/unit/mixins/config-environment-mixin-test.jshint', function () {
+define('fusor-ember-cli/tests/unit/mixins/configure-environment-mixin-test.jshint', function () {
 
   'use strict';
 
   module('JSHint - unit/mixins');
-  test('unit/mixins/config-environment-mixin-test.js should pass jshint', function() { 
-    ok(false, 'unit/mixins/config-environment-mixin-test.js should pass jshint.\nunit/mixins/config-environment-mixin-test.js: line 4, col 1, \'module\' is not defined.\nunit/mixins/config-environment-mixin-test.js: line 7, col 1, \'test\' is not defined.\nunit/mixins/config-environment-mixin-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
+  test('unit/mixins/configure-environment-mixin-test.js should pass jshint', function() { 
+    ok(true, 'unit/mixins/configure-environment-mixin-test.js should pass jshint.'); 
   });
 
 });
-define('fusor-ember-cli/tests/unit/mixins/configure-organization-mixin-test', ['ember', 'fusor-ember-cli/mixins/configure-organization-mixin'], function (Ember, ConfigureOrganizationMixinMixin) {
+define('fusor-ember-cli/tests/unit/mixins/configure-organization-mixin-test', ['ember', 'fusor-ember-cli/mixins/configure-organization-mixin', 'qunit'], function (Ember, ConfigureOrganizationMixinMixin, qunit) {
 
   'use strict';
 
-  module('ConfigureOrganizationMixinMixin');
+  qunit.module('Unit | Mixin | configure organization mixin');
 
   // Replace this with your real tests.
-  test('it works', function () {
+  qunit.test('it works', function (assert) {
     var ConfigureOrganizationMixinObject = Ember['default'].Object.extend(ConfigureOrganizationMixinMixin['default']);
     var subject = ConfigureOrganizationMixinObject.create();
-    ok(subject);
+    assert.ok(subject);
   });
 
 });
@@ -38650,21 +35586,21 @@ define('fusor-ember-cli/tests/unit/mixins/configure-organization-mixin-test.jshi
 
   module('JSHint - unit/mixins');
   test('unit/mixins/configure-organization-mixin-test.js should pass jshint', function() { 
-    ok(false, 'unit/mixins/configure-organization-mixin-test.js should pass jshint.\nunit/mixins/configure-organization-mixin-test.js: line 4, col 1, \'module\' is not defined.\nunit/mixins/configure-organization-mixin-test.js: line 7, col 1, \'test\' is not defined.\nunit/mixins/configure-organization-mixin-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/mixins/configure-organization-mixin-test.js should pass jshint.'); 
   });
 
 });
-define('fusor-ember-cli/tests/unit/mixins/deployment-controller-mixin-test', ['ember', 'fusor-ember-cli/mixins/deployment-controller-mixin'], function (Ember, DeploymentControllerMixinMixin) {
+define('fusor-ember-cli/tests/unit/mixins/deployment-controller-mixin-test', ['ember', 'fusor-ember-cli/mixins/deployment-controller-mixin', 'qunit'], function (Ember, DeploymentControllerMixinMixin, qunit) {
 
   'use strict';
 
-  module('DeploymentControllerMixinMixin');
+  qunit.module('Unit | Mixin | deployment controller mixin');
 
   // Replace this with your real tests.
-  test('it works', function () {
+  qunit.test('it works', function (assert) {
     var DeploymentControllerMixinObject = Ember['default'].Object.extend(DeploymentControllerMixinMixin['default']);
     var subject = DeploymentControllerMixinObject.create();
-    ok(subject);
+    assert.ok(subject);
   });
 
 });
@@ -38674,21 +35610,45 @@ define('fusor-ember-cli/tests/unit/mixins/deployment-controller-mixin-test.jshin
 
   module('JSHint - unit/mixins');
   test('unit/mixins/deployment-controller-mixin-test.js should pass jshint', function() { 
-    ok(false, 'unit/mixins/deployment-controller-mixin-test.js should pass jshint.\nunit/mixins/deployment-controller-mixin-test.js: line 4, col 1, \'module\' is not defined.\nunit/mixins/deployment-controller-mixin-test.js: line 7, col 1, \'test\' is not defined.\nunit/mixins/deployment-controller-mixin-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/mixins/deployment-controller-mixin-test.js should pass jshint.'); 
   });
 
 });
-define('fusor-ember-cli/tests/unit/mixins/deployment-new-satellite-route-mixin-test', ['ember', 'fusor-ember-cli/mixins/deployment-new-satellite-route-mixin'], function (Ember, DeploymentNewSatelliteRouteMixinMixin) {
+define('fusor-ember-cli/tests/unit/mixins/deployment-new-controller-mixin-test', ['ember', 'fusor-ember-cli/mixins/deployment-new-controller-mixin', 'qunit'], function (Ember, DeploymentNewControllerMixinMixin, qunit) {
 
   'use strict';
 
-  module('DeploymentNewSatelliteRouteMixinMixin');
+  qunit.module('Unit | Mixin | deployment new controller mixin');
 
   // Replace this with your real tests.
-  test('it works', function () {
+  qunit.test('it works', function (assert) {
+    var DeploymentNewControllerMixinObject = Ember['default'].Object.extend(DeploymentNewControllerMixinMixin['default']);
+    var subject = DeploymentNewControllerMixinObject.create();
+    assert.ok(subject);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/mixins/deployment-new-controller-mixin-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/mixins');
+  test('unit/mixins/deployment-new-controller-mixin-test.js should pass jshint', function() { 
+    ok(true, 'unit/mixins/deployment-new-controller-mixin-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/mixins/deployment-new-satellite-route-mixin-test', ['ember', 'fusor-ember-cli/mixins/deployment-new-satellite-route-mixin', 'qunit'], function (Ember, DeploymentNewSatelliteRouteMixinMixin, qunit) {
+
+  'use strict';
+
+  qunit.module('Unit | Mixin | deployment new satellite route mixin');
+
+  // Replace this with your real tests.
+  qunit.test('it works', function (assert) {
     var DeploymentNewSatelliteRouteMixinObject = Ember['default'].Object.extend(DeploymentNewSatelliteRouteMixinMixin['default']);
     var subject = DeploymentNewSatelliteRouteMixinObject.create();
-    ok(subject);
+    assert.ok(subject);
   });
 
 });
@@ -38698,21 +35658,21 @@ define('fusor-ember-cli/tests/unit/mixins/deployment-new-satellite-route-mixin-t
 
   module('JSHint - unit/mixins');
   test('unit/mixins/deployment-new-satellite-route-mixin-test.js should pass jshint', function() { 
-    ok(false, 'unit/mixins/deployment-new-satellite-route-mixin-test.js should pass jshint.\nunit/mixins/deployment-new-satellite-route-mixin-test.js: line 4, col 1, \'module\' is not defined.\nunit/mixins/deployment-new-satellite-route-mixin-test.js: line 7, col 1, \'test\' is not defined.\nunit/mixins/deployment-new-satellite-route-mixin-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/mixins/deployment-new-satellite-route-mixin-test.js should pass jshint.'); 
   });
 
 });
-define('fusor-ember-cli/tests/unit/mixins/deployment-route-mixin-test', ['ember', 'fusor-ember-cli/mixins/deployment-route-mixin'], function (Ember, DeploymentRouteMixinMixin) {
+define('fusor-ember-cli/tests/unit/mixins/deployment-route-mixin-test', ['ember', 'fusor-ember-cli/mixins/deployment-route-mixin', 'qunit'], function (Ember, DeploymentRouteMixinMixin, qunit) {
 
   'use strict';
 
-  module('DeploymentRouteMixinMixin');
+  qunit.module('Unit | Mixin | deployment route mixin');
 
   // Replace this with your real tests.
-  test('it works', function () {
+  qunit.test('it works', function (assert) {
     var DeploymentRouteMixinObject = Ember['default'].Object.extend(DeploymentRouteMixinMixin['default']);
     var subject = DeploymentRouteMixinObject.create();
-    ok(subject);
+    assert.ok(subject);
   });
 
 });
@@ -38722,21 +35682,21 @@ define('fusor-ember-cli/tests/unit/mixins/deployment-route-mixin-test.jshint', f
 
   module('JSHint - unit/mixins');
   test('unit/mixins/deployment-route-mixin-test.js should pass jshint', function() { 
-    ok(false, 'unit/mixins/deployment-route-mixin-test.js should pass jshint.\nunit/mixins/deployment-route-mixin-test.js: line 4, col 1, \'module\' is not defined.\nunit/mixins/deployment-route-mixin-test.js: line 7, col 1, \'test\' is not defined.\nunit/mixins/deployment-route-mixin-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/mixins/deployment-route-mixin-test.js should pass jshint.'); 
   });
 
 });
-define('fusor-ember-cli/tests/unit/mixins/disable-tab-mixin-test', ['ember', 'fusor-ember-cli/mixins/disable-tab-mixin'], function (Ember, DisableTabMixinMixin) {
+define('fusor-ember-cli/tests/unit/mixins/disable-tab-mixin-test', ['ember', 'fusor-ember-cli/mixins/disable-tab-mixin', 'qunit'], function (Ember, DisableTabMixinMixin, qunit) {
 
   'use strict';
 
-  module('DisableTabMixinMixin');
+  qunit.module('Unit | Mixin | disable tab mixin');
 
   // Replace this with your real tests.
-  test('it works', function () {
+  qunit.test('it works', function (assert) {
     var DisableTabMixinObject = Ember['default'].Object.extend(DisableTabMixinMixin['default']);
     var subject = DisableTabMixinObject.create();
-    ok(subject);
+    assert.ok(subject);
   });
 
 });
@@ -38746,7 +35706,31 @@ define('fusor-ember-cli/tests/unit/mixins/disable-tab-mixin-test.jshint', functi
 
   module('JSHint - unit/mixins');
   test('unit/mixins/disable-tab-mixin-test.js should pass jshint', function() { 
-    ok(false, 'unit/mixins/disable-tab-mixin-test.js should pass jshint.\nunit/mixins/disable-tab-mixin-test.js: line 4, col 1, \'module\' is not defined.\nunit/mixins/disable-tab-mixin-test.js: line 7, col 1, \'test\' is not defined.\nunit/mixins/disable-tab-mixin-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/mixins/disable-tab-mixin-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/mixins/meta-test', ['ember', 'fusor-ember-cli/mixins/meta', 'qunit'], function (Ember, MetaMixin, qunit) {
+
+  'use strict';
+
+  qunit.module('Unit | Mixin | meta');
+
+  // Replace this with your real tests.
+  qunit.test('it works', function (assert) {
+    var MetaObject = Ember['default'].Object.extend(MetaMixin['default']);
+    var subject = MetaObject.create();
+    assert.ok(subject);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/mixins/meta-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/mixins');
+  test('unit/mixins/meta-test.js should pass jshint', function() { 
+    ok(true, 'unit/mixins/meta-test.js should pass jshint.'); 
   });
 
 });
@@ -38754,7 +35738,7 @@ define('fusor-ember-cli/tests/unit/mixins/progress-bar-mixin-test', ['ember', 'f
 
   'use strict';
 
-  qunit.module('ProgressBarMixinMixin');
+  qunit.module('Unit | Mixin | progress bar mixin');
 
   // Replace this with your real tests.
   qunit.test('it works', function (assert) {
@@ -38774,17 +35758,17 @@ define('fusor-ember-cli/tests/unit/mixins/progress-bar-mixin-test.jshint', funct
   });
 
 });
-define('fusor-ember-cli/tests/unit/mixins/satellite-controller-mixin-test', ['ember', 'fusor-ember-cli/mixins/satellite-controller-mixin'], function (Ember, SatelliteControllerMixinMixin) {
+define('fusor-ember-cli/tests/unit/mixins/satellite-controller-mixin-test', ['ember', 'fusor-ember-cli/mixins/satellite-controller-mixin', 'qunit'], function (Ember, SatelliteControllerMixinMixin, qunit) {
 
   'use strict';
 
-  module('SatelliteControllerMixinMixin');
+  qunit.module('Unit | Mixin | satellite controller mixin');
 
   // Replace this with your real tests.
-  test('it works', function () {
+  qunit.test('it works', function (assert) {
     var SatelliteControllerMixinObject = Ember['default'].Object.extend(SatelliteControllerMixinMixin['default']);
     var subject = SatelliteControllerMixinObject.create();
-    ok(subject);
+    assert.ok(subject);
   });
 
 });
@@ -38794,7 +35778,7 @@ define('fusor-ember-cli/tests/unit/mixins/satellite-controller-mixin-test.jshint
 
   module('JSHint - unit/mixins');
   test('unit/mixins/satellite-controller-mixin-test.js should pass jshint', function() { 
-    ok(false, 'unit/mixins/satellite-controller-mixin-test.js should pass jshint.\nunit/mixins/satellite-controller-mixin-test.js: line 4, col 1, \'module\' is not defined.\nunit/mixins/satellite-controller-mixin-test.js: line 7, col 1, \'test\' is not defined.\nunit/mixins/satellite-controller-mixin-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/mixins/satellite-controller-mixin-test.js should pass jshint.'); 
   });
 
 });
@@ -38802,7 +35786,7 @@ define('fusor-ember-cli/tests/unit/mixins/save-hostname-mixin-test', ['ember', '
 
   'use strict';
 
-  qunit.module('SaveHostnameMixinMixin');
+  qunit.module('Unit | Mixin | save hostname mixin');
 
   // Replace this with your real tests.
   qunit.test('it works', function (assert) {
@@ -38822,17 +35806,17 @@ define('fusor-ember-cli/tests/unit/mixins/save-hostname-mixin-test.jshint', func
   });
 
 });
-define('fusor-ember-cli/tests/unit/mixins/start-controller-mixin-test', ['ember', 'fusor-ember-cli/mixins/start-controller-mixin'], function (Ember, StartControllerMixinMixin) {
+define('fusor-ember-cli/tests/unit/mixins/start-controller-mixin-test', ['ember', 'fusor-ember-cli/mixins/start-controller-mixin', 'qunit'], function (Ember, StartControllerMixinMixin, qunit) {
 
   'use strict';
 
-  module('StartControllerMixinMixin');
+  qunit.module('Unit | Mixin | start controller mixin');
 
   // Replace this with your real tests.
-  test('it works', function () {
+  qunit.test('it works', function (assert) {
     var StartControllerMixinObject = Ember['default'].Object.extend(StartControllerMixinMixin['default']);
     var subject = StartControllerMixinObject.create();
-    ok(subject);
+    assert.ok(subject);
   });
 
 });
@@ -38842,15 +35826,67 @@ define('fusor-ember-cli/tests/unit/mixins/start-controller-mixin-test.jshint', f
 
   module('JSHint - unit/mixins');
   test('unit/mixins/start-controller-mixin-test.js should pass jshint', function() { 
-    ok(false, 'unit/mixins/start-controller-mixin-test.js should pass jshint.\nunit/mixins/start-controller-mixin-test.js: line 4, col 1, \'module\' is not defined.\nunit/mixins/start-controller-mixin-test.js: line 7, col 1, \'test\' is not defined.\nunit/mixins/start-controller-mixin-test.js: line 10, col 3, \'ok\' is not defined.\n\n3 errors'); 
+    ok(true, 'unit/mixins/start-controller-mixin-test.js should pass jshint.'); 
   });
 
 });
-define('fusor-ember-cli/tests/unit/models/credential-test', ['ember-qunit'], function (ember_qunit) {
+define('fusor-ember-cli/tests/unit/models/deployment-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
 
-  ember_qunit.moduleForModel('credential', {
+  ember_qunit.moduleForModel('deployment', 'Unit | Model | deployment', {
+    // Specify the other units that are required for this test.
+    needs: ['model:organization', 'model:lifecycle-environment', 'model:discovered-host']
+  });
+
+  ember_qunit.test('it exists', function (assert) {
+    var model = this.subject();
+    // var store = this.store();
+    assert.ok(!!model);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/models/deployment-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/deployment-test.js should pass jshint', function() { 
+    ok(true, 'unit/models/deployment-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/models/discovered-host-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForModel('discovered-host', 'Unit | Model | discovered host', {
+    // Specify the other units that are required for this test.
+    needs: ['model:deployment', 'model:organization', 'model:lifecycle-environment']
+  });
+
+  ember_qunit.test('it exists', function (assert) {
+    var model = this.subject();
+    // var store = this.store();
+    assert.ok(!!model);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/models/discovered-host-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/discovered-host-test.js should pass jshint', function() { 
+    ok(true, 'unit/models/discovered-host-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/models/environment-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForModel('environment', 'Unit | Model | environment', {
     // Specify the other units that are required for this test.
     needs: []
   });
@@ -38862,117 +35898,13 @@ define('fusor-ember-cli/tests/unit/models/credential-test', ['ember-qunit'], fun
   });
 
 });
-define('fusor-ember-cli/tests/unit/models/credential-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/models');
-  test('unit/models/credential-test.js should pass jshint', function() { 
-    ok(true, 'unit/models/credential-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/models/deployment-host-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleForModel('deployment-host', 'DeploymentHost', {
-    // Specify the other units that are required for this test.
-    needs: []
-  });
-
-  ember_qunit.test('it exists', function () {
-    var model = this.subject();
-    // var store = this.store();
-    ok(!!model);
-  });
-
-});
-define('fusor-ember-cli/tests/unit/models/deployment-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/models');
-  test('unit/models/deployment-host-test.js should pass jshint', function() { 
-    ok(false, 'unit/models/deployment-host-test.js should pass jshint.\nunit/models/deployment-host-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/models/deployment-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleForModel('deployment', 'Deployment', {
-    // Specify the other units that are required for this test.
-    needs: []
-  });
-
-  ember_qunit.test('it exists', function () {
-    var model = this.subject();
-    // var store = this.store();
-    ok(!!model);
-  });
-
-});
-define('fusor-ember-cli/tests/unit/models/deployment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/models');
-  test('unit/models/deployment-test.js should pass jshint', function() { 
-    ok(false, 'unit/models/deployment-test.js should pass jshint.\nunit/models/deployment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/models/discovered-host-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleForModel('discovered-host', 'DiscoveredHost', {
-    // Specify the other units that are required for this test.
-    needs: []
-  });
-
-  ember_qunit.test('it exists', function () {
-    var model = this.subject();
-    // var store = this.store();
-    ok(!!model);
-  });
-
-});
-define('fusor-ember-cli/tests/unit/models/discovered-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/models');
-  test('unit/models/discovered-host-test.js should pass jshint', function() { 
-    ok(false, 'unit/models/discovered-host-test.js should pass jshint.\nunit/models/discovered-host-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/models/environment-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleForModel('environment', 'Environment', {
-    // Specify the other units that are required for this test.
-    needs: []
-  });
-
-  ember_qunit.test('it exists', function () {
-    var model = this.subject();
-    // var store = this.store();
-    ok(!!model);
-  });
-
-});
 define('fusor-ember-cli/tests/unit/models/environment-test.jshint', function () {
 
   'use strict';
 
   module('JSHint - unit/models');
   test('unit/models/environment-test.js should pass jshint', function() { 
-    ok(false, 'unit/models/environment-test.js should pass jshint.\nunit/models/environment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/models/environment-test.js should pass jshint.'); 
   });
 
 });
@@ -38980,7 +35912,7 @@ define('fusor-ember-cli/tests/unit/models/foreman-task-test', ['ember-qunit'], f
 
   'use strict';
 
-  ember_qunit.moduleForModel('foreman-task', {
+  ember_qunit.moduleForModel('foreman-task', 'Unit | Model | foreman task', {
     // Specify the other units that are required for this test.
     needs: []
   });
@@ -39006,15 +35938,15 @@ define('fusor-ember-cli/tests/unit/models/host-test', ['ember-qunit'], function 
 
   'use strict';
 
-  ember_qunit.moduleForModel('host', 'Host', {
+  ember_qunit.moduleForModel('host', 'Unit | Model | host', {
     // Specify the other units that are required for this test.
     needs: []
   });
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var model = this.subject();
     // var store = this.store();
-    ok(!!model);
+    assert.ok(!!model);
   });
 
 });
@@ -39024,33 +35956,7 @@ define('fusor-ember-cli/tests/unit/models/host-test.jshint', function () {
 
   module('JSHint - unit/models');
   test('unit/models/host-test.js should pass jshint', function() { 
-    ok(false, 'unit/models/host-test.js should pass jshint.\nunit/models/host-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/models/hostgroup-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleForModel('hostgroup', 'Hostgroup', {
-    // Specify the other units that are required for this test.
-    needs: []
-  });
-
-  ember_qunit.test('it exists', function () {
-    var model = this.subject();
-    // var store = this.store();
-    ok(!!model);
-  });
-
-});
-define('fusor-ember-cli/tests/unit/models/hostgroup-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/models');
-  test('unit/models/hostgroup-test.js should pass jshint', function() { 
-    ok(false, 'unit/models/hostgroup-test.js should pass jshint.\nunit/models/hostgroup-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/models/host-test.js should pass jshint.'); 
   });
 
 });
@@ -39058,15 +35964,15 @@ define('fusor-ember-cli/tests/unit/models/lifecycle-environment-test', ['ember-q
 
   'use strict';
 
-  ember_qunit.moduleForModel('environment', 'Environment', {
+  ember_qunit.moduleForModel('lifecycle-environment', 'Unit | Model | lifecycle environment', {
     // Specify the other units that are required for this test.
-    needs: []
+    needs: ['model:organization']
   });
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var model = this.subject();
     // var store = this.store();
-    ok(!!model);
+    assert.ok(!!model);
   });
 
 });
@@ -39076,7 +35982,7 @@ define('fusor-ember-cli/tests/unit/models/lifecycle-environment-test.jshint', fu
 
   module('JSHint - unit/models');
   test('unit/models/lifecycle-environment-test.js should pass jshint', function() { 
-    ok(false, 'unit/models/lifecycle-environment-test.js should pass jshint.\nunit/models/lifecycle-environment-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/models/lifecycle-environment-test.js should pass jshint.'); 
   });
 
 });
@@ -39084,15 +35990,15 @@ define('fusor-ember-cli/tests/unit/models/location-test', ['ember-qunit'], funct
 
   'use strict';
 
-  ember_qunit.moduleForModel('location', 'Location', {
+  ember_qunit.moduleForModel('location', 'Unit | Model | location', {
     // Specify the other units that are required for this test.
     needs: []
   });
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var model = this.subject();
     // var store = this.store();
-    ok(!!model);
+    assert.ok(!!model);
   });
 
 });
@@ -39102,7 +36008,7 @@ define('fusor-ember-cli/tests/unit/models/location-test.jshint', function () {
 
   module('JSHint - unit/models');
   test('unit/models/location-test.js should pass jshint', function() { 
-    ok(false, 'unit/models/location-test.js should pass jshint.\nunit/models/location-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/models/location-test.js should pass jshint.'); 
   });
 
 });
@@ -39110,7 +36016,7 @@ define('fusor-ember-cli/tests/unit/models/management-application-test', ['ember-
 
   'use strict';
 
-  ember_qunit.moduleForModel('management-application', {
+  ember_qunit.moduleForModel('management-application', 'Unit | Model | management application', {
     // Specify the other units that are required for this test.
     needs: []
   });
@@ -39136,15 +36042,15 @@ define('fusor-ember-cli/tests/unit/models/organization-test', ['ember-qunit'], f
 
   'use strict';
 
-  ember_qunit.moduleForModel('organization', 'Organization', {
+  ember_qunit.moduleForModel('organization', 'Unit | Model | organization', {
     // Specify the other units that are required for this test.
-    needs: []
+    needs: ['model:lifecycle-environment']
   });
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var model = this.subject();
     // var store = this.store();
-    ok(!!model);
+    assert.ok(!!model);
   });
 
 });
@@ -39154,7 +36060,7 @@ define('fusor-ember-cli/tests/unit/models/organization-test.jshint', function ()
 
   module('JSHint - unit/models');
   test('unit/models/organization-test.js should pass jshint', function() { 
-    ok(false, 'unit/models/organization-test.js should pass jshint.\nunit/models/organization-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/models/organization-test.js should pass jshint.'); 
   });
 
 });
@@ -39162,15 +36068,15 @@ define('fusor-ember-cli/tests/unit/models/product-test', ['ember-qunit'], functi
 
   'use strict';
 
-  ember_qunit.moduleForModel('product', 'Product', {
+  ember_qunit.moduleForModel('product', 'Unit | Model | product', {
     // Specify the other units that are required for this test.
     needs: []
   });
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var model = this.subject();
     // var store = this.store();
-    ok(!!model);
+    assert.ok(!!model);
   });
 
 });
@@ -39180,33 +36086,33 @@ define('fusor-ember-cli/tests/unit/models/product-test.jshint', function () {
 
   module('JSHint - unit/models');
   test('unit/models/product-test.js should pass jshint', function() { 
-    ok(false, 'unit/models/product-test.js should pass jshint.\nunit/models/product-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/models/product-test.js should pass jshint.'); 
   });
 
 });
-define('fusor-ember-cli/tests/unit/models/rhev-setup-test', ['ember-qunit'], function (ember_qunit) {
+define('fusor-ember-cli/tests/unit/models/session-portal-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
 
-  ember_qunit.moduleForModel('rhev-setup', 'RhevSetup', {
+  ember_qunit.moduleForModel('session-portal', 'Unit | Model | session portal', {
     // Specify the other units that are required for this test.
     needs: []
   });
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var model = this.subject();
     // var store = this.store();
-    ok(!!model);
+    assert.ok(!!model);
   });
 
 });
-define('fusor-ember-cli/tests/unit/models/rhev-setup-test.jshint', function () {
+define('fusor-ember-cli/tests/unit/models/session-portal-test.jshint', function () {
 
   'use strict';
 
   module('JSHint - unit/models');
-  test('unit/models/rhev-setup-test.js should pass jshint', function() { 
-    ok(false, 'unit/models/rhev-setup-test.js should pass jshint.\nunit/models/rhev-setup-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+  test('unit/models/session-portal-test.js should pass jshint', function() { 
+    ok(true, 'unit/models/session-portal-test.js should pass jshint.'); 
   });
 
 });
@@ -39214,15 +36120,15 @@ define('fusor-ember-cli/tests/unit/models/subnet-test', ['ember-qunit'], functio
 
   'use strict';
 
-  ember_qunit.moduleForModel('subnet', 'Subnet', {
+  ember_qunit.moduleForModel('subnet', 'Unit | Model | subnet', {
     // Specify the other units that are required for this test.
-    needs: []
+    needs: ['model:traffic-type', 'model:organization', 'model:lifecycle-environment']
   });
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var model = this.subject();
     // var store = this.store();
-    ok(!!model);
+    assert.ok(!!model);
   });
 
 });
@@ -39232,7 +36138,7 @@ define('fusor-ember-cli/tests/unit/models/subnet-test.jshint', function () {
 
   module('JSHint - unit/models');
   test('unit/models/subnet-test.js should pass jshint', function() { 
-    ok(false, 'unit/models/subnet-test.js should pass jshint.\nunit/models/subnet-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/models/subnet-test.js should pass jshint.'); 
   });
 
 });
@@ -39240,15 +36146,15 @@ define('fusor-ember-cli/tests/unit/models/subscription-test', ['ember-qunit'], f
 
   'use strict';
 
-  ember_qunit.moduleForModel('subscription', 'Subscription', {
+  ember_qunit.moduleForModel('subscription', 'Unit | Model | subscription', {
     // Specify the other units that are required for this test.
     needs: []
   });
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var model = this.subject();
     // var store = this.store();
-    ok(!!model);
+    assert.ok(!!model);
   });
 
 });
@@ -39258,7 +36164,7 @@ define('fusor-ember-cli/tests/unit/models/subscription-test.jshint', function ()
 
   module('JSHint - unit/models');
   test('unit/models/subscription-test.js should pass jshint', function() { 
-    ok(false, 'unit/models/subscription-test.js should pass jshint.\nunit/models/subscription-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/models/subscription-test.js should pass jshint.'); 
   });
 
 });
@@ -39266,15 +36172,15 @@ define('fusor-ember-cli/tests/unit/models/traffic-type-test', ['ember-qunit'], f
 
   'use strict';
 
-  ember_qunit.moduleForModel('traffic-type', 'TrafficType', {
+  ember_qunit.moduleForModel('traffic-type', 'Unit | Model | traffic type', {
     // Specify the other units that are required for this test.
-    needs: []
+    needs: ['model:subnet', 'model:organization']
   });
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var model = this.subject();
     // var store = this.store();
-    ok(!!model);
+    assert.ok(!!model);
   });
 
 });
@@ -39284,33 +36190,7 @@ define('fusor-ember-cli/tests/unit/models/traffic-type-test.jshint', function ()
 
   module('JSHint - unit/models');
   test('unit/models/traffic-type-test.js should pass jshint', function() { 
-    ok(false, 'unit/models/traffic-type-test.js should pass jshint.\nunit/models/traffic-type-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/models/user-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleForModel('user', 'User', {
-    // Specify the other units that are required for this test.
-    needs: []
-  });
-
-  ember_qunit.test('it exists', function () {
-    var model = this.subject();
-    // var store = this.store();
-    ok(!!model);
-  });
-
-});
-define('fusor-ember-cli/tests/unit/models/user-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/models');
-  test('unit/models/user-test.js should pass jshint', function() { 
-    ok(false, 'unit/models/user-test.js should pass jshint.\nunit/models/user-test.js: line 14, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/models/traffic-type-test.js should pass jshint.'); 
   });
 
 });
@@ -39318,11 +36198,11 @@ define('fusor-ember-cli/tests/unit/routes/application-test', ['ember-qunit'], fu
 
   'use strict';
 
-  ember_qunit.moduleFor('route:application', 'ApplicationRoute', {});
+  ember_qunit.moduleFor('route:application', 'Unit | Route | application', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -39335,7 +36215,7 @@ define('fusor-ember-cli/tests/unit/routes/application-test.jshint', function () 
 
   module('JSHint - unit/routes');
   test('unit/routes/application-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/application-test.js should pass jshint.\nunit/routes/application-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/application-test.js should pass jshint.'); 
   });
 
 });
@@ -39343,7 +36223,7 @@ define('fusor-ember-cli/tests/unit/routes/assign-nodes-test', ['ember-qunit'], f
 
   'use strict';
 
-  ember_qunit.moduleFor('route:assign-nodes', {});
+  ember_qunit.moduleFor('route:assign-nodes', 'Unit | Route | assign nodes', {});
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
@@ -39361,31 +36241,6 @@ define('fusor-ember-cli/tests/unit/routes/assign-nodes-test.jshint', function ()
   module('JSHint - unit/routes');
   test('unit/routes/assign-nodes-test.js should pass jshint', function() { 
     ok(true, 'unit/routes/assign-nodes-test.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/cloudforms-storage-domain-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:cloudforms-storage-domain', 'CloudformsStorageDomainRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/cloudforms-storage-domain-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes');
-  test('unit/routes/cloudforms-storage-domain-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/cloudforms-storage-domain-test.js should pass jshint.\nunit/routes/cloudforms-storage-domain-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
   });
 
 });
@@ -39414,36 +36269,11 @@ define('fusor-ember-cli/tests/unit/routes/cloudforms-test.jshint', function () {
   });
 
 });
-define('fusor-ember-cli/tests/unit/routes/cloudforms-vm-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:cloudforms-vm', 'CloudformsVmRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/cloudforms-vm-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes');
-  test('unit/routes/cloudforms-vm-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/cloudforms-vm-test.js should pass jshint.\nunit/routes/cloudforms-vm-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
 define('fusor-ember-cli/tests/unit/routes/cloudforms/cfme-configuration-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
 
-  ember_qunit.moduleFor('route:cloudforms/cfme-configuration', {});
+  ember_qunit.moduleFor('route:cloudforms/cfme-configuration', 'Unit | Route | cloudforms/cfme configuration', {});
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
@@ -39468,11 +36298,11 @@ define('fusor-ember-cli/tests/unit/routes/cloudforms/index-test', ['ember-qunit'
 
   'use strict';
 
-  ember_qunit.moduleFor('route:cloudforms/index', 'CloudformsIndexRoute', {});
+  ember_qunit.moduleFor('route:cloudforms/index', 'Unit | Route | cloudforms/index', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -39485,7 +36315,7 @@ define('fusor-ember-cli/tests/unit/routes/cloudforms/index-test.jshint', functio
 
   module('JSHint - unit/routes/cloudforms');
   test('unit/routes/cloudforms/index-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/cloudforms/index-test.js should pass jshint.\nunit/routes/cloudforms/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/cloudforms/index-test.js should pass jshint.'); 
   });
 
 });
@@ -39493,11 +36323,11 @@ define('fusor-ember-cli/tests/unit/routes/configure-environment-test', ['ember-q
 
   'use strict';
 
-  ember_qunit.moduleFor('route:configure-environment', 'ConfigureEnvironmentRoute', {});
+  ember_qunit.moduleFor('route:configure-environment', 'Unit | Route | configure environment', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -39510,7 +36340,7 @@ define('fusor-ember-cli/tests/unit/routes/configure-environment-test.jshint', fu
 
   module('JSHint - unit/routes');
   test('unit/routes/configure-environment-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/configure-environment-test.js should pass jshint.\nunit/routes/configure-environment-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/configure-environment-test.js should pass jshint.'); 
   });
 
 });
@@ -39518,11 +36348,11 @@ define('fusor-ember-cli/tests/unit/routes/configure-organization-test', ['ember-
 
   'use strict';
 
-  ember_qunit.moduleFor('route:configure-organization', 'ConfigureOrganizationRoute', {});
+  ember_qunit.moduleFor('route:configure-organization', 'Unit | Route | configure organization', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -39535,57 +36365,7 @@ define('fusor-ember-cli/tests/unit/routes/configure-organization-test.jshint', f
 
   module('JSHint - unit/routes');
   test('unit/routes/configure-organization-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/configure-organization-test.js should pass jshint.\nunit/routes/configure-organization-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/configure/new-organization-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:configure/new-organization', 'ConfigureNewOrganizationRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/configure/new-organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes/configure');
-  test('unit/routes/configure/new-organization-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/configure/new-organization-test.js should pass jshint.\nunit/routes/configure/new-organization-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/content-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:content', 'ContentRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/content-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes');
-  test('unit/routes/content-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/content-test.js should pass jshint.\nunit/routes/content-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/configure-organization-test.js should pass jshint.'); 
   });
 
 });
@@ -39593,11 +36373,11 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new-test', ['ember-qunit'],
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment-new', 'DeploymentNewRoute', {});
+  ember_qunit.moduleFor('route:deployment-new', 'Unit | Route | deployment new', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -39610,7 +36390,7 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new-test.jshint', function 
 
   module('JSHint - unit/routes');
   test('unit/routes/deployment-new-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/deployment-new-test.js should pass jshint.\nunit/routes/deployment-new-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/deployment-new-test.js should pass jshint.'); 
   });
 
 });
@@ -39618,11 +36398,11 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/index-test', ['ember-qu
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment-new/index', 'DeploymentNewIndexRoute', {});
+  ember_qunit.moduleFor('route:deployment-new/index', 'Unit | Route | deployment new/index', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -39635,7 +36415,7 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/index-test.jshint', fun
 
   module('JSHint - unit/routes/deployment-new');
   test('unit/routes/deployment-new/index-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/deployment-new/index-test.js should pass jshint.\nunit/routes/deployment-new/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/deployment-new/index-test.js should pass jshint.'); 
   });
 
 });
@@ -39643,11 +36423,11 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite-test', ['embe
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment-new/satellite', 'DeploymentNewSatelliteRoute', {});
+  ember_qunit.moduleFor('route:deployment-new/satellite', 'Unit | Route | deployment new/satellite', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -39660,7 +36440,7 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite-test.jshint',
 
   module('JSHint - unit/routes/deployment-new');
   test('unit/routes/deployment-new/satellite-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/deployment-new/satellite-test.js should pass jshint.\nunit/routes/deployment-new/satellite-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/deployment-new/satellite-test.js should pass jshint.'); 
   });
 
 });
@@ -39668,11 +36448,11 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-env
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment-new/satellite/configure-environment', 'DeploymentNewSatelliteConfigureEnvironmentRoute', {});
+  ember_qunit.moduleFor('route:deployment-new/satellite/configure-environment', 'Unit | Route | deployment new/satellite/configure environment', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -39685,7 +36465,7 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-env
 
   module('JSHint - unit/routes/deployment-new/satellite');
   test('unit/routes/deployment-new/satellite/configure-environment-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/deployment-new/satellite/configure-environment-test.js should pass jshint.\nunit/routes/deployment-new/satellite/configure-environment-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/deployment-new/satellite/configure-environment-test.js should pass jshint.'); 
   });
 
 });
@@ -39693,11 +36473,11 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-org
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment-new/satellite/configure-organization', 'DeploymentNewSatelliteConfigureOrganizationRoute', {});
+  ember_qunit.moduleFor('route:deployment-new/satellite/configure-organization', 'Unit | Route | deployment new/satellite/configure organization', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -39710,7 +36490,7 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-org
 
   module('JSHint - unit/routes/deployment-new/satellite');
   test('unit/routes/deployment-new/satellite/configure-organization-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/deployment-new/satellite/configure-organization-test.js should pass jshint.\nunit/routes/deployment-new/satellite/configure-organization-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/deployment-new/satellite/configure-organization-test.js should pass jshint.'); 
   });
 
 });
@@ -39718,11 +36498,11 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/index-test', 
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment-new/satellite/index', 'DeploymentNewSatelliteIndexRoute', {});
+  ember_qunit.moduleFor('route:deployment-new/satellite/index', 'Unit | Route | deployment new/satellite/index', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -39735,7 +36515,7 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/index-test.js
 
   module('JSHint - unit/routes/deployment-new/satellite');
   test('unit/routes/deployment-new/satellite/index-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/deployment-new/satellite/index-test.js should pass jshint.\nunit/routes/deployment-new/satellite/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/deployment-new/satellite/index-test.js should pass jshint.'); 
   });
 
 });
@@ -39743,11 +36523,11 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/start-test', ['ember-qu
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment-new/start', 'DeploymentNewStartRoute', {});
+  ember_qunit.moduleFor('route:deployment-new/start', 'Unit | Route | deployment new/start', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -39760,7 +36540,7 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/start-test.jshint', fun
 
   module('JSHint - unit/routes/deployment-new');
   test('unit/routes/deployment-new/start-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/deployment-new/start-test.js should pass jshint.\nunit/routes/deployment-new/start-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/deployment-new/start-test.js should pass jshint.'); 
   });
 
 });
@@ -39768,11 +36548,11 @@ define('fusor-ember-cli/tests/unit/routes/deployment-test', ['ember-qunit'], fun
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment', 'DeploymentRoute', {});
+  ember_qunit.moduleFor('route:deployment', 'Unit | Route | deployment', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -39785,7 +36565,7 @@ define('fusor-ember-cli/tests/unit/routes/deployment-test.jshint', function () {
 
   module('JSHint - unit/routes');
   test('unit/routes/deployment-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/deployment-test.js should pass jshint.\nunit/routes/deployment-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/deployment-test.js should pass jshint.'); 
   });
 
 });
@@ -39793,11 +36573,11 @@ define('fusor-ember-cli/tests/unit/routes/deployment/index-test', ['ember-qunit'
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment/index', 'DeploymentIndexRoute', {});
+  ember_qunit.moduleFor('route:deployment/index', 'Unit | Route | deployment/index', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -39810,82 +36590,7 @@ define('fusor-ember-cli/tests/unit/routes/deployment/index-test.jshint', functio
 
   module('JSHint - unit/routes/deployment');
   test('unit/routes/deployment/index-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/deployment/index-test.js should pass jshint.\nunit/routes/deployment/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/deployment/new-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:deployment/new', 'DeploymentNewRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/deployment/new-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes/deployment');
-  test('unit/routes/deployment/new-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/deployment/new-test.js should pass jshint.\nunit/routes/deployment/new-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/deployment/review-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:deployment/review', 'DeploymentReviewRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/deployment/review-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes/deployment');
-  test('unit/routes/deployment/review-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/deployment/review-test.js should pass jshint.\nunit/routes/deployment/review-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/deployment/satellite/configure/new-organization-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:deployment/satellite/configure/new-organization', 'DeploymentSatelliteConfigureNewOrganizationRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/deployment/satellite/configure/new-organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes/deployment/satellite/configure');
-  test('unit/routes/deployment/satellite/configure/new-organization-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/deployment/satellite/configure/new-organization-test.js should pass jshint.\nunit/routes/deployment/satellite/configure/new-organization-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/deployment/index-test.js should pass jshint.'); 
   });
 
 });
@@ -39893,11 +36598,11 @@ define('fusor-ember-cli/tests/unit/routes/deployment/start-test', ['ember-qunit'
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment/start', 'DeploymentStartRoute', {});
+  ember_qunit.moduleFor('route:deployment/start', 'Unit | Route | deployment/start', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -39910,7 +36615,7 @@ define('fusor-ember-cli/tests/unit/routes/deployment/start-test.jshint', functio
 
   module('JSHint - unit/routes/deployment');
   test('unit/routes/deployment/start-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/deployment/start-test.js should pass jshint.\nunit/routes/deployment/start-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/deployment/start-test.js should pass jshint.'); 
   });
 
 });
@@ -39918,11 +36623,11 @@ define('fusor-ember-cli/tests/unit/routes/deployments-test', ['ember-qunit'], fu
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployments', 'DeploymentsRoute', {});
+  ember_qunit.moduleFor('route:deployments', 'Unit | Route | deployments', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -39935,57 +36640,7 @@ define('fusor-ember-cli/tests/unit/routes/deployments-test.jshint', function () 
 
   module('JSHint - unit/routes');
   test('unit/routes/deployments-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/deployments-test.js should pass jshint.\nunit/routes/deployments-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/discovered-host-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:discovered-host', 'DiscoveredHostRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/discovered-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes');
-  test('unit/routes/discovered-host-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/discovered-host-test.js should pass jshint.\nunit/routes/discovered-host-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/discovered-hosts-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:discovered-hosts', 'DiscoveredHostsRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/discovered-hosts-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes');
-  test('unit/routes/discovered-hosts-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/discovered-hosts-test.js should pass jshint.\nunit/routes/discovered-hosts-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/deployments-test.js should pass jshint.'); 
   });
 
 });
@@ -39993,11 +36648,11 @@ define('fusor-ember-cli/tests/unit/routes/engine-test', ['ember-qunit'], functio
 
   'use strict';
 
-  ember_qunit.moduleFor('route:engine', 'EngineRoute', {});
+  ember_qunit.moduleFor('route:engine', 'Unit | Route | engine', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -40010,7 +36665,7 @@ define('fusor-ember-cli/tests/unit/routes/engine-test.jshint', function () {
 
   module('JSHint - unit/routes');
   test('unit/routes/engine-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/engine-test.js should pass jshint.\nunit/routes/engine-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/engine-test.js should pass jshint.'); 
   });
 
 });
@@ -40018,11 +36673,11 @@ define('fusor-ember-cli/tests/unit/routes/engine/discovered-host-test', ['ember-
 
   'use strict';
 
-  ember_qunit.moduleFor('route:engine/discovered-host', 'EngineDiscoveredHostRoute', {});
+  ember_qunit.moduleFor('route:engine/discovered-host', 'Unit | Route | engine/discovered host', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -40035,157 +36690,7 @@ define('fusor-ember-cli/tests/unit/routes/engine/discovered-host-test.jshint', f
 
   module('JSHint - unit/routes/engine');
   test('unit/routes/engine/discovered-host-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/engine/discovered-host-test.js should pass jshint.\nunit/routes/engine/discovered-host-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/engine/existing-host-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:engine/existing-host', 'EngineExistingHostRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/engine/existing-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes/engine');
-  test('unit/routes/engine/existing-host-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/engine/existing-host-test.js should pass jshint.\nunit/routes/engine/existing-host-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/engine/hypervisor-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:engine/hypervisor', 'EngineHypervisorRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/engine/hypervisor-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes/engine');
-  test('unit/routes/engine/hypervisor-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/engine/hypervisor-test.js should pass jshint.\nunit/routes/engine/hypervisor-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/engine/new-host-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:engine/new-host', 'EngineNewHostRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/engine/new-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes/engine');
-  test('unit/routes/engine/new-host-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/engine/new-host-test.js should pass jshint.\nunit/routes/engine/new-host-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/hostgroup-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:hostgroup', 'HostgroupRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/hostgroup-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes');
-  test('unit/routes/hostgroup-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/hostgroup-test.js should pass jshint.\nunit/routes/hostgroup-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/hostgroup/edit-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:hostgroup/edit', 'HostgroupEditRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/hostgroup/edit-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes/hostgroup');
-  test('unit/routes/hostgroup/edit-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/hostgroup/edit-test.js should pass jshint.\nunit/routes/hostgroup/edit-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/hostgroups-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:hostgroups', 'HostgroupsRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/hostgroups-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes');
-  test('unit/routes/hostgroups-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/hostgroups-test.js should pass jshint.\nunit/routes/hostgroups-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/engine/discovered-host-test.js should pass jshint.'); 
   });
 
 });
@@ -40193,11 +36698,11 @@ define('fusor-ember-cli/tests/unit/routes/hypervisor-test', ['ember-qunit'], fun
 
   'use strict';
 
-  ember_qunit.moduleFor('route:hypervisor', 'HypervisorRoute', {});
+  ember_qunit.moduleFor('route:hypervisor', 'Unit | Route | hypervisor', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -40210,7 +36715,7 @@ define('fusor-ember-cli/tests/unit/routes/hypervisor-test.jshint', function () {
 
   module('JSHint - unit/routes');
   test('unit/routes/hypervisor-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/hypervisor-test.js should pass jshint.\nunit/routes/hypervisor-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/hypervisor-test.js should pass jshint.'); 
   });
 
 });
@@ -40218,11 +36723,11 @@ define('fusor-ember-cli/tests/unit/routes/hypervisor/discovered-host-test', ['em
 
   'use strict';
 
-  ember_qunit.moduleFor('route:hypervisor/discovered-host', 'HypervisorDiscoveredHostRoute', {});
+  ember_qunit.moduleFor('route:hypervisor/discovered-host', 'Unit | Route | hypervisor/discovered host', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -40235,57 +36740,7 @@ define('fusor-ember-cli/tests/unit/routes/hypervisor/discovered-host-test.jshint
 
   module('JSHint - unit/routes/hypervisor');
   test('unit/routes/hypervisor/discovered-host-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/hypervisor/discovered-host-test.js should pass jshint.\nunit/routes/hypervisor/discovered-host-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/hypervisor/existing-host-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:hypervisor/existing-host', 'HypervisorExistingHostRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/hypervisor/existing-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes/hypervisor');
-  test('unit/routes/hypervisor/existing-host-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/hypervisor/existing-host-test.js should pass jshint.\nunit/routes/hypervisor/existing-host-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/hypervisor/new-host-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:hypervisor/new-host', 'HypervisorNewHostRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/hypervisor/new-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes/hypervisor');
-  test('unit/routes/hypervisor/new-host-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/hypervisor/new-host-test.js should pass jshint.\nunit/routes/hypervisor/new-host-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/hypervisor/discovered-host-test.js should pass jshint.'); 
   });
 
 });
@@ -40293,11 +36748,11 @@ define('fusor-ember-cli/tests/unit/routes/index-test', ['ember-qunit'], function
 
   'use strict';
 
-  ember_qunit.moduleFor('route:index', 'IndexRoute', {});
+  ember_qunit.moduleFor('route:index', 'Unit | Route | index', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -40310,82 +36765,7 @@ define('fusor-ember-cli/tests/unit/routes/index-test.jshint', function () {
 
   module('JSHint - unit/routes');
   test('unit/routes/index-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/index-test.js should pass jshint.\nunit/routes/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/loggedin-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:loggedin', 'LoggedinRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/loggedin-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes');
-  test('unit/routes/loggedin-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/loggedin-test.js should pass jshint.\nunit/routes/loggedin-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/login-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:login', 'LoginRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/login-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes');
-  test('unit/routes/login-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/login-test.js should pass jshint.\nunit/routes/login-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/networking-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:networking', 'NetworkingRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/networking-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes');
-  test('unit/routes/networking-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/networking-test.js should pass jshint.\nunit/routes/networking-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/index-test.js should pass jshint.'); 
   });
 
 });
@@ -40393,11 +36773,11 @@ define('fusor-ember-cli/tests/unit/routes/new-environment-test', ['ember-qunit']
 
   'use strict';
 
-  ember_qunit.moduleFor('route:new-environment', 'NewEnvironmentRoute', {});
+  ember_qunit.moduleFor('route:new-environment', 'Unit | Route | new environment', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -40410,7 +36790,32 @@ define('fusor-ember-cli/tests/unit/routes/new-environment-test.jshint', function
 
   module('JSHint - unit/routes');
   test('unit/routes/new-environment-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/new-environment-test.js should pass jshint.\nunit/routes/new-environment-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/new-environment-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/routes/new-node-registration-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('route:new-node-registration', 'Unit | Route | new node registration', {});
+
+  ember_qunit.test('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+
+  // Specify the other units that are required for this test.
+  // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/new-node-registration-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/new-node-registration-test.js should pass jshint', function() { 
+    ok(true, 'unit/routes/new-node-registration-test.js should pass jshint.'); 
   });
 
 });
@@ -40418,11 +36823,11 @@ define('fusor-ember-cli/tests/unit/routes/new-organization-test', ['ember-qunit'
 
   'use strict';
 
-  ember_qunit.moduleFor('route:new-organization', 'NewOrganizationRoute', {});
+  ember_qunit.moduleFor('route:new-organization', 'Unit | Route | new organization', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -40435,7 +36840,7 @@ define('fusor-ember-cli/tests/unit/routes/new-organization-test.jshint', functio
 
   module('JSHint - unit/routes');
   test('unit/routes/new-organization-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/new-organization-test.js should pass jshint.\nunit/routes/new-organization-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/new-organization-test.js should pass jshint.'); 
   });
 
 });
@@ -40468,11 +36873,11 @@ define('fusor-ember-cli/tests/unit/routes/openstack/index-test', ['ember-qunit']
 
   'use strict';
 
-  ember_qunit.moduleFor('route:openstack/index', 'OpenstackIndexRoute', {});
+  ember_qunit.moduleFor('route:openstack/index', 'Unit | Route | openstack/index', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -40485,7 +36890,7 @@ define('fusor-ember-cli/tests/unit/routes/openstack/index-test.jshint', function
 
   module('JSHint - unit/routes/openstack');
   test('unit/routes/openstack/index-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/openstack/index-test.js should pass jshint.\nunit/routes/openstack/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/openstack/index-test.js should pass jshint.'); 
   });
 
 });
@@ -40493,7 +36898,7 @@ define('fusor-ember-cli/tests/unit/routes/register-nodes-test', ['ember-qunit'],
 
   'use strict';
 
-  ember_qunit.moduleFor('route:register-nodes', {});
+  ember_qunit.moduleFor('route:register-nodes', 'Unit | Route | register nodes', {});
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
@@ -40543,11 +36948,11 @@ define('fusor-ember-cli/tests/unit/routes/review/index-test', ['ember-qunit'], f
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/index', 'ReviewIndexRoute', {});
+  ember_qunit.moduleFor('route:review/index', 'Unit | Route | review/index', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -40560,7 +36965,7 @@ define('fusor-ember-cli/tests/unit/routes/review/index-test.jshint', function ()
 
   module('JSHint - unit/routes/review');
   test('unit/routes/review/index-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/review/index-test.js should pass jshint.\nunit/routes/review/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/review/index-test.js should pass jshint.'); 
   });
 
 });
@@ -40568,11 +36973,11 @@ define('fusor-ember-cli/tests/unit/routes/review/installation-test', ['ember-qun
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/installation', 'ReviewInstallationRoute', {});
+  ember_qunit.moduleFor('route:review/installation', 'Unit | Route | review/installation', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -40585,7 +36990,7 @@ define('fusor-ember-cli/tests/unit/routes/review/installation-test.jshint', func
 
   module('JSHint - unit/routes/review');
   test('unit/routes/review/installation-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/review/installation-test.js should pass jshint.\nunit/routes/review/installation-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/review/installation-test.js should pass jshint.'); 
   });
 
 });
@@ -40593,11 +36998,11 @@ define('fusor-ember-cli/tests/unit/routes/review/progress-test', ['ember-qunit']
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress', 'ReviewProgressRoute', {});
+  ember_qunit.moduleFor('route:review/progress', 'Unit | Route | review/progress', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -40610,7 +37015,7 @@ define('fusor-ember-cli/tests/unit/routes/review/progress-test.jshint', function
 
   module('JSHint - unit/routes/review');
   test('unit/routes/review/progress-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/review/progress-test.js should pass jshint.\nunit/routes/review/progress-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/review/progress-test.js should pass jshint.'); 
   });
 
 });
@@ -40618,7 +37023,7 @@ define('fusor-ember-cli/tests/unit/routes/review/progress/details-test', ['ember
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress/details', {});
+  ember_qunit.moduleFor('route:review/progress/details', 'Unit | Route | review/progress/details', {});
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
@@ -40643,7 +37048,7 @@ define('fusor-ember-cli/tests/unit/routes/review/progress/details/task-test', ['
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress/details/task', {});
+  ember_qunit.moduleFor('route:review/progress/details/task', 'Unit | Route | review/progress/details/task', {});
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
@@ -40668,7 +37073,7 @@ define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/index-tes
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress/details/task/index', {});
+  ember_qunit.moduleFor('route:review/progress/details/task/index', 'Unit | Route | review/progress/details/task/index', {});
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
@@ -40693,7 +37098,7 @@ define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/running-s
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress/details/task/running-steps', {});
+  ember_qunit.moduleFor('route:review/progress/details/task/running-steps', 'Unit | Route | review/progress/details/task/running steps', {});
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
@@ -40718,7 +37123,7 @@ define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/task-erro
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress/details/task/task-errors', {});
+  ember_qunit.moduleFor('route:review/progress/details/task/task-errors', 'Unit | Route | review/progress/details/task/task errors', {});
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
@@ -40743,7 +37148,7 @@ define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/task-lock
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress/details/task/task-locks', {});
+  ember_qunit.moduleFor('route:review/progress/details/task/task-locks', 'Unit | Route | review/progress/details/task/task locks', {});
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
@@ -40768,7 +37173,7 @@ define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/task-raw-
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress/details/task/task-raw', {});
+  ember_qunit.moduleFor('route:review/progress/details/task/task-raw', 'Unit | Route | review/progress/details/task/task raw', {});
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
@@ -40793,7 +37198,7 @@ define('fusor-ember-cli/tests/unit/routes/review/progress/overview-test', ['embe
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress/overview', {});
+  ember_qunit.moduleFor('route:review/progress/overview', 'Unit | Route | review/progress/overview', {});
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
@@ -40843,11 +37248,11 @@ define('fusor-ember-cli/tests/unit/routes/rhci-test', ['ember-qunit'], function 
 
   'use strict';
 
-  ember_qunit.moduleFor('route:rhci', 'RhciRoute', {});
+  ember_qunit.moduleFor('route:rhci', 'Unit | Route | rhci', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -40860,7 +37265,7 @@ define('fusor-ember-cli/tests/unit/routes/rhci-test.jshint', function () {
 
   module('JSHint - unit/routes');
   test('unit/routes/rhci-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/rhci-test.js should pass jshint.\nunit/routes/rhci-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/rhci-test.js should pass jshint.'); 
   });
 
 });
@@ -40868,11 +37273,11 @@ define('fusor-ember-cli/tests/unit/routes/rhev-options-test', ['ember-qunit'], f
 
   'use strict';
 
-  ember_qunit.moduleFor('route:rhev-options', 'RhevOptionsRoute', {});
+  ember_qunit.moduleFor('route:rhev-options', 'Unit | Route | rhev options', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -40885,7 +37290,7 @@ define('fusor-ember-cli/tests/unit/routes/rhev-options-test.jshint', function ()
 
   module('JSHint - unit/routes');
   test('unit/routes/rhev-options-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/rhev-options-test.js should pass jshint.\nunit/routes/rhev-options-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/rhev-options-test.js should pass jshint.'); 
   });
 
 });
@@ -40893,11 +37298,11 @@ define('fusor-ember-cli/tests/unit/routes/rhev-setup-test', ['ember-qunit'], fun
 
   'use strict';
 
-  ember_qunit.moduleFor('route:rhev-setup', 'RhevSetupRoute', {});
+  ember_qunit.moduleFor('route:rhev-setup', 'Unit | Route | rhev setup', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -40910,7 +37315,7 @@ define('fusor-ember-cli/tests/unit/routes/rhev-setup-test.jshint', function () {
 
   module('JSHint - unit/routes');
   test('unit/routes/rhev-setup-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/rhev-setup-test.js should pass jshint.\nunit/routes/rhev-setup-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/rhev-setup-test.js should pass jshint.'); 
   });
 
 });
@@ -40918,11 +37323,11 @@ define('fusor-ember-cli/tests/unit/routes/rhev-test', ['ember-qunit'], function 
 
   'use strict';
 
-  ember_qunit.moduleFor('route:rhev', 'RhevRoute', {});
+  ember_qunit.moduleFor('route:rhev', 'Unit | Route | rhev', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -40935,32 +37340,7 @@ define('fusor-ember-cli/tests/unit/routes/rhev-test.jshint', function () {
 
   module('JSHint - unit/routes');
   test('unit/routes/rhev-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/rhev-test.js should pass jshint.\nunit/routes/rhev-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/rhev/engine-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:rhev/engine', 'RhevEngineRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/rhev/engine-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes/rhev');
-  test('unit/routes/rhev/engine-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/rhev/engine-test.js should pass jshint.\nunit/routes/rhev/engine-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/rhev-test.js should pass jshint.'); 
   });
 
 });
@@ -40968,11 +37348,11 @@ define('fusor-ember-cli/tests/unit/routes/rhev/index-test', ['ember-qunit'], fun
 
   'use strict';
 
-  ember_qunit.moduleFor('route:rhev/index', 'RhevIndexRoute', {});
+  ember_qunit.moduleFor('route:rhev/index', 'Unit | Route | rhev/index', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -40985,7 +37365,7 @@ define('fusor-ember-cli/tests/unit/routes/rhev/index-test.jshint', function () {
 
   module('JSHint - unit/routes/rhev');
   test('unit/routes/rhev/index-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/rhev/index-test.js should pass jshint.\nunit/routes/rhev/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/rhev/index-test.js should pass jshint.'); 
   });
 
 });
@@ -40993,11 +37373,11 @@ define('fusor-ember-cli/tests/unit/routes/satellite-test', ['ember-qunit'], func
 
   'use strict';
 
-  ember_qunit.moduleFor('route:satellite', 'SatelliteRoute', {});
+  ember_qunit.moduleFor('route:satellite', 'Unit | Route | satellite', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -41010,32 +37390,7 @@ define('fusor-ember-cli/tests/unit/routes/satellite-test.jshint', function () {
 
   module('JSHint - unit/routes');
   test('unit/routes/satellite-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/satellite-test.js should pass jshint.\nunit/routes/satellite-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/satellite/configure-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:satellite/configure', 'SatelliteConfigureRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/satellite/configure-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes/satellite');
-  test('unit/routes/satellite/configure-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/satellite/configure-test.js should pass jshint.\nunit/routes/satellite/configure-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/satellite-test.js should pass jshint.'); 
   });
 
 });
@@ -41043,11 +37398,11 @@ define('fusor-ember-cli/tests/unit/routes/satellite/index-test', ['ember-qunit']
 
   'use strict';
 
-  ember_qunit.moduleFor('route:satellite/index', 'SatelliteIndexRoute', {});
+  ember_qunit.moduleFor('route:satellite/index', 'Unit | Route | satellite/index', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -41060,107 +37415,7 @@ define('fusor-ember-cli/tests/unit/routes/satellite/index-test.jshint', function
 
   module('JSHint - unit/routes/satellite');
   test('unit/routes/satellite/index-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/satellite/index-test.js should pass jshint.\nunit/routes/satellite/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/satellite/review-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:satellite/review', 'SatelliteReviewRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/satellite/review-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes/satellite');
-  test('unit/routes/satellite/review-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/satellite/review-test.js should pass jshint.\nunit/routes/satellite/review-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/satellite/subscriptions-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:subscriptions', 'SatelliteSubscriptionsRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/satellite/subscriptions-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes/satellite');
-  test('unit/routes/satellite/subscriptions-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/satellite/subscriptions-test.js should pass jshint.\nunit/routes/satellite/subscriptions-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/setpassword-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:setpassword', 'SetpasswordRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/setpassword-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes');
-  test('unit/routes/setpassword-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/setpassword-test.js should pass jshint.\nunit/routes/setpassword-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/single-deployment-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:single-deployment', 'SingleDeploymentRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/single-deployment-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes');
-  test('unit/routes/single-deployment-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/single-deployment-test.js should pass jshint.\nunit/routes/single-deployment-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/satellite/index-test.js should pass jshint.'); 
   });
 
 });
@@ -41168,11 +37423,11 @@ define('fusor-ember-cli/tests/unit/routes/storage-test', ['ember-qunit'], functi
 
   'use strict';
 
-  ember_qunit.moduleFor('route:storage', 'StorageRoute', {});
+  ember_qunit.moduleFor('route:storage', 'Unit | Route | storage', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -41185,7 +37440,32 @@ define('fusor-ember-cli/tests/unit/routes/storage-test.jshint', function () {
 
   module('JSHint - unit/routes');
   test('unit/routes/storage-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/storage-test.js should pass jshint.\nunit/routes/storage-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/storage-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/routes/subscriptions-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('route:subscriptions', 'Unit | Route | subscriptions', {});
+
+  ember_qunit.test('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+
+  // Specify the other units that are required for this test.
+  // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/subscriptions-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/subscriptions-test.js should pass jshint', function() { 
+    ok(true, 'unit/routes/subscriptions-test.js should pass jshint.'); 
   });
 
 });
@@ -41193,11 +37473,11 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/credentials-test', ['emb
 
   'use strict';
 
-  ember_qunit.moduleFor('route:subscriptions/credentials', 'SubscriptionsCredentialsRoute', {});
+  ember_qunit.moduleFor('route:subscriptions/credentials', 'Unit | Route | subscriptions/credentials', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -41210,7 +37490,7 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/credentials-test.jshint'
 
   module('JSHint - unit/routes/subscriptions');
   test('unit/routes/subscriptions/credentials-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/subscriptions/credentials-test.js should pass jshint.\nunit/routes/subscriptions/credentials-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/subscriptions/credentials-test.js should pass jshint.'); 
   });
 
 });
@@ -41218,11 +37498,11 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/index-test', ['ember-qun
 
   'use strict';
 
-  ember_qunit.moduleFor('route:subscriptions/index', 'SubscriptionsIndexRoute', {});
+  ember_qunit.moduleFor('route:subscriptions/index', 'Unit | Route | subscriptions/index', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -41235,7 +37515,7 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/index-test.jshint', func
 
   module('JSHint - unit/routes/subscriptions');
   test('unit/routes/subscriptions/index-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/subscriptions/index-test.js should pass jshint.\nunit/routes/subscriptions/index-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/subscriptions/index-test.js should pass jshint.'); 
   });
 
 });
@@ -41243,7 +37523,7 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/management-application-t
 
   'use strict';
 
-  ember_qunit.moduleFor('route:subscriptions/management-application', {});
+  ember_qunit.moduleFor('route:subscriptions/management-application', 'Unit | Route | subscriptions/management application', {});
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
@@ -41268,11 +37548,11 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/select-subscriptions-tes
 
   'use strict';
 
-  ember_qunit.moduleFor('route:subscriptions/select-subscriptions', 'SubscriptionsSelectSubscriptionsRoute', {});
+  ember_qunit.moduleFor('route:subscriptions/select-subscriptions', 'Unit | Route | subscriptions/select subscriptions', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -41285,107 +37565,7 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/select-subscriptions-tes
 
   module('JSHint - unit/routes/subscriptions');
   test('unit/routes/subscriptions/select-subscriptions-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/subscriptions/select-subscriptions-test.js should pass jshint.\nunit/routes/subscriptions/select-subscriptions-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/user-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:user', 'UserRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/user-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes');
-  test('unit/routes/user-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/user-test.js should pass jshint.\nunit/routes/user-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/user/edit-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:user/edit', 'UserEditRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/user/edit-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes/user');
-  test('unit/routes/user/edit-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/user/edit-test.js should pass jshint.\nunit/routes/user/edit-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/users-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:users', 'UsersRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/users-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes');
-  test('unit/routes/users-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/users-test.js should pass jshint.\nunit/routes/users-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/routes/users/new-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('route:users/new', 'UsersNewRoute', {});
-
-  ember_qunit.test('it exists', function () {
-    var route = this.subject();
-    ok(route);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
-
-});
-define('fusor-ember-cli/tests/unit/routes/users/new-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/routes/users');
-  test('unit/routes/users/new-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/users/new-test.js should pass jshint.\nunit/routes/users/new-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
+    ok(true, 'unit/routes/subscriptions/select-subscriptions-test.js should pass jshint.'); 
   });
 
 });
@@ -41393,11 +37573,11 @@ define('fusor-ember-cli/tests/unit/routes/where-install-test', ['ember-qunit'], 
 
   'use strict';
 
-  ember_qunit.moduleFor('route:where-install', 'WhereInstallRoute', {});
+  ember_qunit.moduleFor('route:where-install', 'Unit | Route | where install', {});
 
-  ember_qunit.test('it exists', function () {
+  ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
-    ok(route);
+    assert.ok(route);
   });
 
   // Specify the other units that are required for this test.
@@ -41410,33 +37590,7 @@ define('fusor-ember-cli/tests/unit/routes/where-install-test.jshint', function (
 
   module('JSHint - unit/routes');
   test('unit/routes/where-install-test.js should pass jshint', function() { 
-    ok(false, 'unit/routes/where-install-test.js should pass jshint.\nunit/routes/where-install-test.js: line 13, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/serializers/discovered-host-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('serializer:discovered-host', {});
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function (assert) {
-    var serializer = this.subject();
-    assert.ok(serializer);
-  });
-
-  // Specify the other units that are required for this test.
-  // needs: ['serializer:foo']
-
-});
-define('fusor-ember-cli/tests/unit/serializers/discovered-host-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/serializers');
-  test('unit/serializers/discovered-host-test.js should pass jshint', function() { 
-    ok(true, 'unit/serializers/discovered-host-test.js should pass jshint.'); 
+    ok(true, 'unit/routes/where-install-test.js should pass jshint.'); 
   });
 
 });
@@ -41444,7 +37598,7 @@ define('fusor-ember-cli/tests/unit/serializers/foreman-task-test', ['ember-qunit
 
   'use strict';
 
-  ember_qunit.moduleForModel('foreman-task', {
+  ember_qunit.moduleForModel('foreman-task', 'Unit | Serializer | foreman task', {
     // Specify the other units that are required for this test.
     needs: ['serializer:foreman-task']
   });
@@ -41469,226 +37623,6 @@ define('fusor-ember-cli/tests/unit/serializers/foreman-task-test.jshint', functi
   });
 
 });
-define('fusor-ember-cli/tests/unit/views/application-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('view:application', 'ApplicationView');
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var view = this.subject();
-    ok(view);
-  });
-
-});
-define('fusor-ember-cli/tests/unit/views/application-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/views');
-  test('unit/views/application-test.js should pass jshint', function() { 
-    ok(false, 'unit/views/application-test.js should pass jshint.\nunit/views/application-test.js: line 11, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/views/configure-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('view:configure', 'ConfigureView');
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var view = this.subject();
-    ok(view);
-  });
-
-});
-define('fusor-ember-cli/tests/unit/views/configure-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/views');
-  test('unit/views/configure-test.js should pass jshint', function() { 
-    ok(false, 'unit/views/configure-test.js should pass jshint.\nunit/views/configure-test.js: line 11, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/views/organization-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('view:organization', 'OrganizationView');
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var view = this.subject();
-    ok(view);
-  });
-
-});
-define('fusor-ember-cli/tests/unit/views/organization-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/views');
-  test('unit/views/organization-test.js should pass jshint', function() { 
-    ok(false, 'unit/views/organization-test.js should pass jshint.\nunit/views/organization-test.js: line 11, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/unit/views/rhci-test', ['ember-qunit'], function (ember_qunit) {
-
-  'use strict';
-
-  ember_qunit.moduleFor('view:rhci', 'RhciView');
-
-  // Replace this with your real tests.
-  ember_qunit.test('it exists', function () {
-    var view = this.subject();
-    ok(view);
-  });
-
-});
-define('fusor-ember-cli/tests/unit/views/rhci-test.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - unit/views');
-  test('unit/views/rhci-test.js should pass jshint', function() { 
-    ok(false, 'unit/views/rhci-test.js should pass jshint.\nunit/views/rhci-test.js: line 11, col 3, \'ok\' is not defined.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/views/configure.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - views');
-  test('views/configure.js should pass jshint', function() { 
-    ok(true, 'views/configure.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/tests/views/organization.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - views');
-  test('views/organization.js should pass jshint', function() { 
-    ok(false, 'views/organization.js should pass jshint.\nviews/organization.js: line 18, col 25, \'event\' is defined but never used.\n\n1 error'); 
-  });
-
-});
-define('fusor-ember-cli/tests/views/rhci.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - views');
-  test('views/rhci.js should pass jshint', function() { 
-    ok(true, 'views/rhci.js should pass jshint.'); 
-  });
-
-});
-define('fusor-ember-cli/torii-providers/foreman', ['exports'], function (exports) {
-
-  'use strict';
-
-  exports['default'] = Ember.Object.extend({
-
-    // credentials as passed from torii.open
-    open: function open(credentials) {
-      return new Ember.RSVP.Promise(function (resolve, reject) {
-        alert(credentials.username);
-        exampleAsyncLogin(credentials.username, credentials.password,
-
-        // callback function:
-        function (error, response) {
-          // the promise is resolved with the authorization
-          Ember.run.bind(null, resolve, { sessionToken: response.token });
-        });
-      });
-    }
-
-  });
-
-});
-define('fusor-ember-cli/views/configure', ['exports', 'ember'], function (exports, Ember) {
-
-	'use strict';
-
-	exports['default'] = Ember['default'].View.extend({});
-
-});
-define('fusor-ember-cli/views/organization', ['exports', 'ember'], function (exports, Ember) {
-
-  'use strict';
-
-  exports['default'] = Ember['default'].View.extend({
-    classNameBindings: ['color'],
-    color: null,
-    highlight: function highlight() {
-      return this.get('color');
-    },
-
-    // mouseEnter: function(event) {
-    //   this.set('color', 'yellow');
-    // },
-
-    // mouseLeave: function(event) {
-    //   this.set('color', 'green');
-    //   //alert("mouseLeave!");
-    // },
-    doubleClick: function doubleClick(event) {
-      this.set('color', 'red');
-      //alert("ClickableView was clicked!");
-    } });
-
-});
-define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Ember) {
-
-	'use strict';
-
-	exports['default'] = Ember['default'].View.extend(Ember['default'].ViewTargetActionSupport, {});
-
-	// classNameBindings: ['color'],
-	// color: null,
-	// highlight: function() {
-	//   return this.get('color');
-	// },
-
-	// mouseEnter: function(event) {
-	//   this.set('color', 'yellow');
-	// },
-
-	// mouseLeave: function(event) {
-	//   this.set('color', 'green');
-	//   //alert("mouseLeave!");
-	// },
-	// doubleClick: function(event) {
-	//   this.set('color', 'red');
-	//   //alert("ClickableView was clicked!");
-	// },
-
-	// didInsertElement: function(){
-	//     this.$().hide().show('slow');
-	// }
-
-	// click: function() {
-	//   this.triggerAction({
-	//     action: 'showRHCIModal'
-	//   }); // Sends the `save` action, along with the current context
-	//       // to the current controller
-	// },
-	// doRhciModal: function() {
-	//   // this.triggerAction({
-	//   //   action: 'ddd'
-	//   // });
-	//   alert('DDD');
-	// }.on('didInsertElement'),
-
-});
 /* jshint ignore:start */
 
 /* jshint ignore:end */
@@ -41696,13 +37630,13 @@ define('fusor-ember-cli/views/rhci', ['exports', 'ember'], function (exports, Em
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.7ed34196"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.a19e25f9"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.7ed34196"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.a19e25f9"});
 }
 
 /* jshint ignore:end */

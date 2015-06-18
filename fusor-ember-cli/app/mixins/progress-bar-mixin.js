@@ -16,7 +16,7 @@ export default Ember.Mixin.create({
 
   // executes `refreshModel` for every intervalPolling.
   startPolling: function() {
-    this.get('model').reload() // run immediately
+    this.get('model').reload(); // run immediately
     this.set('timer', this.scheduleNextRefresh(this.get('refreshModel'))); //and then repeats
   },
 
@@ -31,7 +31,7 @@ export default Ember.Mixin.create({
 
   percentProgress: function() {
     if (this.get('model.progress') === 1) {
-      return 100
+      return 100;
     } else {
       return (this.get('model.progress') * 100).toFixed(1);
     }

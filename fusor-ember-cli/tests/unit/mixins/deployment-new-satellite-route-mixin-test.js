@@ -1,11 +1,12 @@
 import Ember from 'ember';
-import DeploymentNewSatelliteRouteMixinMixin from 'fusor-ember-cli/mixins/deployment-new-satellite-route-mixin';
+import DeploymentNewSatelliteRouteMixinMixin from '../../../mixins/deployment-new-satellite-route-mixin';
+import { module, test } from 'qunit';
 
-module('DeploymentNewSatelliteRouteMixinMixin');
+module('Unit | Mixin | deployment new satellite route mixin');
 
 // Replace this with your real tests.
-test('it works', function() {
+test('it works', function(assert) {
   var DeploymentNewSatelliteRouteMixinObject = Ember.Object.extend(DeploymentNewSatelliteRouteMixinMixin);
   var subject = DeploymentNewSatelliteRouteMixinObject.create();
-  ok(subject);
+  assert.ok(subject);
 });

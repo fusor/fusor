@@ -28,7 +28,7 @@ export default Ember.ArrayController.extend({
     return this.get('model').filterBy('isSelectedSubscription', true);
   }.property('model.@each.isSelectedSubscription'),
 
-  hasSubscriptionsToAttach: function(key){
+  hasSubscriptionsToAttach: function(){
     var model = this.get('model');
     return (model && model.isAny('isSelectedSubscription'));
   }.property('model.@each.isSelectedSubscription'),

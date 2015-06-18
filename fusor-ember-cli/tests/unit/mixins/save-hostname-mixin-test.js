@@ -2,7 +2,7 @@ import Ember from 'ember';
 import SaveHostnameMixinMixin from '../../../mixins/save-hostname-mixin';
 import { module, test } from 'qunit';
 
-module('SaveHostnameMixinMixin');
+module('Unit | Mixin | save hostname mixin');
 
 // Replace this with your real tests.
 test('it works', function(assert) {

@@ -17,7 +17,7 @@ export default Ember.ArrayController.extend({
     if (sortedDeployments.get('length') > 1) {
       return sortedDeployments.filter(function(record) {
         if (Ember.isPresent(record.get('name'))) {
-          return record.get('name').match(rx)
+          return record.get('name').match(rx);
         }
       });
     } else {

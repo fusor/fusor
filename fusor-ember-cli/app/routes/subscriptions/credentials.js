@@ -6,10 +6,8 @@ export default Ember.Route.extend({
     controller.set('model', model);
     controller.set('showErrorMessage', false);
 
-    var sessionPortal = this.modelFor('subscriptions');
-    var upstream_consumer_uuid = this.modelFor('deployment').get('upstream_consumer_uuid');
     // check if org has upstream UUID using Katello V2 API
-    var orgID = this.modelFor('deployment').get('organization.id')
+    var orgID = this.modelFor('deployment').get('organization.id');
     var url = '/katello/api/v2/organizations/' + orgID;
     $.getJSON(url).then(function(results) {
       if (Ember.isPresent(results.owner_details.upstreamConsumer)) {
@@ -51,7 +49,7 @@ export default Ember.Route.extend({
 
     loginPortal: function() {
       var self = this;
-      var controller = this.controllerFor('subscriptions/credentials')
+      var controller = this.controllerFor('subscriptions/credentials');
       var identification = controller.get('identification');
       var password = controller.get('password');
       var token = $('meta[name="csrf-token"]').attr('content');
@@ -83,7 +81,6 @@ export default Ember.Route.extend({
 
     logoutPortal: function() {
       var self = this;
-      var controller = this.controllerFor('subscriptions/credentials')
       var token = $('meta[name="csrf-token"]').attr('content');
 
       return new Ember.RSVP.Promise(function (resolve, reject) {
@@ -113,17 +110,17 @@ export default Ember.Route.extend({
 
     saveCredentials: function() {
       var self = this;
-      var controller = this.controllerFor('subscriptions/credentials')
+      var controller = this.controllerFor('subscriptions/credentials');
       var identification = controller.get('identification');
       var sessionPortal = this.modelFor('subscriptions');
       if (sessionPortal) {
-        sessionPortal.set('identification', identification)
+        sessionPortal.set('identification', identification);
       } else {
-        var sessionPortal = self.store.createRecord('session-portal', {identification: identification});
+        sessionPortal = self.store.createRecord('session-portal', {identification: identification});
       }
       sessionPortal.save().then(function(result) {
-          console.log('saved session-portal')
-          controller.set('showErrorMessage',false)
+          console.log('saved session-portal');
+          controller.set('showErrorMessage',false);
           return self.send('authenticatePortal');
       }, function(response) {
           console.log('error saving session-portal');
@@ -135,9 +132,8 @@ export default Ember.Route.extend({
 
     authenticatePortal: function() {
 
-      var controller = this.controllerFor('subscriptions/credentials')
+      var controller = this.controllerFor('subscriptions/credentials');
       var identification = controller.get('identification');
-      var password = controller.get('password');
       var token = $('meta[name="csrf-token"]').attr('content');
       var self = this;
       var url = '/customer_portal/users/' + identification + "/owners";
@@ -159,7 +155,7 @@ export default Ember.Route.extend({
               sessionPortal.set('ownerKey', ownerKey);
               sessionPortal.set('isAuthenticated', true);
               sessionPortal.save().then(function(result) {
-                  console.log('saved ownerKey in session-portal')
+                  console.log('saved ownerKey in session-portal');
                   controller.set('nextButtonTitle', "Next");
                   controller.set('disableCredentialsNext', false);
                   return self.transitionTo('subscriptions.management-application');
@@ -176,7 +172,7 @@ export default Ember.Route.extend({
                 controller.set('disableCredentialsNext', false);
                 controller.setProperties({'showErrorMessage': true,
                                           'errorMsg': 'Your username or password is incorrect. Please try again.'
-                                          })
+                                          });
             }
         });
       });
@@ -184,7 +180,7 @@ export default Ember.Route.extend({
     },
 
     redirectToManagementApplication: function() {
-      return this.transitionTo('subscriptions.management-application')
+      return this.transitionTo('subscriptions.management-application');
     }
 
   }

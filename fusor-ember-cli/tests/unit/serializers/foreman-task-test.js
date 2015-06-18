@@ -1,9 +1,6 @@
-import {
-  moduleForModel,
-  test
-} from 'ember-qunit';
+import { moduleForModel, test } from 'ember-qunit';
 
-moduleForModel('foreman-task', {
+moduleForModel('foreman-task', 'Unit | Serializer | foreman task', {
   // Specify the other units that are required for this test.
   needs: ['serializer:foreman-task']
 });

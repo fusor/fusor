@@ -1,11 +1,12 @@
 import Ember from 'ember';
-import DeploymentRouteMixinMixin from 'fusor-ember-cli/mixins/deployment-route-mixin';
+import DeploymentRouteMixinMixin from '../../../mixins/deployment-route-mixin';
+import { module, test } from 'qunit';
 
-module('DeploymentRouteMixinMixin');
+module('Unit | Mixin | deployment route mixin');
 
 // Replace this with your real tests.
-test('it works', function() {
+test('it works', function(assert) {
   var DeploymentRouteMixinObject = Ember.Object.extend(DeploymentRouteMixinMixin);
   var subject = DeploymentRouteMixinObject.create();
-  ok(subject);
+  assert.ok(subject);
 });

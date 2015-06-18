@@ -1,11 +1,9 @@
-import {
-  moduleForComponent,
-  test
-} from 'ember-qunit';
+import { moduleForComponent, test } from 'ember-qunit';
 
-moduleForComponent('review-link', {
+moduleForComponent('review-link', 'Unit | Component | review link', {
   // Specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  // needs: ['component:foo', 'helper:bar'],
+  unit: true
 });
 
 test('it renders', function(assert) {

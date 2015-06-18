@@ -52,7 +52,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       return false;
     }
     var retVal = false;
-    profiles.forEach(function(item, index) {
+    profiles.forEach(function(item) {
       if (item.get('isControl')) {
         retVal = true;
       }
@@ -66,7 +66,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       return false;
     }
     var retVal = false;
-    profiles.forEach(function(item, index) {
+    profiles.forEach(function(item) {
       if (item.get('isCompute')) {
         retVal = true;
       }
@@ -80,7 +80,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       return false;
     }
     var retVal = false;
-    profiles.forEach(function(item, index) {
+    profiles.forEach(function(item) {
       if (item.get('isBlockStorage')) {
         retVal = true;
       }
@@ -94,7 +94,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       return false;
     }
     var retVal = false;
-    profiles.forEach(function(item, index) {
+    profiles.forEach(function(item) {
       if (item.get('isObjectStorage')) {
         retVal = true;
       }
@@ -140,7 +140,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
     assignRole: function(profile, roleType) {
       if (roleType === 'controller') {
-        profile.set('controllerNodes', 1)
+        profile.set('controllerNodes', 1);
       }
       else if (roleType === 'compute') {
         profile.set('computeNodes', 1);

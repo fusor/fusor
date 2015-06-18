@@ -1,16 +1,13 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
-  needs: ['side-menu', 'deployment'],
+  needs: ['deployment'],
 
   deployAsPlugin: true,
   isEmberCliMode: Ember.computed.not('deployAsPlugin'),
   isUpstream: false,
 
   isContainer: Ember.computed.alias("isUpstream"),
-
-  showMainMenu: Ember.computed.and('isLoggedIn', 'isEmberCliMode'),
-  showSideMenu: Ember.computed.alias("controllers.side-menu.showSideMenu"),
 
   isLoggedIn: true, //Ember.computed.alias("session.isAuthenticated"),
 
@@ -32,12 +29,12 @@ export default Ember.Controller.extend({
     if (this.get('isNewDeployment')) {
       return false;
     } else {
-      return this.get('isStarted')
+      return this.get('isStarted');
     }
   }.property('isStarted', 'isNewDeployment'),
 
   actions: {
-    invalidate: function(data) {
+    invalidate: function() {
       return this.transitionTo('login');
     },
 

@@ -20,7 +20,7 @@ export default Ember.Route.extend({
             self.controllerFor('subscriptions.credentials').setProperties({
                                                                'showErrorMessage': true,
                                                                'errorMsg': 'You are not currently logged in. Please log in below.'
-                                                             })
+                                                             });
             return self.transitionTo('subscriptions.credentials');
          });
       }
@@ -38,7 +38,7 @@ export default Ember.Route.extend({
       controller.set('sessionPortal', sessionPortal);
     } else {
       // check if org has upstream UUID using Katello V2 API
-      var orgID = this.modelFor('deployment').get('organization.id')
+      var orgID = this.modelFor('deployment').get('organization.id');
       var url = '/katello/api/v2/organizations/' + orgID;
       $.getJSON(url).then(function(results) {
           if (Ember.isPresent(results.owner_details.upstreamConsumer)) {

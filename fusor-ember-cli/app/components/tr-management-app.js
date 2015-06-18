@@ -17,7 +17,7 @@ export default Ember.Component.extend({
   }.property('isChecked'),
 
   actions: {
-    changeManagementApp: function(event) {
+    changeManagementApp: function() {
       this.sendAction('action', this.get('managementApp'));
     }
   }

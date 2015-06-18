@@ -1,9 +1,6 @@
-import {
-  moduleFor,
-  test
-} from 'ember-qunit';
+import { moduleFor, test } from 'ember-qunit';
 
-moduleFor('route:assign-nodes', {
+moduleFor('route:assign-nodes', 'Unit | Route | assign nodes', {
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
 });

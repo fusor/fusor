@@ -1,21 +1,19 @@
-import {
-  moduleForComponent,
-  test
-} from 'ember-qunit';
+import { moduleForComponent, test } from 'ember-qunit';
 
-moduleForComponent('button-f', {
-  // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+moduleForComponent('button-f', 'Unit | Component | button f', {
+  // Specify the other units that are required for this test
+  needs: ['component:radio-button'],
+  unit: true
 });
 
 test('it renders', function(assert) {
   assert.expect(2);
 
-  // creates the component instance
+  // Creates the component instance
   var component = this.subject();
   assert.equal(component._state, 'preRender');
 
-  // renders the component to the page
+  // Renders the component to the page
   this.render();
   assert.equal(component._state, 'inDOM');
 });

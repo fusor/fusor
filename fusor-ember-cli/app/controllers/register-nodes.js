@@ -164,7 +164,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       var edittedProfiles = this.get('edittedProfiles');
 
       edittedProfiles.setObjects(errorProfiles);
-      newProfiles.forEach(function(item, index) {
+      newProfiles.forEach(function(item) {
         edittedProfiles.pushObject(item);
       });
       this.set('edittedProfiles', edittedProfiles);
@@ -177,7 +177,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       var edittedProfiles = this.get('edittedProfiles');
       var errorProfiles = this.get('errorProfiles');
       var newProfiles = this.get('newProfiles');
-      edittedProfiles.forEach(function(item, index) {
+      edittedProfiles.forEach(function(item) {
         item.isError = false;
         item.errorMessage = '';
         errorProfiles.removeObject(item);
@@ -252,7 +252,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   doNextNodeRegistration: function() {
     if (this.get('modalOpen') === true) {
-      ;this.set('registrationPaused', true)
+      this.set('registrationPaused', true);
     }
     else
     {

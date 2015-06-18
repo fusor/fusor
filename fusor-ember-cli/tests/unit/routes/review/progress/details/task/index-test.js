@@ -1,9 +1,6 @@
-import {
-  moduleFor,
-  test
-} from 'ember-qunit';
+import { moduleFor, test } from 'ember-qunit';
 
-moduleFor('route:review/progress/details/task/index', {
+moduleFor('route:review/progress/details/task/index', 'Unit | Route | review/progress/details/task/index', {
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
 });
