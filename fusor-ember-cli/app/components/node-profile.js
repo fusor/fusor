@@ -5,6 +5,7 @@ export default Ember.Component.extend({
 
   profile: null,
   plan: null,
+  nodes: [],
 
   getParamValue: function(paramName, params) {
     var paramValue = null;
@@ -54,10 +55,32 @@ export default Ember.Component.extend({
     return (this.get('unassignedRoles').length == 0);
   }.property('unassignedRoles'),
 
-  freeNodes: function() {
+  nodeMatchesProfile: function(node, profile) {
+    var nodeMemory = node.get('properties.memory_mb');
+    var nodeCPUs = node.get('properties.cpus');
+    var nodeDisk = node.get('properties.local_gb');
+    var nodeCPUArch = node.get('properties.cpu_arch');
+    var profileMemory = profile.get('ram');
+    var profileCPUs = profile.get('vcpus');
+    var profileDisk = profile.get('disk');
+    var profileCPUArch = profile.get('extra_specs.cpu_arch');
+    return (nodeMemory == profileMemory &&
+	    nodeCPUs == profileCPUs &&
+	    nodeDisk == profileDisk &&
+	    nodeCPUArch == profileCPUArch);
+  },
+
+  matchingNodeCount: function() {
+    var nodeCount = 0;
     var profile = this.get('profile');
-    return profile.get('totalNodes') - profile.get('controllerNodes') - profile.get('computeNodes') - profile.get('blockNodes') - profile.get('objectNodes');
-  }.property('profile.totalNodes', 'profile.controllerNodes', 'profile.computeNodes', 'profile.blockNodes', 'profile.objectNodes'),
+    var self = this;
+    this.get('nodes').forEach(function(node,index) {
+      if (self.nodeMatchesProfile(node,profile)) {
+        nodeCount++;
+      }
+    });
+    return nodeCount;
+  }.property('profile', 'nodes'),
 
   hideAssignMenu: function() {
     this.set('assignMenuOpenClass', '');
