@@ -39,7 +39,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     return (this.get('unassignedRoles').length == this.get('model.roles').length);
   }.property('unassignedRoles'),
 
-  profiles:function() {
+  profiles: function() {
     return this.get('register').get('model.profiles');
   }.property('register.model.profiles', 'register.model.profiles.length'),
 
@@ -47,6 +47,10 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     var profiles = this.get('register.model.profiles');
     return profiles.length;
   }.property('model.profiles', 'model.profiles.length'),
+
+  nodes: function() {
+    return this.get('register').get('model.nodes');
+  }.property('register.model.nodes'),
 
   getRoleByType: function(roleType) {
     var roles = this.get('model.plan.roles');

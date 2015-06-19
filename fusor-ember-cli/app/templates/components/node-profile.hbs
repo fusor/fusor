@@ -5,7 +5,7 @@
                 <h3 class="node-profile-label h5">{{profile.name}}</h3>
             </div>
             <div class="col-sm-5 col-md-4">
-                <h4 class="node-profile-free-nodes h5">Free Nodes: {{profile.freeNodes}}</h4>
+                <h4 class="node-profile-free-nodes h5">Node Count: {{matchingNodeCount}}</h4>
             </div>
         </div>
     </div>
@@ -36,7 +36,7 @@
                     <ul class="deployment-roles deployment-roles-assigned">
                       {{#each role in assignedRoles}}
                         {{#draggable-object content=role}}
-                          {{deployment-role role=role profile=profile plan=plan edit="editRole" remove="removeRole"}}
+                          {{deployment-role role=role profile=profile nodeCount=matchingNodeCount plan=plan edit="editRole" remove="removeRole"}}
                         {{/draggable-object}}
                       {{/each}}
                       {{#unless allRolesAssigned}}

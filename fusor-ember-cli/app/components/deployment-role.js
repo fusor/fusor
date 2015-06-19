@@ -4,6 +4,7 @@ export default Ember.Component.extend({
   role: null,
   profile: null,
   plan: null,
+  nodeCount: 0,
 
   getParamValue: function(paramName, params) {
     var paramValue = null;
@@ -46,7 +47,7 @@ export default Ember.Component.extend({
     var avail = [];
     var increment = 1;
 
-    for (var i=0; i <= this.get('profileNodes'); i = i + increment) {
+    for (var i=0; i <= this.get('nodeCount'); i = i + increment) {
       var nextOption = Ember.Object.create({
         label: '' + i,
         value: i,
@@ -56,7 +57,7 @@ export default Ember.Component.extend({
     }
 
     return avail;
-  }.property('roleNodeCount', 'profileNodesAvailable'),
+  }.property('roleNodeCount'),
 
   actions: {
     assignNodes: function() {
