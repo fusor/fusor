@@ -19,14 +19,27 @@ module Fusor
         
         def index
           h = Overcloud::UndercloudHandle.new('admin','a20a4b1d3b337bed7cd111714e9adbb814100ac7','192.0.2.1', 5001)
-          render :json => h.list_flavors
+          flavors = h.list_flavors
+          flavor_json_array = Array.new
+          for flavor in h.list_flavors
+            flavor_json_array << flavor_json_with_extra_specs(h, flavor)
+          end
+          render :json => {:flavors => flavor_json_array}
         end
         
         def show
           h = Overcloud::UndercloudHandle.new('admin','a20a4b1d3b337bed7cd111714e9adbb814100ac7','192.0.2.1', 5001)
-          render :json => {:flavor => h.get_flavor(params[:id])}
+          render :json => {:flavor => flavor_json_with_extra_specs(h, h.get_flavor(params[:id]))}
         end
         
+        private
+
+        def flavor_json_with_extra_specs(undercloud_handle, flavor)
+          flavor_json = flavor.as_json
+          flavor_json['extra_specs'] = undercloud_handle.get_flavor_extra_specs(flavor.id).as_json
+          return flavor_json
+        end
+
       end
     end
   end
