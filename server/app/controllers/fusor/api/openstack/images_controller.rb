@@ -15,17 +15,16 @@ require 'egon'
 module Fusor
   module Api
     module Openstack
-      class NodesController < Api::V2::BaseController
+      class ImagesController < Api::V2::BaseController
         
         def index
           h = Overcloud::UndercloudHandle.new('admin','a20a4b1d3b337bed7cd111714e9adbb814100ac7','192.0.2.1', 5001)
-          render :json => h.list_nodes
+          render :json => h.list_images.as_json
         end
 
-        def create
+        def show_by_name
           h = Overcloud::UndercloudHandle.new('admin','a20a4b1d3b337bed7cd111714e9adbb814100ac7','192.0.2.1', 5001)
-          @node = h.create_node(params[:node], true)
-          respond_for_show :resource => @node
+          render :json => {:image => h.find_image_by_name(params[:name]).as_json}
         end
         
       end

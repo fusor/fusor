@@ -174,7 +174,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
   errorNodes: [],
   edittedNodes: [],
 
-  drivers: ['IPMI Driver', 'PXE + SSH'],
+  drivers: ['pxe_ipmitool', 'pxe_ssh'],
   architectures: ['amd64', 'x86', 'x86_64'],
   selectedNode: null,
 
@@ -382,9 +382,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
           for (var row in data) {
             var node_data = data[row];
             if (Array.isArray(node_data) && node_data.length >=9) {
-              var memory_mb = parseInt(node_data[0]);
-              var local_gb = parseInt(node_data[1]);
-              var cpus = parseInt(node_data[2]);
+              var memory_mb = node_data[0].trim();
+              var local_gb = node_data[1].trim();
+              var cpus = node_data[2].trim();
               var cpu_arch = node_data[3].trim();
               var driver = node_data[4].trim();
               var ipmi_address = node_data[5].trim();
@@ -467,18 +467,57 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     }
   },
 
+  getImage: function(imageName) {
+    return Ember.$.getJSON('/fusor/api/openstack/images/show_by_name/' + imageName);
+  },
+
   registerNode: function(node) {
     var me = this;
-    var iterationCount = 0;
+    var bmDeployKernelImage = null;
+    var bmDeployRamdiskImage = null;
+
+    this.getImage('bm-deploy-kernel').then(function(kernelImage) {
+	bmDeployKernelImage = kernelImage;
+    });
+    this.getImage('bm-deploy-ramdisk').then(function(ramdiskImage) {
+	bmDeployRamdiskImage = ramdiskImage;
+    });
 
     var promiseFunction = function(resolve) {
       var checkForDone = function() {
-        if (iterationCount === 1) {
-          resolve(true);
+        var driverInfo = {};
+        if ( node.driver == 'pxe_ssh' ) {
+          driverInfo = {
+            ssh_address: node.ipAddress,
+            ssh_username: node.ipmiUsername,
+            ssh_key_contents: node.ipmiPassword,
+            ssh_virt_type: 'virsh',
+            deploy_kernel: bmDeployKernelImage.image.id,
+            deploy_ramdisk: bmDeployRamdiskImage.image.id,
+          }
+        } else if (node.driver == 'pxe_ipmitool')  {
+          driverInfo = {
+            ipmi_address: node.ipAddress,
+            ipmi_username: node.ipmiUsername,
+            ipmi_password: node.ipmiPassword,
+            pxe_deploy_kernel: bmDeployKernelImage.image.id,
+            pxe_deploy_ramdisk: bmDeployRamdiskImage.image.id,
+          }
         }
-        else {
-          resolve(false);
-        }
+        var createdNode = me.store.createRecord('node', {
+            driver: node.driver,
+            driver_info: driverInfo,
+            properties: {
+              memory_mb: node.ram,
+              cpus: node.cpu,
+              local_gb: node.disk,
+              cpu_arch: node.architecture,
+              capabilities: 'boot_option:local',
+            },
+            address: node.nicMacAddress,
+        });
+        createdNode.save();
+        resolve(true);
       };
 
       Ember.run.later(checkForDone, 3000);
@@ -486,50 +525,10 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
     var fulfill = function(isDone) {
       if (isDone) {
-        var randomPercent = Math.round(Math.random() * 100);
-        if (randomPercent <= 5) {
-          node.isError = true;
-          node.errorMessage = node.get('name') + " was not registered: node username/password is invalid.";
-        }
-        else if (randomPercent <= 10) {
-          node.isError = true;
-          node.errorMessage = node.get('name') + " was not registered: node IP address is invalid.";
-        }
-
-        if (node.isError) {
-          var errorNodes = me.get('errorNodes');
-          errorNodes.pushObject(node);
-          me.set('errorNodes', errorNodes);
-        }
-        else {
-          var nodes = me.get('model.nodes');
-          nodes.pushObject(node);
-          var profiles = me.get('model.profiles');
-          var assigned = false;
-          var index = 0;
-          while(!assigned && index < profiles.length) {
-            var nextProfile = profiles[index++];
-            if ((nextProfile.get('cpu') === node.get('cpu')) &&
-                (nextProfile.get('ram') === node.get('ram')) &&
-                (nextProfile.get('disk') === node.get('disk'))) {
-              nextProfile.addNode(node);
-              assigned = true;
-            }
-          }
-          if (!assigned) {
-            var newProfile = me.Profile.create({
-              cpu: node.get('cpu'),
-              ram: node.get('ram'),
-              disk: node.get('disk')
-            });
-            newProfile.addNode(node);
-            profiles.pushObject(newProfile);
-          }
-        }
+        var nodes = me.get('model.nodes');
         me.doNextNodeRegistration();
       }
       else {
-        iterationCount++;
         var promise = new Ember.RSVP.Promise(promiseFunction);
         promise.then(fulfill);
       }
