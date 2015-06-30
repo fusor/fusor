@@ -16,6 +16,12 @@ module Fusor
   module Api
     module Openstack
       class DeploymentPlansController < Api::V2::BaseController
+
+        def deploy
+          h = Overcloud::UndercloudHandle.new('admin','a20a4b1d3b337bed7cd111714e9adbb814100ac7','192.0.2.1', 5001)
+          @plan = h.deploy_plan(params[:id])
+          redirect_to :action => 'show', :id => params[:id]
+        end
         
         def show
           h = Overcloud::UndercloudHandle.new('admin','a20a4b1d3b337bed7cd111714e9adbb814100ac7','192.0.2.1', 5001)
