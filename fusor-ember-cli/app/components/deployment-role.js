@@ -60,15 +60,25 @@ export default Ember.Component.extend({
   }.property('roleNodeCount'),
 
   actions: {
-    assignNodes: function() {
-      var newCount = parseInt(this.$('select').val());
+    updateNodeCount: function() {
+      var nodeCount = parseInt(this.$('select').val());
       var role = this.get('role');
-      role.set('numNodes', newCount);
+      var plan = this.get('plan');
+      var data = { 'role_name': role.get('name'), 'count': nodeCount };
 
-      var profile = this.get('profile');
-      if (!profile.getAssignedRole(role.get('roleType'))) {
-        profile.assignRole(role);
-      }
+      Ember.$.ajax({
+        url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_role_count',
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function(response) {
+          console.log('SUCCESS');
+        },
+        error: function(error) {
+          console.log('ERROR');
+          console.log(error);
+        }
+      });
     },
 
     editRole: function() {

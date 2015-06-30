@@ -4,7 +4,7 @@
     </div>
     <b>{{role.name}}</b>
     {{#if roleAssigned}}
-        <select class="selectpicker"  {{action "assignNodes" this on="change"}}>
+        <select class="selectpicker"  {{action "updateNodeCount" this on="change"}}>
             {{#each option in availableOptions}}
                 {{#if option.selected}}
                     <option selected>{{option.label}}</option>
