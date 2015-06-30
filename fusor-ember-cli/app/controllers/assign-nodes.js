@@ -11,7 +11,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     var numParams = params.get('length');
     for (var i=0; i<numParams; i++) {
       var param = params.objectAt(i);
-      if (param.get('id') == paramName) {
+      if (param.get('id') === paramName) {
         paramValue = param.get('value');
         break;
       }
@@ -21,7 +21,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   unassignedRoles: function() {
     var unassignedRoles = [];
-    var params = this.get('model.parameters')
+    var params = this.get('model.parameters');
     var self = this;
     this.get('model.roles').forEach(function(role, index) {
       if ( self.getParamValue(role.get('flavorParameterName'), params) == null ) {
@@ -32,11 +32,11 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
   }.property('model.roles', 'model.parameters'),
 
   allRolesAssigned: function() {
-    return (this.get('unassignedRoles').length == 0);
+    return (this.get('unassignedRoles').length === 0);
   }.property('unassignedRoles'),
 
   noRolesAssigned: function() {
-    return (this.get('unassignedRoles').length == this.get('model.roles').length);
+    return (this.get('unassignedRoles').length === this.get('model.roles').length);
   }.property('unassignedRoles'),
 
   profiles: function() {
@@ -52,33 +52,6 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     return this.get('register').get('model.nodes');
   }.property('register.model.nodes'),
 
-  getRoleByType: function(roleType) {
-    var roles = this.get('model.plan.roles');
-    if (!roles || !roles.length) {
-      return null;
-    }
-
-    for (var i=0; i<roles.length; i++) {
-      if (roles[i].name === roleType) {
-        return roles[i];
-      }
-    }
-
-    return null;
-  },
-
-  removeRoleFromProfile: function(profile, roleType) {
-    var role = this.getRoleByType(roleType);
-    if (profile !== null && profile !== undefined)
-    {
-      profile.unassignRole(role);
-    }
-    if (role) {
-      role.set('profile', null);
-      role.set('numNodes', 0);
-    }
-  },
-
   isDraggingRole: false,
 
   droppableClass: function() {
@@ -90,33 +63,41 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     }
   }.property('isDraggingRole'),
 
-  doAssignRole: function(profile, role) {
-    role.set('numNodes', 1);
-    role.set('profile', profile);
-    profile.assignRole(role);
+  doAssignRole: function(plan, role, profile) {
+    var data;
+    if (profile == null ) {
+      data = { 'role_name': role.get('name'), 'flavor_name': null };
+    } else {
+      data = { 'role_name': role.get('name'), 'flavor_name': profile.get('name') };
+    }
+
+    Ember.$.ajax({
+      url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_role_flavor',
+      type: 'PUT',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: function(response) {
+        console.log('SUCCESS');
+      },
+      error: function(error) {
+        console.log('ERROR');
+        console.log(error);
+      }
+    });
   },
 
   actions: {
-    editRole: function(roleType) {
-      log("EDIT: " + roleType);
+    editRole: function(role) {
+      console.log("EDIT: " + role);
     },
 
-    assignRoleType: function(profile, roleType) {
-      var role = this.getRoleByType(roleType);
-      this.doAssignRole(profile, role);
-    },
-
-    assignRole: function(profile, role) {
-      this.doAssignRole(profile, role);
-    },
-
-    removeRole: function(profile, roleType) {
-      this.removeRoleFromProfile(profile, roleType);
+    assignRole: function(plan, role, profile) {
+      this.doAssignRole(plan, role, profile);
     },
 
     unassignRole: function(role) {
-      role.set('isDraggingObject', false);
-      this.removeRoleFromProfile(role.profile, role.roleType);
+      var plan = this.get('model');
+      this.doAssignRole(plan, role, null);
     },
 
     doShowSettings: function() {
