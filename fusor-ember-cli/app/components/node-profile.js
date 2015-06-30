@@ -12,7 +12,7 @@ export default Ember.Component.extend({
     var numParams = params.get('length');
     for (var i=0; i<numParams; i++) {
       var param = params.objectAt(i);
-      if (param.get('id') == paramName) {
+      if (param.get('id') === paramName) {
         paramValue = param.get('value');
         break;
       }
@@ -23,10 +23,10 @@ export default Ember.Component.extend({
   assignedRoles: function() {
     var assignedRoles = [];
     var profile = this.get('profile');
-    var params = this.get('plan.parameters')
+    var params = this.get('plan.parameters');
     var self = this;
     this.get('plan.roles').forEach(function(role, index) {
-      if ( self.getParamValue(role.get('flavorParameterName'), params) == profile.get('name') ) {
+      if ( self.getParamValue(role.get('flavorParameterName'), params) === profile.get('name') ) {
         assignedRoles.pushObject(role);
       }
     });
@@ -39,7 +39,7 @@ export default Ember.Component.extend({
     this.get('plan.roles').forEach(function(role, index) {
       var unassignedRole = true;
       for (var i=0; i<assignedRoles.length; i++) {
-        if ( role.get('name') == assignedRoles[i].get('name') ) {
+        if ( role.get('name') === assignedRoles[i].get('name') ) {
           unassignedRole = false;
           break;
         }
@@ -52,7 +52,7 @@ export default Ember.Component.extend({
   }.property('assignedRoles', 'plan', 'plan.roles'),
 
   allRolesAssigned: function() {
-    return (this.get('unassignedRoles').length == 0);
+    return (this.get('unassignedRoles').length === 0);
   }.property('unassignedRoles'),
 
   nodeMatchesProfile: function(node, profile) {
@@ -101,24 +101,14 @@ export default Ember.Component.extend({
         this.set('assignMenuOpenClass', 'open');
       }
     },
-    assignRoleType: function(roleType) {
-      this.set('assignMenuOpenClass', '');
-      this.sendAction('assignRoleType', this.get('profile'), roleType);
-    },
     assignDroppedRole: function(role) {
       role.set('isDraggingObject', false);
       var profile = this.get('profile');
-      if (profile.get('freeNodes') > 0)
+      var plan = this.get('plan');
+      if ( this.getParamValue(role.get('flavorParameterName'), plan.get('parameters')) !== profile.get('name') )
       {
-        if (role.get('profile') !== this.get('profile'))
-        {
-          this.sendAction('unassignRole', role);
-          this.sendAction('assignRole', this.get('profile'), role);
-        }
+        this.sendAction('assignRole', plan, role, profile);
       }
-    },
-    removeRole: function(role) {
-      this.sendAction('unassignRole', role);
     },
     editRole: function(role) {
       this.sendAction('editRole', role);

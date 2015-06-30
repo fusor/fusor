@@ -3,6 +3,7 @@ Fusor::Engine.routes.draw do
     namespace :api do
       scope :openstack, :module => :openstack, :path => :openstack do
         resources :deployment_plans
+        put '/deployment_plans/:id/update_role_flavor', to: 'deployment_plans#update_role_flavor', as: 'deployment_plans_update_role_flavor'
         resources :deployment_roles
         resources :flavors
         resources :images
