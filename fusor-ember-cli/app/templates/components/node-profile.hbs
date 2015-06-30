@@ -47,7 +47,7 @@
                                 </a>
                                 <ul class="dropdown-menu" role="menu" aria-labelledby="role-target-dropdown-1">
 				  {{#each role in unassignedRoles}}
-                                    <a class="roles-menu-item role-controller" {{action "assignRoleType" role.name}}>{{role.name}}</a>
+                                    <a class="roles-menu-item role-controller" {{action "assignRole" role.name}}>{{role.name}}</a>
                                   {{/each}}
                                 </ul>
                             </li>
