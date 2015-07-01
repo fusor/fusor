@@ -11,21 +11,25 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 require 'egon'
+require 'strong_parameters'
 
 module Fusor
   module Api
     module Openstack
-      class NodesController < Api::Openstack::BaseController
-        
-        def index
-          render :json => undercloud_handle.list_nodes
+      class BaseController < ::Katello::Api::V2::ApiController
+
+        resource_description do
+          resource_id 'fusor'
+          api_version 'openstack'
+          api_base_url '/fusor/api'
         end
 
-        def create
-          @node = undercloud_handle.create_node(params[:node], true)
-          respond_for_show :resource => @node
+        private
+
+        def undercloud_handle
+          return Overcloud::UndercloudHandle.new('admin','a20a4b1d3b337bed7cd111714e9adbb814100ac7','192.0.2.1', 5001)
         end
-        
+
       end
     end
   end

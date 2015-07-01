@@ -15,11 +15,10 @@ require 'egon'
 module Fusor
   module Api
     module Openstack
-      class DeploymentRolesController < Api::V2::BaseController
+      class DeploymentRolesController < Api::Openstack::BaseController
         
         def index
-          h = Overcloud::UndercloudHandle.new('admin','a20a4b1d3b337bed7cd111714e9adbb814100ac7','192.0.2.1', 5001)
-          render :json => {:deployment_roles => h.list_deployment_roles}.to_json
+          render :json => {:deployment_roles => undercloud_handle.list_deployment_roles}.to_json
         end
         
       end

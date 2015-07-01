@@ -15,28 +15,24 @@ require 'egon'
 module Fusor
   module Api
     module Openstack
-      class DeploymentPlansController < Api::V2::BaseController
+      class DeploymentPlansController < Api::Openstack::BaseController
 
         def deploy
-          h = Overcloud::UndercloudHandle.new('admin','a20a4b1d3b337bed7cd111714e9adbb814100ac7','192.0.2.1', 5001)
-          @plan = h.deploy_plan(params[:id])
+          @plan = undercloud_handle.deploy_plan(params[:id])
           redirect_to :action => 'show', :id => params[:id]
         end
         
         def show
-          h = Overcloud::UndercloudHandle.new('admin','a20a4b1d3b337bed7cd111714e9adbb814100ac7','192.0.2.1', 5001)
-          render :json => {:deployment_plan => h.get_plan(params[:id])}
+          render :json => {:deployment_plan => undercloud_handle.get_plan(params[:id])}
         end
 
         def update_role_count
-          h = Overcloud::UndercloudHandle.new('admin','a20a4b1d3b337bed7cd111714e9adbb814100ac7','192.0.2.1', 5001)
-          @plan = h.edit_plan_deployment_role_count(params[:id], params[:role_name], params[:count])
+          @plan = undercloud_handle.edit_plan_deployment_role_count(params[:id], params[:role_name], params[:count])
           redirect_to :action => 'show', :id => params[:id]
         end
 
         def update_role_flavor
-          h = Overcloud::UndercloudHandle.new('admin','a20a4b1d3b337bed7cd111714e9adbb814100ac7','192.0.2.1', 5001)
-          @plan = h.edit_plan_deployment_role_flavor(params[:id], params[:role_name], params[:flavor_name])
+          @plan = undercloud_handle.edit_plan_deployment_role_flavor(params[:id], params[:role_name], params[:flavor_name])
           redirect_to :action => 'show', :id => params[:id]
         end
         
