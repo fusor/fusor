@@ -52,6 +52,20 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     return this.get('register').get('model.nodes');
   }.property('register.model.nodes'),
 
+  nodeCount: function() {
+    return this.get('register').get('model.nodes').length;
+  }.property('register.model.nodes'),
+
+  assignedNodeCount: function() {
+    var count = 0;
+    var params = this.get('model.parameters');
+    var self = this;
+    this.get('model.roles').forEach(function(role, index) {
+      count += self.getParamValue(role.get('countParameterName'), params);
+    });
+    return count;
+  }.property('model.roles', 'model.parameters'),
+
   isDraggingRole: false,
 
   droppableClass: function() {
@@ -106,18 +120,27 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
     doShowConfig: function() {
       this.set('showSettings', false);
-    }
+    },
+
+    deployPlan: function() {
+      var plan = this.get('model');
+      Ember.$.ajax({
+        url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/deploy',
+        type: 'POST',
+        contentType: 'application/json',
+        success: function(response) {
+          console.log('SUCCESS');
+        },
+        error: function(error) {
+          console.log('ERROR');
+          console.log(error);
+        }
+      });
+    },
   },
 
   disableAssignNodesNext: function() {
-    var freeNodeCount = 0;
-    var profiles = this.get('profiles');
-    if (profiles) {
-      for (var i = 0; i < profiles.length; i++ ) {
-        freeNodeCount += profiles[i].freeNodes;
-      }
-    }
-    return (freeNodeCount < 4);
+    return false;
   }.property('profiles'),
 
   nextStepRouteName: function() {

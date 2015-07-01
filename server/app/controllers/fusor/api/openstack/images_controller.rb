@@ -15,16 +15,14 @@ require 'egon'
 module Fusor
   module Api
     module Openstack
-      class ImagesController < Api::V2::BaseController
+      class ImagesController < Api::Openstack::BaseController
         
         def index
-          h = Overcloud::UndercloudHandle.new('admin','a20a4b1d3b337bed7cd111714e9adbb814100ac7','192.0.2.1', 5001)
-          render :json => h.list_images.as_json
+          render :json => undercloud_handle.list_images.as_json
         end
 
         def show_by_name
-          h = Overcloud::UndercloudHandle.new('admin','a20a4b1d3b337bed7cd111714e9adbb814100ac7','192.0.2.1', 5001)
-          render :json => {:image => h.find_image_by_name(params[:name]).as_json}
+          render :json => {:image => undercloud_handle.find_image_by_name(params[:name]).as_json}
         end
         
       end
