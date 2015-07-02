@@ -42,8 +42,8 @@
     "ember-localstorage-adapter": "0.5.3",
     "ember-moment": "1.1.1",
     "ember-radio-button": "~1.0.1",
-    "express": "~4.12.3",
-    "glob": "^4.4.2",
-    "morgan": "~1.5.2"
+    "express": "^4.13.0",
+    "glob": "^4.5.3",
+    "morgan": "^1.6.0"
   }
 }

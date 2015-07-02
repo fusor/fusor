@@ -14,9 +14,6 @@ export default Ember.Component.extend({
     }
   }.property('subscription.type'),
 
-  isChecked: function () {
-    return this.get('subscription.isSelectedSubscription');
-  }.property('subscription.isSelectedSubscription'),
 
   bgColor: function () {
     if (this.get('isChecked')) {
@@ -40,10 +37,26 @@ export default Ember.Component.extend({
   }.property('subscription.qtyAvailable'),
 
   setDefaultQtyToAttach: function() {
-    this.get('subscription').set('qtyToAttach', this.get("numSubscriptionsRequired"));
-    if (this.get('isQtyInValid')) {
-      this.get('subscription').set('qtyToAttach', this.get("subscription.qtyAvailable"));
+    var contractNumber = this.get("subscription.contractNumber");
+    var matchingSubscription   = this.get('model').filterBy('contract_number', contractNumber).get('firstObject');
+    if (Ember.isPresent(matchingSubscription) && matchingSubscription.get('quantity_attached') > 0) {
+        this.get('subscription').set('qtyToAttach', matchingSubscription.get('quantity_attached'));
+    } else {
+      this.get('subscription').set('qtyToAttach', this.get("numSubscriptionsRequired"));
+      if (this.get('isQtyInValid')) {
+        this.get('subscription').set('qtyToAttach', this.get("subscription.qtyAvailable"));
+      }
     }
   }.on('didInsertElement'),
+
+  setIsSelectedSubscription: function() {
+    var contractsNumbers = (this.get('model').getEach('contract_number'));
+    console.log('contractsNumbers are:');
+    console.log(contractsNumbers);
+    var yesno = contractsNumbers.contains(this.get('subscription.contractNumber'));
+    this.get('subscription').set('isSelectedSubscription', yesno);
+  }.on('didInsertElement'),
+
+  isChecked: Ember.computed.alias('subscription.isSelectedSubscription'),
 
 });

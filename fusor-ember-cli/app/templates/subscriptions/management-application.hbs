@@ -1,3 +1,7 @@
+{{outlet}}
+
+{{#if showManagementApplications}}
+
 {{#if showAlertMessage}}
   <div class="row">
     <div class='col-md-9'>
@@ -52,3 +56,8 @@
                    disableNext=disableNextOnManagementApp
                    parentController=controller
                    disableCancel=controllers.deployment.isStarted}}
+
+{{/if}}
+
+
+

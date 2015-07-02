@@ -4,9 +4,12 @@ export default Ember.Controller.extend({
 
   needs: ['subscriptions', 'deployment'],
 
+  showManagementApplications: true,
+
   sessionPortal: Ember.computed.alias('controllers.subscriptions.model'),
   upstream_consumer_uuid: Ember.computed.alias("controllers.deployment.upstream_consumer_uuid"),
   upstream_consumer_name: Ember.computed.alias("controllers.deployment.upstream_consumer_name"),
+  // cuuid: Ember.computed.alias("controllers.deployment.upstream_consumer_uuid"),
 
   showAlertMessage: false,
 
@@ -17,10 +20,11 @@ export default Ember.Controller.extend({
   actions: {
     selectManagementApp: function(managementApp) {
       this.set('showAlertMessage', false);
-      this.get('sessionPortal').set('consumerUUID', managementApp.uuid);
+      this.get('sessionPortal').set('consumerUUID', managementApp.get('id'));
       this.get('sessionPortal').save();
-      this.set('upstream_consumer_uuid', managementApp.uuid);
-      this.set('upstream_consumer_name', managementApp.name);
+      this.set('upstream_consumer_uuid', managementApp.get('id'));
+      this.set('upstream_consumer_name', managementApp.get('name'));
+      this.transitionTo('subscriptions.management-application.consumer', managementApp.get('id'));
     },
 
     createSatellite: function() {

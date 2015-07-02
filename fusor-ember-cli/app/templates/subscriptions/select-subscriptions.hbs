@@ -11,6 +11,12 @@
   </div>
 {{/if}}
 
+{{#if isLoading}}
+      <div class="spinner spinner-md spinner-inline"></div>
+      <span class='spinner-text'>
+        Loading from Red Hat Customer Portal ...
+      </span>
+{{else}}
 <div class="row">
   <div class='col-md-9'>
 
@@ -42,8 +48,8 @@
         </thead>
 
       <tbody>
-      {{#each subscription in model itemController="subscription"}}
-        {{tr-subscription subscription=subscription numSubscriptionsRequired=numSubscriptionsRequired}}
+      {{#each subscription in subscriptionPools itemController="subscription"}}
+        {{tr-subscription subscription=subscription numSubscriptionsRequired=numSubscriptionsRequired model=model}}
       {{else}}
         <tr>
           <td colspan="8">
@@ -58,9 +64,19 @@
   </div>
 </div>
 
-{{cancel-back-next backRouteName='subscriptions.management-application'
+<!-- debugging only -->
+{{#each sub in model}}
+  {{!#if false}}
+   {{sub.id}} - {{sub.contract_number}} - {{sub.product_name}} - {{sub.quantity_attached}}
+   <br />
+  {{!/if}}
+{{/each}}
+
+{{#cancel-back-next backRouteName='subscriptions.management-application'
                    disableBack=false
-                   nextRouteName='review'
-                   disableNext=disableNextOnSelectSubscriptions
                    parentController=controller
                    disableCancel=controllers.deployment.isStarted}}
+  <button {{action 'saveSubscriptions' 'review'}} class='btn btn-primary'>Next</button>
+{{/cancel-back-next}}
+
+{{/if}}

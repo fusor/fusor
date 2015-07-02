@@ -128,6 +128,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
 
     error: function(reason) {
       console.log(reason);
+      alert(reason);
       alert(reason.statusText);
     },
 

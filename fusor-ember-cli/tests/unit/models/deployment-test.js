@@ -2,7 +2,7 @@ import { moduleForModel, test } from 'ember-qunit';
 
 moduleForModel('deployment', 'Unit | Model | deployment', {
   // Specify the other units that are required for this test.
-  needs: ['model:organization', 'model:lifecycle-environment', 'model:discovered-host']
+  needs: ['model:organization', 'model:lifecycle-environment', 'model:discovered-host', 'model:subscription']
 });
 
 test('it exists', function(assert) {

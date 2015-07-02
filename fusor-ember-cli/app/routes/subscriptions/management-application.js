@@ -8,13 +8,13 @@ export default Ember.Route.extend({
     var ownerKey = sessionPortal.get('ownerKey');
     // Use owner key to get consumers (subscription application manangers)
     // GET /customer_portal/owners/#{OWNER['key']}/consumers?type=satellite
-    var url = ('/customer_portal/owners/' + ownerKey + '/consumers?type=satellite');
 
-    return $.getJSON(url).then(function(results) {
+    return this.store.find('management-application', {owner_key: ownerKey}).then(function(results) {
         sessionPortal.set('isAuthenticated', true); // in case go to this route from URL
         sessionPortal.save();
         return results;
-      }, function() {
+      }, function(results) {
+         console.log(results);
          sessionPortal.set('isAuthenticated',false);
          sessionPortal.save().then(function() {
             self.controllerFor('subscriptions.credentials').setProperties({
@@ -30,6 +30,8 @@ export default Ember.Route.extend({
 
   setupController: function(controller, model) {
     controller.set('model', model);
+    controller.set('showManagementApplications', true);
+    //debugger
 
     var sessionPortal = this.modelFor('subscriptions');
     var upstream_consumer_uuid = this.modelFor('deployment').get('upstream_consumer_uuid');
@@ -65,7 +67,8 @@ export default Ember.Route.extend({
   actions: {
       error: function(reason, transition) {
         // bubble up this error event:
-        return true;
+        //return true;
+        console.log(reason);
       }
   }
 

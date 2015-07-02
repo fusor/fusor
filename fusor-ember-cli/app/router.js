@@ -60,7 +60,12 @@ export default Router.map(function() {
     });
     this.resource('subscriptions', function() {
       this.route('credentials');
-      this.route('management-application');
+      this.route('management-application', function() {
+        this.route('consumer', { path: '/:management_application_uuid' }, function() {
+          this.route('pools');
+          this.route('entitlements');
+        });
+      });
       this.route('select-subscriptions', {path: 'select'});
     });
     this.resource('review', function() {

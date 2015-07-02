@@ -53,6 +53,9 @@ export default DS.Model.extend({
   // has many Hypervisors
   discovered_hosts: DS.hasMany('discovered-host', {inverse: 'deployments', async: true}),
 
+  // has many Subscriptions
+  subscriptions: DS.hasMany('subscription', {inverse: 'deployment', async: true}),
+
 });
 
 

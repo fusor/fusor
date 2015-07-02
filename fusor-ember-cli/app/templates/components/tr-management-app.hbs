@@ -1,5 +1,5 @@
 <td>
-    {{radio-button value=managementApp.uuid groupValue=consumerUUID changed="changeManagementApp" id=org.id disabled=disabled}}
+   {{radio-button value=managementApp.id groupValue=consumerUUID changed="changeManagementApp" id=org.id disabled=disabled}}
 </td>
 <td>
     {{managementApp.name}}
@@ -8,5 +8,9 @@
     {{managementApp.entitlementCount}}
 </td>
 <td>
-    {{managementApp.uuid}}
+    {{managementApp.id}}
+
+    {{!#link-to 'pools' managementApp.id}}pools{{!/link-to}}
+    {{!#link-to 'subscriptions.management-application.consumer.entitlements' managementApp.id}}entitlements{{!/link-to}}
+
 </td>
