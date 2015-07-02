@@ -28,6 +28,30 @@ define('fusor-ember-cli/adapters/deployment', ['exports', 'ember-data'], functio
     });
 
 });
+define('fusor-ember-cli/adapters/entitlement', ['exports', 'ember-data'], function (exports, DS) {
+
+    'use strict';
+
+    exports['default'] = DS['default'].ActiveModelAdapter.extend({
+
+        buildURL: function buildURL(type, query) {
+            // Use consumer UUID to get entitlements
+            // GET /customer_portal/consumers/#{CONSUMER['uuid']}/entitlements
+            //debugger
+            return '/customer_portal/consumers/' + query['uuid'] + '/entitlements';
+
+            // To use http-mock instead of live consumer portal, comment out line above and uncomment below
+            // return 'api-mock/entitlements';
+        },
+
+        // TODO - docs showed urlForQuery hook, is this later ember-data version???
+        // source code says - RestAdapter#findQuery has been deprecated and renamed to `query`./
+        findQuery: function findQuery(store, type, query) {
+            // customization here - add query as a parameter fto buildURL
+            return this.ajax(this.buildURL(type, query), 'GET');
+        } });
+
+});
 define('fusor-ember-cli/adapters/foreman-task', ['exports', 'ember-data'], function (exports, DS) {
 
     'use strict';
@@ -41,6 +65,52 @@ define('fusor-ember-cli/adapters/foreman-task', ['exports', 'ember-data'], funct
     });
 
 });
+define('fusor-ember-cli/adapters/management-application', ['exports', 'ember-data'], function (exports, DS) {
+
+    'use strict';
+
+    exports['default'] = DS['default'].ActiveModelAdapter.extend({
+
+        buildURL: function buildURL(type, query) {
+            // Use owner key to get consumers (subscription application manangers)
+            // GET /customer_portal/owners/#{OWNER['key']}/consumers?type=satellite
+            return '/customer_portal/owners/' + query['owner_key'] + '/consumers?type=satellite';
+
+            // To use http-mock instead of live consumer portal, comment out line above and uncomment below
+            // return 'api-mock/consumers';
+        },
+
+        // TODO - docs showed urlForQuery hook, is this later ember-data version???
+        // source code says - RestAdapter#findQuery has been deprecated and renamed to `query`./
+        findQuery: function findQuery(store, type, query) {
+            // customization here - add query as a parameter fto buildURL
+            return this.ajax(this.buildURL(type, query), 'GET');
+        } });
+
+});
+define('fusor-ember-cli/adapters/pool', ['exports', 'fusor-ember-cli/adapters/application'], function (exports, ApplicationAdapter) {
+
+    'use strict';
+
+    exports['default'] = ApplicationAdapter['default'].extend({
+
+        buildURL: function buildURL(type, query) {
+            // Use consumer UUID to get pools
+            // GET /customer_portal/pools?consumer=' + consumerUUID + '&listall=false');
+            return '/customer_portal/pools?consumer=' + query['uuid'];
+
+            // To use http-mock instead of live consumer portal, comment out line above and uncomment below
+            // return 'api-mock/pools';
+        },
+
+        // TODO - docs showed urlForQuery hook, is this later ember-data version???
+        // source code says - RestAdapter#findQuery has been deprecated and renamed to `query`./
+        findQuery: function findQuery(store, type, query) {
+            // customization here - add query as a parameter fto buildURL
+            return this.ajax(this.buildURL(type, query), 'GET');
+        } });
+
+});
 define('fusor-ember-cli/adapters/session-portal', ['exports', 'ember-data'], function (exports, DS) {
 
   'use strict';
@@ -48,6 +118,18 @@ define('fusor-ember-cli/adapters/session-portal', ['exports', 'ember-data'], fun
   exports['default'] = DS['default'].LSAdapter.extend({
     namespace: 'rhci'
   });
+
+});
+define('fusor-ember-cli/adapters/subscription', ['exports', 'ember-data'], function (exports, DS) {
+
+    'use strict';
+
+    var token = $('meta[name="csrf-token"]').attr('content');
+    exports['default'] = DS['default'].ActiveModelAdapter.extend({
+        namespace: 'fusor/api/v21',
+        headers: {
+            'X-CSRF-Token': token
+        } });
 
 });
 define('fusor-ember-cli/app', ['exports', 'ember', 'ember/resolver', 'ember/load-initializers', 'fusor-ember-cli/config/environment'], function (exports, Ember, Resolver, loadInitializers, config) {
@@ -1012,8 +1094,8 @@ define('fusor-ember-cli/components/tr-management-app', ['exports', 'ember'], fun
     classNameBindings: ['bgColor'],
 
     isChecked: (function () {
-      return this.get('consumerUUID') === this.get('managementApp.uuid');
-    }).property('consumerUUID', 'managementApp.uuid'),
+      return this.get('consumerUUID') === this.get('managementApp.id');
+    }).property('consumerUUID', 'managementApp.id'),
 
     bgColor: (function () {
       if (this.get('isChecked')) {
@@ -1077,10 +1159,6 @@ define('fusor-ember-cli/components/tr-subscription', ['exports', 'ember'], funct
       }
     }).property('subscription.type'),
 
-    isChecked: (function () {
-      return this.get('subscription.isSelectedSubscription');
-    }).property('subscription.isSelectedSubscription'),
-
     bgColor: (function () {
       if (this.get('isChecked')) {
         return 'white-on-blue';
@@ -1103,11 +1181,27 @@ define('fusor-ember-cli/components/tr-subscription', ['exports', 'ember'], funct
     }).property('subscription.qtyAvailable'),
 
     setDefaultQtyToAttach: (function () {
-      this.get('subscription').set('qtyToAttach', this.get('numSubscriptionsRequired'));
-      if (this.get('isQtyInValid')) {
-        this.get('subscription').set('qtyToAttach', this.get('subscription.qtyAvailable'));
+      var contractNumber = this.get('subscription.contractNumber');
+      var matchingSubscription = this.get('model').filterBy('contract_number', contractNumber).get('firstObject');
+      if (Ember['default'].isPresent(matchingSubscription) && matchingSubscription.get('quantity_attached') > 0) {
+        this.get('subscription').set('qtyToAttach', matchingSubscription.get('quantity_attached'));
+      } else {
+        this.get('subscription').set('qtyToAttach', this.get('numSubscriptionsRequired'));
+        if (this.get('isQtyInValid')) {
+          this.get('subscription').set('qtyToAttach', this.get('subscription.qtyAvailable'));
+        }
       }
-    }).on('didInsertElement') });
+    }).on('didInsertElement'),
+
+    setIsSelectedSubscription: (function () {
+      var contractsNumbers = this.get('model').getEach('contract_number');
+      console.log('contractsNumbers are:');
+      console.log(contractsNumbers);
+      var yesno = contractsNumbers.contains(this.get('subscription.contractNumber'));
+      this.get('subscription').set('isSelectedSubscription', yesno);
+    }).on('didInsertElement'),
+
+    isChecked: Ember['default'].computed.alias('subscription.isSelectedSubscription') });
 
 });
 define('fusor-ember-cli/components/tr-task', ['exports', 'ember'], function (exports, Ember) {
@@ -1958,6 +2052,17 @@ define('fusor-ember-cli/controllers/engine/discovered-host', ['exports', 'ember'
     }).property('model') });
 
 });
+define('fusor-ember-cli/controllers/entitlements', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].ArrayController.extend({
+
+    showEntitlements: true,
+    arrayQuantities: Ember['default'].computed.mapBy('model', 'quantity'),
+    totalQuantity: Ember['default'].computed.sum('arrayQuantities') });
+
+});
 define('fusor-ember-cli/controllers/host', ['exports', 'ember'], function (exports, Ember) {
 
 	'use strict';
@@ -2570,7 +2675,7 @@ define('fusor-ember-cli/controllers/review/installation', ['exports', 'ember'], 
   'use strict';
 
   exports['default'] = Ember['default'].Controller.extend({
-    needs: ['application', 'rhci', 'deployment', 'satellite', 'configure-organization', 'configure-environment', 'rhev-setup', 'hypervisor', 'hypervisor/discovered-host', 'engine/discovered-host', 'storage', 'networking', 'rhev-options', 'where-install', 'cloudforms-storage-domain', 'cloudforms-vm', 'review', 'subscriptions/select-subscriptions'],
+    needs: ['application', 'rhci', 'deployment', 'satellite', 'configure-organization', 'configure-environment', 'rhev-setup', 'hypervisor', 'hypervisor/discovered-host', 'engine/discovered-host', 'storage', 'networking', 'rhev-options', 'where-install', 'cloudforms-vm', 'review', 'subscriptions/select-subscriptions'],
 
     rhevValidated: (function () {
       if (this.get('isRhev')) {
@@ -2634,6 +2739,7 @@ define('fusor-ember-cli/controllers/review/installation', ['exports', 'ember'], 
     rhev_engine_host: Ember['default'].computed.alias('controllers.deployment.discovered_host'),
     selectedRhevEngine: Ember['default'].computed.alias('controllers.deployment.discovered_host'),
     isStarted: Ember['default'].computed.alias('controllers.deployment.isStarted'),
+    subscriptions: Ember['default'].computed.alias('controllers.deployment.subscriptions'),
 
     engineNamePlusDomain: (function () {
       if (this.get('isStarted')) {
@@ -2856,7 +2962,7 @@ define('fusor-ember-cli/controllers/rhev', ['exports', 'ember'], function (expor
   'use strict';
 
   exports['default'] = Ember['default'].Controller.extend({
-    needs: ['application', 'rhev-setup', 'side-menu', 'deployment', 'storage', 'rhev-options'],
+    needs: ['application', 'rhev-setup', 'deployment', 'storage', 'rhev-options'],
 
     rhevSetup: Ember['default'].computed.alias('controllers.rhev-setup.rhevSetup'),
 
@@ -3025,7 +3131,9 @@ define('fusor-ember-cli/controllers/subscriptions', ['exports', 'ember'], functi
 
     disableTabManagementApplication: Ember['default'].computed.not('model.isAuthenticated'),
 
-    disableTabSelectSubsciptions: Ember['default'].computed.alias('controllers.subscriptions/management-application.disableNextOnManagementApp') });
+    disableTabSelectSubsciptions: Ember['default'].computed.alias('controllers.subscriptions/management-application.disableNextOnManagementApp'),
+
+    uuid: Ember['default'].computed.alias('controllers.deployment.upstream_consumer_uuid') });
 
 });
 define('fusor-ember-cli/controllers/subscriptions/credentials', ['exports', 'ember'], function (exports, Ember) {
@@ -3095,9 +3203,12 @@ define('fusor-ember-cli/controllers/subscriptions/management-application', ['exp
 
     needs: ['subscriptions', 'deployment'],
 
+    showManagementApplications: true,
+
     sessionPortal: Ember['default'].computed.alias('controllers.subscriptions.model'),
     upstream_consumer_uuid: Ember['default'].computed.alias('controllers.deployment.upstream_consumer_uuid'),
     upstream_consumer_name: Ember['default'].computed.alias('controllers.deployment.upstream_consumer_name'),
+    // cuuid: Ember.computed.alias("controllers.deployment.upstream_consumer_uuid"),
 
     showAlertMessage: false,
 
@@ -3108,10 +3219,11 @@ define('fusor-ember-cli/controllers/subscriptions/management-application', ['exp
     actions: {
       selectManagementApp: function selectManagementApp(managementApp) {
         this.set('showAlertMessage', false);
-        this.get('sessionPortal').set('consumerUUID', managementApp.uuid);
+        this.get('sessionPortal').set('consumerUUID', managementApp.get('id'));
         this.get('sessionPortal').save();
-        this.set('upstream_consumer_uuid', managementApp.uuid);
-        this.set('upstream_consumer_name', managementApp.name);
+        this.set('upstream_consumer_uuid', managementApp.get('id'));
+        this.set('upstream_consumer_name', managementApp.get('name'));
+        this.transitionTo('subscriptions.management-application.consumer', managementApp.get('id'));
       },
 
       createSatellite: function createSatellite() {
@@ -3153,11 +3265,39 @@ define('fusor-ember-cli/controllers/subscriptions/management-application', ['exp
     } });
 
 });
-define('fusor-ember-cli/controllers/subscriptions/select-subscriptions', ['exports', 'ember'], function (exports, Ember) {
+define('fusor-ember-cli/controllers/subscriptions/management-application/consumer', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].Controller.extend({
+
+    needs: ['deployment'],
+
+    //  queryParams: ['cuuid'],
+
+    cuuid: Ember['default'].computed.alias('controllers.deployment.upstream_consumer_uuid') });
+
+});
+define('fusor-ember-cli/controllers/subscriptions/management-application/consumer/entitlements', ['exports', 'ember'], function (exports, Ember) {
 
   'use strict';
 
   exports['default'] = Ember['default'].ArrayController.extend({
+
+    needs: ['deployment'],
+
+    arrayQuantities: Ember['default'].computed.mapBy('model', 'quantity'),
+    totalQuantity: Ember['default'].computed.sum('arrayQuantities'),
+
+    upstream_consumer_uuid: Ember['default'].computed.alias('controllers.deployment.upstream_consumer_uuid') });
+
+});
+define('fusor-ember-cli/controllers/subscriptions/management-application/consumer/pools', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].ArrayController.extend({
+
     needs: ['application', 'deployment'],
 
     itemController: 'subscription',
@@ -3214,6 +3354,37 @@ define('fusor-ember-cli/controllers/subscriptions/select-subscriptions', ['expor
 
     showErrorMessage: Ember['default'].computed.not('allQuantitiesValid'),
     disableNextOnSelectSubscriptions: Ember['default'].computed.not('allQuantitiesValid') });
+
+});
+define('fusor-ember-cli/controllers/subscriptions/select-subscriptions', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].ArrayController.extend({
+    needs: ['application', 'deployment'],
+
+    itemController: 'subscription',
+
+    isUpstream: Ember['default'].computed.alias('controllers.application.isUpstream'),
+    stepNumberSubscriptions: Ember['default'].computed.alias('controllers.deployment.stepNumberSubscriptions'),
+    enable_access_insights: Ember['default'].computed.alias('controllers.deployment.enable_access_insights'),
+    numSubscriptionsRequired: Ember['default'].computed.alias('controllers.deployment.numSubscriptionsRequired'),
+
+    enableAnalytics: (function () {
+      if (this.get('enable_access_insights')) {
+        return 'Enabled';
+      } else {
+        return 'Disabled';
+      }
+    }).property('enable_access_insights'),
+
+    analyticsColor: (function () {
+      if (this.get('enableAnalytics')) {
+        return '';
+      } else {
+        return 'disabled-color';
+      }
+    }).property('enableAnalytics') });
 
 });
 define('fusor-ember-cli/controllers/where-install', ['exports', 'ember'], function (exports, Ember) {
@@ -4137,6 +4308,18 @@ define('fusor-ember-cli/mixins/start-controller-mixin', ['exports', 'ember'], fu
     }).property('isUpstream') });
 
 });
+define('fusor-ember-cli/models/consumer', ['exports', 'ember-data'], function (exports, DS) {
+
+  'use strict';
+
+  exports['default'] = DS['default'].Model.extend({
+    name: DS['default'].attr('string'),
+    type: DS['default'].attr('string'),
+    entitlementCount: DS['default'].attr('number'),
+    uuid: DS['default'].attr('string')
+  });
+
+});
 define('fusor-ember-cli/models/coordinator', ['exports', 'ember', 'fusor-ember-cli/models/obj-hash'], function (exports, Ember, ObjHash) {
 
   'use strict';
@@ -4225,7 +4408,10 @@ define('fusor-ember-cli/models/deployment', ['exports', 'ember-data'], function 
     discovered_host: DS['default'].belongsTo('discovered-host', { inverse: 'deployment', async: true }),
 
     // has many Hypervisors
-    discovered_hosts: DS['default'].hasMany('discovered-host', { inverse: 'deployments', async: true }) });
+    discovered_hosts: DS['default'].hasMany('discovered-host', { inverse: 'deployments', async: true }),
+
+    // has many Subscriptions
+    subscriptions: DS['default'].hasMany('subscription', { inverse: 'deployment', async: true }) });
 
 });
 define('fusor-ember-cli/models/discovered-host', ['exports', 'ember-data'], function (exports, DS) {
@@ -4258,6 +4444,33 @@ define('fusor-ember-cli/models/discovered-host', ['exports', 'ember-data'], func
 
     created_at: DS['default'].attr('date'),
     updated_at: DS['default'].attr('date') });
+
+});
+define('fusor-ember-cli/models/entitlement', ['exports', 'ember-data'], function (exports, DS) {
+
+  'use strict';
+
+  exports['default'] = DS['default'].Model.extend({
+
+    //pool node attributes
+    poolId: DS['default'].attr('string'),
+    poolType: DS['default'].attr('string'),
+    poolQuantity: DS['default'].attr('number'),
+    subscriptionId: DS['default'].attr('string'),
+    activeSubscription: DS['default'].attr('boolean'),
+    contractNumber: DS['default'].attr('string'),
+    accountNumber: DS['default'].attr('string'),
+    consumed: DS['default'].attr('number'),
+    exported: DS['default'].attr('number'),
+    productName: DS['default'].attr('string'),
+
+    //attributes not returned in 'pool' node
+    quantity: DS['default'].attr('number'),
+    startDate: DS['default'].attr('date'),
+    endDate: DS['default'].attr('date'),
+    href: DS['default'].attr('string'),
+    created: DS['default'].attr('date'),
+    updated: DS['default'].attr('date') });
 
 });
 define('fusor-ember-cli/models/environment', ['exports', 'ember-data'], function (exports, DS) {
@@ -4348,11 +4561,44 @@ define('fusor-ember-cli/models/management-application', ['exports', 'ember-data'
   'use strict';
 
   exports['default'] = DS['default'].Model.extend({
+    // uuid is not listed here since serializer defines it as primaryKey so it's retreived as id
     name: DS['default'].attr('string'),
-    type: DS['default'].attr('string'),
+    releaseVer: DS['default'].attr('string'),
+    username: DS['default'].attr('string'),
+    entitlementStatus: DS['default'].attr('string'),
+    serviceLevel: DS['default'].attr('string'),
+    environment: DS['default'].attr('string'),
     entitlementCount: DS['default'].attr('number'),
-    uuid: DS['default'].attr('string')
+    lastCheckin: DS['default'].attr('date'),
+    canActivate: DS['default'].attr('boolean'),
+    hypervisorId: DS['default'].attr('string'),
+    autoheal: DS['default'].attr('boolean'),
+    href: DS['default'].attr('string'),
+    created: DS['default'].attr('date'),
+    updated: DS['default'].attr('date')
+
   });
+
+  // These objects are in the JSON response but removed in the serializer
+  // and not saved in the store
+  //
+  // "releaseVer": {
+  //     "releaseVer": null
+  // },
+  // "type": {
+  //     "id": "9",
+  //     "label": "satellite",
+  //     "manifest": true
+  // },
+  // "owner": {
+  //     "id": "8a85f9814a192108014a1adef5826b38",
+  //     "key": "7473998",
+  //     "displayName": "7473998",
+  //     "href": "/owners/7473998"
+  // },
+  // "installedProducts": [],
+  // "guestIds": [],
+  // "capabilities": [],
 
 });
 define('fusor-ember-cli/models/obj-hash', ['exports', 'ember'], function (exports, Ember) {
@@ -4409,6 +4655,39 @@ define('fusor-ember-cli/models/organization', ['exports', 'ember-data'], functio
     lifecycle_environments: DS['default'].hasMany('lifecycle-environment', { async: true }) });
 
   //  subnets: DS.hasMany('subnet', { async: true })
+
+});
+define('fusor-ember-cli/models/pool', ['exports', 'ember-data'], function (exports, DS) {
+
+  'use strict';
+
+  exports['default'] = DS['default'].Model.extend({
+
+    type: DS['default'].attr('string'),
+    subscriptionId: DS['default'].attr('string'),
+    activeSubscription: DS['default'].attr('boolean'),
+    contractNumber: DS['default'].attr('string'),
+    accountNumber: DS['default'].attr('string'),
+    consumed: DS['default'].attr('number'),
+    exported: DS['default'].attr('number'),
+    productName: DS['default'].attr('string'),
+
+    quantity: DS['default'].attr('number'),
+    startDate: DS['default'].attr('date'),
+    endDate: DS['default'].attr('date'),
+    href: DS['default'].attr('string'),
+    created: DS['default'].attr('date'),
+    updated: DS['default'].attr('date'),
+
+    qtyAvailable: (function () {
+      return this.get('quantity') - this.get('consumed');
+    }).property('quantity', 'consumed'),
+
+    qtyAvailableOfTotal: (function () {
+      return this.get('qtyAvailable') + ' of ' + this.get('quantity');
+    }).property('qtyAvailable', 'quantity')
+
+  });
 
 });
 define('fusor-ember-cli/models/product', ['exports', 'ember-data'], function (exports, DS) {
@@ -4468,12 +4747,13 @@ define('fusor-ember-cli/models/subscription', ['exports', 'ember-data'], functio
   'use strict';
 
   exports['default'] = DS['default'].Model.extend({
-    productName: DS['default'].attr('string'),
-    contractNumber: DS['default'].attr('string'),
-    type: DS['default'].attr('string'),
-    startDate: DS['default'].attr('date'),
-    endDate: DS['default'].attr('date'),
-    quantity: DS['default'].attr('number') });
+
+    contract_number: DS['default'].attr('string'),
+    product_name: DS['default'].attr('string'),
+    quantity_attached: DS['default'].attr('number'),
+    deployment: DS['default'].belongsTo('deployment', { inverse: 'subscriptions', async: true })
+
+  });
 
 });
 define('fusor-ember-cli/models/traffic-type', ['exports', 'ember-data'], function (exports, DS) {
@@ -4533,7 +4813,9 @@ define('fusor-ember-cli/router', ['exports', 'ember', 'fusor-ember-cli/config/en
         this.resource('engine', function () {
           this.route('discovered-host');
         });
-        this.resource('hypervisor', function () {});
+        this.resource('hypervisor', function () {
+          this.route('discovered-host');
+        });
         this.resource('rhev-options', { path: 'configuration' });
         this.resource('storage');
       });
@@ -4548,7 +4830,12 @@ define('fusor-ember-cli/router', ['exports', 'ember', 'fusor-ember-cli/config/en
       });
       this.resource('subscriptions', function () {
         this.route('credentials');
-        this.route('management-application');
+        this.route('management-application', function () {
+          this.route('consumer', { path: '/:management_application_uuid' }, function () {
+            this.route('pools');
+            this.route('entitlements');
+          });
+        });
         this.route('select-subscriptions', { path: 'select' });
       });
       this.resource('review', function () {
@@ -4687,6 +4974,31 @@ define('fusor-ember-cli/routes/configure-organization', ['exports', 'ember'], fu
     }
 
   });
+
+});
+define('fusor-ember-cli/routes/consumer', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].Route.extend({
+
+    model: function model(params) {
+      return this.store.find('consumer', params.uuid);
+    },
+
+    serialize: function serialize(model) {
+      // this will make the URL `/consumers/:uuid`
+      return { consumer_slug: model.get('uuid') };
+    }
+
+  });
+
+});
+define('fusor-ember-cli/routes/consumers', ['exports', 'ember'], function (exports, Ember) {
+
+	'use strict';
+
+	exports['default'] = Ember['default'].Route.extend({});
 
 });
 define('fusor-ember-cli/routes/deployment-new', ['exports', 'ember', 'fusor-ember-cli/mixins/deployment-route-mixin'], function (exports, Ember, DeploymentRouteMixin) {
@@ -4957,6 +5269,7 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cl
 
       error: function error(reason) {
         console.log(reason);
+        alert(reason);
         alert(reason.statusText);
       } }
 
@@ -5705,13 +6018,13 @@ define('fusor-ember-cli/routes/subscriptions/management-application', ['exports'
       var ownerKey = sessionPortal.get('ownerKey');
       // Use owner key to get consumers (subscription application manangers)
       // GET /customer_portal/owners/#{OWNER['key']}/consumers?type=satellite
-      var url = '/customer_portal/owners/' + ownerKey + '/consumers?type=satellite';
 
-      return $.getJSON(url).then(function (results) {
+      return this.store.find('management-application', { owner_key: ownerKey }).then(function (results) {
         sessionPortal.set('isAuthenticated', true); // in case go to this route from URL
         sessionPortal.save();
         return results;
-      }, function () {
+      }, function (results) {
+        console.log(results);
         sessionPortal.set('isAuthenticated', false);
         sessionPortal.save().then(function () {
           self.controllerFor('subscriptions.credentials').setProperties({
@@ -5725,6 +6038,8 @@ define('fusor-ember-cli/routes/subscriptions/management-application', ['exports'
 
     setupController: function setupController(controller, model) {
       controller.set('model', model);
+      controller.set('showManagementApplications', true);
+      //debugger
 
       var sessionPortal = this.modelFor('subscriptions');
       var upstream_consumer_uuid = this.modelFor('deployment').get('upstream_consumer_uuid');
@@ -5760,11 +6075,83 @@ define('fusor-ember-cli/routes/subscriptions/management-application', ['exports'
     actions: {
       error: function error(reason, transition) {
         // bubble up this error event:
-        return true;
+        //return true;
+        console.log(reason);
       }
     }
 
   });
+
+});
+define('fusor-ember-cli/routes/subscriptions/management-application/consumer', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].Route.extend({
+
+    model: function model(params) {
+      return this.store.find('management-application', params.management_application_uuid);
+    },
+
+    setupController: function setupController(controller, model) {
+      controller.set('model', model);
+      var sessionPortal = this.modelFor('subscriptions');
+      sessionPortal.set('consumerUUID', model.get('id'));
+      sessionPortal.save();
+      return this.controllerFor('deployment').set('upstream_consumer_uuid', model.get('id'));
+    }
+
+  });
+
+});
+define('fusor-ember-cli/routes/subscriptions/management-application/consumer/entitlements', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].Route.extend({
+
+    beforeModel: function beforeModel() {
+      return this.store.unloadAll('entitlement');
+    },
+
+    model: function model(params) {
+      var uuid = this.modelFor('deployment').get('upstream_consumer_uuid');
+      console.log('uuid is ' + uuid);
+      return this.store.find('entitlement', { uuid: uuid });
+    },
+
+    // setupController: function(controller, model) {
+    //   controller.set('model', model);
+    //   this.controllerFor('subscriptions/management-application').set('showEntitlements', true);
+    // }
+
+    activate: function activate() {
+      this.controllerFor('subscriptions/management-application').set('showManagementApplications', false);
+    },
+
+    deactivate: function deactivate() {
+      this.controllerFor('subscriptions/management-application').set('showManagementApplications', true);
+    } });
+
+});
+define('fusor-ember-cli/routes/subscriptions/management-application/consumer/pools', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].Route.extend({
+
+    model: function model(params) {
+      var uuid = this.modelFor('deployment').get('upstream_consumer_uuid');
+      return this.store.find('pool', { uuid: uuid });
+    },
+
+    activate: function activate() {
+      this.controllerFor('subscriptions/management-application').set('showManagementApplications', false);
+    },
+
+    deactivate: function deactivate() {
+      this.controllerFor('subscriptions/management-application').set('showManagementApplications', true);
+    } });
 
 });
 define('fusor-ember-cli/routes/subscriptions/select-subscriptions', ['exports', 'ember'], function (exports, Ember) {
@@ -5774,33 +6161,36 @@ define('fusor-ember-cli/routes/subscriptions/select-subscriptions', ['exports', 
   exports['default'] = Ember['default'].Route.extend({
 
     model: function model() {
-      // Use UUID from consumer (management application) to get subscriptions
-      // GET /customer_portal/consumers/#{CONSUMER['uuid']}/entitlements
+      return this.modelFor('deployment').get('subscriptions');
+    },
+
+    setupController: function setupController(controller, model) {
+      controller.set('model', model);
+      controller.set('isLoading', true);
       var self = this;
-      var consumerUUID = this.modelFor('subscriptions').get('consumerUUID');
-      var urlEntitlements = '/customer_portal/consumers/' + consumerUUID + '/entitlements';
-      var urlAllPools = '/customer_portal/pools?consumer=' + consumerUUID + '&listall=false';
-      var entitlementsResults = $.getJSON(urlEntitlements);
-      var allPoolsResults = $.getJSON(urlAllPools);
 
-      return Ember['default'].RSVP.Promise.all([entitlementsResults, allPoolsResults]).then(function (results) {
-        console.log(results[0]);
-        console.log(results[1]);
+      var consumerUUID = this.modelFor('deployment').get('upstream_consumer_uuid');
+
+      var entitlements = this.store.find('entitlement', { uuid: consumerUUID });
+      var pools = this.store.find('pool', { uuid: consumerUUID });
+
+      return Ember['default'].RSVP.Promise.all([entitlements, pools]).then(function (results) {
+        var entitlementsResults = results[0];
+        var allPoolsResults = results[1];
         self.modelFor('subscriptions').set('isAuthenticated', true); // in case go to this route from URL
-        results[1].forEach(function (item) {
-
-          item['qtyTotal'] = item.quantity;
-          item['qtyAvailable'] = item.quantity - item.consumed;
-          item['qtyAvailableOfTotal'] = item['qtyAvailable'] + ' of ' + item['qtyTotal'];
-
-          item['qtyAttached'] = 0; //default for loop
-          results[0].forEach(function (entitlementItem) {
-            if (entitlementItem.pool.id === item.id) {
-              item['qtyAttached'] = item['qtyAttached'] + entitlementItem.quantity;
+        allPoolsResults.forEach(function (pool) {
+          pool.set('qtyAttached', 0); //default for loop
+          entitlementsResults.forEach(function (entitlement) {
+            if (entitlement.get('poolId') === pool.get('id')) {
+              // // TODO change to increment function
+              // pool.set('qtyAttached', (pool.get('qtyAttached') + entitlement.get('quantity')));
+              pool.incrementProperty('qtyAttached', entitlement.get('quantity'));
             }
           });
         });
-        return Ember['default'].A(results[1]);
+        controller.set('subscriptionEntitlements', Ember['default'].A(results[0]));
+        controller.set('subscriptionPools', Ember['default'].A(results[1]));
+        return controller.set('isLoading', false);
       }, function () {
         self.modelFor('subscriptions').set('isAuthenticated');
         self.modelFor('subscriptions').save().then(function () {
@@ -5813,13 +6203,54 @@ define('fusor-ember-cli/routes/subscriptions/select-subscriptions', ['exports', 
       });
     },
 
+    deactivate: function deactivate() {},
+
     actions: {
+
+      saveSubscriptions: function saveSubscriptions(redirectPath) {
+        var self = this;
+        var deployment = this.modelFor('deployment');
+        var subscriptionPools = this.controllerFor('subscriptions/select-subscriptions').get('subscriptionPools');
+
+        // remove existing subscriptions
+        deployment.get('subscriptions').then(function (results) {
+          results.forEach(function (sub) {
+            sub.deleteRecord();
+            sub.save();
+          });
+
+          deployment.save().then(function () {
+
+            // add subscriptions to deployment
+            subscriptionPools.forEach(function (pool) {
+              if (pool.get('isSelectedSubscription')) {
+                var sub = self.store.createRecord('subscription', { 'contract_number': pool.get('contractNumber'),
+                  'product_name': pool.get('productName'),
+                  'quantity_attached': pool.get('qtyToAttach'),
+                  'deployment': deployment
+                });
+                sub.save();
+              }
+            });
+
+            if (redirectPath) {
+              return self.transitionTo(redirectPath);
+            }
+          });
+        });
+      },
+
       error: function error(reason) {
         console.log(reason);
         alert(reason.statusText);
-      } }
+      }
+
+    }
 
   });
+
+  // uncommeting causes inFlight issues
+  // return this.send('saveSubscriptions', null);
 
 });
 define('fusor-ember-cli/routes/where-install', ['exports', 'ember'], function (exports, Ember) {
@@ -5852,6 +6283,43 @@ define('fusor-ember-cli/routes/where-install', ['exports', 'ember'], function (e
     } });
 
 });
+define('fusor-ember-cli/serializers/entitlement', ['exports', 'ember-data'], function (exports, DS) {
+
+  'use strict';
+
+  exports['default'] = DS['default'].RESTSerializer.extend({
+
+    // add root node 'entitlements' that customer protal JSON response doesn't return
+    extractArray: function extractArray(store, type, payload) {
+      payload = { entitlements: payload };
+      return this._super(store, type, payload);
+    },
+
+    // remove attribute keys in the json response that aren't in the model management application
+    normalizeHash: {
+      entitlements: function entitlements(hash) {
+        delete hash.consumer;
+        delete hash.certificates;
+        // move attributes within the 'pool' node to main level
+        hash.poolId = hash.pool.id;
+        hash.poolType = hash.pool.type;
+        hash.poolQuantity = hash.pool.quantity;
+        hash.subscriptionId = hash.pool.subscriptionId;
+        hash.activeSubscription = hash.pool.activeSubscription;
+        hash.contractNumber = hash.pool.contractNumber;
+        hash.accountNumber = hash.pool.accountNumber;
+        hash.consumed = hash.pool.consumed;
+        hash.exported = hash.pool.exported;
+        hash.consumed = hash.pool.consumed;
+        hash.productName = hash.pool.productName;
+        delete hash.pool;
+        return hash;
+      }
+    }
+
+  });
+
+});
 define('fusor-ember-cli/serializers/foreman-task', ['exports', 'ember-data'], function (exports, DS) {
 
   'use strict';
@@ -5860,6 +6328,85 @@ define('fusor-ember-cli/serializers/foreman-task', ['exports', 'ember-data'], fu
     attrs: {
       humanized: { embedded: 'always' }
     }
+  });
+
+});
+define('fusor-ember-cli/serializers/management-application', ['exports', 'ember-data'], function (exports, DS) {
+
+  'use strict';
+
+  exports['default'] = DS['default'].RESTSerializer.extend({
+
+    primaryKey: 'uuid',
+
+    // add root node 'management_applications' that customer protal JSON response doesn't return
+    extractArray: function extractArray(store, type, payload) {
+      payload = { management_applications: payload };
+      return this._super(store, type, payload);
+    },
+
+    // remove attribute keys in the json response that aren't in the model management application
+    normalizeHash: {
+      management_applications: function management_applications(hash) {
+        delete hash.releaseVer;
+        delete hash.type;
+        delete hash.owner;
+        delete hash.installedProducts;
+        delete hash.guestIds;
+        delete hash.capabilities;
+        return hash;
+      }
+    }
+
+  });
+
+  // These objects are in the JSON response but removed in the serializer
+  // and not saved in the store
+  //
+  // "releaseVer": {
+  //     "releaseVer": null
+  // },
+  // "type": {
+  //     "id": "9",
+  //     "label": "satellite",
+  //     "manifest": true
+  // },
+  // "owner": {
+  //     "id": "8a85f9814a192108014a1adef5826b38",
+  //     "key": "7473998",
+  //     "displayName": "7473998",
+  //     "href": "/owners/7473998"
+  // },
+  // "installedProducts": [],
+  // "guestIds": [],
+  // "capabilities": [],
+
+});
+define('fusor-ember-cli/serializers/pool', ['exports', 'ember-data'], function (exports, DS) {
+
+  'use strict';
+
+  exports['default'] = DS['default'].RESTSerializer.extend({
+
+    // add root node 'entitlements' that customer protal JSON response doesn't return
+    extractArray: function extractArray(store, type, payload) {
+      payload = { pools: payload };
+      return this._super(store, type, payload);
+    },
+
+    // remove attribute keys in the json response that aren't in the model management application
+    normalizeHash: {
+      management_applications: function management_applications(hash) {
+        delete hash.releaseVer;
+        delete hash.type;
+        delete hash.owner;
+        delete hash.installedProducts;
+        delete hash.guestIds;
+        delete hash.capabilities;
+        return hash;
+      }
+    }
+
   });
 
 });
@@ -14585,7 +15132,7 @@ define('fusor-ember-cli/templates/components/tr-management-app', ['exports'], fu
       build: function build(dom) {
         var el0 = dom.createDocumentFragment();
         var el1 = dom.createElement("td");
-        var el2 = dom.createTextNode("\n    ");
+        var el2 = dom.createTextNode("\n   ");
         dom.appendChild(el1, el2);
         var el2 = dom.createComment("");
         dom.appendChild(el1, el2);
@@ -14620,7 +15167,7 @@ define('fusor-ember-cli/templates/components/tr-management-app', ['exports'], fu
         dom.appendChild(el1, el2);
         var el2 = dom.createComment("");
         dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\n");
+        var el2 = dom.createTextNode("\n\n    pools\n    entitlements\n\n");
         dom.appendChild(el1, el2);
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n");
@@ -14651,10 +15198,10 @@ define('fusor-ember-cli/templates/components/tr-management-app', ['exports'], fu
         var morph1 = dom.createMorphAt(dom.childAt(fragment, [2]),1,1);
         var morph2 = dom.createMorphAt(dom.childAt(fragment, [4]),1,1);
         var morph3 = dom.createMorphAt(dom.childAt(fragment, [6]),1,1);
-        inline(env, morph0, context, "radio-button", [], {"value": get(env, context, "managementApp.uuid"), "groupValue": get(env, context, "consumerUUID"), "changed": "changeManagementApp", "id": get(env, context, "org.id"), "disabled": get(env, context, "disabled")});
+        inline(env, morph0, context, "radio-button", [], {"value": get(env, context, "managementApp.id"), "groupValue": get(env, context, "consumerUUID"), "changed": "changeManagementApp", "id": get(env, context, "org.id"), "disabled": get(env, context, "disabled")});
         content(env, morph1, context, "managementApp.name");
         content(env, morph2, context, "managementApp.entitlementCount");
-        content(env, morph3, context, "managementApp.uuid");
+        content(env, morph3, context, "managementApp.id");
         return fragment;
       }
     };
@@ -16728,6 +17275,102 @@ define('fusor-ember-cli/templates/configure-organization.loading', ['exports'], 
         } else {
           fragment = this.build(dom);
         }
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('fusor-ember-cli/templates/consumer', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      revision: "Ember@1.11.1",
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, content = hooks.content;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+        dom.insertBoundary(fragment, 0);
+        content(env, morph0, context, "outlet");
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('fusor-ember-cli/templates/consumers', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      revision: "Ember@1.11.1",
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, content = hooks.content;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+        dom.insertBoundary(fragment, 0);
+        content(env, morph0, context, "outlet");
         return fragment;
       }
     };
@@ -19198,6 +19841,46 @@ define('fusor-ember-cli/templates/engine/discovered-host', ['exports'], function
         var morph1 = dom.createMorphAt(fragment,2,2,contextualElement);
         block(env, morph0, context, "if", [get(env, context, "isLoadingHosts")], {}, child0, child1);
         inline(env, morph1, context, "cancel-back-next", [], {"backRouteName": "rhev-setup", "disableBack": false, "nextRouteName": get(env, context, "engineNextRouteName"), "disableNext": get(env, context, "controllers.rhev.hasNoEngine"), "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('fusor-ember-cli/templates/entitlements.loading', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      revision: "Ember@1.11.1",
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
         return fragment;
       }
     };
@@ -25674,61 +26357,6 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
       var child5 = (function() {
         var child0 = (function() {
           var child0 = (function() {
-            var child0 = (function() {
-              return {
-                isHTMLBars: true,
-                revision: "Ember@1.11.1",
-                blockParams: 0,
-                cachedFragment: null,
-                hasRendered: false,
-                build: function build(dom) {
-                  var el0 = dom.createDocumentFragment();
-                  var el1 = dom.createTextNode("                ");
-                  dom.appendChild(el0, el1);
-                  var el1 = dom.createComment("");
-                  dom.appendChild(el0, el1);
-                  var el1 = dom.createTextNode("\n                ");
-                  dom.appendChild(el0, el1);
-                  var el1 = dom.createComment("");
-                  dom.appendChild(el0, el1);
-                  var el1 = dom.createTextNode("\n                ");
-                  dom.appendChild(el0, el1);
-                  var el1 = dom.createComment("");
-                  dom.appendChild(el0, el1);
-                  var el1 = dom.createTextNode("\n");
-                  dom.appendChild(el0, el1);
-                  return el0;
-                },
-                render: function render(context, env, contextualElement) {
-                  var dom = env.dom;
-                  var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
-                  dom.detectNamespace(contextualElement);
-                  var fragment;
-                  if (env.useFragmentCache && dom.canClone) {
-                    if (this.cachedFragment === null) {
-                      fragment = this.build(dom);
-                      if (this.hasRendered) {
-                        this.cachedFragment = fragment;
-                      } else {
-                        this.hasRendered = true;
-                      }
-                    }
-                    if (this.cachedFragment) {
-                      fragment = dom.cloneNode(this.cachedFragment, true);
-                    }
-                  } else {
-                    fragment = this.build(dom);
-                  }
-                  var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
-                  var morph1 = dom.createMorphAt(fragment,3,3,contextualElement);
-                  var morph2 = dom.createMorphAt(fragment,5,5,contextualElement);
-                  inline(env, morph0, context, "review-link", [], {"label": "Subscription Name", "routeName": "subscriptions.select-subscriptions", "value": get(env, context, "sub.productName")});
-                  inline(env, morph1, context, "review-link", [], {"label": "Contract Number", "routeName": "subscriptions.select-subscriptions", "value": get(env, context, "sub.contractNumber")});
-                  inline(env, morph2, context, "review-link", [], {"label": "Quantity", "routeName": "subscriptions.select-subscriptions", "value": get(env, context, "sub.qtyToAttach")});
-                  return fragment;
-                }
-              };
-            }());
             return {
               isHTMLBars: true,
               revision: "Ember@1.11.1",
@@ -25737,13 +26365,25 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
               hasRendered: false,
               build: function build(dom) {
                 var el0 = dom.createDocumentFragment();
+                var el1 = dom.createTextNode("              ");
+                dom.appendChild(el0, el1);
                 var el1 = dom.createComment("");
+                dom.appendChild(el0, el1);
+                var el1 = dom.createTextNode("\n              ");
+                dom.appendChild(el0, el1);
+                var el1 = dom.createComment("");
+                dom.appendChild(el0, el1);
+                var el1 = dom.createTextNode("\n              ");
+                dom.appendChild(el0, el1);
+                var el1 = dom.createComment("");
+                dom.appendChild(el0, el1);
+                var el1 = dom.createTextNode("\n");
                 dom.appendChild(el0, el1);
                 return el0;
               },
               render: function render(context, env, contextualElement) {
                 var dom = env.dom;
-                var hooks = env.hooks, get = hooks.get, block = hooks.block;
+                var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
                 dom.detectNamespace(contextualElement);
                 var fragment;
                 if (env.useFragmentCache && dom.canClone) {
@@ -25761,10 +26401,12 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
                 } else {
                   fragment = this.build(dom);
                 }
-                var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
-                dom.insertBoundary(fragment, null);
-                dom.insertBoundary(fragment, 0);
-                block(env, morph0, context, "if", [get(env, context, "sub.isSelectedSubscription")], {}, child0, null);
+                var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
+                var morph1 = dom.createMorphAt(fragment,3,3,contextualElement);
+                var morph2 = dom.createMorphAt(fragment,5,5,contextualElement);
+                inline(env, morph0, context, "review-link", [], {"label": "Subscription Name", "routeName": "subscriptions.select-subscriptions", "value": get(env, context, "sub.product_name")});
+                inline(env, morph1, context, "review-link", [], {"label": "Contract Number", "routeName": "subscriptions.select-subscriptions", "value": get(env, context, "sub.contract_number")});
+                inline(env, morph2, context, "review-link", [], {"label": "Quantity", "routeName": "subscriptions.select-subscriptions", "value": get(env, context, "sub.quantity_attached")});
                 return fragment;
               }
             };
@@ -25861,7 +26503,7 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
               var morph2 = dom.createMorphAt(fragment,5,5,contextualElement);
               inline(env, morph0, context, "review-link", [], {"label": "Subscription Management Application", "routeName": "subscriptions.management-application", "isRequired": true, "value": get(env, context, "controllers.deployment.managementApplicationName")});
               inline(env, morph1, context, "review-link", [], {"label": "Red Hat Access Insights", "routeName": "subscriptions.select-subscriptions", "value": get(env, context, "controllers.subscriptions/select-subscriptions.enableAnalytics")});
-              block(env, morph2, context, "each", [get(env, context, "controllers.subscriptions/select-subscriptions.model")], {"keyword": "sub"}, child0, child1);
+              block(env, morph2, context, "each", [get(env, context, "subscriptions")], {"keyword": "sub"}, child0, child1);
               return fragment;
             }
           };
@@ -30646,7 +31288,15 @@ define('fusor-ember-cli/templates/subscriptions', ['exports'], function (exports
         dom.appendChild(el2, el3);
         var el3 = dom.createComment("");
         dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("  ");
+        var el3 = dom.createTextNode("        ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createComment(" <a>4C. Entitlements</a> ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n        ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createComment(" <a>4C. Pools</a> ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n  ");
         dom.appendChild(el2, el3);
         dom.appendChild(el1, el2);
         var el2 = dom.createTextNode("\n");
@@ -31428,6 +32078,154 @@ define('fusor-ember-cli/templates/subscriptions/management-application', ['expor
 
   exports['default'] = Ember.HTMLBars.template((function() {
     var child0 = (function() {
+      var child0 = (function() {
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("  ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("div");
+            dom.setAttribute(el1,"class","row");
+            var el2 = dom.createTextNode("\n    ");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createElement("div");
+            dom.setAttribute(el2,"class","col-md-9");
+            var el3 = dom.createTextNode("\n      ");
+            dom.appendChild(el2, el3);
+            var el3 = dom.createElement("div");
+            dom.setAttribute(el3,"class","alert alert-success rhci-alert");
+            var el4 = dom.createTextNode("\n          ");
+            dom.appendChild(el3, el4);
+            var el4 = dom.createElement("i");
+            dom.setAttribute(el4,"class","fa fa-2x fa-check-circle-o green-circle");
+            dom.appendChild(el3, el4);
+            var el4 = dom.createTextNode("\n           \n          ");
+            dom.appendChild(el3, el4);
+            var el4 = dom.createComment("");
+            dom.appendChild(el3, el4);
+            var el4 = dom.createTextNode(" added successfully.\n      ");
+            dom.appendChild(el3, el4);
+            dom.appendChild(el2, el3);
+            var el3 = dom.createTextNode("\n    ");
+            dom.appendChild(el2, el3);
+            dom.appendChild(el1, el2);
+            var el2 = dom.createTextNode("\n  ");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, content = hooks.content;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var morph0 = dom.createMorphAt(dom.childAt(fragment, [1, 1, 1]),3,3);
+            content(env, morph0, context, "newSatelliteName");
+            return fragment;
+          }
+        };
+      }());
+      var child1 = (function() {
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("        Register a New Satellite\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            return fragment;
+          }
+        };
+      }());
+      var child2 = (function() {
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("          ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
+            inline(env, morph0, context, "tr-management-app", [], {"managementApp": get(env, context, "managementApp"), "consumerUUID": get(env, context, "sessionPortal.consumerUUID"), "action": "selectManagementApp", "disabled": get(env, context, "controllers.deployment.isStarted")});
+            return fragment;
+          }
+        };
+      }());
       return {
         isHTMLBars: true,
         revision: "Ember@1.11.1",
@@ -31436,122 +32234,113 @@ define('fusor-ember-cli/templates/subscriptions/management-application', ['expor
         hasRendered: false,
         build: function build(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("  ");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createElement("div");
-          dom.setAttribute(el1,"class","row");
-          var el2 = dom.createTextNode("\n    ");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createElement("div");
-          dom.setAttribute(el2,"class","col-md-9");
-          var el3 = dom.createTextNode("\n      ");
-          dom.appendChild(el2, el3);
-          var el3 = dom.createElement("div");
-          dom.setAttribute(el3,"class","alert alert-success rhci-alert");
-          var el4 = dom.createTextNode("\n          ");
-          dom.appendChild(el3, el4);
-          var el4 = dom.createElement("i");
-          dom.setAttribute(el4,"class","fa fa-2x fa-check-circle-o green-circle");
-          dom.appendChild(el3, el4);
-          var el4 = dom.createTextNode("\n           \n          ");
-          dom.appendChild(el3, el4);
-          var el4 = dom.createComment("");
-          dom.appendChild(el3, el4);
-          var el4 = dom.createTextNode(" added successfully.\n      ");
-          dom.appendChild(el3, el4);
-          dom.appendChild(el2, el3);
-          var el3 = dom.createTextNode("\n    ");
-          dom.appendChild(el2, el3);
-          dom.appendChild(el1, el2);
-          var el2 = dom.createTextNode("\n  ");
-          dom.appendChild(el1, el2);
-          dom.appendChild(el0, el1);
           var el1 = dom.createTextNode("\n");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          var hooks = env.hooks, content = hooks.content;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          var morph0 = dom.createMorphAt(dom.childAt(fragment, [1, 1, 1]),3,3);
-          content(env, morph0, context, "newSatelliteName");
-          return fragment;
-        }
-      };
-    }());
-    var child1 = (function() {
-      return {
-        isHTMLBars: true,
-        revision: "Ember@1.11.1",
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("        Register a New Satellite\n");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          return fragment;
-        }
-      };
-    }());
-    var child2 = (function() {
-      return {
-        isHTMLBars: true,
-        revision: "Ember@1.11.1",
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("          ");
           dom.appendChild(el0, el1);
           var el1 = dom.createComment("");
           dom.appendChild(el0, el1);
           var el1 = dom.createTextNode("\n");
           dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          dom.setAttribute(el1,"class","row");
+          var el2 = dom.createTextNode("\n  ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("div");
+          dom.setAttribute(el2,"class","col-md-9");
+          var el3 = dom.createTextNode("\n    ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createElement("div");
+          dom.setAttribute(el3,"class","pull-right");
+          var el4 = dom.createTextNode("\n");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createComment("");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createTextNode("    ");
+          dom.appendChild(el3, el4);
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n  ");
+          dom.appendChild(el2, el3);
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n\n");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("br");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n\n");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          dom.setAttribute(el1,"class","row");
+          var el2 = dom.createTextNode("\n  ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("div");
+          dom.setAttribute(el2,"class","col-md-9");
+          var el3 = dom.createTextNode("\n    ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createElement("table");
+          dom.setAttribute(el3,"class","table table-bordered");
+          var el4 = dom.createTextNode("\n      ");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createElement("thead");
+          var el5 = dom.createTextNode("\n        ");
+          dom.appendChild(el4, el5);
+          var el5 = dom.createElement("th");
+          dom.appendChild(el4, el5);
+          var el5 = dom.createTextNode("\n        ");
+          dom.appendChild(el4, el5);
+          var el5 = dom.createElement("th");
+          var el6 = dom.createTextNode("Name");
+          dom.appendChild(el5, el6);
+          dom.appendChild(el4, el5);
+          var el5 = dom.createTextNode("\n        ");
+          dom.appendChild(el4, el5);
+          var el5 = dom.createElement("th");
+          var el6 = dom.createTextNode("Subscriptions Attached");
+          dom.appendChild(el5, el6);
+          dom.appendChild(el4, el5);
+          var el5 = dom.createTextNode("\n        ");
+          dom.appendChild(el4, el5);
+          var el5 = dom.createElement("th");
+          var el6 = dom.createTextNode("UUID");
+          dom.appendChild(el5, el6);
+          dom.appendChild(el4, el5);
+          var el5 = dom.createTextNode("\n      ");
+          dom.appendChild(el4, el5);
+          dom.appendChild(el3, el4);
+          var el4 = dom.createTextNode("\n      ");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createElement("tbody");
+          var el5 = dom.createTextNode("\n");
+          dom.appendChild(el4, el5);
+          var el5 = dom.createComment("");
+          dom.appendChild(el4, el5);
+          var el5 = dom.createTextNode("      ");
+          dom.appendChild(el4, el5);
+          dom.appendChild(el3, el4);
+          var el4 = dom.createTextNode("\n    ");
+          dom.appendChild(el3, el4);
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n  ");
+          dom.appendChild(el2, el3);
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n\n");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n\n");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n\n");
+          dom.appendChild(el0, el1);
           return el0;
         },
         render: function render(context, env, contextualElement) {
           var dom = env.dom;
-          var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
+          var hooks = env.hooks, get = hooks.get, block = hooks.block, inline = hooks.inline;
           dom.detectNamespace(contextualElement);
           var fragment;
           if (env.useFragmentCache && dom.canClone) {
@@ -31570,7 +32359,15 @@ define('fusor-ember-cli/templates/subscriptions/management-application', ['expor
             fragment = this.build(dom);
           }
           var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
-          inline(env, morph0, context, "tr-management-app", [], {"managementApp": get(env, context, "managementApp"), "consumerUUID": get(env, context, "sessionPortal.consumerUUID"), "action": "selectManagementApp", "disabled": get(env, context, "controllers.deployment.isStarted")});
+          var morph1 = dom.createMorphAt(dom.childAt(fragment, [3, 1, 1]),1,1);
+          var morph2 = dom.createMorphAt(dom.childAt(fragment, [7, 1, 1, 3]),1,1);
+          var morph3 = dom.createMorphAt(fragment,9,9,contextualElement);
+          var morph4 = dom.createMorphAt(fragment,11,11,contextualElement);
+          block(env, morph0, context, "if", [get(env, context, "showAlertMessage")], {}, child0, null);
+          block(env, morph1, context, "em-modal-toggler", [], {"modal-id": "registerNewSatellite", "class": "btn btn-primary", "disabled": get(env, context, "controllers.deployment.isStarted")}, child1, null);
+          block(env, morph2, context, "each", [get(env, context, "model")], {"keyword": "managementApp"}, child2, null);
+          inline(env, morph3, context, "partial", ["new-satellite"], {});
+          inline(env, morph4, context, "cancel-back-next", [], {"backRouteName": "subscriptions.credentials", "disableBack": false, "nextRouteName": "subscriptions.select-subscriptions", "disableNext": get(env, context, "disableNextOnManagementApp"), "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
           return fragment;
         }
       };
@@ -31585,109 +32382,17 @@ define('fusor-ember-cli/templates/subscriptions/management-application', ['expor
         var el0 = dom.createDocumentFragment();
         var el1 = dom.createComment("");
         dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("div");
-        dom.setAttribute(el1,"class","row");
-        var el2 = dom.createTextNode("\n  ");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createElement("div");
-        dom.setAttribute(el2,"class","col-md-9");
-        var el3 = dom.createTextNode("\n    ");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createElement("div");
-        dom.setAttribute(el3,"class","pull-right");
-        var el4 = dom.createTextNode("\n");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createComment("");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("    ");
-        dom.appendChild(el3, el4);
-        dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("\n  ");
-        dom.appendChild(el2, el3);
-        dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\n");
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("br");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("div");
-        dom.setAttribute(el1,"class","row");
-        var el2 = dom.createTextNode("\n  ");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createElement("div");
-        dom.setAttribute(el2,"class","col-md-9");
-        var el3 = dom.createTextNode("\n    ");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createElement("table");
-        dom.setAttribute(el3,"class","table table-bordered");
-        var el4 = dom.createTextNode("\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("thead");
-        var el5 = dom.createTextNode("\n        ");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createElement("th");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("\n        ");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createElement("th");
-        var el6 = dom.createTextNode("Name");
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("\n        ");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createElement("th");
-        var el6 = dom.createTextNode("Subscriptions Attached");
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("\n        ");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createElement("th");
-        var el6 = dom.createTextNode("UUID");
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("\n      ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n      ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("tbody");
-        var el5 = dom.createTextNode("\n");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createComment("");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("      ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n    ");
-        dom.appendChild(el3, el4);
-        dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("\n  ");
-        dom.appendChild(el2, el3);
-        dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\n");
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n\n");
         dom.appendChild(el0, el1);
         var el1 = dom.createComment("");
         dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
+        var el1 = dom.createTextNode("\n\n\n");
         dom.appendChild(el0, el1);
         return el0;
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, get = hooks.get, block = hooks.block, inline = hooks.inline;
+        var hooks = env.hooks, content = hooks.content, get = hooks.get, block = hooks.block;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -31706,16 +32411,10 @@ define('fusor-ember-cli/templates/subscriptions/management-application', ['expor
           fragment = this.build(dom);
         }
         var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
-        var morph1 = dom.createMorphAt(dom.childAt(fragment, [2, 1, 1]),1,1);
-        var morph2 = dom.createMorphAt(dom.childAt(fragment, [6, 1, 1, 3]),1,1);
-        var morph3 = dom.createMorphAt(fragment,8,8,contextualElement);
-        var morph4 = dom.createMorphAt(fragment,10,10,contextualElement);
+        var morph1 = dom.createMorphAt(fragment,2,2,contextualElement);
         dom.insertBoundary(fragment, 0);
-        block(env, morph0, context, "if", [get(env, context, "showAlertMessage")], {}, child0, null);
-        block(env, morph1, context, "em-modal-toggler", [], {"modal-id": "registerNewSatellite", "class": "btn btn-primary", "disabled": get(env, context, "controllers.deployment.isStarted")}, child1, null);
-        block(env, morph2, context, "each", [get(env, context, "model")], {"keyword": "managementApp"}, child2, null);
-        inline(env, morph3, context, "partial", ["new-satellite"], {});
-        inline(env, morph4, context, "cancel-back-next", [], {"backRouteName": "subscriptions.credentials", "disableBack": false, "nextRouteName": "subscriptions.select-subscriptions", "disableNext": get(env, context, "disableNextOnManagementApp"), "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
+        content(env, morph0, context, "outlet");
+        block(env, morph1, context, "if", [get(env, context, "showManagementApplications")], {}, child0, null);
         return fragment;
       }
     };
@@ -31764,7 +32463,647 @@ define('fusor-ember-cli/templates/subscriptions/management-application.loading',
   }()));
 
 });
-define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports'], function (exports) {
+define('fusor-ember-cli/templates/subscriptions/management-application/consumer', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      revision: "Ember@1.11.1",
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, content = hooks.content;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+        dom.insertBoundary(fragment, 0);
+        content(env, morph0, context, "outlet");
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('fusor-ember-cli/templates/subscriptions/management-application/consumer/entitlements', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    var child0 = (function() {
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("p");
+          var el2 = dom.createTextNode("\n        ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode(" - ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode(" - ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode(" - ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode(" - ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n    ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, content = hooks.content;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          var element1 = dom.childAt(fragment, [1]);
+          var morph0 = dom.createMorphAt(element1,1,1);
+          var morph1 = dom.createMorphAt(element1,3,3);
+          var morph2 = dom.createMorphAt(element1,5,5);
+          var morph3 = dom.createMorphAt(element1,7,7);
+          var morph4 = dom.createMorphAt(element1,9,9);
+          content(env, morph0, context, "entitlement.contractNumber");
+          content(env, morph1, context, "entitlement.quantity");
+          content(env, morph2, context, "entitlement.endDate");
+          content(env, morph3, context, "entitlement.consumed");
+          content(env, morph4, context, "entitlement.poolQuantity");
+          return fragment;
+        }
+      };
+    }());
+    var child1 = (function() {
+      var child0 = (function() {
+        var child0 = (function() {
+          return {
+            isHTMLBars: true,
+            revision: "Ember@1.11.1",
+            blockParams: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            build: function build(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("            ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createElement("span");
+              dom.setAttribute(el1,"aria-hidden","true");
+              var el2 = dom.createTextNode("×");
+              dom.appendChild(el1, el2);
+              dom.appendChild(el0, el1);
+              var el1 = dom.createElement("span");
+              dom.setAttribute(el1,"class","sr-only");
+              var el2 = dom.createTextNode("Close");
+              dom.appendChild(el1, el2);
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            render: function render(context, env, contextualElement) {
+              var dom = env.dom;
+              dom.detectNamespace(contextualElement);
+              var fragment;
+              if (env.useFragmentCache && dom.canClone) {
+                if (this.cachedFragment === null) {
+                  fragment = this.build(dom);
+                  if (this.hasRendered) {
+                    this.cachedFragment = fragment;
+                  } else {
+                    this.hasRendered = true;
+                  }
+                }
+                if (this.cachedFragment) {
+                  fragment = dom.cloneNode(this.cachedFragment, true);
+                }
+              } else {
+                fragment = this.build(dom);
+              }
+              return fragment;
+            }
+          };
+        }());
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("h4");
+            dom.setAttribute(el1,"class","modal-title");
+            var el2 = dom.createTextNode("List of Entitlements");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, block = hooks.block;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+            dom.insertBoundary(fragment, 0);
+            block(env, morph0, context, "em-modal-toggler", [], {"class": "close"}, child0, null);
+            return fragment;
+          }
+        };
+      }());
+      var child1 = (function() {
+        var child0 = (function() {
+          var child0 = (function() {
+            return {
+              isHTMLBars: true,
+              revision: "Ember@1.11.1",
+              blockParams: 0,
+              cachedFragment: null,
+              hasRendered: false,
+              build: function build(dom) {
+                var el0 = dom.createDocumentFragment();
+                var el1 = dom.createTextNode("            ");
+                dom.appendChild(el0, el1);
+                var el1 = dom.createElement("p");
+                var el2 = dom.createTextNode("\n                ");
+                dom.appendChild(el1, el2);
+                var el2 = dom.createComment("");
+                dom.appendChild(el1, el2);
+                var el2 = dom.createTextNode(" - ");
+                dom.appendChild(el1, el2);
+                var el2 = dom.createComment("");
+                dom.appendChild(el1, el2);
+                var el2 = dom.createTextNode(" - ");
+                dom.appendChild(el1, el2);
+                var el2 = dom.createComment("");
+                dom.appendChild(el1, el2);
+                var el2 = dom.createTextNode("\n            ");
+                dom.appendChild(el1, el2);
+                dom.appendChild(el0, el1);
+                var el1 = dom.createTextNode("\n");
+                dom.appendChild(el0, el1);
+                return el0;
+              },
+              render: function render(context, env, contextualElement) {
+                var dom = env.dom;
+                var hooks = env.hooks, content = hooks.content;
+                dom.detectNamespace(contextualElement);
+                var fragment;
+                if (env.useFragmentCache && dom.canClone) {
+                  if (this.cachedFragment === null) {
+                    fragment = this.build(dom);
+                    if (this.hasRendered) {
+                      this.cachedFragment = fragment;
+                    } else {
+                      this.hasRendered = true;
+                    }
+                  }
+                  if (this.cachedFragment) {
+                    fragment = dom.cloneNode(this.cachedFragment, true);
+                  }
+                } else {
+                  fragment = this.build(dom);
+                }
+                var element0 = dom.childAt(fragment, [1]);
+                var morph0 = dom.createMorphAt(element0,1,1);
+                var morph1 = dom.createMorphAt(element0,3,3);
+                var morph2 = dom.createMorphAt(element0,5,5);
+                content(env, morph0, context, "entitlement.contractNumber");
+                content(env, morph1, context, "entitlement.quantity");
+                content(env, morph2, context, "entitlement.endDate");
+                return fragment;
+              }
+            };
+          }());
+          return {
+            isHTMLBars: true,
+            revision: "Ember@1.11.1",
+            blockParams: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            build: function build(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("\n        ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createElement("h1");
+              var el2 = dom.createComment("");
+              dom.appendChild(el1, el2);
+              var el2 = dom.createTextNode(" Subscriptions Attached");
+              dom.appendChild(el1, el2);
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n\n");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n\n\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            render: function render(context, env, contextualElement) {
+              var dom = env.dom;
+              var hooks = env.hooks, content = hooks.content, get = hooks.get, block = hooks.block;
+              dom.detectNamespace(contextualElement);
+              var fragment;
+              if (env.useFragmentCache && dom.canClone) {
+                if (this.cachedFragment === null) {
+                  fragment = this.build(dom);
+                  if (this.hasRendered) {
+                    this.cachedFragment = fragment;
+                  } else {
+                    this.hasRendered = true;
+                  }
+                }
+                if (this.cachedFragment) {
+                  fragment = dom.cloneNode(this.cachedFragment, true);
+                }
+              } else {
+                fragment = this.build(dom);
+              }
+              var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),0,0);
+              var morph1 = dom.createMorphAt(fragment,3,3,contextualElement);
+              content(env, morph0, context, "totalQuantity");
+              block(env, morph1, context, "each", [get(env, context, "model")], {"keyword": "entitlement"}, child0, null);
+              return fragment;
+            }
+          };
+        }());
+        var child1 = (function() {
+          return {
+            isHTMLBars: true,
+            revision: "Ember@1.11.1",
+            blockParams: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            build: function build(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("            Loading ...\n\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            render: function render(context, env, contextualElement) {
+              var dom = env.dom;
+              dom.detectNamespace(contextualElement);
+              var fragment;
+              if (env.useFragmentCache && dom.canClone) {
+                if (this.cachedFragment === null) {
+                  fragment = this.build(dom);
+                  if (this.hasRendered) {
+                    this.cachedFragment = fragment;
+                  } else {
+                    this.hasRendered = true;
+                  }
+                }
+                if (this.cachedFragment) {
+                  fragment = dom.cloneNode(this.cachedFragment, true);
+                }
+              } else {
+                fragment = this.build(dom);
+              }
+              return fragment;
+            }
+          };
+        }());
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, get = hooks.get, block = hooks.block;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+            dom.insertBoundary(fragment, 0);
+            block(env, morph0, context, "if", [get(env, context, "model.isLoaded")], {}, child0, child1);
+            return fragment;
+          }
+        };
+      }());
+      var child2 = (function() {
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("          Close\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            return fragment;
+          }
+        };
+      }());
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, block = hooks.block;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
+          var morph1 = dom.createMorphAt(fragment,3,3,contextualElement);
+          var morph2 = dom.createMorphAt(fragment,5,5,contextualElement);
+          block(env, morph0, context, "em-modal-title", [], {}, child0, null);
+          block(env, morph1, context, "em-modal-body", [], {}, child1, null);
+          block(env, morph2, context, "em-modal-footer", [], {}, child2, null);
+          return fragment;
+        }
+      };
+    }());
+    return {
+      isHTMLBars: true,
+      revision: "Ember@1.11.1",
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createElement("h1");
+        var el2 = dom.createTextNode("Entitlements");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("h1");
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode(" Subscriptions Attached");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment(" HOW TO INTERATE AND ONLY SHOW UNIQUE ROWS ");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, content = hooks.content, get = hooks.get, block = hooks.block;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        var morph0 = dom.createMorphAt(fragment,2,2,contextualElement);
+        var morph1 = dom.createMorphAt(dom.childAt(fragment, [4]),0,0);
+        var morph2 = dom.createMorphAt(fragment,6,6,contextualElement);
+        var morph3 = dom.createMorphAt(fragment,10,10,contextualElement);
+        var morph4 = dom.createMorphAt(fragment,12,12,contextualElement);
+        content(env, morph0, context, "upstream_consumer_uuid");
+        content(env, morph1, context, "totalQuantity");
+        block(env, morph2, context, "each", [get(env, context, "model")], {"keyword": "entitlement"}, child0, null);
+        block(env, morph3, context, "em-modal", [], {"configName": "bs", "id": "entitlementsModal"}, child1, null);
+        content(env, morph4, context, "outlet");
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('fusor-ember-cli/templates/subscriptions/management-application/consumer/loading', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      revision: "Ember@1.11.1",
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","spinner spinner-md spinner-inline");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("span");
+        dom.setAttribute(el1,"class","spinner-text");
+        var el2 = dom.createTextNode("\n  Loading from Red Hat Customer Portal ...\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('fusor-ember-cli/templates/subscriptions/management-application/consumer/pools', ['exports'], function (exports) {
 
   'use strict';
 
@@ -31946,6 +33285,12 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
       hasRendered: false,
       build: function build(dom) {
         var el0 = dom.createDocumentFragment();
+        var el1 = dom.createTextNode("length is ");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n\n");
+        dom.appendChild(el0, el1);
         var el1 = dom.createComment("");
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n");
@@ -32079,13 +33424,13 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
         dom.appendChild(el0, el1);
         var el1 = dom.createComment("");
         dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
+        var el1 = dom.createTextNode("\n\n\n");
         dom.appendChild(el0, el1);
         return el0;
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, get = hooks.get, block = hooks.block, content = hooks.content, inline = hooks.inline, attribute = hooks.attribute;
+        var hooks = env.hooks, content = hooks.content, get = hooks.get, block = hooks.block, inline = hooks.inline, attribute = hooks.attribute;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -32103,21 +33448,675 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
         } else {
           fragment = this.build(dom);
         }
-        var element0 = dom.childAt(fragment, [2, 1]);
+        var element0 = dom.childAt(fragment, [5, 1]);
         var element1 = dom.childAt(element0, [5]);
-        var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
-        var morph1 = dom.createMorphAt(dom.childAt(element0, [1, 1]),0,0);
-        var morph2 = dom.createMorphAt(element0,3,3);
+        var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
+        var morph1 = dom.createMorphAt(fragment,3,3,contextualElement);
+        var morph2 = dom.createMorphAt(dom.childAt(element0, [1, 1]),0,0);
+        var morph3 = dom.createMorphAt(element0,3,3);
         var attrMorph0 = dom.createAttrMorph(element1, 'class');
-        var morph3 = dom.createMorphAt(dom.childAt(element0, [11, 3]),1,1);
-        var morph4 = dom.createMorphAt(fragment,4,4,contextualElement);
+        var morph4 = dom.createMorphAt(dom.childAt(element0, [11, 3]),1,1);
+        var morph5 = dom.createMorphAt(fragment,7,7,contextualElement);
+        content(env, morph0, context, "model.length");
+        block(env, morph1, context, "if", [get(env, context, "showErrorMessage")], {}, child0, null);
+        content(env, morph2, context, "controllers.deployment.upstream_consumer_name");
+        inline(env, morph3, context, "input", [], {"type": "checkbox", "name": "enable_access_insights", "disabled": false, "checked": get(env, context, "enable_access_insights")});
+        attribute(env, attrMorph0, element1, "class", get(env, context, "analyticsColor"));
+        block(env, morph4, context, "each", [get(env, context, "model")], {"itemController": "subscription", "keyword": "subscription"}, child1, child2);
+        inline(env, morph5, context, "cancel-back-next", [], {"backRouteName": "subscriptions.management-application", "disableBack": false, "nextRouteName": "review", "disableNext": get(env, context, "disableNextOnSelectSubscriptions"), "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('fusor-ember-cli/templates/subscriptions/management-application/consumer/pools.loading', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      revision: "Ember@1.11.1",
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createTextNode("ppools.loading.hbs");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('fusor-ember-cli/templates/subscriptions/management-application/consumer/pools/loading', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      revision: "Ember@1.11.1",
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createTextNode("loading poooooooools");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    var child0 = (function() {
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          dom.setAttribute(el1,"class","row");
+          var el2 = dom.createTextNode("\n    ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("div");
+          dom.setAttribute(el2,"class","col-md-9");
+          var el3 = dom.createTextNode("\n      ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createElement("div");
+          dom.setAttribute(el3,"class","alert alert-danger rhci-alert");
+          var el4 = dom.createTextNode("\n          ");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createElement("i");
+          dom.setAttribute(el4,"class","fa fa-2x fa-exclamation-triangle errorForValidation");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createTextNode("\n           \n          Quantity should be greater than zero and should not exceed the number of available subscriptions for this product.\n      ");
+          dom.appendChild(el3, el4);
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n    ");
+          dom.appendChild(el2, el3);
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n  ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          return fragment;
+        }
+      };
+    }());
+    var child1 = (function() {
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("      ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          dom.setAttribute(el1,"class","spinner spinner-md spinner-inline");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n      ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("span");
+          dom.setAttribute(el1,"class","spinner-text");
+          var el2 = dom.createTextNode("\n        Loading from Red Hat Customer Portal ...\n      ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          return fragment;
+        }
+      };
+    }());
+    var child2 = (function() {
+      var child0 = (function() {
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
+            inline(env, morph0, context, "tr-subscription", [], {"subscription": get(env, context, "subscription"), "numSubscriptionsRequired": get(env, context, "numSubscriptionsRequired"), "model": get(env, context, "model")});
+            return fragment;
+          }
+        };
+      }());
+      var child1 = (function() {
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("tr");
+            var el2 = dom.createTextNode("\n          ");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createElement("td");
+            dom.setAttribute(el2,"colspan","8");
+            var el3 = dom.createTextNode("\n            ");
+            dom.appendChild(el2, el3);
+            var el3 = dom.createElement("p");
+            dom.setAttribute(el3,"class","no_subscriptions");
+            var el4 = dom.createTextNode("\n              No subscriptions found. Check your account in in the ");
+            dom.appendChild(el3, el4);
+            var el4 = dom.createElement("a");
+            dom.setAttribute(el4,"href","https://idp.redhat.com/idp/");
+            dom.setAttribute(el4,"target","_blank");
+            var el5 = dom.createTextNode("Red Hat Customer Portal");
+            dom.appendChild(el4, el5);
+            dom.appendChild(el3, el4);
+            var el4 = dom.createTextNode(" to verify you have subscriptions available.\n            ");
+            dom.appendChild(el3, el4);
+            dom.appendChild(el2, el3);
+            var el3 = dom.createTextNode("\n          ");
+            dom.appendChild(el2, el3);
+            dom.appendChild(el1, el2);
+            var el2 = dom.createTextNode("\n        ");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            return fragment;
+          }
+        };
+      }());
+      var child2 = (function() {
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("   ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode(" - ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode(" - ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode(" - ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n   ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("br");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, content = hooks.content;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
+            var morph1 = dom.createMorphAt(fragment,3,3,contextualElement);
+            var morph2 = dom.createMorphAt(fragment,5,5,contextualElement);
+            var morph3 = dom.createMorphAt(fragment,7,7,contextualElement);
+            content(env, morph0, context, "sub.id");
+            content(env, morph1, context, "sub.contract_number");
+            content(env, morph2, context, "sub.product_name");
+            content(env, morph3, context, "sub.quantity_attached");
+            return fragment;
+          }
+        };
+      }());
+      var child3 = (function() {
+        return {
+          isHTMLBars: true,
+          revision: "Ember@1.11.1",
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("  ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("button");
+            dom.setAttribute(el1,"class","btn btn-primary");
+            var el2 = dom.createTextNode("Next");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, element = hooks.element;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var element0 = dom.childAt(fragment, [1]);
+            element(env, element0, context, "action", ["saveSubscriptions", "review"], {});
+            return fragment;
+          }
+        };
+      }());
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createElement("div");
+          dom.setAttribute(el1,"class","row");
+          var el2 = dom.createTextNode("\n  ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("div");
+          dom.setAttribute(el2,"class","col-md-9");
+          var el3 = dom.createTextNode("\n\n    ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createElement("p");
+          var el4 = dom.createTextNode("\n    If you need to attach more subscriptions to ");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createElement("strong");
+          var el5 = dom.createComment("");
+          dom.appendChild(el4, el5);
+          dom.appendChild(el3, el4);
+          var el4 = dom.createTextNode(" for the components of your RHCI deployment, please do so before proceeding.\n    ");
+          dom.appendChild(el3, el4);
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n\n    ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createComment("");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n    ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createElement("span");
+          var el4 = dom.createTextNode("\n      Enable Red Hat Access Insights for this deployment\n    ");
+          dom.appendChild(el3, el4);
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n    ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createElement("br");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n    ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createElement("br");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n\n\n    ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createElement("table");
+          dom.setAttribute(el3,"class","table table-bordered small");
+          var el4 = dom.createTextNode("\n      ");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createElement("thead");
+          var el5 = dom.createTextNode("\n        ");
+          dom.appendChild(el4, el5);
+          var el5 = dom.createElement("tr");
+          var el6 = dom.createTextNode("\n          ");
+          dom.appendChild(el5, el6);
+          var el6 = dom.createElement("th");
+          var el7 = dom.createTextNode(" ");
+          dom.appendChild(el6, el7);
+          dom.appendChild(el5, el6);
+          var el6 = dom.createTextNode("\n          ");
+          dom.appendChild(el5, el6);
+          var el6 = dom.createElement("th");
+          var el7 = dom.createTextNode(" Subscription Name ");
+          dom.appendChild(el6, el7);
+          dom.appendChild(el5, el6);
+          var el6 = dom.createTextNode("\n          ");
+          dom.appendChild(el5, el6);
+          var el6 = dom.createElement("th");
+          var el7 = dom.createTextNode(" Contract Number ");
+          dom.appendChild(el6, el7);
+          dom.appendChild(el5, el6);
+          var el6 = dom.createTextNode("\n          ");
+          dom.appendChild(el5, el6);
+          var el6 = dom.createElement("th");
+          var el7 = dom.createTextNode(" System Type ");
+          dom.appendChild(el6, el7);
+          dom.appendChild(el5, el6);
+          var el6 = dom.createTextNode("\n          ");
+          dom.appendChild(el5, el6);
+          var el6 = dom.createElement("th");
+          var el7 = dom.createTextNode(" Start Date ");
+          dom.appendChild(el6, el7);
+          dom.appendChild(el5, el6);
+          var el6 = dom.createTextNode("\n          ");
+          dom.appendChild(el5, el6);
+          var el6 = dom.createElement("th");
+          var el7 = dom.createTextNode(" End Date ");
+          dom.appendChild(el6, el7);
+          dom.appendChild(el5, el6);
+          var el6 = dom.createTextNode("\n          ");
+          dom.appendChild(el5, el6);
+          var el6 = dom.createElement("th");
+          var el7 = dom.createTextNode(" Attached ");
+          dom.appendChild(el6, el7);
+          dom.appendChild(el5, el6);
+          var el6 = dom.createTextNode("\n          ");
+          dom.appendChild(el5, el6);
+          var el6 = dom.createElement("th");
+          var el7 = dom.createTextNode(" Available ");
+          dom.appendChild(el6, el7);
+          dom.appendChild(el5, el6);
+          var el6 = dom.createTextNode("\n          ");
+          dom.appendChild(el5, el6);
+          var el6 = dom.createElement("th");
+          var el7 = dom.createTextNode(" Quantity ");
+          dom.appendChild(el6, el7);
+          dom.appendChild(el5, el6);
+          var el6 = dom.createTextNode("\n        ");
+          dom.appendChild(el5, el6);
+          dom.appendChild(el4, el5);
+          var el5 = dom.createTextNode("\n        ");
+          dom.appendChild(el4, el5);
+          dom.appendChild(el3, el4);
+          var el4 = dom.createTextNode("\n\n      ");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createElement("tbody");
+          var el5 = dom.createTextNode("\n");
+          dom.appendChild(el4, el5);
+          var el5 = dom.createComment("");
+          dom.appendChild(el4, el5);
+          var el5 = dom.createTextNode("      ");
+          dom.appendChild(el4, el5);
+          dom.appendChild(el3, el4);
+          var el4 = dom.createTextNode("\n    ");
+          dom.appendChild(el3, el4);
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n  ");
+          dom.appendChild(el2, el3);
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n\n");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment(" debugging only ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, content = hooks.content, get = hooks.get, inline = hooks.inline, attribute = hooks.attribute, block = hooks.block;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          var element1 = dom.childAt(fragment, [0, 1]);
+          var element2 = dom.childAt(element1, [5]);
+          var morph0 = dom.createMorphAt(dom.childAt(element1, [1, 1]),0,0);
+          var morph1 = dom.createMorphAt(element1,3,3);
+          var attrMorph0 = dom.createAttrMorph(element2, 'class');
+          var morph2 = dom.createMorphAt(dom.childAt(element1, [11, 3]),1,1);
+          var morph3 = dom.createMorphAt(fragment,4,4,contextualElement);
+          var morph4 = dom.createMorphAt(fragment,6,6,contextualElement);
+          content(env, morph0, context, "controllers.deployment.upstream_consumer_name");
+          inline(env, morph1, context, "input", [], {"type": "checkbox", "name": "enable_access_insights", "disabled": false, "checked": get(env, context, "enable_access_insights")});
+          attribute(env, attrMorph0, element2, "class", get(env, context, "analyticsColor"));
+          block(env, morph2, context, "each", [get(env, context, "subscriptionPools")], {"itemController": "subscription", "keyword": "subscription"}, child0, child1);
+          block(env, morph3, context, "each", [get(env, context, "model")], {"keyword": "sub"}, child2, null);
+          block(env, morph4, context, "cancel-back-next", [], {"backRouteName": "subscriptions.management-application", "disableBack": false, "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")}, child3, null);
+          return fragment;
+        }
+      };
+    }());
+    return {
+      isHTMLBars: true,
+      revision: "Ember@1.11.1",
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, get = hooks.get, block = hooks.block;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+        var morph1 = dom.createMorphAt(fragment,2,2,contextualElement);
+        dom.insertBoundary(fragment, null);
         dom.insertBoundary(fragment, 0);
         block(env, morph0, context, "if", [get(env, context, "showErrorMessage")], {}, child0, null);
-        content(env, morph1, context, "controllers.deployment.upstream_consumer_name");
-        inline(env, morph2, context, "input", [], {"type": "checkbox", "name": "enable_access_insights", "disabled": false, "checked": get(env, context, "enable_access_insights")});
-        attribute(env, attrMorph0, element1, "class", get(env, context, "analyticsColor"));
-        block(env, morph3, context, "each", [get(env, context, "model")], {"itemController": "subscription", "keyword": "subscription"}, child1, child2);
-        inline(env, morph4, context, "cancel-back-next", [], {"backRouteName": "subscriptions.management-application", "disableBack": false, "nextRouteName": "review", "disableNext": get(env, context, "disableNextOnSelectSubscriptions"), "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
+        block(env, morph1, context, "if", [get(env, context, "isLoading")], {}, child1, child2);
         return fragment;
       }
     };
@@ -32670,6 +34669,16 @@ define('fusor-ember-cli/tests/adapters/deployment.jshint', function () {
   });
 
 });
+define('fusor-ember-cli/tests/adapters/entitlement.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - adapters');
+  test('adapters/entitlement.js should pass jshint', function() { 
+    ok(true, 'adapters/entitlement.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/adapters/foreman-task.jshint', function () {
 
   'use strict';
@@ -32680,6 +34689,26 @@ define('fusor-ember-cli/tests/adapters/foreman-task.jshint', function () {
   });
 
 });
+define('fusor-ember-cli/tests/adapters/management-application.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - adapters');
+  test('adapters/management-application.js should pass jshint', function() { 
+    ok(true, 'adapters/management-application.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/adapters/pool.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - adapters');
+  test('adapters/pool.js should pass jshint', function() { 
+    ok(true, 'adapters/pool.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/adapters/session-portal.jshint', function () {
 
   'use strict';
@@ -32687,6 +34716,16 @@ define('fusor-ember-cli/tests/adapters/session-portal.jshint', function () {
   module('JSHint - adapters');
   test('adapters/session-portal.js should pass jshint', function() { 
     ok(true, 'adapters/session-portal.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/adapters/subscription.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - adapters');
+  test('adapters/subscription.js should pass jshint', function() { 
+    ok(true, 'adapters/subscription.js should pass jshint.'); 
   });
 
 });
@@ -33180,6 +35219,16 @@ define('fusor-ember-cli/tests/controllers/engine/discovered-host.jshint', functi
   });
 
 });
+define('fusor-ember-cli/tests/controllers/entitlements.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - controllers');
+  test('controllers/entitlements.js should pass jshint', function() { 
+    ok(true, 'controllers/entitlements.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/controllers/host.jshint', function () {
 
   'use strict';
@@ -33520,6 +35569,36 @@ define('fusor-ember-cli/tests/controllers/subscriptions/management-application.j
   });
 
 });
+define('fusor-ember-cli/tests/controllers/subscriptions/management-application/consumer.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - controllers/subscriptions/management-application');
+  test('controllers/subscriptions/management-application/consumer.js should pass jshint', function() { 
+    ok(true, 'controllers/subscriptions/management-application/consumer.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/controllers/subscriptions/management-application/consumer/entitlements.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - controllers/subscriptions/management-application/consumer');
+  test('controllers/subscriptions/management-application/consumer/entitlements.js should pass jshint', function() { 
+    ok(true, 'controllers/subscriptions/management-application/consumer/entitlements.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/controllers/subscriptions/management-application/consumer/pools.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - controllers/subscriptions/management-application/consumer');
+  test('controllers/subscriptions/management-application/consumer/pools.js should pass jshint', function() { 
+    ok(true, 'controllers/subscriptions/management-application/consumer/pools.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/controllers/subscriptions/select-subscriptions.jshint', function () {
 
   'use strict';
@@ -33717,6 +35796,16 @@ define('fusor-ember-cli/tests/mixins/start-controller-mixin.jshint', function ()
   });
 
 });
+define('fusor-ember-cli/tests/models/consumer.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - models');
+  test('models/consumer.js should pass jshint', function() { 
+    ok(true, 'models/consumer.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/models/deployment.jshint', function () {
 
   'use strict';
@@ -33734,6 +35823,16 @@ define('fusor-ember-cli/tests/models/discovered-host.jshint', function () {
   module('JSHint - models');
   test('models/discovered-host.js should pass jshint', function() { 
     ok(true, 'models/discovered-host.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/models/entitlement.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - models');
+  test('models/entitlement.js should pass jshint', function() { 
+    ok(true, 'models/entitlement.js should pass jshint.'); 
   });
 
 });
@@ -33804,6 +35903,16 @@ define('fusor-ember-cli/tests/models/organization.jshint', function () {
   module('JSHint - models');
   test('models/organization.js should pass jshint', function() { 
     ok(true, 'models/organization.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/models/pool.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - models');
+  test('models/pool.js should pass jshint', function() { 
+    ok(true, 'models/pool.js should pass jshint.'); 
   });
 
 });
@@ -33934,6 +36043,26 @@ define('fusor-ember-cli/tests/routes/configure-organization.jshint', function ()
   module('JSHint - routes');
   test('routes/configure-organization.js should pass jshint', function() { 
     ok(true, 'routes/configure-organization.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/routes/consumer.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - routes');
+  test('routes/consumer.js should pass jshint', function() { 
+    ok(true, 'routes/consumer.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/routes/consumers.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - routes');
+  test('routes/consumers.js should pass jshint', function() { 
+    ok(true, 'routes/consumers.js should pass jshint.'); 
   });
 
 });
@@ -34407,6 +36536,36 @@ define('fusor-ember-cli/tests/routes/subscriptions/management-application.jshint
   });
 
 });
+define('fusor-ember-cli/tests/routes/subscriptions/management-application/consumer.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - routes/subscriptions/management-application');
+  test('routes/subscriptions/management-application/consumer.js should pass jshint', function() { 
+    ok(true, 'routes/subscriptions/management-application/consumer.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/routes/subscriptions/management-application/consumer/entitlements.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - routes/subscriptions/management-application/consumer');
+  test('routes/subscriptions/management-application/consumer/entitlements.js should pass jshint', function() { 
+    ok(true, 'routes/subscriptions/management-application/consumer/entitlements.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/routes/subscriptions/management-application/consumer/pools.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - routes/subscriptions/management-application/consumer');
+  test('routes/subscriptions/management-application/consumer/pools.js should pass jshint', function() { 
+    ok(true, 'routes/subscriptions/management-application/consumer/pools.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/routes/subscriptions/select-subscriptions.jshint', function () {
 
   'use strict';
@@ -34427,6 +36586,16 @@ define('fusor-ember-cli/tests/routes/where-install.jshint', function () {
   });
 
 });
+define('fusor-ember-cli/tests/serializers/entitlement.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - serializers');
+  test('serializers/entitlement.js should pass jshint', function() { 
+    ok(true, 'serializers/entitlement.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/serializers/foreman-task.jshint', function () {
 
   'use strict';
@@ -34434,6 +36603,26 @@ define('fusor-ember-cli/tests/serializers/foreman-task.jshint', function () {
   module('JSHint - serializers');
   test('serializers/foreman-task.js should pass jshint', function() { 
     ok(true, 'serializers/foreman-task.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/serializers/management-application.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - serializers');
+  test('serializers/management-application.js should pass jshint', function() { 
+    ok(true, 'serializers/management-application.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/serializers/pool.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - serializers');
+  test('serializers/pool.js should pass jshint', function() { 
+    ok(true, 'serializers/pool.js should pass jshint.'); 
   });
 
 });
@@ -34506,6 +36695,32 @@ define('fusor-ember-cli/tests/unit/adapters/deployment-test.jshint', function ()
   });
 
 });
+define('fusor-ember-cli/tests/unit/adapters/entitlement-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('adapter:entitlement', 'Unit | Adapter | entitlement', {});
+
+  // Replace this with your real tests.
+  ember_qunit.test('it exists', function (assert) {
+    var adapter = this.subject();
+    assert.ok(adapter);
+  });
+
+  // Specify the other units that are required for this test.
+  // needs: ['serializer:foo']
+
+});
+define('fusor-ember-cli/tests/unit/adapters/entitlement-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/adapters');
+  test('unit/adapters/entitlement-test.js should pass jshint', function() { 
+    ok(true, 'unit/adapters/entitlement-test.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/adapters/foreman-task-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -34529,6 +36744,58 @@ define('fusor-ember-cli/tests/unit/adapters/foreman-task-test.jshint', function 
   module('JSHint - unit/adapters');
   test('unit/adapters/foreman-task-test.js should pass jshint', function() { 
     ok(true, 'unit/adapters/foreman-task-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/adapters/management-application-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('adapter:management-application', 'Unit | Adapter | management application', {});
+
+  // Replace this with your real tests.
+  ember_qunit.test('it exists', function (assert) {
+    var adapter = this.subject();
+    assert.ok(adapter);
+  });
+
+  // Specify the other units that are required for this test.
+  // needs: ['serializer:foo']
+
+});
+define('fusor-ember-cli/tests/unit/adapters/management-application-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/adapters');
+  test('unit/adapters/management-application-test.js should pass jshint', function() { 
+    ok(true, 'unit/adapters/management-application-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/adapters/pool-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('adapter:pool', 'Unit | Adapter | pool', {});
+
+  // Replace this with your real tests.
+  ember_qunit.test('it exists', function (assert) {
+    var adapter = this.subject();
+    assert.ok(adapter);
+  });
+
+  // Specify the other units that are required for this test.
+  // needs: ['serializer:foo']
+
+});
+define('fusor-ember-cli/tests/unit/adapters/pool-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/adapters');
+  test('unit/adapters/pool-test.js should pass jshint', function() { 
+    ok(true, 'unit/adapters/pool-test.js should pass jshint.'); 
   });
 
 });
@@ -35542,6 +37809,110 @@ define('fusor-ember-cli/tests/unit/controllers/application-test.jshint', functio
   });
 
 });
+define('fusor-ember-cli/tests/unit/controllers/entitlements-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('controller:entitlements', {});
+
+  // Replace this with your real tests.
+  ember_qunit.test('it exists', function (assert) {
+    var controller = this.subject();
+    assert.ok(controller);
+  });
+
+  // Specify the other units that are required for this test.
+  // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/controllers/entitlements-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers');
+  test('unit/controllers/entitlements-test.js should pass jshint', function() { 
+    ok(true, 'unit/controllers/entitlements-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/controllers/subscriptions/management-application/consumer-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('controller:subscriptions/management-application/consumer', {
+    // Specify the other units that are required for this test.
+    needs: ['controller:deployment']
+  });
+
+  // Replace this with your real tests.
+  ember_qunit.test('it exists', function (assert) {
+    var controller = this.subject();
+    assert.ok(controller);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/controllers/subscriptions/management-application/consumer-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/subscriptions/management-application');
+  test('unit/controllers/subscriptions/management-application/consumer-test.js should pass jshint', function() { 
+    ok(true, 'unit/controllers/subscriptions/management-application/consumer-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/controllers/subscriptions/management-application/consumer/entitlements-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('controller:subscriptions/management-application/consumer/entitlements', {
+    // Specify the other units that are required for this test.
+    needs: ['controller:deployment']
+  });
+
+  // Replace this with your real tests.
+  ember_qunit.test('it exists', function (assert) {
+    var controller = this.subject();
+    assert.ok(controller);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/controllers/subscriptions/management-application/consumer/entitlements-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/subscriptions/management-application/consumer');
+  test('unit/controllers/subscriptions/management-application/consumer/entitlements-test.js should pass jshint', function() { 
+    ok(true, 'unit/controllers/subscriptions/management-application/consumer/entitlements-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/controllers/subscriptions/management-application/consumer/pools-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('controller:subscriptions/management-application/consumer/pools', {
+    // Specify the other units that are required for this test.
+    needs: ['controller:deployment', 'controller:application']
+  });
+
+  // Replace this with your real tests.
+  ember_qunit.test('it exists', function (assert) {
+    var controller = this.subject();
+    assert.ok(controller);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/controllers/subscriptions/management-application/consumer/pools-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/controllers/subscriptions/management-application/consumer');
+  test('unit/controllers/subscriptions/management-application/consumer/pools-test.js should pass jshint', function() { 
+    ok(true, 'unit/controllers/subscriptions/management-application/consumer/pools-test.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/mixins/configure-environment-mixin-test', ['ember', 'fusor-ember-cli/mixins/configure-environment-mixin', 'qunit'], function (Ember, ConfigureEnvironmentMixinMixin, qunit) {
 
   'use strict';
@@ -35830,13 +38201,39 @@ define('fusor-ember-cli/tests/unit/mixins/start-controller-mixin-test.jshint', f
   });
 
 });
+define('fusor-ember-cli/tests/unit/models/consumer-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForModel('consumer', 'Unit | Model | consumer', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  ember_qunit.test('it exists', function (assert) {
+    var model = this.subject();
+    // var store = this.store();
+    assert.ok(!!model);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/models/consumer-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/consumer-test.js should pass jshint', function() { 
+    ok(true, 'unit/models/consumer-test.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/models/deployment-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
 
   ember_qunit.moduleForModel('deployment', 'Unit | Model | deployment', {
     // Specify the other units that are required for this test.
-    needs: ['model:organization', 'model:lifecycle-environment', 'model:discovered-host']
+    needs: ['model:organization', 'model:lifecycle-environment', 'model:discovered-host', 'model:subscription']
   });
 
   ember_qunit.test('it exists', function (assert) {
@@ -35862,7 +38259,7 @@ define('fusor-ember-cli/tests/unit/models/discovered-host-test', ['ember-qunit']
 
   ember_qunit.moduleForModel('discovered-host', 'Unit | Model | discovered host', {
     // Specify the other units that are required for this test.
-    needs: ['model:deployment', 'model:organization', 'model:lifecycle-environment']
+    needs: ['model:deployment', 'model:organization', 'model:lifecycle-environment', 'model:subscription']
   });
 
   ember_qunit.test('it exists', function (assert) {
@@ -35879,6 +38276,32 @@ define('fusor-ember-cli/tests/unit/models/discovered-host-test.jshint', function
   module('JSHint - unit/models');
   test('unit/models/discovered-host-test.js should pass jshint', function() { 
     ok(true, 'unit/models/discovered-host-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/models/entitlement-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForModel('entitlement', 'Unit | Model | entitlement', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  ember_qunit.test('it exists', function (assert) {
+    var model = this.subject();
+    // var store = this.store();
+    assert.ok(!!model);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/models/entitlement-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/entitlement-test.js should pass jshint', function() { 
+    ok(true, 'unit/models/entitlement-test.js should pass jshint.'); 
   });
 
 });
@@ -36064,6 +38487,32 @@ define('fusor-ember-cli/tests/unit/models/organization-test.jshint', function ()
   });
 
 });
+define('fusor-ember-cli/tests/unit/models/pool-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForModel('pool', 'Unit | Model | pool', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  ember_qunit.test('it exists', function (assert) {
+    var model = this.subject();
+    // var store = this.store();
+    assert.ok(!!model);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/models/pool-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/pool-test.js should pass jshint', function() { 
+    ok(true, 'unit/models/pool-test.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/models/product-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -36148,7 +38597,7 @@ define('fusor-ember-cli/tests/unit/models/subscription-test', ['ember-qunit'], f
 
   ember_qunit.moduleForModel('subscription', 'Unit | Model | subscription', {
     // Specify the other units that are required for this test.
-    needs: []
+    needs: ['model:deployment', 'model:organization', 'model:lifecycle-environment', 'model:discovered-host']
   });
 
   ember_qunit.test('it exists', function (assert) {
@@ -36366,6 +38815,56 @@ define('fusor-ember-cli/tests/unit/routes/configure-organization-test.jshint', f
   module('JSHint - unit/routes');
   test('unit/routes/configure-organization-test.js should pass jshint', function() { 
     ok(true, 'unit/routes/configure-organization-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/routes/consumer-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('route:consumer', 'Unit | Route | consumer', {});
+
+  ember_qunit.test('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+
+  // Specify the other units that are required for this test.
+  // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/consumer-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/consumer-test.js should pass jshint', function() { 
+    ok(true, 'unit/routes/consumer-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/routes/consumers-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('route:consumers', 'Unit | Route | consumers', {});
+
+  ember_qunit.test('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+
+  // Specify the other units that are required for this test.
+  // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/consumers-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes');
+  test('unit/routes/consumers-test.js should pass jshint', function() { 
+    ok(true, 'unit/routes/consumers-test.js should pass jshint.'); 
   });
 
 });
@@ -37544,6 +40043,81 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/management-application-t
   });
 
 });
+define('fusor-ember-cli/tests/unit/routes/subscriptions/management-application/consumer-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('route:subscriptions/management-application/consumer', 'Unit | Route | subscriptions/management application/consumer', {});
+
+  ember_qunit.test('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+
+  // Specify the other units that are required for this test.
+  // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/subscriptions/management-application/consumer-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/subscriptions/management-application');
+  test('unit/routes/subscriptions/management-application/consumer-test.js should pass jshint', function() { 
+    ok(true, 'unit/routes/subscriptions/management-application/consumer-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/routes/subscriptions/management-application/consumer/entitlements-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('route:subscriptions/management-application/consumer/entitlements', 'Unit | Route | subscriptions/management application/consumer/entitlements', {});
+
+  ember_qunit.test('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+
+  // Specify the other units that are required for this test.
+  // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/subscriptions/management-application/consumer/entitlements-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/subscriptions/management-application/consumer');
+  test('unit/routes/subscriptions/management-application/consumer/entitlements-test.js should pass jshint', function() { 
+    ok(true, 'unit/routes/subscriptions/management-application/consumer/entitlements-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/routes/subscriptions/management-application/consumer/pools-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('route:subscriptions/management-application/consumer/pools', 'Unit | Route | subscriptions/management application/consumer/pools', {});
+
+  ember_qunit.test('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+
+  // Specify the other units that are required for this test.
+  // needs: ['controller:foo']
+
+});
+define('fusor-ember-cli/tests/unit/routes/subscriptions/management-application/consumer/pools-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/routes/subscriptions/management-application/consumer');
+  test('unit/routes/subscriptions/management-application/consumer/pools-test.js should pass jshint', function() { 
+    ok(true, 'unit/routes/subscriptions/management-application/consumer/pools-test.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/subscriptions/select-subscriptions-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -37594,6 +40168,35 @@ define('fusor-ember-cli/tests/unit/routes/where-install-test.jshint', function (
   });
 
 });
+define('fusor-ember-cli/tests/unit/serializers/entitlement-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForModel('entitlement', 'Unit | Serializer | entitlement', {
+    // Specify the other units that are required for this test.
+    needs: ['serializer:entitlement']
+  });
+
+  // Replace this with your real tests.
+  ember_qunit.test('it serializes records', function (assert) {
+    var record = this.subject();
+
+    var serializedRecord = record.serialize();
+
+    assert.ok(serializedRecord);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/serializers/entitlement-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/serializers');
+  test('unit/serializers/entitlement-test.js should pass jshint', function() { 
+    ok(true, 'unit/serializers/entitlement-test.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/serializers/foreman-task-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -37623,6 +40226,64 @@ define('fusor-ember-cli/tests/unit/serializers/foreman-task-test.jshint', functi
   });
 
 });
+define('fusor-ember-cli/tests/unit/serializers/management-application-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForModel('management-application', 'Unit | Serializer | management application', {
+    // Specify the other units that are required for this test.
+    needs: ['serializer:management-application']
+  });
+
+  // Replace this with your real tests.
+  ember_qunit.test('it serializes records', function (assert) {
+    var record = this.subject();
+
+    var serializedRecord = record.serialize();
+
+    assert.ok(serializedRecord);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/serializers/management-application-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/serializers');
+  test('unit/serializers/management-application-test.js should pass jshint', function() { 
+    ok(true, 'unit/serializers/management-application-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/serializers/pool-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForModel('pool', 'Unit | Serializer | pool', {
+    // Specify the other units that are required for this test.
+    needs: ['serializer:pool']
+  });
+
+  // Replace this with your real tests.
+  ember_qunit.test('it serializes records', function (assert) {
+    var record = this.subject();
+
+    var serializedRecord = record.serialize();
+
+    assert.ok(serializedRecord);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/serializers/pool-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/serializers');
+  test('unit/serializers/pool-test.js should pass jshint', function() { 
+    ok(true, 'unit/serializers/pool-test.js should pass jshint.'); 
+  });
+
+});
 /* jshint ignore:start */
 
 /* jshint ignore:end */
@@ -37630,13 +40291,13 @@ define('fusor-ember-cli/tests/unit/serializers/foreman-task-test.jshint', functi
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.a19e25f9"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.0e5cee7f"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.a19e25f9"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.0e5cee7f"});
 }
 
 /* jshint ignore:end */
