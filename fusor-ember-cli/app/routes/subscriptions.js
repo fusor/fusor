@@ -20,7 +20,7 @@ export default Ember.Route.extend({
   },
 
   actions: {
-    error: function(reason, transition) {
+    error: function(reason) {
       console.log(reason);
       alert(reason.statusText);
     }

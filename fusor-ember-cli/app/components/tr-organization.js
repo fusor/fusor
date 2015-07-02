@@ -7,7 +7,7 @@ export default Ember.Component.extend({
   classNameBindings: ['bgColor'],
 
   isChecked: function () {
-    return (this.get('selectedOrganization') == this.get('org'));
+    return (this.get('selectedOrganization') === this.get('org'));
   }.property('selectedOrganization', 'org'),
 
   bgColor: function () {
@@ -17,7 +17,7 @@ export default Ember.Component.extend({
   }.property('isChecked'),
 
   actions: {
-    organizationChanged: function(event) {
+    organizationChanged: function() {
       this.sendAction('action', this.get('org'));
     }
   }

@@ -18,7 +18,7 @@ export default Ember.Controller.extend({
   }.property('disableNext', 'isUpstream'),
 
   disableTabProgress: function() {
-    return !(this.get('controllers.deployment.isStarted'))
+    return !(this.get('controllers.deployment.isStarted'));
   }.property('controllers.deployment.isStarted'),
 
   disableTabSummary: function() {

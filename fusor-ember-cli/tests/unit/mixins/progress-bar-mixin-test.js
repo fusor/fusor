@@ -2,7 +2,7 @@ import Ember from 'ember';
 import ProgressBarMixinMixin from '../../../mixins/progress-bar-mixin';
 import { module, test } from 'qunit';
 
-module('ProgressBarMixinMixin');
+module('Unit | Mixin | progress bar mixin');
 
 // Replace this with your real tests.
 test('it works', function(assert) {

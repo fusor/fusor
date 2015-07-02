@@ -1,9 +1,6 @@
-import {
-  moduleFor,
-  test
-} from 'ember-qunit';
+import { moduleFor, test } from 'ember-qunit';
 
-moduleFor('route:subscriptions/management-application', {
+moduleFor('route:subscriptions/management-application', 'Unit | Route | subscriptions/management application', {
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
 });

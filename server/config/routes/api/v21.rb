@@ -7,6 +7,7 @@ Fusor::Engine.routes.draw do
             put :deploy
           end
         end
+        resources :subscriptions
       end
     end
   end

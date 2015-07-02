@@ -16,7 +16,7 @@ export default Ember.ArrayController.extend({
 
   // Filter out hosts selected as Hypervisor
   availableHosts: Ember.computed.filter('allDiscoveredHosts', function(host, index, array) {
-    return (host.get('id') != this.get('selectedRhevEngine.id'));
+    return (host.get('id') !== this.get('selectedRhevEngine.id'));
   }).property('allDiscoveredHosts', 'selectedRhevEngine'),
 
   filteredHosts: function(){

@@ -2,36 +2,39 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
 
-  model: function() {
-    // Use UUID from consumer (management application) to get subscriptions
-    // GET /customer_portal/consumers/#{CONSUMER['uuid']}/entitlements
+  model: function () {
+    return this.modelFor('deployment').get('subscriptions');
+  },
+
+  setupController: function(controller, model) {
+    controller.set('model', model);
+    controller.set('isLoading', true);
     var self = this;
-    var consumerUUID        = this.modelFor('subscriptions').get('consumerUUID');
-    var urlEntitlements     = ('/customer_portal/consumers/' + consumerUUID + '/entitlements');
-    var urlAllPools         = ('/customer_portal/pools?consumer=' + consumerUUID + '&listall=false');
-    var entitlementsResults = $.getJSON(urlEntitlements);
-    var allPoolsResults     = $.getJSON(urlAllPools);
 
-    return Ember.RSVP.Promise.all([entitlementsResults, allPoolsResults]).then(function(results) {
-      console.log(results[0]);
-      console.log(results[1]);
+    var consumerUUID = this.modelFor('deployment').get('upstream_consumer_uuid');
+
+    var entitlements = this.store.find('entitlement', {uuid: consumerUUID});
+    var pools        = this.store.find('pool',        {uuid: consumerUUID});
+
+    return Ember.RSVP.Promise.all([entitlements, pools]).then(function(results) {
+      var entitlementsResults = results[0];
+      var allPoolsResults     = results[1];
       self.modelFor('subscriptions').set('isAuthenticated', true); // in case go to this route from URL
-      results[1].forEach(function(item){
-
-          item['qtyTotal'] = item.quantity;
-          item['qtyAvailable'] = item.quantity - item.consumed;
-          item['qtyAvailableOfTotal'] = item['qtyAvailable'] + ' of ' + item['qtyTotal'];
-
-          item['qtyAttached'] = 0 //default for loop
-          results[0].forEach(function(entitlementItem) {
-            if (entitlementItem.pool.id === item.id) {
-              item['qtyAttached'] = item['qtyAttached'] + entitlementItem.quantity;
+      allPoolsResults.forEach(function(pool){
+          pool.set('qtyAttached', 0); //default for loop
+          entitlementsResults.forEach(function(entitlement) {
+            if (entitlement.get('poolId') === pool.get('id')) {
+              // // TODO change to increment function
+              // pool.set('qtyAttached', (pool.get('qtyAttached') + entitlement.get('quantity')));
+              pool.incrementProperty('qtyAttached', entitlement.get('quantity'));
             }
           });
       });
-      return Ember.A(results[1]);
+      controller.set('subscriptionEntitlements', Ember.A(results[0]));
+      controller.set('subscriptionPools', Ember.A(results[1]));
+      return controller.set('isLoading', false);
     }, function() {
-         self.modelFor('subscriptions').set('isAuthenticated')
+         self.modelFor('subscriptions').set('isAuthenticated');
          self.modelFor('subscriptions').save().then(function() {
            self.controllerFor('subscriptions.credentials').setProperties({
                                                                'showErrorMessage': true,
@@ -42,11 +45,52 @@ export default Ember.Route.extend({
     });
   },
 
+  deactivate: function() {
+    // uncommeting causes inFlight issues
+    // return this.send('saveSubscriptions', null);
+  },
+
   actions: {
-      error: function(reason, transition) {
-        console.log(reason);
-        alert(reason.statusText);
-      },
+
+    saveSubscriptions: function(redirectPath) {
+      var self = this;
+      var deployment = this.modelFor('deployment');
+      var subscriptionPools = this.controllerFor('subscriptions/select-subscriptions').get('subscriptionPools');
+
+      // remove existing subscriptions
+      deployment.get('subscriptions').then(function(results) {
+          results.forEach(function(sub) {
+              sub.deleteRecord();
+              sub.save();
+          });
+
+          deployment.save().then(function () {
+
+              // add subscriptions to deployment
+              subscriptionPools.forEach(function(pool) {
+                if (pool.get('isSelectedSubscription')) {
+                    var sub = self.store.createRecord('subscription', {'contract_number': pool.get('contractNumber'),
+                                                                       'product_name': pool.get('productName'),
+                                                                       'quantity_attached': pool.get('qtyToAttach'),
+                                                                       'deployment': deployment
+                                                                      });
+                    sub.save();
+                }
+              });
+
+              if (redirectPath) {
+                return self.transitionTo(redirectPath);
+              }
+          });
+      });
+
+    },
+
+    error: function(reason) {
+      console.log(reason);
+      alert(reason.statusText);
+    }
+
   }
 
 });

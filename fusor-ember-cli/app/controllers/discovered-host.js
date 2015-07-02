@@ -31,10 +31,10 @@ export default Ember.ObjectController.extend({
 
   isSelectedAsHypervisor: function () {
     if (this.get('selectedRhevHypervisorHosts')) {
-      var selectedIds = this.get('selectedRhevHypervisorHosts').getEach("id")
-      return selectedIds.contains(this.get('id'))
+      var selectedIds = this.get('selectedRhevHypervisorHosts').getEach("id");
+      return selectedIds.contains(this.get('id'));
     } else {
-      return false
+      return false;
     }
   }.property('selectedRhevHypervisorHosts.[]'),
 

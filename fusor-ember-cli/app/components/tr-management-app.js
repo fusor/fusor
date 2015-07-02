@@ -7,8 +7,8 @@ export default Ember.Component.extend({
   classNameBindings: ['bgColor'],
 
   isChecked: function () {
-    return (this.get('consumerUUID') === this.get('managementApp.uuid'));
-  }.property('consumerUUID', 'managementApp.uuid'),
+    return (this.get('consumerUUID') === this.get('managementApp.id'));
+  }.property('consumerUUID', 'managementApp.id'),
 
   bgColor: function () {
     if (this.get('isChecked')) {
@@ -17,7 +17,7 @@ export default Ember.Component.extend({
   }.property('isChecked'),
 
   actions: {
-    changeManagementApp: function(event) {
+    changeManagementApp: function() {
       this.sendAction('action', this.get('managementApp'));
     }
   }

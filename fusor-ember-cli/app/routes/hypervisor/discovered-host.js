@@ -15,7 +15,6 @@ export default Ember.Route.extend({
   },
 
   deactivate: function() {
-    var model = this.modelFor('deployment')
     return this.send('saveHyperVisors', null);
   },
 

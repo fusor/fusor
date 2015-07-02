@@ -1,14 +1,11 @@
-import {
-  moduleFor,
-  test
-} from 'ember-qunit';
+import { moduleFor, test } from 'ember-qunit';
 
-moduleFor('route:rhev-options', 'RhevOptionsRoute', {
+moduleFor('route:rhev-options', 'Unit | Route | rhev options', {
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
 });
 
-test('it exists', function() {
+test('it exists', function(assert) {
   var route = this.subject();
-  ok(route);
+  assert.ok(route);
 });

@@ -1,11 +1,12 @@
 import Ember from 'ember';
-import DisableTabMixinMixin from 'fusor-ember-cli/mixins/disable-tab-mixin';
+import DisableTabMixinMixin from '../../../mixins/disable-tab-mixin';
+import { module, test } from 'qunit';
 
-module('DisableTabMixinMixin');
+module('Unit | Mixin | disable tab mixin');
 
 // Replace this with your real tests.
-test('it works', function() {
+test('it works', function(assert) {
   var DisableTabMixinObject = Ember.Object.extend(DisableTabMixinMixin);
   var subject = DisableTabMixinObject.create();
-  ok(subject);
+  assert.ok(subject);
 });

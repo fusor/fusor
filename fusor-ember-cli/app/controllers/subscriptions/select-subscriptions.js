@@ -18,36 +18,4 @@ export default Ember.ArrayController.extend({
     if (this.get('enableAnalytics')) { return ''; } else { return 'disabled-color'; }
   }.property('enableAnalytics'),
 
-  totalCountSubscriptions: Ember.computed.alias('model.length'),
-
-  totalSelectedCount: function(){
-      return this.get('model').filterBy('isSelectedSubscription', true).get('length');
-  }.property('model.@each.isSelectedSubscription'),
-
-  selectedSubscriptions: function(){
-    return this.get('model').filterBy('isSelectedSubscription', true);
-  }.property('model.@each.isSelectedSubscription'),
-
-  hasSubscriptionsToAttach: function(key){
-    var model = this.get('model');
-    return (model && model.isAny('isSelectedSubscription'));
-  }.property('model.@each.isSelectedSubscription'),
-
-  allQuantitiesValid: function() {
-    var allValid = true;
-    this.get('selectedSubscriptions').forEach(function(item) {
-      if ((item.qtyAvailable > 0) && (item.qtyToAttach > 0) && allValid) {
-        if (item.qtyToAttach > item.qtyAvailable) {
-          allValid = false;
-        }
-      } else {
-        allValid = false;
-      }
-    });
-    return allValid;
-  }.property('model.@each.qtyToAttach', 'model.@each.isSelectedSubscription'),
-
-  showErrorMessage: Ember.computed.not('allQuantitiesValid'),
-  disableNextOnSelectSubscriptions: Ember.computed.not('allQuantitiesValid'),
-
 });

@@ -5,7 +5,7 @@ export default Ember.Controller.extend({
           'configure-environment', 'rhev-setup', 'hypervisor', 'hypervisor/discovered-host',
           'engine/discovered-host', 'storage',
           'networking', 'rhev-options', 'where-install',
-          'cloudforms-storage-domain', 'cloudforms-vm', 'review', 'subscriptions/select-subscriptions'],
+          'cloudforms-vm', 'review', 'subscriptions/select-subscriptions'],
 
   rhevValidated: function() {
     if (this.get('isRhev')) {
@@ -73,6 +73,7 @@ export default Ember.Controller.extend({
   rhev_engine_host: Ember.computed.alias("controllers.deployment.discovered_host"),
   selectedRhevEngine: Ember.computed.alias("controllers.deployment.discovered_host"),
   isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
+  subscriptions: Ember.computed.alias("controllers.deployment.subscriptions"),
 
   engineNamePlusDomain: function() {
     if (this.get('isStarted')) {
@@ -108,7 +109,7 @@ export default Ember.Controller.extend({
   }.property('isSubscriptions', 'isRhev', 'isOpenStack', 'isCloudForms'),
 
   lifecycleEnvironmentName: function() {
-    var name = this.get('controllers.deployment.lifecycle_environment.name')
+    var name = this.get('controllers.deployment.lifecycle_environment.name');
     if (name) {
       return name;
     } else {
@@ -120,7 +121,7 @@ export default Ember.Controller.extend({
     if (this.get('hasSubscriptionsToAttach')) {
       return "attachSubscriptions";
     } else {
-      return "installDeployment"
+      return "installDeployment";
     }
   }.property('hasSubscriptionsToAttach'),
 

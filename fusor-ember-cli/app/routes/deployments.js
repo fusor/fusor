@@ -8,7 +8,6 @@ export default Ember.Route.extend({
   actions: {
     deleteDeployment: function (item) {
       this.controllerFor('deployments').set('isCloseModal', true);
-      var self = this;
       return this.store.find('deployment', item.get('id')).then(function(deployment) {
         deployment.deleteRecord();
         return deployment.save();

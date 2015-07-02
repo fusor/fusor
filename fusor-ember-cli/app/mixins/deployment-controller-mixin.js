@@ -144,7 +144,7 @@ export default Ember.Mixin.create({
       } else if (this.get('isSubscriptions')) {
         return 'subscriptions';
       } else {
-        return 'review'
+        return 'review';
       }
     } else if (this.get('step2RouteName') === 'openstack') {
       if (this.get('isCloudForms')) {
@@ -152,13 +152,13 @@ export default Ember.Mixin.create({
       } else if (this.get('isSubscriptions')) {
         return 'subscriptions';
       } else {
-        return 'review'
+        return 'review';
       }
     } else if (this.get('step2RouteName') === 'cloudforms') {
       if (this.get('isSubscriptions')) {
         return 'subscriptions';
       } else {
-        return 'review'
+        return 'review';
       }
     }
   }.property('step2RouteName', 'isOpenStack', 'isCloudForms', 'isSubscriptions'),

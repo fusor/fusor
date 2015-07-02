@@ -57,15 +57,17 @@ export default Router.map(function() {
     this.resource('cloudforms', function() {
       this.resource('where-install');
       this.route('cfme-configuration', { path: 'configuration' });
-      this.resource('cloudforms-storage-domain', {path: 'storage-domain'});
-      this.resource('cloudforms-vm', {path: 'vm'});
     });
     this.resource('subscriptions', function() {
       this.route('credentials');
-      this.route('management-application');
+      this.route('management-application', function() {
+        this.route('consumer', { path: '/:management_application_uuid' }, function() {
+          this.route('pools');
+          this.route('entitlements');
+        });
+      });
       this.route('select-subscriptions', {path: 'select'});
     });
-    this.resource('products');
     this.resource('review', function() {
       this.route('installation');
       this.route('progress', function() {
@@ -83,14 +85,4 @@ export default Router.map(function() {
     });
   });
 
-  this.resource('hostgroups', function() {
-    this.resource('hostgroup', { path: '/:hostgroup_id' }, function() {
-      this.route('edit');
-    });
-  });
-
-  this.route('hostgroup/edit');
-  this.resource("discovered-hosts", function() {
-    this.resource("discovered-host", { path: '/:discovered_hosts_id' });
-  });
 });

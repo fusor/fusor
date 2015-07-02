@@ -24,5 +24,7 @@ module Fusor
     # has many hypervisors
     has_many :discovered_hosts, serializer: ::HostSerializer
 
+    has_many :subscriptions, serializer: Fusor::SubscriptionSerializer
+
   end
 end

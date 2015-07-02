@@ -1,11 +1,12 @@
 import Ember from 'ember';
-import ConfigureOrganizationMixinMixin from 'fusor-ember-cli/mixins/configure-organization-mixin';
+import ConfigureOrganizationMixinMixin from '../../../mixins/configure-organization-mixin';
+import { module, test } from 'qunit';
 
-module('ConfigureOrganizationMixinMixin');
+module('Unit | Mixin | configure organization mixin');
 
 // Replace this with your real tests.
-test('it works', function() {
+test('it works', function(assert) {
   var ConfigureOrganizationMixinObject = Ember.Object.extend(ConfigureOrganizationMixinMixin);
   var subject = ConfigureOrganizationMixinObject.create();
-  ok(subject);
+  assert.ok(subject);
 });
