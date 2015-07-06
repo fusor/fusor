@@ -145,5 +145,5 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   nextStepRouteName: function() {
     return ('');
-  }.property('step2RoutName', 'step3RouteName')
+  }.property('step2RouteName', 'step3RouteName')
 });
