@@ -4,7 +4,11 @@ import DeploymentRouteMixin from "../mixins/deployment-route-mixin";
 export default Ember.Route.extend(DeploymentRouteMixin, {
 
   model: function () {
-      return this.store.find('deployment-plan', 'overcloud');
+      return Ember.RSVP.hash({
+	  plan: this.store.find('deployment-plan', 'overcloud'),
+	  nodes: this.store.find('node'),
+	  profiles: this.store.find('flavor')
+      });
   },
 
   setupController: function(controller, model) {

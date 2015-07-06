@@ -4,7 +4,6 @@ import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
 export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   needs: ['deployment', 'register-nodes'],
-  register: Ember.computed.alias("controllers.register-nodes"),
 
   getParamValue: function(paramName, params) {
     var paramValue = null;
@@ -21,50 +20,50 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   unassignedRoles: function() {
     var unassignedRoles = [];
-    var params = this.get('model.parameters');
+    var params = this.get('model.plan.parameters');
     var self = this;
-    this.get('model.roles').forEach(function(role, index) {
+    this.get('model.plan.roles').forEach(function(role, index) {
       if ( self.getParamValue(role.get('flavorParameterName'), params) == null ) {
         unassignedRoles.pushObject(role);
       }
     });
     return unassignedRoles;
-  }.property('model.roles', 'model.parameters'),
+  }.property('model.plan.roles', 'model.plan.parameters'),
 
   allRolesAssigned: function() {
     return (this.get('unassignedRoles').length === 0);
   }.property('unassignedRoles'),
 
   noRolesAssigned: function() {
-    return (this.get('unassignedRoles').length === this.get('model.roles').length);
+    return (this.get('unassignedRoles').length === this.get('model.plan.roles').length);
   }.property('unassignedRoles'),
 
   profiles: function() {
-    return this.get('register').get('model.profiles');
-  }.property('register.model.profiles', 'register.model.profiles.length'),
+    return this.get('model.profiles');
+  }.property('model.profiles', 'model.profiles.length'),
 
   numProfiles: function() {
-    var profiles = this.get('register.model.profiles');
+    var profiles = this.get('model.profiles');
     return profiles.length;
   }.property('model.profiles', 'model.profiles.length'),
 
   nodes: function() {
-    return this.get('register').get('model.nodes');
-  }.property('register.model.nodes'),
+    return this.get('model.nodes');
+  }.property('model.nodes'),
 
   nodeCount: function() {
-    return this.get('register').get('model.nodes').length;
-  }.property('register.model.nodes'),
+    return this.get('model.nodes').length;
+  }.property('model.nodes'),
 
   assignedNodeCount: function() {
     var count = 0;
-    var params = this.get('model.parameters');
+    var params = this.get('model.plan.parameters');
     var self = this;
-    this.get('model.roles').forEach(function(role, index) {
+    this.get('model.plan.roles').forEach(function(role, index) {
       count += self.getParamValue(role.get('countParameterName'), params);
     });
     return count;
-  }.property('model.roles', 'model.parameters'),
+  }.property('model.plan.roles', 'model.plan.parameters'),
 
   isDraggingRole: false,
 
@@ -110,7 +109,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     },
 
     unassignRole: function(role) {
-      var plan = this.get('model');
+      var plan = this.get('model.plan');
       this.doAssignRole(plan, role, null);
     },
 
@@ -123,7 +122,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     },
 
     deployPlan: function() {
-      var plan = this.get('model');
+      var plan = this.get('model.plan');
       Ember.$.ajax({
         url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/deploy',
         type: 'POST',
