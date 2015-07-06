@@ -5,9 +5,9 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
 
   model: function () {
       return Ember.RSVP.hash({
-	  plan: this.store.find('deployment-plan', 'overcloud'),
-	  nodes: this.store.find('node'),
-	  profiles: this.store.find('flavor')
+          plan: this.store.find('deployment-plan', 'overcloud'),
+          nodes: this.store.find('node'),
+          profiles: this.store.find('flavor')
       });
   },
 
