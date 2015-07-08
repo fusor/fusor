@@ -27,7 +27,7 @@ module Fusor
         private
 
         def undercloud_handle
-          return Overcloud::UndercloudHandle.new('admin','a20a4b1d3b337bed7cd111714e9adbb814100ac7','192.0.2.1', 5001)
+          return Overcloud::UndercloudHandle.new('admin','61866164668025ea66c0c4c811e27a219964dea5','192.0.2.1', 5001)
         end
 
       end
