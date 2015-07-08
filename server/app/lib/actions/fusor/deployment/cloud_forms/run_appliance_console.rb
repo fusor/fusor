@@ -45,11 +45,7 @@ module Actions
                 "--db_password #{db_password}"
 
             status, output = run_command(cmd)
-            if status == 0
-              sleep 300
-            else
-              fail _("Unable to run appliance console: %{output}") % { :output => output.join('; ') }
-            end
+            fail _("Unable to run appliance console: %{output}") % { :output => output.join('; ') } unless status == 0
 
             # TODO: observing issues with running the appliance console using SSHConnection; therefore, temporarily
             # commenting out and using the approach above which will run it from a python script

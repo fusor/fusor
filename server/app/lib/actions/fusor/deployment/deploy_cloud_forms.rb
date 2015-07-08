@@ -32,50 +32,47 @@ module Actions
             return
           end
 
-          # TODO: Need to ensure that if rhev isn't up, we fail the action, but have the ability to resume/retry
-          is_rhev_up = plan_action(::Actions::Fusor::Deployment::Rhev::IsUp, deployment)
-          if is_rhev_up.output[:is_up]
-            Rails.logger.info "================ RHEV is UP ===================="
-            transfer_action = plan_action(::Actions::Fusor::Deployment::Rhev::TransferImage,
-                                          deployment,
-                                          repository,
-                                          image_file_name)
+          plan_action(::Actions::Fusor::Deployment::Rhev::WaitForDataCenter, deployment)
 
-            upload_action = plan_action(::Actions::Fusor::Deployment::Rhev::UploadImage,
+          transfer_action = plan_action(::Actions::Fusor::Deployment::Rhev::TransferImage,
                                         deployment,
-                                        transfer_action.output[:image_file_name])
+                                        repository,
+                                        image_file_name)
 
-            plan_action(::Actions::Fusor::Deployment::Rhev::ImportTemplate,
-                        deployment,
-                        upload_action.output[:template_name])
+          upload_action = plan_action(::Actions::Fusor::Deployment::Rhev::UploadImage,
+                                      deployment,
+                                      transfer_action.output[:image_file_name])
 
-            create_vm_action = plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::Create,
-                                           deployment,
-                                           upload_action.output[:template_name])
+          plan_action(::Actions::Fusor::Deployment::Rhev::ImportTemplate,
+                      deployment,
+                      upload_action.output[:template_name])
 
-            plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::AddDisk,
-                        deployment,
-                        create_vm_action.output[:vm_id])
+          create_vm_action = plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::Create,
+                                         deployment,
+                                         upload_action.output[:template_name])
 
-            plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::Start,
-                        deployment,
-                        create_vm_action.output[:vm_id])
+          plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::AddDisk,
+                      deployment,
+                      create_vm_action.output[:vm_id])
 
-            get_ip_action = plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::GetIp,
-                                        deployment,
-                                        create_vm_action.output[:vm_id])
+          plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::Start,
+                      deployment,
+                      create_vm_action.output[:vm_id])
 
-            #TODO: if is_cloudforms_up(vm_ip), I guess we want to wait for it to come up instead of a simple true/false
-            plan_action(::Actions::Fusor::Deployment::CloudForms::RunApplianceConsole,
-                        deployment,
-                        get_ip_action.output[:ip])
+          get_ip_action = plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::GetIp,
+                                      deployment,
+                                      create_vm_action.output[:vm_id])
 
-            plan_action(::Actions::Fusor::Deployment::CloudForms::AddRhevProvider,
-                        deployment,
-                        get_ip_action.output[:ip])
-          else
-            Rails.logger.info "================ RHEV is DOWN ===================="
-          end
+          plan_action(::Actions::Fusor::Deployment::CloudForms::RunApplianceConsole,
+                      deployment,
+                      get_ip_action.output[:ip])
+
+          plan_action(::Actions::Fusor::Deployment::CloudForms::WaitForConsole,
+                      get_ip_action.output[:ip])
+
+          plan_action(::Actions::Fusor::Deployment::CloudForms::AddRhevProvider,
+                      deployment,
+                      get_ip_action.output[:ip])
         end
       end
     end

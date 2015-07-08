@@ -14,26 +14,41 @@ module Actions
   module Fusor
     module Deployment
       module Rhev
-        class IsUp < Actions::Base
+        class WaitForDataCenter < Actions::Base
+          include Actions::Base::Polling
+
+          input_format do
+            param :deployment_id
+          end
+
           def humanized_name
-            _("Is Virtualization Environment Up?")
+            _("Wait for Virtualization Data Center")
           end
 
           def plan(deployment)
-            plan_self(deployment_id: deployment.id,
-                      user_id: ::User.current.id)
+            plan_self(deployment_id: deployment.id)
           end
 
-          def run
-            deployment = ::Fusor::Deployment.find(input[:deployment_id])
-            output[:is_up] = is_rhev_up(deployment)
+          def done?
+            external_task
+          end
+
+          def invoke_external_task
+            Rails.logger.info "================ Rhev::WaitForDataCenter invoke_external_task method ===================="
+            is_up? get_status(input[:deployment_id])
+          end
+
+          def poll_external_task
+            Rails.logger.info "================ Rhev::WaitForDataCenter poll_external_task method ===================="
+            is_up? get_status(input[:deployment_id])
           end
 
           private
 
-          def is_rhev_up(deployment)
+          def get_status(deployment_id)
+            Rails.logger.info "================ Rhev::WaitForDataCenter get_status method ===================="
+            deployment = ::Fusor::Deployment.find(deployment_id)
             script_dir = "/usr/share/fusor_ovirt/bin/"
-
             api_user = "admin@internal"
             api_password = deployment.rhev_engine_admin_password
             api_host = deployment.rhev_engine_host.facts['ipaddress']
@@ -47,13 +62,11 @@ module Actions
                 "--data_center #{data_center}"
 
             status, output = Utils::Fusor::CommandUtils.run_command(cmd)
-            if status == 0 and "up" == output.first.rstrip
-              return true
-              # thought about failing if it isn't up, but figured I'll let the
-              # caller fail if this returns false
-            end
+            { status: status, output: output }
+          end
 
-            return false
+          def is_up?(status)
+            (status[:status] == 0) && ("up" == status[:output].first.rstrip) ? true : false
           end
         end
       end
