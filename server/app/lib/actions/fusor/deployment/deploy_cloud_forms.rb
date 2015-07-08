@@ -32,47 +32,49 @@ module Actions
             return
           end
 
-          plan_action(::Actions::Fusor::Deployment::Rhev::WaitForDataCenter, deployment)
+          sequence do
+            plan_action(::Actions::Fusor::Deployment::Rhev::WaitForDataCenter, deployment)
 
-          transfer_action = plan_action(::Actions::Fusor::Deployment::Rhev::TransferImage,
+            transfer_action = plan_action(::Actions::Fusor::Deployment::Rhev::TransferImage,
+                                          deployment,
+                                          repository,
+                                          image_file_name)
+
+            upload_action = plan_action(::Actions::Fusor::Deployment::Rhev::UploadImage,
                                         deployment,
-                                        repository,
-                                        image_file_name)
+                                        transfer_action.output[:image_file_name])
 
-          upload_action = plan_action(::Actions::Fusor::Deployment::Rhev::UploadImage,
-                                      deployment,
-                                      transfer_action.output[:image_file_name])
+            plan_action(::Actions::Fusor::Deployment::Rhev::ImportTemplate,
+                        deployment,
+                        upload_action.output[:template_name])
 
-          plan_action(::Actions::Fusor::Deployment::Rhev::ImportTemplate,
-                      deployment,
-                      upload_action.output[:template_name])
+            create_vm_action = plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::Create,
+                                           deployment,
+                                           upload_action.output[:template_name])
 
-          create_vm_action = plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::Create,
-                                         deployment,
-                                         upload_action.output[:template_name])
+            plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::AddDisk,
+                        deployment,
+                        create_vm_action.output[:vm_id])
 
-          plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::AddDisk,
-                      deployment,
-                      create_vm_action.output[:vm_id])
+            plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::Start,
+                        deployment,
+                        create_vm_action.output[:vm_id])
 
-          plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::Start,
-                      deployment,
-                      create_vm_action.output[:vm_id])
+            get_ip_action = plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::GetIp,
+                                        deployment,
+                                        create_vm_action.output[:vm_id])
 
-          get_ip_action = plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::GetIp,
-                                      deployment,
-                                      create_vm_action.output[:vm_id])
+            plan_action(::Actions::Fusor::Deployment::CloudForms::RunApplianceConsole,
+                        deployment,
+                        get_ip_action.output[:ip])
 
-          plan_action(::Actions::Fusor::Deployment::CloudForms::RunApplianceConsole,
-                      deployment,
-                      get_ip_action.output[:ip])
+            plan_action(::Actions::Fusor::Deployment::CloudForms::WaitForConsole,
+                        get_ip_action.output[:ip])
 
-          plan_action(::Actions::Fusor::Deployment::CloudForms::WaitForConsole,
-                      get_ip_action.output[:ip])
-
-          plan_action(::Actions::Fusor::Deployment::CloudForms::AddRhevProvider,
-                      deployment,
-                      get_ip_action.output[:ip])
+            plan_action(::Actions::Fusor::Deployment::CloudForms::AddRhevProvider,
+                        deployment,
+                        get_ip_action.output[:ip])
+          end
         end
       end
     end
