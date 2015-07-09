@@ -3,7 +3,7 @@ module Fusor
     class DeploymentValidator < ActiveModel::Validator
       def validate(deployment)
         if not (deployment.deploy_rhev or deployment.deploy_cfme or deployment.deploy_openstack)
-          deployment.errors[:deploy_rhev] << _('You must deploy something...')
+          deployment.errors[:base] << _('You must deploy something...')
         end
 
         if deployment.deploy_rhev
