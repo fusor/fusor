@@ -7,8 +7,8 @@ export default Ember.Component.extend(SaveHostnameMixin, {
   classNameBindings: ['bgColor'],
 
   isChecked: function () {
-    return this.get('host.isSelectedAsHypervisor');
-  }.property('host.isSelectedAsHypervisor'),
+    return this.get('isSelectedAsHypervisor');
+  }.property('isSelectedAsHypervisor'),
 
   bgColor: function () {
     if (this.get('isChecked')) {
@@ -17,9 +17,9 @@ export default Ember.Component.extend(SaveHostnameMixin, {
   }.property('isChecked'),
 
   observeHostName: function() {
-    if (this.get('host.isSelectedAsHypervisor')) {
-      if (this.get('isCustomScheme') && (this.get('custom_preprend_name'))) {
-        this.get('host').set('name', (this.get('custom_preprend_name') + this.get('num')));
+    if (this.get('isSelectedAsHypervisor')) {
+      if (this.get('isCustomScheme') && (this.get('customPreprendName'))) {
+        this.get('host').set('name', (this.get('customPreprendName') + this.get('num')));
       } else if (this.get('isHypervisorN')) {
         this.get('host').set('name', ('hypervisor' + this.get('num')));
       } else if (this.get('isMac')) {
@@ -29,6 +29,48 @@ export default Ember.Component.extend(SaveHostnameMixin, {
       }
       return this.send('saveHostname');
     }
-  }.observes('host.isSelectedAsHypervisor', 'custom_preprend_name', 'isCustomScheme', 'isHypervisorN', 'isFreeform', 'isMac')
+  }.observes('isSelectedAsHypervisor', 'customPreprendName', 'isCustomScheme', 'isHypervisorN', 'isFreeform', 'isMac'),
 
+  addOrRemoveHypervisor: function(){
+    if (this.get('isSelectedAsHypervisor')) {
+      this.get('model').addObject(this.get('host'));
+    } else {
+      this.get('model').removeObject(this.get('host'));
+    }
+  }.observes('isSelectedAsHypervisor'),
+
+  cssHostHostId: function () {
+    return ('host_' + this.get('host.id'));
+  }.property('host.id'),
+
+  cssIdHostId: function () {
+    return ('id_' + this.get('host.id'));
+  }.property('host.id'),
+
+  selectedIds: function () {
+    return this.get('model').getEach("id");
+  }.property('model.[]'),
+
+  isSelectedAsHypervisor: function () {
+      return this.get('selectedIds').contains(this.get('host.id'));
+  }.property('selectedIds', 'host.id'),
+
+  hostType: function() {
+    if (this.get('host.is_virtual')) {
+      return "Virtual";
+    } else {
+      return "Bare Metal";
+    }
+  }.property('host.is_virtual'),
+
+  actions: {
+    engineHostChanged: function(host) {
+      var engine_hostname = host.get('name');
+      var controller = this.get('controllers.deployment');
+      return this.store.find('discovered-host', host.get('id')).then(function (result) {
+        return controller.set('discovered_host', result);
+        //TODO save hostname on discovered host on save deploy
+      });
+    }
+  }
 });

@@ -4,20 +4,21 @@ export default Ember.Controller.extend({
 
   needs: ['deployment'],
 
-  upstream_consumer_uuid: Ember.computed.alias("controllers.deployment.upstream_consumer_uuid"),
-  upstream_consumer_name: Ember.computed.alias("controllers.deployment.upstream_consumer_name"),
+  upstreamConsumerUuid: Ember.computed.alias("controllers.deployment.model.upstream_consumer_uuid"),
+  upstreamConsumerName: Ember.computed.alias("controllers.deployment.model.upstream_consumer_name"),
 
-  isRhev: Ember.computed.alias("controllers.deployment.deploy_rhev"),
-  isOpenStack: Ember.computed.alias("controllers.deployment.deploy_openstack"),
-  isCloudForms: Ember.computed.alias("controllers.deployment.deploy_cfme"),
+  isRhev: Ember.computed.alias("controllers.deployment.model.deploy_rhev"),
+  isOpenStack: Ember.computed.alias("controllers.deployment.model.deploy_openstack"),
+  isCloudForms: Ember.computed.alias("controllers.deployment.model.deploy_cfme"),
 
   //overwritten by setupController
   organizationUpstreamConsumerUUID: null,
   organizationUpstreamConsumerName: null,
 
   validCredentials: function() {
-    return (Ember.isPresent(this.get('identification')) && Ember.isPresent(this.get('password')));
-  }.property('username', 'password'),
+    // password is not saved in the model
+    return (Ember.isPresent(this.get('model.identification')) && Ember.isPresent(this.get('password')));
+  }.property('model.identification', 'password'),
 
   enableCredentialsNext: function() {
     return this.get('validCredentials') || this.get('model.isAuthenticated');
@@ -25,8 +26,8 @@ export default Ember.Controller.extend({
   disableCredentialsNext: Ember.computed.not('enableCredentialsNext'),
 
   hasUpstreamConsumerUuid: function() {
-    return Ember.isPresent(this.get('upstream_consumer_uuid'));
-  }.property('upstream_consumer_uuid'),
+    return Ember.isPresent(this.get('upstreamConsumerUuid'));
+  }.property('upstreamConsumerUuid'),
 
   hasOrganizationUpstreamConsumerUUID: function() {
     return Ember.isPresent(this.get('organizationUpstreamConsumerUUID'));

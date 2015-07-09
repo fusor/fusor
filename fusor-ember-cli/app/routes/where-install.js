@@ -10,11 +10,11 @@ export default Ember.Route.extend({
     if (isRhev && !(isOpenStack)) {
       this.controllerFor('where-install').set('disableRHEV', false);
       this.controllerFor('where-install').set('disableOpenStack', true);
-      return this.controllerFor('deployment').set('cfme_install_loc', 'RHEV');
+      return this.controllerFor('deployment').set('model.cfme_install_loc', 'RHEV');
     } else if (!(isRhev) && isOpenStack) {
       this.controllerFor('where-install').set('disableRHEV', true);
       this.controllerFor('where-install').set('disableOpenStack', false);
-      return this.controllerFor('deployment').set('cfme_install_loc', 'OpenStack');
+      return this.controllerFor('deployment').set('model.cfme_install_loc', 'OpenStack');
     } else {
       this.controllerFor('where-install').set('disableRHEV', false);
       this.controllerFor('where-install').set('disableOpenStack', false);

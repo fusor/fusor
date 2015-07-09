@@ -1,10 +1,10 @@
 import Ember from 'ember';
 
-export default Ember.ObjectController.extend({
+export default Ember.Controller.extend({
 
   needs: ['deployment', 'cloudforms'],
 
-  cfme_install_loc: Ember.computed.alias("controllers.deployment.cfme_install_loc"),
+  cfmeInstallLoc: Ember.computed.alias("controllers.deployment.model.cfme_install_loc"),
   isRhev: Ember.computed.alias("controllers.deployment.isRhev"),
   isOpenStack: Ember.computed.alias("controllers.deployment.isOpenStack"),
   satelliteTabRouteName: Ember.computed.alias("controllers.deployment.satelliteTabRouteName"),

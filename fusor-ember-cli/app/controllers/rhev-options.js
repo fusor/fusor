@@ -4,12 +4,12 @@ export default Ember.Controller.extend({
 
   needs: ['deployment'],
 
-  rhev_root_password: Ember.computed.alias("controllers.deployment.rhev_root_password"),
-  rhev_engine_admin_password: Ember.computed.alias("controllers.deployment.rhev_engine_admin_password"),
-  rhev_database_name: Ember.computed.alias("controllers.deployment.rhev_database_name"),
-  rhev_cluster_name: Ember.computed.alias("controllers.deployment.rhev_cluster_name"),
-  rhev_cpu_type: Ember.computed.alias("controllers.deployment.rhev_cpu_type"),
-  rhev_is_self_hosted: Ember.computed.alias("controllers.deployment.rhev_is_self_hosted"),
+  rhev_root_password: Ember.computed.alias("controllers.deployment.model.rhev_root_password"),
+  rhev_engine_admin_password: Ember.computed.alias("controllers.deployment.model.rhev_engine_admin_password"),
+  rhev_database_name: Ember.computed.alias("controllers.deployment.model.rhev_database_name"),
+  rhev_cluster_name: Ember.computed.alias("controllers.deployment.model.rhev_cluster_name"),
+  rhev_cpu_type: Ember.computed.alias("controllers.deployment.model.rhev_cpu_type"),
+  rhev_is_self_hosted: Ember.computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
 
   cpuTypes: ['Intel Conroe Family', 'Intel Penryn Family', 'Intel Nehalem Family',
              'Intel Westmere Family', 'Intel SandyBridge Family', 'Intel Haswell',

@@ -1,16 +1,16 @@
 import Ember from 'ember';
 
-export default Ember.ObjectController.extend({
+export default Ember.Controller.extend({
 
   needs: ['deployment', 'hypervisor/discovered-host', 'engine/discovered-host'],
 
   cssHostHostId: function () {
-    return ('host_' + this.get('id'));
-  }.property('id'),
+    return ('host_' + this.get('model.id'));
+  }.property('model.id'),
 
   cssIdHostId: function () {
-    return ('id_' + this.get('id'));
-  }.property('id'),
+    return ('id_' + this.get('model.id'));
+  }.property('model.id'),
 
   allDiscoveredHosts: Ember.computed.alias("controllers.hypervisor/discovered-host.allDiscoveredHosts"),
   // same as controllers.deployment.discovered_hosts
@@ -31,7 +31,7 @@ export default Ember.ObjectController.extend({
 
   isSelectedAsHypervisor: function () {
     if (this.get('selectedRhevHypervisorHosts')) {
-      var selectedIds = this.get('selectedRhevHypervisorHosts').getEach("id");
+      var selectedIds = this.get('selectedRhevHypervisorHosts').getEach("model.id");
       return selectedIds.contains(this.get('id'));
     } else {
       return false;
@@ -39,16 +39,16 @@ export default Ember.ObjectController.extend({
   }.property('selectedRhevHypervisorHosts.[]'),
 
   isSelectedAsEngine: function () {
-    return (this.get('selectedRhevEngineHost.id') === this.get('id'));
+    return (this.get('selectedRhevEngineHost.id') === this.get('model.id'));
   }.property('selectedRhevEngineHost'),
 
   hostType: function() {
-    if (this.get('is_virtual')) {
+    if (this.get('model.is_virtual')) {
       return "Virtual";
     } else {
       return "Bare Metal";
     }
-  }.property('is_virtual'),
+  }.property('model.is_virtual'),
 
   actions: {
     engineHostChanged: function(host) {

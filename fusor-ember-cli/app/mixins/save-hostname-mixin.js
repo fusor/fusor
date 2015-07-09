@@ -5,7 +5,6 @@ export default Ember.Mixin.create({
   actions: {
     saveHostname: function() {
       var host = this.get('host');
-      console.log(host);
       var self = this;
       var token = $('meta[name="csrf-token"]').attr('content');
 

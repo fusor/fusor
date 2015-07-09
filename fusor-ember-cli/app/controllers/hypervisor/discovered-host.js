@@ -5,16 +5,16 @@ export default Ember.ArrayController.extend({
 
   itemController: ['discovered-host'],
 
-  selectedRhevEngine: Ember.computed.alias("controllers.deployment.discovered_host"),
-  rhev_is_self_hosted: Ember.computed.alias("controllers.deployment.rhev_is_self_hosted"),
+  selectedRhevEngine: Ember.computed.alias("controllers.deployment.model.discovered_host"),
+  rhevIsSelfHosted: Ember.computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
 
   isCustomScheme: Ember.computed.alias("controllers.hypervisor.isCustomScheme"),
   isHypervisorN: Ember.computed.alias("controllers.hypervisor.isHypervisorN"),
-  custom_preprend_name: Ember.computed.alias("controllers.hypervisor.custom_preprend_name"),
+  customPreprendName: Ember.computed.alias("controllers.hypervisor.model.custom_preprend_name"),
   isFreeform: Ember.computed.alias("controllers.hypervisor.isFreeform"),
   isMac: Ember.computed.alias("controllers.hypervisor.isMac"),
 
-  // Filter out hosts selected as Hypervisor
+  // Filter out hosts selected as Engine
   availableHosts: Ember.computed.filter('allDiscoveredHosts', function(host, index, array) {
     return (host.get('id') !== this.get('selectedRhevEngine.id'));
   }).property('allDiscoveredHosts', 'selectedRhevEngine'),
@@ -64,22 +64,13 @@ export default Ember.ArrayController.extend({
     }
   }.observes('allChecked'),
 
-  idsChecked: function(key){
-    var model = this.get('model');
-    if (model && model.isAny('isSelectedAsHypervisor')) {
-      return this.get('model').getEach("id");
-    } else {
-      return '';
-    }
-  }.property('model.@each.isSelectedAsHypervisor'),
-
   hypervisorBackRouteName: function() {
-    if (this.get('rhev_is_self_hosted')) {
+    if (this.get('rhevIsSelfHosted')) {
       return 'rhev-setup';
     } else {
       return 'engine.discovered-host';
     }
-  }.property('rhev_is_self_hosted'),
+  }.property('rhevIsSelfHosted'),
 
   actions: {
     refreshModel: function() {
@@ -87,12 +78,12 @@ export default Ember.ArrayController.extend({
     },
 
     setCheckAll: function() {
-      this.get('model').removeObjects(this.get('availableHosts'));
+      this.get('model').setObjects([]);;
       return this.get('model').addObjects(this.get('availableHosts'));
     },
 
     setUncheckAll: function() {
-      return this.get('model').removeObjects(this.get('availableHosts'));
+      this.get('model').setObjects([]);
     }
 
   }

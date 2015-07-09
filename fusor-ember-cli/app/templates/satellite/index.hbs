@@ -2,10 +2,10 @@
   <div class='col-md-9'>
     <form class="form-horizontal" role="form">
 
-      {{text-f label="Name" value=name inputSize='col-md-5' errors=errors cssId=idSatName
+      {{text-f label="Name" value=model.name inputSize='col-md-5' errors=errors cssId=idSatName
                isRequired=true disabled=controllers.application.deploymentIsStarted}}
 
-      {{textarea-f label="Description (Optional)" value=description inputSize='col-md-5' cssId=idSatDesc
+      {{textarea-f label="Description (Optional)" value=model.description inputSize='col-md-5' cssId=idSatDesc
                    disabled=controllers.application.deploymentIsStarted }}
 
     </form>

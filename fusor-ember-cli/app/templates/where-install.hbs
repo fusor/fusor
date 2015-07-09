@@ -6,7 +6,7 @@
     </p>
 
     <div class='ident-radio'>
-      {{#radio-button value="RHEV" groupValue=cfme_install_loc changed="cfmeLocationChanged" id="install_on_rhev" disabled=disableRHEVradio}}
+      {{#radio-button value="RHEV" groupValue=cfmeInstallLoc changed="cfmeLocationChanged" id="install_on_rhev" disabled=disableRHEVradio}}
         <span {{bind-attr class="disableRHEV:disabled"}}>
           Install CloudForms on Red Hat Enterprise Virtualization
         </span>
@@ -14,7 +14,7 @@
     </div>
 
     <div class='ident-radio'>
-      {{#radio-button value="OpenStack" groupValue=cfme_install_loc changed="cfmeLocationChanged" id="install_on_openstack" disabled=disableOpenstackradio}}
+      {{#radio-button value="OpenStack" groupValue=cfmeInstallLoc changed="cfmeLocationChanged" id="install_on_openstack" disabled=disableOpenstackradio}}
         <span {{bind-attr class=":inline-block disableOpenStack:disabled"}}>
           Install CloudForms on Red Hat Enterprise Linux OpenStack Platform
           <p style='margin-left:16px;'>

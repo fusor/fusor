@@ -14,7 +14,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
   nullifyLifecycleEnvIfSelected: function(){
     if (this.get('useDefaultOrgViewForEnv')) {
       this.set('selectedEnvironment', null);
-      return this.get('controllers.deployment-new').set('lifecycle_environment', null);
+      return this.get('controllers.deployment-new.model').set('lifecycle_environment', null);
     }
   }.observes('useDefaultOrgViewForEnv'),
 
@@ -28,7 +28,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
     selectEnvironment: function(environment) {
       this.set('showAlertMessage', false);
       this.set('selectedEnvironment', environment);
-      return this.get('controllers.deployment-new').set('lifecycle_environment', environment);
+      return this.get('controllers.deployment-new.model').set('lifecycle_environment', environment);
     },
 
     createEnvironment: function() {

@@ -44,7 +44,7 @@ length is {{model.length}}
         </thead>
 
       <tbody>
-      {{#each subscription in model itemController="subscription"}}
+      {{#each subscription in model}}
         {{tr-subscription subscription=subscription numSubscriptionsRequired=numSubscriptionsRequired}}
       {{else}}
         <tr>

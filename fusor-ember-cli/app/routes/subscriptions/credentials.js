@@ -50,7 +50,7 @@ export default Ember.Route.extend({
     loginPortal: function() {
       var self = this;
       var controller = this.controllerFor('subscriptions/credentials');
-      var identification = controller.get('identification');
+      var identification = controller.get('model.identification');
       var password = controller.get('password');
       var token = $('meta[name="csrf-token"]').attr('content');
       controller.set('nextButtonTitle', "Logging in ...");
@@ -111,7 +111,7 @@ export default Ember.Route.extend({
     saveCredentials: function() {
       var self = this;
       var controller = this.controllerFor('subscriptions/credentials');
-      var identification = controller.get('identification');
+      var identification = controller.get('model.identification');
       var sessionPortal = this.modelFor('subscriptions');
       if (sessionPortal) {
         sessionPortal.set('identification', identification);
@@ -133,7 +133,7 @@ export default Ember.Route.extend({
     authenticatePortal: function() {
 
       var controller = this.controllerFor('subscriptions/credentials');
-      var identification = controller.get('identification');
+      var identification = controller.get('model.identification');
       var token = $('meta[name="csrf-token"]').attr('content');
       var self = this;
       var url = '/customer_portal/users/' + identification + "/owners";
