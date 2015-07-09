@@ -52,14 +52,18 @@ module Fusor
         raise ::ActiveRecord::RecordInvalid.new @deployment
       end
 
-      sync_task(::Actions::Fusor::Subscription::ManageManifest,
-                @deployment,
-                customer_portal_credentials)
+      manifest_task = sync_task(::Actions::Fusor::Subscription::ManageManifest,
+                                @deployment,
+                                customer_portal_credentials)
 
-      task = async_task(::Actions::Fusor::Deploy,
-                        @deployment,
-                        params[:skip_content])
-
+      # If the manifest action failed, there is no need to continue with
+      # the deploy actions, since it requires subscriptions & content
+      # both of which are enabled by the manifest.
+      unless manifest_task["result"] == "error"
+        task = async_task(::Actions::Fusor::Deploy,
+                          @deployment,
+                          params[:skip_content])
+      end
       respond_for_async :resource => task
     end
 
