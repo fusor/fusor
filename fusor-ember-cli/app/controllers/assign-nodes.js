@@ -65,10 +65,18 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     return count;
   }.property('model.plan.roles', 'model.plan.parameters'),
 
-  isDraggingRole: false,
+  isDraggingRole: function() {
+    var isDragging = false;
+    this.get('model.plan.roles').forEach(function (role, index) {
+          if (role.get('isDraggingObject') === true) {
+            isDragging = true;
+          }
+    });
+    return isDragging;
+  }.property('model.plan.roles', 'model.plan.roles.@each.isDraggingObject'),
 
   droppableClass: function() {
-    if (this.isDraggingRole) {
+    if (this.get('isDraggingRole')) {
       return 'deployment-roles-active';
     }
     else {
@@ -99,13 +107,63 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     });
   },
 
+  edittedRole: null,
+  showSettings: true,
+
+  openEditDialog: function() {
+    this.set('editRoleModalOpened', true);
+    this.set('editRoleModalClosed', false);
+  },
+
+  closeEditDialog: function() {
+    this.set('editRoleModalOpened', false);
+    this.set('editRoleModalClosed', true);
+  },
+
+  settingsTabActiveClass: function() {
+    if (this.get('showSettings')) {
+      return "active";
+    }
+    else {
+      return "inactive";
+    }
+  }.property('showSettings'),
+
+  configTabActiveClass: function() {
+    if (this.get('showSettings')) {
+      return "inactive";
+    }
+    else {
+      return "active";
+    }
+  }.property('showSettings'),
+
   actions: {
     editRole: function(role) {
-      console.log("EDIT: " + role);
+      this.set('edittedRole', role);
+      this.openEditDialog();
+    },
+
+    saveRole: function() {
+      this.closeEditDialog();
+    },
+
+    cancelEditRole: function() {
+      this.closeEditDialog();
+    },
+
+    assignRoleType: function(profile, roleType) {
+      var role = this.getRoleByType(roleType);
+      this.doAssignRole(profile, role);
     },
 
     assignRole: function(plan, role, profile) {
       this.doAssignRole(plan, role, profile);
+    },
+
+    removeRole: function(profile, role) {
+      var plan = this.get('model.plan');
+      this.doAssignRole(plan, role, null);
     },
 
     unassignRole: function(role) {

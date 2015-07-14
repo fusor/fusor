@@ -97,10 +97,17 @@ export default Ember.Component.extend({
 
   actions: {
     showAssignMenu: function() {
-      if (this.get('freeNodes') > 0) {
+      if (this.get('unassignedRoles').length > 0) {
         this.set('assignMenuOpenClass', 'open');
       }
     },
+
+    assignRole: function(role) {
+      var profile = this.get('profile');
+      var plan = this.get('plan');
+      this.sendAction('assignRole', plan, role, profile);
+    },
+
     assignDroppedRole: function(role) {
       role.set('isDraggingObject', false);
       var profile = this.get('profile');
@@ -112,6 +119,11 @@ export default Ember.Component.extend({
     },
     editRole: function(role) {
       this.sendAction('editRole', role);
+    },
+
+    removeRole: function(role) {
+      var profile = this.get('profile');
+      this.sendAction('removeRole', profile, role);
     }
   },
   didInsertElement: function() {
