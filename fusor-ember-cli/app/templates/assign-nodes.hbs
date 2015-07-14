@@ -2,17 +2,15 @@
     <div class="col-md-12">
         <h2>Available Deployment Roles</h2>
         {{#draggable-object-target action="unassignRole"}}
-            <div class="row deployment-roles deployment-roles-unassigned deployment-roles-assignable {{droppableClass}}">
+            <div class="row col-md-12 deployment-roles deployment-roles-unassigned deployment-roles-assignable {{droppableClass}}">
               {{#each role in unassignedRoles}}
                 {{#draggable-object content=role}}
                   {{deployment-role role=role edit="editRole"}}
                 {{/draggable-object}}
               {{/each}}
-              {{#unless noRolesAssigned}}
-                {{#draggable-object content=role}}
-                  {{deployment-role role-assigned=false}}
-                {{/draggable-object}}
-              {{/unless}}
+              {{#if allRolesAssigned}}
+                {{deployment-role role-assigned=false}}
+              {{/if}}
             </div>
         {{/draggable-object-target}}
     </div><!-- /col -->
@@ -24,9 +22,9 @@
             <div class="row">
                 <div class='col-md-7'>
                   {{#if nodes}}
-                    {{node-profile profile=profile nodes=nodes plan=model.plan doAssign=true assignRole="assignRole" unassignRole="unassignRole" editRole="editRole"}}
+                    {{node-profile profile=profile nodes=nodes plan=model.plan doAssign=true assignRole="assignRole" unassignRole="unassignRole" editRole="editRole" removeRole="removeRole"}}
                  {{else}}
-                    {{node-profile profile=profile plan=model.plan doAssign=true assignRole="assignRole" unassignRole="unassignRole" editRole="editRole"}}
+                    {{node-profile profile=profile plan=model.plan doAssign=true assignRole="assignRole" unassignRole="unassignRole" editRole="editRole" removeRole="removeRole"}}
                  {{/if}}
                 </div>
             </div>
@@ -52,3 +50,5 @@
         </div>
     </div>
 </div>
+
+{{partial 'edit-deployment-role'}}
