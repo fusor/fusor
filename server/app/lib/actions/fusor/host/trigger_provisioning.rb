@@ -28,6 +28,7 @@ module Actions
           host = ::Host::Base.find(input[:host_id])
 
           success, host = assign_host_to_hostgroup(host, hostgroup)
+          sleep_before_reboot
           reboot_host(host) if host
         end
 
@@ -154,6 +155,21 @@ module Actions
               joins(:organizations).
               where("taxonomies.id in (?)", [deployment.organization.id]).first
         end
+
+        def sleep_before_reboot
+          sleep_seconds = 60
+          if SETTINGS[:fusor][:provision]
+            if SETTINGS[:fusor][:provision][:sleep_before_reboot]
+              sleep_seconds = SETTINGS[:fusor][:provision][:sleep_before_reboot].to_i
+              Rails.logger.warn "XXX using setting for [:fusor][:provision][:sleep_before_reboot] = #{sleep_seconds} seconds"
+            end
+          end
+
+          Rails.logger.warn "XXX sleeping for #{sleep_seconds} seconds"
+          sleep sleep_seconds
+          Rails.logger.warn "XXX woke up from sleep for #{sleep_seconds} seconds"
+        end
+
       end
     end
   end
