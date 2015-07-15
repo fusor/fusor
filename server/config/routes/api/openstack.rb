@@ -11,6 +11,7 @@ Fusor::Engine.routes.draw do
         resources :images
         get '/images/show_by_name/:name', to: 'images#show_by_name', as: 'images_show_by_name'
         resources :nodes
+        get '/nodes/:id/ready', to: 'nodes#ready', as: 'nodes_ready'
       end
     end
   end

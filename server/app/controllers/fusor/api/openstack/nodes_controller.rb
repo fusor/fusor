@@ -25,6 +25,11 @@ module Fusor
           @node = undercloud_handle.create_node(params[:node], true)
           respond_for_show :resource => @node
         end
+
+        def ready
+          ready = undercloud_handle.introspect_node_status(params[:id])
+          render :json => {:node => {:id => params[:id], :ready => ready}}.to_json
+        end
         
       end
     end
