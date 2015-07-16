@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
-  needs: ['application','rhci', 'deployment', 'satellite', 'configure-organization',
+  needs: ['application','deployment', 'satellite', 'configure-organization',
           'configure-environment', 'rhev-setup', 'hypervisor', 'hypervisor/discovered-host',
           'engine/discovered-host', 'storage',
           'networking', 'rhev-options', 'where-install',
@@ -9,23 +9,23 @@ export default Ember.Controller.extend({
 
   rhevValidated: function() {
     if (this.get('isRhev')) {
-      return Ember.isPresent(this.get('controllers.deployment.rhev_engine_admin_password')) &&
+      return Ember.isPresent(this.get('controllers.deployment.model.rhev_engine_admin_password')) &&
              Ember.isPresent(this.get('selectedRhevEngine')) &&
              Ember.isPresent(this.get('selectedHypervisorHosts')) &&
-             Ember.isPresent(this.get('controllers.deployment.rhev_storage_type'));
+             Ember.isPresent(this.get('controllers.deployment.model.rhev_storage_type'));
     } else {
       return true;
     }
-  }.property('controllers.deployment.rhev_engine_admin_password', 'controllers.deployment.rhev_storage_type',
+  }.property('controllers.deployment.model.rhev_engine_admin_password', 'controllers.deployment.model.rhev_storage_type',
              'selectedRhevEngine', 'selectedHypervisorHosts'),
 
   cfmeValidated: function() {
     if (this.get('isCloudForms')) {
-      return Ember.isPresent(this.get('controllers.deployment.cfme_install_loc'));
+      return Ember.isPresent(this.get('controllers.deployment.model.cfme_install_loc'));
     } else {
       return true;
     }
-  }.property('controllers.deployment.cfme_install_loc'),
+  }.property('controllers.deployment.model.cfme_install_loc'),
 
   buttonDeployTitle: function() {
     if (this.get('controllers.deployment.isStarted')) {
@@ -57,7 +57,7 @@ export default Ember.Controller.extend({
   hostAddress: Ember.computed.alias("controllers.rhev-options.hostAddress"),
   engineHostName: Ember.computed.alias("controllers.rhev-options.engineHostName"),
 
-  nameDeployment: Ember.computed.alias("controllers.deployment.name"),
+  nameDeployment: Ember.computed.alias("controllers.deployment.model.name"),
   selectedOrganization: Ember.computed.alias("controllers.deployment.selectedOrganzation"),
   selectedEnvironment: Ember.computed.alias("controllers.deployment.selectedEnvironment"),
   rhevSetup: Ember.computed.alias("controllers.deployment.rhevSetup"),
@@ -67,13 +67,13 @@ export default Ember.Controller.extend({
   isCloudForms: Ember.computed.alias("controllers.deployment.isCloudForms"),
   isSubscriptions: Ember.computed.alias("controllers.deployment.isSubscriptions"),
 
-  isSelfHosted: Ember.computed.alias("controllers.deployment.rhev_is_self_hosted"),
-  selectedHypervisorHosts: Ember.computed.alias("controllers.deployment.discovered_hosts"),
+  isSelfHosted: Ember.computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
+  selectedHypervisorHosts: Ember.computed.alias("controllers.deployment.model.discovered_hosts"),
 
-  rhev_engine_host: Ember.computed.alias("controllers.deployment.discovered_host"),
-  selectedRhevEngine: Ember.computed.alias("controllers.deployment.discovered_host"),
+  rhev_engine_host: Ember.computed.alias("controllers.deployment.model.discovered_host"),
+  selectedRhevEngine: Ember.computed.alias("controllers.deployment.model.discovered_host"),
   isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
-  subscriptions: Ember.computed.alias("controllers.deployment.subscriptions"),
+  subscriptions: Ember.computed.alias("controllers.deployment.model.subscriptions"),
 
   engineNamePlusDomain: function() {
     if (this.get('isStarted')) {
@@ -84,15 +84,15 @@ export default Ember.Controller.extend({
     }
   }.property('selectedRhevEngine.name', 'isStarted'),
 
-  nameRHCI: Ember.computed.alias("controllers.rhci.nameRHCI"),
-  nameRhev: Ember.computed.alias("controllers.rhci.nameRhev"),
-  nameOpenStack: Ember.computed.alias("controllers.rhci.nameOpenStack"),
-  nameCloudForms: Ember.computed.alias("controllers.rhci.nameCloudForms"),
-  nameSatellite: Ember.computed.alias("controllers.rhci.nameSatellite"),
+  nameRHCI: Ember.computed.alias("controllers.deployment.nameRHCI"),
+  nameRhev: Ember.computed.alias("controllers.deployment.nameRhev"),
+  nameOpenStack: Ember.computed.alias("controllers.deployment.nameOpenStack"),
+  nameCloudForms: Ember.computed.alias("controllers.deployment.nameCloudForms"),
+  nameSatellite: Ember.computed.alias("controllers.deployment.nameSatellite"),
 
   backRouteNameonReviewInstallation: function() {
     if (this.get('isSubscriptions')) {
-      if (Ember.isPresent(this.get('controllers.deployment.upstream_consumer_uuid'))) {
+      if (Ember.isPresent(this.get('controllers.deployment.model.upstream_consumer_uuid'))) {
         return 'subscriptions.select-subscriptions';
       } else {
         return 'subscriptions.credentials';
@@ -106,16 +106,16 @@ export default Ember.Controller.extend({
         return 'storage';
       }
     }
-  }.property('isSubscriptions', 'isRhev', 'isOpenStack', 'isCloudForms'),
+  }.property('isSubscriptions', 'isRhev', 'isOpenStack', 'isCloudForms', 'controllers.deployment.model.upstream_consumer_uuid'),
 
   lifecycleEnvironmentName: function() {
-    var name = this.get('controllers.deployment.lifecycle_environment.name');
+    var name = this.get('controllers.deployment.model.lifecycle_environment.name');
     if (name) {
       return name;
     } else {
       return "Default Organization View";
     }
-  }.property('controllers.deployment.lifecycle_environment.name'),
+  }.property('controllers.deployment.model.lifecycle_environment.name'),
 
   deploymentButtonAction: function() {
     if (this.get('hasSubscriptionsToAttach')) {

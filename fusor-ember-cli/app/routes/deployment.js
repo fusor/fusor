@@ -17,7 +17,8 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
   actions: {
     installDeployment: function() {
       var self = this;
-      var deployment = this.controllerFor('deployment');
+      var deployment = self.modelFor('deployment');
+      var depController = this.controllerFor('deployment');
       var token = $('meta[name="csrf-token"]').attr('content');
 
       var controller = this.controllerFor('review/installation');
@@ -29,7 +30,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
         Ember.$.ajax({
             url: '/fusor/api/v21/deployments/' + deployment.get('id') + '/deploy' ,
             type: "PUT",
-            data: JSON.stringify({'skip_content': deployment.get('skipContent') }),
+            data: JSON.stringify({'skip_content': depController.get('skipContent') }),
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
@@ -39,7 +40,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
             success: function(response) {
               resolve(response);
               var uuid = response.id;
-              var deployment = self.modelFor('deployment');
               deployment.set('foreman_task_uuid', uuid);
               deployment.save().then(function () {
                 return self.transitionTo('review.progress.overview');
@@ -66,7 +66,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       var token = $('meta[name="csrf-token"]').attr('content');
       var sessionPortal = this.modelFor('subscriptions');
       var consumerUUID = sessionPortal.get('consumerUUID');
-      var subscriptions = this.controllerFor('subscriptions/select-subscriptions').get('model');
+      var subscriptions = this.controllerFor('subscriptions/select-subscriptions').get('subscriptionPools');
 
       var controller = this.controllerFor('review/installation');
 
@@ -77,16 +77,16 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       subscriptions.forEach(function(item){
         console.log(item);
         console.log('qtyToAttach is');
-        console.log(item.qtyToAttach);
+        console.log(item.get('qtyToAttach'));
         console.log('pool ID is');
-        console.log(item.id);
+        console.log(item.get('id'));
         console.log('isSelectedSubscription is');
-        console.log(item.isSelectedSubscription);
+        console.log(item.get('isSelectedSubscription'));
 
-        if (item.isSelectedSubscription) {
+        if (item.get('isSelectedSubscription')) {
 
           // POST /customer_portal/consumers/#{CONSUMER['uuid']}/entitlements?pool=#{POOL['id']}&quantity=#{QUANTITY}
-          var url = '/customer_portal/consumers/' + consumerUUID + "/entitlements?pool=" + item.id + "&quantity=" + item.qtyToAttach;
+          var url = '/customer_portal/consumers/' + consumerUUID + "/entitlements?pool=" + item.get('id') + "&quantity=" + item.get('qtyToAttach');
 
           return new Ember.RSVP.Promise(function (resolve, reject) {
             Ember.$.ajax({

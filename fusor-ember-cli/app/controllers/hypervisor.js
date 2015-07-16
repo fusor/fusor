@@ -3,26 +3,26 @@ import Ember from 'ember';
 export default Ember.Controller.extend({
   needs: ['rhev', 'deployment'],
 
-  host_naming_scheme: Ember.computed.alias("controllers.deployment.host_naming_scheme"),
-  custom_preprend_name: Ember.computed.alias("controllers.deployment.custom_preprend_name"),
+  hostNamingScheme: Ember.computed.alias("controllers.deployment.model.host_naming_scheme"),
+  customPreprendName: Ember.computed.alias("controllers.deployment.model.custom_preprend_name"),
 
   namingOptions: ['Freeform', 'MAC address', 'hypervisorN', 'Custom scheme'],
 
   isFreeform: function() {
-    return (this.get('host_naming_scheme') === 'Freeform');
-  }.property('host_naming_scheme'),
+    return (this.get('hostNamingScheme') === 'Freeform');
+  }.property('hostNamingScheme'),
 
   isMac: function() {
-    return (this.get('host_naming_scheme') === 'MAC address');
-  }.property('host_naming_scheme'),
+    return (this.get('hostNamingScheme') === 'MAC address');
+  }.property('hostNamingScheme'),
 
   isCustomScheme: function() {
-    return (this.get('host_naming_scheme') === 'Custom scheme');
-  }.property('host_naming_scheme'),
+    return (this.get('hostNamingScheme') === 'Custom scheme');
+  }.property('hostNamingScheme'),
 
   isHypervisorN: function() {
-    return (this.get('host_naming_scheme') === 'hypervisorN');
-  }.property('host_naming_scheme'),
+    return (this.get('hostNamingScheme') === 'hypervisorN');
+  }.property('hostNamingScheme'),
 
 
 

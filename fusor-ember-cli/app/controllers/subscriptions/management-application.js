@@ -7,24 +7,24 @@ export default Ember.Controller.extend({
   showManagementApplications: true,
 
   sessionPortal: Ember.computed.alias('controllers.subscriptions.model'),
-  upstream_consumer_uuid: Ember.computed.alias("controllers.deployment.upstream_consumer_uuid"),
-  upstream_consumer_name: Ember.computed.alias("controllers.deployment.upstream_consumer_name"),
-  // cuuid: Ember.computed.alias("controllers.deployment.upstream_consumer_uuid"),
+  upstreamConsumerUuid: Ember.computed.alias("controllers.deployment.model.upstream_consumer_uuid"),
+  upstreamConsumerName: Ember.computed.alias("controllers.deployment.model.upstream_consumer_name"),
 
   showAlertMessage: false,
 
   disableNextOnManagementApp: function() {
-    return (Ember.isBlank(this.get('upstream_consumer_uuid')));
-  }.property('upstream_consumer_uuid'),
+    return (Ember.isBlank(this.get('upstreamConsumerUuid')));
+  }.property('upstreamConsumerUuid'),
 
   actions: {
     selectManagementApp: function(managementApp) {
       this.set('showAlertMessage', false);
       this.get('sessionPortal').set('consumerUUID', managementApp.get('id'));
       this.get('sessionPortal').save();
-      this.set('upstream_consumer_uuid', managementApp.get('id'));
-      this.set('upstream_consumer_name', managementApp.get('name'));
-      this.transitionTo('subscriptions.management-application.consumer', managementApp.get('id'));
+      this.set('upstreamConsumerUuid', managementApp.get('id'));
+      this.set('upstreamConsumerName', managementApp.get('name'));
+      // show selected UUID in url
+      return this.transitionTo('subscriptions.management-application.consumer', managementApp.get('id'));
     },
 
     createSatellite: function() {

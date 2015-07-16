@@ -5,17 +5,17 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
 
   needs: ['deployment', 'application'],
 
-  satelliteTabRouteName: Ember.computed.alias("controllers.deployment.satelliteTabRouteName"),
-  organizationTabRouteName: Ember.computed.alias("controllers.deployment.organizationTabRouteName"),
+  satelliteTabRouteName: Ember.computed.alias("controllers.deployment.model.satelliteTabRouteName"),
+  organizationTabRouteName: Ember.computed.alias("controllers.deployment.model.organizationTabRouteName"),
 
-  selectedOrganization: Ember.computed.alias("controllers.deployment.organization"),
+  selectedOrganization: Ember.computed.alias("controllers.deployment.model.organization"),
 
   step2RouteName: Ember.computed.alias("controllers.deployment.step2RouteName"),
 
   nullifyLifecycleEnvIfSelected: function(){
     if (this.get('useDefaultOrgViewForEnv')) {
       this.set('selectedEnvironment', null);
-      return this.get('controllers.deployment').set('lifecycle_environment', null);
+      return this.get('controllers.deployment.model').set('lifecycle_environment', null);
     }
   }.observes('useDefaultOrgViewForEnv'),
 
@@ -23,13 +23,13 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
   hasNoLifecycleEnvironment: Ember.computed.alias("controllers.deployment.hasNoLifecycleEnvironment"),
   disableNextOnLifecycleEnvironment: Ember.computed.alias("controllers.deployment.disableNextOnLifecycleEnvironment"),
 
-  deployment: Ember.computed.alias("controllers.deployment"),
+  deployment: Ember.computed.alias("controllers.deployment.model"),
 
   actions: {
     selectEnvironment: function(environment) {
       this.set('showAlertMessage', false);
       this.set('selectedEnvironment', environment);
-      return this.get('controllers.deployment').set('lifecycle_environment', environment);
+      return this.get('controllers.deployment.model').set('lifecycle_environment', environment);
     },
 
     createEnvironment: function() {
@@ -48,7 +48,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
         //success
         self.get('lifecycleEnvironments').addObject(result);
         self.set('selectedEnvironment', environment);
-        self.get('controllers.deployment').set('lifecycle_environment', environment);
+        self.get('controllers.deployment.model').set('lifecycle_environment', environment);
         return self.set('showAlertMessage', true);
       }, function() {
         alert('error saving environment');

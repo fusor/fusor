@@ -6,9 +6,9 @@ export default Ember.Mixin.create({
           'configure-organization', 'configure-environment',
           'subscriptions/select-subscriptions'],
 
-  isRhev: Ember.computed.alias("deploy_rhev"),
-  isOpenStack: Ember.computed.alias("deploy_openstack"),
-  isCloudForms: Ember.computed.alias("deploy_cfme"),
+  isRhev: Ember.computed.alias("model.deploy_rhev"),
+  isOpenStack: Ember.computed.alias("model.deploy_openstack"),
+  isCloudForms: Ember.computed.alias("model.deploy_cfme"),
 
   // default is downstream
   isUpstream: false,

@@ -2,7 +2,7 @@ import Ember from 'ember';
 import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
 import DisableTabMixin from "../mixins/disable-tab-mixin";
 
-export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableTabMixin, {
+export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixin, {
 
   needs: ['deployment-new/satellite/configure-environment', 'application'],
 

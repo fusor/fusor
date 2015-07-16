@@ -2,7 +2,7 @@ import Ember from 'ember';
 import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
 import DisableTabMixin from "../mixins/disable-tab-mixin";
 
-export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableTabMixin, {
+export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixin, {
 
   needs: ['configure-environment', 'deployments', 'rhev', 'cloudforms',
           'subscriptions/credentials', 'subscriptions/select-subscriptions'],
@@ -32,17 +32,17 @@ export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableT
 
   hasSubscriptionUUID: function() {
     return (Ember.isPresent(this.get('controllers.subscriptions/credentials.organizationUpstreamConsumerUUID')) ||
-            Ember.isPresent(this.get('upstream_consumer_uuid'))
+            Ember.isPresent(this.get('model.upstream_consumer_uuid'))
            );
-  }.property('controllers.subscriptions/credentials.organizationUpstreamConsumerUUID', 'upstream_consumer_uuid'),
+  }.property('controllers.subscriptions/credentials.organizationUpstreamConsumerUUID', 'model.upstream_consumer_uuid'),
 
   isDisabledReview: function() {
     return (this.get('isDisabledSubscriptions') || !this.get("hasSubscriptionUUID") || this.get('controllers.subscriptions/select-subscriptions.disableNextOnSelectSubscriptions'));
   }.property('isDisabledSubscriptions', 'hasSubscriptionUUID', 'controllers.subscriptions/select-subscriptions.disableNextOnSelectSubscriptions'),
 
   hasLifecycleEnvironment: function() {
-    return (!!(this.get('lifecycle_environment.id')) || this.get('useDefaultOrgViewForEnv'));
-  }.property('lifecycle_environment', 'useDefaultOrgViewForEnv'),
+    return (!!(this.get('model.lifecycle_environment.id')) || this.get('useDefaultOrgViewForEnv'));
+  }.property('model.lifecycle_environment', 'useDefaultOrgViewForEnv'),
   hasNoLifecycleEnvironment: Ember.computed.not('hasLifecycleEnvironment'),
 
   validations: {
@@ -74,11 +74,11 @@ export default Ember.ObjectController.extend(DeploymentControllerMixin, DisableT
   }.property('isRhev', 'isOpenStack', 'isCloudForms', 'discovered_hosts'),
 
   managementApplicationName: function() {
-    if (Ember.isPresent(this.get('upstream_consumer_name'))) {
-      return this.get('upstream_consumer_name');
+    if (Ember.isPresent(this.get('model.upstream_consumer_name'))) {
+      return this.get('model.upstream_consumer_name');
     } else {
       return this.get('controllers.subscriptions/credentials.organizationUpstreamConsumerName');
     }
-  }.property('upstream_consumer_name', 'controllers.subscriptions/credentials.organizationUpstreamConsumerName'),
+  }.property('model.upstream_consumer_name', 'controllers.subscriptions/credentials.organizationUpstreamConsumerName'),
 
 });

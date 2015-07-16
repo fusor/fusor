@@ -29,13 +29,13 @@
   <tbody>
   {{#each deployment in filteredDeployments itemController="deployment"}}
     <tr>
-      <td> {{#link-to 'deployment' deployment}} {{deployment.name}} {{/link-to}}</td>
-      <td> {{deployment.lifecycle_environment.name}} </td>
-      <td> {{deployment.organization.name}} </td>
+      <td> {{#link-to 'deployment' deployment.model}} {{deployment.model.name}} {{/link-to}}</td>
+      <td> {{deployment.model.lifecycle_environment.name}} </td>
+      <td> {{deployment.model.organization.name}} </td>
       <td>
-          {{#link-to 'deployment' deployment class='btn btn-sm btn-default'}} Edit {{/link-to}}
+          {{#link-to 'deployment' deployment.model class='btn btn-sm btn-default'}} Edit {{/link-to}}
           {{#unless deployment.isStarted}}
-              {{delete-deployment-button deployment=deployment
+              {{delete-deployment-button deployment=deployment.model
                                          action="openDeploymentModal"}}
           {{/unless}}
       </td>

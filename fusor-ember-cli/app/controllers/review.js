@@ -2,12 +2,12 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
-  needs: ['subscriptions', 'rhci', 'application', 'deployment', 'review/progress/overview'],
+  needs: ['subscriptions', 'application', 'deployment', 'review/progress/overview'],
 
   isUpstream: Ember.computed.alias("controllers.application.isUpstream"),
   disableNext: Ember.computed.alias("controllers.subscriptions.disableNext"),
 
-  nameSelectSubscriptions: Ember.computed.alias("controllers.rhci.nameSelectSubscriptions"),
+  nameSelectSubscriptions: Ember.computed.alias("controllers.deployment.nameSelectSubscriptions"),
 
   stepNumberReview: Ember.computed.alias("controllers.deployment.stepNumberReview"),
 

@@ -4,15 +4,15 @@ export default Ember.Controller.extend({
 
   needs: ['deployment'],
 
-  rhev_is_self_hosted: Ember.computed.alias("controllers.deployment.rhev_is_self_hosted"),
+  rhevIsSelfHosted: Ember.computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
 
   rhevSetup: function() {
-    return (this.get('rhev_is_self_hosted') ? "selfhost" : "rhevhost");
-  }.property('rhev_is_self_hosted'),
+    return (this.get('rhevIsSelfHosted') ? "selfhost" : "rhevhost");
+  }.property('rhevIsSelfHosted'),
 
   rhevSetupTitle: function() {
-    return (this.get('rhev_is_self_hosted') ? "Self Hosted" : "Host + Engine");
-  }.property('rhev_is_self_hosted'),
+    return (this.get('rhevIsSelfHosted') ? "Self Hosted" : "Host + Engine");
+  }.property('rhevIsSelfHosted'),
 
   isSelfHosted: function() {
     return (this.get('rhevSetup') === 'selfhost');
@@ -20,7 +20,7 @@ export default Ember.Controller.extend({
 
   actions: {
     rhevSetupChanged: function() {
-      return this.get('controllers.deployment').set('rhev_is_self_hosted', this.get('isSelfHosted'));
+      return this.get('controllers.deployment.model').set('rhev_is_self_hosted', this.get('isSelfHosted'));
     }
   }
 

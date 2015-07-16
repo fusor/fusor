@@ -55,14 +55,18 @@
         </thead>
 
         <tbody>
-        {{#each host in filteredHosts itemController='discovered-host'}}
-           {{tr-hypervisor host=host isCustomScheme=isCustomScheme
-                                     isMac=isMac
-                                     isHypervisorN=isHypervisorN
-                                     custom_preprend_name=custom_preprend_name
-                                     isFreeform=isFreeform
-                                     num=host.id
-                                     disabled=controllers.deployment.isStarted}}
+        {{#each host in filteredHosts}}
+           {{tr-hypervisor host=host
+                           model=model
+                           parentController=controller
+                           isCustomScheme=isCustomScheme
+                           isMac=isMac
+                           isHypervisorN=isHypervisorN
+                           customPreprendName=customPreprendName
+                           isFreeform=isFreeform
+                           num=host.id
+                           disabled=controllers.deployment.isStarted
+                           filteredHosts=filteredHosts}}
         {{/each}}
         </tbody>
       </table>

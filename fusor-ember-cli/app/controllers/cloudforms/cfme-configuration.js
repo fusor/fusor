@@ -4,7 +4,7 @@ export default Ember.Controller.extend({
 
   needs: ['deployment', 'cloudforms'],
 
-  cfme_root_password: Ember.computed.alias("controllers.deployment.cfme_root_password"),
+  cfmeRootPassword: Ember.computed.alias("controllers.deployment.model.cfme_root_password"),
   isSubscriptions: Ember.computed.alias("controllers.deployment.isSubscriptions"),
 
   nextRouteNameAfterCFME: function() {

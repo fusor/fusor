@@ -5,8 +5,8 @@ export default Ember.Route.extend({
   setupController: function(controller, model) {
     controller.set('model', model);
     controller.set('satelliteTabRouteName', 'deployment-new.satellite.index');
-    controller.set('deploy_rhev', true);
-    controller.set('deploy_cfme', true);
+    controller.set('model.deploy_rhev', true);
+    controller.set('model.deploy_cfme', true);
   },
 
   activate: function() {

@@ -5,13 +5,13 @@ export default Ember.Mixin.create({
   needs: ['deployment', 'configure-organization', 'configure-environment'],
 
   hasName: function() {
-    return (this.get('name.length') > 0);
-  }.property('name'),
+    return (this.get('model.name.length') > 0);
+  }.property('model.name'),
   hasNoName: Ember.computed.not('hasName'),
 
   hasOrganization: function() {
-    return !!(this.get('organization.id'));
-  }.property('organization'),
+    return !!(this.get('model.organization.id'));
+  }.property('model.organization.id'),
   hasNoOrganization: Ember.computed.not('hasOrganization'),
 
   // disable All if there is no deployment name
