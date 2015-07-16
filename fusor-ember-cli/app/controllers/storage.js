@@ -16,6 +16,30 @@ export default Ember.Controller.extend({
   step3RouteName: Ember.computed.alias("controllers.deployment.step3RouteName"),
   isCloudForms: Ember.computed.alias("controllers.deployment.isCloudForms"),
 
+  hasEndingSlashInSharePath: function() {
+    return (this.get('rhev_share_path').slice('-1') === '/');
+  }.property('rhev_share_path'),
+
+  hasEndingSlashInExportPath: function() {
+    return (this.get('rhev_export_domain_path').slice('-1') === '/');
+  }.property('rhev_export_domain_path'),
+
+  errorsHashSharePath: function() {
+    if (this.get('hasEndingSlashInSharePath')) {
+      return {"name": 'You cannot have a trailing slash'};
+    } else {
+      return {};
+    }
+  }.property('hasEndingSlashInSharePath', 'rhev_share_path'),
+
+  errorsHashExportPath: function() {
+    if (this.get('hasEndingSlashInExportPath')) {
+      return {"name": 'You cannot have a trailing slash'};
+    } else {
+      return {};
+    }
+  }.property('hasEndingSlashInExportPath', 'rhev_export_domain_path'),
+
   isNFS: function() {
     return (this.get('rhev_storage_type') === 'NFS');
   }.property('rhev_storage_type'),
@@ -28,17 +52,30 @@ export default Ember.Controller.extend({
     return (this.get('rhev_storage_type') === 'Gluster');
   }.property('rhev_storage_type'),
 
+  isInvalidStorageFields: function() {
+    return (Ember.isBlank(this.get('rhev_storage_type')) ||
+            Ember.isBlank(this.get('rhev_storage_name')) ||
+            Ember.isBlank(this.get('rhev_storage_address')) ||
+            Ember.isBlank(this.get('rhev_share_path')) ||
+            this.get('hasEndingSlashInSharePath')
+           );
+  }.property('rhev_storage_type', 'rhev_storage_name', 'rhev_storage_address', 'rhev_share_path', 'hasEndingSlashInSharePath'),
+
+  isInvalidExportDomainFields: function() {
+    return (Ember.isBlank(this.get('rhev_export_domain_name')) ||
+            Ember.isBlank(this.get('rhev_export_domain_address')) ||
+            Ember.isBlank(this.get('rhev_export_domain_path')) ||
+            this.get('hasEndingSlashInExportPath')
+           );
+  }.property('rhev_export_domain_name', 'rhev_export_domain_address', 'rhev_export_domain_path', 'hasEndingSlashInExportPath'),
+
   disableNextStorage: function () {
     if (this.get('isCloudForms')) {
-      return (Ember.isBlank(this.get('rhev_storage_type')) ||
-              Ember.isBlank(this.get('rhev_export_domain_name')) ||
-              Ember.isBlank(this.get('rhev_export_domain_address')) ||
-              Ember.isBlank(this.get('rhev_export_domain_path'))
-             );
+      return (this.get('isInvalidStorageFields') || this.get('isInvalidExportDomainFields'));
     } else {
-      return Ember.isBlank(this.get('rhev_storage_type'));
+      return (this.get('isInvalidStorageFields'));
     }
-  }.property('isCloudForms', 'rhev_storage_type', 'rhev_export_domain_name', 'rhev_export_domain_address', 'rhev_export_domain_path'),
+  }.property('isInvalidStorageFields', 'isInvalidExportDomainFields'),
 
   validRhevStorage: Ember.computed.not('disableNextStorage'),
 

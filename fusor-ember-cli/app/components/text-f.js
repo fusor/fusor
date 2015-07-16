@@ -6,9 +6,25 @@ export default Ember.Component.extend({
     return (this.get('type') ? this.get('type') : 'text');
   }.property('type'),
 
+  validIsRequiredAndBlank: function() {
+    return (this.get('isRequired') && Ember.isBlank(this.get('value')));
+  }.property('value', 'isRequired'),
+
+  isPassword: function() {
+    return (this.get('type') === 'password');
+  }.property('type'),
+
+  passwordTooShort: function() {
+    return (this.get('isPassword') && (this.get('value.length') < 8));
+  }.property('value', 'isPassword'),
+
+  hasError: function() {
+    return Ember.isPresent(this.get('errors.name'));
+  }.property('errors.name'),
+
   actions: {
-     showErrors: function() {
-       this.set("showError", true);
+     showValidationErrors: function() {
+       this.set("showValidationError", true);
      }
    }
 
