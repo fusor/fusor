@@ -5,11 +5,20 @@ export default DS.Model.extend({
   description: DS.attr('string'),
   version: DS.attr('number'),
 
-  countParameterName: function() {
-      return this.get('name') + '-' + this.get('version') + '::count'
+  parameterPrefix: function() {
+      return this.get('name') + '-' + this.get('version') + '::';
   }.property('name', 'version'),
+
+  countParameterName: function() {
+      return this.get('parameterPrefix') + 'count';
+  }.property('name', 'version'),
+
   flavorParameterName: function() {
-      return this.get('name') + '-' + this.get('version') + '::Flavor'
+      return this.get('parameterPrefix') + 'Flavor';
+  }.property('name', 'version'),
+
+  imageParameterName: function() {
+      return this.get('parameterPrefix') + 'Image';
   }.property('name', 'version'),
 
   roleType: function() {

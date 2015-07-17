@@ -18,6 +18,10 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     return paramValue;
   },
 
+  images: function() {
+    return this.get('model.images');
+  }.property('model.images'),
+
   unassignedRoles: function() {
     var unassignedRoles = [];
     var params = this.get('model.plan.parameters');
@@ -108,6 +112,10 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
   },
 
   edittedRole: null,
+  edittedRoleImage: null,
+  edittedRoleNodeCount: null,
+  edittedRoleProfile: null,
+  edittedRoleParameters: null,
   showSettings: true,
 
   openEditDialog: function() {
@@ -140,11 +148,44 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   actions: {
     editRole: function(role) {
+      var roleParams = [];
+      this.get('model.plan.parameters').forEach(function(param) {
+        if (param.get('id').indexOf(role.get('parameterPrefix')) === 0) {
+          roleParams.pushObject(param);
+        }
+      });
       this.set('edittedRole', role);
+      this.set('edittedRoleImage', this.getParamValue(role.get('imageParameterName'), roleParams));
+      this.set('edittedRoleNodeCount', this.getParamValue(role.get('countParameterName'), roleParams));
+      this.set('edittedRoleProfile', this.getParamValue(role.get('flavorParameterName'), roleParams));
+      this.set('edittedRoleParameters', roleParams);
       this.openEditDialog();
     },
 
     saveRole: function() {
+      var plan = this.get('model.plan');
+      var role = this.get('edittedRole');
+
+      var params = [
+        {'name': role.get('imageParameterName'), 'value': this.get('edittedRoleImage')},
+        {'name': role.get('countParameterName'), 'value': this.get('edittedRoleNodeCount')},
+        {'name': role.get('flavorParameterName'), 'value': this.get('edittedRoleProfile')}
+      ];
+
+      Ember.$.ajax({
+        url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_parameters',
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({ 'parameters': params }),
+        success: function(response) {
+          console.log('SUCCESS');
+        },
+        error: function(error) {
+          console.log('ERROR');
+          console.log(error);
+        }
+      });
+
       this.closeEditDialog();
     },
 
