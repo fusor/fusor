@@ -21,7 +21,7 @@
             </ul>
             <div class="tab-content" style="margin-top: 30px;">
                 {{#if showSettings}}
-                    <div role="tabpanel" class="tab-pane active" id="overall-settings">
+                    <div role="tabpanel" class="tab-pane active deployment-role-settings-content" id="overall-settings">
                         <div class="form-horizontal">
                             <fieldset>
                                 <div class="form-group">
@@ -38,19 +38,13 @@
                         </div>
                     </div>
                 {{else}}
-                    <div role="tabpanel" class="tab-pane active" id="service-configuration">
+                    <div role="tabpanel" class="tab-pane active deployment-role-settings-content" id="service-configuration">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="form-horizontal">
                                     {{#each roleParameter in edittedRoleParameters}}
                                         <div class="form-group required">
-                                            <label class="col-sm-4 control-label" for="service-configuration-setting-2">
-                                                {{roleParameter.id}}
-                                                <i class="pficon pficon-help" data-toggle="tooltip" data-placement="top" title={{roleParameter.description}}></i>
-                                            </label>
-                                            <div class="col-sm-8">
-                                                {{roleParameter.value}}
-                                            </div>
+                                          {{text-f label=roleParameter.displayId value=roleParameter.value labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
                                         </div>
                                     {{/each}}
                                 </div>

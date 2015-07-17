@@ -215,6 +215,13 @@
   position: relative;
   text-align: center;
 }
+
+.deployment-role-settings-content {
+  height: 400px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 .nav-node-registration {
   float: right;
   margin: 0 0 -1px;

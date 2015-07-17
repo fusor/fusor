@@ -161,6 +161,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       var roleParams = [];
       this.get('model.plan.parameters').forEach(function(param) {
         if (param.get('id').indexOf(role.get('parameterPrefix')) === 0) {
+          param.displayId = param.get('id').substring(role.get('parameterPrefix').length);
           roleParams.pushObject(param);
         }
       });
