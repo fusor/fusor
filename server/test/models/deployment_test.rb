@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'test_plugin_helper'
 
 class DeploymentTest < ActiveSupport::TestCase
@@ -90,6 +91,20 @@ class DeploymentTest < ActiveSupport::TestCase
     rhev.rhev_storage_type = 'NFS'
     rhev.rhev_share_path = nil
     assert_not rhev.save, "Saved rhev deployment that used nfs but had no path"
+  end
+
+  test "should not save rhev deployment if nfs path ends in slash" do
+    rhev = fusor_deployments(:rhev)
+    rhev.rhev_storage_type = 'NFS'
+    rhev.rhev_share_path = '/invalid/path/'
+    assert_not rhev.save, "Saved rhev deployment who's nfs path ended in a slash"
+  end
+
+  test "should not save rhev deployment if nfs path contains non-ascii characters" do
+    rhev = fusor_deployments(:rhev)
+    rhev.rhev_storage_type = 'NFS'
+    rhev.rhev_share_path = '/å'
+    assert_not rhev.save, "Saved rhev deployment who's nfs path contained non-ascii characters"
   end
 
   test "should not save rhev deployment if storage type is local and missing local path" do
