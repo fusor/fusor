@@ -88,13 +88,21 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     }
   }.property('isDraggingRole'),
 
+  showLoadingSpinner: false,
+  loadingSpinnerText: "Loading...",
+
   doAssignRole: function(plan, role, profile) {
     var data;
+    var me = this;
+
     if (profile == null ) {
       data = { 'role_name': role.get('name'), 'flavor_name': null };
     } else {
       data = { 'role_name': role.get('name'), 'flavor_name': profile.get('name') };
     }
+
+    me.set('loadingSpinnerText', "Loading...");
+    me.set('showLoadingSpinner', true);
 
     Ember.$.ajax({
       url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_role_flavor',
@@ -102,9 +110,11 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       contentType: 'application/json',
       data: JSON.stringify(data),
       success: function(response) {
+        me.set('showLoadingSpinner', false);
         console.log('SUCCESS');
       },
       error: function(error) {
+        me.set('showLoadingSpinner', false);
         console.log('ERROR');
         console.log(error);
       }
@@ -222,14 +232,21 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
     deployPlan: function() {
       var plan = this.get('model.plan');
+      var me = this;
+
+      me.set('loadingSpinnerText', "Deploying plan: " + plan.get('id'));
+      me.set('showLoadingSpinner', true);
+
       Ember.$.ajax({
         url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/deploy',
         type: 'POST',
         contentType: 'application/json',
         success: function(response) {
+          me.set('showLoadingSpinner', false);
           console.log('SUCCESS');
         },
         error: function(error) {
+          me.set('showLoadingSpinner', false);
           console.log('ERROR');
           console.log(error);
         }

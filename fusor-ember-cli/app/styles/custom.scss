@@ -188,6 +188,19 @@ li.disabled a {
   padding-left: 15px;
 }
 
+.loading-spinner {
+  display: inline-block;
+  position: fixed;
+  left: 40%;
+  top: 40%;
+}
+
+.loading-spinner-content {
+  display: inline-block;
+  padding: 5px;
+  font-size: 16px;
+}
+
 .spinner-text {
   font-size: 20px;
 }
