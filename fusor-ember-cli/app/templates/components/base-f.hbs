@@ -6,6 +6,9 @@
           <span class='errorForValidation'>*</span>
         {{/if}}
         {{label}}
+        {{#if showHelpPopover}}
+            <span class="pficon pficon-help" style="margin-left: 5px;" title={{helpText}}></span>
+        {{/if}}
       </label>
 
       <div class="{{inputClassSize}}">
