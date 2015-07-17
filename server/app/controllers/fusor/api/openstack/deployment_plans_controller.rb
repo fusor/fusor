@@ -35,6 +35,11 @@ module Fusor
           @plan = undercloud_handle.edit_plan_deployment_role_flavor(params[:id], params[:role_name], params[:flavor_name])
           redirect_to :action => 'show', :id => params[:id]
         end
+
+        def update_parameters
+          @plan = undercloud_handle.edit_plan_parameters(params[:id], params[:parameters])
+          redirect_to :action => 'show', :id => params[:id]
+        end
         
       end
     end
