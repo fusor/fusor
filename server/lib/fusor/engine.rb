@@ -8,6 +8,18 @@ module Fusor
     config.autoload_paths += Dir["#{config.root}/app/overrides"]
     config.autoload_paths += Dir["#{config.root}/app/serializers"]
 
+    initializer 'fusor.silenced_logger', :after => :build_middleware_stack do |app|
+      # Add additional paths below if you want logging silenced
+      #  we want the polling of ForemanTasksController#show silenced to reduce noise in logs
+      silenced_paths = ["api/v21/foreman_tasks/"]
+
+      Rails.logger.warn "fusor_server will update 'Katello.config.logging.ignored_paths' to silence logging of paths '#{silenced_paths}'"
+      for sil_path in silenced_paths
+        Katello.config.logging.ignored_paths.push(sil_path)
+      end
+      Rails.logger.warn "fusor_server has updated 'Katello.config.logging.ignored_paths' to #{Katello.config.logging.ignored_paths}"
+    end
+
     # Add any db migrations
     initializer "fusor.load_app_instance_data" do |app|
       app.config.paths['db/migrate'] += Fusor::Engine.paths['db/migrate'].existent
