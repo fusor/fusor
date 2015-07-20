@@ -38,7 +38,7 @@ export default Ember.Controller.extend({
     return ((this.get('controllers.deployment.model.rhev_is_self_hosted') && this.get('hasNoEngine')) ||
             (!this.get('controllers.deployment.model.rhev_is_self_hosted') && this.get('hasNoHypervisor'))
            );
-  }.property('controllers.deployment.rhev_is_self_hosted.model', 'hasNoEngine', 'hasNoHypervisor'),
+  }.property('controllers.deployment.model.rhev_is_self_hosted', 'hasNoEngine', 'hasNoHypervisor'),
 
   disableTabRhevStorage: function () {
     return (Ember.isBlank(this.get('controllers.deployment.model.rhev_root_password')) ||
@@ -46,7 +46,7 @@ export default Ember.Controller.extend({
             (this.get('controllers.deployment.model.rhev_root_password.length') < 8) ||
             (this.get('controllers.deployment.model.rhev_engine_admin_password.length') < 8)
            );
-  }.property('controllers.deployment.model.rhev_root_password', 'controllers.deployment.rhev_engine_admin_password'),
+  }.property('controllers.deployment.model.rhev_root_password', 'controllers.deployment.model.rhev_engine_admin_password'),
 
   validRhevSetup: true,
   validRhevEngine: Ember.computed.alias("hasEngine"),

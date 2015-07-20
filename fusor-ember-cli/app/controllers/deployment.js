@@ -52,8 +52,6 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
     },
   },
 
-  selectedRhevEngine: null,
-
   satelliteInvalid: Ember.computed.or('hasNoName', 'hasNoOrganization', 'hasNoLifecycleEnvironment'),
 
   skipContent: false,
