@@ -24,14 +24,26 @@
     If you need to attach more subscriptions to <strong>{{controllers.deployment.model.upstream_consumer_name}}</strong> for the components of your RHCI deployment, please do so before proceeding.
     </p>
 
-    {{input type="checkbox" name="enable_access_insights" disabled=false checked=enable_access_insights}}
+    {{input type="checkbox" name="enable_access_insights" disabled=isStarted checked=enable_access_insights}}
     <span class={{analyticsColor}}>
       Enable Red Hat Access Insights for this deployment
     </span>
     <br />
     <br />
 
+  {{#unless isStarted}}
+    {{#if hasContractNumbersInModelNotInPool}}
+      <div class="row">
+        <div class='col-md-9'>
+          <div class='alert alert-danger rhci-alert'>
+              You previously selected subscriptions (Contract Number {{contractNumbersInModelNotInPool}}) that are no longer available to be selected in the pool.
+          </div>
+        </div>
+      </div>
+    {{/if}}
 
+
+  {{#if hasSubscriptionPools}}
     <table class="table table-bordered small">
       <thead>
         <tr>
@@ -59,18 +71,66 @@
           </td>
         </tr>
       {{/each}}
+
       </tbody>
     </table>
+
+  {{else}}
+
+    <div class='col-md-9'>
+      <div class='alert alert-danger rhci-alert'>
+          <i class="fa fa-2x fa-exclamation-triangle errorForValidation"></i>
+          &nbsp;
+              No subscriptions found. Check your account in in the <a href='https://idp.redhat.com/idp/' target='_blank'>Red Hat Customer Portal</a> to verify you have subscriptions available.
+      </div>
+
+      {{#if hasSubscriptionSavedInModel}}
+
+        <div class='alert alert-danger rhci-alert'>
+                Below are the subscriptions that you previously saved with the deployment.
+        </div>
+
+        <table class="table table-bordered small">
+          <thead>
+            <tr>
+              <th> </th>
+              <th> Subscription Name </th>
+              <th> Contract Number </th>
+              <th> Quantity </th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {{#each sub in model}}
+              {{tr-subscription-saved subscription=sub}}
+            {{/each}}
+            </tbody>
+        </table>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{else}}
+
+        <table class="table table-bordered small">
+          <thead>
+            <tr>
+              <th> </th>
+              <th> Subscription Name </th>
+              <th> Contract Number </th>
+              <th> Quantity </th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {{#each sub in model}}
+              {{tr-subscription-saved subscription=sub}}
+            {{/each}}
+            </tbody>
+        </table>
+  {{/unless}}
   </div>
 </div>
-
-<!-- debugging only -->
-{{#each sub in model}}
-  {{!#if false}}
-   {{sub.id}} - {{sub.contract_number}} - {{sub.product_name}} - {{sub.quantity_attached}}
-   <br />
-  {{!/if}}
-{{/each}}
 
 {{#cancel-back-next backRouteName='subscriptions.management-application'
                    disableBack=false
