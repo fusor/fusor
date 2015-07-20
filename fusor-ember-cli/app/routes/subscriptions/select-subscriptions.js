@@ -8,39 +8,42 @@ export default Ember.Route.extend({
 
   setupController: function(controller, model) {
     controller.set('model', model);
-    controller.set('isLoading', true);
     var self = this;
 
-    var consumerUUID = this.modelFor('deployment').get('upstream_consumer_uuid');
+    if (!(this.controllerFor('deployment').get('isStarted'))) {
+        controller.set('isLoading', true);
 
-    var entitlements = this.store.find('entitlement', {uuid: consumerUUID});
-    var pools        = this.store.find('pool',        {uuid: consumerUUID});
+        var consumerUUID = this.modelFor('deployment').get('upstream_consumer_uuid');
 
-    return Ember.RSVP.Promise.all([entitlements, pools]).then(function(results) {
-      var entitlementsResults = results[0];
-      var allPoolsResults     = results[1];
-      self.modelFor('subscriptions').set('isAuthenticated', true); // in case go to this route from URL
-      allPoolsResults.forEach(function(pool){
-          pool.set('qtyAttached', 0); //default for loop
-          entitlementsResults.forEach(function(entitlement) {
-            if (entitlement.get('poolId') === pool.get('id')) {
-              pool.incrementProperty('qtyAttached', entitlement.get('quantity'));
-            }
+        var entitlements = this.store.find('entitlement', {uuid: consumerUUID});
+        var pools        = this.store.find('pool',        {uuid: consumerUUID});
+
+        return Ember.RSVP.Promise.all([entitlements, pools]).then(function(results) {
+          var entitlementsResults = results[0];
+          var allPoolsResults     = results[1];
+          self.modelFor('subscriptions').set('isAuthenticated', true); // in case go to this route from URL
+          allPoolsResults.forEach(function(pool){
+              pool.set('qtyAttached', 0); //default for loop
+              entitlementsResults.forEach(function(entitlement) {
+                if (entitlement.get('poolId') === pool.get('id')) {
+                  pool.incrementProperty('qtyAttached', entitlement.get('quantity'));
+                }
+              });
           });
-      });
-      controller.set('subscriptionEntitlements', Ember.A(results[0]));
-      controller.set('subscriptionPools', Ember.A(results[1]));
-      return controller.set('isLoading', false);
-    }, function() {
-         self.modelFor('subscriptions').set('isAuthenticated');
-         self.modelFor('subscriptions').save().then(function() {
-           self.controllerFor('subscriptions.credentials').setProperties({
-                                                               'showErrorMessage': true,
-                                                               'errorMsg': 'You are not currently logged in. Please log in below.'
-                                                             });
-           return self.transitionTo('subscriptions.credentials');
-         });
-    });
+          controller.set('subscriptionEntitlements', Ember.A(results[0]));
+          controller.set('subscriptionPools', Ember.A(results[1]));
+          return controller.set('isLoading', false);
+        }, function() {
+             self.modelFor('subscriptions').set('isAuthenticated');
+             self.modelFor('subscriptions').save().then(function() {
+               self.controllerFor('subscriptions.credentials').setProperties({
+                                                                   'showErrorMessage': true,
+                                                                   'errorMsg': 'You are not currently logged in. Please log in below.'
+                                                                 });
+               return self.transitionTo('subscriptions.credentials');
+             });
+        });
+    }
   },
 
   deactivate: function() {
