@@ -17,11 +17,15 @@ export default Ember.Controller.extend({
   isCloudForms: Ember.computed.alias("controllers.deployment.isCloudForms"),
 
   hasEndingSlashInSharePath: function() {
-    return (this.get('rhev_share_path').slice('-1') === '/');
+    if (Ember.isPresent(this.get('rhev_share_path'))) {
+      return (this.get('rhev_share_path').slice('-1') === '/');
+    }
   }.property('rhev_share_path'),
 
   hasEndingSlashInExportPath: function() {
-    return (this.get('rhev_export_domain_path').slice('-1') === '/');
+    if (Ember.isPresent(this.get('rhev_export_domain_path'))) {
+      return (this.get('rhev_export_domain_path').slice('-1') === '/');
+    }
   }.property('rhev_export_domain_path'),
 
   errorsHashSharePath: function() {

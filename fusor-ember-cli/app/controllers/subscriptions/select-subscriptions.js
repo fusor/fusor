@@ -9,7 +9,7 @@ export default Ember.ArrayController.extend({
   numSubscriptionsRequired: Ember.computed.alias("controllers.deployment.numSubscriptionsRequired"),
 
   hasSubscriptionsToAttach: function() {
-    return (this.get('model.length') > 0)
+    return (this.get('model.length') > 0);
   }.property('model.[]'),
 
   enableAnalytics: function() {

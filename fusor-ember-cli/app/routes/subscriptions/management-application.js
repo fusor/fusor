@@ -34,7 +34,9 @@ export default Ember.Route.extend({
     //debugger
 
     var sessionPortal = this.modelFor('subscriptions');
-    var upstream_consumer_uuid = this.modelFor('deployment').get('upstream_consumer_uuid');
+    var deployment = this.modelFor('deployment');
+    var upstream_consumer_uuid = deployment.get('upstream_consumer_uuid');
+
     if (upstream_consumer_uuid) {
       sessionPortal.set('consumerUUID', upstream_consumer_uuid);
       controller.set('sessionPortal', sessionPortal);
@@ -47,8 +49,8 @@ export default Ember.Route.extend({
             sessionPortal.set('consumerUUID', results.owner_details.upstreamConsumer.uuid);
             sessionPortal.save();
             controller.set('sessionPortal', sessionPortal);
-            controller.set('upstream_consumer_uuid', results.owner_details.upstreamConsumer.uuid);
-            controller.set('upstream_consumer_name', results.owner_details.upstreamConsumer.name);
+            deployment.set('upstream_consumer_uuid', results.owner_details.upstreamConsumer.uuid);
+            deployment.set('upstream_consumer_name', results.owner_details.upstreamConsumer.name);
           } else {
             // nullify sessionPortal.consumerUUID since it's probably a different deployment
             sessionPortal.set('consumerUUID', null);

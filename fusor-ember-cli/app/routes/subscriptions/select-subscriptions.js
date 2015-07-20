@@ -24,8 +24,6 @@ export default Ember.Route.extend({
           pool.set('qtyAttached', 0); //default for loop
           entitlementsResults.forEach(function(entitlement) {
             if (entitlement.get('poolId') === pool.get('id')) {
-              // // TODO change to increment function
-              // pool.set('qtyAttached', (pool.get('qtyAttached') + entitlement.get('quantity')));
               pool.incrementProperty('qtyAttached', entitlement.get('quantity'));
             }
           });
