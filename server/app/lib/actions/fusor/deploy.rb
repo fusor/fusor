@@ -18,136 +18,26 @@ module Actions
       end
 
       def plan(deployment, skip_content = false)
-        Rails.logger.warn "XXX action plan called"
         fail _("Unable to locate fusor.yaml settings in config/settings.plugins.d") unless SETTINGS[:fusor]
         fail _("Unable to locate content settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:content]
         fail _("Unable to locate host group settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:host_groups]
-        fail _("Unable to locate puppet class settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:puppet_classes]
 
         sequence do
-          product_types = [:rhev, :cfme, :openstack]  # array of supported products
-          products_enabled = [deployment.deploy_rhev, deployment.deploy_cfme, deployment.deploy_openstack]
+          unless skip_content
+            plan_action(::Actions::Fusor::Content::ManageContentAsSubPlan,
+                        deployment)
+          end
 
-          content = SETTINGS[:fusor][:content]
-          products_content = [content[:rhev], content[:cloudforms], content[:openstack]]
-          host_groups = SETTINGS[:fusor][:host_groups]
-          products_host_groups = [host_groups[:rhev], host_groups[:cloudforms], host_groups[:openstack]]
+          if deployment.deploy_rhev
+            plan_action(::Actions::Fusor::Deployment::Rhev::DeployAsSubPlan,
+                        deployment)
+          end
 
-          enable_smart_class_parameter_overrides
-
-          products_enabled.each_with_index do |product_enabled, index|
-            if product_enabled
-              if products_content[index]
-                unless skip_content
-                  plan_action(::Actions::Fusor::Content::EnableRepositories,
-                              deployment.organization,
-                              products_content[index])
-
-                  # As part of enabling repositories, zero or more repos will be created.  Let's
-                  # retrieve the repos needed for the deployment and use them in actions that follow
-                  repositories = retrieve_deployment_repositories(deployment.organization, products_content[index])
-
-                  plan_action(::Actions::Fusor::Content::SyncRepositories, repositories)
-
-                  plan_action(::Actions::Fusor::Content::PublishContentView,
-                              deployment,
-                              yum_repositories(repositories)) if deployment.lifecycle_environment_id
-                end
-
-                unless repositories
-                  repositories = retrieve_deployment_repositories(deployment.organization, products_content[index])
-                end
-                plan_configure_activation_key(deployment, yum_repositories(repositories))
-              end
-
-              if products_host_groups[index]
-                plan_action(::Actions::Fusor::ConfigureHostGroups,
-                            deployment,
-                            product_types[index],
-                            products_host_groups[index])
-              end
-
-              case product_types[index]
-                when :rhev
-                  plan_action(::Actions::Fusor::Deployment::DeployRhev,
-                              deployment)
-                when :cfme
-                  plan_action(::Actions::Fusor::Deployment::DeployCloudForms,
-                              deployment,
-                              file_repositories(repositories).first,
-                              image_file_name(products_content[index]))
-              end
-            end
+          if deployment.deploy_cfme
+            plan_action(::Actions::Fusor::Deployment::CloudForms::DeployAsSubPlan,
+                        deployment)
           end
         end
-      end
-
-      private
-
-      def plan_configure_activation_key(deployment, repositories)
-        # At this time, 1 activation key can be used to support all products; therefore,
-        # we only need to plan the action once.
-        return if @configure_activation_key_planned
-        plan_action(::Actions::Fusor::ActivationKey::ConfigureActivationKey, deployment, repositories)
-        @configure_activation_key_planned = true
-      end
-
-      def retrieve_deployment_repositories(organization, product_content)
-        repos = []
-        product_content.each { |details| repos << find_repository(organization, details) }
-        repos
-      end
-
-      def image_file_name(product_content)
-        product = product_content.find{ |content| !content[:image_file_name].nil? }
-        product[:image_file_name] if product
-      end
-
-      def file_repositories(repositories)
-        repositories.select{ |repo| repo.content_type == ::Katello::Repository::FILE_TYPE }
-      end
-
-      def yum_repositories(repositories)
-        repositories.select{ |repo| repo.content_type == ::Katello::Repository::YUM_TYPE }
-      end
-
-      def enable_smart_class_parameter_overrides
-        # Enable parameter overrides for all parameters supported by the configured puppet classes
-        puppet_classes = ::Puppetclass.where(:name => SETTINGS[:fusor][:puppet_classes].map{ |p| p[:name] })
-        puppet_classes.each do |puppet_class|
-          puppet_class.smart_class_parameters.each do |parameter|
-            unless parameter.override
-              parameter.override = true
-              parameter.save!
-            end
-          end
-        end
-      end
-
-      def find_repository(organization, repo_details)
-        product = ::Katello::Product.where(:organization_id => organization.id,
-                                           :name => repo_details[:product_name]).first
-
-        if product
-          product_content = product.productContent.find do |content|
-            content.content.name == repo_details[:repository_set_name]
-          end
-
-          substitutions = { basearch: repo_details[:basearch], releasever: repo_details[:releasever] }
-          unless repository = repository_mapper(product, product_content.content, substitutions).find_repository
-            fail _("Unable to locate repository for: Product '%{product_name}',"\
-                   " Repository Set '%{repo_set_name}'") %
-                   { :product_name => product.name, :repo_set_name => product_content.content.name }
-          end
-        else
-          fail _("Product '%{product_name}' does not exist. Confirm that a manifest"\
-                 " containing it has been imported.") % { :product_name => repo_details[:product_name] }
-        end
-        repository
-      end
-
-      def repository_mapper(product, content, substitutions)
-        ::Katello::Candlepin::Content::RepositoryMapper.new(product, content, substitutions)
       end
     end
   end
