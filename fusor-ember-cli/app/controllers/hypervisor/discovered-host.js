@@ -78,7 +78,7 @@ export default Ember.ArrayController.extend({
     },
 
     setCheckAll: function() {
-      this.get('model').setObjects([]);;
+      this.get('model').setObjects([]);
       return this.get('model').addObjects(this.get('availableHosts'));
     },
 

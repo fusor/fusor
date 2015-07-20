@@ -65,13 +65,13 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   numSubscriptionsRequired: function() {
     var num = 0;
     if (this.get('isRhev')) {
-      num = num + 1 + this.get('discovered_hosts.length'); // 1 is for engine
+      num = num + 1 + this.get('model.discovered_hosts.length'); // 1 is for engine
     }
     if (this.get('isCloudForms')) {
       num = num + 1;
     }
     return num;
-  }.property('isRhev', 'isOpenStack', 'isCloudForms', 'discovered_hosts'),
+  }.property('isRhev', 'isOpenStack', 'isCloudForms', 'model.discovered_hosts.[]'),
 
   managementApplicationName: function() {
     if (Ember.isPresent(this.get('model.upstream_consumer_name'))) {
