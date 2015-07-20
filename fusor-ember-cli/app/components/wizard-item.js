@@ -5,6 +5,14 @@ export default Ember.Component.extend({
 
   classNameBindings: ['active', 'completed', 'future'],
 
+  attributeBindings: ['dataToggle:data-toggle', 'dataPlacement:data-placement', 'title'],
+
+  dataToggle: "tooltip",
+  dataPlacement: "top",
+  title: function() {
+    return this.get('fullname');
+  }.property('fullname'),
+
   active: function () {
     return this.get('childViews').isAny('active');
   }.property('childViews.@each.active'),
@@ -15,12 +23,6 @@ export default Ember.Component.extend({
 
   future: function() {
     return this.get('isDisabled');
-
-
   }.property('isDisabled'),
-
-  // isReviewTab: function() {
-  //   return (this.get('routeName') == 'review')
-  // }.property('routeName')
 
 });
