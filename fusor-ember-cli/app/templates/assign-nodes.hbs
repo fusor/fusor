@@ -42,11 +42,7 @@
           {{#link-to 'register-nodes' class='btn btn-default'}}
               Back
           {{/link-to}}
-            <button {{action 'deployPlan' nextStepRouteName}}
-              {{bind-attr disabled=disableAssignNodesNext}}
-                    class='btn btn-primary'>
-                Next
-            </button>
+          {{#link-to nextStepRouteName class='btn btn-primary' disabled=disableAssignNodesNext}}Next{{/link-to}}
         </div>
     </div>
 </div>

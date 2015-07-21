@@ -29,15 +29,18 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
 
       return new Ember.RSVP.Promise(function (resolve, reject) {
         Ember.$.ajax({
-            url: '/fusor/api/v21/deployments/' + deployment.get('id') + '/deploy' ,
-            type: "PUT",
-            data: JSON.stringify({'skip_content': deployment.get('skipContent') }),
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "X-CSRF-Token": token,
-                "Authorization": "Basic " + self.get('session.basicAuthToken')
-            },
+            //url: '/fusor/api/v21/deployments/' + deployment.get('id') + '/deploy' ,
+            //type: "PUT",
+            //data: JSON.stringify({'skip_content': deployment.get('skipContent') }),
+            //headers: {
+            //    "Accept": "application/json",
+            //    "Content-Type": "application/json",
+            //    "X-CSRF-Token": token,
+            //    "Authorization": "Basic " + self.get('session.basicAuthToken')
+            //},
+            url: '/fusor/api/openstack/deployment_plans/overcloud/deploy',
+            type: 'POST',
+            contentType: 'application/json',
             success: function(response) {
               resolve(response);
               var uuid = response.id;
