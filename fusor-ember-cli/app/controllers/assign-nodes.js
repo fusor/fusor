@@ -230,29 +230,6 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     doShowConfig: function() {
       this.set('showSettings', false);
     },
-
-    deployPlan: function() {
-      var plan = this.get('model.plan');
-      var me = this;
-
-      me.set('loadingSpinnerText', "Deploying plan: " + plan.get('id'));
-      me.set('showLoadingSpinner', true);
-
-      Ember.$.ajax({
-        url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/deploy',
-        type: 'POST',
-        contentType: 'application/json',
-        success: function(response) {
-          me.set('showLoadingSpinner', false);
-          console.log('SUCCESS');
-        },
-        error: function(error) {
-          me.set('showLoadingSpinner', false);
-          console.log('ERROR');
-          console.log(error);
-        }
-      });
-    },
   },
 
   disableAssignNodesNext: function() {
@@ -260,6 +237,6 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
   }.property('profiles'),
 
   nextStepRouteName: function() {
-    return ('');
+    return ('review');
   }.property('step2RouteName', 'step3RouteName')
 });
