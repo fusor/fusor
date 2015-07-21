@@ -36,22 +36,24 @@
                     <ul class="deployment-roles deployment-roles-assigned">
                       {{#each role in assignedRoles}}
                         {{#draggable-object content=role}}
-                          {{deployment-role role=role profile=profile nodeCount=matchingNodeCount plan=plan edit="editRole" remove="removeRole"}}
+                          {{deployment-role role=role profile=profile nodeCount=matchingNodeCount plan=plan edit="editRole" remove="removeRole" readOnly=readOnly}}
                         {{/draggable-object}}
                       {{/each}}
-                      {{#unless allRolesAssigned}}
-                        {{#draggable-object-target action='assignDroppedRole'}}
-                            <li class="role-target {{assignMenuOpenClass}}  dropdown">
-                                <a id="role-target-dropdown-1" {{action "showAssignMenu" profile bubbles=false}} data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fa fa-plus"></i> Assign Role
-                                </a>
-                                <ul class="dropdown-menu" role="menu" aria-labelledby="role-target-dropdown-1">
-                                  {{#each role in unassignedRoles}}
-                                    <a class="roles-menu-item role-controller" {{action "assignRole" role}}>{{role.name}}</a>
-                                  {{/each}}
-                                </ul>
-                            </li>
-                        {{/draggable-object-target}}
+                      {{#unless readOnly}}
+                        {{#unless allRolesAssigned}}
+                          {{#draggable-object-target action='assignDroppedRole'}}
+                              <li class="role-target {{assignMenuOpenClass}}  dropdown">
+                                  <a id="role-target-dropdown-1" {{action "showAssignMenu" profile bubbles=false}} data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                      <i class="fa fa-plus"></i> Assign Role
+                                  </a>
+                                  <ul class="dropdown-menu" role="menu" aria-labelledby="role-target-dropdown-1">
+                                    {{#each role in unassignedRoles}}
+                                      <a class="roles-menu-item role-controller" {{action "assignRole" role}}>{{role.name}}</a>
+                                    {{/each}}
+                                  </ul>
+                              </li>
+                          {{/draggable-object-target}}
+                        {{/unless}}
                       {{/unless}}
                     </ul>
                 </div>
