@@ -1,6 +1,7 @@
 <td> {{#link-to 'deployment' deployment}} {{deployment.name}} {{/link-to}}</td>
 <td> {{deployment.lifecycle_environment.name}} </td>
 <td> {{deployment.organization.name}} </td>
+<td> {{formanTaskResult}} </td>
 <td>
     {{#link-to 'deployment' deployment class='btn btn-sm btn-default'}} Edit {{/link-to}}
     {{#if canDelete}}
