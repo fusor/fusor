@@ -6,7 +6,7 @@ export default Ember.Controller.extend({
 
   selectedRhevEngineHost: Ember.computed.alias("model"),
   hypervisorModelIds: Ember.computed.alias("controllers.hypervisor/discovered-host.hypervisorModelIds"),
-  rhev_is_self_hosted: Ember.computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
+  rhevIsSelfHosted: Ember.computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
 
   // Set by route's setupController. Needed since hypervisorModelIds is
   // only available after route hypervisor/discovered hosts is activated
@@ -14,12 +14,12 @@ export default Ember.Controller.extend({
   allDiscoveredHosts: [],
 
   engineNextRouteName: function() {
-    if (this.get('model.rhev_is_self_hosted')) {
+    if (this.get('rhevIsSelfHosted')) {
       return 'rhev-options';
     } else {
       return 'hypervisor.discovered-host';
     }
-  }.property('model.rhev_is_self_hosted'),
+  }.property('rhevIsSelfHosted'),
 
   // Filter out hosts selected as Hypervisor
   availableHosts: Ember.computed.filter('allDiscoveredHosts', function(item, index, array) {
