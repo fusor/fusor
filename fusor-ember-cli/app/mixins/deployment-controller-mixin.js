@@ -64,6 +64,18 @@ export default Ember.Mixin.create({
     if (this.get('isUpstream')) { return "ManageIQ"; } else { return "CloudForms"; }
   }.property('isUpstream'),
 
+  fullnameRhev: function() {
+    if (this.get('isUpstream')) { return "oVirt Project"; } else { return "Red Hat Enterprise Virtualization"; }
+  }.property('isUpstream'),
+
+  fullnameOpenStack: function() {
+    if (this.get('isUpstream')) { return "RDO Project"; } else { return "Red Hat Enterprise Linux OpenStack Platform"; }
+  }.property('isUpstream'),
+
+  fullnameCloudForms: function() {
+    if (this.get('isUpstream')) { return "ManageIQ"; } else { return "Red Hat Cloud Forms Management Engine"; }
+  }.property('isUpstream'),
+
   // logo
   logoPath: function() {
     if (this.get('isUpstream')) { return "assets/foreman.png"; } else { return "assets/Header-logotype.png"; }

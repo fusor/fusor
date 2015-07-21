@@ -3,15 +3,15 @@
   {{wizard-item num=1 name=nameSatellite routeName=routeNameSatellite isDisabled=false currentStepNumber=currentStepNumber}}
 
   {{#if isRhev}}
-    {{wizard-item num=stepNumberRhev name=nameRhev routeName='rhev' isDisabled=isDisabledRhev currentStepNumber=currentStepNumber}}
+    {{wizard-item num=stepNumberRhev name=nameRhev routeName='rhev' isDisabled=isDisabledRhev currentStepNumber=currentStepNumber fullname=fullnameRhev}}
   {{/if}}
 
   {{#if isOpenStack}}
-    {{wizard-item num=stepNumberOpenstack name=nameOpenStack routeName='openstack' isDisabled=isDisabledOpenstack currentStepNumber=currentStepNumber}}
+    {{wizard-item num=stepNumberOpenstack name=nameOpenStack routeName='openstack' isDisabled=isDisabledOpenstack currentStepNumber=currentStepNumber fullname=fullnameOpenStack}}
   {{/if}}
 
   {{#if isCloudForms}}
-    {{wizard-item num=stepNumberCloudForms name=nameCloudForms routeName='cloudforms' isDisabled=isDisabledCloudForms currentStepNumber=currentStepNumber}}
+    {{wizard-item num=stepNumberCloudForms name=nameCloudForms routeName='cloudforms' isDisabled=isDisabledCloudForms currentStepNumber=currentStepNumber fullname=fullnameCloudForms}}
   {{/if}}
 
   {{#if isSubscriptions}}
