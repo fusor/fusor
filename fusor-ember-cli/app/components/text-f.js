@@ -19,8 +19,8 @@ export default Ember.Component.extend({
   }.property('value', 'isPassword'),
 
   hasError: function() {
-    return Ember.isPresent(this.get('errors.name'));
-  }.property('errors.name'),
+    return (Ember.isPresent(this.get('errors.name')) || this.get('passwordTooShort') || this.get('validIsRequiredAndBlank'));
+  }.property('errors.name', 'passwordTooShort', 'validIsRequiredAndBlank'),
 
   actions: {
      showValidationErrors: function() {
