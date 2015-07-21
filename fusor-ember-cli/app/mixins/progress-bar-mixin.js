@@ -97,4 +97,8 @@ export default Ember.Mixin.create({
     return(this.get('model.progress') == 1);  // TODO Why is === 1 false???
   }.property('model.progress'),
 
+  isError: function() {
+    return(this.get('model.result') === 'error');
+  }.property('model.result'),
+
 });
