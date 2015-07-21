@@ -19,7 +19,7 @@ export default DS.Model.extend({
   is_virtual: DS.attr('boolean'),
 
   // relationship to Engine
-  deployment: DS.belongsTo('deployment', {inverse: 'discovered_host', async: true}),
+  deployment: DS.belongsTo('deployment', {inverse: 'discovered_host'}),
 
   // relationship to Hypervisors
   deployments: DS.hasMany('deployment', {inverse: 'discovered_hosts', async: true}),
