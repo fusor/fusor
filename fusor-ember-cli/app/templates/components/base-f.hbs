@@ -1,5 +1,5 @@
 <div class="clearfix">
-   <div class="form-group">
+   <div class="form-group {{if hasError 'has-error'}}">
 
       <label {{bind-attr class=":control-label labelClassSize class"}}>
         {{#if isRequired}}
@@ -19,7 +19,7 @@
       {{/if}}
 
       <span class='help-block'>
-      {{help-inline}}
+       {{help-inline}}
       </span>
 
    </div>
