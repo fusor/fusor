@@ -32,9 +32,18 @@ module Fusor
 
             if deployment.rhev_share_path.empty?
               deployment.errors[:rhev_share_path] << _('NFS share specified but missing path to the share')
+            else
+              # See https://tools.ietf.org/html/rfc2224#section-1
+              # NFS paths cannot end in slash or contain non-ascii chars
+              if deployment.rhev_share_path.end_with?("/") && deployment.rhev_share_path.length > 1
+                deployment.errors[:rhev_share_path] << _('NFS path specified ends in a "/", which is invalid')
+              end
+
+              if not deployment.rhev_share_path.ascii_only?
+                deployment.errors[:rhev_share_path] << _('NFS path specified contains non-ascii characters, which is invalid')
+              end
             end
           end
-
 
           if deployment.rhev_storage_type == 'Local' 
             if deployment.rhev_local_storage_path.empty?
