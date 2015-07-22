@@ -13,6 +13,7 @@ Fusor::Engine.routes.draw do
         get '/images/show_by_name/:name', to: 'images#show_by_name', as: 'images_show_by_name'
         resources :nodes
         get '/nodes/:id/ready', to: 'nodes#ready', as: 'nodes_ready'
+        resources :openstack_deployments
       end
     end
   end
