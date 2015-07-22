@@ -29,6 +29,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
 
       return new Ember.RSVP.Promise(function (resolve, reject) {
         Ember.$.ajax({
+            // TODO: Uncomment when we merge with master
             //url: '/fusor/api/v21/deployments/' + deployment.get('id') + '/deploy' ,
             //type: "PUT",
             //data: JSON.stringify({'skip_content': deployment.get('skipContent') }),
@@ -57,8 +58,10 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
             },
 
             error: function(response){
+              return self.transitionTo('review.progress.overview');
               console.log(response);
-              var errorMsg = response.responseJSON.displayMessage;
+              //var errorMsg = response.responseJSON.displayMessage;
+              var errorMsg = response;
               self.controllerFor('review.installation').set('errorMsg', errorMsg);
               self.controllerFor('review.installation').set('showErrorMessage', true);
               self.controllerFor('review.installation').set('buttonDeployTitle', 'Deploy');

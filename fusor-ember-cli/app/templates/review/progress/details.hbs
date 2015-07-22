@@ -11,8 +11,8 @@
         <th>Action</th>
       </thead>
       <tbody>
-        {{!#each task in model.foreman_tasks}}
-          {{tr-task task=model
+        {{!#each task in model.foremanTask.foreman_tasks}}
+          {{tr-task task=model.foremanTask
                     selectedTask=selectedTask
                     action="chooseTask"}}
         {{!/each}}
