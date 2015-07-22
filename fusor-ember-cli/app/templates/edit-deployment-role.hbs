@@ -42,11 +42,21 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-horizontal">
-                                    {{#each roleParameter in edittedRoleParameters}}
+                                    <fieldset>
                                         <div class="form-group required">
-                                          {{text-f label=roleParameter.displayId value=roleParameter.value labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
+                                            {{#each roleParameter in edittedRoleParameters}}
+                                                {{#if roleParameter.isBoolean}}
+                                                  {{check-f label=roleParameter.displayId checked=roleParameter.value labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
+                                                {{else}}
+                                                  {{#if rolerParameter.isPassword}}
+                                                    {{text-f label=roleParameter.displayId value="FUCK" type='password' labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
+                                                  {{else}}
+                                                    {{text-f label=roleParameter.displayId value=roleParameter.value type=roleParameter.inputType labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
+                                                  {{/if}}
+                                                {{/if}}
+                                            {{/each}}
                                         </div>
-                                    {{/each}}
+                                    </fieldset>
                                 </div>
                             </div>
                         </div>

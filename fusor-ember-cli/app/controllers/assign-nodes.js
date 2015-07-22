@@ -162,7 +162,18 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       this.get('model.plan.parameters').forEach(function(param) {
         if (param.get('id').indexOf(role.get('parameterPrefix')) === 0) {
           param.displayId = param.get('id').substring(role.get('parameterPrefix').length);
-          roleParams.pushObject(param);
+          if (param.get('parameter_type') === 'boolean') {
+            param.set('isBoolean', true);
+          }
+          else if (param.get('hidden')) {
+            param.set('inputType', 'password');
+          }
+          else {
+            param.set('inputType', param.get('parameter_type'));
+          }
+          if (param.get('parameter_type') !== 'json') {
+            roleParams.pushObject(param);
+          }
         }
       });
       this.set('edittedRole', role);
