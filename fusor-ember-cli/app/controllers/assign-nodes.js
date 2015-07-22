@@ -64,7 +64,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     var params = this.get('model.plan.parameters');
     var self = this;
     this.get('model.plan.roles').forEach(function(role, index) {
-      count += self.getParamValue(role.get('countParameterName'), params);
+      count += parseInt(self.getParamValue(role.get('countParameterName'), params), 10);
     });
     return count;
   }.property('model.plan.roles', 'model.plan.parameters'),
