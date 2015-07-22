@@ -31,7 +31,7 @@
       {{else}}
         <div class="spinner spinner-xs spinner-inline"></div>
       {{/if}}
-      {{progressBarMsg}}<span class='no-bold'>{{controller.progressBarSubMsg}}</span> {{!model.humanized_errors !!!temporary commented this out}}
+      {{progressBarMsg}}<span class='no-bold'>{{controller.progressBarSubMsg}}</span> {{model.humanized_errors}}
       <div class='pull-right'>
         {{controller.percentProgress}}%
       </div>

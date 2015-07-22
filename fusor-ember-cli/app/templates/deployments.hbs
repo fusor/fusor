@@ -22,24 +22,14 @@
       <th> Name </th>
       <th> Environment </th>
       <th> Organization </th>
+      <th> Status </th>
       <th> </th>
     </tr>
     </thead>
 
   <tbody>
-  {{#each deployment in filteredDeployments itemController="deployment"}}
-    <tr>
-      <td> {{#link-to 'deployment' deployment.model}} {{deployment.model.name}} {{/link-to}}</td>
-      <td> {{deployment.model.lifecycle_environment.name}} </td>
-      <td> {{deployment.model.organization.name}} </td>
-      <td>
-          {{#link-to 'deployment' deployment.model class='btn btn-sm btn-default'}} Edit {{/link-to}}
-          {{#unless deployment.isStarted}}
-              {{delete-deployment-button deployment=deployment.model
-                                         action="openDeploymentModal"}}
-          {{/unless}}
-      </td>
-    </tr>
+  {{#each deployment in filteredDeployments}}
+      {{tr-deployment deployment=deployment}}
   {{/each}}
   </tbody>
 </table>

@@ -48,7 +48,7 @@ export default DS.Model.extend({
   updated_at: DS.attr('date'),
 
   // has one Engine
-  discovered_host: DS.belongsTo('discovered-host', {inverse: 'deployment', async: true}),
+  discovered_host: DS.belongsTo('discovered-host', {inverse: 'deployment', async: false}),
 
   // has many Hypervisors
   discovered_hosts: DS.hasMany('discovered-host', {inverse: 'deployments', async: true}),
