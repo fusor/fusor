@@ -99,6 +99,6 @@ export default Ember.Mixin.create({
 
   isError: function() {
     return(this.get('model.result') === 'error');
-  }.property('model.result'),
+  }.property('model.result')
 
 });
