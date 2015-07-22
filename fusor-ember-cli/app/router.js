@@ -51,6 +51,7 @@ export default Router.map(function() {
     });
 
     this.resource('openstack', function() {
+      this.resource('undercloud-deploy');
       this.resource('register-nodes');
       this.resource('assign-nodes');
     });
