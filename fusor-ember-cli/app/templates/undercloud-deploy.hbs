@@ -1,0 +1,54 @@
+<div class="row">
+  <div class='col-md-9'>
+    <br />
+    <form class="form-horizontal" role="form">
+
+      {{select-simple-f label="Deployment Mode"   labelSize='col-md-5' inputSize='col-md-5' content=deploymentModes selection=deploy.deploymentMode isRequired=true helpText=deploymentModeHelp}}
+      {{text-f label="Image Path" value=deploy.imagePath labelSize='col-md-5' inputSize='col-md-5' errors=errors isRequired=true helpText=imagePathHelp}}
+      {{text-f label="Local IP" value=deploy.localIP     labelSize='col-md-5' inputSize='col-md-5' errors=errors isRequired=true helpText=localIPHelp}}
+        <div class="panel-group" style="width:100%">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a {{action 'toggleShowAdvancedSettings'}} {{bind-attr class="showAdvancedSettingsClass"}}>
+                            Advanced Settings
+                        </a>
+                    </h4>
+                </div>
+                {{#if showAdvancedSettings}}
+                    <div id="collapseOne" class="panel-collapse collapse in" style="margin-top: 10px;">
+                      {{text-f label="Local Interface" value=deploy.localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=localInterfaceHelp}}
+                      {{text-f label="Masquerade Network" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=masquerateNetworkHelp}}
+                      {{text-f label="DHCP Start" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=dhcpStartHelp}}
+                      {{text-f label="DHCP End" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=dhcpEndHelp}}
+                      {{text-f label="Network CIDR" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=networkCidrHelp}}
+                      {{text-f label="Network Gateway" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=networkGatewayHelp}}
+                      {{text-f label="Discovery Interface" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=discoveryInterfaceHelp}}
+                      {{text-f label="Discovery IP Range" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=discoveryIpRangeHelp}}
+                      {{text-f label="Discovery PXEID" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=discoveryPxeIDHelp}}
+                      {{text-f label="Admin Token" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=adminTokenHelp}}
+                      {{text-f label="Admin Password" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=adminPasswordHelp}}
+                      {{text-f label="Database Password" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=databasePasswordHelp}}
+                      {{text-f label="Glance Password" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=glancePasswordHelp}}
+                      {{text-f label="Heat Password" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=heatPasswordHelp}}
+                      {{text-f label="Neutron Password" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=neutronPasswordHelp}}
+                      {{text-f label="Nova Password" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=novaPasswordHelp}}
+                      {{text-f label="Ironic Password" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=ironicPasswordHelp}}
+                      {{text-f label="Tuskar Password" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=tuskarPasswordHelp}}
+                      {{text-f label="Ceilometer Password" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=ceilometerPasswordHelp}}
+                      {{text-f label="Ceilometer SNMPD Password" value=localIP     labelSize='col-md-5' inputSize='col-md-5' isRequired=false helpText=ceilometerSnpmdPasswordHelp}}
+                    </div>
+                {{/if}}
+            </div>
+        </div>
+    </form>
+  </div>
+</div>
+{{cancel-back-next backRouteName=satelliteTabRouteName
+                   disableBack=false
+                   nextRouteName='register-nodes'
+                   disableNext=disableDeployUndercloudNext
+                   parentController=controller}}
+
+
+
