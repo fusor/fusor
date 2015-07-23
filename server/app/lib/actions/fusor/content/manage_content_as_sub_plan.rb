@@ -13,21 +13,21 @@
 module Actions
   module Fusor
     module Content
-      class SyncRepositoryAsSubPlan < Actions::ActionWithSubPlans
+      class ManageContentAsSubPlan < Actions::ActionWithSubPlans
         def humanized_name
-          _("Synchronize Repository as Sub Plan")
+          _("Manage Content as Sub Plan")
         end
 
         input_format do
-          param :id, Integer
+          param :deployment_id, Integer
         end
 
-        def plan(repository)
-          plan_self(:id => repository.id)
+        def plan(deployment)
+          plan_self(:deployment_id => deployment.id)
         end
 
         def create_sub_plans
-          trigger(::Actions::Katello::Repository::Sync, ::Katello::Repository.find(input[:id]))
+          trigger(::Actions::Fusor::Content::ManageContent, ::Fusor::Deployment.find(input[:deployment_id]))
         end
       end
     end

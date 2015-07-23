@@ -12,22 +12,25 @@
 
 module Actions
   module Fusor
-    module Content
-      class SyncRepositoryAsSubPlan < Actions::ActionWithSubPlans
-        def humanized_name
-          _("Synchronize Repository as Sub Plan")
-        end
+    module Deployment
+      module CloudForms
+        class DeployAsSubPlan < Actions::ActionWithSubPlans
+          def humanized_name
+            _("Deploy CloudForms Management Engine as Sub Plan")
+          end
 
-        input_format do
-          param :id, Integer
-        end
+          input_format do
+            param :deployment_id, Integer
+          end
 
-        def plan(repository)
-          plan_self(:id => repository.id)
-        end
+          def plan(deployment)
+            plan_self(:deployment_id => deployment.id)
+          end
 
-        def create_sub_plans
-          trigger(::Actions::Katello::Repository::Sync, ::Katello::Repository.find(input[:id]))
+          def create_sub_plans
+            trigger(::Actions::Fusor::Deployment::CloudForms::Deploy,
+                    ::Fusor::Deployment.find(input[:deployment_id]))
+          end
         end
       end
     end
