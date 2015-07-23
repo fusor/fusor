@@ -8,7 +8,7 @@
 <td> {{moment subscription.endDate 'll'}} </td>
 <td class='text-center'> {{subscription.qtyAttached}} </td>
 <td class='text-center'> {{subscription.qtyAvailableOfTotal}}</td>
-<td {{bind-attr class=":text-center subscription.isSelectedSubscription:black-font:not-selected"}}>
+<td class="text-center {{if subscription.isSelectedSubscription 'black-font' 'not-selected'}}">
   {{#if subscription.isSelectedSubscription}}
      {{input type="input" name='qtyToAttach'
                           value=subscription.qtyToAttach

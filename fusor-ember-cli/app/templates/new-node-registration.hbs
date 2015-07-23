@@ -46,7 +46,7 @@
                     </div>
                     <ul class="nav nav-pills nav-stacked nav-registered-nodes">
                         {{#each profile in edittedProfiles}}
-                            <li {{bind-attr class=profile.isActiveClass}}>
+                            <li class="{{profile.isActiveClass}}">
                                 <a {{action "selectProfile" profile}}>{{profile.name}}</a>
                                 <i class="fa fa-trash-o" {{action "removeProfile" profile}}></i>
                             </li>
@@ -54,7 +54,7 @@
                     </ul>
                 </div>
                 <form>
-                      <div class="col-xs-7" {{bind-attr style=nodeFormStyle}}>
+                      <div class="col-xs-7" style="{{nodeFormStyle}}">
                           <div>
                               <h4>Node Detail - {{selectedProfile.name}}</h4>
                               <div class="form-horizontal">
@@ -141,8 +141,8 @@
     {{/em-modal-body}}
 
     {{#em-modal-footer}}
-        <button type="cancel" class="btn btn-default" {{bind-attr disabled=async}} {{action "cancelRegisterNodes"}}>Cancel</button>
-        <button type="submit" class="btn btn-primary" {{bind-attr disabled=async}} {{action "registerNodes"}}>Register Nodes</button>
+        <button type="cancel" class="btn btn-default" disabled={{async}} {{action "cancelRegisterNodes"}}>Cancel</button>
+        <button type="submit" class="btn btn-primary" disabled={{async}} {{action "registerNodes"}}>Register Nodes</button>
     {{/em-modal-footer}}
 
 {{/em-modal-form}}

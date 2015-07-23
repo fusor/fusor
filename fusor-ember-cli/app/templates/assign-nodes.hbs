@@ -41,7 +41,7 @@
               Back
           {{/link-to}}
             <button {{action 'saveDeployment' nextStepRouteName}}
-              {{bind-attr disabled=disableAssignNodesNext}}
+                    disabled={{disableAssignNodesNext}}
                     class='btn btn-primary'>
                 Next
             </button>

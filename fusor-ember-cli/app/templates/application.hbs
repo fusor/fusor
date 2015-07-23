@@ -2,6 +2,6 @@
   {{partial "mainmenu"}}
 {{/if}}
 
-<div {{bind-attr class="isContainer:container:container-fluid"}}>
+<div class="{{if isContainer 'container' 'container-fluid'}}">
   {{outlet}}
 </div>

@@ -1,7 +1,7 @@
-<span {{bind-attr id=cssId}}>
-  <img {{bind-attr src=srcImage}} {{bind-attr class=":img-responsive isDisabled:disabledImage"}}>
+<span id="{{cssId}}">
+  <img src="{{srcImage}}" class="img-responsive {{if isDisabled 'disabledImage'}}">
 
-  <div {{bind-attr class=":rhci-footer isChecked:rhci-footer-selected:rhci-footer-unselected"}}>
+  <div class="rhci-footer {{if isChecked 'rhci-footer-selected' 'rhci-footer-unselected'}}">
        <span class='rhci-install-footer'>
          {{#if isChecked}}
            <i class="fa fa-1x fa-check"></i>
