@@ -58,6 +58,7 @@ BuildRequires: ruby(abi) = 1.8
 %endif
 
 Requires: foreman >= 1.7.0
+Requires: fusor-selinux >= 1.0.0
 BuildRequires: foreman >= 1.7.0
 BuildRequires: foreman-assets >= 1.7.0
 # TODO
