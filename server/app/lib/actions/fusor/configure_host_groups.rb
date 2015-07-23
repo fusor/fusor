@@ -90,6 +90,15 @@ module Actions
           else
             # this host group is the deployment group
             operating_system = find_operating_system(lifecycle_environment, content_view)
+
+            # add access insights class, will get inherited by all machine nodes
+            if deployment.enable_access_insights
+              # Puppetclass names are unique, there is only one access insights
+              # puppet class regardless of how many environments or orgs there are
+              insights_class = Puppetclass.find("access_insights_client")
+              hostgroup_params[:puppetclass_ids] = [ insights_class.id ]
+            end
+
             default_capsule_id = ::Katello::CapsuleContent.default_capsule.try(:capsule).try(:id)
 
             hostgroup_params[:name] = deployment.name
