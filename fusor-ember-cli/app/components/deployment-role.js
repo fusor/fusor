@@ -38,6 +38,14 @@ export default Ember.Component.extend({
     return this.getParamValue(role.get('countParameterName'), params);
   }.property('role', 'plan.parameters'),
 
+  hasAssignedNodes: function() {
+    return this.get('roleNodeCount') >= 1;
+  }.property('roleNodeCount'),
+
+  multipleAssignedNodes: function() {
+    return this.get('roleNodeCount') >= 2;
+  }.property('roleNodeCount'),
+
   profileNodes: function() {
     var totalNodes = 10;
     return totalNodes;
