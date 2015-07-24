@@ -138,6 +138,16 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     this.set('editRoleModalClosed', true);
   },
 
+  openGlobalServiceConfigDialog: function() {
+    this.set('editGlobalServiceConfigModalOpened', true);
+    this.set('editGlobalServiceConfigModalClosed', false);
+  },
+
+  closeGlobalServiceConfigDialog: function() {
+    this.set('editGlobalServiceConfigModalOpened', false);
+    this.set('editGlobalServiceConfigModalClosed', true);
+  },
+
   settingsTabActiveClass: function() {
     if (this.get('showSettings')) {
       return "active";
@@ -158,11 +168,14 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   actions: {
     editRole: function(role) {
+      this.set('showSettings', true);
       var roleParams = [];
       this.get('model.plan.parameters').forEach(function(param) {
         if (param.get('id').indexOf(role.get('parameterPrefix')) === 0) {
           param.displayId = param.get('id').substring(role.get('parameterPrefix').length);
-          if (param.get('parameter_type') === 'boolean') {
+          param.displayId = param.displayId.replace(/([a-z])([A-Z])/g, '$1 $2');
+
+          if (param.get('parameter_type') === 'boolean333') {
             param.set('isBoolean', true);
           }
           else if (param.get('hidden')) {
@@ -185,6 +198,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     },
 
     saveRole: function() {
+      var me = this;
       var plan = this.get('model.plan');
       var role = this.get('edittedRole');
 
@@ -194,6 +208,12 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
         {'name': role.get('flavorParameterName'), 'value': this.get('edittedRoleProfile')}
       ];
 
+      this.get('edittedRoleParameters').forEach(function(param) {
+        params.push({'name': param.get('id'), 'value': param.get('value')});
+      });
+
+      me.set('loadingSpinnerText', "Saving...");
+      me.set('showLoadingSpinner', true);
       Ember.$.ajax({
         url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_parameters',
         type: 'PUT',
@@ -201,10 +221,12 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
         data: JSON.stringify({ 'parameters': params }),
         success: function(response) {
           console.log('SUCCESS');
+          me.set('showLoadingSpinner', false);
         },
         error: function(error) {
           console.log('ERROR');
           console.log(error);
+          me.set('showLoadingSpinner', false);
         }
       });
 
@@ -241,6 +263,67 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     doShowConfig: function() {
       this.set('showSettings', false);
     },
+
+    editGlobalServiceConfig: function(role) {
+      var plan = this.get('model.plan');
+      var planParams = [];
+      this.get('model.plan.parameters').forEach(function(param) {
+        if (param.get('id').indexOf('::') === -1) {
+          param.displayId = param.get('id').replace(/([a-z])([A-Z])/g, '$1 $2');
+          if (param.get('parameter_type') === 'boolean') {
+            param.set('isBoolean', true);
+          }
+          else if (param.get('hidden')) {
+            param.set('inputType', 'password');
+          }
+          else {
+            param.set('inputType', param.get('parameter_type'));
+          }
+          if (param.get('parameter_type') !== 'json') {
+            planParams.pushObject(param);
+          }
+        }
+      });
+      this.set('edittedPlanParameters', planParams);
+
+      this.openGlobalServiceConfigDialog();
+    },
+
+    saveGlobalServiceConfig: function() {
+      var me = this;
+      var plan = this.get('model.plan');
+      var config = this.get('globalServiceConfig');
+      var editConfig = this.get('edittedGlobalConfig');
+
+      var params = [];
+      this.get('edittedPlanParameters').forEach(function(param) {
+        params.push({'name': param.get('id'), 'value': param.get('value')});
+      });
+
+      me.set('loadingSpinnerText', "Saving...");
+      me.set('showLoadingSpinner', true);
+      Ember.$.ajax({
+        url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_parameters',
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({ 'parameters': params }),
+        success: function(response) {
+          console.log('SUCCESS');
+          me.set('showLoadingSpinner', false);
+        },
+        error: function(error) {
+          console.log('ERROR');
+          console.log(error);
+          me.set('showLoadingSpinner', false);
+        }
+      });
+
+      this.closeGlobalServiceConfigDialog();
+    },
+
+    cancelGlobalServiceConfig: function() {
+      this.closeGlobalServiceConfigDialog();
+    }
   },
 
   disableAssignNodesNext: function() {
