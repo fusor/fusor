@@ -25,7 +25,7 @@ export default Ember.Component.extend({
     var profile = this.get('profile');
     var params = this.get('plan.parameters');
     var self = this;
-    this.get('plan.roles').forEach(function(role, index) {
+    this.get('plan.roles').forEach(function(role) {
       if ( self.getParamValue(role.get('flavorParameterName'), params) === profile.get('name') ) {
         assignedRoles.pushObject(role);
       }
@@ -36,7 +36,7 @@ export default Ember.Component.extend({
   unassignedRoles: function() {
     var unassignedRoles = [];
     var assignedRoles = this.get('assignedRoles');
-    this.get('plan.roles').forEach(function(role, index) {
+    this.get('plan.roles').forEach(function(role) {
       var unassignedRole = true;
       for (var i=0; i<assignedRoles.length; i++) {
         if ( role.get('name') === assignedRoles[i].get('name') ) {
@@ -55,6 +55,7 @@ export default Ember.Component.extend({
     return (this.get('unassignedRoles').length === 0);
   }.property('unassignedRoles'),
 
+  /* jshint ignore:start */
   nodeMatchesProfile: function(node, profile) {
     var nodeMemory = node.get('properties.memory_mb');
     var nodeCPUs = node.get('properties.cpus');
@@ -65,16 +66,17 @@ export default Ember.Component.extend({
     var profileDisk = profile.get('disk');
     var profileCPUArch = profile.get('extra_specs.cpu_arch');
     return (nodeMemory == profileMemory &&
-	    nodeCPUs == profileCPUs &&
-	    nodeDisk == profileDisk &&
-	    nodeCPUArch == profileCPUArch);
+      nodeCPUs == profileCPUs &&
+      nodeDisk == profileDisk &&
+      nodeCPUArch == profileCPUArch);
   },
+  /* jshint ignore:end */
 
   matchingNodeCount: function() {
     var nodeCount = 0;
     var profile = this.get('profile');
     var self = this;
-    this.get('nodes').forEach(function(node,index) {
+    this.get('nodes').forEach(function(node) {
       if (self.nodeMatchesProfile(node,profile)) {
         nodeCount++;
       }
@@ -119,6 +121,10 @@ export default Ember.Component.extend({
     },
     editRole: function(role) {
       this.sendAction('editRole', role);
+    },
+
+    setRoleCount: function(role, count) {
+      this.sendAction('setRoleCount', role, count);
     },
 
     removeRole: function(role) {

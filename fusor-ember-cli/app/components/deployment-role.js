@@ -11,7 +11,7 @@ export default Ember.Component.extend({
     var numParams = params.get('length');
     for (var i=0; i<numParams; i++) {
       var param = params.objectAt(i);
-      if (param.get('id') == paramName) {
+      if (param.get('id') === paramName) {
         paramValue = param.get('value');
         break;
       }
@@ -34,9 +34,17 @@ export default Ember.Component.extend({
 
   roleNodeCount: function() {
     var role = this.get('role');
-    var params = this.get('plan.parameters')
+    var params = this.get('plan.parameters');
     return this.getParamValue(role.get('countParameterName'), params);
   }.property('role', 'plan.parameters'),
+
+  hasAssignedNodes: function() {
+    return this.get('roleNodeCount') >= 1;
+  }.property('roleNodeCount'),
+
+  multipleAssignedNodes: function() {
+    return this.get('roleNodeCount') >= 2;
+  }.property('roleNodeCount'),
 
   profileNodes: function() {
     var totalNodes = 10;
@@ -51,7 +59,9 @@ export default Ember.Component.extend({
       var nextOption = Ember.Object.create({
         label: '' + i,
         value: i,
+        /* jshint ignore:start */
         selected: (i == this.get('roleNodeCount'))
+        /* jshint ignore:end */
       });
       avail.pushObject(nextOption);
     }
@@ -62,23 +72,7 @@ export default Ember.Component.extend({
   actions: {
     updateNodeCount: function() {
       var nodeCount = parseInt(this.$('select').val());
-      var role = this.get('role');
-      var plan = this.get('plan');
-      var data = { 'role_name': role.get('name'), 'count': nodeCount };
-
-      Ember.$.ajax({
-        url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_role_count',
-        type: 'PUT',
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: function(response) {
-          console.log('SUCCESS');
-        },
-        error: function(error) {
-          console.log('ERROR');
-          console.log(error);
-        }
-      });
+      this.sendAction('setRoleCount', this.get('role'), nodeCount);
     },
 
     editRole: function() {

@@ -204,6 +204,12 @@
   padding: 0;
   display: block;
 }
+.deployment-roles-all-assigned {
+  color: #999999;
+  font-style: italic;
+  padding-left: 20px;
+}
+
 .roles-menu-item {
   background: #ffffff;
   border: 2px solid #bbbbbb;
@@ -216,8 +222,23 @@
   text-align: center;
 }
 
+.edit-global-config {
+  line-height: 38px;
+  padding-left: 15px;
+}
+
+.modal-button-bar {
+  border-top: 1px solid #d1d1d1;
+}
+
 .deployment-role-settings-content {
   height: 400px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.global-config-settings-content {
+  height: 330px;
   overflow-x: hidden;
   overflow-y: auto;
 }

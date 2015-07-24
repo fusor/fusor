@@ -26,7 +26,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     var unassignedRoles = [];
     var params = this.get('model.plan.parameters');
     var self = this;
-    this.get('model.plan.roles').forEach(function(role, index) {
+    this.get('model.plan.roles').forEach(function(role) {
       if ( self.getParamValue(role.get('flavorParameterName'), params) == null ) {
         unassignedRoles.pushObject(role);
       }
@@ -63,7 +63,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     var count = 0;
     var params = this.get('model.plan.parameters');
     var self = this;
-    this.get('model.plan.roles').forEach(function(role, index) {
+    this.get('model.plan.roles').forEach(function(role) {
       count += parseInt(self.getParamValue(role.get('countParameterName'), params), 10);
     });
     return count;
@@ -71,7 +71,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   isDraggingRole: function() {
     var isDragging = false;
-    this.get('model.plan.roles').forEach(function (role, index) {
+    this.get('model.plan.roles').forEach(function (role) {
           if (role.get('isDraggingObject') === true) {
             isDragging = true;
           }
@@ -109,7 +109,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       type: 'PUT',
       contentType: 'application/json',
       data: JSON.stringify(data),
-      success: function(response) {
+      success: function() {
         me.set('showLoadingSpinner', false);
         console.log('SUCCESS');
       },
@@ -138,6 +138,16 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     this.set('editRoleModalClosed', true);
   },
 
+  openGlobalServiceConfigDialog: function() {
+    this.set('editGlobalServiceConfigModalOpened', true);
+    this.set('editGlobalServiceConfigModalClosed', false);
+  },
+
+  closeGlobalServiceConfigDialog: function() {
+    this.set('editGlobalServiceConfigModalOpened', false);
+    this.set('editGlobalServiceConfigModalClosed', true);
+  },
+
   settingsTabActiveClass: function() {
     if (this.get('showSettings')) {
       return "active";
@@ -158,33 +168,49 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   actions: {
     editRole: function(role) {
+      this.set('showSettings', true);
       var roleParams = [];
+      var advancedParams = [];
       this.get('model.plan.parameters').forEach(function(param) {
-        if (param.get('id').indexOf(role.get('parameterPrefix')) === 0) {
-          param.displayId = param.get('id').substring(role.get('parameterPrefix').length);
+        var paramId = param.get('id');
+        if (paramId.indexOf(role.get('parameterPrefix')) === 0) {
+          param.displayId = paramId.substring(role.get('parameterPrefix').length);
+          param.displayId = param.displayId.replace(/([a-z])([A-Z])/g, '$1 $2');
+
+/* Using boolean breaks saving...
           if (param.get('parameter_type') === 'boolean') {
             param.set('isBoolean', true);
           }
-          else if (param.get('hidden')) {
+*/
+          if (param.get('hidden')) {
             param.set('inputType', 'password');
           }
           else {
             param.set('inputType', param.get('parameter_type'));
           }
-          if (param.get('parameter_type') !== 'json') {
+
+          if ((paramId === role.get('imageParameterName')) ||
+              (paramId === role.get('countParameterName')) ||
+              (paramId === role.get('flavorParameterName'))) {
             roleParams.pushObject(param);
+          }
+          else if (param.get('parameter_type') !== 'json') {
+            advancedParams.pushObject(param);
           }
         }
       });
+
       this.set('edittedRole', role);
       this.set('edittedRoleImage', this.getParamValue(role.get('imageParameterName'), roleParams));
       this.set('edittedRoleNodeCount', this.getParamValue(role.get('countParameterName'), roleParams));
       this.set('edittedRoleProfile', this.getParamValue(role.get('flavorParameterName'), roleParams));
-      this.set('edittedRoleParameters', roleParams);
+      this.set('edittedRoleParameters', advancedParams);
+
       this.openEditDialog();
     },
 
     saveRole: function() {
+      var me = this;
       var plan = this.get('model.plan');
       var role = this.get('edittedRole');
 
@@ -194,21 +220,54 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
         {'name': role.get('flavorParameterName'), 'value': this.get('edittedRoleProfile')}
       ];
 
+      this.get('edittedRoleParameters').forEach(function(param) {
+        params.push({'name': param.get('id'), 'value': param.get('value')});
+      });
+
+      me.set('loadingSpinnerText', "Saving...");
+      me.set('showLoadingSpinner', true);
       Ember.$.ajax({
         url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_parameters',
         type: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify({ 'parameters': params }),
-        success: function(response) {
+        success: function() {
           console.log('SUCCESS');
+          me.set('showLoadingSpinner', false);
         },
         error: function(error) {
           console.log('ERROR');
           console.log(error);
+          me.set('showLoadingSpinner', false);
         }
       });
 
       this.closeEditDialog();
+    },
+
+    setRoleCount: function(role, count) {
+      var me = this;
+      var plan = this.get('model.plan');
+      var data = { 'role_name': role.get('name'), 'count': count };
+
+      me.set('loadingSpinnerText', "Saving...");
+      me.set('showLoadingSpinner', true);
+
+      Ember.$.ajax({
+        url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_role_count',
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function() {
+          console.log('SUCCESS');
+          me.set('showLoadingSpinner', false);
+        },
+        error: function(error) {
+          console.log('ERROR');
+          console.log(error);
+          me.set('showLoadingSpinner', false);
+        }
+      });
     },
 
     cancelEditRole: function() {
@@ -241,6 +300,66 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     doShowConfig: function() {
       this.set('showSettings', false);
     },
+
+    editGlobalServiceConfig: function() {
+      var planParams = [];
+      this.get('model.plan.parameters').forEach(function(param) {
+        if (param.get('id').indexOf('::') === -1) {
+          param.displayId = param.get('id').replace(/([a-z])([A-Z])/g, '$1 $2');
+/* Using boolean breaks saving...
+          if (param.get('parameter_type') === 'boolean') {
+            param.set('isBoolean', true);
+          }
+*/
+          if (param.get('hidden')) {
+            param.set('inputType', 'password');
+          }
+          else {
+            param.set('inputType', param.get('parameter_type'));
+          }
+          if (param.get('parameter_type') !== 'json') {
+            planParams.pushObject(param);
+          }
+        }
+      });
+      this.set('edittedPlanParameters', planParams);
+
+      this.openGlobalServiceConfigDialog();
+    },
+
+    saveGlobalServiceConfig: function() {
+      var me = this;
+      var plan = this.get('model.plan');
+
+      var params = [];
+      this.get('edittedPlanParameters').forEach(function(param) {
+        params.push({'name': param.get('id'), 'value': param.get('value')});
+      });
+
+      me.set('loadingSpinnerText', "Saving...");
+      me.set('showLoadingSpinner', true);
+      Ember.$.ajax({
+        url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_parameters',
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({ 'parameters': params }),
+        success: function() {
+          console.log('SUCCESS');
+          me.set('showLoadingSpinner', false);
+        },
+        error: function(error) {
+          console.log('ERROR');
+          console.log(error);
+          me.set('showLoadingSpinner', false);
+        }
+      });
+
+      this.closeGlobalServiceConfigDialog();
+    },
+
+    cancelGlobalServiceConfig: function() {
+      this.closeGlobalServiceConfigDialog();
+    }
   },
 
   disableAssignNodesNext: function() {

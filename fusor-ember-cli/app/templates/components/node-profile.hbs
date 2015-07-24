@@ -1,45 +1,50 @@
-  <div class="panel panel-default node-profile {{assignClass}}">
-    <div class="panel-heading">
-        <div class="row">
-            <div class="col-sm-7 col-md-8">
-                <h3 class="node-profile-label h5">{{profile.name}}</h3>
-            </div>
-            <div class="col-sm-5 col-md-4">
-                <h4 class="node-profile-free-nodes h5">Node Count: {{matchingNodeCount}}</h4>
+{{#if readOnly}}
+  {{profile.name}}:
+  {{#each role in assignedRoles}}
+    {{deployment-role role=role profile=profile plan=plan readOnly=true}}
+  {{/each}}
+{{else}}
+    <div class="panel panel-default node-profile {{assignClass}}">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-sm-7 col-md-8">
+                    <h3 class="node-profile-label h5">{{profile.name}}</h3>
+                </div>
+                <div class="col-sm-5 col-md-4">
+                    <h4 class="node-profile-free-nodes h5">Node Count: {{matchingNodeCount}}</h4>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="panel-body">
-        <div class="row">
-            <div class="col-sm-5 col-md-4">
-                <h4 class="h5">Each node has:</h4>
-                <table class="table node-specs">
-                    <tbody>
-                      <tr>
-                          <th>CPU</th>
-                          <td>{{profile.vcpus}}</td>
-                      </tr>
-                      <tr>
-                          <th>RAM</th>
-                          <td>{{profile.ram}} MB</td>
-                      </tr>
-                      <tr>
-                          <th>Disk</th>
-                          <td>{{profile.disk}} GB</td>
-                      </tr>
-                    </tbody>
-                </table>
-            </div>
-            {{#if doAssign }}
-                <div class="col-sm-7 col-md-8">
-                    <h4 class="h5">Assigned Nodes</h4>
-                    <ul class="deployment-roles deployment-roles-assigned">
-                      {{#each role in assignedRoles}}
-                        {{#draggable-object content=role}}
-                          {{deployment-role role=role profile=profile nodeCount=matchingNodeCount plan=plan edit="editRole" remove="removeRole" readOnly=readOnly}}
-                        {{/draggable-object}}
-                      {{/each}}
-                      {{#unless readOnly}}
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-5 col-md-4">
+                    <h4 class="h5">Each node has:</h4>
+                    <table class="table node-specs">
+                        <tbody>
+                        <tr>
+                            <th>CPU</th>
+                            <td>{{profile.vcpus}}</td>
+                        </tr>
+                        <tr>
+                            <th>RAM</th>
+                            <td>{{profile.ram}} MB</td>
+                        </tr>
+                        <tr>
+                            <th>Disk</th>
+                            <td>{{profile.disk}} GB</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+              {{#if doAssign }}
+                  <div class="col-sm-7 col-md-8">
+                      <h4 class="h5">Assigned Nodes</h4>
+                      <ul class="deployment-roles deployment-roles-assigned">
+                        {{#each role in assignedRoles}}
+                          {{#draggable-object content=role}}
+                            {{deployment-role role=role profile=profile nodeCount=matchingNodeCount plan=plan edit="editRole" setRoleCount="setRoleCount" remove="removeRole" readOnly=false}}
+                          {{/draggable-object}}
+                        {{/each}}
                         {{#unless allRolesAssigned}}
                           {{#draggable-object-target action='assignDroppedRole'}}
                               <li class="role-target {{assignMenuOpenClass}}  dropdown">
@@ -48,20 +53,20 @@
                                   </a>
                                   <ul class="dropdown-menu" role="menu" aria-labelledby="role-target-dropdown-1">
                                     {{#each role in unassignedRoles}}
-                                      <a class="roles-menu-item role-controller" {{action "assignRole" role}}>{{role.name}}</a>
+                                        <a class="roles-menu-item role-controller" {{action "assignRole" role}}>{{role.name}}</a>
                                     {{/each}}
                                   </ul>
                               </li>
                           {{/draggable-object-target}}
                         {{/unless}}
-                      {{/unless}}
-                    </ul>
-                </div>
-            {{else}}
-                <div class="col-sm-7 col-md-8">
-                    <em>Assigning nodes to roles will occur in step {{stepNumberOpenstack}}B.</em>
-                </div>
-            {{/if}}
+                      </ul>
+                  </div>
+              {{else}}
+                  <div class="col-sm-7 col-md-8">
+                      <em>Assigning nodes to roles will occur in step {{stepNumberOpenstack}}B.</em>
+                  </div>
+              {{/if}}
+            </div>
         </div>
     </div>
-</div>
+{{/if}}

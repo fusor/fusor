@@ -79,7 +79,7 @@
         {{/if}}
     {{/em-modal-body}}
 
-    {{#em-modal-footer}}
+    {{#em-modal-footer class="modal-button-bar"}}
         <button type="cancel" class="btn btn-default" {{bind-attr disabled=async}} {{action "cancelRegisterNodes"}}>Cancel</button>
         <button type="submit" class="btn btn-primary" {{bind-attr disabled=async}} {{action "registerNodes"}}>Register Nodes</button>
     {{/em-modal-footer}}

@@ -361,23 +361,23 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     var promiseFunction = function(resolve) {
       var checkForDone = function() {
         var driverInfo = {};
-        if ( node.driver == 'pxe_ssh' ) {
+        if ( node.driver === 'pxe_ssh' ) {
           driverInfo = {
             ssh_address: node.ipAddress,
             ssh_username: node.ipmiUsername,
             ssh_key_contents: node.ipmiPassword,
             ssh_virt_type: 'virsh',
             deploy_kernel: bmDeployKernelImage.image.id,
-            deploy_ramdisk: bmDeployRamdiskImage.image.id,
-          }
-        } else if (node.driver == 'pxe_ipmitool')  {
+            deploy_ramdisk: bmDeployRamdiskImage.image.id
+          };
+        } else if (node.driver === 'pxe_ipmitool')  {
           driverInfo = {
             ipmi_address: node.ipAddress,
             ipmi_username: node.ipmiUsername,
             ipmi_password: node.ipmiPassword,
             pxe_deploy_kernel: bmDeployKernelImage.image.id,
-            pxe_deploy_ramdisk: bmDeployRamdiskImage.image.id,
-          }
+            pxe_deploy_ramdisk: bmDeployRamdiskImage.image.id
+          };
         }
         var createdNode = me.store.createRecord('node', {
             driver: node.driver,
@@ -400,7 +400,6 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
     var fulfill = function(isDone) {
       if (isDone) {
-        var nodes = me.get('model.nodes');
         me.doNextNodeRegistration();
       }
       else {
