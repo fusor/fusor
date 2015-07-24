@@ -55,6 +55,7 @@ export default Ember.Component.extend({
     return (this.get('unassignedRoles').length === 0);
   }.property('unassignedRoles'),
 
+  /* jshint ignore:start */
   nodeMatchesProfile: function(node, profile) {
     var nodeMemory = node.get('properties.memory_mb');
     var nodeCPUs = node.get('properties.cpus');
@@ -64,11 +65,12 @@ export default Ember.Component.extend({
     var profileCPUs = profile.get('vcpus');
     var profileDisk = profile.get('disk');
     var profileCPUArch = profile.get('extra_specs.cpu_arch');
-    return (nodeMemory === profileMemory &&
-	    nodeCPUs === profileCPUs &&
-	    nodeDisk === profileDisk &&
-	    nodeCPUArch === profileCPUArch);
+    return (nodeMemory == profileMemory &&
+      nodeCPUs == profileCPUs &&
+      nodeDisk == profileDisk &&
+      nodeCPUArch == profileCPUArch);
   },
+  /* jshint ignore:end */
 
   matchingNodeCount: function() {
     var nodeCount = 0;
