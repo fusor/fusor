@@ -72,23 +72,7 @@ export default Ember.Component.extend({
   actions: {
     updateNodeCount: function() {
       var nodeCount = parseInt(this.$('select').val());
-      var role = this.get('role');
-      var plan = this.get('plan');
-      var data = { 'role_name': role.get('name'), 'count': nodeCount };
-
-      Ember.$.ajax({
-        url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_role_count',
-        type: 'PUT',
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: function() {
-          console.log('SUCCESS');
-        },
-        error: function(error) {
-          console.log('ERROR');
-          console.log(error);
-        }
-      });
+      this.sendAction('setRoleCount', this.get('role'), nodeCount);
     },
 
     editRole: function() {
