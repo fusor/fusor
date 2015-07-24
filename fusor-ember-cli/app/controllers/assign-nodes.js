@@ -170,9 +170,11 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     editRole: function(role) {
       this.set('showSettings', true);
       var roleParams = [];
+      var advancedParams = [];
       this.get('model.plan.parameters').forEach(function(param) {
-        if (param.get('id').indexOf(role.get('parameterPrefix')) === 0) {
-          param.displayId = param.get('id').substring(role.get('parameterPrefix').length);
+        var paramId = param.get('id');
+        if (paramId.indexOf(role.get('parameterPrefix')) === 0) {
+          param.displayId = paramId.substring(role.get('parameterPrefix').length);
           param.displayId = param.displayId.replace(/([a-z])([A-Z])/g, '$1 $2');
 
 /* Using boolean breaks saving...
@@ -186,16 +188,24 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
           else {
             param.set('inputType', param.get('parameter_type'));
           }
-          if (param.get('parameter_type') !== 'json') {
+
+          if ((paramId === role.get('imageParameterName')) ||
+              (paramId === role.get('countParameterName')) ||
+              (paramId === role.get('flavorParameterName'))) {
             roleParams.pushObject(param);
+          }
+          else if (param.get('parameter_type') !== 'json') {
+            advancedParams.pushObject(param);
           }
         }
       });
+
       this.set('edittedRole', role);
       this.set('edittedRoleImage', this.getParamValue(role.get('imageParameterName'), roleParams));
       this.set('edittedRoleNodeCount', this.getParamValue(role.get('countParameterName'), roleParams));
       this.set('edittedRoleProfile', this.getParamValue(role.get('flavorParameterName'), roleParams));
-      this.set('edittedRoleParameters', roleParams);
+      this.set('edittedRoleParameters', advancedParams);
+
       this.openEditDialog();
     },
 
