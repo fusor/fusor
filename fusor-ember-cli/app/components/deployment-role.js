@@ -11,7 +11,7 @@ export default Ember.Component.extend({
     var numParams = params.get('length');
     for (var i=0; i<numParams; i++) {
       var param = params.objectAt(i);
-      if (param.get('id') == paramName) {
+      if (param.get('id') === paramName) {
         paramValue = param.get('value');
         break;
       }
@@ -34,7 +34,7 @@ export default Ember.Component.extend({
 
   roleNodeCount: function() {
     var role = this.get('role');
-    var params = this.get('plan.parameters')
+    var params = this.get('plan.parameters');
     return this.getParamValue(role.get('countParameterName'), params);
   }.property('role', 'plan.parameters'),
 
@@ -59,7 +59,7 @@ export default Ember.Component.extend({
       var nextOption = Ember.Object.create({
         label: '' + i,
         value: i,
-        selected: (i == this.get('roleNodeCount'))
+        selected: (i === this.get('roleNodeCount'))
       });
       avail.pushObject(nextOption);
     }
@@ -79,7 +79,7 @@ export default Ember.Component.extend({
         type: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(data),
-        success: function(response) {
+        success: function() {
           console.log('SUCCESS');
         },
         error: function(error) {
