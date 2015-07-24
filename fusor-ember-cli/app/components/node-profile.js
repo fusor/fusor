@@ -123,6 +123,10 @@ export default Ember.Component.extend({
       this.sendAction('editRole', role);
     },
 
+    setRoleCount: function(role, count) {
+      this.sendAction('setRoleCount', role, count);
+    },
+
     removeRole: function(role) {
       var profile = this.get('profile');
       this.sendAction('removeRole', profile, role);

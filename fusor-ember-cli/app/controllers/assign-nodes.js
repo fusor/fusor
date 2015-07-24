@@ -245,6 +245,31 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       this.closeEditDialog();
     },
 
+    setRoleCount: function(role, count) {
+      var me = this;
+      var plan = this.get('model.plan');
+      var data = { 'role_name': role.get('name'), 'count': count };
+
+      me.set('loadingSpinnerText', "Saving...");
+      me.set('showLoadingSpinner', true);
+
+      Ember.$.ajax({
+        url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_role_count',
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function() {
+          console.log('SUCCESS');
+          me.set('showLoadingSpinner', false);
+        },
+        error: function(error) {
+          console.log('ERROR');
+          console.log(error);
+          me.set('showLoadingSpinner', false);
+        }
+      });
+    },
+
     cancelEditRole: function() {
       this.closeEditDialog();
     },
