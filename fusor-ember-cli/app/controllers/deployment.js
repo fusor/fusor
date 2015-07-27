@@ -79,4 +79,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
     }
   }.property('model.upstream_consumer_name', 'controllers.subscriptions/credentials.organizationUpstreamConsumerName'),
 
+  hasEngine: function() {
+    return Ember.isPresent(this.get("model.discovered_host.id"));
+  }.property('model.discovered_host.id'),
+  hasNoEngine: Ember.computed.not('hasEngine'),
+
 });
