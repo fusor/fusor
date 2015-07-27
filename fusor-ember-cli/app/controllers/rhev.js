@@ -20,9 +20,7 @@ export default Ember.Controller.extend({
   disableTabRhevSetupType: false,
   disableTabRhevEngine: false,
 
-  hasEngine: function() {
-    return !!(this.get('controllers.deployment.model.discovered_host.id'));
-  }.property('controllers.deployment.model.discovered_host.id'),
+  hasEngine: Ember.computed.alias('controllers.deployment.hasEngine'),
   hasNoEngine: Ember.computed.not('hasEngine'),
 
   hasHypervisor: function() {

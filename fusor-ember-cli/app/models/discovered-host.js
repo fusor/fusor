@@ -18,12 +18,6 @@ export default DS.Model.extend({
   subnet_to_s: DS.attr('string'),
   is_virtual: DS.attr('boolean'),
 
-  // relationship to Engine
-  deployment: DS.belongsTo('deployment', {inverse: 'discovered_host'}),
-
-  // relationship to Hypervisors
-  deployments: DS.hasMany('deployment', {inverse: 'discovered_hosts', async: true}),
-
   created_at: DS.attr('date'),
   updated_at: DS.attr('date'),
 

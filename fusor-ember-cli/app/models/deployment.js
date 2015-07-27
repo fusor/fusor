@@ -48,10 +48,10 @@ export default DS.Model.extend({
   updated_at: DS.attr('date'),
 
   // has one Engine
-  discovered_host: DS.belongsTo('discovered-host', {inverse: 'deployment', async: false}),
+  discovered_host: DS.belongsTo('discovered-host', {async: true}),
 
   // has many Hypervisors
-  discovered_hosts: DS.hasMany('discovered-host', {inverse: 'deployments', async: true}),
+  discovered_hosts: DS.hasMany('discovered-host', {async: true}),
 
   // has many Subscriptions
   subscriptions: DS.hasMany('subscription', {inverse: 'deployment', async: true}),
