@@ -1,6 +1,6 @@
-<div {{bind-attr class=":navbar :navbar-default :navbar-outer isUpstream:navbar-outer-upstream"}}>
+<div class="navbar navbar-default navbar-outer {{if isUpstream 'navbar-outer-upstream'}}">
   <div class="navbar-header">
-    <div {{bind-attr class="isUpstream:container:container"}}>
+    <div class="container">
 
       <div class="navbar-brand">
         {{#if isUpstream}}

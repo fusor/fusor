@@ -1,7 +1,7 @@
 <div class='row'>
   <div class='col-md-12'>
     <h3 {{action 'openItem'}}>
-    <i {{bind-attr class=":fa isOpen:fa-angle-down:fa-angle-right"}}></i>
+    <i class="fa {{if isOpen 'fa-angle-down' 'fa-angle-right'}}"></i>
       &nbsp;{{name}}
     </h3>
     {{#if isOpen}}

@@ -80,5 +80,5 @@
                     disableBack=false
                     parentController=controller
                     disableCancel=controllers.deployment.isStarted}}
-  <button {{action 'saveHyperVisors' 'rhev-options'}} class='btn btn-primary' {{bind-attr disabled=controllers.rhev.hasNoHypervisor}}>Next</button>
+  <button {{action 'saveHyperVisors' 'rhev-options'}} class='btn btn-primary' disabled={{controllers.rhev.hasNoHypervisor}}>Next</button>
 {{/cancel-back-next}}

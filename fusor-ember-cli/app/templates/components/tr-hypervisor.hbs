@@ -2,7 +2,7 @@
   {{input type="checkbox" name="isSelectedAsHypervisor" checked=isSelectedAsHypervisor id=cssIdHostId disabled=disabled}}
 </td>
 
-<td {{bind-attr class="isSelectedAsHypervisor:white-font:not-selected"}}>
+<td class="{{if isSelectedAsHypervisor 'white-font' 'not-selected'}}">
   {{#if isSelectedAsHypervisor}}
     {{#if isFreeform}}
       {{input type="text" value=host.name class='form-control' focus-out='saveHostname' id=cssHostHostId}}

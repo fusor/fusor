@@ -91,7 +91,7 @@
                     disableCancel=controllers.application.deploymentIsStarted}}
     {{#if deployment.isNew}}
       <button {{action 'saveDeployment' step2RouteName}}
-              {{bind-attr disabled=disableNextOnLifecycleEnvironment}}
+              disabled={{disableNextOnLifecycleEnvironment}}
               class='btn btn-primary'>
           {{#if deployment.isSaving}}
             Loading ... <i class="fa fa-angle-right"></i>
@@ -101,7 +101,7 @@
       </button>
     {{else}}
       <button {{action 'saveDeployment' step2RouteName}}
-              {{bind-attr disabled=disableNextOnLifecycleEnvironment}}
+              disabled={{disableNextOnLifecycleEnvironment}}
               class='btn btn-primary'>
           Next <i class="fa fa-angle-right"></i>
       </button>
