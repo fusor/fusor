@@ -42,7 +42,7 @@ export default Ember.Mixin.create({
   }.property('model.progress'),
 
   styleWidth: function () {
-    return 'width: ' + (this.get('model.progress') * 100).toFixed(1) + '%;';
+    return new Ember.Handlebars.SafeString((this.get('model.progress') * 100).toFixed(1) + '%');
   }.property('model.progress'),
 
   progressBarClass: function() {
