@@ -16,6 +16,7 @@ export default DS.Model.extend({
   humanized_errors: DS.attr('string'),
   humanized_output: DS.attr('string'),
   humanized_input: DS.attr('string'),
+  repository: DS.attr('string'),
   taskUrl: function() {
     return '/foreman_tasks/tasks/' + this.get('id');
   }.property('id')

@@ -2,22 +2,24 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
   needs: ['application','deployment', 'satellite', 'configure-organization',
-          'configure-environment', 'rhev-setup', 'hypervisor', 'hypervisor/discovered-host',
+          'configure-environment', 'rhev-setup', 'rhev', 'hypervisor', 'hypervisor/discovered-host',
           'engine/discovered-host', 'storage',
           'networking', 'rhev-options', 'where-install',
           'cloudforms-vm', 'review', 'subscriptions/select-subscriptions'],
+
+  isSelfHost: Ember.computed.alias("controllers.rhev.isSelfHost"),
 
   rhevValidated: function() {
     if (this.get('isRhev')) {
       return Ember.isPresent(this.get('controllers.deployment.model.rhev_engine_admin_password')) &&
              Ember.isPresent(this.get('selectedRhevEngine')) &&
-             Ember.isPresent(this.get('selectedHypervisorHosts')) &&
+             (this.get('isSelfHost') || Ember.isPresent(this.get('selectedHypervisorHosts'))) &&
              Ember.isPresent(this.get('controllers.deployment.model.rhev_storage_type'));
     } else {
       return true;
     }
   }.property('controllers.deployment.model.rhev_engine_admin_password', 'controllers.deployment.model.rhev_storage_type',
-             'selectedRhevEngine', 'selectedHypervisorHosts'),
+             'selectedRhevEngine', 'selectedHypervisorHosts', 'isSelfHost'),
 
   cfmeValidated: function() {
     if (this.get('isCloudForms')) {
