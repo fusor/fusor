@@ -12,12 +12,15 @@ module Fusor
       # Add additional paths below if you want logging silenced
       #  we want the polling of ForemanTasksController#show silenced to reduce noise in logs
       silenced_paths = ["api/v21/foreman_tasks/"]
-
-      Rails.logger.warn "fusor_server will update 'Katello.config.logging.ignored_paths' to silence logging of paths '#{silenced_paths}'"
-      for sil_path in silenced_paths
-        Katello.config.logging.ignored_paths.push(sil_path)
+        
+      if Katello.config.respond_to? 'logging' and Katello.config.logging.respond_to? 'ignored_paths'
+        for sil_path in silenced_paths
+          Katello.config.logging.ignored_paths.push(sil_path)
+        end
+        Rails.logger.warn "fusor_server has added '#{silenced_paths}' to 'Katello.config.logging.ignored_paths': #{Katello.config.logging.ignored_paths}"
+      else
+        Rails.logger.warn "fusor_server did not find 'Katello.config.logging.ignored_paths' available, skipping silence of logs for '#{silenced_paths}'"
       end
-      Rails.logger.warn "fusor_server has updated 'Katello.config.logging.ignored_paths' to #{Katello.config.logging.ignored_paths}"
     end
 
     # Add any db migrations
