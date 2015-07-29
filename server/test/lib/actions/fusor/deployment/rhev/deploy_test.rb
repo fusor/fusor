@@ -1,12 +1,12 @@
 require 'test_plugin_helper'
 
-module Actions::Fusor::Deployment
-  class DeployRhevTest < FusorActionTest
+module Actions::Fusor::Deployment::Rhev
+  class DeployTest < FusorActionTest
     TriggerProvisioning = ::Actions::Fusor::Host::TriggerProvisioning
     WaitUntilProvisioned = ::Actions::Fusor::Host::WaitUntilProvisioned
 
     def setup
-      @deploy = create_action DeployRhev
+      @deploy = create_action Deploy
       @deployment = fusor_deployments(:rhev_and_cfme)
     end
 
