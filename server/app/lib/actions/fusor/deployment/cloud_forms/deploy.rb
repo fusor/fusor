@@ -80,6 +80,9 @@ module Actions
               plan_action(::Actions::Fusor::Deployment::CloudForms::AddRhevProvider,
                           deployment,
                           get_ip_action.output[:ip])
+
+              plan_action(::Actions::Fusor::Deployment::Update, deployment,
+                          { cfme_address: get_ip_action.output[:ip] })
             end
           end
 
