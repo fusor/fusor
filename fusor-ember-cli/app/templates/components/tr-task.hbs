@@ -1,21 +1,17 @@
-<td>
-    {{#link-to 'review.progress.details.task' task}}{{task.id}}{{/link-to}}
-</td>
-<td>
-    {{#link-to 'review.progress.details.task' task}}{{task.label}}{{/link-to}}
-</td>
-<td>
-    {{task.state}}
-</td>
-<td>
-    {{task.result}}
-</td>
-<td>
-    {{task.started_at}}
-</td>
-<td>
-    {{task.user}}
-</td>
-<td>
-    <a href={{task.taskUrl}} target='_blank'>View Task</a>
-</td>
+{{#if task}}
+  <td>
+      {{actionNameAndRepository}}
+  </td>
+  <td>
+      {{task.state}}
+  </td>
+  <td>
+      {{task.result}}
+  </td>
+  <td>
+      {{moment task.started_at 'lll'}}
+  </td>
+  <td>
+      <a href={{task.taskUrl}} target='_blank'>View Task</a>
+  </td>
+{{/if}}

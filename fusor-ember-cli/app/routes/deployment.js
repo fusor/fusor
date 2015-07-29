@@ -18,7 +18,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     installDeployment: function() {
       var self = this;
       var deployment = self.modelFor('deployment');
-      var depController = this.controllerFor('deployment');
       var token = $('meta[name="csrf-token"]').attr('content');
 
       var controller = this.controllerFor('review/installation');
@@ -30,7 +29,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
         Ember.$.ajax({
             url: '/fusor/api/v21/deployments/' + deployment.get('id') + '/deploy' ,
             type: "PUT",
-            data: JSON.stringify({'skip_content': depController.get('skipContent') }),
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",

@@ -2,20 +2,26 @@
   <div class='col-md-9'>
     <table class="table table-striped">
       <thead>
-        <th>Product</th>
         <th>Action</th>
         <th>State</th>
         <th>Result</th>
         <th>Started at</th>
-        <th>User</th>
         <th>Action</th>
       </thead>
       <tbody>
-        {{!#each task in model.foreman_tasks}}
-          {{tr-task task=model
-                    selectedTask=selectedTask
-                    action="chooseTask"}}
-        {{!/each}}
+          {{tr-task task=model.deployTask}}
+          {{tr-task task=model.manageContentTask}}
+          {{tr-task task=model.synctask0}}
+          {{tr-task task=model.synctask1}}
+          {{tr-task task=model.synctask2}}
+          {{tr-task task=model.synctask3}}
+          {{tr-task task=model.synctask4}}
+          {{tr-task task=model.synctask5}}
+          {{tr-task task=model.synctask6}}
+          {{tr-task task=model.synctask7}}
+          {{tr-task task=model.synctask8}}
+          {{tr-task task=model.rhevTask}}
+          {{tr-task task=model.cfmeTask}}
       </tbody>
     </table>
   </div>

@@ -1,89 +1,26 @@
 <br />
-<div class='row'>
-  <div class='col-md-1 rhci-review-product-name'>
-    <h3>Satellite</h3>
-  </div>
-  <div class='col-md-8'>
-    <div class='progress-bar-label'>
-      <i class="fa fa-check-circle-o green-circle"></i>
-      &nbsp;Deployment successful
-      <div class='pull-right'>
-        100%
-      </div>
-    </div>
-    <div class="progress">
-      <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
-      </div>
-    </div>
-  </div>
-</div>
 
-<div class='row'>
-  <div class='col-md-1 rhci-review-product-name'>
-    <h3>{{deploymentProductNames}}</h3>
-  </div>
-  <div class='col-md-8'>
-    <div class='progress-bar-label'>
-      {{#if isFinished}}
-        <i class="fa fa-check-circle-o green-circle"></i>&nbsp;
-      {{else if isError}}
-        <i class="fa fa-exclamation-triangle errorForValidation"></i>&nbsp;
-      {{else}}
-        <div class="spinner spinner-xs spinner-inline"></div>
-      {{/if}}
-      {{progressBarMsg}}<span class='no-bold'>{{controller.progressBarSubMsg}}</span> {{model.humanized_errors}}
-      <div class='pull-right'>
-        {{controller.percentProgress}}%
-      </div>
-    </div>
-    <div class="progress">
-      <div class={{progressBarClass}} role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={{percentProgressInt}} style="width: {{styleWidth}};">
-      </div>
-    </div>
-  </div>
-</div>
+{{progress-bar name=nameSatellite
+               isAggregated=true
+               model=model.manageContentTask
+               synctask0=model.synctask0
+               synctask1=model.synctask1
+               synctask2=model.synctask2
+               synctask3=model.synctask3
+               synctask4=model.synctask4
+               synctask5=model.synctask5
+               synctask6=model.synctask6
+               synctask7=model.synctask7
+               synctask8=model.synctask8
+               action="refreshModel"}}
 
-{{#if false}}
-<div class='row'>
-  <div class='col-md-1'>
-    Openstack
-  </div>
-
-  <div class='col-md-8'>
-    <div class='progress-bar-label'>
-      <i class="fa fa-spinner spin"></i>
-      &nbsp;Downloading: <span class='no-bold'>Installing components</span>
-      <div class='pull-right'>
-        5%
-      </div>
-    </div>
-    <div class="progress">
-      <div class="progress-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="width: 5%;">
-      NEED TODO
-      </div>
-    </div>
-  </div>
-</div>
+{{#if isRhev}}
+  {{progress-bar model=model.rhevTask name=nameRhev isAggregated=false action="refreshModel"}}
 {{/if}}
 
-{{#if false}}
-<div class='row'>
-  <div class='col-md-1'>
-    Cloudforms
-  </div>
+{{#if isOpenStack}}
+{{/if}}
 
-  <div class='col-md-8'>
-    <div class='progress-bar-label'>
-      <i class="fa fa-exclamation-circle errorForValidation"></i>
-      &nbsp;Error: <span class='no-bold'>Installing components</span>
-      <div class='pull-right'>
-        12%
-      </div>
-    </div>
-    <div class="progress">
-      <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="12" aria-valuemin="0" aria-valuemax="100" style="width: 12%;">
-      </div>
-    </div>
-  </div>
-</div>
+{{#if isCloudForms}}
+  {{progress-bar model=model.cfmeTask name=nameCloudForms isAggregated=false action="refreshModel"}}
 {{/if}}
