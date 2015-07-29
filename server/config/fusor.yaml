@@ -17,7 +17,7 @@
       - :product_name: "Red Hat Enterprise Linux Server"
         :repository_set_name: "Red Hat Enterprise Linux 6 Server (Kickstart)"
         :basearch: "x86_64"
-        :releasever: "6.6"
+        :releasever: "6.7"
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :repository_set_name: "Red Hat Enterprise Linux 6 Server - RH Common (RPMs)"
@@ -26,11 +26,6 @@
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :repository_set_name: "Red Hat Enterprise Linux 6 Server - Supplementary (RPMs)"
-        :basearch: "x86_64"
-        :releasever: "6Server"
-
-      - :product_name: "Red Hat Enterprise Virtualization"
-        :repository_set_name: "Red Hat Enterprise Virtualization Hypervisor (RPMs)"
         :basearch: "x86_64"
         :releasever: "6Server"
 
