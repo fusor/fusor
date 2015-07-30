@@ -7,43 +7,33 @@
       <i class="fa fa-check-circle-o green-circle"></i>&nbsp;
     {{else if isError}}
       <i class="fa fa-exclamation-triangle errorForValidation"></i>&nbsp;
-    {{else if isAggregated}}
+    {{else if isSatelliteProgressBar}}
       <div class="spinner spinner-xs spinner-inline"></div>
     {{else if isStarted}}
       <div class="spinner spinner-xs spinner-inline"></div>
     {{/if}}
 
     {{progressBarMsg}}
-    {{#if isAggregated}}
+
+    {{#if isSatelliteProgressBar}}
       <span class='no-bold'>
           <a href='/katello/sync_management#!=' target='_blank'> View Content Sync Status</a>
       </span>
     {{/if}}
-    <span class='errorForValidation'>
-      {{model.humanized_errors}}
-    </span>
+
+    {{#if hasHumanizedErrors}}
+      <span class='errorForValidation'>
+          {{#link-to 'review.progress.details'}}{{model.humanized_errors}}{{/link-to}}
+      </span>
+    {{/if}}
+
     <div class='pull-right'>
       {{percentProgress}}%
     </div>
   </div>
+
   <div class="progress">
     <div class={{progressBarClass}} role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={{percentProgressInt}} style="width: {{styleWidth}};">
     </div>
   </div>
 </div>
-
-{{!progressSynctask0}}
-{{!progressSynctask1}}
-{{!progressSynctask2}}
-{{!progressSynctask3}}
-{{!progressSynctask4}}
-{{!progressSynctask5}}
-{{!progressSynctask6}}
-{{!progressSynctask7}}
-{{!progressSynctask8}}
-{{!progressSyncAvg}}
-{{!isStarted}}
-
-{{!synctask6}}
-{{!synctask7}}
-{{!synctask8}}

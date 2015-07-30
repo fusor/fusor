@@ -1,7 +1,7 @@
 <br />
 
 {{progress-bar name=nameSatellite
-               isAggregated=true
+               isSatelliteProgressBar=true
                model=model.manageContentTask
                synctask0=model.synctask0
                synctask1=model.synctask1
@@ -11,16 +11,16 @@
                synctask5=model.synctask5
                synctask6=model.synctask6
                synctask7=model.synctask7
-               synctask8=model.synctask8
                action="refreshModel"}}
 
 {{#if isRhev}}
-  {{progress-bar model=model.rhevTask name=nameRhev isAggregated=false action="refreshModel"}}
+  {{progress-bar model=model.rhevTask name=nameRhev isSatelliteProgressBar=false action="refreshModel"}}
 {{/if}}
 
 {{#if isOpenStack}}
+  {{!progress-bar for openstack TODO}}
 {{/if}}
 
 {{#if isCloudForms}}
-  {{progress-bar model=model.cfmeTask name=nameCloudForms isAggregated=false action="refreshModel"}}
+  {{progress-bar model=model.cfmeTask name=nameCloudForms isSatelliteProgressBar=false action="refreshModel"}}
 {{/if}}

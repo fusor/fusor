@@ -50,7 +50,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
             error: function(response){
               controller.set('showSpinner', false);
               console.log(response);
-              var errorMsg = response.responseJSON.displayMessage;
+              var errorMsg = response.responseText;
               controller.set('errorMsg', errorMsg);
               controller.set('showErrorMessage', true);
               reject(response);
@@ -126,8 +126,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
 
     error: function(reason) {
       console.log(reason);
-      alert(reason);
-      alert(reason.statusText);
     },
 
   }

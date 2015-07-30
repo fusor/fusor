@@ -1,30 +1,35 @@
-<div class="row">
-  <div class='col-md-9'>
-    <table class="table table-striped">
-      <thead>
-        <th>Action</th>
-        <th>State</th>
-        <th>Result</th>
-        <th>Started at</th>
-        <th>Action</th>
-      </thead>
-      <tbody>
-          {{tr-task task=model.deployTask}}
-          {{tr-task task=model.manageContentTask}}
-          {{tr-task task=model.synctask0}}
-          {{tr-task task=model.synctask1}}
-          {{tr-task task=model.synctask2}}
-          {{tr-task task=model.synctask3}}
-          {{tr-task task=model.synctask4}}
-          {{tr-task task=model.synctask5}}
-          {{tr-task task=model.synctask6}}
-          {{tr-task task=model.synctask7}}
-          {{tr-task task=model.synctask8}}
-          {{tr-task task=model.rhevTask}}
-          {{tr-task task=model.cfmeTask}}
-      </tbody>
-    </table>
-  </div>
-</div>
+<br />
+{{#if isLoadingMoreTasks}}
 
-{{outlet}}
+    <div class="spinner spinner-md spinner-inline"></div>
+    <span class='spinner-text'>
+      Loading Data from Tasks ...
+    </span>
+
+{{else}}
+
+    <div class="row">
+      <div class='col-md-9'>
+        <table class="table table-bordered small">
+          <thead>
+            <th>Action</th>
+            <th class='center'>State</th>
+            <th class='center'>Result</th>
+            <th class='center'>Progress</th>
+            <th class='center'>Started at</th>
+          </thead>
+          <tbody>
+              {{tr-task task=model.deployTask}}
+              {{tr-task task=model.manageContentTask}}
+              {{tr-task task=model.rhevTask}}
+              {{tr-task task=model.cfmeTask}}
+              {{#each synctask in synctasks}}
+                  {{tr-task task=synctask}}
+              {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {{outlet}}
+
+{{/if}}
