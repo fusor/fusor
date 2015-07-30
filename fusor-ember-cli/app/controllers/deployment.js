@@ -31,10 +31,10 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   }.property("satelliteInvalid", 'isRhev', 'controllers.rhev.validRhev', 'controllers.cloudforms.validCloudforms'),
 
   hasSubscriptionUUID: function() {
-    return (Ember.isPresent(this.get('controllers.subscriptions/credentials.organizationUpstreamConsumerUUID')) ||
+    return (Ember.isPresent(this.get('organizationUpstreamConsumerUUID')) ||
             Ember.isPresent(this.get('model.upstream_consumer_uuid'))
            );
-  }.property('controllers.subscriptions/credentials.organizationUpstreamConsumerUUID', 'model.upstream_consumer_uuid'),
+  }.property('organizationUpstreamConsumerUUID', 'model.upstream_consumer_uuid'),
 
   isDisabledReview: function() {
     return (this.get('isDisabledSubscriptions') || !this.get("hasSubscriptionUUID") || this.get('controllers.subscriptions/select-subscriptions.disableNextOnSelectSubscriptions'));
