@@ -32,7 +32,7 @@
         {{review-link label='Setup Type' routeName='rhev-setup' isRequired=true
                           value=controllers.rhev-setup.rhevSetupTitle}}
         {{#if isSelfHosted}}
-            {{review-link label='Hypervisor/Engine' routeName='engine.discovered-host' isRequired=true
+            {{review-link label='Engine/Hypervisor' routeName='engine.discovered-host' isRequired=true
                           value=engineNamePlusDomain}}
         {{else}}
             {{review-link label='Engine Host Name' routeName='engine.discovered-host' isRequired=true

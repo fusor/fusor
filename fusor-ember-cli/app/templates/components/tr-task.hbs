@@ -1,17 +1,25 @@
 {{#if task}}
   <td>
-      {{actionNameAndRepository}}
+      <a href={{task.taskUrl}} target='_blank'>{{actionNameAndRepository}}</a>
   </td>
-  <td>
+  <td class='center'>
       {{task.state}}
   </td>
-  <td>
-      {{task.result}}
+  <td class="center {{textBold}} {{textColor}}">
+      {{#if isError}}
+          <a href={{task.taskUrl}} target='_blank'>{{task.result}}</a>
+      {{else}}
+          {{task.result}}
+      {{/if}}
   </td>
-  <td>
+  <td class="center {{textBold}} {{textColor}}">
+      {{#if isError}}
+          <a href={{task.taskUrl}} target='_blank'>{{percentProgress}}</a>
+      {{else}}
+          {{percentProgress}}
+      {{/if}}
+  </td>
+  <td class="center">
       {{moment task.started_at 'lll'}}
-  </td>
-  <td>
-      <a href={{task.taskUrl}} target='_blank'>View Task</a>
   </td>
 {{/if}}

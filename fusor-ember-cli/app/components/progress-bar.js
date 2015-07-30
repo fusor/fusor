@@ -18,39 +18,33 @@ export default Ember.Component.extend({
     return 5000; // Time between refreshing (in ms)
   }.property().readOnly(),
 
-  scheduleNextRefresh: function(f) {
+  scheduleNextRefresh: function() {
     return Ember.run.later(this, function() {
       this.set('timer', this.scheduleNextRefresh(this.sendAction()));
     }, this.get('intervalPolling'));
   },
 
-  percentProgress: function() {
-    if (this.get('isAggregated')) {
-        if ((parseFloat(this.get('progressSyncAvg'), 10.0) >= -1) && (parseInt(this.get('progressSyncAvg'), 10) <= 0.5)) {
-          return 0.5;
-        } else if ((parseFloat(this.get('progressSyncAvg'), 10.0) > 0) && (parseInt(this.get('progressSyncAvg'), 10) < 99)) {
-          return this.get('progressSyncAvg');
-        } else if (parseInt(this.get('model.progress'), 10) === 1) {
-          return 100;
-        } else if (parseInt(this.get('progressSyncAvg'), 10) === 99) {
-          return 99;
-        } else {
-          return 0;
-        }
-    } else if (parseFloat(this.get('model.progress'), 10.0) > 0) {
-        return (this.get('model.progress') * 100).toFixed(1);
+  valueProgress: function() {
+    if (this.get('model.state') === 'planning') {
+        return 0.1;
+    } else if (this.get('model.state')) {
+        return (this.get('model.progress') * 100);
     } else {
         return 0;
     }
-  }.property('model.progress', 'isAggregated', 'progressSyncAvg'),
+  }.property('model.progress'),
+
+  percentProgress: function() {
+    return this.get('valueProgress').toFixed(1);
+  }.property('valueProgress'),
 
   percentProgressInt: function() {
-    return (this.get('percentProgress')); //.toFixed(0);
-  }.property('percentProgress'),
+    return this.get('valueProgress').toFixed(0);
+  }.property('valueProgress'),
 
   styleWidth: function () {
     return new Ember.Handlebars.SafeString(this.get('percentProgressInt') + '%');
-  }.property('percentProgress'),
+  }.property('percentProgressInt'),
 
   progressBarClass: function() {
     var result = this.get('model.result');
@@ -66,9 +60,9 @@ export default Ember.Component.extend({
   }.property('model.result'),
 
   deploymentStatus: function() {
-    var progress = this.get('model.progress');
-    if (progress) {
-      if (progress === 1) {
+    var valueProgress = this.get('valueProgress');
+    if (valueProgress) {
+      if (valueProgress === 100) {
         return 'Finished';
       } else {
         return 'In Process';
@@ -76,7 +70,7 @@ export default Ember.Component.extend({
     } else {
       return 'Waiting for content';
     }
-  }.property('model.progress'),
+  }.property('valueProgress'),
 
   isSpin: function() {
     return ((this.get('deploymentStatus') === 'In Process') && (this.get('model.result') === 'pending'));
@@ -84,13 +78,13 @@ export default Ember.Component.extend({
 
   progressBarMsg: function() {
     if (this.get('isFinished')) {
-      if (this.get('isAggregated')) {
+      if (this.get('isSatelliteProgressBar')) {
         return "Sync content and setup successful";
       } else {
         return "Deployment successful";
       }
     } else if ((this.get('deploymentStatus') === 'In Process') && (this.get('model.result') === 'pending')) {
-      if (this.get('isAggregated')) {
+      if (this.get('isSatelliteProgressBar')) {
         return "Syncing content";
       } else {
         return "Installing components";
@@ -102,20 +96,23 @@ export default Ember.Component.extend({
     } else if (!this.get('isStarted')) {
       return "Waiting for content";
     }
-  }.property('deploymentStatus', 'model.result', 'isFinished', 'isAggregated'),
+  }.property('deploymentStatus', 'model.result', 'isFinished', 'isSatelliteProgressBar'),
 
   isFinished: function() {
-    // model.progress returns 1 (for some strange reason) before the sync subtasks start to return, so also need to check if progressSyncAvg is 99
-    return ((parseInt(this.get('model.progress', 10)) === 1) && (parseInt(this.get('progressSyncAvg', 10)) === 99));
-  }.property('model.progress', 'progressSyncAvg'),
+    return (this.get('valueProgress') === 100);
+  }.property('valueProgress'),
 
   isStarted: function() {
-    return(parseFloat(this.get('percentProgress'), 10.0) > 0);
-  }.property('percentProgress'),
+    return(this.get('valueProgress') > 0);
+  }.property('valueProgress'),
 
   isError: function() {
     return(this.get('model.result') === 'error');
   }.property('model.result'),
+
+  hasHumanizedErrors: function() {
+    return (Ember.isPresent(this.get('model.humanized_errors')));
+  }.property('model.humanized_errors'),
 
   progressSynctask0: function() {
     if (this.get('synctask0.progress')) {
@@ -189,31 +186,14 @@ export default Ember.Component.extend({
     }
   }.property('synctask8.progress'),
 
-  progressSyncAvg: function() {
-    return (((parseFloat(this.get('progressSynctask0'), 10.0) +
-             parseFloat(this.get('progressSynctask1'), 10.0) +
-             parseFloat(this.get('progressSynctask2'), 10.0) +
-             parseFloat(this.get('progressSynctask3'), 10.0) +
-             parseFloat(this.get('progressSynctask4'), 10.0) +
-             parseFloat(this.get('progressSynctask5'), 10.0) +
-             parseFloat(this.get('progressSynctask6'), 10.0) +
-             parseFloat(this.get('progressSynctask7'), 10.0) +
-             parseFloat(this.get('progressSynctask8'), 10.0)
-           ) / 9).toFixed(1) - 1);
-  }.property('progressSynctask0', 'progressSynctask1', 'progressSynctask2', 'progressSynctask3',
-             'progressSynctask4', 'progressSynctask5', 'progressSynctask6', 'progressSynctask7',
-             'progressSynctask8'),
-
   actions: {
     // executes `refreshModel` for every intervalPolling.
     startPolling: function() {
-      console.log('startPolling');
       this.sendAction(); // run immediately
       this.set('timer', this.scheduleNextRefresh(this.sendAction())); //and then repeats
     },
 
     stopPolling: function() {
-      console.log('stopPolling');
       Ember.run.cancel(this.get('timer'));
     }
   }

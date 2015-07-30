@@ -43,6 +43,7 @@ export default DS.Model.extend({
   host_naming_scheme: DS.attr('string'),
   custom_preprend_name: DS.attr('string'),
   enable_access_insights: DS.attr('boolean'),
+  cfme_address: DS.attr('string'),
 
   created_at: DS.attr('date'),
   updated_at: DS.attr('date'),
