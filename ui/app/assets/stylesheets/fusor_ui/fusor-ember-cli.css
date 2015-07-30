@@ -268,10 +268,10 @@ label.env_path_disabled:after {
   color: green; }
 
 .errorForValidation {
-  color: red; }
+  color: #a94442; }
 
 .errorForValidation a {
-  color: red; }
+  color: #a94442; }
 
 .defaultValue {
   color: #999; }
@@ -311,6 +311,9 @@ th {
 
 .black-font {
   color: #000 !important; }
+
+.white-font {
+  color: #fff !important; }
 
 li.disabled a {
   color: #999 !important; }
