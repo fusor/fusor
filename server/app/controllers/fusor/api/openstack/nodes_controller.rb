@@ -23,7 +23,7 @@ module Fusor
 
         def create
           @node = undercloud_handle.create_node(params[:node], true)
-          respond_for_show :resource => @node
+          redirect_to :action => 'show', :id => @node.uuid
         end
 
         def ready
