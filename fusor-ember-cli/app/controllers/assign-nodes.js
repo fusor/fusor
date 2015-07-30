@@ -114,9 +114,13 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
         console.log('SUCCESS');
       },
       error: function(error) {
-        me.set('showLoadingSpinner', false);
         console.log('ERROR');
         console.log(error);
+        // TODO: Remove the reload call once we determine how to get around the failure
+        //       that appears to be due to port forwarding. But make sure to leave the show spinner setting.
+        me.get('model').plan.reload().then(function() {
+          me.set('showLoadingSpinner', false);
+        });
       }
     });
   },
