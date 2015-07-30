@@ -13,4 +13,9 @@ export default Ember.Controller.extend({
             this.get('controllers.review/installation.selectedRhevEngine.name') +
             '/ovirt-engine/');
   }.property('controllers.review/installation.selectedRhevEngine.name'),
+
+  cfmeUrl: function() {
+    return ('https://' + this.get('controllers.deployment.model.cfme_address'));
+  }.property('controllers.deployment.model.cfme_address')
+
 });
