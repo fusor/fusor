@@ -20,5 +20,17 @@ export default Ember.Component.extend({
 
   unitsClassSize: function () {
     return this.getWithDefault('unitsSize', 'col-md-2');
-  }.property()
+  }.property(),
+
+  helpId: 'popover',
+
+  didInsertElement: function() {
+    this.set('helpId', 'popover_' + Math.floor((Math.random() * 100000)));
+    var selector = '[data-toggle=' + this.get('helpId') + ']';
+    var afterDisplayed = function() {
+      PatternFly.popovers(selector);
+    };
+    Ember.run.later(afterDisplayed, 300);
+  }
+
 });
