@@ -9,6 +9,75 @@
   white-space:nowrap;
 }
 
+.advanced-settings-group {
+  margin-bottom: 20px;
+}
+.advanced-settings-default > .advanced-settings-heading {
+  color: #333333;
+}
+.advanced-settings-default > .advanced-settings-heading + .advanced-settings-collapse > .advanced-settings-body {
+  border-top-color: #dddddd;
+}
+.advanced-settings-title {
+  font-weight: 700;
+}
+.advanced-settings-group .panel {
+  color: #4d5258;
+}
+.advanced-settings-group .panel + .panel {
+  margin-top: -1px;
+}
+.advanced-settings-group .advanced-settings-default {
+}
+.advanced-settings-group .advanced-settings-heading {
+}
+.advanced-settings-group .advanced-settings-heading + .advanced-settings-collapse .advanced-settings-body {
+}
+.advanced-settings-group .advanced-settings-title {
+  font-weight: 500;
+  line-height: 1;
+}
+.advanced-settings-group .advanced-settings-title > a {
+  font-weight: 600;
+}
+.advanced-settings-group .advanced-settings-title > a:before {
+  content: "\f107";
+  font-family: "FontAwesome";
+  font-size: 12px;
+  margin-right: 5px;
+  vertical-align: 0;
+}
+.advanced-settings-group .advanced-settings-title > a:focus {
+  outline: none;
+  text-decoration: none;
+}
+.advanced-settings-group .advanced-settings-title > a:hover {
+  text-decoration: none;
+}
+.advanced-settings-group .advanced-settings-title > a.collapsed:before {
+  content: "\f105";
+  margin-left: 4px;
+  margin-right: 7px;
+}
+
+.deploy-undercloud-param-label {
+  width: 165px;
+  float: left;
+}
+.deploy-undercloud-param-input {
+  width: 100px;
+  float: left;
+  margin-left: 20px;
+}
+.deploy-undercloud-param-range {
+  width: 320px;
+  float: left;
+  margin-left: 20px;
+}
+.deploy-undercloud-param-range-input {
+  width: 100px;
+  float: left;
+}
 .deployment-roles {
   float: left;
   font-weight: 600;
