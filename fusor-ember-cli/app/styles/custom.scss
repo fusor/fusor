@@ -188,6 +188,17 @@ li.disabled a {
   padding-left: 15px;
 }
 
+.modal-overlay {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width:100%;
+  height:100%;
+  text-align:center;
+  z-index: 1000;
+  background-color: #000000;
+}
+
 .loading-spinner {
   display: inline-block;
   position: fixed;
