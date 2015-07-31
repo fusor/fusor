@@ -91,8 +91,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
   }.property('errorNodes', 'errorNodes.length'),
 
   preRegistered: 0,
+
   nodeRegComplete: function() {
-    return  this.get('model.nodes').length + this.get('errorNodes').length - this.get('preRegistered');
+    return  this.get('model').nodes.get('length') - 1 + this.get('errorNodes').length - this.get('preRegistered');
   }.property('model.nodes.length', 'errorNodes.length', 'preRegistered'),
 
   nodeRegTotal: function() {
@@ -110,7 +111,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
   }.property('nodeRegComplete', 'nodeRegTotal'),
 
   noRegisteredNodes: function() {
-      return (this.get('model.nodes').length < 1);
+      return (this.get('model').nodes.get('length') < 1);
   }.property('model.nodes', 'model.nodes.length'),
 
   hasSelectedNode: function() {
@@ -300,7 +301,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
   },
 
   disableRegisterNodesNext: function() {
-    var nodeCount = this.get('model.nodes.length');
+    var nodeCount = this.get('model').nodes.length;
     return (nodeCount < 2);
   }.property('model.profiles', 'model.profiles.length'),
 
@@ -309,7 +310,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     if (newNodes && newNodes.length > 0) {
       if (!this.get('registrationInProgress'))
       {
-        this.set('preRegistered', this.get('model.nodes.length'));
+        this.set('preRegistered', this.get('model').nodes.get('length'));
         this.doNextNodeRegistration();
       }
       else if (this.get('registrationPaused')) {
@@ -352,63 +353,69 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     var bmDeployRamdiskImage = null;
 
     this.getImage('bm-deploy-kernel').then(function(kernelImage) {
-	bmDeployKernelImage = kernelImage;
+      bmDeployKernelImage = kernelImage;
     });
     this.getImage('bm-deploy-ramdisk').then(function(ramdiskImage) {
-	bmDeployRamdiskImage = ramdiskImage;
+      bmDeployRamdiskImage = ramdiskImage;
     });
 
-    var promiseFunction = function(resolve) {
-      var checkForDone = function() {
-        var driverInfo = {};
-        if ( node.driver === 'pxe_ssh' ) {
-          driverInfo = {
-            ssh_address: node.ipAddress,
-            ssh_username: node.ipmiUsername,
-            ssh_key_contents: node.ipmiPassword,
-            ssh_virt_type: 'virsh',
-            deploy_kernel: bmDeployKernelImage.image.id,
-            deploy_ramdisk: bmDeployRamdiskImage.image.id
-          };
-        } else if (node.driver === 'pxe_ipmitool')  {
-          driverInfo = {
-            ipmi_address: node.ipAddress,
-            ipmi_username: node.ipmiUsername,
-            ipmi_password: node.ipmiPassword,
-            pxe_deploy_kernel: bmDeployKernelImage.image.id,
-            pxe_deploy_ramdisk: bmDeployRamdiskImage.image.id
-          };
-        }
-        var createdNode = me.store.createRecord('node', {
-            driver: node.driver,
-            driver_info: driverInfo,
-            properties: {
-              memory_mb: node.ram,
-              cpus: node.cpu,
-              local_gb: node.disk,
-              cpu_arch: node.architecture,
-              capabilities: 'boot_option:local',
-            },
-            address: node.nicMacAddress,
-        });
-        createdNode.save();
-        resolve(true);
+    var driverInfo = {};
+    if ( node.driver === 'pxe_ssh' ) {
+      driverInfo = {
+        ssh_address: node.ipAddress,
+        ssh_username: node.ipmiUsername,
+        ssh_key_contents: node.ipmiPassword,
+        ssh_virt_type: 'virsh',
+        deploy_kernel: bmDeployKernelImage.image.id,
+        deploy_ramdisk: bmDeployRamdiskImage.image.id
       };
+    } else if (node.driver === 'pxe_ipmitool')  {
+      driverInfo = {
+        ipmi_address: node.ipAddress,
+        ipmi_username: node.ipmiUsername,
+        ipmi_password: node.ipmiPassword,
+        pxe_deploy_kernel: bmDeployKernelImage.image.id,
+        pxe_deploy_ramdisk: bmDeployRamdiskImage.image.id
+      };
+    }
+    var createdNode = me.store.createRecord('node', {
+      driver: node.driver,
+      driver_info: driverInfo,
+      properties: {
+        memory_mb: node.ram,
+        cpus: node.cpu,
+        local_gb: node.disk,
+        cpu_arch: node.architecture,
+        capabilities: 'boot_option:local'
+      },
+      address: node.nicMacAddress
+    });
 
-      Ember.run.later(checkForDone, 3000);
+    var handleSuccess = function(node) {
+      me.get('nodes').pushObject(node);
+      me.doNextNodeRegistration();
+
     };
 
-    var fulfill = function(isDone) {
-      if (isDone) {
-        me.doNextNodeRegistration();
+    var handleFailure = function(reason) {
+      me.get('model').nodes.get('content').removeObject(createdNode);
+
+      try {
+        var displayMessage = reason.responseJSON.displayMessage;
+        displayMessage = displayMessage.substring(displayMessage.indexOf('{'),displayMessage.indexOf('}') + 1) + "}";
+        displayMessage = displayMessage.replace(/\\/g, "");
+        displayMessage = displayMessage.replace(/\"\{/g, "{");
+
+        var errorObj = JSON.parse(displayMessage);
+        node.errorMessage = node.ipAddress + ": " + errorObj.error_message.faultstring;
       }
-      else {
-        var promise = new Ember.RSVP.Promise(promiseFunction);
-        promise.then(fulfill);
-      }
+      catch (e) {
+        node.errorMessage = node.ipAddress + ": " + reason.statusText;
+     }
+      me.get('errorNodes').pushObject(node);
+      me.doNextNodeRegistration();
     };
 
-    var promise = new Ember.RSVP.Promise(promiseFunction);
-    promise.then(fulfill);
+    createdNode.save().then(handleSuccess).catch(handleFailure);
   }
 });
