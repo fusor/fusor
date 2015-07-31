@@ -21,7 +21,9 @@ var app = new EmberApp({
 // along with the exports of each module as its value.
 
 app.import('bower_components/jquery-csv/src/jquery.csv.js');
+app.import('bower_components/patternfly/components/bootstrap/dist/js/bootstrap.min.js');
 app.import('bower_components/patternfly/dist/css/patternfly.min.css');
+app.import('bower_components/patternfly/dist/js/patternfly.js');
 app.import('bower_components/matchmedia/matchMedia.js');
 
 
