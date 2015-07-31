@@ -29,6 +29,11 @@ export default Ember.Component.extend({
     var selector = '[data-toggle=' + this.get('helpId') + ']';
     var afterDisplayed = function() {
       PatternFly.popovers(selector);
+
+      $(selector).on('click', function (e) {
+        var allpopovers = $('[base-popover=true]');
+        allpopovers.not(this).popover('hide');
+      });
     };
     Ember.run.later(afterDisplayed, 300);
   }
