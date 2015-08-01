@@ -21,6 +21,10 @@ module Fusor
           render :json => undercloud_handle.list_nodes
         end
 
+        def show
+          render :json => undercloud_handle.get_node(params[:id])
+        end
+
         def create
           @node = undercloud_handle.create_node(params[:node], true)
           redirect_to :action => 'show', :id => @node.uuid
