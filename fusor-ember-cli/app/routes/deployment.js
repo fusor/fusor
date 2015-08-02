@@ -150,6 +150,11 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       console.log(reason);
     },
 
+    refreshModel: function(){
+      console.log('refreshModelOnDeploymentRoute');
+      return this.refresh();
+    }
+
   }
 
 });

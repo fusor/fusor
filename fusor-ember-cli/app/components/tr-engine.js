@@ -1,30 +1,22 @@
 import Ember from 'ember';
-import SaveHostnameMixin from "../mixins/save-hostname-mixin";
+import TrEngineHypervisorMixin from "../mixins/tr-engine-hypervisor-mixin";
 
-export default Ember.Component.extend(SaveHostnameMixin, {
-  tagName: 'tr',
+export default Ember.Component.extend(TrEngineHypervisorMixin, {
 
-  classNameBindings: ['bgColor'],
+  isSelectedAsEngine: function() {
+      if (this.get('selectedRhevEngineHost')) {
+          return (this.get('selectedRhevEngineHost.id') === this.get('host.id'));
+      }
+  }.property('host', 'selectedRhevEngineHost'),
 
   isChecked: function () {
-    return this.get('host.isSelectedAsEngine');
-  }.property('host.isSelectedAsEngine'),
-
-  bgColor: function () {
-    if (this.get('isChecked')) {
-      return 'white-on-blue';
-    }
-  }.property('isChecked'),
+      return this.get('isSelectedAsEngine');
+  }.property('isSelectedAsEngine'),
 
   actions: {
     engineHostChanged: function(host) {
-      var self = this.get('targetObject');
-      var controller = self.get('controllers.deployment');
-      return self.store.find('discovered-host', host.get('id')).then(function (result) {
-        return controller.set('model.discovered_host', result);
-      });
-    },
-
+      return this.sendAction("action", host);
+    }
   }
 
 });

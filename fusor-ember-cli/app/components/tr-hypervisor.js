@@ -1,20 +1,11 @@
 import Ember from 'ember';
-import SaveHostnameMixin from "../mixins/save-hostname-mixin";
+import TrEngineHypervisorMixin from "../mixins/tr-engine-hypervisor-mixin";
 
-export default Ember.Component.extend(SaveHostnameMixin, {
-  tagName: 'tr',
-
-  classNameBindings: ['bgColor'],
+export default Ember.Component.extend(TrEngineHypervisorMixin, {
 
   isChecked: function () {
     return this.get('isSelectedAsHypervisor');
   }.property('isSelectedAsHypervisor'),
-
-  bgColor: function () {
-    if (this.get('isChecked')) {
-      return 'white-on-blue';
-    }
-  }.property('isChecked'),
 
   observeHostName: function() {
     if (this.get('isSelectedAsHypervisor')) {
@@ -39,28 +30,9 @@ export default Ember.Component.extend(SaveHostnameMixin, {
     }
   }.observes('isSelectedAsHypervisor'),
 
-  cssHostHostId: function () {
-    return ('host_' + this.get('host.id'));
-  }.property('host.id'),
-
-  cssIdHostId: function () {
-    return ('id_' + this.get('host.id'));
-  }.property('host.id'),
-
-  selectedIds: function () {
-    return this.get('model').getEach("id");
-  }.property('model.[]'),
-
   isSelectedAsHypervisor: function () {
       return this.get('selectedIds').contains(this.get('host.id'));
   }.property('selectedIds', 'host.id'),
 
-  hostType: function() {
-    if (this.get('host.is_virtual')) {
-      return "Virtual";
-    } else {
-      return "Bare Metal";
-    }
-  }.property('host.is_virtual')
-
 });
+

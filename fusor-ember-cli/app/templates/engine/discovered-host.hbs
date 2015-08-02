@@ -28,7 +28,7 @@
             <span class='rhev-select-all'>
             </span>
 
-            <button class='btn btn-default btn-sm' {{action 'refreshModel'}}>Refresh Data</button>
+            <button class='btn btn-default btn-sm' {{action 'refreshDiscoveredHosts'}}>Refresh Data</button>
           </div>
 
         </form>
@@ -49,9 +49,11 @@
           </tr>
         </thead>
         <tbody>
-          {{#each host in filteredHosts itemController='discovered-host'}}
-             {{tr-engine host=host selectedRhevEngineHost=selectedRhevEngineHost
-                                   disabled=controllers.deployment.isStarted}}
+          {{#each host in filteredHosts}}
+             {{tr-engine host=host
+                         selectedRhevEngineHost=selectedRhevEngineHost
+                         disabled=controllers.deployment.isStarted
+                         action="setEngine"}}
           {{/each}}
         </tbody>
       </table>
