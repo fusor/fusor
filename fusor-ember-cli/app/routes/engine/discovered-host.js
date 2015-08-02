@@ -11,15 +11,26 @@ export default Ember.Route.extend({
     var self = this;
     this.store.find('discovered-host').then(function(results) {
       controller.set('allDiscoveredHosts', results);
-      self.modelFor('deployment').get('discovered_hosts').then(function(results2) {
-        controller.set('selectedHypervisors', results2);
-        controller.set('isLoadingHosts', false);
-      });
+      controller.set('isLoadingHosts', false);
     });
   },
 
   deactivate: function() {
     return this.send('saveDeployment', null);
   },
+
+  // TODO - make mixin - same on route hypervisor/discovered-host
+  actions: {
+    refreshDiscoveredHosts: function(){
+      console.log('refresh allDiscoveredHosts');
+      var controller = this.get('controller');
+      controller.set('isLoadingHosts', true);
+      this.store.find('discovered-host').then(function(results) {
+        controller.set('allDiscoveredHosts', results);
+        controller.set('isLoadingHosts', false);
+      });
+
+    }
+  }
 
 });

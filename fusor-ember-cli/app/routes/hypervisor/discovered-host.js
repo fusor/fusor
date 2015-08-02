@@ -48,7 +48,19 @@ export default Ember.Route.extend({
             }
         });
       });
+    },
+
+    // TODO - make mixin - same on route engine/discovered-host
+    refreshDiscoveredHosts: function(){
+      console.log('refresh allDiscoveredHosts');
+      var controller = this.get('controller');
+      controller.set('isLoadingHosts', true);
+      this.store.find('discovered-host').then(function(results) {
+        controller.set('allDiscoveredHosts', results);
+        controller.set('isLoadingHosts', false);
+      });
     }
+
   }
 
 });

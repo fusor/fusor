@@ -1,17 +1,17 @@
 <td>
-    {{radio-button value=host.model groupValue=selectedRhevEngineHost changed="engineHostChanged" id=host.cssIdHostId disabled=disabled}}
+    {{radio-button value=host groupValue=selectedRhevEngineHost changed="engineHostChanged" id=cssIdHostId disabled=disabled}}
 </td>
-<td class="{{if host.isSelectedAsEngine 'black-font' 'not-selected'}}">
-    {{#if host.isSelectedAsEngine}}
-      {{input type="text" value=host.model.name class='form-control' focus-out='saveHostname' id=host.cssHostHostId}}
+<td class="{{if isSelectedAsEngine 'black-font' 'not-selected'}}">
+    {{#if isSelectedAsEngine}}
+      {{input type="text" value=host.name class='form-control' focus-out='saveHostname' id=cssHostHostId}}
     {{else}}
       Not Selected
     {{/if}}
 </td>
-<td> {{host.model.mac}} </td>
-<td> {{host.hostType}} </td>
-<td class='text-center'> {{host.model.cpus}} CPU</td>
-<td class='text-center'> {{host.model.memory_human_size}}</td>
-<td class='text-center'> {{host.model.disk_count}} </td>
-<td class='text-center'> {{host.model.disks_human_size}} </td>
-<td> {{host.model.subnet_to_s}} </td>
+<td> {{host.mac}} </td>
+<td> {{hostType}} </td>
+<td class='text-center'> {{host.cpus}} CPU</td>
+<td class='text-center'> {{host.memory_human_size}}</td>
+<td class='text-center'> {{host.disk_count}} </td>
+<td class='text-center'> {{host.disks_human_size}} </td>
+<td> {{host.subnet_to_s}} </td>

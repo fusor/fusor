@@ -5,13 +5,11 @@ export default Ember.Controller.extend({
   needs: ['deployment', 'hypervisor/discovered-host', 'rhev'],
 
   selectedRhevEngineHost: Ember.computed.alias("model"),
-  hypervisorModelIds: Ember.computed.alias("controllers.hypervisor/discovered-host.hypervisorModelIds"),
   rhevIsSelfHosted: Ember.computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
 
-  // Set by route's setupController. Needed since hypervisorModelIds is
-  // only available after route hypervisor/discovered hosts is activated
-  selectedHypervisors: [],
-  allDiscoveredHosts: [],
+  hypervisorModelIds: function() {
+    return this.get('controllers.deployment.model.discovered_hosts').getEach('id');
+  }.property('controllers.deployment.model.discovered_hosts.[]'),
 
   engineNextRouteName: function() {
     if (this.get('rhevIsSelfHosted')) {
@@ -22,12 +20,22 @@ export default Ember.Controller.extend({
   }.property('rhevIsSelfHosted'),
 
   // Filter out hosts selected as Hypervisor
-  availableHosts: Ember.computed.filter('allDiscoveredHosts', function(item, index, array) {
-    var hypervisorsIds = (this.get('selectedHypervisors').getEach('id'));
-    console.log(hypervisorsIds);
-    return !(hypervisorsIds.contains(item.get('id')));
-  }).property('selectedHypervisors', 'allDiscoveredHosts'),
+  availableHosts: function() {
+    // TODO: Ember.computed.filter() caused problems. error item.get is not a function
+    var self = this;
+     var allDiscoveredHosts = this.get('allDiscoveredHosts');
+     if (this.get('allDiscoveredHosts')) {
+        return allDiscoveredHosts.filter(function(item) {
+          if (self.get('hypervisorModelIds')) {
+            //console.log(item.get('id'));
+            //console.log(self.get('hypervisorModelIds'));
+            return !(self.get('hypervisorModelIds').contains(item.get('id')));
+          }
+        });
+      }
+  }.property('allDiscoveredHosts.[]', 'hypervisorModelIds.[]'),
 
+  // same as Engine. TODO. put it mixin
   filteredHosts: function(){
     var searchString = this.get('searchString');
     var rx = new RegExp(searchString, 'gi');
@@ -43,10 +51,17 @@ export default Ember.Controller.extend({
     } else {
       return model;
     }
-  }.property('availableHosts', 'searchString'),
+  }.property('availableHosts.[]', 'searchString'),
 
   numSelected: function() {
     return (this.get('model.id')) ? 1 : 0;
   }.property('model.id'),
+
+  actions: {
+    setEngine: function(host) {
+      var deployment = this.get('controllers.deployment');
+      deployment.set('model.discovered_host', host);
+    }
+  }
 
 });

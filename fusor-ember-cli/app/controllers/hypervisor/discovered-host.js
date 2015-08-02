@@ -3,8 +3,6 @@ import Ember from 'ember';
 export default Ember.ArrayController.extend({
   needs: ['deployment', 'hypervisor', 'rhev'],
 
-  itemController: ['discovered-host'],
-
   selectedRhevEngine: Ember.computed.alias("controllers.deployment.model.discovered_host"),
   rhevIsSelfHosted: Ember.computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
 
@@ -15,9 +13,20 @@ export default Ember.ArrayController.extend({
   isMac: Ember.computed.alias("controllers.hypervisor.isMac"),
 
   // Filter out hosts selected as Engine
-  availableHosts: Ember.computed.filter('allDiscoveredHosts', function(host, index, array) {
-    return (host.get('id') !== this.get('selectedRhevEngine.id'));
-  }).property('allDiscoveredHosts', 'selectedRhevEngine'),
+  availableHosts: function() {
+    // TODO: Ember.computed.filter() caused problems. error item.get is not a function
+    var self = this;
+     var allDiscoveredHosts = this.get('allDiscoveredHosts');
+     if (this.get('allDiscoveredHosts')) {
+        return allDiscoveredHosts.filter(function(item) {
+          if (self.get('hypervisorModelIds')) {
+            //console.log(item.get('id'));
+            //console.log(self.get('hypervisorModelIds'));
+            return (item.get('id') !== self.get('selectedRhevEngine.id'));
+          }
+        });
+      }
+  }.property('allDiscoveredHosts.[]', 'hypervisorModelIds.[]'),
 
   filteredHosts: function(){
     var searchString = this.get('searchString');
@@ -34,7 +43,7 @@ export default Ember.ArrayController.extend({
     } else {
       return model;
     }
-  }.property('availableHosts', 'searchString'),
+  }.property('availableHosts.[]', 'searchString'),
 
   hypervisorModelIds: function() {
     if (this.get('model')) {
@@ -73,9 +82,6 @@ export default Ember.ArrayController.extend({
   }.property('rhevIsSelfHosted'),
 
   actions: {
-    refreshModel: function() {
-      return this.get('model').reload();
-    },
 
     setCheckAll: function() {
       this.get('model').setObjects([]);
