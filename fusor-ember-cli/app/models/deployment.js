@@ -66,7 +66,13 @@ export default DS.Model.extend({
     } else {
       return [];
     }
-  }.property('discovered_hosts')
+  }.property('discovered_hosts'),
+
+  // controller.deployment.isStarted returns false if refreshing child route,
+  // so best to have it on model as well
+  isStarted: function() {
+    return !!(this.get('foreman_task_uuid'));
+  }.property('foreman_task_uuid')
 
 });
 

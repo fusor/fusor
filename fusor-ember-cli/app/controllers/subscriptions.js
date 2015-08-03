@@ -4,8 +4,11 @@ export default Ember.Controller.extend({
   needs: ['deployment', 'subscriptions/credentials', 'subscriptions/management-application'],
 
   stepNumberSubscriptions: Ember.computed.alias("controllers.deployment.stepNumberSubscriptions"),
+  isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
 
-  disableTabManagementApplication: Ember.computed.not("model.isAuthenticated"),
+  disableTabManagementApplication: function() {
+     return (!this.get('isStarted') && !this.get('model.isAuthenticated'));
+  }.property('model.isAuthenticated', 'isStarted'),
 
   disableTabSelectSubsciptions: Ember.computed.alias("controllers.subscriptions/management-application.disableNextOnManagementApp"),
 
