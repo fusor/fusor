@@ -84,4 +84,55 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   }.property('model.discovered_host.id'),
   hasNoEngine: Ember.computed.not('hasEngine'),
 
+  cntHypervisors: function() {
+    return this.get('model.discovered_hosts.length');
+  }.property('model.discovered_hosts.[]'),
+
+  hasHypervisors: function() {
+    return (this.get('cntHypervisors') > 0);
+  }.property('cntHypervisors'),
+  hasNoHypervisors: Ember.computed.not('hasHypervisors'),
+
+  isStarted: function() {
+    return !!(this.get('model.foreman_task_uuid'));
+  }.property('model.foreman_task_uuid'),
+
+  foremanTask: function() {
+    if (this.get('isStarted')) {
+        return this.store.find('foreman-task', this.get('model.foreman_task_uuid'));
+    }
+  }.property('model.foreman_task_uuid', 'isStarted'),
+
+  // these are overwritten by setProgress .observes()
+  progress: null,
+  state: null,
+
+  setProgress: function() {
+    if (this.get('foremanTask')) {
+      this.get('foremanTask').then(function(result) {
+          this.set('progress', result.get('progress'));
+          this.set('state', result.get('state'));
+      }.bind(this));
+    }
+  }.observes('foremanTask', 'model.foreman_task_uuid'),
+
+  isFinished: function() {
+    return !!(this.get('progress') === '1');
+  }.property('progress'),
+
+  progressPercent: function() {
+    if (this.get('progress')) {
+        return (this.get('progress') * 100).toFixed(1) + '%';
+    }
+  }.property('progress'),
+
+  cntSubscriptions: function() {
+    return this.get('model.subscriptions.length');
+  }.property('model.subscriptions.[]'),
+
+  hasSubscriptions: function() {
+    return (this.get('cntSubscriptions') > 0);
+  }.property('cntSubscriptions'),
+  hasNoSubscriptions: Ember.computed.not('hasSubscriptions'),
+
 });
