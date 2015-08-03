@@ -35,5 +35,11 @@ module Fusor
     alias_attribute :discovered_host_id, :rhev_engine_host_id
 
     has_many :subscriptions, :class_name => "Fusor::Subscription", :foreign_key => :deployment_id
+
+    scoped_search :on => [:id, :name], :complete_value => true
+
+    # used by ember-data for .find('model', {id: [1,2,3]})
+    scope :by_id, lambda { |n=nil| where(:id => n) if n.present? }
+
   end
 end

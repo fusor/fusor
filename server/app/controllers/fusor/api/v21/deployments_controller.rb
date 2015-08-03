@@ -18,7 +18,7 @@ module Fusor
     rescue_from Encoding::UndefinedConversionError, :with => :ignore_it
 
     def index
-      @deployments = Deployment.all
+      @deployments = Deployment.search_for(params[:search], :order => params[:order]).by_id(params[:id])
       render :json => @deployments, :each_serializer => Fusor::DeploymentSerializer
     end
 

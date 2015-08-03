@@ -16,14 +16,15 @@ module Fusor
                :rhev_root_password, :cfme_root_password,
                :host_naming_scheme, :custom_preprend_name, :enable_access_insights,
                :cfme_address,
+               :rhev_engine_host_id,
                :created_at, :updated_at
 
     has_one :organization, serializer: ::OrganizationSerializer
     has_one :lifecycle_environment, serializer: ::LifecycleEnvironmentSerializer
     # has one engine
-    has_one :discovered_host, serializer: ::HostSerializer
+    has_one :discovered_host, serializer: ::HostBaseSerializer
     # has many hypervisors
-    has_many :discovered_hosts, serializer: ::HostSerializer
+    has_many :discovered_hosts, serializer: ::HostBaseSerializer
 
     has_many :subscriptions, serializer: Fusor::SubscriptionSerializer
 
