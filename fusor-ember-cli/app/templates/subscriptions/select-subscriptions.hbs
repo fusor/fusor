@@ -31,104 +31,111 @@
     <br />
     <br />
 
-  {{#unless isStarted}}
-    {{#if hasContractNumbersInModelNotInPool}}
-      <div class="row">
-        <div class='col-md-9'>
-          <div class='alert alert-danger rhci-alert'>
-              You previously selected subscriptions (Contract Number {{contractNumbersInModelNotInPool}}) that are no longer available to be selected in the pool.
+    {{#unless isStarted}}
+
+        {{#if hasContractNumbersInModelNotInPool}}
+          <div class="row">
+            <div class='col-md-9'>
+              <div class='alert alert-danger rhci-alert'>
+                  You previously selected subscriptions (Contract Number {{contractNumbersInModelNotInPool}}) that are no longer available to be selected in the pool.
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    {{/if}}
+        {{/if}}
 
-
-  {{#if hasSubscriptionPools}}
-    <table class="table table-bordered small">
-      <thead>
-        <tr>
-          <th> </th>
-          <th> Subscription Name </th>
-          <th> Contract Number </th>
-          <th> System Type </th>
-          <th> Start Date </th>
-          <th> End Date </th>
-          <th> Attached </th>
-          <th> Available </th>
-          <th> Quantity </th>
-        </tr>
-        </thead>
-
-      <tbody>
-      {{#each subscription in subscriptionPools}}
-        {{tr-subscription subscription=subscription numSubscriptionsRequired=numSubscriptionsRequired model=model}}
-      {{else}}
-        <tr>
-          <td colspan="8">
-            <p class='no_subscriptions'>
-              No subscriptions found. Check your account in in the <a href='https://idp.redhat.com/idp/' target='_blank'>Red Hat Customer Portal</a> to verify you have subscriptions available.
-            </p>
-          </td>
-        </tr>
-      {{/each}}
-
-      </tbody>
-    </table>
-
-  {{else}}
-
-    <div class='col-md-9'>
-      <div class='alert alert-danger rhci-alert'>
-          <i class="fa fa-2x fa-exclamation-triangle errorForValidation"></i>
-          &nbsp;
-              No subscriptions found. Check your account in in the <a href='https://idp.redhat.com/idp/' target='_blank'>Red Hat Customer Portal</a> to verify you have subscriptions available.
-      </div>
-
-      {{#if hasSubscriptionSavedInModel}}
-
-        <div class='alert alert-danger rhci-alert'>
-                Below are the subscriptions that you previously saved with the deployment.
-        </div>
-
-        <table class="table table-bordered small">
-          <thead>
-            <tr>
-              <th> </th>
-              <th> Subscription Name </th>
-              <th> Contract Number </th>
-              <th> Quantity </th>
-            </tr>
-            </thead>
+        {{#if hasSubscriptionPools}}
+          <table class="table table-bordered small">
+            <thead>
+              <tr>
+                <th> </th>
+                <th> Subscription Name </th>
+                <th> Contract Number </th>
+                <th> System Type </th>
+                <th> Start Date </th>
+                <th> End Date </th>
+                <th> Attached </th>
+                <th> Available </th>
+                <th> Quantity </th>
+              </tr>
+              </thead>
 
             <tbody>
-            {{#each sub in model}}
-              {{tr-subscription-saved subscription=sub}}
+            {{#each subscription in subscriptionPools}}
+              {{tr-subscription subscription=subscription numSubscriptionsRequired=numSubscriptionsRequired model=model}}
+            {{else}}
+              <tr>
+                <td colspan="8">
+                  <p class='no_subscriptions'>
+                    No subscriptions found. Check your account in in the <a href='https://idp.redhat.com/idp/' target='_blank'>Red Hat Customer Portal</a> to verify you have subscriptions available.
+                  </p>
+                </td>
+              </tr>
             {{/each}}
+
             </tbody>
-        </table>
-      {{/if}}
-    </div>
-  {{/if}}
+          </table>
 
-  {{else}}
+        {{else}}
 
-        <table class="table table-bordered small">
-          <thead>
-            <tr>
-              <th> </th>
-              <th> Subscription Name </th>
-              <th> Contract Number </th>
-              <th> Quantity </th>
-            </tr>
-            </thead>
+          <div class='col-md-9'>
 
-            <tbody>
-            {{#each sub in model}}
-              {{tr-subscription-saved subscription=sub}}
-            {{/each}}
-            </tbody>
-        </table>
-  {{/unless}}
+            <div class='alert alert-danger rhci-alert'>
+                <i class="fa fa-2x fa-exclamation-triangle errorForValidation"></i>
+                &nbsp;
+                    No subscriptions found. Check your account in in the <a href='https://idp.redhat.com/idp/' target='_blank'>Red Hat Customer Portal</a> to verify you have subscriptions available.
+            </div>
+
+            {{#if hasSubscriptionSavedInModel}}
+                <div class='alert alert-danger rhci-alert'>
+                        Below are the subscriptions that you previously saved with the deployment.
+                </div>
+
+                <table class="table table-bordered small">
+                  <thead>
+                    <tr>
+                      <th> </th>
+                      <th> Subscription Name </th>
+                      <th> Contract Number </th>
+                      <th> Quantity </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {{#each sub in model}}
+                      {{tr-subscription-saved subscription=sub}}
+                    {{/each}}
+                    </tbody>
+                </table>
+            {{/if}}
+          </div>
+        {{/if}}
+
+    {{else}}
+
+          <table class="table table-bordered small">
+            <thead>
+              <tr>
+                <th> </th>
+                <th> Subscription Name </th>
+                <th> Contract Number </th>
+                <th> Quantity </th>
+              </tr>
+              </thead>
+
+              <tbody>
+              {{#each sub in model}}
+                {{tr-subscription-saved subscription=sub}}
+              {{else}}
+                <tr>
+                  <td colspan=4>
+                    No subscriptions were attached to deployment
+                  </td>
+                </tr>
+              {{/each}}
+              </tbody>
+          </table>
+
+    {{/unless}}
   </div>
 </div>
 
