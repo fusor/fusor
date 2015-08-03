@@ -40,6 +40,6 @@ cp ./dist/assets/r/manageiq-640-210.png  ../ui/app/assets/images/r/;
 
 cp ./dist/fonts/*.*  ../ui/public/fonts/;
 
-#cd ..
-#git add .;
-#git commit -m "copy minified assets from fusor-ember-cli/dist to FusorUI gem at fusor/ui/app/assets";
+cd ..
+git add .;
+git commit -m "copy minified assets from fusor-ember-cli/dist to FusorUI gem at fusor/ui/app/assets";

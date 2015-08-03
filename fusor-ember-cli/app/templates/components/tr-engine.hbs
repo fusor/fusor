@@ -1,9 +1,13 @@
 <td>
     {{radio-button value=host groupValue=selectedRhevEngineHost changed="engineHostChanged" id=cssIdHostId disabled=disabled}}
 </td>
-<td class="{{if isSelectedAsEngine 'black-font' 'not-selected'}}">
+<td class="{{if isSelectedAsEngine 'white-font' 'not-selected'}}">
     {{#if isSelectedAsEngine}}
-      {{input type="text" value=host.name class='form-control' focus-out='saveHostname' id=cssHostHostId}}
+      {{#if disabled}}
+          {{host.name}}
+      {{else}}
+          {{input type="text" value=host.name class='form-control' focus-out='saveHostname' id=cssHostHostId}}
+      {{/if}}
     {{else}}
       Not Selected
     {{/if}}

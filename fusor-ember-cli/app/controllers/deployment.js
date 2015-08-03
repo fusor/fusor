@@ -56,10 +56,6 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
 
   skipContent: false,
 
-  isStarted: function() {
-    return !!(this.get('model.foreman_task_uuid'));
-  }.property('model.foreman_task_uuid'),
-
   numSubscriptionsRequired: function() {
     var num = 0;
     if (this.get('isRhev')) {
@@ -96,10 +92,12 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   isStarted: function() {
     return !!(this.get('model.foreman_task_uuid'));
   }.property('model.foreman_task_uuid'),
+  isNotStarted: Ember.computed.not('isStarted'),
 
   isFinished: function() {
-    return !!(this.get('model.progress') === '1');
+    return (this.get('model.progress') === '1');
   }.property('model.progress'),
+  isNotFinished: Ember.computed.not('isFinished'),
 
   cntSubscriptions: function() {
     return this.get('model.subscriptions.length');

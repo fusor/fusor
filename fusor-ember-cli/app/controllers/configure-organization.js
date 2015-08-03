@@ -11,6 +11,7 @@ export default Ember.Controller.extend(ConfigureOrganizationMixin, {
   satelliteTabRouteName: Ember.computed.alias("controllers.deployment.satelliteTabRouteName"),
   lifecycleEnvironmentTabRouteName: Ember.computed.alias("controllers.deployment.lifecycleEnvironmentTabRouteName"),
   deploymentName: Ember.computed.alias("controllers.deployment.name"),
+  isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
 
   actions: {
     selectOrganization: function(organization) {

@@ -5,6 +5,8 @@ export default Ember.ArrayController.extend({
 
   selectedRhevEngine: Ember.computed.alias("controllers.deployment.model.discovered_host"),
   rhevIsSelfHosted: Ember.computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
+  isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
+  isNotStarted: Ember.computed.alias("controllers.deployment.isNotStarted"),
 
   isCustomScheme: Ember.computed.alias("controllers.hypervisor.isCustomScheme"),
   isHypervisorN: Ember.computed.alias("controllers.hypervisor.isHypervisorN"),
@@ -28,22 +30,25 @@ export default Ember.ArrayController.extend({
       }
   }.property('allDiscoveredHosts.[]', 'hypervisorModelIds.[]'),
 
+  // same as Engine. TODO. put it mixin
   filteredHosts: function(){
     var searchString = this.get('searchString');
     var rx = new RegExp(searchString, 'gi');
-    var model = this.get('availableHosts');
+    var availableHosts = this.get('availableHosts');
 
-    if (model.get('length') > 0) {
-      return model.filter(function(record) {
+    if (this.get('isStarted')) {
+      return this.get('model');
+    } else if (availableHosts.get('length') > 0) {
+      return availableHosts.filter(function(record) {
         return (record.get('name').match(rx) || record.get('memory_human_size').match(rx) ||
                 record.get('disks_human_size').match(rx) || record.get('subnet_to_s').match(rx) ||
                 record.get('mac').match(rx)
                );
       });
     } else {
-      return model;
+      return availableHosts;
     }
-  }.property('availableHosts.[]', 'searchString'),
+  }.property('availableHosts.[]', 'searchString', 'model', 'isStarted'),
 
   hypervisorModelIds: function() {
     if (this.get('model')) {

@@ -73,6 +73,7 @@ export default DS.Model.extend({
   isStarted: function() {
     return !!(this.get('foreman_task_uuid'));
   }.property('foreman_task_uuid'),
+  isNotStarted: Ember.computed.not('isStarted'),
 
   // also put these in model rather than controller so it is accessible
   progress: null,

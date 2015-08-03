@@ -16,7 +16,7 @@
               <div class='rhev-search-box'>
                   {{input type='text' class='form-control rhev-search-input'
                                placeholder=' Search ...'
-                               value=searchString}}
+                               value=searchString disabled=isStarted}}
               </div>
             </div>
           </div>
@@ -25,10 +25,10 @@
 
             {{numSelected}} selected
 
-            <span class='rhev-select-all'>
-            </span>
-
-            <button class='btn btn-default btn-sm' {{action 'refreshDiscoveredHosts'}}>Refresh Data</button>
+            <button class='btn btn-default btn-sm' {{action 'refreshDiscoveredHosts'}}
+                    disabled={{isStarted}}>
+                Refresh Data
+            </button>
           </div>
 
         </form>
@@ -52,7 +52,7 @@
           {{#each host in filteredHosts}}
              {{tr-engine host=host
                          selectedRhevEngineHost=selectedRhevEngineHost
-                         disabled=controllers.deployment.isStarted
+                         disabled=isStarted
                          action="setEngine"}}
           {{/each}}
         </tbody>
@@ -68,4 +68,4 @@
                    nextRouteName=engineNextRouteName
                    disableNext=controllers.deployment.hasNoEngine
                    parentController=controller
-                   disableCancel=controllers.deployment.isStarted}}
+                   disableCancel=isStarted}}
