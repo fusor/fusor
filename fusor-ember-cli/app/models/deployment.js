@@ -72,7 +72,32 @@ export default DS.Model.extend({
   // so best to have it on model as well
   isStarted: function() {
     return !!(this.get('foreman_task_uuid'));
-  }.property('foreman_task_uuid')
+  }.property('foreman_task_uuid'),
+
+  // also put these in model rather than controller so it is accessible
+  progress: null,
+  state: null,
+
+  foremanTask: function() {
+    if (this.get('isStarted')) {
+        return this.store.find('foreman-task', this.get('foreman_task_uuid'));
+    }
+  }.property('foreman_task_uuid', 'isStarted'),
+
+  setProgress: function() {
+    if (this.get('foremanTask')) {
+      this.get('foremanTask').then(function(result) {
+          this.set('progress', result.get('progress'));
+          this.set('state', result.get('state'));
+      }.bind(this));
+    }
+  }.observes('foremanTask', 'foreman_task_uuid'),
+
+  progressPercent: function() {
+    if (this.get('progress')) {
+        return (this.get('progress') * 100).toFixed(1) + '%';
+    }
+  }.property('progress')
 
 });
 
