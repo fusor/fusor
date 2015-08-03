@@ -16,7 +16,8 @@
               <div class='rhev-search-box'>
                   {{input type='text' class='form-control rhev-search-input'
                                placeholder=' Search ...'
-                               value=searchString}}
+                               value=searchString
+                               disabled=isStarted}}
               </div>
             </div>
           </div>
@@ -25,15 +26,20 @@
 
             {{model.length}} selected
 
-            <span class='rhev-select-all'>
-              {{#if isAllChecked}}
-                <a {{action 'setUncheckAll'}}>Deselect all ({{availableHosts.length}})</a>
-              {{else}}
-                <a {{action 'setCheckAll'}}>Select all ({{availableHosts.length}})</a>
-              {{/if}}
-            </span>
+            {{#if isNotStarted}}
+              <span class='rhev-select-all'>
+                {{#if isAllChecked}}
+                  <a {{action 'setUncheckAll'}}>Deselect all ({{availableHosts.length}})</a>
+                {{else}}
+                  <a {{action 'setCheckAll'}}>Select all ({{availableHosts.length}})</a>
+                {{/if}}
+              </span>
+            {{/if}}
 
-            <button class='btn btn-default btn-sm' {{action 'refreshDiscoveredHosts'}}>Refresh Data</button>
+            <button class='btn btn-default btn-sm' {{action 'refreshDiscoveredHosts'}}
+                    disabled={{isStarted}}>
+                Refresh Data
+            </button>
           </div>
 
         </form>
@@ -65,7 +71,7 @@
                            customPreprendName=customPreprendName
                            isFreeform=isFreeform
                            num=host.id
-                           disabled=controllers.deployment.isStarted
+                           disabled=isStarted
                            filteredHosts=filteredHosts}}
         {{/each}}
         </tbody>

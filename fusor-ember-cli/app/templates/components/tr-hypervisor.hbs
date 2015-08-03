@@ -5,7 +5,11 @@
 <td class="{{if isSelectedAsHypervisor 'white-font' 'not-selected'}}">
   {{#if isSelectedAsHypervisor}}
     {{#if isFreeform}}
-      {{input type="text" value=host.name class='form-control' focus-out='saveHostname' id=cssHostHostId}}
+      {{#if disabled}}
+          {{host.name}}
+      {{else}}
+          {{input type="text" value=host.name class='form-control' focus-out='saveHostname' id=cssHostHostId }}
+      {{/if}}
     {{else}}
       {{host.name}}
     {{/if}}

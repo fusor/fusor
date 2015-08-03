@@ -40,7 +40,7 @@
           {{tr-organization org=org
                             selectedOrganization=selectedOrganization
                             action="selectOrganization"
-                            disabled=controllers.application.deploymentIsStarted}}
+                            disabled=isStarted}}
         {{/each}}
       </tbody>
     </table>
@@ -56,4 +56,4 @@
                    nextRouteName=lifecycleEnvironmentTabRouteName
                    disableNext=disableNextOnConfigureOrganization
                    parentController=controller
-                   disableCancel=controllers.application.deploymentIsStarted}}
+                   disableCancel=isStarted}}

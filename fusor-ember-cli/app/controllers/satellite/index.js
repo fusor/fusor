@@ -5,14 +5,9 @@ export default Ember.Controller.extend(SatelliteControllerMixin, {
 
   needs: ['satellite', 'deployment', 'application'],
 
-  validations: {
-    name: {
-      presence: true,
-    },
-  },
-
   name: Ember.computed.alias("controllers.deployment.name"),
   description: Ember.computed.alias("controllers.deployment.description"),
+  isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
 
   organizationTabRouteName: Ember.computed.alias("controllers.deployment.organizationTabRouteName"),
 
