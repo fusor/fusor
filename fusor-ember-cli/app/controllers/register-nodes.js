@@ -349,16 +349,6 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   registerNode: function(node) {
     var me = this;
-    var bmDeployKernelImage = null;
-    var bmDeployRamdiskImage = null;
-
-    this.getImage('bm-deploy-kernel').then(function(kernelImage) {
-      bmDeployKernelImage = kernelImage;
-    });
-    this.getImage('bm-deploy-ramdisk').then(function(ramdiskImage) {
-      bmDeployRamdiskImage = ramdiskImage;
-    });
-
     var driverInfo = {};
     if ( node.driver === 'pxe_ssh' ) {
       driverInfo = {
@@ -366,16 +356,16 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
         ssh_username: node.ipmiUsername,
         ssh_key_contents: node.ipmiPassword,
         ssh_virt_type: 'virsh',
-        deploy_kernel: bmDeployKernelImage.image.id,
-        deploy_ramdisk: bmDeployRamdiskImage.image.id
+        deploy_kernel: this.get('model').bmDeployKernelImage.image.id,
+        deploy_ramdisk: this.get('model').bmDeployRamdiskImage.image.id
       };
     } else if (node.driver === 'pxe_ipmitool')  {
       driverInfo = {
         ipmi_address: node.ipAddress,
         ipmi_username: node.ipmiUsername,
         ipmi_password: node.ipmiPassword,
-        pxe_deploy_kernel: bmDeployKernelImage.image.id,
-        pxe_deploy_ramdisk: bmDeployRamdiskImage.image.id
+        pxe_deploy_kernel: this.get('model').bmDeployKernelImage.image.id,
+        pxe_deploy_ramdisk: this.get('model').bmDeployRamdiskImage.image.id
       };
     }
     var createdNode = me.store.createRecord('node', {
@@ -392,14 +382,12 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     });
 
     var handleSuccess = function(node) {
-      me.get('nodes').pushObject(node);
+      me.get('model').nodes.pushObject(node);
       me.doNextNodeRegistration();
-
     };
 
     var handleFailure = function(reason) {
       me.get('model').nodes.get('content').removeObject(createdNode);
-
       try {
         var displayMessage = reason.responseJSON.displayMessage;
         displayMessage = displayMessage.substring(displayMessage.indexOf('{'),displayMessage.indexOf('}') + 1) + "}";
