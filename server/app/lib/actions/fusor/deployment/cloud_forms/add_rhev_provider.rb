@@ -37,7 +37,7 @@ module Actions
                          :password => deployment.rhev_engine_admin_password
             }
 
-            Utils::CloudForms::Provider.add(input[:vm_ip], deployment.cfme_root_password, provider)
+            Utils::CloudForms::Provider.add(input[:vm_ip], provider)
             Rails.logger.info "================ Leaving AddRhevProvider run method ===================="
           end
         end

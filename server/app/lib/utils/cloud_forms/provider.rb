@@ -16,7 +16,7 @@ require 'openssl'
 module Utils
   module CloudForms
     class Provider
-      def self.add(cfme_ip, cfme_root_pw, provider_params)
+      def self.add(cfme_ip, provider_params)
         Rails.logger.debug "Adding the RHEV provider at #{provider_params[:ip]} to the CloudForms VM at #{cfme_ip}"
 
         agent = Mechanize.new
