@@ -70,6 +70,10 @@ module Actions
                                           deployment,
                                           create_vm_action.output[:vm_id])
 
+              plan_action(::Actions::Fusor::Deployment::CloudForms::UpdateRootPassword,
+                          deployment,
+                          get_ip_action.output[:ip])
+
               plan_action(::Actions::Fusor::Deployment::CloudForms::RunApplianceConsole,
                           deployment,
                           get_ip_action.output[:ip])

@@ -35,8 +35,9 @@ module Actions
             # JWM 6/9/2015, We are not yet setting the CloudForms VM root password
             # We need to use the default password of 'smartvm' until we add support.
             #
-            ssh_password = "smartvm" # TODO: need to update to use deployment.cfme_root_password; however, that means it must also be set on VM during/after creation
-            #ssh_password = deployment.cfme_root_password
+            #ssh_password = "smartvm" # TODO: need to update to use deployment.cfme_root_password; however, that means it must also be set on VM during/after creation
+            Rails.logger.warn "XXX using cfme_root_password"
+            ssh_password = deployment.cfme_root_password
 
             cmd = "#{script_dir}miq_run_appliance_console.py "\
                 "--miq_ip #{input[:vm_ip]} "\

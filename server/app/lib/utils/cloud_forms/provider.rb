@@ -22,6 +22,8 @@ module Utils
         agent = Mechanize.new
         agent.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
+        # 2015/07/23 jesusr - change this to use cfme_admin_password instead of
+        # smartvm once we have the entry in the UI.
         logged_in_page = agent.post("https://#{cfme_ip}/dashboard/authenticate?button=login",
                                     { "user_name" => "admin",
                                       "user_password" => "smartvm" })
