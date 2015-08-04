@@ -1,4 +1,4 @@
-{{#em-modal-form class="scrollable-form" configName="bs" id="nodeRegistrationModal" on-submit="registerNodes" open-if=registerNodesModalOpened close-if=registerNodesModalClosed in-async=async}}
+{{#em-modal class="scrollable-form" configName="bs" id="nodeRegistrationModal" closeIfClickedOutside=handleOutsideClick open-if=registerNodesModalOpened close-if=registerNodesModalClosed in-async=async}}
 
     {{#em-modal-title}}
         {{#em-modal-toggler class="close"}}
@@ -84,4 +84,4 @@
         <button type="submit" class="btn btn-primary" disabled={{async}} {{action "registerNodes"}}>Register Nodes</button>
     {{/em-modal-footer}}
 
-{{/em-modal-form}}
+{{/em-modal}}
