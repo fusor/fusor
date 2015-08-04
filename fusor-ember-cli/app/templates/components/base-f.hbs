@@ -5,11 +5,13 @@
         {{#if isRequired}}
           <span class='errorForValidation'>*</span>
         {{/if}}
-        {{label}}
+        <label class="class">
+          {{label}}
+        </label>
         {{#if showHelpPopover}}
-            <span class="pficon fa fa-info-circle" style="color:#0099d3;" base-popover="true" data-trigger="click" data-original-title={{label}} data-toggle={{helpId}} data-html="true" data-content={{helpText}} data-close=true></span>
+          <button class="pficon fa fa-info-circle rhci-popover-button" data-original-title={{label}} data-toggle="popover" data-trigger="focus" data-html="true" data-content={{helpText}}></button>
         {{/if}}
-      </label>
+      </div>
 
       <div class="{{inputClassSize}}">
         {{yield}}

@@ -31,9 +31,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   undercloudDebugHelp: "Sets the log level of discovery services to DEBUG.",
 
-  showAdvancedSettings: false,
+  showAdvancedSettings: 'out',
   showAdvancedSettingsClass: function() {
-    if (this.get('showAdvancedSettings')) {
+    if (this.get('showAdvancedSettings') === 'in') {
       return '';
     }
     else
@@ -63,7 +63,12 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   actions: {
     toggleShowAdvancedSettings: function() {
-      this.set('showAdvancedSettings', !this.get('showAdvancedSettings'));
+      if (this.get('showAdvancedSettings') === 'in') {
+        this.set('showAdvancedSettings', 'out');
+      }
+      else {
+        this.set('showAdvancedSettings', 'in');
+      }
     },
 
     deployUndercloud: function () {
