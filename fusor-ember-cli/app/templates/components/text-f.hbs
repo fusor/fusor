@@ -14,6 +14,13 @@
             must be 8 or more characters
         </span>
     {{/if}}
+
+    {{#if validIsUnique}}
+        <span class="error errorForValidation">
+            must be unique
+        </span>
+    {{/if}}
+
   {{/if}}
 
   <!-- don't need to wait for focus-out -->
