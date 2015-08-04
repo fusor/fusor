@@ -48,7 +48,7 @@ export default Ember.ArrayController.extend({
     } else {
       return availableHosts;
     }
-  }.property('availableHosts.[]', 'searchString', 'model', 'isStarted'),
+  }.property('availableHosts.[]', 'searchString', 'isStarted'),
 
   hypervisorModelIds: function() {
     if (this.get('model')) {
