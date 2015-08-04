@@ -55,7 +55,7 @@ export default Ember.Controller.extend({
     } else {
       return availableHosts;
     }
-  }.property('availableHosts.[]', 'searchString', 'model', 'isStarted'),
+  }.property('availableHosts.[]', 'searchString', 'isStarted'),
 
   numSelected: function() {
     return (this.get('model.id')) ? 1 : 0;
