@@ -2,12 +2,12 @@
 <form class="form-horizontal" role="form">
     <div class="row">
         <div class='col-md-12'>
-          {{select-simple-f label="Deployment Mode" value=model.deploymentMode      labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=true helpText=deploymentModeHelp content=deploymentModes helpId=1}}
-          {{text-f label="Image Path"               value=model.imagePath           labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=true helpText=imagePathHelp helpId=2}}
-          {{text-f label="Undercloud IP"            valueBinding=model.undercloudIP labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=true helpText=undercloudIPHelp helpId=3}}
-          {{text-f label="SSH User"                 valueBinding=model.sshUser      labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=true helpText=sshUserHelp helpId=4}}
-          {{text-f label="SSH Password"             value=model.sshPassword         labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=true helpText=sshPasswordHelp type='password' helpId=5}}
-          {{text-f label="Local Interface"          value=model.localInterface      labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=true helpText=localInterfaceHelp helpId=6}}
+          {{select-simple-f id="example" label="Deployment Mode" value=model.deploymentMode      labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=true helpText=deploymentModeHelp content=deploymentModes}}
+          {{text-f label="Image Path"               value=model.imagePath           labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=true helpText=imagePathHelp}}
+          {{text-f label="Undercloud IP"            valueBinding=model.undercloudIP labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=true helpText=undercloudIPHelp}}
+          {{text-f label="SSH User"                 valueBinding=model.sshUser      labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=true helpText=sshUserHelp}}
+          {{text-f label="SSH Password"             value=model.sshPassword         labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=true helpText=sshPasswordHelp type='password'}}
+          {{text-f label="Local Interface"          value=model.localInterface      labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=true helpText=localInterfaceHelp}}
         </div>
         <div class='col-md-12'>
             <div class="advanced-settings-group" style="width:100%">
@@ -18,20 +18,18 @@
                         </div>
                     </div>
                 </div>
-                {{#if showAdvancedSettings}}
-                    <div id="collapseOne" class="advanced-settings-collapse collapse in" style="margin-top: 15px;">
-                        <div role="tabpanel" class="tab-pane active undercloud-advanced-settings-content" id="network-settings">
-                          {{text-f       label="Masquerade Network"  value=model.masqueradeNetwork labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=false helpText=masquerateNetworkHelp helpId=7}}
-                          {{range-text-f label="DHCP Range"          value1=model.dhcpStart value2=model.dhcpEnd  labelSize='deploy-undercloud-param-label' rangeSize='deploy-undercloud-param-range' inputSize='deploy-undercloud-param-range-input' isRequired=false helpText=dhcpRangeHelp  helpId=8 input-width="127px"}}
-                          {{text-f       label="Network CIDR"        value=model.networkCidr       labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=false helpText=networkCidrHelp helpId=9}}
-                          {{text-f       label="Network Gateway"     value=model.networkGateway      labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=false helpText=networkGatewayHelp helpId=10}}
-                          {{text-f       label="Discovery Interface" value=model.discoveryInterface  labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=false helpText=discoveryInterfaceHelp helpId=11}}
-                          {{range-text-f label="Discovery IP Range"  value1=model.discoveryIpStart value2=model.discoveryIpEnd   labelSize='deploy-undercloud-param-label' rangeSize='deploy-undercloud-param-range' inputSize='deploy-undercloud-param-range-input' isRequired=false helpText=discoveryIpRangeHelp helpId=12 input-width="127px"}}
-                          {{check-f      label="Run Discovery Benchmark" checked=model.discoveryRunbench labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=false}}
-                          {{check-f      label="Enable Undercloud Debug" checked=model.undercloudDebug labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=false}}
-                        </div>
+                <div id="collapseOne" class="advanced-settings-collapse collapse {{showAdvancedSettings}}" style="margin-top: 15px;">
+                    <div role="tabpanel" class="tab-pane active undercloud-advanced-settings-content" id="network-settings">
+                      {{text-f       label="Masquerade Network"  value=model.masqueradeNetwork labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=false helpText=masquerateNetworkHelp}}
+                      {{range-text-f label="DHCP Range"          value1=model.dhcpStart value2=model.dhcpEnd  labelSize='deploy-undercloud-param-label' rangeSize='deploy-undercloud-param-range' inputSize='deploy-undercloud-param-range-input' isRequired=false helpText=dhcpRangeHelp input-width="127px"}}
+                      {{text-f       label="Network CIDR"        value=model.networkCidr       labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=false helpText=networkCidrHelp}}
+                      {{text-f       label="Network Gateway"     value=model.networkGateway      labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=false helpText=networkGatewayHelp}}
+                      {{text-f       label="Discovery Interface" value=model.discoveryInterface  labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=false helpText=discoveryInterfaceHelp}}
+                      {{range-text-f label="Discovery IP Range"  value1=model.discoveryIpStart value2=model.discoveryIpEnd   labelSize='deploy-undercloud-param-label' rangeSize='deploy-undercloud-param-range' inputSize='deploy-undercloud-param-range-input' isRequired=false helpText=discoveryIpRangeHelp input-width="127px"}}
+                      {{check-f      label="Run Discovery Benchmark" checked=model.discoveryRunbench labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=false}}
+                      {{check-f      label="Enable Undercloud Debug" checked=model.undercloudDebug labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=false}}
                     </div>
-                {{/if}}
+                </div>
             </div>
         </div>
         <div class='col-md-10'>
@@ -66,3 +64,4 @@
                    parentController=controller}}
 {{loading-spinner show=showLoadingSpinner text=loadingSpinnerText}}
 
+{{base-popover selector='popover'}}

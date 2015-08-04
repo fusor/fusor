@@ -1,15 +1,17 @@
 <div class="clearfix">
    <div class="form-group">
 
-      <label {{bind-attr class=":control-label labelClassSize class"}}>
+      <div {{bind-attr class=":control-label labelClassSize"}}>
         {{#if isRequired}}
           <span class='errorForValidation'>*</span>
         {{/if}}
-        {{label}}
+        <label class="class">
+          {{label}}
+        </label>
         {{#if showHelpPopover}}
-            <span class="pficon fa fa-info-circle" style="color:#0099d3;" base-popover="true" data-trigger="click" data-original-title={{label}} data-toggle={{helpId}} data-html="true" data-content={{helpText}} data-close=true></span>
+          <button class="pficon fa fa-info-circle rhci-popover-button" data-original-title={{label}} data-toggle="popover" data-trigger="focus" data-html="true" data-content={{helpText}}></button>
         {{/if}}
-      </label>
+      </div>
 
       <div {{bind-attr class="inputClassSize"}}>
         {{yield}}

@@ -20,22 +20,5 @@ export default Ember.Component.extend({
 
   unitsClassSize: function () {
     return this.getWithDefault('unitsSize', 'col-md-2');
-  }.property(),
-
-  helpId: 'popover',
-
-  didInsertElement: function() {
-    this.set('helpId', 'popover_' + Math.floor((Math.random() * 100000)));
-    var selector = '[data-toggle=' + this.get('helpId') + ']';
-    var afterDisplayed = function() {
-      PatternFly.popovers(selector);
-
-      $(selector).on('click', function (e) {
-        var allpopovers = $('[base-popover=true]');
-        allpopovers.not(this).popover('hide');
-      });
-    };
-    Ember.run.later(afterDisplayed, 300);
-  }
-
+  }.property()
 });
