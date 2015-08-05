@@ -32,6 +32,16 @@ export default Ember.Component.extend({
     }
   }.property('isStarted', 'isError'),
 
+  routeNameForEdit: function() {
+    if (Ember.isBlank(this.get('deployment.state'))) {
+      return "deployment";
+    } else if (this.get('model.state') === '1') {
+      return "review.summary";
+    } else {
+      return "review.progress.overview";
+    }
+  }.property('deployment.progress'),
+
   actions: {
     openDeploymentModal: function (item) {
       this.get('targetObject').set('deploymentInModal', item);
