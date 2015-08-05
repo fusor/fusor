@@ -57,33 +57,38 @@ export default Ember.Route.extend({
       var self = this;
       var deployment = this.modelFor('deployment');
       var subscriptionPools = this.controllerFor('subscriptions/select-subscriptions').get('subscriptionPools');
+      var hasSubscriptionPools = this.controllerFor('subscriptions/select-subscriptions').get('hasSubscriptionPools');
 
-      // remove existing subscriptions
-      deployment.get('subscriptions').then(function(results) {
-          results.forEach(function(sub) {
-              sub.deleteRecord();
-              sub.save();
-          });
-
-          deployment.save().then(function () {
-
-              // add subscriptions to deployment
-              subscriptionPools.forEach(function(pool) {
-                if (pool.get('isSelectedSubscription')) {
-                    var sub = self.store.createRecord('subscription', {'contract_number': pool.get('contractNumber'),
-                                                                       'product_name': pool.get('productName'),
-                                                                       'quantity_attached': pool.get('qtyToAttach'),
-                                                                       'deployment': deployment
-                                                                      });
-                    sub.save();
-                }
+      if (hasSubscriptionPools) {
+          // remove existing subscriptions
+          deployment.get('subscriptions').then(function(results) {
+              results.forEach(function(sub) {
+                  sub.deleteRecord();
+                  sub.save();
               });
 
-              if (redirectPath) {
-                return self.transitionTo(redirectPath);
-              }
+              deployment.save().then(function () {
+
+                  // add subscriptions to deployment
+                  subscriptionPools.forEach(function(pool) {
+                    if (pool.get('isSelectedSubscription')) {
+                        var sub = self.store.createRecord('subscription', {'contract_number': pool.get('contractNumber'),
+                                                                           'product_name': pool.get('productName'),
+                                                                           'quantity_attached': pool.get('qtyToAttach'),
+                                                                           'deployment': deployment
+                                                                          });
+                        sub.save();
+                    }
+                  });
+
+                  if (redirectPath) {
+                    return self.transitionTo(redirectPath);
+                  }
+              });
           });
-      });
+      } else {
+          return self.transitionTo(redirectPath);
+      }
 
     },
 
