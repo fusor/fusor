@@ -148,6 +148,8 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
 
     error: function(reason) {
       console.log(reason);
+      var controller = this.controllerFor('deployment');
+      controller.set('errorMsg', reason.responseJSON.error.message);
     },
 
     refreshModel: function(){
