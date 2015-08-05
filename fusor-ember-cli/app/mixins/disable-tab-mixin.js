@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Mixin.create({
 
-  needs: ['deployment', 'configure-organization', 'configure-environment'],
+  needs: ['deployment', 'configure-organization', 'configure-environment', 'application'],
 
   hasName: function() {
     return (this.get('model.name.length') > 0);
@@ -14,11 +14,32 @@ export default Ember.Mixin.create({
   }.property('model.organization.id'),
   hasNoOrganization: Ember.computed.not('hasOrganization'),
 
+  deploymentNames: Ember.computed.alias("controllers.application.deploymentNames"),
+
+  isDuplicateName: function() {
+    if (this.get('model').get('isNew')) {
+      return this.get('deploymentNames').contains(this.get('model.name'));
+    } else {
+      var attrs = this.get('model').changedAttributes();
+      if (attrs.name) {
+        var origValue = attrs.name[0];
+        var dirtyValue = attrs.name[1];
+        if (origValue !== dirtyValue) {
+            return this.get('deploymentNames').contains(dirtyValue);
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
+  }.property('model.name'),
+
   // disable All if there is no deployment name
   disableAll: Ember.computed.alias("hasNoName"),
 
   // disable Next on Deployment Name if there is no deployment name
-  disableNextOnDeploymentName: Ember.computed.alias("hasNoName"),
+  disableNextOnDeploymentName: Ember.computed.or("hasNoName", 'isDuplicateName'),
 
   // disable Next on Configure Organization if no organization is selected
   disableNextOnConfigureOrganization: Ember.computed.or('hasNoOrganization', 'disableAll'),

@@ -45,13 +45,6 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   }.property('model.lifecycle_environment', 'useDefaultOrgViewForEnv'),
   hasNoLifecycleEnvironment: Ember.computed.not('hasLifecycleEnvironment'),
 
-  validations: {
-    name: {
-      presence: true,
-      length: { minimum: 2 }
-    },
-  },
-
   satelliteInvalid: Ember.computed.or('hasNoName', 'hasNoOrganization', 'hasNoLifecycleEnvironment'),
 
   skipContent: false,

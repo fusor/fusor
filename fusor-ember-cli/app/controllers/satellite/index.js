@@ -18,4 +18,6 @@ export default Ember.Controller.extend(SatelliteControllerMixin, {
 
   backRouteNameOnSatIndex: 'deployment.start',
 
+  deploymentNames: Ember.computed.alias("controllers.application.deploymentNames")
+
 });

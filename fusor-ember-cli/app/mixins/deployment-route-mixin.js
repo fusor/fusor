@@ -17,7 +17,7 @@ export default Ember.Mixin.create({
           }
         },
         function(error) {
-          alert('There was an error trying to save: ' + error);
+          console.log('There was an error trying to save: ' + error);
         }
       );
     },
