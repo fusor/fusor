@@ -31,6 +31,8 @@ module Actions
             db_password = "changeme" # TODO: we may want to make this configurable in the future
             ssh_user = "root"
 
+            deployment = ::Fusor::Deployment.find(input[:deployment_id])
+
             #
             # JWM 6/9/2015, We are not yet setting the CloudForms VM root password
             # We need to use the default password of 'smartvm' until we add support.

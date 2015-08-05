@@ -31,6 +31,8 @@ module Actions
             ssh_user = "root"
             ssh_password = "smartvm"
 
+            deployment = ::Fusor::Deployment.find(input[:deployment_id])
+
             # TODO: observing issues with running the appliance console using SSHConnection; therefore, temporarily
             # commenting out and using the approach above which will run it from a python script
             @io = StringIO.new
