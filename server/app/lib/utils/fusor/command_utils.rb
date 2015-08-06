@@ -18,24 +18,29 @@ module Utils
         # the the output variable
         stdin, stdout_err, wait_thr = Open3.popen2e(cmd)
         status = wait_thr.value.exitstatus
-        #pid = wait_thr[:pid]
-        if status > 0
-            Rails.logger.error "Error running command: #{cmd}"
-            Rails.logger.error "Status code: #{status}"
-            Rails.logger.error "Command output: #{stdout_err}"
-        elsif log_on_success
-            Rails.logger.info "Command: #{cmd}"
-            Rails.logger.info "Status code: #{status}"
-            Rails.logger.info "Command output: #{stdout_err}"
-        end
 
         # capture the output into a variable because once we close
         # it you can no longer read it.
+        #
+        # also need to capture it so that we can log any errors
+        # that may have occurred otherwise we just log the class id
+        # which is useless in a debugging scenario.
+        #
         output = stdout_err.readlines
 
+        if status > 0
+            Rails.logger.error "Error running command: #{cmd}"
+            Rails.logger.error "Status code: #{status}"
+            Rails.logger.error "Command output: #{output}"
+        elsif log_on_success
+            Rails.logger.info "Command: #{cmd}"
+            Rails.logger.info "Status code: #{status}"
+            Rails.logger.info "Command output: #{output}"
+        end
+
         # need to close these explicitly as per the docs
-        stdin.close
-        stdout_err.close
+        stdin.close unless stdin.closed?
+        stdout_err.close unless stdout_err.closed?
 
         return status, output
       end
