@@ -5,14 +5,18 @@
     </p>
 
     <div class='ident-radio'>
-      {{#radio-button value="selfhost" groupValue=rhevSetup changed="rhevSetupChanged" id='selfhost' disabled=controllers.deployment.isStarted}}
-        Self-hosted
+      {{#radio-button value="selfhost" groupValue=rhevSetup changed="rhevSetupChanged" id='selfhost' disabled=true}}
+        <span class='disabled'>
+          Self-hosted
+        </span>
       {{/radio-button}}
     </div>
 
     <div class='ident-radio'>
       {{#radio-button value="rhevhost" groupValue=rhevSetup changed="rhevSetupChanged" id='rhevhost' disabled=controllers.deployment.isStarted}}
+      <span class="{{if controllers.deployment.isStarted 'disabled'}}">
         Hypervisor + engine
+      </span>
       {{/radio-button}}
     </div>
 

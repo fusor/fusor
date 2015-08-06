@@ -23,7 +23,9 @@
 <div class='default_org_view'>
   {{input type="checkbox" name="useDefaultOrgViewForEnv" checked=useDefaultOrgViewForEnv
           disabled=isStarted}}
-  Use Default Organization View
+  <span class="{{if isStarted 'disabled'}}">
+    Use Default Organization View
+  </span>
 </div>
 
 {{#unless useDefaultOrgViewForEnv}}
