@@ -35,6 +35,7 @@ module Actions
 
             # TODO: observing issues with running the appliance console using SSHConnection; therefore, temporarily
             # commenting out and using the approach above which will run it from a python script
+            @success = false
             @io = StringIO.new
             client = Utils::Fusor::SSHConnection.new(input[:vm_ip], ssh_user, ssh_password)
             client.on_complete(lambda { update_root_password_completed })
@@ -49,17 +50,23 @@ module Actions
           def update_root_password_completed
             Rails.logger.warn "XXX the appliance console successfully ran on the node"
             if @io.string.include? "passwd: all authentication tokens updated successfully."
+              @success = true
               Rails.logger.info @io.string
             else
+              @success = false
               Rails.logger.error @io.string
             end
-            @io.close
+            @io.close unless @io.closed?
           end
 
           def update_root_password_failed
-            Rails.logger.error @io.string
-            @io.close
-            fail _("Failed to update root password on appliance")
+            @io.close unless @io.closed?
+            if not @success
+                # SSH connection assumes if something is written to stderr it's a
+                # problem. We only care about that if we actually failed.
+                Rails.logger.error @io.string
+                fail _("Failed to update root password on appliance")
+            end
           end
         end
       end
