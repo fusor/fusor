@@ -14,9 +14,9 @@ export default Ember.Route.extend({
         controller.set('organizationUpstreamConsumerUUID', results.owner_details.upstreamConsumer.uuid);
         controller.set('organizationUpstreamConsumerName', results.owner_details.upstreamConsumer.name);
         // if no UUID for deployment, assign it from org UUID
-        if (Ember.isBlank(controller.get('upstream_consumer_uuid'))) {
-          controller.set('upstream_consumer_uuid', results.owner_details.upstreamConsumer.uuid);
-          controller.set('upstream_consumer_name', results.owner_details.upstreamConsumer.name);
+        if (Ember.isBlank(controller.get('model.upstream_consumer_uuid'))) {
+          controller.set('upstreamConsumerUuid', results.owner_details.upstreamConsumer.uuid);
+          controller.set('upstreamConsumerName', results.owner_details.upstreamConsumer.name);
         }
       } else {
         controller.set('organizationUpstreamConsumerUUID', null);
