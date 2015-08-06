@@ -11,10 +11,6 @@ export default Ember.Controller.extend({
   isOpenStack: Ember.computed.alias("controllers.deployment.model.deploy_openstack"),
   isCloudForms: Ember.computed.alias("controllers.deployment.model.deploy_cfme"),
 
-  //overwritten by setupController
-  organizationUpstreamConsumerUUID: null,
-  organizationUpstreamConsumerName: null,
-
   validCredentials: function() {
     // password is not saved in the model
     return (Ember.isPresent(this.get('model.identification')) && Ember.isPresent(this.get('password')));
