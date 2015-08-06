@@ -54,8 +54,9 @@ export default Ember.Component.extend({
   availableOptions: function() {
     var avail = [];
     var increment = 1;
+    var maxNodes = Math.max(this.get('nodeCount'), this.get('roleNodeCount'));
 
-    for (var i=0; i <= this.get('nodeCount'); i = i + increment) {
+    for (var i=0; i <= maxNodes; i = i + increment) {
       var nextOption = Ember.Object.create({
         label: '' + i,
         value: i,
