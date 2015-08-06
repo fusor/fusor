@@ -8,15 +8,17 @@
 
     {{#radio-button value="NFS" groupValue=rhev_storage_type id='nfs'
                     disabled=controllers.deployment.isStarted}}
-      NFS
+      <span class="{{if controllers.deployment.isStarted 'disabled'}}">
+        NFS
+      </span>
     {{/radio-button}}
     &nbsp;&nbsp;&nbsp;&nbsp;
     {{#radio-button value="Local" groupValue=rhev_storage_type id='local' disabled=true}}
-      <span class='disabled-color'>Local</span>
+      <span class='disabled'>Local</span>
     {{/radio-button}}
     &nbsp;&nbsp;&nbsp;&nbsp;
     {{#radio-button value="Gluster" groupValue=rhev_storage_type id='gluster' disabled=true}}
-      <span class='disabled-color'>Gluster</span>
+      <span class='disabled'>Gluster</span>
     {{/radio-button}}
   {{/base-f}}
 
