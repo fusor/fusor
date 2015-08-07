@@ -96,6 +96,11 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     var me = this;
 
     if (profile == null ) {
+      var unassignedRoles = this.get('unassignedRoles');
+      if (unassignedRoles.contains(role)) {
+        // Role is already unassigned, do nothing
+        return;
+      }
       data = { 'role_name': role.get('name'), 'flavor_name': null };
     } else {
       data = { 'role_name': role.get('name'), 'flavor_name': profile.get('name') };
@@ -237,7 +242,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
         data: JSON.stringify({ 'parameters': params }),
         success: function() {
           console.log('SUCCESS');
-          me.set('showLoadingSpinner', false);
+          me.get('model').plan.reload().then(function() {
+            me.set('showLoadingSpinner', false);
+          });
         },
         error: function(error) {
           console.log('ERROR');
@@ -264,7 +271,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
         data: JSON.stringify(data),
         success: function() {
           console.log('SUCCESS');
-          me.set('showLoadingSpinner', false);
+          me.get('model').plan.reload().then(function() {
+            me.set('showLoadingSpinner', false);
+          });
         },
         error: function(error) {
           console.log('ERROR');
