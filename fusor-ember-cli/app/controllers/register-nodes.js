@@ -338,6 +338,19 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     }
   },
 
+  updateAfterRegistration: function(resolve) {
+    var me = this;
+
+    me.get('model').nodes.store.findAll('node', {reload: true}).then(function() {
+      me.get('model').profiles.store.findAll('flavor', {reload: true}).then(function () {
+        if (resolve)
+        {
+          resolve();
+        }
+      });
+    });
+  },
+
   doNextNodeRegistration: function(lastNode) {
     if (this.get('modalOpen') === true) {
       this.set('registrationPaused', true);
@@ -358,16 +371,14 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       else
       {
         var me = this;
-
-        me.get('model').nodes.store.findAll('node', {reload: true}).then(function() {
-          if (me.get('introspectionInProgress') !== true)
-          {
-            me.startCheckingNodeIntrospection();
-          }
-          else if (lastNode !== undefined) {
-            me.checkNodeIntrospection(lastNode);
-          }
-        });
+        this.updateAfterRegistration();
+        if (me.get('introspectionInProgress') !== true)
+        {
+          me.startCheckingNodeIntrospection();
+        }
+        else if (lastNode !== undefined) {
+          me.checkNodeIntrospection(lastNode);
+        }
       }
     }
   },
