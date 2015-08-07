@@ -36,8 +36,6 @@ module Actions
             end
 
             sequence do
-              plan_action(::Actions::Fusor::Deployment::Rhev::WaitForDataCenter, deployment)
-
               repositories = retrieve_deployment_repositories(deployment.organization,
                                                               SETTINGS[:fusor][:content][:cloudforms])
 

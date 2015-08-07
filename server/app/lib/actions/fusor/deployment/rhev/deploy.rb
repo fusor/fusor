@@ -44,6 +44,9 @@ module Actions
 
               plan_action(::Actions::Fusor::Host::WaitUntilProvisioned,
                           deployment.rhev_engine_host)
+
+              plan_action(::Actions::Fusor::Deployment::Rhev::WaitForDataCenter,
+                          deployment)
             end
           end
 
