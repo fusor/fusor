@@ -61,7 +61,6 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
   registerNodesModalOpened: false,
   registerNodesModalClosed: true,
   modalOpen: false,
-  isUploadVisible: false,
 
   registrationError: function() {
     return this.get('errorNodes').length > 0;
@@ -176,12 +175,8 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     this.set('modalOpen', false);
   },
 
-  doCancelUpload: function(fileInput) {
-    if (fileInput)
-    {
-      fileInput.value = null;
-    }
-    this.set('isUploadVisible', false);
+  getCSVFileInput: function() {
+    return $('#regNodesUploadFileInput')[0];
   },
 
   actions: {
@@ -262,16 +257,14 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       }
     },
 
-    toggleUploadVisibility: function() {
-      if (this.get('isUploadVisible')) {
-        this.doCancelUpload();
-      }
-      else {
-        this.set('isUploadVisible', true);
-      }
+    updloadCsvFile: function() {
+      var uploadfile = this.getCSVFileInput();
+      uploadfile.click();
     },
 
-    readCSVFile: function(file, fileInput) {
+    csvFileChosen: function() {
+      var fileInput = this.getCSVFileInput();
+      var file = fileInput.files[0];
       var me = this;
       if (file) {
         var reader = new FileReader();
@@ -313,7 +306,6 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
               me.updateNodeSelection(newNode);
             }
           }
-          me.doCancelUpload(fileInput);
         };
         reader.onloadend = function() {
           if (reader.error) {
@@ -323,10 +315,6 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
         reader.readAsText(file);
       }
-    },
-
-    cancelUpload: function(fileInput) {
-      this.doCancelUpload(fileInput);
     }
   },
 
