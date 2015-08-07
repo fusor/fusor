@@ -48,6 +48,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
   newNodes: [],
   errorNodes: [],
   edittedNodes: [],
+  introspectionNodes: [],
 
   drivers: ['pxe_ipmitool', 'pxe_ssh'],
   architectures: ['amd64', 'x86', 'x86_64'],
@@ -55,10 +56,11 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
 
   registrationInProgress: false,
+  initRegInProcess: false,
+  introspectionInProgress: false,
   registerNodesModalOpened: false,
   registerNodesModalClosed: true,
   modalOpen: false,
-  isUploadVisible: false,
 
   registrationError: function() {
     return this.get('errorNodes').length > 0;
@@ -92,23 +94,39 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   preRegistered: 0,
 
+  successNodesLength: function() {
+    if (this.get('introspectionInProgress') !== true) {
+      return 0;
+    }
+    // Nodes in introspection are in the model so we have to un-count them as well as any pre-registered nodes
+    return this.get('model').nodes.get('length') - this.get('introspectionNodes').length - this.get('preRegistered');
+  }.property('model.nodes.length', 'introspectionNodes.length', 'preRegistered', 'introspectionInProgress'),
+
   nodeRegComplete: function() {
-    return  this.get('model').nodes.get('length') - 1 + this.get('errorNodes').length - this.get('preRegistered');
-  }.property('model.nodes.length', 'errorNodes.length', 'preRegistered'),
+    return this.get('successNodesLength') + this.get('errorNodes').length;
+  }.property('successNodesLength', 'errorNodes.length'),
 
   nodeRegTotal: function() {
-    var total = this.get('nodeRegComplete') + this.get('newNodes').length;
-    if (this.get('registrationInProgress') && !this.get('registrationPaused')) {
+    var total = this.get('nodeRegComplete') + this.get('newNodes').length + this.get('introspectionNodes').length;
+
+    // During the initial registration process there is a node in limbo...
+    if (this.get('initRegInProcess') === true) {
       total++;
     }
+
     return total;
-  }.property('nodeRegComplete', 'newNodes.length', 'registrationInProgress', 'registrationPaused'),
+  }.property('nodeRegComplete', 'newNodes.length', 'introspectionNodes.length', 'registrationInProgress', 'introspectionInProgress'),
 
   nodeRegPercentComplete: function() {
-    var nodeRegComplete = this.get('nodeRegComplete');
     var nodeRegTotal = this.get('nodeRegTotal');
-    return Math.round(nodeRegComplete / nodeRegTotal * 100);
-  }.property('nodeRegComplete', 'nodeRegTotal'),
+    var nodeRegComplete = this.get('nodeRegComplete');
+    var nodesIntrospection = this.get('introspectionNodes').length;
+
+    var numSteps = nodeRegTotal * 4;
+    var stepsComplete = (nodeRegComplete * 4) + (nodesIntrospection * 1);
+
+    return Math.round(stepsComplete / numSteps * 100);
+  }.property('nodeRegComplete', 'nodeRegTotal', 'newNodes', 'introspectionNodes'),
 
   noRegisteredNodes: function() {
       return (this.get('model').nodes.get('length') < 1);
@@ -128,17 +146,21 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     }
   }.property('edittedNodes.length', 'hasSelectedNode'),
 
-  updateNodeSelection: function(profile) {
+  updateNodeSelection: function(node) {
     var oldSelection = this.get('selectedNode');
     if (oldSelection) {
       oldSelection.set('isSelected', false);
     }
 
-    if (profile)
+    if (node)
     {
-      profile.set('isSelected', true);
+      node.set('isSelected', true);
     }
-    this.set('selectedNode', profile);
+    this.set('selectedNode', node);
+  },
+
+  handleOutsideClick: function() {
+    // do nothing, this overrides the closing of the dialog when clicked outside of it
   },
 
   openRegDialog: function() {
@@ -153,12 +175,8 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     this.set('modalOpen', false);
   },
 
-  doCancelUpload: function(fileInput) {
-    if (fileInput)
-    {
-      fileInput.value = null;
-    }
-    this.set('isUploadVisible', false);
+  getCSVFileInput: function() {
+    return $('#regNodesUploadFileInput')[0];
   },
 
   actions: {
@@ -167,10 +185,17 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       var errorNodes = this.get('errorNodes');
       var edittedNodes = this.get('edittedNodes');
 
-      edittedNodes.setObjects(errorNodes);
-      newNodes.forEach(function(item) {
-        edittedNodes.pushObject(item);
+      edittedNodes.setObjects(newNodes);
+      var savedErrors = [];
+      errorNodes.forEach(function(item) {
+        if (!item.isIntrospectionError) {
+          edittedNodes.pushObject(item);
+        }
+        else {
+          savedErrors.push(item);
+        }
       });
+      this.set('errorNodes', savedErrors);
 
       // Always start with at least one profile
       if (edittedNodes.length === 0) {
@@ -232,16 +257,14 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       }
     },
 
-    toggleUploadVisibility: function() {
-      if (this.get('isUploadVisible')) {
-        this.doCancelUpload();
-      }
-      else {
-        this.set('isUploadVisible', true);
-      }
+    updloadCsvFile: function() {
+      var uploadfile = this.getCSVFileInput();
+      uploadfile.click();
     },
 
-    readCSVFile: function(file, fileInput) {
+    csvFileChosen: function() {
+      var fileInput = this.getCSVFileInput();
+      var file = fileInput.files[0];
       var me = this;
       if (file) {
         var reader = new FileReader();
@@ -283,7 +306,6 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
               me.updateNodeSelection(newNode);
             }
           }
-          me.doCancelUpload(fileInput);
         };
         reader.onloadend = function() {
           if (reader.error) {
@@ -293,33 +315,43 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
         reader.readAsText(file);
       }
-    },
-
-    cancelUpload: function(fileInput) {
-      this.doCancelUpload(fileInput);
     }
   },
 
   disableRegisterNodesNext: function() {
-    var nodeCount = this.get('model').nodes.length;
+    var nodeCount = this.get('model').nodes.get('length');
     return (nodeCount < 2);
-  }.property('model.profiles', 'model.profiles.length'),
+  }.property('model.nodes.length'),
 
   registerNewNodes: function() {
     var newNodes = this.get('newNodes');
     if (newNodes && newNodes.length > 0) {
       if (!this.get('registrationInProgress'))
       {
+        this.set('introspectionNodes', []);
         this.set('preRegistered', this.get('model').nodes.get('length'));
         this.doNextNodeRegistration();
       }
-      else if (this.get('registrationPaused')) {
+      else if (this.get('registrationPaused') || this.get('introspectionInProgress')) {
         this.doNextNodeRegistration();
       }
     }
   },
 
-  doNextNodeRegistration: function() {
+  updateAfterRegistration: function(resolve) {
+    var me = this;
+
+    me.get('model').nodes.store.findAll('node', {reload: true}).then(function() {
+      me.get('model').profiles.store.findAll('flavor', {reload: true}).then(function () {
+        if (resolve)
+        {
+          resolve();
+        }
+      });
+    });
+  },
+
+  doNextNodeRegistration: function(lastNode) {
     if (this.get('modalOpen') === true) {
       this.set('registrationPaused', true);
     }
@@ -338,13 +370,42 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       }
       else
       {
-        this.set('registrationInProgress', false);
+        var me = this;
+        this.updateAfterRegistration();
+        if (me.get('introspectionInProgress') !== true)
+        {
+          me.startCheckingNodeIntrospection();
+        }
+        else if (lastNode !== undefined) {
+          me.checkNodeIntrospection(lastNode);
+        }
       }
+    }
+  },
+
+  startCheckingNodeIntrospection: function() {
+    var me = this;
+    var introspectionNodes = me.get('introspectionNodes');
+    if (introspectionNodes.length > 0) {
+      me.set('introspectionInProgress', true);
+      introspectionNodes.forEach(function(node) {
+        me.checkNodeIntrospection(node);
+      });
+    }
+    else
+    {
+      this.set('registrationInProgress', false);
     }
   },
 
   getImage: function(imageName) {
     return Ember.$.getJSON('/fusor/api/openstack/images/show_by_name/' + imageName);
+  },
+
+  addIntrospectionNode: function(node) {
+    var introspectionNodes = this.get('introspectionNodes');
+    introspectionNodes.pushObject(node);
+    this.set('introspectionNodes', introspectionNodes);
   },
 
   registerNode: function(node) {
@@ -368,7 +429,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
         pxe_deploy_ramdisk: this.get('model').bmDeployRamdiskImage.image.id
       };
     }
-    var createdNode = me.store.createRecord('node', {
+    var createdNode = {
       driver: node.driver,
       driver_info: driverInfo,
       properties: {
@@ -379,31 +440,115 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
         capabilities: 'boot_option:local'
       },
       address: node.nicMacAddress
-    });
-
-    var handleSuccess = function(node) {
-      me.get('model').nodes.pushObject(node);
-      me.doNextNodeRegistration();
     };
 
-    var handleFailure = function(reason) {
-      me.get('model').nodes.get('content').removeObject(createdNode);
-      try {
-        var displayMessage = reason.responseJSON.displayMessage;
+    this.set('initRegInProcess', true);
+    Ember.$.ajax({
+      url: '/fusor/api/openstack/nodes',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({ 'node': createdNode }),
+      success: function(registeredNode) {
+        me.set('initRegInProcess', false);
+        me.addIntrospectionNode(registeredNode);
+        me.doNextNodeRegistration(registeredNode);
+      },
+      error: function(reason) {
+        me.set('initRegInProcess', false);
+        node.errorMessage = node.ipAddress + ": " + me.getErrorMessageFromReason(reason);
+        me.get('errorNodes').pushObject(node);
+        me.doNextNodeRegistration();
+      }
+    });
+  },
+
+  getErrorMessageFromReason: function(reason) {
+    try {
+      var displayMessage = reason.responseJSON.displayMessage;
+      if (displayMessage.indexOf('{') >= 0 && displayMessage.indexOf('}') >= 1) {
         displayMessage = displayMessage.substring(displayMessage.indexOf('{'),displayMessage.indexOf('}') + 1) + "}";
         displayMessage = displayMessage.replace(/\\/g, "");
-        displayMessage = displayMessage.replace(/\"\{/g, "{");
+        displayMessage = displayMessage.replace(/"\{/g, "{");
 
         var errorObj = JSON.parse(displayMessage);
-        node.errorMessage = node.ipAddress + ": " + errorObj.error_message.faultstring;
+        displayMessage = errorObj.error_message.faultstring;
       }
-      catch (e) {
-        node.errorMessage = node.ipAddress + ": " + reason.statusText;
-     }
-      me.get('errorNodes').pushObject(node);
-      me.doNextNodeRegistration();
+
+      return displayMessage;
+    }
+    catch (e) {
+      return reason.statusText;
+    }
+  },
+
+  checkNodeIntrospection: function(node) {
+    var me = this;
+
+    var promiseFunction = function(resolve) {
+      var checkForDone = function() {
+        Ember.$.ajax({
+          url: '/fusor/api/openstack/nodes/' + node.uuid + '/ready',
+          type: 'GET',
+          contentType: 'application/json',
+          success: function(results) {
+            resolve({done: results.node.ready});
+          },
+          error: function(results) {
+            if (results.status === 0) {
+              // Known problem during introspection, return response is empty, keep trying
+              resolve({done: false});
+            }
+            else if (results.status === 500) {
+              var error = me.getErrorMessageFromReason(results);
+              if (error.indexOf('timeout') >= 0) {
+                resolve({done: false});
+              }
+              else {
+                resolve({done: true, errorResults: results});
+              }
+            }
+            else {
+              resolve({done: true, errorResults: results});
+            }
+          }
+        });
+      };
+
+      Ember.run.later(checkForDone, 15 * 1000);
     };
 
-    createdNode.save().then(handleSuccess).catch(handleFailure);
+    var fulfill = function(results) {
+      if (results.done)
+      {
+        var introspectionNodes = me.get('introspectionNodes');
+        introspectionNodes.removeObject(node);
+        me.set('introspectionNodes', introspectionNodes);
+        if (introspectionNodes.length === 0 && me.get('newNodes').length === 0) {
+          me.set('registrationInProgress', false);
+          me.set('introspectionInProgress', false);
+        }
+
+        if (results.errorResults) {
+          var nodeID;
+          if (node.driver === 'pxe_ssh' ) {
+            nodeID = node.driver_info.ssh_address;
+          }
+          else if (node.driver === 'pxe_ipmitool')
+          {
+            nodeID = node.driver_info.ipmi_address;
+          }
+          node.errorMessage = nodeID + ": " + me.getErrorMessageFromReason(results.errorResults);
+          node.isIntrospectionError = true;
+          me.get('errorNodes').pushObject(node);
+        }
+      }
+      else {
+        var promise = new Ember.RSVP.Promise(promiseFunction);
+        promise.then(fulfill);
+      }
+    };
+
+    var promise = new Ember.RSVP.Promise(promiseFunction);
+    promise.then(fulfill);
   }
 });

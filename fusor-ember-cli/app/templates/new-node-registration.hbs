@@ -1,4 +1,4 @@
-{{#em-modal-form class="scrollable-form" configName="bs" id="nodeRegistrationModal" on-submit="registerNodes" open-if=registerNodesModalOpened close-if=registerNodesModalClosed in-async=async}}
+{{#em-modal class="scrollable-form" configName="bs" id="nodeRegistrationModal" closeIfClickedOutside=handleOutsideClick open-if=registerNodesModalOpened close-if=registerNodesModalClosed in-async=async}}
 
     {{#em-modal-title}}
         {{#em-modal-toggler class="close"}}
@@ -21,7 +21,7 @@
                     <div class="row">
                         <div class="col-xs-12 column" style="padding-bottom: 5px;">
                             <h3 class="col-xs-6 nodes-registered-count">{{edittedNodes.length}} Nodes</h3>
-                            <a class="col-xs-2  nodes-add-button add-node-link" title="Upload from CSV" {{action "toggleUploadVisibility"}}>
+                            <a class="col-xs-2  nodes-add-button add-node-link" title="Upload from CSV" {{action "updloadCsvFile"}}>
                                 <i class="fa fa-upload"></i>
                             </a>
                             <a class="col-xs-2  nodes-add-button add-node-link" title="Add node" {{action "addNode"}}>
@@ -29,13 +29,9 @@
                             </a>
                         </div>
                     </div>
-                    {{#if isUploadVisible}}
-                        <div class="modal-tab-content">
-                            <div role="tabpanel" class="tab-pane active upload-nodes" id="upload-nodes">
-                              {{file-upload-form accept='text/csv' uploadButtonTitle='Upload Nodes' doUpload='readCSVFile' doCancel='cancelUpload'}}
-                            </div>
+                        <div style="display: none;">
+                            <input id="regNodesUploadFileInput" value=selectedFile type="file" accept='text/csv' {{action "csvFileChosen" on="change"}}>
                         </div>
-                    {{/if}}
                     <ul class="nav nav-pills nav-stacked nav-registered-nodes">
                         {{#each node in edittedNodes}}
                             <li {{bind-attr class=node.isActiveClass}}>
@@ -84,4 +80,4 @@
         <button type="submit" class="btn btn-primary" {{bind-attr disabled=async}} {{action "registerNodes"}}>Register Nodes</button>
     {{/em-modal-footer}}
 
-{{/em-modal-form}}
+{{/em-modal}}

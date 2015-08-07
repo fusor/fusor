@@ -23,7 +23,7 @@ var app = new EmberApp({
 app.import('bower_components/jquery-csv/src/jquery.csv.js');
 app.import('bower_components/patternfly/components/bootstrap/dist/js/bootstrap.min.js');
 app.import('bower_components/patternfly/dist/css/patternfly.min.css');
-app.import('bower_components/patternfly/dist/js/patternfly.js');
+app.import('bower_components/patternfly/dist/js/patternfly.min.js');
 
 
 app.import('bower_components/patternfly/dist/fonts/OpenSans-Bold-webfont.ttf', {destDir: 'fonts'});
