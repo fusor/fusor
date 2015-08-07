@@ -1,6 +1,7 @@
 import Ember from 'ember';
+import ProgressBarMixin from "../../../mixins/progress-bar-mixin";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(ProgressBarMixin, {
   needs: ['deployment'],
 
   isRhev: Ember.computed.alias("controllers.deployment.isRhev"),

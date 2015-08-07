@@ -5,25 +5,6 @@ export default Ember.Component.extend({
   tagName: 'div',
   classNames: ['row'],
 
-  runStartPolling: function() {
-    return this.send('startPolling');
-  }.on('didInsertElement'),
-
-  runStopPolling: function() {
-    return this.send('stopPolling');
-  }.on('willDestroyElement'),
-
-  // START REFRESH
-  intervalPolling: function() {
-    return 5000; // Time between refreshing (in ms)
-  }.property().readOnly(),
-
-  scheduleNextRefresh: function() {
-    return Ember.run.later(this, function() {
-      this.set('timer', this.scheduleNextRefresh(this.sendAction()));
-    }, this.get('intervalPolling'));
-  },
-
   valueProgress: function() {
     if (this.get('model.state') === 'planning') {
         return 0.1;
@@ -114,87 +95,4 @@ export default Ember.Component.extend({
     return (Ember.isPresent(this.get('model.humanized_errors')));
   }.property('model.humanized_errors'),
 
-  progressSynctask0: function() {
-    if (this.get('synctask0.progress')) {
-      return (this.get('synctask0.progress') * 100).toFixed(1);
-    } else {
-      return 0;
-    }
-  }.property('synctask0.progress'),
-
-  progressSynctask1: function() {
-    if (this.get('synctask1.progress')) {
-      return (this.get('synctask1.progress') * 100).toFixed(1);
-    } else {
-      return 0;
-    }
-  }.property('synctask1.progress'),
-
-  progressSynctask2: function() {
-    if (this.get('synctask2.progress')) {
-      return (this.get('synctask2.progress') * 100).toFixed(1);
-    } else {
-      return 0;
-    }
-  }.property('synctask2.progress'),
-
-  progressSynctask3: function() {
-    if (this.get('synctask3.progress')) {
-      return (this.get('synctask3.progress') * 100).toFixed(1);
-    } else {
-      return 0;
-    }
-  }.property('synctask3.progress'),
-
-  progressSynctask4: function() {
-    if (this.get('synctask4.progress')) {
-      return (this.get('synctask4.progress') * 100).toFixed(1);
-    } else {
-      return 0;
-    }
-  }.property('synctask4.progress'),
-
-  progressSynctask5: function() {
-    if (this.get('synctask5.progress')) {
-      return (this.get('synctask5.progress') * 100).toFixed(1);
-    } else {
-      return 0;
-    }
-  }.property('synctask5.progress'),
-
-  progressSynctask6: function() {
-    if (this.get('synctask6.progress')) {
-      return (this.get('synctask6.progress') * 100).toFixed(1);
-    } else {
-      return 0;
-    }
-  }.property('synctask6.progress'),
-
-  progressSynctask7: function() {
-    if (this.get('synctask7.progress')) {
-      return (this.get('synctask7.progress') * 100).toFixed(1);
-    } else {
-      return 0;
-    }
-  }.property('synctask7.progress'),
-
-  progressSynctask8: function() {
-    if (this.get('synctask8.progress')) {
-      return (this.get('synctask8.progress') * 100).toFixed(1);
-    } else {
-      return 0;
-    }
-  }.property('synctask8.progress'),
-
-  actions: {
-    // executes `refreshModel` for every intervalPolling.
-    startPolling: function() {
-      this.sendAction(); // run immediately
-      this.set('timer', this.scheduleNextRefresh(this.sendAction())); //and then repeats
-    },
-
-    stopPolling: function() {
-      Ember.run.cancel(this.get('timer'));
-    }
-  }
 });
