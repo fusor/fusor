@@ -635,8 +635,7 @@ table.fusor-table {
 .sidebar-pf-right {
   padding-top: 20px; }
 
-.sidebar-pf.sidebar-pf-left {
-  min-height: 850px;
-  /* to expand left bar to be gray -- temp fix rather than calculating page height  in jQuery*/ }
-
+/*.sidebar-pf.sidebar-pf-left {
+  min-height: 850px;   to expand left bar to be gray -- temp fix rather than calculating page height  in jQuery
+}*/
 /*@import "openstack";*/
