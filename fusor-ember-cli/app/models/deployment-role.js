@@ -30,13 +30,13 @@ export default DS.Model.extend({
       return 'compute';
     }
     else if (name.indexOf('cinder') >= 0) {
-      return 'block';
+      return 'cinder';
     }
     else if (name.indexOf('swift') >= 0) {
-      return 'object';
+      return 'swift';
     }
     else if (name.indexOf('ceph') >= 0) {
-      return 'block';
+      return 'ceph';
     }
 
     return name;
