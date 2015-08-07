@@ -14,6 +14,5 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
 
   setupController: function(controller, model) {
     controller.set('model', model);
-  },
-
+  }
 });

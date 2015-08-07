@@ -175,9 +175,14 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     }
   }.property('showSettings'),
 
+  handleOutsideClick: function(e) {
+    // do nothing, this overrides the closing of the dialog when clicked outside of it
+  },
+
   actions: {
     editRole: function(role) {
-      this.set('showSettings', true);
+      this.set('showRoleSettings', 'active');
+      this.set('showRoleConfig',   'inactive');
       var roleParams = [];
       var advancedParams = [];
       this.get('model.plan.parameters').forEach(function(param) {
@@ -306,12 +311,17 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       this.doAssignRole(plan, role, null);
     },
 
+    showRoleSettings: 'active',
+    showRoleConfig:   'inactive',
+
     doShowSettings: function() {
-      this.set('showSettings', true);
+      this.set('showRoleSettings', 'active');
+      this.set('showRoleConfig',   'inactive');
     },
 
     doShowConfig: function() {
-      this.set('showSettings', false);
+      this.set('showRoleSettings', 'inactive');
+      this.set('showRoleConfig',   'active');
     },
 
     editGlobalServiceConfig: function() {
