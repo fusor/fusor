@@ -93,6 +93,6 @@ export default Ember.Component.extend({
 
   hasHumanizedErrors: function() {
     return (Ember.isPresent(this.get('model.humanized_errors')));
-  }.property('model.humanized_errors'),
+  }.property('model.humanized_errors')
 
 });

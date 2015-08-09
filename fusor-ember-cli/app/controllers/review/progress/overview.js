@@ -12,6 +12,6 @@ export default Ember.Controller.extend(ProgressBarMixin, {
   nameRhev: Ember.computed.alias("controllers.deployment.nameRhev"),
   nameOpenStack: Ember.computed.alias("controllers.deployment.nameOpenStack"),
   nameCloudForms: Ember.computed.alias("controllers.deployment.nameCloudForms"),
-  nameSatellite: Ember.computed.alias("controllers.deployment.nameSatellite"),
+  nameSatellite: Ember.computed.alias("controllers.deployment.nameSatellite")
 
 });

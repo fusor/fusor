@@ -53,7 +53,6 @@ export default Ember.Mixin.create({
 
   imgCloudForms: function() {
     if (this.get('isUpstream')) { return "/assets/r/manageiq-640-210.png"; } else { return "/assets/r/rhci-cloudforms-640-210.png"; }
-  }.property('isUpstream'),
-
+  }.property('isUpstream')
 
 });

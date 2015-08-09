@@ -47,6 +47,6 @@ export default Ember.ArrayController.extend({
   }.property('model.@each.qtyToAttach', 'model.@each.isSelectedSubscription'),
 
   showErrorMessage: Ember.computed.not('allQuantitiesValid'),
-  disableNextOnSelectSubscriptions: Ember.computed.not('allQuantitiesValid'),
+  disableNextOnSelectSubscriptions: Ember.computed.not('allQuantitiesValid')
 
 });

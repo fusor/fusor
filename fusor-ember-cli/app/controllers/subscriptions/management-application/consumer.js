@@ -6,6 +6,6 @@ export default Ember.Controller.extend({
 
 //  queryParams: ['cuuid'],
 
- cuuid: Ember.computed.alias("controllers.deployment.upstream_consumer_uuid"),
+ cuuid: Ember.computed.alias("controllers.deployment.upstream_consumer_uuid")
 
 });

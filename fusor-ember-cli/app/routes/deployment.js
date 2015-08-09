@@ -19,7 +19,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     // check if org has upstream UUID using Katello V2 API
     var orgID = model.get('organization.id');
     var url = '/katello/api/v2/organizations/' + orgID;
-    $.getJSON(url).then(function(results) {
+    Ember.$.getJSON(url).then(function(results) {
       if (Ember.isPresent(results.owner_details.upstreamConsumer)) {
         controller.set('organizationUpstreamConsumerUUID', results.owner_details.upstreamConsumer.uuid);
         controller.set('organizationUpstreamConsumerName', results.owner_details.upstreamConsumer.name);
@@ -40,7 +40,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     installDeployment: function() {
       var self = this;
       var deployment = self.modelFor('deployment');
-      var token = $('meta[name="csrf-token"]').attr('content');
+      var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
       var controller = this.controllerFor('review/installation');
 
@@ -83,7 +83,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
 
     attachSubscriptions: function() {
       var self = this;
-      var token = $('meta[name="csrf-token"]').attr('content');
+      var token = Ember.$('meta[name="csrf-token"]').attr('content');
       var sessionPortal = this.modelFor('subscriptions');
       var consumerUUID = sessionPortal.get('consumerUUID');
       var subscriptions = this.controllerFor('subscriptions/select-subscriptions').get('subscriptionPools');

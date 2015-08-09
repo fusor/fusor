@@ -49,7 +49,7 @@ export default Ember.Controller.extend({
     } else {
       return 'loginPortal';
     }
-  }.property('model.isAuthenticated'),
+  }.property('model.isAuthenticated')
 
 
 });

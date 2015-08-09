@@ -20,6 +20,6 @@ export default DS.Model.extend({
   endDate: DS.attr('date'),
   href: DS.attr('string'),
   created: DS.attr('date'),
-  updated: DS.attr('date'),
+  updated: DS.attr('date')
 
 });

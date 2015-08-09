@@ -29,6 +29,6 @@ export default Ember.Component.extend({
 
   isNotALink: function() {
     return (Ember.isBlank(this.get('routeName')) && !(this.get('isExternalURL')));
-  }.property('isExternalURL', 'routeName'),
+  }.property('isExternalURL', 'routeName')
 
 });

@@ -32,7 +32,7 @@ export default Ember.Component.extend(TrEngineHypervisorMixin, {
 
   isSelectedAsHypervisor: function () {
       return this.get('selectedIds').contains(this.get('host.id'));
-  }.property('selectedIds', 'host.id'),
+  }.property('selectedIds', 'host.id')
 
 });
 

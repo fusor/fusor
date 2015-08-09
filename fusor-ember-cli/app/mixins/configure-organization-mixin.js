@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Mixin.create({
 
-  needs: ['application'],
+  needs: ['application', 'deployment'],
 
   selectedOrganization: Ember.computed.alias("model"),
 
@@ -23,7 +23,6 @@ export default Ember.Mixin.create({
 
   actions: {
     createOrganization: function() {
-      //if (this.get('fields_org.isDirty')) {
         var self = this;
         this.set('fields_org.name', this.get('defaultOrgName'));
         var organization = this.store.createRecord('organization', this.get('fields_org'));
@@ -35,14 +34,9 @@ export default Ember.Mixin.create({
           self.set('organization', org);
           return self.set('showAlertMessage', true);
         }, function(error) {
-          alert('There was an error trying to save: ' + error);
-          //organization.destroyRecord();
-          //organization.rollback()
-          //organization.reload();
-          //organization.unloadRecord();
+          self.get('controllers.deployment').set('errorMsg', 'error saving organization' + error);
         });
-      //}
-    },
+    }
   }
 
 });

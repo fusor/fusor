@@ -31,10 +31,6 @@ export default Ember.Mixin.create({
   organizationTabRouteName: null,
   lifecycleEnvironmentTabRouteName: null,
 
-  // nameSelectSubscriptions: function() {
-  //   if (this.get('isUpstream')) { return "Select Content Source"; } else { return "Select Subscriptions"; }
-  // }.property('isUpstream'),
-
   disableNextOnStart: function () {
     return (!(this.get('isRhev') || this.get('isOpenStack') || this.get('isCloudForms')));
   }.property('isRhev', 'isOpenStack', 'isCloudForms'),
@@ -173,6 +169,6 @@ export default Ember.Mixin.create({
         return 'review';
       }
     }
-  }.property('step2RouteName', 'isOpenStack', 'isCloudForms', 'isSubscriptions'),
+  }.property('step2RouteName', 'isOpenStack', 'isCloudForms', 'isSubscriptions')
 
 });

@@ -11,6 +11,6 @@ export default Ember.Component.extend({
       // name is fqdn for managed host
       return (this.get("host.name"));
     }
-  }.property('host'),
+  }.property('host')
 
 });

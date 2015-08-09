@@ -6,6 +6,6 @@ export default Ember.Route.extend({
     controller.set('model', model);
     var stepNumberReview = this.controllerFor('deployment').get('stepNumberReview');
     return this.controllerFor('deployment').set('currentStepNumber', stepNumberReview);
-  },
+  }
 
 });

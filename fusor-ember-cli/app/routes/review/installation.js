@@ -9,6 +9,6 @@ export default Ember.Route.extend({
     controller.set('model', model);
     controller.set('showSpinner', false);
     controller.set('showErrorMessage', false);
-  },
+  }
 
 });

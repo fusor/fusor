@@ -12,6 +12,6 @@ export default Ember.Route.extend({
     deployment.save().then(function() {
       return console.log('saved deployment successfully');
     });
-  },
+  }
 
 });

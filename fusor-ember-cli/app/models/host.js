@@ -13,5 +13,5 @@ export default DS.Model.extend({
   organization: DS.attr('string'),
   cpu: DS.attr('string'),
   memory: DS.attr('string'),
-  vendor: DS.attr('string'),
+  vendor: DS.attr('string')
 });

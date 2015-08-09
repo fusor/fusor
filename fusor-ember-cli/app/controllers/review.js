@@ -23,6 +23,6 @@ export default Ember.Controller.extend({
 
   disableTabSummary: function() {
     return !this.get('isFinished');
-  }.property('isFinished'),
+  }.property('isFinished')
 
 });

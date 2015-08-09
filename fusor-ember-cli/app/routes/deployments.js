@@ -12,7 +12,7 @@ export default Ember.Route.extend({
         deployment.deleteRecord();
         return deployment.save();
       });
-    },
+    }
   }
 
 });

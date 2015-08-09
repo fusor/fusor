@@ -18,6 +18,6 @@ export default Ember.Controller.extend(ConfigureOrganizationMixin, {
       this.set('selectedOrganization', organization);
       return this.get('controllers.deployment-new.model').set('organization', organization);
     }
-  },
+  }
 
 });

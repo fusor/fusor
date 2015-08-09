@@ -1,7 +1,6 @@
 import Ember from 'ember';
-import SatelliteControllerMixin from "../../../mixins/satellite-controller-mixin";
 
-export default Ember.Controller.extend(SatelliteControllerMixin, {
+export default Ember.Controller.extend({
 
   needs: ['deployment-new', 'deployment-new/satellite', 'deployment', 'application'],
 
