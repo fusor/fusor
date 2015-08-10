@@ -18,6 +18,6 @@ export default Ember.Controller.extend({
 
   incrementBy: 20,
 
-  isFinished: Ember.computed.alias("controllers.review/progress/overview.isFinished"),
+  isFinished: Ember.computed.alias("controllers.deployment.isFinished")
 
 });

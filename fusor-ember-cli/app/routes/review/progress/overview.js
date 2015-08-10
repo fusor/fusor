@@ -14,9 +14,6 @@ export default Ember.Route.extend({
         var rhevTask          = subtasksOfDeploy.findBy('humanized_name', 'Deploy Red Hat Enterprise Virtualization');
         var cfmeTask          = subtasksOfDeploy.findBy('humanized_name', 'Deploy CloudForms Management Engine');
 
-        var manageContentTaskUuid = manageContentTask.get('id');
-        var subtasksOfManageContentPromise = self.store.find('foreman-task', {search: "parent_task_id = " + manageContentTaskUuid});
-
         return Ember.RSVP.hash({
            deployTask: deployTask,
            manageContentTask: manageContentTask,
