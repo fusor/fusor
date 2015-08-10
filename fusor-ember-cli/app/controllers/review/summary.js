@@ -8,7 +8,7 @@ export default Ember.Controller.extend({
   isOpenStack: Ember.computed.alias('controllers.deployment.isOpenStack'),
   isCloudForms: Ember.computed.alias('controllers.deployment.isCloudForms'),
 
-  selectedRhevEngine: Ember.computed.alias('controllers.deployment.selectedRhevEngine'),
+  selectedRhevEngine: Ember.computed.alias("controllers.deployment.model.discovered_host"),
 
   // TODO - make mixin, same method as installation
   engineNamePlusDomain: function() {
