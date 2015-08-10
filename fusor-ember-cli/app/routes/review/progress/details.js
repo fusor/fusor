@@ -16,12 +16,16 @@ export default Ember.Route.extend({
     controller.set('model', model);
     controller.set('isLoadingMoreTasks', true);
 
-    var manageContentTaskUuid = model.manageContentTask.get('id');
-    console.log(manageContentTaskUuid);
-    return this.store.find('foreman-task', {search: "parent_task_id=" + manageContentTaskUuid}).then(function(synctasks) {
-          controller.set('synctasks', synctasks);
-          return controller.set('isLoadingMoreTasks', false);
-    });
+    if (model.manageContentTask) {
+        var manageContentTaskUuid = model.manageContentTask.get('id');
+        console.log(manageContentTaskUuid);
+        return this.store.find('foreman-task', {search: "parent_task_id=" + manageContentTaskUuid}).then(function(synctasks) {
+              controller.set('synctasks', synctasks);
+              return controller.set('isLoadingMoreTasks', false);
+        });
+    } else {
+        return controller.set('isLoadingMoreTasks', false);
+    }
   }
 
 });
