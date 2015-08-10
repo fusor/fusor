@@ -10,8 +10,10 @@ export default Ember.Controller.extend({
      return (!this.get('isStarted') && !this.get('model.isAuthenticated'));
   }.property('model.isAuthenticated', 'isStarted'),
 
-  disableTabSelectSubsciptions: Ember.computed.alias("controllers.subscriptions/management-application.disableNextOnManagementApp"),
+  upstreamConsumerUuid: Ember.computed.alias("controllers.deployment.model.upstream_consumer_uuid"),
 
-  uuid: Ember.computed.alias("controllers.deployment.model.upstream_consumer_uuid")
+  disableTabSelectSubsciptions: function() {
+    return (Ember.isBlank(this.get('upstreamConsumerUuid')) || !this.get('model.isAuthenticated'));
+  }.property('model.isAuthenticated', 'upstreamConsumerUuid')
 
 });
