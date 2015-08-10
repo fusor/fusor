@@ -26,19 +26,16 @@ export default Ember.Route.extend({
 
   setupController: function(controller, model) {
     controller.set('model', model);
-    //alert("startPolling in setupController");
     controller.stopPolling();
     controller.startPolling();
   },
 
   deactivate: function() {
-    //alert("stopPolling in deactivate");
     this.get('controller').stopPolling();
   },
 
   actions: {
     refreshModelOnOverviewRoute: function(){
-      console.log('refreshModelOnOverviewRoute');
       return this.refresh();
     }
   }

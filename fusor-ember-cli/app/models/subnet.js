@@ -19,6 +19,5 @@ export default DS.Model.extend({
   sort_network_id: DS.attr('number'),
   boot_mode: DS.attr('string'),
   ipam: DS.attr('string'),
-  trafficTypes: DS.hasMany('trafficType', { async: true }),
   organization: DS.belongsTo('organization')
 });

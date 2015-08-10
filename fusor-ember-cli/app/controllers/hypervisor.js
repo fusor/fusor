@@ -22,8 +22,6 @@ export default Ember.Controller.extend({
 
   isHypervisorN: function() {
     return (this.get('hostNamingScheme') === 'hypervisorN');
-  }.property('hostNamingScheme'),
-
-
+  }.property('hostNamingScheme')
 
 });

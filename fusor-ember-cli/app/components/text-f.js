@@ -42,8 +42,8 @@ export default Ember.Component.extend({
   }.property('uniqueValues', 'value', 'isUnique'),
 
   actions: {
-     showValidationErrors: function() {
-       this.set("showValidationError", true);
-     }
-   }
+    showValidationErrors: function() {
+      this.set("showValidationError", true);
+    }
+  }
 });

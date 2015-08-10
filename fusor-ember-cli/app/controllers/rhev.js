@@ -55,5 +55,5 @@ export default Ember.Controller.extend({
   validRhev: function() {
     return this.get('validRhevSetup') && this.get('validRhevEngine') && this.get('validRhevHypervisor') &&
            this.get('validRhevOptions') && this.get('validRhevStorage');
-  }.property('validRhevSetup', 'validRhevEngine', 'validRhevHypervisor', 'validRhevOptions', 'validRhevStorage'),
+  }.property('validRhevSetup', 'validRhevEngine', 'validRhevHypervisor', 'validRhevOptions', 'validRhevStorage')
 });

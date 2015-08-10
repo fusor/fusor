@@ -9,7 +9,7 @@ export default Ember.Route.extend({
     // check if org has upstream UUID using Katello V2 API
     var orgID = this.modelFor('deployment').get('organization.id');
     var url = '/katello/api/v2/organizations/' + orgID;
-    $.getJSON(url).then(function(results) {
+    Ember.$.getJSON(url).then(function(results) {
       if (Ember.isPresent(results.owner_details.upstreamConsumer)) {
         controller.set('organizationUpstreamConsumerUUID', results.owner_details.upstreamConsumer.uuid);
         controller.set('organizationUpstreamConsumerName', results.owner_details.upstreamConsumer.name);
@@ -27,7 +27,7 @@ export default Ember.Route.extend({
     if (model.get('isAuthenticated')) {
       // verify isAuthenticated: true is accurate, since Satellite session may have changed.
       var urlVerify = '/customer_portal/users/' + model.get('identification') + "/owners";
-      $.getJSON(urlVerify).then(function(results) {
+      Ember.$.getJSON(urlVerify).then(function(results) {
         //do nothing
       }, function(results) {
         model.set('isAuthenticated', false);
@@ -52,7 +52,7 @@ export default Ember.Route.extend({
       var controller = this.controllerFor('subscriptions/credentials');
       var identification = controller.get('model.identification');
       var password = controller.get('password');
-      var token = $('meta[name="csrf-token"]').attr('content');
+      var token = Ember.$('meta[name="csrf-token"]').attr('content');
       controller.set('nextButtonTitle', "Logging in ...");
       controller.set('disableCredentialsNext', true);
       return new Ember.RSVP.Promise(function (resolve, reject) {
@@ -81,7 +81,7 @@ export default Ember.Route.extend({
 
     logoutPortal: function() {
       var self = this;
-      var token = $('meta[name="csrf-token"]').attr('content');
+      var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
       return new Ember.RSVP.Promise(function (resolve, reject) {
         Ember.$.ajax({
@@ -134,7 +134,7 @@ export default Ember.Route.extend({
 
       var controller = this.controllerFor('subscriptions/credentials');
       var identification = controller.get('model.identification');
-      var token = $('meta[name="csrf-token"]').attr('content');
+      var token = Ember.$('meta[name="csrf-token"]').attr('content');
       var self = this;
       var url = '/customer_portal/users/' + identification + "/owners";
 

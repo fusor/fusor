@@ -1,7 +1,6 @@
 import Ember from 'ember';
-import SatelliteControllerMixin from "../../mixins/satellite-controller-mixin";
 
-export default Ember.Controller.extend(SatelliteControllerMixin, {
+export default Ember.Controller.extend({
 
   needs: ['deployment-new'],
 
@@ -13,6 +12,6 @@ export default Ember.Controller.extend(SatelliteControllerMixin, {
   disableTabConfigureOrganization: Ember.computed.alias("controllers.deployment-new.disableTabConfigureOrganization"),
   disableTabLifecycleEnvironment: Ember.computed.alias("controllers.deployment-new.disableTabLifecycleEnvironment"),
 
-  backRouteNameOnSatIndex: 'deployment-new.start',
+  backRouteNameOnSatIndex: 'deployment-new.start'
 
 });

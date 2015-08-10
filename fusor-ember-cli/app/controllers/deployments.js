@@ -33,6 +33,6 @@ export default Ember.ArrayController.extend({
     openDeploymentModal: function (item) {
       this.set('deploymentInModal', item);
       return this.set('isOpenModal', true);
-    },
+    }
   }
 });

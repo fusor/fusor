@@ -16,5 +16,6 @@ export default Ember.Component.extend({
 
   numCols: function () {
     return this.getWithDefault('cols', '');
-  }.property(),
+  }.property()
+
 });

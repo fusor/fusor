@@ -25,7 +25,7 @@ export default Ember.Route.extend({
       var self = this;
       var deployment = this.modelFor('deployment');
       var hypervisorModelIds = this.controllerFor('hypervisor/discovered-host').get('hypervisorModelIds');
-      var token = $('meta[name="csrf-token"]').attr('content');
+      var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
       return new Ember.RSVP.Promise(function (resolve, reject) {
         Ember.$.ajax({

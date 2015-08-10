@@ -148,7 +148,7 @@ export default Ember.Component.extend({
   },
   didInsertElement: function() {
     var self = this;
-    $('body').on('click', function() {
+    Ember.$('body').on('click', function() {
       try {
         self.hideAssignMenu();
       }

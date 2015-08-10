@@ -26,6 +26,6 @@ export default Ember.Component.extend({
 
   percentProgress: function() {
     return ((this.get('task.progress') * 100).toFixed(0) + '%');
-  }.property('task.progress'),
+  }.property('task.progress')
 
 });

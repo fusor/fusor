@@ -81,7 +81,7 @@ export default Ember.Controller.extend({
     }
   }.property('isInvalidStorageFields', 'isInvalidExportDomainFields'),
 
-  validRhevStorage: Ember.computed.not('disableNextStorage'),
+  validRhevStorage: Ember.computed.not('disableNextStorage')
 
 });
 

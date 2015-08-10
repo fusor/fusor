@@ -18,6 +18,6 @@ export default Ember.Controller.extend({
 
   validCloudforms: function() {
     return this.get('hasInstallLocation') && this.get('hasCFRootPassword');
-  }.property('hasInstallLocation', 'hasCFRootPassword'),
+  }.property('hasInstallLocation', 'hasCFRootPassword')
 
 });

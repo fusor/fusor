@@ -4,8 +4,8 @@ export default Ember.Controller.extend({
   needs: ['application','deployment', 'satellite', 'configure-organization',
           'configure-environment', 'rhev-setup', 'rhev', 'hypervisor', 'hypervisor/discovered-host',
           'engine/discovered-host', 'storage',
-          'networking', 'rhev-options', 'where-install',
-          'cloudforms-vm', 'review', 'subscriptions/select-subscriptions'],
+          'rhev-options', 'where-install',
+          'review', 'subscriptions/select-subscriptions'],
 
   isSelfHost: Ember.computed.alias("controllers.rhev.isSelfHost"),
 
@@ -127,6 +127,6 @@ export default Ember.Controller.extend({
     } else {
       return "installDeployment";
     }
-  }.property('hasSubscriptionsToAttach'),
+  }.property('hasSubscriptionsToAttach')
 
 });

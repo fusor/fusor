@@ -6,6 +6,6 @@ export default Ember.Route.extend({
     controller.set('model', model);
     var stepNumberOpenstack = this.controllerFor('deployment').get('stepNumberOpenstack');
     return this.controllerFor('deployment').set('currentStepNumber', stepNumberOpenstack);
-  },
+  }
 
 });

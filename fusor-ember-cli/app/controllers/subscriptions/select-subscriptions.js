@@ -41,8 +41,6 @@ export default Ember.ArrayController.extend({
      return (this.get('contractNumbersInModelNotInPool.length') > 0);
   }.property('contractNumbersInModelNotInPool'),
 
-
-
   hasSubscriptionsToAttach: function() {
     return (this.get('model.length') > 0);
   }.property('model.[]'),
@@ -53,6 +51,6 @@ export default Ember.ArrayController.extend({
 
   analyticsColor: function() {
     if (this.get('enableAnalytics')) { return ''; } else { return 'disabled-color'; }
-  }.property('enableAccessInsights'),
+  }.property('enableAccessInsights')
 
 });

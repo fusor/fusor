@@ -12,6 +12,6 @@ export default Ember.Controller.extend({
 
   disableTabSelectSubsciptions: Ember.computed.alias("controllers.subscriptions/management-application.disableNextOnManagementApp"),
 
-  uuid: Ember.computed.alias("controllers.deployment.model.upstream_consumer_uuid"),
+  uuid: Ember.computed.alias("controllers.deployment.model.upstream_consumer_uuid")
 
 });

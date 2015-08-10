@@ -5,6 +5,6 @@ export default Ember.Component.extend({
 
   click: function() {
     this.sendAction('action', this.get('deployment'));
-  },
+  }
 
 });

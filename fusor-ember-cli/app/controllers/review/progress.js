@@ -12,11 +12,6 @@ export default Ember.Controller.extend({
 
   showErrorMessage: false,
   errorMsg: null, // this should be overwritten by API response
-  installationInProgress: true,
-
-  prog: 1,
-
-  incrementBy: 20,
 
   isFinished: Ember.computed.alias("controllers.deployment.isFinished")
 

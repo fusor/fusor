@@ -47,7 +47,7 @@ export default Ember.Route.extend({
       // check if org has upstream UUID using Katello V2 API
       var orgID = this.modelFor('deployment').get('organization.id');
       var url = '/katello/api/v2/organizations/' + orgID;
-      $.getJSON(url).then(function(results) {
+      Ember.$.getJSON(url).then(function(results) {
           if (Ember.isPresent(results.owner_details.upstreamConsumer)) {
             sessionPortal.set('consumerUUID', results.owner_details.upstreamConsumer.uuid);
             sessionPortal.save();
@@ -72,10 +72,8 @@ export default Ember.Route.extend({
   actions: {
       error: function(reason, transition) {
         // bubble up this error event:
-        //return true;
-        console.log(reason);
+        return true;
       }
   }
-
 
 });

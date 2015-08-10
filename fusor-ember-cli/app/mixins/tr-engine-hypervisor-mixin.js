@@ -36,7 +36,7 @@ export default Ember.Mixin.create({
     saveHostname: function() {
       var host = this.get('host');
       var self = this;
-      var token = $('meta[name="csrf-token"]').attr('content');
+      var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
       return new Ember.RSVP.Promise(function (resolve, reject) {
         Ember.$.ajax({

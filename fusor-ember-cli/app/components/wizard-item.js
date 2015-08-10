@@ -23,6 +23,6 @@ export default Ember.Component.extend({
 
   future: function() {
     return this.get('isDisabled');
-  }.property('isDisabled'),
+  }.property('isDisabled')
 
 });

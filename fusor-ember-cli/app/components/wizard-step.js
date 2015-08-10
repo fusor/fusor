@@ -15,23 +15,23 @@ export default Ember.Component.extend({
             var navbarpfHeight = 0;
             var pageheaderrhciHeight = 0;
             var rowHeight = 0;
-            if ($('.sidebar-pf').length > 0 && matchMedia('only screen and (min-width: 768px)').matches) {
-              documentHeight = $(document).height();
-              navbarpfHeight = $('.navbar-pf').outerHeight();
-              pageheaderrhciHeight = $('.page-header-rhci').outerHeight();
+            if (Ember.$('.sidebar-pf').length > 0 && matchMedia('only screen and (min-width: 768px)').matches) {
+              documentHeight = Ember.$(document).height();
+              navbarpfHeight = Ember.$('.navbar-pf').outerHeight();
+              pageheaderrhciHeight = Ember.$('.page-header-rhci').outerHeight();
               rowHeight = documentHeight - navbarpfHeight - pageheaderrhciHeight;
             }
             // set height of attribute in controller
             return self.set('minHeight', rowHeight);
     }.bind(this);
 
-    $(window).on('resize', this.resizeHandler);
+    Ember.$(window).on('resize', this.resizeHandler);
     this.resizeHandler();
 
   }.on('didInsertElement'),
 
   removeResize: function() {
-    $(window).off('resize', this.resizeHandler);
+    Ember.$(window).off('resize', this.resizeHandler);
   }.on('willDestroyElement')
 
 });

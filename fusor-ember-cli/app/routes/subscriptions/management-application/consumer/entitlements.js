@@ -23,8 +23,6 @@ export default Ember.Route.extend({
 
   deactivate: function() {
     this.controllerFor('subscriptions/management-application').set('showManagementApplications', true);
-  },
-
-
+  }
 
 });

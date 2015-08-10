@@ -17,10 +17,10 @@ export default Ember.Mixin.create({
           }
         },
         function(error) {
-          console.log('There was an error trying to save: ' + error);
+          self.set('errorMsg', 'error saving organization' + error);
         }
       );
-    },
+    }
   }
 
 });

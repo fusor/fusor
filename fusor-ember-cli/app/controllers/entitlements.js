@@ -4,6 +4,6 @@ export default Ember.ArrayController.extend({
 
   showEntitlements: true,
   arrayQuantities: Ember.computed.mapBy('model', 'quantity'),
-  totalQuantity: Ember.computed.sum('arrayQuantities'),
+  totalQuantity: Ember.computed.sum('arrayQuantities')
 
 });

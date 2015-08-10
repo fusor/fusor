@@ -51,7 +51,7 @@ export default Ember.Controller.extend({
            );
   }.property('rhev_root_password', 'rhev_engine_admin_password'),
 
-  validRhevOptions: Ember.computed.not('disableNextRhevOptions'),
+  validRhevOptions: Ember.computed.not('disableNextRhevOptions')
 
 });
 

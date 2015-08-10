@@ -28,7 +28,7 @@ export default Ember.Controller.extend({
     },
 
     createSatellite: function() {
-      var token = $('meta[name="csrf-token"]').attr('content');
+      var token = Ember.$('meta[name="csrf-token"]').attr('content');
       var newSatelliteName = this.get('newSatelliteName');
       var ownerKey = this.get('sessionPortal').get('ownerKey');
       var self = this;
@@ -64,6 +64,6 @@ export default Ember.Controller.extend({
       });
     }
 
-  },
+  }
 
 });

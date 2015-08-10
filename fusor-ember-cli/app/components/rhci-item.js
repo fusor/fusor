@@ -24,6 +24,6 @@ export default Ember.Component.extend({
 
   mouseLeave: function(){
     this.set('isHover', false);
-  },
+  }
 
 });
