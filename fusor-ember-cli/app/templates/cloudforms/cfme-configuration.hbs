@@ -4,6 +4,7 @@
       {{text-f label="CFME Root password" type='password' value=cfmeRootPassword
                cssId='cfme_root_password'
                isRequired=true disabled=controllers.deployment.isStarted
+               minChars=8
                help-inline='must be 8 or more characters'
                placeholder='must be 8 or more characters'}}
     </form>

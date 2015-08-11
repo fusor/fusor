@@ -5,10 +5,12 @@
     <br />
     <form class="form form-horizontal">
       {{text-f label="Root password for Engine & Hypervisor" type='password' value=rhev_root_password cssId='rhev_root_password' isRequired=true disabled=controllers.deployment.isStarted
+      minChars=8
       help-inline='must be 8 or more characters'
       placeholder='must be 8 or more characters'}}
 
       {{text-f label="Engine admin password" type='password' value=rhev_engine_admin_password cssId='rhev_engine_admin_password' isRequired=true disabled=controllers.deployment.isStarted
+      minChars=8
       help-inline='must be 8 or more characters'
       placeholder='must be 8 or more characters'}}
 
