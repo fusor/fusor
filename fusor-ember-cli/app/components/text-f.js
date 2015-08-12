@@ -15,8 +15,10 @@ export default Ember.Component.extend({
   }.property('type'),
 
   passwordTooShort: function() {
-    return (this.get('isPassword') && (this.get('value.length') < 8));
-  }.property('value', 'isPassword'),
+    if (this.get('minChars')) {
+      return (this.get('isPassword') && (this.get('value.length') < this.get('minChars')));
+    }
+  }.property('value', 'isPassword', 'minChars'),
 
   hasError: function() {
     return (this.get('showValidationError') &&
