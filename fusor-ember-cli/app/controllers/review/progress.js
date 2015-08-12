@@ -13,6 +13,6 @@ export default Ember.Controller.extend({
   showErrorMessage: false,
   errorMsg: null, // this should be overwritten by API response
 
-  isFinished: Ember.computed.alias("controllers.deployment.isFinished")
+  deployTaskIsFinished: Ember.computed.alias("controllers.review/progress/overview.deployTaskIsFinished")
 
 });

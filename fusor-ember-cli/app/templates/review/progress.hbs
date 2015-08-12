@@ -32,7 +32,7 @@
                     disableBack=false
                     parentController=controller
                     disableCancel=controllers.deployment.isStarted}}
-  {{#if isFinished}}
+  {{#if deployTaskIsFinished}}
     {{#link-to 'review.summary' role="button" class='btn btn-primary'}}
         Next <i class="fa fa-angle-right"></i>
     {{/link-to}}
