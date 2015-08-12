@@ -11,7 +11,7 @@ export default Ember.Controller.extend({
 
   stepNumberReview: Ember.computed.alias("controllers.deployment.stepNumberReview"),
 
-  isFinished: Ember.computed.alias("controllers.deployment.isFinished"),
+  deployTaskIsFinished: Ember.computed.alias("controllers.review/progress/overview.deployTaskIsFinished"),
 
   disableTabInstallation: function() {
     return (this.get('disableNext') && (!(this.get('isUpstream'))));
@@ -22,7 +22,7 @@ export default Ember.Controller.extend({
   }.property('controllers.deployment.isStarted'),
 
   disableTabSummary: function() {
-    return !this.get('isFinished');
-  }.property('isFinished')
+    return !this.get('deployTaskIsFinished');
+  }.property('deployTaskIsFinished')
 
 });

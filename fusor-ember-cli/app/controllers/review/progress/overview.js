@@ -12,6 +12,12 @@ export default Ember.Controller.extend(ProgressBarMixin, {
   nameRhev: Ember.computed.alias("controllers.deployment.nameRhev"),
   nameOpenStack: Ember.computed.alias("controllers.deployment.nameOpenStack"),
   nameCloudForms: Ember.computed.alias("controllers.deployment.nameCloudForms"),
-  nameSatellite: Ember.computed.alias("controllers.deployment.nameSatellite")
+  nameSatellite: Ember.computed.alias("controllers.deployment.nameSatellite"),
+  progressDeployment: Ember.computed.alias("model.deployTask.progress"),
+
+  deployTaskIsFinished: function() {
+    console.log('calculating deployTaskIsFinished');
+    return (this.get('progressDeployment') === '1');
+  }.property('progressDeployment')
 
 });
