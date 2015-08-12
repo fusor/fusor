@@ -425,8 +425,8 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
         ipmi_address: node.ipAddress,
         ipmi_username: node.ipmiUsername,
         ipmi_password: node.ipmiPassword,
-        pxe_deploy_kernel: this.get('model').bmDeployKernelImage.image.id,
-        pxe_deploy_ramdisk: this.get('model').bmDeployRamdiskImage.image.id
+        deploy_kernel: this.get('model').bmDeployKernelImage.image.id,
+        deploy_ramdisk: this.get('model').bmDeployRamdiskImage.image.id
       };
     }
     var createdNode = {
