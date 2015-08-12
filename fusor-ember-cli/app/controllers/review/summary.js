@@ -23,8 +23,8 @@ export default Ember.Controller.extend({
   }.property('selectedRhevEngine'),
 
   rhevEngineUrl: function() {
-    return ('https://' + this.get('engineNamePlusDomain') + '/ovirt-engine/');
-  }.property('engineNamePlusDomain'),
+    return ('https://' + this.get('selectedRhevEngine.ip') + '/ovirt-engine/');
+  }.property('selectedRhevEngine'),
 
   cfmeUrl: function() {
     return ('https://' + this.get('controllers.deployment.model.cfme_address'));
