@@ -34,12 +34,10 @@ module Actions
           end
 
           def invoke_external_task
-            Rails.logger.info "================ Rhev::WaitForDataCenter invoke_external_task method ===================="
             is_up? get_status(input[:deployment_id])
           end
 
           def poll_external_task
-            Rails.logger.info "================ Rhev::WaitForDataCenter poll_external_task method ===================="
             is_up? get_status(input[:deployment_id])
           end
 
@@ -47,26 +45,32 @@ module Actions
 
           def get_status(deployment_id)
             Rails.logger.info "================ Rhev::WaitForDataCenter get_status method ===================="
-            deployment = ::Fusor::Deployment.find(deployment_id)
-            script_dir = "/usr/share/fusor_ovirt/bin/"
-            api_user = "admin@internal"
-            api_password = deployment.rhev_engine_admin_password
-            api_host = deployment.rhev_engine_host.facts['ipaddress']
-            # if db name is empty or nil, use Default
-            data_center = deployment.rhev_database_name.to_s[/.+/m] || "Default"
 
-            cmd = "#{script_dir}ovirt_get_datacenter_status.py "\
+            # If the api_host ip is available, use it to check the status of the data center.
+            # If it isn't available, it is likely that the puppet facts have not been uploaded,
+            # yet; therefore, skip checking the status until the next interval.
+            deployment = ::Fusor::Deployment.find(deployment_id)
+            api_host = deployment.rhev_engine_host.facts['ipaddress']
+            unless api_host.blank?
+              script_dir = "/usr/share/fusor_ovirt/bin/"
+              api_user = "admin@internal"
+              api_password = deployment.rhev_engine_admin_password
+              # if db name is empty or nil, use Default
+              data_center = deployment.rhev_database_name.to_s[/.+/m] || "Default"
+
+              cmd = "#{script_dir}ovirt_get_datacenter_status.py "\
                 "--api_user #{api_user} "\
                 "--api_host #{api_host} "\
                 "--api_pass #{api_password} "\
                 "--data_center #{data_center}"
 
-            status, output = Utils::Fusor::CommandUtils.run_command(cmd)
-            { status: status, output: output }
+              status, output = Utils::Fusor::CommandUtils.run_command(cmd)
+              { status: status, output: output }
+            end
           end
 
           def is_up?(status)
-            (status[:status] == 0) && ("up" == status[:output].first.rstrip) ? true : false
+            !status.nil? && (status[:status] == 0) && ("up" == status[:output].first.rstrip) ? true : false
           end
         end
       end
