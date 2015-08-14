@@ -96,6 +96,11 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     var me = this;
 
     if (profile == null ) {
+      var unassignedRoles = this.get('unassignedRoles');
+      if (unassignedRoles.contains(role)) {
+        // Role is already unassigned, do nothing
+        return;
+      }
       data = { 'role_name': role.get('name'), 'flavor_name': null };
     } else {
       data = { 'role_name': role.get('name'), 'flavor_name': profile.get('name') };
@@ -170,9 +175,14 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     }
   }.property('showSettings'),
 
+  handleOutsideClick: function(e) {
+    // do nothing, this overrides the closing of the dialog when clicked outside of it
+  },
+
   actions: {
     editRole: function(role) {
-      this.set('showSettings', true);
+      this.set('showRoleSettings', 'active');
+      this.set('showRoleConfig',   'inactive');
       var roleParams = [];
       var advancedParams = [];
       this.get('model.plan.parameters').forEach(function(param) {
@@ -237,7 +247,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
         data: JSON.stringify({ 'parameters': params }),
         success: function() {
           console.log('SUCCESS');
-          me.set('showLoadingSpinner', false);
+          me.get('model').plan.reload().then(function() {
+            me.set('showLoadingSpinner', false);
+          });
         },
         error: function(error) {
           console.log('ERROR');
@@ -264,7 +276,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
         data: JSON.stringify(data),
         success: function() {
           console.log('SUCCESS');
-          me.set('showLoadingSpinner', false);
+          me.get('model').plan.reload().then(function() {
+            me.set('showLoadingSpinner', false);
+          });
         },
         error: function(error) {
           console.log('ERROR');
@@ -297,12 +311,17 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       this.doAssignRole(plan, role, null);
     },
 
+    showRoleSettings: 'active',
+    showRoleConfig:   'inactive',
+
     doShowSettings: function() {
-      this.set('showSettings', true);
+      this.set('showRoleSettings', 'active');
+      this.set('showRoleConfig',   'inactive');
     },
 
     doShowConfig: function() {
-      this.set('showSettings', false);
+      this.set('showRoleSettings', 'inactive');
+      this.set('showRoleConfig',   'active');
     },
 
     editGlobalServiceConfig: function() {

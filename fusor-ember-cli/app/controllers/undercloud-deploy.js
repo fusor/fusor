@@ -52,6 +52,15 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     return !this.get('deployed');
   }.property('deployed'),
 
+  disableTabRegisterNodes: function() {
+    return !this.get('deployed');
+  }.property('deployed'),
+
+  disableTabAssignNodes: function() {
+    return !this.get('deployed');
+  }.property('deployed'),
+
+
   isDirty: false,
 
   watchModel: function() {

@@ -1,10 +1,10 @@
-{{#em-modal-form configName="bs" id="editGlobalServiceConfigModal" on-submit="saveGlobalServiceConfig" open-if=editGlobalServiceConfigModalOpened close-if=editGlobalServiceConfigModalClosed in-async=async}}
+{{#em-modal configName="bs" id="editGlobalServiceConfigModal" closeIfClickedOutside=handleOutsideClick open-if=editGlobalServiceConfigModalOpened close-if=editGlobalServiceConfigModalClosed in-async=async}}
 
     {{#em-modal-title}}
         {{#em-modal-toggler class="close"}}
-            <span aria-hidden="true" {{action "cancelEditRole"}}>×</span><span class="sr-only">Close</span>
+            <span aria-hidden="true" {{action "cancelGlobalServiceConfig"}}>×</span><span class="sr-only">Close</span>
         {{/em-modal-toggler}}
-        <h4 class="modal-title">Global Service Configuration</h4>
+        <h4 class="modal-title">Edit Global Configuration</h4>
     {{/em-modal-title}}
 
     {{#em-modal-body}}
@@ -14,7 +14,7 @@
           <div role="tabpanel" class="tab-pane active global-config-settings-content">
               <div class="form-horizontal">
                   <fieldset>
-                      <div class="form-group required">
+                      <div class="required">
                         {{#each planParameter in edittedPlanParameters}}
                           {{#if planParameter.isBoolean}}
                             {{check-f label=planParameter.displayId checked=planParameter.value labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=planParameter.description}}
@@ -37,5 +37,5 @@
         <button type="cancel" class="btn btn-default" {{bind-attr disabled=async}} {{action "cancelGlobalServiceConfig"}}>Cancel</button>
         <button type="submit" class="btn btn-primary" {{bind-attr disabled=async}} {{action "saveGlobalServiceConfig"}}>Save</button>
     {{/em-modal-footer}}
-
-{{/em-modal-form}}
+    {{base-popover selector='popover'}}
+{{/em-modal}}
