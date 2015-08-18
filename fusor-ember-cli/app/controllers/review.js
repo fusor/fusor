@@ -21,8 +21,6 @@ export default Ember.Controller.extend({
     return !(this.get('controllers.deployment.isStarted'));
   }.property('controllers.deployment.isStarted'),
 
-  disableTabSummary: function() {
-    return !this.get('deployTaskIsFinished');
-  }.property('deployTaskIsFinished')
+  disableTabSummary: Ember.computed.not("deployTaskIsFinished")
 
 });
