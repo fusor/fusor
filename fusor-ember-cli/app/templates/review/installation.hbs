@@ -40,7 +40,7 @@
 
             {{#review-link label='Hypervisor Host Name' routeName='hypervisor.discovered-host' isRequired=true value=selectedHypervisorHosts useYieldInstead=true}}
                 {{#each host in selectedHypervisorHosts}}
-                   {{hypervisor-name host=host}}
+                   {{hypervisor-name host=host hypervisorDomain=hypervisorDomain}}
                 {{/each}}
             {{/review-link}}
         {{/if}}
