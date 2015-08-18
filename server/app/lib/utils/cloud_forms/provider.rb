@@ -64,6 +64,40 @@ module Utils
         }
         request_data = new_provider_form.request_data
         provider_added = agent.post("https://#{cfme_ip}/ems_infra/create/new?button=add", request_data, submit_headers)
+
+        get_provider_hosts(cfme_ip, agent, provider_params).each do |host_link|
+          add_host_credentials(host_link, cfme_ip, agent, provider_params, submit_headers)
+        end
+      end
+
+      def self.get_host_links(cfme_ip, agent)
+        agent.get("https://#{cfme_ip}/host/show_list", [], agent.page.uri)
+          .links_with(:href => %r'/host/show/1r', :text => "\n\t\t\t\t\n\t\t\t\t")
+      end
+
+      def self.get_provider_hosts(cfme_ip, agent, provider_params)
+        host_add_counter = 0
+        while get_host_links(cfme_ip, agent).count != provider_params[:hypervisors].count && host_add_counter < 10
+          host_add_counter = host_add_counter+1
+          Rails.logger.info "Waiting 30 seconds to discover provider hosts. Try #{host_add_counter} of 10."
+          sleep(30)
+        end
+        Rails.logger.info "#{get_host_links(cfme_ip, agent).count} hosts discovered."
+        get_host_links(cfme_ip, agent)
+      end
+
+      def self.add_host_credentials(host_link, cfme_ip, agent, provider_params, submit_headers)
+        host=agent.get("https://#{cfme_ip}/#{host_link.uri}", [], agent.page.uri)
+        host_id=host.links_with(:href => %r'/?display=main').first.uri.to_s.match( %r'([0-9]+)').to_s
+        host_edit=agent.get("https://#{cfme_ip}/host/edit/#{host_id}", [], agent.page.uri)
+
+        host_edit_form=host_edit.form
+        host_edit_form["default_userid"]="root"
+        host_edit_form["default_password"]=provider_params[:password]
+        host_edit_form["default_verify"]=provider_params[:password]
+
+        request_data = host_edit_form.request_data
+        agent.post("https://#{cfme_ip}/host/update/#{host_id}?button=save", request_data, submit_headers)
       end
     end
   end
