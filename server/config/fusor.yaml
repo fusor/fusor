@@ -20,7 +20,7 @@
         :releasever: "6.7"
 
       - :product_name: "Red Hat Enterprise Linux Server"
-        :repository_set_name: "Red Hat Satellite Tools 6 Beta (for RHEL 6 Server) (RPMs)"
+        :repository_set_name: "Red Hat Satellite Tools 6.1 (for RHEL 6 Server) (RPMs)"
         :basearch: "x86_64"
 
       - :product_name: "Red Hat Enterprise Linux Server"
