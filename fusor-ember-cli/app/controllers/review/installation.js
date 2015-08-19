@@ -79,14 +79,12 @@ export default Ember.Controller.extend({
 
   engineNamePlusDomain: function() {
     if (this.get("selectedRhevEngine.is_discovered")) {
-      // need to add domain for discovered host to make fqdn
-      // TODO - dynamically get domain name of hostgroup Fusor Base if is not example.com
-      return (this.get("selectedRhevEngine.name") + '.example.com');
+      return (this.get("selectedRhevEngine.name") + '.' + this.get('engineDomain'));
     } else {
       // name is fqdn for managed host
       return (this.get("selectedRhevEngine.name"));
     }
-  }.property('selectedRhevEngine'),
+  }.property('selectedRhevEngine', 'engineDomain'),
 
   nameRHCI: Ember.computed.alias("controllers.deployment.nameRHCI"),
   nameRhev: Ember.computed.alias("controllers.deployment.nameRhev"),
