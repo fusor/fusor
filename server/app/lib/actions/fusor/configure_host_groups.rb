@@ -87,10 +87,16 @@ module Actions
             # this host group is a child of the deployment group
             hostgroup_params[:name] = name_setting
             hostgroup_params[:puppetclass_ids] = puppet_class_ids
+            if hostgroup_settings[:os]
+              operating_system = ::Redhat.where(:name => hostgroup_settings[:os], :major => hostgroup_settings[:major], :minor => hostgroup_settings[:minor]).first
+              hostgroup_params[:operatingsystem_id] = operating_system.try(:id)
+              hostgroup_params[:medium_id] = operating_system.try(:media).try(:first).try(:id)
+              hostgroup_params[:ptable_id] = operating_system.try(:ptables).try(:first).try(:id)
+              hostgroup_params[:architecture_id] = operating_system.try(:architectures).try(:first).try(:id)
+              hostgroup_params[:root_pass] = root_password(deployment, product_type)
+            end
           else
             # this host group is the deployment group
-            operating_system = find_operating_system(lifecycle_environment, content_view)
-
             # add access insights class, will get inherited by all machine nodes
             if deployment.enable_access_insights
               # Puppetclass names are unique, there is only one access insights
@@ -108,11 +114,6 @@ module Actions
             hostgroup_params[:content_source_id] = default_capsule_id
             hostgroup_params[:puppet_ca_proxy_id] = default_capsule_id
             hostgroup_params[:puppet_proxy_id] = default_capsule_id
-            hostgroup_params[:operatingsystem_id] = operating_system.try(:id)
-            hostgroup_params[:medium_id] = operating_system.try(:media).try(:first).try(:id)
-            hostgroup_params[:ptable_id] = operating_system.try(:ptables).try(:first).try(:id)
-            hostgroup_params[:architecture_id] = operating_system.try(:architectures).try(:first).try(:id)
-            hostgroup_params[:root_pass] = root_password(deployment, product_type)
           end
         else
           fail _("Unable to locate content view '%s'.") % content_view_name(deployment)
@@ -269,22 +270,6 @@ module Actions
 
       def find_content_view(organization_id, view_name)
         ::Katello::ContentView.where(:organization_id => organization_id, :name => view_name).first
-      end
-
-      def find_operating_system(lifecycle_environment, content_view)
-        content_view_version = content_view.version(lifecycle_environment)
-
-        # Find the first repo that has a distribution.
-        # Note: at this time, the assumption is that there will only be 1 repo containing distro.
-        repo = content_view_version.repositories.find{ |repo| repo.bootable_distribution }
-        distribution = repo.bootable_distribution
-
-        # Locate the operating system using the information from the distribution
-        os_name = ::Redhat.construct_name(distribution.family)
-        major, minor = distribution.version.split('.')
-        minor ||= '' # treat minor versions as empty string to not confuse with nil
-
-        ::Redhat.where(:name => os_name, :major => major, :minor => minor).first
       end
 
       def content_view_name(deployment)
