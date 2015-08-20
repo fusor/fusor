@@ -34,7 +34,8 @@ module Actions
                          :hostname => deployment.rhev_engine_host.name,
                          :ip => deployment.rhev_engine_host.ip,
                          :username => "admin@internal", # TODO: perhaps make configurable, in future
-                         :password => deployment.rhev_engine_admin_password
+                         :password => deployment.rhev_engine_admin_password,
+                         :hypervisors => deployment.discovered_hosts
             }
 
             Utils::CloudForms::Provider.add(input[:vm_ip], provider)
