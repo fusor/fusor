@@ -26,16 +26,14 @@ module Actions
           end
 
           def run
+            Rails.logger.info "================ UpdateRootPassword run method ===================="
             begin
-              Rails.logger.info "================ UpdateRootPassword run method ===================="
 
               ssh_user = "root"
               ssh_password = "smartvm"
 
               deployment = ::Fusor::Deployment.find(input[:deployment_id])
 
-              # TODO: observing issues with running the appliance console using SSHConnection; therefore, temporarily
-              # commenting out and using the approach above which will run it from a python script
               @success = false
               @retry = false
               @io = StringIO.new
@@ -45,13 +43,12 @@ module Actions
               cmd = "echo \"#{deployment.cfme_root_password}\" | passwd --stdin #{ssh_user}"
               client.execute(cmd, @io)
 
-              Rails.logger.info "================ Leaving UpdateRootPassword run method ===================="
               # close the stringio at the end
               @io.close unless @io.closed?
 
               # retry if necessary
               sleep_seconds = 20
-              if not @success and @retry
+              if not @success && @retry
                 Rails.logger.info "UpdateRootPassword will retry again once in #{sleep_seconds}."
 
                 # pause for station identification, actually pausing to give
@@ -71,9 +68,9 @@ module Actions
               fail _("Failed to update root password on appliance. Error message: #{e.message}")
               @io.close unless @io.closed?
             end
+            Rails.logger.info "================ Leaving UpdateRootPassword run method ===================="
           end
 
-          # TODO: temporarily commenting out the SSHConnection callbacks.  See above.
           def update_root_password_completed
             Rails.logger.debug "=========== completed entered ============="
             if @io.string.include? "passwd: all authentication tokens updated successfully."
