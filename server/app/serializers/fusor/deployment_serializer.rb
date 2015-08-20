@@ -13,7 +13,7 @@ module Fusor
                :rhev_gluster_ssh_port, :rhev_gluster_root_password,
                :rhev_is_self_hosted, :cfme_install_loc,
                :foreman_task_uuid, :upstream_consumer_uuid, :upstream_consumer_name,
-               :rhev_root_password, :cfme_root_password,
+               :rhev_root_password, :cfme_root_password, :cfme_admin_password,
                :host_naming_scheme, :custom_preprend_name, :enable_access_insights,
                :cfme_address,
                :rhev_engine_host_id,
