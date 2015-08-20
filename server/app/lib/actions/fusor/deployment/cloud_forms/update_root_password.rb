@@ -27,46 +27,74 @@ module Actions
 
           def run
             Rails.logger.info "================ UpdateRootPassword run method ===================="
+            begin
 
-            ssh_user = "root"
-            ssh_password = "smartvm"
+              ssh_user = "root"
+              ssh_password = "smartvm"
 
-            deployment = ::Fusor::Deployment.find(input[:deployment_id])
+              deployment = ::Fusor::Deployment.find(input[:deployment_id])
 
-            # TODO: observing issues with running the appliance console using SSHConnection; therefore, temporarily
-            # commenting out and using the approach above which will run it from a python script
-            @success = false
-            @io = StringIO.new
-            client = Utils::Fusor::SSHConnection.new(input[:vm_ip], ssh_user, ssh_password)
-            client.on_complete(lambda { update_root_password_completed })
-            client.on_failure(lambda { update_root_password_failed })
-            cmd = "echo \"#{deployment.cfme_root_password}\" | passwd --stdin #{ssh_user}"
-            client.execute(cmd, @io)
+              @success = false
+              @retry = false
+              @io = StringIO.new
+              client = Utils::Fusor::SSHConnection.new(input[:vm_ip], ssh_user, ssh_password)
+              client.on_complete(lambda { update_root_password_completed })
+              client.on_failure(lambda { update_root_password_failed })
+              cmd = "echo \"#{deployment.cfme_root_password}\" | passwd --stdin #{ssh_user}"
+              client.execute(cmd, @io)
 
+              # close the stringio at the end
+              @io.close unless @io.closed?
+
+              # retry if necessary
+              sleep_seconds = 20
+              if not @success && @retry
+                Rails.logger.info "UpdateRootPassword will retry again once in #{sleep_seconds}."
+
+                # pause for station identification, actually pausing to give
+                # cfme time to start ssh or whatever caused the original timeout
+                # to be ready for use
+                sleep sleep_seconds
+
+                @io = StringIO.new
+                client.execute(cmd, @io)
+                if not @success
+                    # if retry didn't work, we're done
+                    fail _("Failed to update root password on appliance, after a retry. Error message: #{@io.string}")
+                end
+                @io.close unless @io.closed?
+              end
+            rescue Exception => e
+              fail _("Failed to update root password on appliance. Error message: #{e.message}")
+              @io.close unless @io.closed?
+            end
             Rails.logger.info "================ Leaving UpdateRootPassword run method ===================="
           end
 
-          # TODO: temporarily commenting out the SSHConnection callbacks.  See above.
           def update_root_password_completed
-            Rails.logger.warn "XXX the appliance console successfully ran on the node"
+            Rails.logger.debug "=========== completed entered ============="
             if @io.string.include? "passwd: all authentication tokens updated successfully."
               @success = true
-              Rails.logger.info @io.string
+              @retry = false
+              Rails.logger.info "Password updated successfully. #{@io.string}"
             else
               @success = false
-              Rails.logger.error @io.string
+              Rails.logger.error "Password was not updated. Error: #{@io.string}"
             end
-            @io.close unless @io.closed?
+            Rails.logger.debug "=========== completed exited ============="
           end
 
           def update_root_password_failed
-            @io.close unless @io.closed?
+            Rails.logger.debug "=========== failed entered ============="
             if not @success
-                # SSH connection assumes if something is written to stderr it's a
-                # problem. We only care about that if we actually failed.
-                Rails.logger.error @io.string
-                fail _("Failed to update root password on appliance")
+              if @io.string.include? "execution expired"
+                @retry = true
+              end
+              # SSH connection assumes if something is written to stderr it's a
+              # problem. We only care about that if we actually failed.
+              Rails.logger.error "Probable error. Will we retry? #{@retry}. Error message: #{@io.string}"
             end
+            Rails.logger.debug "=========== failed exited ============="
           end
         end
       end

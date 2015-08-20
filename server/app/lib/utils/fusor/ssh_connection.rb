@@ -109,9 +109,9 @@ module Utils
         rescue Exception => e
           puts e.message
           puts e.backtrace.inspect
+          stringio_write(stringio, e.message)
           call_failure
           call_complete
-          stringio_write(stringio, e.message)
           e.message if stringio.nil?
         end
       end
