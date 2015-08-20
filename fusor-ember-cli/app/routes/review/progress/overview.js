@@ -3,12 +3,11 @@ import Ember from 'ember';
 export default Ember.Route.extend({
   model: function () {
       var deployment = this.modelFor('deployment');
-      var deployTaskPromise = this.store.find('foreman-task', deployment.get('foreman_task_uuid'));
+      var deployTaskPromise = this.store.find('foreman-task', {search: "id = " + deployment.get('foreman_task_uuid')});
       var subtasksOfDeployPromise = this.store.find('foreman-task', {search: "parent_task_id = " + deployment.get('foreman_task_uuid')});
       var self = this;
-
       return Ember.RSVP.Promise.all([deployTaskPromise, subtasksOfDeployPromise]).then(function(results) {
-        var deployTask = results[0];
+        var deployTask = results[0].get('firstObject');
         var subtasksOfDeploy = results[1];
         var manageContentTask = subtasksOfDeploy.findBy('humanized_name', 'Manage Content');
         var rhevTask          = subtasksOfDeploy.findBy('humanized_name', 'Deploy Red Hat Enterprise Virtualization');
@@ -26,6 +25,10 @@ export default Ember.Route.extend({
 
   setupController: function(controller, model) {
     controller.set('model', model);
+    controller.set('deployTask', model.deployTask);
+    controller.set('manageContentTask', model.manageContentTask);
+    controller.set('rhevTask', model.rhevTask);
+    controller.set('cfmeTask', model.cfmeTask);
     controller.stopPolling();
     controller.startPolling();
   },
