@@ -1,17 +1,15 @@
 <br />
 
-{{progress-bar model=model.manageContentTask name=nameSatellite isSatelliteProgressBar=true}}
+{{progress-bar model=manageContentTask name=nameSatellite isSatelliteProgressBar=true}}
 
 {{#if isRhev}}
-  {{progress-bar model=model.rhevTask name=nameRhev isSatelliteProgressBar=false}}
+  {{progress-bar model=rhevTask name=nameRhev isSatelliteProgressBar=false}}
 {{/if}}
 
 {{#if isOpenStack}}
-  {{!progress-bar model=model.openstackTask name=nameOpenStack isSatelliteProgressBar=false}}
+  {{!progress-bar model=openstackTask name=nameOpenStack isSatelliteProgressBar=false}}
 {{/if}}
 
 {{#if isCloudForms}}
-  {{progress-bar model=model.cfmeTask name=nameCloudForms isSatelliteProgressBar=false}}
+  {{progress-bar model=cfmeTask name=nameCloudForms isSatelliteProgressBar=false}}
 {{/if}}
-
-{{!model.deployTask.progress}}
