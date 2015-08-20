@@ -16,18 +16,17 @@ require 'openssl'
 module Utils
   module CloudForms
     class Provider
-      def self.add(cfme_ip, provider_params)
+      def self.add(cfme_ip, provider_params, deployment)
         Rails.logger.debug "Adding the RHEV provider at #{provider_params[:ip]} to the CloudForms VM at #{cfme_ip}"
 
         agent = Mechanize.new
         agent.verify_mode = OpenSSL::SSL::VERIFY_NONE
         agent.open_timeout = 180
 
-        # 2015/07/23 jesusr - change this to use cfme_admin_password instead of
-        # smartvm once we have the entry in the UI.
+        # 20150825 jesusr - use cfme_admin_password from deployment
         logged_in_page = agent.post("https://#{cfme_ip}/dashboard/authenticate?button=login",
                                     { "user_name" => "admin",
-                                      "user_password" => "smartvm" })
+                                      "user_password" => deployment.cfme_admin_password })
 
         # The referer is VERY IMPORTANT in manageIQ
         # If 'agent.page.uri' is removed in below request it will not function
