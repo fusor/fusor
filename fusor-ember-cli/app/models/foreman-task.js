@@ -1,7 +1,6 @@
 import DS from 'ember-data';
 
 export default DS.Model.extend({
-  type: DS.attr('string'),
   label: DS.attr('string'),
   pending: DS.attr('boolean'),
   humanized_name: DS.attr('string'),
@@ -12,7 +11,6 @@ export default DS.Model.extend({
   result: DS.attr('string'),
   external_id: DS.attr('string'),
   progress: DS.attr('string'),
-  parent_task_id: DS.attr('string'),
   humanized_errors: DS.attr('string'),
   humanized_output: DS.attr('string'),
   humanized_input: DS.attr('string'),
