@@ -48,8 +48,17 @@ module Actions
               Rails.logger.info "================ Leaving UpdateRootPassword run method ===================="
               # close the stringio at the end
               @io.close unless @io.closed?
+
+              # retry if necessary
+              sleep_seconds = 20
               if not @success and @retry
-                Rails.logger.info "UpdateRootPassword will retry again once."
+                Rails.logger.info "UpdateRootPassword will retry again once in #{sleep_seconds}."
+
+                # pause for station identification, actually pausing to give
+                # cfme time to start ssh or whatever caused the original timeout
+                # to be ready for use
+                sleep sleep_seconds
+
                 @io = StringIO.new
                 client.execute(cmd, @io)
                 if not @success
