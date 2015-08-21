@@ -4,146 +4,132 @@ export default Ember.Component.extend({
   assignMenuOpenClass: '',
 
   profile: null,
-  nodeProfiles: null,
+  plan: null,
+  nodes: [],
+
+  getParamValue: function(paramName, params) {
+    var paramValue = null;
+    var numParams = params.get('length');
+    for (var i=0; i<numParams; i++) {
+      var param = params.objectAt(i);
+      if (param.get('id') === paramName) {
+        paramValue = param.get('value');
+        break;
+      }
+    }
+    return paramValue;
+  },
 
   assignedRoles: function() {
-    var roles = [];
+    var assignedRoles = [];
     var profile = this.get('profile');
-    var me = this;
+    var params = this.get('plan.parameters');
+    var self = this;
+    this.get('plan.roles').forEach(function(role) {
+      if ( self.getParamValue(role.get('flavorParameterName'), params) === profile.get('name') ) {
+        assignedRoles.pushObject(role);
+      }
+    });
+    return assignedRoles;
+  }.property('profile', 'plan', 'plan.roles', 'plan.parameters'),
 
-    var Role = Ember.Object.extend({
-      roleType: '',
-      roleLabel: '',
-      profile: profile,
-      isDraggingObject: false,
-      watchForDrag: function() {
-
-        if (this.get('isDraggingObject')) {
-          me.sendAction("startDrag", this);
+  unassignedRoles: function() {
+    var unassignedRoles = [];
+    var assignedRoles = this.get('assignedRoles');
+    this.get('plan.roles').forEach(function(role) {
+      var unassignedRole = true;
+      for (var i=0; i<assignedRoles.length; i++) {
+        if ( role.get('name') === assignedRoles[i].get('name') ) {
+          unassignedRole = false;
+          break;
         }
-        else {
-          me.sendAction("stopDrag", this);
-        }
-      }.observes('isDraggingObject')
-    });
-
-    if (profile.get('isControl')) {
-      roles.pushObject(Role.create({
-        roleType: 'controller',
-        roleLabel: 'Controller'
-      }));
-    }
-    if (profile.get('isCompute')) {
-      roles.pushObject(Role.create({
-        roleType: 'compute',
-        roleLabel: 'Compute'
-      }));
-    }
-    if (profile.get('isBlockStorage')) {
-      roles.pushObject(Role.create({
-        roleType: 'block',
-        roleLabel: 'Block Storage'
-      }));
-    }
-    if (profile.get('isObjectStorage')) {
-      roles.pushObject(Role.create({
-        roleType: 'object',
-        roleLabel: 'Object Storage'
-      }));
-    }
-    return roles;
-  }.property('profile.isCompute', 'profile.isControl', 'profile.isBlockStorage', 'profile.isObjectStorage'),
-
-  controllerAssigned: function() {
-    var profiles = this.get('nodeProfiles');
-    if (!profiles) {
-      return false;
-    }
-    var retVal = false;
-    profiles.forEach(function(item, index) {
-      if (item.get('isControl')) {
-        retVal = true;
+      }
+      if ( unassignedRole ) {
+        unassignedRoles.pushObject(role);
       }
     });
-    return retVal;
-  }.property('nodeProfiles','nodeProfiles.@each.isControl'),
+    return unassignedRoles;
+  }.property('assignedRoles', 'plan', 'plan.roles'),
 
-  computeAssigned: function() {
-    var profiles = this.get('nodeProfiles');
-    if (!profiles) {
-      return false;
-    }
-    var retVal = false;
-    profiles.forEach(function(item, index) {
-      if (item.get('isCompute')) {
-        retVal = true;
-      }
-    });
-    return retVal;
-  }.property('nodeProfiles.@each.isCompute'),
+  allRolesAssigned: function() {
+    return (this.get('unassignedRoles').length === 0);
+  }.property('unassignedRoles'),
 
-  blockAssigned: function() {
-    var profiles = this.get('nodeProfiles');
-    if (!profiles) {
-      return false;
-    }
-    var retVal = false;
-    profiles.forEach(function(item, index) {
-      if (item.get('isBlockStorage')) {
-        retVal = true;
-      }
-    });
-    return retVal;
-  }.property('nodeProfiles.@each.isBlockStorage'),
+  /* jshint ignore:start */
+  nodeMatchesProfile: function(node, profile) {
+    var nodeMemory = node.get('properties.memory_mb');
+    var nodeCPUs = node.get('properties.cpus');
+    var nodeDisk = node.get('properties.local_gb');
+    var nodeCPUArch = node.get('properties.cpu_arch');
+    var profileMemory = profile.get('ram');
+    var profileCPUs = profile.get('vcpus');
+    var profileDisk = profile.get('disk');
+    var profileCPUArch = profile.get('extra_specs.cpu_arch');
+    return (nodeMemory == profileMemory &&
+      nodeCPUs == profileCPUs &&
+      nodeDisk == profileDisk &&
+      nodeCPUArch == profileCPUArch);
+  },
+  /* jshint ignore:end */
 
-  objectAssigned: function() {
-    var profiles = this.get('nodeProfiles');
-    if (!profiles) {
-      return false;
-    }
-    var retVal = false;
-    profiles.forEach(function(item, index) {
-      if (item.get('isObjectStorage')) {
-        retVal = true;
-      }
-    });
-    return retVal;
-  }.property('nodeProfiles.@each.isObjectStorage'),
-
-  freeNodes: function() {
+  matchingNodeCount: function() {
+    var nodeCount = 0;
     var profile = this.get('profile');
-    return profile.get('totalNodes') - profile.get('controllerNodes') - profile.get('computeNodes') - profile.get('blockNodes') - profile.get('objectNodes');
-  }.property('profile.totalNodes', 'profile.controllerNodes', 'profile.computeNodes', 'profile.blockNodes', 'profile.objectNodes'),
-
-  allAssigned: function() {
-    return this.get('controllerAssigned') && this.get('computeAssigned') && this.get('blockAssigned') && this.get('objectAssigned');
-  }.property('controllerAssigned', 'computeAssigned', 'blockAssigned', 'objectAssigned'),
+    var self = this;
+    this.get('nodes').forEach(function(node) {
+      if (self.nodeMatchesProfile(node,profile)) {
+        nodeCount++;
+      }
+    });
+    return nodeCount;
+  }.property('profile', 'nodes'),
 
   hideAssignMenu: function() {
     this.set('assignMenuOpenClass', '');
   },
 
+  assignClass: function() {
+    if (this.doAssign) {
+      return "";
+    }
+    else {
+      return "nodes-coalescing";
+    }
+  }.property('doAssign'),
+
   actions: {
-    showAssignMenu: function(profile) {
-      if (this.get('freeNodes') > 0) {
+    showAssignMenu: function() {
+      if (this.get('unassignedRoles').length > 0) {
         this.set('assignMenuOpenClass', 'open');
       }
     },
-    assignRole: function(roleType) {
-      this.set('assignMenuOpenClass', '');
-      this.sendAction('assignRole', this.get('profile'), roleType);
+
+    assignRole: function(role) {
+      var profile = this.get('profile');
+      var plan = this.get('plan');
+      this.sendAction('assignRole', plan, role, profile);
     },
+
     assignDroppedRole: function(role) {
       role.set('isDraggingObject', false);
-      if (role.profile !== this.get('profile')) {
-        if (role.profile) {
-          this.sendAction('removeRole', role.profile, role.roleType);
-        }
-        this.sendAction('assignRole', this.get('profile'), role.roleType);
+      var profile = this.get('profile');
+      var plan = this.get('plan');
+      if ( this.getParamValue(role.get('flavorParameterName'), plan.get('parameters')) !== profile.get('name') )
+      {
+        this.sendAction('assignRole', plan, role, profile);
       }
     },
-    removeRole: function(roleType) {
-      this.sendAction('removeRole', this.get('profile'), roleType);
+    editRole: function(role) {
+      this.sendAction('editRole', role);
+    },
+
+    setRoleCount: function(role, count) {
+      this.sendAction('setRoleCount', role, count);
+    },
+
+    removeRole: function(role) {
+      var profile = this.get('profile');
+      this.sendAction('removeRole', profile, role);
     }
   },
   didInsertElement: function() {

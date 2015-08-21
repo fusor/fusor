@@ -15,6 +15,7 @@ rhev:
   organization: empty_organization
   lifecycle_environment: library
   upstream_consumer_uuid: 1
+  organization_id: 1
 
 another_rhev:
   rhev_root_password: redhat1234
@@ -31,6 +32,7 @@ another_rhev:
   organization: empty_organization
   lifecycle_environment: library
   upstream_consumer_uuid: 1
+  organization_id: 1
 
 rhev_and_cfme:
   rhev_root_password: redhat1234
@@ -49,3 +51,4 @@ rhev_and_cfme:
   cfme_install_loc: RHEV
   lifecycle_environment: library
   upstream_consumer_uuid: 1
+  organization_id: 1

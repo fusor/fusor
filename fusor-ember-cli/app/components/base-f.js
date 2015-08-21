@@ -11,8 +11,12 @@ export default Ember.Component.extend({
   }.property(),
 
   showUnits: function() {
-    return Ember.isBlank(this.get('unitsLabel'));
+    return !Ember.isBlank(this.get('unitsLabel'));
   }.property('unitsLabel'),
+
+  showHelpPopover: function() {
+    return !Ember.isBlank(this.get('helpText'));
+  }.property('showHelpIndicator'),
 
   unitsClassSize: function () {
     return this.getWithDefault('unitsSize', 'col-md-2');

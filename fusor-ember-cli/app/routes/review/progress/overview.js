@@ -17,7 +17,10 @@ export default Ember.Route.extend({
            deployTask: deployTask,
            manageContentTask: manageContentTask,
            rhevTask: rhevTask,
-           cfmeTask: cfmeTask
+           cfmeTask: cfmeTask,
+           openstackDeployment: this.store.find('openstack-deployment', 'overcloud'),
+           openstackPlan: this.store.find('deployment-plan', 'overcloud'),
+           openstackNodes: this.store.find('node')
         });
 
       });

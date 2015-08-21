@@ -1,29 +1,34 @@
 <div class="row">
-    <div class="col-md-12">
-        <h2>Available Deployment Roles</h2>
+    <div class="col-md-12" style="float: left;">
+        <p >
+            <h2 style="vertical-align: bottom;display:inline-block;">Available Deployment Roles</h2>
+            <a class="edit-global-config" {{action "editGlobalServiceConfig"}}> Edit Global Configuration</a>
+        </p>
         {{#draggable-object-target action="unassignRole"}}
-            <ul class="deployment-roles deployment-roles-unassigned deployment-roles-assignable {{droppableClass}}">
-              {{#each role in availableRoles}}
+            <div class="row col-md-12 deployment-roles deployment-roles-unassigned deployment-roles-assignable {{droppableClass}}">
+              {{#each role in unassignedRoles}}
                 {{#draggable-object content=role}}
-                  {{deployment-role role-type=role.roleType role-label=role.roleLabel role-assigned=false edit="editRole"}}
+                  {{deployment-role role=role edit="editRole"}}
                 {{/draggable-object}}
               {{/each}}
-              {{#unless noneAssigned}}
-                {{#draggable-object content=role}}
-                  {{deployment-role role-type='hidden' role-assigned=false}}
-                {{/draggable-object}}
-              {{/unless}}
-            </ul>
+              {{#if allRolesAssigned}}
+                  <span class="deployment-roles-all-assigned">All deployment roles have been assigned.</span>
+              {{/if}}
+            </div>
         {{/draggable-object-target}}
     </div><!-- /col -->
 </div><!-- /row -->
 <div class="row">
     <div class="col-md-12">
         <h2>Node Profiles</h2>
-        {{#each profile in nodeProfiles}}
+        {{#each profile in profiles}}
             <div class="row">
                 <div class='col-md-7'>
-                  {{node-profile profile=profile nodeProfiles=nodeProfiles doAssign=true assignRole="assignRole" startDrag="startDrag" stopDrag="stopDrag" edit="editRole" removeRole="removeRole"}}
+                  {{#if nodes}}
+                    {{node-profile profile=profile nodes=nodes plan=model.plan doAssign=true assignRole="assignRole" unassignRole="unassignRole" editRole="editRole" setRoleCount="setRoleCount"  removeRole="removeRole"}}
+                 {{else}}
+                    {{node-profile profile=profile plan=model.plan doAssign=true assignRole="assignRole" unassignRole="unassignRole" editRole="editRole" setRoleCount="setRoleCount"  removeRole="removeRole"}}
+                 {{/if}}
                 </div>
             </div>
         {{/each}}
@@ -35,16 +40,16 @@
 
 <br />
 <div class="row">
-    <div class='col-md-9'>
+    <div class="col-md-12 rhci-steps-buttons">
         <div class='pull-right'>
           {{#link-to 'register-nodes' class='btn btn-default'}}
               Back
           {{/link-to}}
-            <button {{action 'saveDeployment' nextStepRouteName}}
-                    disabled={{disableAssignNodesNext}}
-                    class='btn btn-primary'>
-                Next
-            </button>
+          {{#link-to nextStepRouteName class='btn btn-primary' disabled=disableAssignNodesNext}}Next{{/link-to}}
         </div>
     </div>
 </div>
+
+{{partial 'edit-deployment-role'}}
+{{partial 'edit-global-service-config'}}
+{{loading-spinner show=showLoadingSpinner text=loadingSpinnerText}}

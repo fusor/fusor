@@ -4,41 +4,83 @@ import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
 export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   needs: ['deployment', 'register-nodes'],
-  register: Ember.computed.alias("controllers.register-nodes"),
 
-  availableRoles: function() {
-    var roles = [];
-    if (!this.get('controllerAssigned')) {
-      roles.pushObject(Ember.Object.create({
-        roleType: 'controller',
-        roleLabel: 'Controller'
-      }));
+  getParamValue: function(paramName, params) {
+    var paramValue = null;
+    var numParams = params.get('length');
+    for (var i=0; i<numParams; i++) {
+      var param = params.objectAt(i);
+      if (param.get('id') === paramName) {
+        paramValue = param.get('value');
+        break;
+      }
     }
-    if (!this.get('computeAssigned')) {
-      roles.pushObject(Ember.Object.create({
-        roleType: 'compute',
-        roleLabel: 'Compute'
-      }));
-    }
-    if (!this.get('blockAssigned')) {
-      roles.pushObject(Ember.Object.create({
-        roleType: 'block',
-        roleLabel: 'Block Storage'
-      }));
-    }
-    if (!this.get('objectAssigned')) {
-      roles.pushObject(Ember.Object.create({
-        roleType: 'object',
-        roleLabel: 'Object Storage'
-      }));
-    }
-    return roles;
-  }.property('controllerAssigned', 'computeAssigned', 'blockAssigned', 'objectAssigned'),
+    return paramValue;
+  },
 
-  isDraggingRole: false,
+  images: function() {
+    return this.get('model.images');
+  }.property('model.images'),
+
+  unassignedRoles: function() {
+    var unassignedRoles = [];
+    var params = this.get('model.plan.parameters');
+    var self = this;
+    this.get('model.plan.roles').forEach(function(role) {
+      if ( self.getParamValue(role.get('flavorParameterName'), params) == null ) {
+        unassignedRoles.pushObject(role);
+      }
+    });
+    return unassignedRoles;
+  }.property('model.plan.roles', 'model.plan.parameters'),
+
+  allRolesAssigned: function() {
+    return (this.get('unassignedRoles').length === 0);
+  }.property('unassignedRoles'),
+
+  noRolesAssigned: function() {
+    return (this.get('unassignedRoles').length === this.get('model.plan.roles').length);
+  }.property('unassignedRoles'),
+
+  profiles: function() {
+    return this.get('model.profiles');
+  }.property('model.profiles', 'model.profiles.length'),
+
+  numProfiles: function() {
+    var profiles = this.get('model.profiles');
+    return profiles.length;
+  }.property('model.profiles', 'model.profiles.length'),
+
+  nodes: function() {
+    return this.get('model.nodes');
+  }.property('model.nodes'),
+
+  nodeCount: function() {
+    return this.get('model.nodes').length;
+  }.property('model.nodes'),
+
+  assignedNodeCount: function() {
+    var count = 0;
+    var params = this.get('model.plan.parameters');
+    var self = this;
+    this.get('model.plan.roles').forEach(function(role) {
+      count += parseInt(self.getParamValue(role.get('countParameterName'), params), 10);
+    });
+    return count;
+  }.property('model.plan.roles', 'model.plan.parameters'),
+
+  isDraggingRole: function() {
+    var isDragging = false;
+    this.get('model.plan.roles').forEach(function (role) {
+          if (role.get('isDraggingObject') === true) {
+            isDragging = true;
+          }
+    });
+    return isDragging;
+  }.property('model.plan.roles', 'model.plan.roles.@each.isDraggingObject'),
 
   droppableClass: function() {
-    if (this.isDraggingRole) {
+    if (this.get('isDraggingRole')) {
       return 'deployment-roles-active';
     }
     else {
@@ -46,143 +88,308 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     }
   }.property('isDraggingRole'),
 
-  controllerAssigned: function() {
-    var profiles = this.get('nodeProfiles');
-    if (!profiles) {
-      return false;
+  showLoadingSpinner: false,
+  loadingSpinnerText: "Loading...",
+
+  doAssignRole: function(plan, role, profile) {
+    var data;
+    var me = this;
+
+    if (profile == null ) {
+      var unassignedRoles = this.get('unassignedRoles');
+      if (unassignedRoles.contains(role)) {
+        // Role is already unassigned, do nothing
+        return;
+      }
+      data = { 'role_name': role.get('name'), 'flavor_name': null };
+    } else {
+      data = { 'role_name': role.get('name'), 'flavor_name': profile.get('name') };
     }
-    var retVal = false;
-    profiles.forEach(function(item) {
-      if (item.get('isControl')) {
-        retVal = true;
+
+    me.set('loadingSpinnerText', "Loading...");
+    me.set('showLoadingSpinner', true);
+
+    Ember.$.ajax({
+      url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_role_flavor',
+      type: 'PUT',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: function() {
+        me.set('showLoadingSpinner', false);
+        console.log('SUCCESS');
+      },
+      error: function(error) {
+        console.log('ERROR');
+        console.log(error);
+        // TODO: Remove the reload call once we determine how to get around the failure
+        //       that appears to be due to port forwarding. But make sure to leave the show spinner setting.
+        me.get('model').plan.reload().then(function() {
+          me.set('showLoadingSpinner', false);
+        });
       }
     });
-    return retVal;
-  }.property('nodeProfiles','nodeProfiles.@each.isControl'),
+  },
 
-  computeAssigned: function() {
-    var profiles = this.get('nodeProfiles');
-    if (!profiles) {
-      return false;
+  edittedRole: null,
+  edittedRoleImage: null,
+  edittedRoleNodeCount: null,
+  edittedRoleProfile: null,
+  edittedRoleParameters: null,
+  showSettings: true,
+
+  openEditDialog: function() {
+    this.set('editRoleModalOpened', true);
+    this.set('editRoleModalClosed', false);
+  },
+
+  closeEditDialog: function() {
+    this.set('editRoleModalOpened', false);
+    this.set('editRoleModalClosed', true);
+  },
+
+  openGlobalServiceConfigDialog: function() {
+    this.set('editGlobalServiceConfigModalOpened', true);
+    this.set('editGlobalServiceConfigModalClosed', false);
+  },
+
+  closeGlobalServiceConfigDialog: function() {
+    this.set('editGlobalServiceConfigModalOpened', false);
+    this.set('editGlobalServiceConfigModalClosed', true);
+  },
+
+  settingsTabActiveClass: function() {
+    if (this.get('showSettings')) {
+      return "active";
     }
-    var retVal = false;
-    profiles.forEach(function(item) {
-      if (item.get('isCompute')) {
-        retVal = true;
-      }
-    });
-    return retVal;
-  }.property('nodeProfiles.@each.isCompute'),
-
-  blockAssigned: function() {
-    var profiles = this.get('nodeProfiles');
-    if (!profiles) {
-      return false;
+    else {
+      return "inactive";
     }
-    var retVal = false;
-    profiles.forEach(function(item) {
-      if (item.get('isBlockStorage')) {
-        retVal = true;
-      }
-    });
-    return retVal;
-  }.property('nodeProfiles.@each.isBlockStorage'),
+  }.property('showSettings'),
 
-  objectAssigned: function() {
-    var profiles = this.get('nodeProfiles');
-    if (!profiles) {
-      return false;
+  configTabActiveClass: function() {
+    if (this.get('showSettings')) {
+      return "inactive";
     }
-    var retVal = false;
-    profiles.forEach(function(item) {
-      if (item.get('isObjectStorage')) {
-        retVal = true;
-      }
-    });
-    return retVal;
-  }.property('nodeProfiles.@each.isObjectStorage'),
-
-  allAssigned: function() {
-    return this.get('controllerAssigned') && this.get('computeAssigned') && this.get('blockAssigned') && this.get('objectAssigned');
-  }.property('controllerAssigned','computeAssigned', 'blockAssigned', 'objectAssigned'),
-
-  noneAssigned: function() {
-    return !this.get('controllerAssigned') && !this.get('computeAssigned') && !this.get('blockAssigned') && !this.get('objectAssigned');
-  }.property('controllerAssigned','computeAssigned', 'blockAssigned', 'objectAssigned'),
-
-  nodeProfiles:function() {
-    return this.get('register').get('model.nodeProfiles');
-  }.property('register.model.nodeProfiles', 'register.model.nodeProfiles.length'),
-
-  numProfiles: function() {
-    var profiles = this.get('register.model.nodeProfiles');
-    return profiles.length;
-  }.property('model.nodeProfiles', 'model.nodeProfiles.length'),
-
-  removeRoleFromProfile: function(profile, roleType) {
-    if (roleType === 'controller') {
-      profile.set('controllerNodes', 0);
+    else {
+      return "active";
     }
-    else if (roleType === 'compute') {
-      profile.set('computeNodes', 0);
-    }
-    else if (roleType === 'block') {
-      profile.set('blockNodes', 0);
-    }
-    else if (roleType === 'object') {
-      profile.set('objectNodes', 0);
-    }
+  }.property('showSettings'),
+
+  handleOutsideClick: function(e) {
+    // do nothing, this overrides the closing of the dialog when clicked outside of it
   },
 
   actions: {
-    editRole: function(roleType) {
+    editRole: function(role) {
+      this.set('showRoleSettings', 'active');
+      this.set('showRoleConfig',   'inactive');
+      var roleParams = [];
+      var advancedParams = [];
+      this.get('model.plan.parameters').forEach(function(param) {
+        var paramId = param.get('id');
+        if (paramId.indexOf(role.get('parameterPrefix')) === 0) {
+          param.displayId = paramId.substring(role.get('parameterPrefix').length);
+          param.displayId = param.displayId.replace(/([a-z])([A-Z])/g, '$1 $2');
+
+/* Using boolean breaks saving...
+          if (param.get('parameter_type') === 'boolean') {
+            param.set('isBoolean', true);
+          }
+*/
+          if (param.get('hidden')) {
+            param.set('inputType', 'password');
+          }
+          else {
+            param.set('inputType', param.get('parameter_type'));
+          }
+
+          if ((paramId === role.get('imageParameterName')) ||
+              (paramId === role.get('countParameterName')) ||
+              (paramId === role.get('flavorParameterName'))) {
+            roleParams.pushObject(param);
+          }
+          else if (param.get('parameter_type') !== 'json') {
+            advancedParams.pushObject(param);
+          }
+        }
+      });
+
+      this.set('edittedRole', role);
+      this.set('edittedRoleImage', this.getParamValue(role.get('imageParameterName'), roleParams));
+      this.set('edittedRoleNodeCount', this.getParamValue(role.get('countParameterName'), roleParams));
+      this.set('edittedRoleProfile', this.getParamValue(role.get('flavorParameterName'), roleParams));
+      this.set('edittedRoleParameters', advancedParams);
+
+      this.openEditDialog();
     },
 
-    assignRole: function(profile, roleType) {
-      if (roleType === 'controller') {
-        profile.set('controllerNodes', 1);
-      }
-      else if (roleType === 'compute') {
-        profile.set('computeNodes', 1);
-      }
-      else if (roleType === 'block') {
-        profile.set('blockNodes', 1);
-      }
-      else if (roleType === 'object') {
-        profile.set('objectNodes', 1);
-      }
+    saveRole: function() {
+      var me = this;
+      var plan = this.get('model.plan');
+      var role = this.get('edittedRole');
+
+      var params = [
+        {'name': role.get('imageParameterName'), 'value': this.get('edittedRoleImage')},
+        {'name': role.get('countParameterName'), 'value': this.get('edittedRoleNodeCount')},
+        {'name': role.get('flavorParameterName'), 'value': this.get('edittedRoleProfile')}
+      ];
+
+      this.get('edittedRoleParameters').forEach(function(param) {
+        params.push({'name': param.get('id'), 'value': param.get('value')});
+      });
+
+      me.set('loadingSpinnerText', "Saving...");
+      me.set('showLoadingSpinner', true);
+      Ember.$.ajax({
+        url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_parameters',
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({ 'parameters': params }),
+        success: function() {
+          console.log('SUCCESS');
+          me.get('model').plan.reload().then(function() {
+            me.set('showLoadingSpinner', false);
+          });
+        },
+        error: function(error) {
+          console.log('ERROR');
+          console.log(error);
+          me.set('showLoadingSpinner', false);
+        }
+      });
+
+      this.closeEditDialog();
     },
 
-    removeRole: function(profile, roleType) {
-      this.removeRoleFromProfile(profile, roleType);
+    setRoleCount: function(role, count) {
+      var me = this;
+      var plan = this.get('model.plan');
+      var data = { 'role_name': role.get('name'), 'count': count };
+
+      me.set('loadingSpinnerText', "Saving...");
+      me.set('showLoadingSpinner', true);
+
+      Ember.$.ajax({
+        url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_role_count',
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function() {
+          console.log('SUCCESS');
+          me.get('model').plan.reload().then(function() {
+            me.set('showLoadingSpinner', false);
+          });
+        },
+        error: function(error) {
+          console.log('ERROR');
+          console.log(error);
+          me.set('showLoadingSpinner', false);
+        }
+      });
+    },
+
+    cancelEditRole: function() {
+      this.closeEditDialog();
+    },
+
+    assignRoleType: function(profile, roleType) {
+      var role = this.getRoleByType(roleType);
+      this.doAssignRole(profile, role);
+    },
+
+    assignRole: function(plan, role, profile) {
+      this.doAssignRole(plan, role, profile);
+    },
+
+    removeRole: function(profile, role) {
+      var plan = this.get('model.plan');
+      this.doAssignRole(plan, role, null);
     },
 
     unassignRole: function(role) {
-      role.set('isDraggingObject', false);
-      this.removeRoleFromProfile(role.profile, role.roleType);
+      var plan = this.get('model.plan');
+      this.doAssignRole(plan, role, null);
     },
 
-    startDrag:function() {
-      this.set('isDraggingRole', true);
+    showRoleSettings: 'active',
+    showRoleConfig:   'inactive',
+
+    doShowSettings: function() {
+      this.set('showRoleSettings', 'active');
+      this.set('showRoleConfig',   'inactive');
     },
 
-    stopDrag:function() {
-      this.set('isDraggingRole', false);
+    doShowConfig: function() {
+      this.set('showRoleSettings', 'inactive');
+      this.set('showRoleConfig',   'active');
+    },
+
+    editGlobalServiceConfig: function() {
+      var planParams = [];
+      this.get('model.plan.parameters').forEach(function(param) {
+        if (param.get('id').indexOf('::') === -1) {
+          param.displayId = param.get('id').replace(/([a-z])([A-Z])/g, '$1 $2');
+/* Using boolean breaks saving...
+          if (param.get('parameter_type') === 'boolean') {
+            param.set('isBoolean', true);
+          }
+*/
+          if (param.get('hidden')) {
+            param.set('inputType', 'password');
+          }
+          else {
+            param.set('inputType', param.get('parameter_type'));
+          }
+          if (param.get('parameter_type') !== 'json') {
+            planParams.pushObject(param);
+          }
+        }
+      });
+      this.set('edittedPlanParameters', planParams);
+
+      this.openGlobalServiceConfigDialog();
+    },
+
+    saveGlobalServiceConfig: function() {
+      var me = this;
+      var plan = this.get('model.plan');
+
+      var params = [];
+      this.get('edittedPlanParameters').forEach(function(param) {
+        params.push({'name': param.get('id'), 'value': param.get('value')});
+      });
+
+      me.set('loadingSpinnerText', "Saving...");
+      me.set('showLoadingSpinner', true);
+      Ember.$.ajax({
+        url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_parameters',
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({ 'parameters': params }),
+        success: function() {
+          console.log('SUCCESS');
+          me.set('showLoadingSpinner', false);
+        },
+        error: function(error) {
+          console.log('ERROR');
+          console.log(error);
+          me.set('showLoadingSpinner', false);
+        }
+      });
+
+      this.closeGlobalServiceConfigDialog();
+    },
+
+    cancelGlobalServiceConfig: function() {
+      this.closeGlobalServiceConfigDialog();
     }
   },
 
   disableAssignNodesNext: function() {
-    var freeNodeCount = 0;
-    var profiles = this.get('nodeProfiles');
-    if (profiles) {
-      for (var i = 0; i < profiles.length; i++ ) {
-        freeNodeCount += profiles[i].freeNodes;
-      }
-    }
-    return (freeNodeCount < 4);
-  }.property('nodeProfiles'),
+    return false;
+  }.property('profiles'),
 
   nextStepRouteName: function() {
-    return ('');
-  }.property('step2RoutName', 'step3RouteName')
+    return ('review');
+  }.property('step2RouteName', 'step3RouteName')
 });

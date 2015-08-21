@@ -1,22 +1,33 @@
-<li class="role role-{{role-type}} {{assignedClass}}">
-    <div class="deployment-role-label">
-        {{roleLabel}}
+{{#if readOnly}}
+  {{#if hasAssignedNodes}}
+    <div style="padding-left: 15px;">
+      {{roleNodeCount}} {{role.name}}
+      {{#if multipleAssignedNodes}}Nodes{{else}}Node{{/if}}
     </div>
-    {{#if role-assigned}}
-        <select class="selectpicker"  {{action "assignNodes" this on="change"}}>
-            {{#each option in availableOptions}}
-                {{#if option.selected}}
-                    <option selected>{{option.label}}</option>
-                {{else}}
-                    <option >{{option.label}}</option>
-                {{/if}}
-            {{/each}}
-        </select>
+  {{/if}}
+{{else}}
+    <li class="role role-{{role.roleType}} {{assignedClass}}">
+    <div class="deployment-role-label">
+        {{role.name}}
+    </div>
+    {{#if roleAssigned}}
+         <select class="selectpicker"  {{action "updateNodeCount" this on="change"}}>
+             {{#each option in availableOptions}}
+                 {{#if option.selected}}
+                     <option selected>{{option.label}}</option>
+                 {{else}}
+                     <option >{{option.label}}</option>
+                 {{/if}}
+             {{/each}}
+          </select>
     {{/if}}
-    <a class="role-option delete">
-        <i class="fa fa-times" {{action "removeRole" role-type}}></i>
-    </a>
-    <a class="role-option edit" >
-        <i class="fa fa-pencil" {{action "editRole" role-type}}></i>
-    </a>
+    {{#unless readOnly}}
+      <a class="role-option delete">
+          <i class="fa fa-times" {{action "removeRole"}}></i>
+      </a>
+      <a class="role-option edit" >
+          <i class="fa fa-pencil" {{action "editRole"}}></i>
+      </a>
+    {{/unless}}
 </li>
+{{/if}}
