@@ -196,6 +196,7 @@ module Actions
                     # necessary because the puppet parameter needs to store it in clear text and
                     # the hostgroup stores it using one-time encryption.
                     { :name => "root_password", :value => root_password(deployment, product_type) },
+                    { :name => "dc_name", :value => deployment.rhev_database_name },
                     { :name => "cluster_name", :value => deployment.rhev_cluster_name },
                     { :name => "storage_name", :value => deployment.rhev_storage_name },
                     { :name => "storage_address", :value => deployment.rhev_storage_address },
