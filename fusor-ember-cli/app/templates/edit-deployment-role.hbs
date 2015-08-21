@@ -1,0 +1,76 @@
+{{#em-modal configName="bs" id="editDeploymentRoleModal" closeIfClickedOutside=handleOutsideClick open-if=editRoleModalOpened close-if=editRoleModalClosed in-async=async}}
+
+    {{#em-modal-title}}
+        {{#em-modal-toggler class="close"}}
+            <span aria-hidden="true" {{action "cancelEditRole"}}>×</span><span class="sr-only">Close</span>
+        {{/em-modal-toggler}}
+        <h4 class="modal-title">Edit Deployment Role - {{edittedRole.name}}</h4>
+    {{/em-modal-title}}
+
+    {{#em-modal-body}}
+        {{#if async}}
+            Submitting, please wait...
+        {{else}}
+            <ul class="nav nav-tabs nav-tabs-pf" role="tablist">
+                <li role="presentation" class={{settingsTabActiveClass}}>
+                    <a aria-controls="overall-settings" role="tab" data-toggle="tab" {{action "doShowSettings"}}>Overall Settings</a>
+                </li>
+                <li role="presentation" class={{configTabActiveClass}}>
+                    <a  aria-controls="service-configuration" role="tab" data-toggle="tab" {{action "doShowConfig"}}>Service Configuration</a>
+                </li>
+            </ul>
+            <div class="tab-content" style="margin-top: 30px;">
+                <div role="tabpanel" class="tab-pane deployment-role-settings-content {{showRoleSettings}}" id="overall-settings">
+                    <div class="form-horizontal">
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4 ">Name</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" type="text" value={{edittedRole.name}} readOnly="true">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4 ">Description</label>
+                                <div class="col-sm-8">
+                                    <textarea class="form-control" type="text" value={{edittedRole.description}} readOnly="true"></textarea>
+                                </div>
+                            </div>
+                            {{select-f label="Provisioning Image" labelSize='col-sm-4' inputSize='col-sm-8' content=images value=edittedRoleImage isRequired=false optionLabelPath="content.name" optionValuePath="content.name"}}
+                            {{select-f label="Node Profile" labelSize='col-sm-4' inputSize='col-sm-8' content=profiles value=edittedRoleProfile  isRequired=false optionLabelPath="content.name" optionValuePath="content.name"}}
+                            {{text-f label="Number of Nodes" type='number' labelSize='col-sm-4' inputSize='col-sm-8' value=edittedRoleNodeCount isRequired=false}}
+                        </fieldset>
+                    </div>
+                </div>
+                <div role="tabpanel" class="tab-pane deployment-role-settings-content {{showRoleConfig}}" id="service-configuration">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-horizontal">
+                                <fieldset>
+                                    <div class="required">
+                                        {{#each roleParameter in edittedRoleParameters}}
+                                            {{#if roleParameter.isBoolean}}
+                                              {{check-f label=roleParameter.displayId checked=roleParameter.value labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
+                                            {{else}}
+                                              {{#if rolerParameter.isPassword}}
+                                                {{text-f label=roleParameter.displayId value=roleParameter.value type='password' labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
+                                              {{else}}
+                                                {{text-f label=roleParameter.displayId value=roleParameter.value type=roleParameter.inputType labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
+                                              {{/if}}
+                                            {{/if}}
+                                        {{/each}}
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/if}}
+    {{/em-modal-body}}
+
+    {{#em-modal-footer}}
+        <button type="cancel" class="btn btn-default" {{bind-attr disabled=async}} {{action "cancelEditRole"}}>Cancel</button>
+        <button type="submit" class="btn btn-primary" {{bind-attr disabled=async}} {{action "saveRole"}}>Save</button>
+    {{/em-modal-footer}}
+    {{base-popover selector='popover'}}
+{{/em-modal}}

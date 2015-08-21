@@ -1,6 +1,8 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
-  needs: ['deployment'],
-  stepNumberOpenstack: Ember.computed.alias("controllers.deployment.stepNumberOpenstack")
+  needs: ['undercloud-deploy'],
+  stepNumberOpenstack: Ember.computed.alias("controllers.undercloud-deploy.stepNumberOpenstack"),
+  disableTabRegisterNodes: Ember.computed.alias("controllers.undercloud-deploy.disableTabRegisterNodes"),
+  disableTabAssignNodes: Ember.computed.alias("controllers.undercloud-deploy.disableTabAssignNodes")
 });

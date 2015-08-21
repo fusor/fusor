@@ -9,6 +9,75 @@
   white-space:nowrap;
 }
 
+.advanced-settings-group {
+  margin-bottom: 20px;
+}
+.advanced-settings-default > .advanced-settings-heading {
+  color: #333333;
+}
+.advanced-settings-default > .advanced-settings-heading + .advanced-settings-collapse > .advanced-settings-body {
+  border-top-color: #dddddd;
+}
+.advanced-settings-title {
+  font-weight: 700;
+}
+.advanced-settings-group .panel {
+  color: #4d5258;
+}
+.advanced-settings-group .panel + .panel {
+  margin-top: -1px;
+}
+.advanced-settings-group .advanced-settings-default {
+}
+.advanced-settings-group .advanced-settings-heading {
+}
+.advanced-settings-group .advanced-settings-heading + .advanced-settings-collapse .advanced-settings-body {
+}
+.advanced-settings-group .advanced-settings-title {
+  font-weight: 500;
+  line-height: 1;
+}
+.advanced-settings-group .advanced-settings-title > a {
+  font-weight: 600;
+}
+.advanced-settings-group .advanced-settings-title > a:before {
+  content: "\f107";
+  font-family: "FontAwesome";
+  font-size: 12px;
+  margin-right: 5px;
+  vertical-align: 0;
+}
+.advanced-settings-group .advanced-settings-title > a:focus {
+  outline: none;
+  text-decoration: none;
+}
+.advanced-settings-group .advanced-settings-title > a:hover {
+  text-decoration: none;
+}
+.advanced-settings-group .advanced-settings-title > a.collapsed:before {
+  content: "\f105";
+  margin-left: 4px;
+  margin-right: 7px;
+}
+
+.deploy-undercloud-param-label {
+  width: 165px;
+  float: left;
+}
+.deploy-undercloud-param-input {
+  width: 100px;
+  float: left;
+  margin-left: 20px;
+}
+.deploy-undercloud-param-range {
+  width: 320px;
+  float: left;
+  margin-left: 20px;
+}
+.deploy-undercloud-param-range-input {
+  width: 100px;
+  float: left;
+}
 .deployment-roles {
   float: left;
   font-weight: 600;
@@ -22,6 +91,8 @@
   padding-left: 12px;
   padding-top: 10px;
   display: inline-block;
+  min-width: 660px;
+  min-height: 60px;
 }
 .deployment-roles.deployment-roles-unassigned.deployment-roles-active {
   border-color: #7b7b7b;
@@ -41,17 +112,16 @@
   text-align: center;
 }
 .deployment-roles li:before {
-  background-image: linear-gradient(to bottom, #bbbbbb 60%, #ffffff 0%);
   background-position: left;
   background-repeat: repeat-y;
-  background-size: 2px 5px;
+  background-size: 3px 6px;
   border: 4px solid #bbbbbb;
   bottom: 1px;
   content: '';
   left: 1px;
   position: absolute;
   top: 1px;
-  width: 10px;
+  width: 9px;
 }
 .deployment-roles .menu-item li:before {
   background-image: none;
@@ -97,48 +167,64 @@
 .deployment-roles li.role-assigned .role-option:hover {
   color: #e6e6e6;
 }
-.deployment-roles .role-block {
-  border-color: #409d35;
-}
-.deployment-roles li.role-block:before {
-  background-image: linear-gradient(to bottom, #409d35 60%, #ffffff 0%);
-  border-color: #409d35;
-}
-.deployment-roles li.role-block.role-assigned {
-  background: #92d400;
-}
+
 .deployment-roles .role-compute {
-  border-color: #ea7a23;
+  border-color: #f0ab00;
 }
 .deployment-roles li.role-compute:before {
-  background-image: linear-gradient(to bottom, #ea7a23 60%, #ffffff 0%);
-  border-color: #ea7a23;
+  background-image: linear-gradient(to bottom, #f0ab00 60%, #ffffff 0%);
+  border-color: #f0ab00;
 }
 .deployment-roles li.role-compute.role-assigned {
-  background: #f3a928;
+  background: #f5c12e;
 }
+
 .deployment-roles .role-controller {
-  border-color: #0d6f9a;
+  border-color: #582fc0;
 }
 .deployment-roles .role-controller:before {
-  background-image: linear-gradient(to bottom, #0d6f9a 60%, #ffffff 0%);
-  border-color: #0d6f9a;
+  background-image: linear-gradient(to bottom, #582fc0 60%, #ffffff 0%);
+  border-color: #582fc0;
 }
 .deployment-roles .role-controller.role-assigned {
-  background: #1ba9df;
+  background: #8461f7;
 }
-.deployment-roles .role-object {
-  border-color: #a2030d;
+
+.deployment-roles .role-swift {
+  border-color: #ec7a08;
 }
+.deployment-roles li.role-swift:before {
+  background-image: linear-gradient(to bottom, #ec7a08 60%, #ffffff 0%);
+  border-color: #ec7a08;
+}
+.deployment-roles li.role-swift.role-assigned {
+  background: #f39d3c;
+}
+
+.deployment-roles .role-ceph {
+  border-color: #007a87;
+}
+.deployment-roles li.role-ceph:before {
+  background-image: linear-gradient(to bottom, #007a87 60%, #ffffff 0%);
+  border-color: #007a87;
+}
+.deployment-roles li.role-ceph.role-assigned {
+  background: #3a9ca6;
+}
+
+.deployment-roles .role-cinder {
+  border-color: #6ca100;
+}
+.deployment-roles li.role-cinder:before {
+  background-image: linear-gradient(to bottom, #6ca100 60%, #ffffff 0%);
+  border-color: #6ca100;
+}
+.deployment-roles li.role-cinder.role-assigned {
+  background: #92d400;
+}
+
 .deployment-roles .role-hidden {
   visibility: hidden;
-}
-.deployment-roles li.role-object:before {
-  background-image: linear-gradient(to bottom, #a2030d 60%, #ffffff 0%);
-  border-color: #a2030d;
-}
-.deployment-roles li.role-object.role-assigned {
-  background: #ec4853;
 }
 .deployment-roles li.role-target {
   border-style: dashed;
@@ -202,17 +288,47 @@
   padding: 0;
   display: block;
 }
+.deployment-roles-all-assigned {
+  color: #999999;
+  font-style: italic;
+  padding-left: 20px;
+}
+
 .roles-menu-item {
   background: #ffffff;
-  border: 2px solid #bbbbbb;
+  border: 3px solid #bbbbbb;
   border-radius: 1px;
   float: left;
-  margin: 0 10px 10px 10px;
+  margin: 5px 10px;
   min-width: 150px;
   padding: 6px 20px;
   position: relative;
   text-align: center;
 }
+
+.edit-global-config {
+  line-height: 38px;
+  padding-left: 15px;
+}
+
+.modal-button-bar {
+  border-top: 1px solid #d1d1d1;
+}
+
+.deployment-role-settings-content {
+  height: 400px;
+  margin-bottom: -20px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.global-config-settings-content {
+  height: 510px;
+  margin-bottom: -20px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 .nav-node-registration {
   float: right;
   margin: 0 0 -1px;

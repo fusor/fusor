@@ -34,10 +34,10 @@
     </div>
 {{else}}
   <div class="row">
-    <div class='col-md-5'>
+    <div class='col-md-7'>
     {{#if noRegisteredNodes}}
       <p>
-        Currently, there are no registered nodes available. You must have at least ??? nodes in order to continue
+        Currently, there are no registered nodes available. You must have at least 3 nodes in order to continue
         this deployment. Use the Register Nodes button below to begin the registration process.
       </p>
     {{else}}
@@ -51,11 +51,6 @@
 
 <div class="row">
     <div class='col-md-5'>
-      {{#if registrationInProgress}}
-        {{#em-modal-toggler modal-id="newOrganizationModal" class="btn btn-default"  style="margin-right:10px;"}}
-            Cancel
-        {{/em-modal-toggler}}
-      {{/if}}
       <button class="btn btn-primary" {{action "showNodeRegistrationModal"}}>
           Register Nodes
       </button>
@@ -69,10 +64,14 @@
       </div>
   </div>
 
-  {{#each profile in model.nodeProfiles}}
+  {{#each profile in model.profiles}}
       <div class="row">
           <div class='col-md-7'>
-            {{node-profile profile=profile stepNumberOpenstack=stepNumberOpenstack}}
+            {{#if model.nodes}}
+              {{node-profile profile=profile nodes=model.nodes stepNumberOpenstack=stepNumberOpenstack}}
+            {{else}}
+              {{node-profile profile=profile stepNumberOpenstack=stepNumberOpenstack}}
+            {{/if}}
           </div>
       </div>
   {{/each}}
@@ -80,9 +79,9 @@
 
 <br />
 <div class="row">
-    <div class='col-md-9'>
+    <div class="col-md-12 rhci-steps-buttons">
         <div class='pull-right'>
-          {{#link-to satelliteTabRouteName class='btn btn-default'}}
+          {{#link-to 'undercloud-deploy' class='btn btn-default'}}
               Back
           {{/link-to}}
           {{#link-to 'assign-nodes' class='btn btn-primary' disabled=disableRegisterNodesNext}}Next{{/link-to}}
@@ -91,3 +90,4 @@
 </div>
 
 {{partial 'new-node-registration'}}
+
