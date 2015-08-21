@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
-  needs: ['deployment', 'review/installation'],
+  needs: ['deployment'],
 
   isRhev: Ember.computed.alias('controllers.deployment.isRhev'),
   isOpenStack: Ember.computed.alias('controllers.deployment.isOpenStack'),
@@ -27,7 +27,7 @@ export default Ember.Controller.extend({
   }.property('selectedRhevEngine'),
 
   cfmeUrl: function() {
-    return ('https://' + this.get('controllers.deployment.model.cfme_address'));
-  }.property('controllers.deployment.model.cfme_address')
+    return ('https://' + this.get('model.cfme_address'));
+  }.property('model.cfme_address')
 
 });
