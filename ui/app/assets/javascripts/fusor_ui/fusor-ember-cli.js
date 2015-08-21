@@ -3063,7 +3063,7 @@ define('fusor-ember-cli/controllers/review/summary', ['exports', 'ember'], funct
 
   exports['default'] = Ember['default'].Controller.extend({
 
-    needs: ['deployment', 'review/installation'],
+    needs: ['deployment'],
 
     isRhev: Ember['default'].computed.alias('controllers.deployment.isRhev'),
     isOpenStack: Ember['default'].computed.alias('controllers.deployment.isOpenStack'),
@@ -3088,8 +3088,8 @@ define('fusor-ember-cli/controllers/review/summary', ['exports', 'ember'], funct
     }).property('selectedRhevEngine'),
 
     cfmeUrl: (function () {
-      return 'https://' + this.get('controllers.deployment.model.cfme_address');
-    }).property('controllers.deployment.model.cfme_address')
+      return 'https://' + this.get('model.cfme_address');
+    }).property('model.cfme_address')
 
   });
 
@@ -6150,8 +6150,10 @@ define('fusor-ember-cli/routes/review/summary', ['exports', 'ember'], function (
   exports['default'] = Ember['default'].Route.extend({
 
     model: function model() {
-      var deployment = this.modelFor('deployment');
-      return this.store.find('foreman-task', deployment.get('foreman_task_uuid'));
+      var deployment_id = this.modelFor('deployment').get('id');
+      return this.store.find('deployment', { search: 'id = ' + deployment_id }).then(function (results) {
+        return results.get('firstObject');
+      });
     }
 
   });
@@ -35732,7 +35734,7 @@ define('fusor-ember-cli/tests/routes/review/installation.jshint', function () {
 
   module('JSHint - routes/review');
   test('routes/review/installation.js should pass jshint', function() { 
-    ok(false, 'routes/review/installation.js should pass jshint.\nroutes/review/installation.js: line 17, col 7, Missing semicolon.\n\n1 error'); 
+    ok(true, 'routes/review/installation.js should pass jshint.'); 
   });
 
 });
@@ -39736,13 +39738,13 @@ define('fusor-ember-cli/tests/unit/serializers/pool-test.jshint', function () {
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.abc65713"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.e91168c9"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.abc65713"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.e91168c9"});
 }
 
 /* jshint ignore:end */
