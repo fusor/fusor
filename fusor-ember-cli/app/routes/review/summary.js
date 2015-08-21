@@ -3,8 +3,10 @@ import Ember from 'ember';
 export default Ember.Route.extend({
 
   model: function() {
-    var deployment = this.modelFor('deployment');
-    return this.store.find('foreman-task', deployment.get('foreman_task_uuid'));
+    var deployment_id = this.modelFor('deployment').get('id');
+    return this.store.find('deployment', {search: "id = " + deployment_id}).then(function(results) {
+        return results.get('firstObject');
+    });
   }
 
 });

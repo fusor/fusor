@@ -14,7 +14,7 @@ export default Ember.Route.extend({
         var hypervisorDomain = results.filterBy('name', 'RHEV-Hypervisor').get('firstObject').get('domain.name');
         controller.set('engineDomain', engineDomain);
         controller.set('hypervisorDomain', hypervisorDomain);
-    })
+    });
   }
 
 });
