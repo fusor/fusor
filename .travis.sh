@@ -36,6 +36,8 @@ if [ $1 == "install" ]; then
   echo "gem 'dynflow'" >> bundler.d/local.rb
   echo "gem 'less-rails'" >> bundler.d/local.rb
   echo "gem 'logger'" >> bundler.d/local.rb
+  echo "gem 'egon'" >> bundler.d/local.rb
+  echo "gem 'net-ssh'" >> bundler.d/local.rb
   bundle install
 
   # hacky, find a better way to do this...
