@@ -21,10 +21,10 @@
       <span class='disabled'>Gluster</span>
     {{/radio-button}}
   {{/base-f}}
-
   {{#if isNFS}}
-      {{text-f label="Data Domain Name" value=rhev_storage_name isRequired=true cssId='rhev_storage_name' disabled=controllers.deployment.isStarted}}
-      {{text-f label="Storage Address" value=rhev_storage_address isRequired=true cssId='rhev_storage_address' disabled=controllers.deployment.isStarted}}
+      {{text-f label="Data Domain Name" value=rhev_storage_name isRequired=true cssId='rhev_storage_name' disabled=controllers.deployment.isStarted isAlphaNumeric=true}}
+      {{text-f label="Storage Address" value=rhev_storage_address isRequired=true cssId='rhev_storage_address' disabled=controllers.deployment.isStarted
+      isHostname=true}}
       {{text-f label="Share Path" value=rhev_share_path isRequired=true cssId='rhev_share_path' disabled=controllers.deployment.isStarted errors=errorsHashSharePath}}
 
   {{else if isLocal}}
@@ -44,8 +44,8 @@
 
   <form class="form form-horizontal">
 
-    {{text-f label="Export Domain Name" value=rhev_export_domain_name cssId='rhev_export_domain_name' isRequired=true disabled=controllers.deployment.isStarted}}
-    {{text-f label="Storage Address" value=rhev_export_domain_address cssId='rhev_export_domain_address' isRequired=true disabled=controllers.deployment.isStarted}}
+    {{text-f label="Export Domain Name" value=rhev_export_domain_name cssId='rhev_export_domain_name' isRequired=true disabled=controllers.deployment.isStarted isAlphaNumeric=true}}
+    {{text-f label="Storage Address" value=rhev_export_domain_address cssId='rhev_export_domain_address' isRequired=true disabled=controllers.deployment.isStarted isHostname=true}}
     {{text-f label="Share Path" value=rhev_export_domain_path cssId='rhev_export_domain_path' isRequired=true disabled=controllers.deployment.isStarted errors=errorsHashExportPath}}
 
   </form>

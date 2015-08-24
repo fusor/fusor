@@ -43,13 +43,30 @@ export default Ember.Controller.extend({
        }
   ],
 
+  invalidIsAlphaNumericRhevDatabase: function() {
+      var rx = new RegExp(/^[A-Za-z0-9_-]+$/);
+      if (Ember.isPresent(this.get('rhev_database_name'))) {
+          return !(this.get('rhev_database_name').match(rx));
+      }
+  }.property('rhev_database_name'),
+
+  invalidIsAlphaNumericRhevCluster: function() {
+      var rx = new RegExp(/^[A-Za-z0-9_-]+$/);
+      if (Ember.isPresent(this.get('rhev_cluster_name'))) {
+          return !(this.get('rhev_cluster_name').match(rx));
+      }
+  }.property('rhev_cluster_name'),
+
   disableNextRhevOptions: function() {
     return (Ember.isBlank(this.get('rhev_root_password')) ||
             Ember.isBlank(this.get('rhev_engine_admin_password')) ||
             this.get('rhev_root_password.length') < 8 ||
-            this.get('rhev_engine_admin_password.length') < 8
+            this.get('rhev_engine_admin_password.length') < 8 ||
+            this.get('invalidIsAlphaNumericRhevDatabase') ||
+            this.get('invalidIsAlphaNumericRhevCluster')
            );
-  }.property('rhev_root_password', 'rhev_engine_admin_password'),
+  }.property('rhev_root_password', 'rhev_engine_admin_password',
+             'invalidIsAlphaNumericRhevDatabase', 'invalidIsAlphaNumericRhevCluster'),
 
   validRhevOptions: Ember.computed.not('disableNextRhevOptions')
 
