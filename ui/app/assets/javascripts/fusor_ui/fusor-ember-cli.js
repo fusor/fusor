@@ -10,7 +10,7 @@ define('fusor-ember-cli/adapters/application', ['exports', 'ember-data', 'ember'
     exports['default'] = DS['default'].ActiveModelAdapter.extend({
         namespace: 'api/v21',
         headers: {
-            'X-CSRF-Token': token
+            "X-CSRF-Token": token
         }
     });
 
@@ -23,7 +23,7 @@ define('fusor-ember-cli/adapters/deployment', ['exports', 'ember-data', 'ember']
     exports['default'] = DS['default'].ActiveModelAdapter.extend({
         namespace: 'fusor/api/v21',
         headers: {
-            'X-CSRF-Token': token
+            "X-CSRF-Token": token
         }
     });
 
@@ -62,7 +62,7 @@ define('fusor-ember-cli/adapters/foreman-task', ['exports', 'ember-data', 'ember
     exports['default'] = DS['default'].ActiveModelAdapter.extend({
         namespace: 'api/v21',
         headers: {
-            'X-CSRF-Token': token
+            "X-CSRF-Token": token
         }
     });
 
@@ -134,7 +134,7 @@ define('fusor-ember-cli/adapters/subscription', ['exports', 'ember-data', 'ember
     exports['default'] = DS['default'].ActiveModelAdapter.extend({
         namespace: 'fusor/api/v21',
         headers: {
-            'X-CSRF-Token': token
+            "X-CSRF-Token": token
         }
 
     });
@@ -348,86 +348,18 @@ define('fusor-ember-cli/components/deployment-role', ['exports', 'ember'], funct
   });
 
 });
-define('fusor-ember-cli/components/draggable-object-target', ['exports', 'ember', 'ember-drag-drop/mixins/droppable', 'fusor-ember-cli/helpers/log'], function (exports, Ember, Droppable, log) {
+define('fusor-ember-cli/components/draggable-object-target', ['exports', 'ember-drag-drop/components/draggable-object-target'], function (exports, DraggableObjectTarget) {
 
-  'use strict';
+	'use strict';
 
-  exports['default'] = Ember['default'].Component.extend(Droppable['default'], {
-    classNames: ['draggable-object-target'],
-
-    handlePayload: function handlePayload(payload) {
-      log['default']('in handlePayload');
-      var obj = this.get('coordinator').getObject(payload, { target: this });
-      this.sendAction('action', obj, { target: this });
-      //throw obj.get("rating");
-      // obj.set('rating','good');
-      // if (obj.save) {
-      //   obj.save();
-      // }
-    },
-
-    handleDrop: function handleDrop(event) {
-      var dataTransfer = event.dataTransfer;
-      var payload = dataTransfer.getData('Text');
-      this.handlePayload(payload);
-    },
-
-    acceptDrop: function acceptDrop(event) {
-      this.handleDrop(event);
-    },
-
-    actions: {
-      acceptForDrop: function acceptForDrop() {
-        var hashId = this.get('coordinator.clickedId');
-        this.handlePayload(hashId);
-      }
-    }
-  });
+	exports['default'] = DraggableObjectTarget['default'];
 
 });
-define('fusor-ember-cli/components/draggable-object', ['exports', 'ember', 'fusor-ember-cli/helpers/log'], function (exports, Ember, log) {
+define('fusor-ember-cli/components/draggable-object', ['exports', 'ember-drag-drop/components/draggable-object'], function (exports, DraggableObject) {
 
-  'use strict';
+	'use strict';
 
-  exports['default'] = Ember['default'].Component.extend({
-    tagName: 'div',
-    classNames: ['draggable-object'],
-    classNameBindings: ['isDraggingObject'],
-    attributeBindings: ['draggable'],
-
-    draggable: (function () {
-      return 'true';
-    }).property(),
-
-    handleDragStart: (function (event) {
-      log['default']('handleDragStart');
-
-      var dataTransfer = event.dataTransfer;
-
-      var obj = this.get('content');
-      var id = this.get('coordinator').setObject(obj, { source: this });
-
-      dataTransfer.setData('Text', id);
-
-      obj.set('isDraggingObject', true);
-      this.set('isDraggingObject', true);
-    }).on('dragStart'),
-
-    handleDragEnd: (function () {
-      log['default']('handleDragEnd');
-      this.set('content.isDraggingObject', false);
-      this.set('isDraggingObject', false);
-    }).on('dragEnd'),
-
-    actions: {
-      selectForDrag: function selectForDrag() {
-        log['default']('selectForDrag');
-        var obj = this.get('content');
-        var hashId = this.get('coordinator').setObject(obj, { source: this });
-        this.get('coordinator').set('clickedId', hashId);
-      }
-    }
-  });
+	exports['default'] = DraggableObject['default'];
 
 });
 define('fusor-ember-cli/components/em-button', ['exports', 'ember-idx-button/button'], function (exports, ButtonComponent) {
@@ -619,12 +551,12 @@ define('fusor-ember-cli/components/hypervisor-name', ['exports', 'ember'], funct
 
     namePlusDomain: (function () {
       if (this.get("host.is_discovered")) {
-        return this.get("host.name") + "." + this.get("hypervisorDomain");
+        return this.get("host.name") + "." + this.get('hypervisorDomain');
       } else {
         // name is fqdn for managed host
         return this.get("host.name");
       }
-    }).property("host", "hypervisorDomain")
+    }).property('host', 'hypervisorDomain')
 
   });
 
@@ -666,9 +598,9 @@ define('fusor-ember-cli/components/node-profile', ['exports', 'ember'], function
         watchForDrag: (function () {
 
           if (this.get('isDraggingObject')) {
-            me.sendAction('startDrag', this);
+            me.sendAction("startDrag", this);
           } else {
-            me.sendAction('stopDrag', this);
+            me.sendAction("stopDrag", this);
           }
         }).observes('isDraggingObject')
       });
@@ -803,76 +735,11 @@ define('fusor-ember-cli/components/node-profile', ['exports', 'ember'], function
   });
 
 });
-define('fusor-ember-cli/components/object-bin', ['exports', 'ember', 'fusor-ember-cli/helpers/log'], function (exports, Ember, log) {
+define('fusor-ember-cli/components/object-bin', ['exports', 'ember-drag-drop/components/object-bin'], function (exports, ObjectBin) {
 
-  'use strict';
+	'use strict';
 
-  var YieldLocalMixin = Ember['default'].Mixin.create({
-    _yield: function _yield(context, options) {
-      var view = options.data.view;
-      var parentView = this._parentView;
-      var template = Ember['default'].get(this, 'template');
-
-      if (template) {
-        Ember['default'].assert('A Component must have a parent view in order to yield.', parentView);
-
-        view.appendChild(Ember['default'].View, {
-          isVirtual: true,
-          tagName: '',
-          _contextView: parentView,
-          template: template,
-          context: Ember['default'].get(view, 'context'),
-          controller: Ember['default'].get(view, 'controller'),
-          templateData: { keywords: {} }
-        });
-      }
-    }
-  });
-
-  var removeOne = function removeOne(arr, obj) {
-    var l = arr.get('length');
-    arr.removeObject(obj);
-    var l2 = arr.get('length');
-
-    if (l - 1 !== l2) {
-      throw 'bad length ' + l + ' ' + l2;
-    }
-  };
-
-  exports['default'] = Ember['default'].Component.extend(YieldLocalMixin, {
-    model: [],
-    classNames: ['draggable-object-bin'],
-
-    manageList: true,
-
-    handleObjectMoved: (function () {
-      log['default']('bin objectMoved');
-    }).on('objectMoved'),
-
-    actions: {
-      handleObjectDropped: function handleObjectDropped(obj) {
-        log['default']('bin handleObjectDropped');
-        log['default']('manageList ' + this.get('manageList'));
-
-        if (this.get('manageList')) {
-          log['default']('pushing object');
-          this.get('model').pushObject(obj);
-        }
-
-        this.trigger('objectDroppedInternal', obj);
-        this.sendAction('objectDropped', { obj: obj, bin: this });
-      },
-
-      handleObjectDragged: function handleObjectDragged(obj) {
-        log['default']('bin handleObjectDragged');
-        if (this.get('manageList')) {
-          removeOne(this.get('model'), obj);
-        }
-        this.trigger('objectDraggedInternal', obj);
-        this.sendAction('objectDragged');
-      }
-    }
-  });
+	exports['default'] = ObjectBin['default'];
 
 });
 define('fusor-ember-cli/components/progress-bar', ['exports', 'ember'], function (exports, Ember) {
@@ -939,22 +806,22 @@ define('fusor-ember-cli/components/progress-bar', ['exports', 'ember'], function
     progressBarMsg: (function () {
       if (this.get('isFinished')) {
         if (this.get('isSatelliteProgressBar')) {
-          return 'Sync content and setup successful';
+          return "Sync content and setup successful";
         } else {
-          return 'Deployment successful';
+          return "Deployment successful";
         }
       } else if (this.get('deploymentStatus') === 'In Process' && this.get('model.result') === 'pending') {
         if (this.get('isSatelliteProgressBar')) {
-          return 'Syncing content';
+          return "Syncing content";
         } else {
-          return 'Installing components';
+          return "Installing components";
         }
       } else if (this.get('model.result') === 'error') {
-        return 'Error';
+        return "Error";
       } else if (this.get('model.result') === 'warning') {
-        return 'Warning';
+        return "Warning";
       } else if (!this.get('isStarted')) {
-        return 'Waiting for content';
+        return "Waiting for content";
       }
     }).property('deploymentStatus', 'model.result', 'isFinished', 'isSatelliteProgressBar'),
 
@@ -982,6 +849,13 @@ define('fusor-ember-cli/components/radio-button-f', ['exports', 'ember'], functi
 	'use strict';
 
 	exports['default'] = Ember['default'].Component.extend({});
+
+});
+define('fusor-ember-cli/components/radio-button-input', ['exports', 'ember-radio-button/components/radio-button-input'], function (exports, RadioButtonInput) {
+
+	'use strict';
+
+	exports['default'] = RadioButtonInput['default'];
 
 });
 define('fusor-ember-cli/components/radio-button', ['exports', 'ember-radio-button/components/radio-button'], function (exports, RadioButton) {
@@ -1128,9 +1002,27 @@ define('fusor-ember-cli/components/text-f', ['exports', 'ember'], function (expo
       }
     }).property('value', 'isPassword', 'minChars'),
 
+    invalidIsAlphaNumeric: (function () {
+      if (this.get('isAlphaNumeric')) {
+        var validAlphaNumbericRegex = new RegExp(/^[A-Za-z0-9_-]+$/);
+        if (Ember['default'].isPresent(this.get('value'))) {
+          return !this.get('value').match(validAlphaNumbericRegex);
+        }
+      }
+    }).property('value', 'isAlphaNumeric'),
+
+    invalidIsHostname: (function () {
+      if (this.get('isHostname')) {
+        var validHostnameRegex = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$";
+        if (Ember['default'].isPresent(this.get('value'))) {
+          return !this.get('value').match(validHostnameRegex);
+        }
+      }
+    }).property('value', 'isHostname'),
+
     hasError: (function () {
-      return this.get('showValidationError') && (Ember['default'].isPresent(this.get('errors.name')) || this.get('passwordTooShort') || this.get('validIsRequiredAndBlank') || this.get('validIsUnique'));
-    }).property('showValidationError', 'errors.name', 'passwordTooShort', 'validIsRequiredAndBlank'),
+      return this.get('showValidationError') && (Ember['default'].isPresent(this.get('errors.name')) || this.get('passwordTooShort') || this.get('validIsRequiredAndBlank') || this.get('validIsUnique') || this.get('invalidIsAlphaNumeric') || this.get('invalidIsHostname'));
+    }).property('showValidationError', 'errors.name', 'passwordTooShort', 'validIsRequiredAndBlank', 'validIsUnique', 'invalidIsAlphaNumeric', 'invalidIsHostname'),
 
     setOrigValue: (function () {
       console.log('didInsertElement');
@@ -1147,7 +1039,7 @@ define('fusor-ember-cli/components/text-f', ['exports', 'ember'], function (expo
 
     actions: {
       showValidationErrors: function showValidationErrors() {
-        this.set('showValidationError', true);
+        this.set("showValidationError", true);
       }
     }
   });
@@ -1216,11 +1108,11 @@ define('fusor-ember-cli/components/tr-deployment', ['exports', 'ember'], functio
 
     routeNameForEdit: (function () {
       if (Ember['default'].isBlank(this.get('deployment.state'))) {
-        return 'deployment';
+        return "deployment";
       } else if (this.get('model.state') === '1') {
-        return 'review.summary';
+        return "review.summary";
       } else {
-        return 'review.progress.overview';
+        return "review.progress.overview";
       }
     }).property('deployment.progress'),
 
@@ -1252,7 +1144,7 @@ define('fusor-ember-cli/components/tr-engine', ['exports', 'ember', 'fusor-ember
 
     actions: {
       engineHostChanged: function engineHostChanged(host) {
-        return this.sendAction('action', host);
+        return this.sendAction("action", host);
       }
     }
 
@@ -1381,7 +1273,7 @@ define('fusor-ember-cli/components/tr-subscription', ['exports', 'ember'], funct
     classNameBindings: ['bgColor'],
 
     systemType: (function () {
-      if (this.get('subscription.type') === 'NORMAL') {
+      if (this.get('subscription.type') === "NORMAL") {
         return 'Physical';
       } else {
         return this.get('subscription.type');
@@ -1410,14 +1302,14 @@ define('fusor-ember-cli/components/tr-subscription', ['exports', 'ember'], funct
     }).property('subscription.qtyAvailable'),
 
     setDefaultQtyToAttach: (function () {
-      var contractNumber = this.get('subscription.contractNumber');
+      var contractNumber = this.get("subscription.contractNumber");
       var matchingSubscription = this.get('model').filterBy('contract_number', contractNumber).get('firstObject');
       if (Ember['default'].isPresent(matchingSubscription) && matchingSubscription.get('quantity_attached') > 0) {
         this.get('subscription').set('qtyToAttach', matchingSubscription.get('quantity_attached'));
       } else {
-        this.get('subscription').set('qtyToAttach', this.get('numSubscriptionsRequired'));
+        this.get('subscription').set('qtyToAttach', this.get("numSubscriptionsRequired"));
         if (this.get('isQtyInValid')) {
-          this.get('subscription').set('qtyToAttach', this.get('subscription.qtyAvailable'));
+          this.get('subscription').set('qtyToAttach', this.get("subscription.qtyAvailable"));
         }
       }
     }).on('didInsertElement'),
@@ -1490,8 +1382,8 @@ define('fusor-ember-cli/components/wizard-item', ['exports', 'ember'], function 
 
     attributeBindings: ['dataToggle:data-toggle', 'dataPlacement:data-placement', 'title'],
 
-    dataToggle: 'tooltip',
-    dataPlacement: 'top',
+    dataToggle: "tooltip",
+    dataPlacement: "top",
     title: (function () {
       return this.get('fullname');
     }).property('fullname'),
@@ -1562,18 +1454,18 @@ define('fusor-ember-cli/controllers/application', ['exports', 'ember'], function
     isEmberCliMode: Ember['default'].computed.not('deployAsPlugin'),
     isUpstream: false,
 
-    isContainer: Ember['default'].computed.alias('isUpstream'),
+    isContainer: Ember['default'].computed.alias("isUpstream"),
 
     isLoggedIn: true, //Ember.computed.alias("session.isAuthenticated"),
 
-    loginUsername: Ember['default'].computed.alias('session.currentUser.login'),
+    loginUsername: Ember['default'].computed.alias("session.currentUser.login"),
 
-    nameRHCI: Ember['default'].computed.alias('controllers.deployment.nameRHCI'),
-    nameRhev: Ember['default'].computed.alias('controllers.deployment.nameRhev'),
-    nameOpenStack: Ember['default'].computed.alias('controllers.deployment.nameOpenStack'),
-    nameCloudForms: Ember['default'].computed.alias('controllers.deployment.nameCloudForms'),
-    nameSatellite: Ember['default'].computed.alias('controllers.deployment.nameSatellite'),
-    logoPath: Ember['default'].computed.alias('controllers.deployment.logoPath'),
+    nameRHCI: Ember['default'].computed.alias("controllers.deployment.nameRHCI"),
+    nameRhev: Ember['default'].computed.alias("controllers.deployment.nameRhev"),
+    nameOpenStack: Ember['default'].computed.alias("controllers.deployment.nameOpenStack"),
+    nameCloudForms: Ember['default'].computed.alias("controllers.deployment.nameCloudForms"),
+    nameSatellite: Ember['default'].computed.alias("controllers.deployment.nameSatellite"),
+    logoPath: Ember['default'].computed.alias("controllers.deployment.logoPath"),
 
     actions: {
       invalidate: function invalidate() {
@@ -1595,7 +1487,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'fusor-e
   exports['default'] = Ember['default'].Controller.extend(DeploymentControllerMixin['default'], {
 
     needs: ['deployment', 'register-nodes'],
-    register: Ember['default'].computed.alias('controllers.register-nodes'),
+    register: Ember['default'].computed.alias("controllers.register-nodes"),
 
     availableRoles: (function () {
       var roles = [];
@@ -1777,17 +1669,17 @@ define('fusor-ember-cli/controllers/cloudforms', ['exports', 'ember'], function 
 
   exports['default'] = Ember['default'].Controller.extend({
     needs: ['deployment'],
-    stepNumberCloudForms: Ember['default'].computed.alias('controllers.deployment.stepNumberCloudForms'),
+    stepNumberCloudForms: Ember['default'].computed.alias("controllers.deployment.stepNumberCloudForms"),
 
     hasInstallLocation: (function () {
       return Ember['default'].isPresent(this.get('controllers.deployment.model.cfme_install_loc'));
     }).property('controllers.deployment.model.cfme_install_loc'),
-    hasNoInstallLocation: Ember['default'].computed.not('hasInstallLocation'),
+    hasNoInstallLocation: Ember['default'].computed.not("hasInstallLocation"),
 
     hasCFRootPassword: (function () {
       return Ember['default'].isPresent(this.get('controllers.deployment.model.cfme_root_password')) && this.get('controllers.deployment.model.cfme_root_password.length') > 7;
     }).property('controllers.deployment.model.cfme_root_password'),
-    hasNoCFRootPassword: Ember['default'].computed.not('hasCFRootPassword'),
+    hasNoCFRootPassword: Ember['default'].computed.not("hasCFRootPassword"),
 
     validCloudforms: (function () {
       return this.get('hasInstallLocation') && this.get('hasCFRootPassword');
@@ -1804,8 +1696,8 @@ define('fusor-ember-cli/controllers/cloudforms/cfme-configuration', ['exports', 
 
     needs: ['deployment', 'cloudforms'],
 
-    cfmeRootPassword: Ember['default'].computed.alias('controllers.deployment.model.cfme_root_password'),
-    isSubscriptions: Ember['default'].computed.alias('controllers.deployment.isSubscriptions'),
+    cfmeRootPassword: Ember['default'].computed.alias("controllers.deployment.model.cfme_root_password"),
+    isSubscriptions: Ember['default'].computed.alias("controllers.deployment.isSubscriptions"),
 
     nextRouteNameAfterCFME: (function () {
       if (this.get('isSubscriptions')) {
@@ -1825,13 +1717,13 @@ define('fusor-ember-cli/controllers/configure-environment', ['exports', 'ember',
 
     needs: ['deployment', 'application'],
 
-    satelliteTabRouteName: Ember['default'].computed.alias('controllers.deployment.model.satelliteTabRouteName'),
-    organizationTabRouteName: Ember['default'].computed.alias('controllers.deployment.model.organizationTabRouteName'),
-    isStarted: Ember['default'].computed.alias('controllers.deployment.isStarted'),
+    satelliteTabRouteName: Ember['default'].computed.alias("controllers.deployment.model.satelliteTabRouteName"),
+    organizationTabRouteName: Ember['default'].computed.alias("controllers.deployment.model.organizationTabRouteName"),
+    isStarted: Ember['default'].computed.alias("controllers.deployment.isStarted"),
 
-    selectedOrganization: Ember['default'].computed.alias('controllers.deployment.model.organization'),
+    selectedOrganization: Ember['default'].computed.alias("controllers.deployment.model.organization"),
 
-    step2RouteName: Ember['default'].computed.alias('controllers.deployment.step2RouteName'),
+    step2RouteName: Ember['default'].computed.alias("controllers.deployment.step2RouteName"),
 
     nullifyLifecycleEnvIfSelected: (function () {
       if (this.get('useDefaultOrgViewForEnv')) {
@@ -1840,11 +1732,11 @@ define('fusor-ember-cli/controllers/configure-environment', ['exports', 'ember',
       }
     }).observes('useDefaultOrgViewForEnv'),
 
-    hasLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment.hasLifecycleEnvironment'),
-    hasNoLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment.hasNoLifecycleEnvironment'),
-    disableNextOnLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment.disableNextOnLifecycleEnvironment'),
+    hasLifecycleEnvironment: Ember['default'].computed.alias("controllers.deployment.hasLifecycleEnvironment"),
+    hasNoLifecycleEnvironment: Ember['default'].computed.alias("controllers.deployment.hasNoLifecycleEnvironment"),
+    disableNextOnLifecycleEnvironment: Ember['default'].computed.alias("controllers.deployment.disableNextOnLifecycleEnvironment"),
 
-    deployment: Ember['default'].computed.alias('controllers.deployment.model'),
+    deployment: Ember['default'].computed.alias("controllers.deployment.model"),
 
     actions: {
       selectEnvironment: function selectEnvironment(environment) {
@@ -1888,13 +1780,13 @@ define('fusor-ember-cli/controllers/configure-organization', ['exports', 'ember'
 
     needs: ['deployment', 'application'],
 
-    organization: Ember['default'].computed.alias('controllers.deployment.organization'),
+    organization: Ember['default'].computed.alias("controllers.deployment.organization"),
 
-    disableNextOnConfigureOrganization: Ember['default'].computed.alias('controllers.deployment.disableNextOnConfigureOrganization'),
-    satelliteTabRouteName: Ember['default'].computed.alias('controllers.deployment.satelliteTabRouteName'),
-    lifecycleEnvironmentTabRouteName: Ember['default'].computed.alias('controllers.deployment.lifecycleEnvironmentTabRouteName'),
-    deploymentName: Ember['default'].computed.alias('controllers.deployment.name'),
-    isStarted: Ember['default'].computed.alias('controllers.deployment.isStarted'),
+    disableNextOnConfigureOrganization: Ember['default'].computed.alias("controllers.deployment.disableNextOnConfigureOrganization"),
+    satelliteTabRouteName: Ember['default'].computed.alias("controllers.deployment.satelliteTabRouteName"),
+    lifecycleEnvironmentTabRouteName: Ember['default'].computed.alias("controllers.deployment.lifecycleEnvironmentTabRouteName"),
+    deploymentName: Ember['default'].computed.alias("controllers.deployment.name"),
+    isStarted: Ember['default'].computed.alias("controllers.deployment.isStarted"),
 
     actions: {
       selectOrganization: function selectOrganization(organization) {
@@ -1913,9 +1805,9 @@ define('fusor-ember-cli/controllers/deployment-new', ['exports', 'ember', 'fusor
 
   exports['default'] = Ember['default'].Controller.extend(DeploymentControllerMixin['default'], DisableTabMixin['default'], {
 
-    needs: ["deployment-new/satellite/configure-environment", "application"],
+    needs: ['deployment-new/satellite/configure-environment', 'application'],
 
-    routeNameSatellite: "deployment-new.satellite",
+    routeNameSatellite: 'deployment-new.satellite',
 
     useDefaultOrgViewForEnv: Ember['default'].computed.alias("controllers.deployment-new/satellite/configure-environment.useDefaultOrgViewForEnv"),
 
@@ -1927,9 +1819,9 @@ define('fusor-ember-cli/controllers/deployment-new', ['exports', 'ember', 'fusor
     isDisabledReview: true,
 
     hasLifecycleEnvironment: (function () {
-      return !!this.get("lifecycle_environment.id") || this.get("useDefaultOrgViewForEnv");
-    }).property("lifecycle_environment", "useDefaultOrgViewForEnv"),
-    hasNoLifecycleEnvironment: Ember['default'].computed.not("hasLifecycleEnvironment")
+      return !!this.get('lifecycle_environment.id') || this.get('useDefaultOrgViewForEnv');
+    }).property('lifecycle_environment', 'useDefaultOrgViewForEnv'),
+    hasNoLifecycleEnvironment: Ember['default'].computed.not('hasLifecycleEnvironment')
 
   });
 
@@ -1942,13 +1834,13 @@ define('fusor-ember-cli/controllers/deployment-new/satellite', ['exports', 'embe
 
     needs: ['deployment-new'],
 
-    satelliteTabRouteName: Ember['default'].computed.alias('controllers.deployment-new.satelliteTabRouteName'),
-    organizationTabRouteName: Ember['default'].computed.alias('controllers.deployment-new.organizationTabRouteName'),
-    lifecycleEnvironmentTabRouteName: Ember['default'].computed.alias('controllers.deployment-new.lifecycleEnvironmentTabRouteName'),
+    satelliteTabRouteName: Ember['default'].computed.alias("controllers.deployment-new.satelliteTabRouteName"),
+    organizationTabRouteName: Ember['default'].computed.alias("controllers.deployment-new.organizationTabRouteName"),
+    lifecycleEnvironmentTabRouteName: Ember['default'].computed.alias("controllers.deployment-new.lifecycleEnvironmentTabRouteName"),
 
-    disableTabDeploymentName: Ember['default'].computed.alias('controllers.deployment-new.disableTabDeploymentName'),
-    disableTabConfigureOrganization: Ember['default'].computed.alias('controllers.deployment-new.disableTabConfigureOrganization'),
-    disableTabLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment-new.disableTabLifecycleEnvironment'),
+    disableTabDeploymentName: Ember['default'].computed.alias("controllers.deployment-new.disableTabDeploymentName"),
+    disableTabConfigureOrganization: Ember['default'].computed.alias("controllers.deployment-new.disableTabConfigureOrganization"),
+    disableTabLifecycleEnvironment: Ember['default'].computed.alias("controllers.deployment-new.disableTabLifecycleEnvironment"),
 
     backRouteNameOnSatIndex: 'deployment-new.start'
 
@@ -1963,11 +1855,11 @@ define('fusor-ember-cli/controllers/deployment-new/satellite/configure-environme
 
     needs: ['deployment-new', 'deployment', 'application'],
 
-    organizationTabRouteName: Ember['default'].computed.alias('controllers.deployment-new.organizationTabRouteName'),
+    organizationTabRouteName: Ember['default'].computed.alias("controllers.deployment-new.organizationTabRouteName"),
 
-    selectedOrganization: Ember['default'].computed.alias('controllers.deployment-new.organization'),
+    selectedOrganization: Ember['default'].computed.alias("controllers.deployment-new.organization"),
 
-    step2RouteName: Ember['default'].computed.alias('controllers.deployment-new.step2RouteName'),
+    step2RouteName: Ember['default'].computed.alias("controllers.deployment-new.step2RouteName"),
 
     nullifyLifecycleEnvIfSelected: (function () {
       if (this.get('useDefaultOrgViewForEnv')) {
@@ -1976,11 +1868,11 @@ define('fusor-ember-cli/controllers/deployment-new/satellite/configure-environme
       }
     }).observes('useDefaultOrgViewForEnv'),
 
-    hasLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment-new.hasLifecycleEnvironment'),
-    hasNoLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment-new.hasNoLifecycleEnvironment'),
-    disableNextOnLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment-new.disableNextOnLifecycleEnvironment'),
+    hasLifecycleEnvironment: Ember['default'].computed.alias("controllers.deployment-new.hasLifecycleEnvironment"),
+    hasNoLifecycleEnvironment: Ember['default'].computed.alias("controllers.deployment-new.hasNoLifecycleEnvironment"),
+    disableNextOnLifecycleEnvironment: Ember['default'].computed.alias("controllers.deployment-new.disableNextOnLifecycleEnvironment"),
 
-    deployment: Ember['default'].computed.alias('controllers.deployment-new'),
+    deployment: Ember['default'].computed.alias("controllers.deployment-new"),
 
     actions: {
       selectEnvironment: function selectEnvironment(environment) {
@@ -2024,12 +1916,12 @@ define('fusor-ember-cli/controllers/deployment-new/satellite/configure-organizat
 
     needs: ['deployment-new', 'deployment', 'application'],
 
-    organization: Ember['default'].computed.alias('controllers.deployment-new.model.organization'),
+    organization: Ember['default'].computed.alias("controllers.deployment-new.model.organization"),
 
-    disableNextOnConfigureOrganization: Ember['default'].computed.alias('controllers.deployment-new.disableNextOnConfigureOrganization'),
-    satelliteTabRouteName: Ember['default'].computed.alias('controllers.deployment-new.satelliteTabRouteName'),
-    lifecycleEnvironmentTabRouteName: Ember['default'].computed.alias('controllers.deployment-new.lifecycleEnvironmentTabRouteName'),
-    deploymentName: Ember['default'].computed.alias('controllers.deployment-new.model.name'),
+    disableNextOnConfigureOrganization: Ember['default'].computed.alias("controllers.deployment-new.disableNextOnConfigureOrganization"),
+    satelliteTabRouteName: Ember['default'].computed.alias("controllers.deployment-new.satelliteTabRouteName"),
+    lifecycleEnvironmentTabRouteName: Ember['default'].computed.alias("controllers.deployment-new.lifecycleEnvironmentTabRouteName"),
+    deploymentName: Ember['default'].computed.alias("controllers.deployment-new.model.name"),
 
     actions: {
       selectOrganization: function selectOrganization(organization) {
@@ -2050,19 +1942,19 @@ define('fusor-ember-cli/controllers/deployment-new/satellite/index', ['exports',
 
     needs: ['deployment-new', 'deployment-new/satellite', 'deployment', 'application'],
 
-    name: Ember['default'].computed.alias('controllers.deployment-new.name'),
-    description: Ember['default'].computed.alias('controllers.deployment-new.description'),
+    name: Ember['default'].computed.alias("controllers.deployment-new.name"),
+    description: Ember['default'].computed.alias("controllers.deployment-new.description"),
 
-    organizationTabRouteName: Ember['default'].computed.alias('controllers.deployment-new/satellite.organizationTabRouteName'),
+    organizationTabRouteName: Ember['default'].computed.alias("controllers.deployment-new/satellite.organizationTabRouteName"),
 
-    disableNextOnDeploymentName: Ember['default'].computed.alias('controllers.deployment-new.disableNextOnDeploymentName'),
+    disableNextOnDeploymentName: Ember['default'].computed.alias("controllers.deployment-new.disableNextOnDeploymentName"),
 
     idSatName: 'deployment_new_sat_name',
     idSatDesc: 'deployment_new_sat_desc',
 
     backRouteNameOnSatIndex: 'deployment-new.start',
 
-    deploymentNames: Ember['default'].computed.alias('controllers.application.deploymentNames')
+    deploymentNames: Ember['default'].computed.alias("controllers.application.deploymentNames")
 
   });
 
@@ -2075,10 +1967,10 @@ define('fusor-ember-cli/controllers/deployment-new/start', ['exports', 'ember', 
 
     needs: ['deployment-new'],
 
-    isRhev: Ember['default'].computed.alias('controllers.deployment-new.model.deploy_rhev'),
-    isOpenStack: Ember['default'].computed.alias('controllers.deployment-new.model.deploy_openstack'),
-    isCloudForms: Ember['default'].computed.alias('controllers.deployment-new.model.deploy_cfme'),
-    isSubscriptions: Ember['default'].computed.alias('controllers.deployment-new.isSubscriptions')
+    isRhev: Ember['default'].computed.alias("controllers.deployment-new.model.deploy_rhev"),
+    isOpenStack: Ember['default'].computed.alias("controllers.deployment-new.model.deploy_openstack"),
+    isCloudForms: Ember['default'].computed.alias("controllers.deployment-new.model.deploy_cfme"),
+    isSubscriptions: Ember['default'].computed.alias("controllers.deployment-new.isSubscriptions")
 
   });
 
@@ -2089,9 +1981,9 @@ define('fusor-ember-cli/controllers/deployment', ['exports', 'ember', 'fusor-emb
 
   exports['default'] = Ember['default'].Controller.extend(DeploymentControllerMixin['default'], DisableTabMixin['default'], {
 
-    needs: ["configure-environment", "deployments", "rhev", "cloudforms", "subscriptions/credentials", "subscriptions/select-subscriptions"],
+    needs: ['configure-environment', 'deployments', 'rhev', 'cloudforms', 'subscriptions/credentials', 'subscriptions/select-subscriptions'],
 
-    routeNameSatellite: "satellite",
+    routeNameSatellite: 'satellite',
 
     useDefaultOrgViewForEnv: Ember['default'].computed.alias("controllers.configure-environment.useDefaultOrgViewForEnv"),
 
@@ -2102,81 +1994,81 @@ define('fusor-ember-cli/controllers/deployment', ['exports', 'ember', 'fusor-emb
     isDisabledOpenstack: Ember['default'].computed.alias("satelliteInvalid"),
 
     isDisabledCloudForms: (function () {
-      return this.get("satelliteInvalid") || this.get("isRhev") && !this.get("controllers.rhev.validRhev");
-    }).property("satelliteInvalid", "isRhev", "controllers.rhev.validRhev"),
+      return this.get('satelliteInvalid') || this.get('isRhev') && !this.get('controllers.rhev.validRhev');
+    }).property("satelliteInvalid", 'isRhev', 'controllers.rhev.validRhev'),
 
     isDisabledSubscriptions: (function () {
-      return this.get("satelliteInvalid") || this.get("isRhev") && !this.get("controllers.rhev.validRhev") || this.get("isCloudForms") && !this.get("controllers.cloudforms.validCloudforms");
-    }).property("satelliteInvalid", "isRhev", "controllers.rhev.validRhev", "controllers.cloudforms.validCloudforms"),
+      return this.get('satelliteInvalid') || this.get('isRhev') && !this.get('controllers.rhev.validRhev') || this.get('isCloudForms') && !this.get('controllers.cloudforms.validCloudforms');
+    }).property("satelliteInvalid", 'isRhev', 'controllers.rhev.validRhev', 'controllers.cloudforms.validCloudforms'),
 
     hasSubscriptionUUID: (function () {
-      return Ember['default'].isPresent(this.get("organizationUpstreamConsumerUUID")) || Ember['default'].isPresent(this.get("model.upstream_consumer_uuid"));
-    }).property("organizationUpstreamConsumerUUID", "model.upstream_consumer_uuid"),
+      return Ember['default'].isPresent(this.get('organizationUpstreamConsumerUUID')) || Ember['default'].isPresent(this.get('model.upstream_consumer_uuid'));
+    }).property('organizationUpstreamConsumerUUID', 'model.upstream_consumer_uuid'),
 
     isDisabledReview: (function () {
-      return this.get("isDisabledSubscriptions") || !this.get("hasSubscriptionUUID") || this.get("controllers.subscriptions/select-subscriptions.disableNextOnSelectSubscriptions");
-    }).property("isDisabledSubscriptions", "hasSubscriptionUUID", "controllers.subscriptions/select-subscriptions.disableNextOnSelectSubscriptions"),
+      return this.get('isDisabledSubscriptions') || !this.get("hasSubscriptionUUID") || this.get('controllers.subscriptions/select-subscriptions.disableNextOnSelectSubscriptions');
+    }).property('isDisabledSubscriptions', 'hasSubscriptionUUID', 'controllers.subscriptions/select-subscriptions.disableNextOnSelectSubscriptions'),
 
     hasLifecycleEnvironment: (function () {
-      return !!this.get("model.lifecycle_environment.id") || this.get("useDefaultOrgViewForEnv");
-    }).property("model.lifecycle_environment", "useDefaultOrgViewForEnv"),
-    hasNoLifecycleEnvironment: Ember['default'].computed.not("hasLifecycleEnvironment"),
+      return !!this.get('model.lifecycle_environment.id') || this.get('useDefaultOrgViewForEnv');
+    }).property('model.lifecycle_environment', 'useDefaultOrgViewForEnv'),
+    hasNoLifecycleEnvironment: Ember['default'].computed.not('hasLifecycleEnvironment'),
 
-    satelliteInvalid: Ember['default'].computed.or("hasNoName", "hasNoOrganization", "hasNoLifecycleEnvironment"),
+    satelliteInvalid: Ember['default'].computed.or('hasNoName', 'hasNoOrganization', 'hasNoLifecycleEnvironment'),
 
     skipContent: false,
 
     numSubscriptionsRequired: (function () {
       var num = 0;
-      if (this.get("isRhev")) {
-        num = num + 1 + this.get("model.discovered_hosts.length"); // 1 is for engine
+      if (this.get('isRhev')) {
+        num = num + 1 + this.get('model.discovered_hosts.length'); // 1 is for engine
       }
-      if (this.get("isCloudForms")) {
+      if (this.get('isCloudForms')) {
         num = num + 1;
       }
       return num;
-    }).property("isRhev", "isOpenStack", "isCloudForms", "model.discovered_hosts.[]"),
+    }).property('isRhev', 'isOpenStack', 'isCloudForms', 'model.discovered_hosts.[]'),
 
     managementApplicationName: (function () {
-      if (Ember['default'].isPresent(this.get("model.upstream_consumer_name"))) {
-        return this.get("model.upstream_consumer_name");
+      if (Ember['default'].isPresent(this.get('model.upstream_consumer_name'))) {
+        return this.get('model.upstream_consumer_name');
       } else {
-        return this.get("controllers.subscriptions/credentials.organizationUpstreamConsumerName");
+        return this.get('controllers.subscriptions/credentials.organizationUpstreamConsumerName');
       }
-    }).property("model.upstream_consumer_name", "controllers.subscriptions/credentials.organizationUpstreamConsumerName"),
+    }).property('model.upstream_consumer_name', 'controllers.subscriptions/credentials.organizationUpstreamConsumerName'),
 
     hasEngine: (function () {
       return Ember['default'].isPresent(this.get("model.discovered_host.id"));
-    }).property("model.discovered_host.id"),
-    hasNoEngine: Ember['default'].computed.not("hasEngine"),
+    }).property('model.discovered_host.id'),
+    hasNoEngine: Ember['default'].computed.not('hasEngine'),
 
     cntHypervisors: (function () {
-      return this.get("model.discovered_hosts.length");
-    }).property("model.discovered_hosts.[]"),
+      return this.get('model.discovered_hosts.length');
+    }).property('model.discovered_hosts.[]'),
 
     hasHypervisors: (function () {
-      return this.get("cntHypervisors") > 0;
-    }).property("cntHypervisors"),
-    hasNoHypervisors: Ember['default'].computed.not("hasHypervisors"),
+      return this.get('cntHypervisors') > 0;
+    }).property('cntHypervisors'),
+    hasNoHypervisors: Ember['default'].computed.not('hasHypervisors'),
 
     isStarted: (function () {
-      return !!this.get("model.foreman_task_uuid");
-    }).property("model.foreman_task_uuid"),
-    isNotStarted: Ember['default'].computed.not("isStarted"),
+      return !!this.get('model.foreman_task_uuid');
+    }).property('model.foreman_task_uuid'),
+    isNotStarted: Ember['default'].computed.not('isStarted'),
 
     isFinished: (function () {
-      return this.get("model.progress") === "1";
-    }).property("model.progress"),
-    isNotFinished: Ember['default'].computed.not("isFinished"),
+      return this.get('model.progress') === '1';
+    }).property('model.progress'),
+    isNotFinished: Ember['default'].computed.not('isFinished'),
 
     cntSubscriptions: (function () {
-      return this.get("model.subscriptions.length");
-    }).property("model.subscriptions.[]"),
+      return this.get('model.subscriptions.length');
+    }).property('model.subscriptions.[]'),
 
     hasSubscriptions: (function () {
-      return this.get("cntSubscriptions") > 0;
-    }).property("cntSubscriptions"),
-    hasNoSubscriptions: Ember['default'].computed.not("hasSubscriptions")
+      return this.get('cntSubscriptions') > 0;
+    }).property('cntSubscriptions'),
+    hasNoSubscriptions: Ember['default'].computed.not('hasSubscriptions')
 
   });
 
@@ -2189,10 +2081,10 @@ define('fusor-ember-cli/controllers/deployment/start', ['exports', 'ember', 'fus
 
     needs: ['deployment'],
 
-    isRhev: Ember['default'].computed.alias('controllers.deployment.model.deploy_rhev'),
-    isOpenStack: Ember['default'].computed.alias('controllers.deployment.model.deploy_openstack'),
-    isCloudForms: Ember['default'].computed.alias('controllers.deployment.model.deploy_cfme'),
-    isSubscriptions: Ember['default'].computed.alias('controllers.deployment.model.isSubscriptions')
+    isRhev: Ember['default'].computed.alias("controllers.deployment.model.deploy_rhev"),
+    isOpenStack: Ember['default'].computed.alias("controllers.deployment.model.deploy_openstack"),
+    isCloudForms: Ember['default'].computed.alias("controllers.deployment.model.deploy_cfme"),
+    isSubscriptions: Ember['default'].computed.alias("controllers.deployment.model.isSubscriptions")
 
   });
 
@@ -2256,7 +2148,7 @@ define('fusor-ember-cli/controllers/engine', ['exports', 'ember'], function (exp
 
   exports['default'] = Ember['default'].Controller.extend({
     needs: ['rhev'],
-    engineTabName: Ember['default'].computed.alias('controllers.rhev.engineTabName'),
+    engineTabName: Ember['default'].computed.alias("controllers.rhev.engineTabName"),
     engineTabNameLowercase: (function () {
       return this.get('engineTabName').toLowerCase();
     }).property('engineTabName')
@@ -2271,10 +2163,10 @@ define('fusor-ember-cli/controllers/engine/discovered-host', ['exports', 'ember'
 
     needs: ['deployment', 'hypervisor/discovered-host', 'rhev'],
 
-    selectedRhevEngineHost: Ember['default'].computed.alias('model'),
-    rhevIsSelfHosted: Ember['default'].computed.alias('controllers.deployment.model.rhev_is_self_hosted'),
-    isStarted: Ember['default'].computed.alias('controllers.deployment.isStarted'),
-    isNotStarted: Ember['default'].computed.alias('controllers.deployment.isNotStarted'),
+    selectedRhevEngineHost: Ember['default'].computed.alias("model"),
+    rhevIsSelfHosted: Ember['default'].computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
+    isStarted: Ember['default'].computed.alias("controllers.deployment.isStarted"),
+    isNotStarted: Ember['default'].computed.alias("controllers.deployment.isNotStarted"),
 
     hypervisorModelIds: (function () {
       return this.get('controllers.deployment.model.discovered_hosts').getEach('id');
@@ -2362,8 +2254,8 @@ define('fusor-ember-cli/controllers/hypervisor', ['exports', 'ember'], function 
   exports['default'] = Ember['default'].Controller.extend({
     needs: ['rhev', 'deployment'],
 
-    hostNamingScheme: Ember['default'].computed.alias('controllers.deployment.model.host_naming_scheme'),
-    customPreprendName: Ember['default'].computed.alias('controllers.deployment.model.custom_preprend_name'),
+    hostNamingScheme: Ember['default'].computed.alias("controllers.deployment.model.host_naming_scheme"),
+    customPreprendName: Ember['default'].computed.alias("controllers.deployment.model.custom_preprend_name"),
 
     namingOptions: ['Freeform', 'MAC address', 'hypervisorN', 'Custom scheme'],
 
@@ -2393,16 +2285,16 @@ define('fusor-ember-cli/controllers/hypervisor/discovered-host', ['exports', 'em
   exports['default'] = Ember['default'].ArrayController.extend({
     needs: ['deployment', 'hypervisor', 'rhev'],
 
-    selectedRhevEngine: Ember['default'].computed.alias('controllers.deployment.model.discovered_host'),
-    rhevIsSelfHosted: Ember['default'].computed.alias('controllers.deployment.model.rhev_is_self_hosted'),
-    isStarted: Ember['default'].computed.alias('controllers.deployment.isStarted'),
-    isNotStarted: Ember['default'].computed.alias('controllers.deployment.isNotStarted'),
+    selectedRhevEngine: Ember['default'].computed.alias("controllers.deployment.model.discovered_host"),
+    rhevIsSelfHosted: Ember['default'].computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
+    isStarted: Ember['default'].computed.alias("controllers.deployment.isStarted"),
+    isNotStarted: Ember['default'].computed.alias("controllers.deployment.isNotStarted"),
 
-    isCustomScheme: Ember['default'].computed.alias('controllers.hypervisor.isCustomScheme'),
-    isHypervisorN: Ember['default'].computed.alias('controllers.hypervisor.isHypervisorN'),
-    customPreprendName: Ember['default'].computed.alias('controllers.hypervisor.model.custom_preprend_name'),
-    isFreeform: Ember['default'].computed.alias('controllers.hypervisor.isFreeform'),
-    isMac: Ember['default'].computed.alias('controllers.hypervisor.isMac'),
+    isCustomScheme: Ember['default'].computed.alias("controllers.hypervisor.isCustomScheme"),
+    isHypervisorN: Ember['default'].computed.alias("controllers.hypervisor.isHypervisorN"),
+    customPreprendName: Ember['default'].computed.alias("controllers.hypervisor.model.custom_preprend_name"),
+    isFreeform: Ember['default'].computed.alias("controllers.hypervisor.isFreeform"),
+    isMac: Ember['default'].computed.alias("controllers.hypervisor.isMac"),
 
     // Filter out hosts selected as Engine
     availableHosts: (function () {
@@ -2509,7 +2401,7 @@ define('fusor-ember-cli/controllers/openstack', ['exports', 'ember'], function (
 
   exports['default'] = Ember['default'].Controller.extend({
     needs: ['deployment'],
-    stepNumberOpenstack: Ember['default'].computed.alias('controllers.deployment.stepNumberOpenstack')
+    stepNumberOpenstack: Ember['default'].computed.alias("controllers.deployment.stepNumberOpenstack")
   });
 
 });
@@ -2796,10 +2688,10 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'fusor
           var randomPercent = Math.round(Math.random() * 100);
           if (randomPercent <= 5) {
             node.isError = true;
-            node.errorMessage = node.name + ' was not registered: node username/password is invalid.';
+            node.errorMessage = node.name + " was not registered: node username/password is invalid.";
           } else if (randomPercent <= 10) {
             node.isError = true;
-            node.errorMessage = node.name + ' was not registered: node IP address is invalid.';
+            node.errorMessage = node.name + " was not registered: node IP address is invalid.";
           }
 
           if (node.isError) {
@@ -2833,14 +2725,14 @@ define('fusor-ember-cli/controllers/review', ['exports', 'ember'], function (exp
 
     needs: ['subscriptions', 'application', 'deployment', 'review/progress/overview'],
 
-    isUpstream: Ember['default'].computed.alias('controllers.application.isUpstream'),
-    disableNext: Ember['default'].computed.alias('controllers.subscriptions.disableNext'),
+    isUpstream: Ember['default'].computed.alias("controllers.application.isUpstream"),
+    disableNext: Ember['default'].computed.alias("controllers.subscriptions.disableNext"),
 
-    nameSelectSubscriptions: Ember['default'].computed.alias('controllers.deployment.nameSelectSubscriptions'),
+    nameSelectSubscriptions: Ember['default'].computed.alias("controllers.deployment.nameSelectSubscriptions"),
 
-    stepNumberReview: Ember['default'].computed.alias('controllers.deployment.stepNumberReview'),
+    stepNumberReview: Ember['default'].computed.alias("controllers.deployment.stepNumberReview"),
 
-    deployTaskIsFinished: Ember['default'].computed.alias('controllers.review/progress/overview.deployTaskIsFinished'),
+    deployTaskIsFinished: Ember['default'].computed.alias("controllers.review/progress/overview.deployTaskIsFinished"),
 
     disableTabInstallation: (function () {
       return this.get('disableNext') && !this.get('isUpstream');
@@ -2850,7 +2742,7 @@ define('fusor-ember-cli/controllers/review', ['exports', 'ember'], function (exp
       return !this.get('controllers.deployment.isStarted');
     }).property('controllers.deployment.isStarted'),
 
-    disableTabSummary: Ember['default'].computed.not('deployTaskIsFinished')
+    disableTabSummary: Ember['default'].computed.not("deployTaskIsFinished")
 
   });
 
@@ -2862,7 +2754,7 @@ define('fusor-ember-cli/controllers/review/installation', ['exports', 'ember'], 
   exports['default'] = Ember['default'].Controller.extend({
     needs: ['application', 'deployment', 'satellite', 'configure-organization', 'configure-environment', 'rhev-setup', 'rhev', 'hypervisor', 'hypervisor/discovered-host', 'engine/discovered-host', 'storage', 'rhev-options', 'where-install', 'review', 'subscriptions/select-subscriptions'],
 
-    isSelfHost: Ember['default'].computed.alias('controllers.rhev.isSelfHost'),
+    isSelfHost: Ember['default'].computed.alias("controllers.rhev.isSelfHost"),
 
     rhevValidated: (function () {
       if (this.get('isRhev')) {
@@ -2895,11 +2787,11 @@ define('fusor-ember-cli/controllers/review/installation', ['exports', 'ember'], 
     showErrorMessage: false,
     errorMsg: null,
     foremanTasksURL: null,
-    skipContent: Ember['default'].computed.alias('controllers.deployment.skipContent'),
+    skipContent: Ember['default'].computed.alias("controllers.deployment.skipContent"),
 
     showSpinner: false,
     spinnerTextMessage: null,
-    hasSubscriptionsToAttach: Ember['default'].computed.alias('controllers.subscriptions/select-subscriptions.hasSubscriptionsToAttach'),
+    hasSubscriptionsToAttach: Ember['default'].computed.alias("controllers.subscriptions/select-subscriptions.hasSubscriptionsToAttach"),
 
     isRhevOpen: true,
     isOpenStackOpen: true,
@@ -2907,41 +2799,41 @@ define('fusor-ember-cli/controllers/review/installation', ['exports', 'ember'], 
     isSubscriptionsOpen: true,
 
     engineHostAddressDefault: 'ovirt-hypervisor.rhci.redhat.com',
-    hostAddress: Ember['default'].computed.alias('controllers.rhev-options.hostAddress'),
-    engineHostName: Ember['default'].computed.alias('controllers.rhev-options.engineHostName'),
+    hostAddress: Ember['default'].computed.alias("controllers.rhev-options.hostAddress"),
+    engineHostName: Ember['default'].computed.alias("controllers.rhev-options.engineHostName"),
 
-    nameDeployment: Ember['default'].computed.alias('controllers.deployment.model.name'),
-    selectedOrganization: Ember['default'].computed.alias('controllers.deployment.selectedOrganzation'),
-    selectedEnvironment: Ember['default'].computed.alias('controllers.deployment.selectedEnvironment'),
-    rhevSetup: Ember['default'].computed.alias('controllers.deployment.rhevSetup'),
+    nameDeployment: Ember['default'].computed.alias("controllers.deployment.model.name"),
+    selectedOrganization: Ember['default'].computed.alias("controllers.deployment.selectedOrganzation"),
+    selectedEnvironment: Ember['default'].computed.alias("controllers.deployment.selectedEnvironment"),
+    rhevSetup: Ember['default'].computed.alias("controllers.deployment.rhevSetup"),
 
-    isRhev: Ember['default'].computed.alias('controllers.deployment.isRhev'),
-    isOpenStack: Ember['default'].computed.alias('controllers.deployment.isOpenStack'),
-    isCloudForms: Ember['default'].computed.alias('controllers.deployment.isCloudForms'),
-    isSubscriptions: Ember['default'].computed.alias('controllers.deployment.isSubscriptions'),
+    isRhev: Ember['default'].computed.alias("controllers.deployment.isRhev"),
+    isOpenStack: Ember['default'].computed.alias("controllers.deployment.isOpenStack"),
+    isCloudForms: Ember['default'].computed.alias("controllers.deployment.isCloudForms"),
+    isSubscriptions: Ember['default'].computed.alias("controllers.deployment.isSubscriptions"),
 
-    isSelfHosted: Ember['default'].computed.alias('controllers.deployment.model.rhev_is_self_hosted'),
-    selectedHypervisorHosts: Ember['default'].computed.alias('controllers.deployment.model.discovered_hosts'),
+    isSelfHosted: Ember['default'].computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
+    selectedHypervisorHosts: Ember['default'].computed.alias("controllers.deployment.model.discovered_hosts"),
 
-    rhev_engine_host: Ember['default'].computed.alias('controllers.deployment.model.discovered_host'),
-    selectedRhevEngine: Ember['default'].computed.alias('controllers.deployment.model.discovered_host'),
-    isStarted: Ember['default'].computed.alias('controllers.deployment.isStarted'),
-    subscriptions: Ember['default'].computed.alias('controllers.deployment.model.subscriptions'),
+    rhev_engine_host: Ember['default'].computed.alias("controllers.deployment.model.discovered_host"),
+    selectedRhevEngine: Ember['default'].computed.alias("controllers.deployment.model.discovered_host"),
+    isStarted: Ember['default'].computed.alias("controllers.deployment.isStarted"),
+    subscriptions: Ember['default'].computed.alias("controllers.deployment.model.subscriptions"),
 
     engineNamePlusDomain: (function () {
-      if (this.get('selectedRhevEngine.is_discovered')) {
-        return this.get('selectedRhevEngine.name') + '.' + this.get('engineDomain');
+      if (this.get("selectedRhevEngine.is_discovered")) {
+        return this.get("selectedRhevEngine.name") + '.' + this.get('engineDomain');
       } else {
         // name is fqdn for managed host
-        return this.get('selectedRhevEngine.name');
+        return this.get("selectedRhevEngine.name");
       }
     }).property('selectedRhevEngine', 'engineDomain'),
 
-    nameRHCI: Ember['default'].computed.alias('controllers.deployment.nameRHCI'),
-    nameRhev: Ember['default'].computed.alias('controllers.deployment.nameRhev'),
-    nameOpenStack: Ember['default'].computed.alias('controllers.deployment.nameOpenStack'),
-    nameCloudForms: Ember['default'].computed.alias('controllers.deployment.nameCloudForms'),
-    nameSatellite: Ember['default'].computed.alias('controllers.deployment.nameSatellite'),
+    nameRHCI: Ember['default'].computed.alias("controllers.deployment.nameRHCI"),
+    nameRhev: Ember['default'].computed.alias("controllers.deployment.nameRhev"),
+    nameOpenStack: Ember['default'].computed.alias("controllers.deployment.nameOpenStack"),
+    nameCloudForms: Ember['default'].computed.alias("controllers.deployment.nameCloudForms"),
+    nameSatellite: Ember['default'].computed.alias("controllers.deployment.nameSatellite"),
 
     backRouteNameonReviewInstallation: (function () {
       if (this.get('isSubscriptions')) {
@@ -2953,9 +2845,11 @@ define('fusor-ember-cli/controllers/review/installation', ['exports', 'ember'], 
       } else {
         if (this.get('isCloudForms')) {
           return 'cloudforms/cfme-configuration';
-        } else if (this.get('isOpenStack')) {} else if (this.get('isRhev')) {
-          return 'storage';
-        }
+        } else if (this.get('isOpenStack')) {
+          // TODO
+        } else if (this.get('isRhev')) {
+            return 'storage';
+          }
       }
     }).property('isSubscriptions', 'isRhev', 'isOpenStack', 'isCloudForms', 'controllers.deployment.model.upstream_consumer_uuid'),
 
@@ -2964,21 +2858,19 @@ define('fusor-ember-cli/controllers/review/installation', ['exports', 'ember'], 
       if (name) {
         return name;
       } else {
-        return 'Default Organization View';
+        return "Default Organization View";
       }
     }).property('controllers.deployment.model.lifecycle_environment.name'),
 
     deploymentButtonAction: (function () {
       if (this.get('hasSubscriptionsToAttach')) {
-        return 'attachSubscriptions';
+        return "attachSubscriptions";
       } else {
-        return 'installDeployment';
+        return "installDeployment";
       }
     }).property('hasSubscriptionsToAttach')
 
   });
-
-  // TODO
 
 });
 define('fusor-ember-cli/controllers/review/progress', ['exports', 'ember'], function (exports, Ember) {
@@ -2998,8 +2890,8 @@ define('fusor-ember-cli/controllers/review/progress', ['exports', 'ember'], func
     showErrorMessage: false,
     errorMsg: null, // this should be overwritten by API response
 
-    deployTaskIsFinished: Ember['default'].computed.alias('controllers.review/progress/overview.deployTaskIsFinished'),
-    deployTaskIsStopped: Ember['default'].computed.alias('controllers.review/progress/overview.deployTaskIsStopped'),
+    deployTaskIsFinished: Ember['default'].computed.alias("controllers.review/progress/overview.deployTaskIsFinished"),
+    deployTaskIsStopped: Ember['default'].computed.alias("controllers.review/progress/overview.deployTaskIsStopped"),
 
     deployButtonTitle: (function () {
       if (this.get('deployTaskIsStopped')) {
@@ -3033,18 +2925,18 @@ define('fusor-ember-cli/controllers/review/progress/overview', ['exports', 'embe
   exports['default'] = Ember['default'].Controller.extend(ProgressBarMixin['default'], {
     needs: ['deployment'],
 
-    isRhev: Ember['default'].computed.alias('controllers.deployment.isRhev'),
-    isOpenStack: Ember['default'].computed.alias('controllers.deployment.isOpenStack'),
-    isCloudForms: Ember['default'].computed.alias('controllers.deployment.isCloudForms'),
+    isRhev: Ember['default'].computed.alias("controllers.deployment.isRhev"),
+    isOpenStack: Ember['default'].computed.alias("controllers.deployment.isOpenStack"),
+    isCloudForms: Ember['default'].computed.alias("controllers.deployment.isCloudForms"),
 
-    nameRHCI: Ember['default'].computed.alias('controllers.deployment.nameRHCI'),
-    nameRhev: Ember['default'].computed.alias('controllers.deployment.nameRhev'),
-    nameOpenStack: Ember['default'].computed.alias('controllers.deployment.nameOpenStack'),
-    nameCloudForms: Ember['default'].computed.alias('controllers.deployment.nameCloudForms'),
-    nameSatellite: Ember['default'].computed.alias('controllers.deployment.nameSatellite'),
-    progressDeployment: Ember['default'].computed.alias('deployTask.progress'),
-    resultDeployment: Ember['default'].computed.alias('deployTask.result'),
-    stateDeployment: Ember['default'].computed.alias('deployTask.state'),
+    nameRHCI: Ember['default'].computed.alias("controllers.deployment.nameRHCI"),
+    nameRhev: Ember['default'].computed.alias("controllers.deployment.nameRhev"),
+    nameOpenStack: Ember['default'].computed.alias("controllers.deployment.nameOpenStack"),
+    nameCloudForms: Ember['default'].computed.alias("controllers.deployment.nameCloudForms"),
+    nameSatellite: Ember['default'].computed.alias("controllers.deployment.nameSatellite"),
+    progressDeployment: Ember['default'].computed.alias("deployTask.progress"),
+    resultDeployment: Ember['default'].computed.alias("deployTask.result"),
+    stateDeployment: Ember['default'].computed.alias("deployTask.state"),
 
     deployTaskIsStopped: (function () {
       return this.get('stateDeployment') === 'stopped' || this.get('stateDeployment') === 'paused';
@@ -3069,17 +2961,17 @@ define('fusor-ember-cli/controllers/review/summary', ['exports', 'ember'], funct
     isOpenStack: Ember['default'].computed.alias('controllers.deployment.isOpenStack'),
     isCloudForms: Ember['default'].computed.alias('controllers.deployment.isCloudForms'),
 
-    selectedRhevEngine: Ember['default'].computed.alias('controllers.deployment.model.discovered_host'),
+    selectedRhevEngine: Ember['default'].computed.alias("controllers.deployment.model.discovered_host"),
 
     // TODO - make mixin, same method as installation
     engineNamePlusDomain: (function () {
-      if (this.get('selectedRhevEngine.is_discovered')) {
+      if (this.get("selectedRhevEngine.is_discovered")) {
         // need to add domain for discovered host to make fqdn
         // TODO - dynamically get domain name of hostgroup Fusor Base if is not example.com
-        return this.get('selectedRhevEngine.name') + '.example.com';
+        return this.get("selectedRhevEngine.name") + '.example.com';
       } else {
         // name is fqdn for managed host
-        return this.get('selectedRhevEngine.name');
+        return this.get("selectedRhevEngine.name");
       }
     }).property('selectedRhevEngine'),
 
@@ -3102,12 +2994,12 @@ define('fusor-ember-cli/controllers/rhev-options', ['exports', 'ember'], functio
 
     needs: ['deployment'],
 
-    rhev_root_password: Ember['default'].computed.alias('controllers.deployment.model.rhev_root_password'),
-    rhev_engine_admin_password: Ember['default'].computed.alias('controllers.deployment.model.rhev_engine_admin_password'),
-    rhev_database_name: Ember['default'].computed.alias('controllers.deployment.model.rhev_database_name'),
-    rhev_cluster_name: Ember['default'].computed.alias('controllers.deployment.model.rhev_cluster_name'),
-    rhev_cpu_type: Ember['default'].computed.alias('controllers.deployment.model.rhev_cpu_type'),
-    rhev_is_self_hosted: Ember['default'].computed.alias('controllers.deployment.model.rhev_is_self_hosted'),
+    rhev_root_password: Ember['default'].computed.alias("controllers.deployment.model.rhev_root_password"),
+    rhev_engine_admin_password: Ember['default'].computed.alias("controllers.deployment.model.rhev_engine_admin_password"),
+    rhev_database_name: Ember['default'].computed.alias("controllers.deployment.model.rhev_database_name"),
+    rhev_cluster_name: Ember['default'].computed.alias("controllers.deployment.model.rhev_cluster_name"),
+    rhev_cpu_type: Ember['default'].computed.alias("controllers.deployment.model.rhev_cpu_type"),
+    rhev_is_self_hosted: Ember['default'].computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
 
     cpuTypes: ['Intel Conroe Family', 'Intel Penryn Family', 'Intel Nehalem Family', 'Intel Westmere Family', 'Intel SandyBridge Family', 'Intel Haswell', 'AMD Opteron G1', 'AMD Opteron G2', 'AMD Opteron G3', 'AMD Opteron G4', 'AMD Opteron G5', 'IBM POWER 8'],
 
@@ -3134,9 +3026,23 @@ define('fusor-ember-cli/controllers/rhev-options', ['exports', 'ember'], functio
       name: 'Gluster'
     }],
 
+    invalidIsAlphaNumericRhevDatabase: (function () {
+      var rx = new RegExp(/^[A-Za-z0-9_-]+$/);
+      if (Ember['default'].isPresent(this.get('rhev_database_name'))) {
+        return !this.get('rhev_database_name').match(rx);
+      }
+    }).property('rhev_database_name'),
+
+    invalidIsAlphaNumericRhevCluster: (function () {
+      var rx = new RegExp(/^[A-Za-z0-9_-]+$/);
+      if (Ember['default'].isPresent(this.get('rhev_cluster_name'))) {
+        return !this.get('rhev_cluster_name').match(rx);
+      }
+    }).property('rhev_cluster_name'),
+
     disableNextRhevOptions: (function () {
-      return Ember['default'].isBlank(this.get('rhev_root_password')) || Ember['default'].isBlank(this.get('rhev_engine_admin_password')) || this.get('rhev_root_password.length') < 8 || this.get('rhev_engine_admin_password.length') < 8;
-    }).property('rhev_root_password', 'rhev_engine_admin_password'),
+      return Ember['default'].isBlank(this.get('rhev_root_password')) || Ember['default'].isBlank(this.get('rhev_engine_admin_password')) || this.get('rhev_root_password.length') < 8 || this.get('rhev_engine_admin_password.length') < 8 || this.get('invalidIsAlphaNumericRhevDatabase') || this.get('invalidIsAlphaNumericRhevCluster');
+    }).property('rhev_root_password', 'rhev_engine_admin_password', 'invalidIsAlphaNumericRhevDatabase', 'invalidIsAlphaNumericRhevCluster'),
 
     validRhevOptions: Ember['default'].computed.not('disableNextRhevOptions')
 
@@ -3151,14 +3057,14 @@ define('fusor-ember-cli/controllers/rhev-setup', ['exports', 'ember'], function 
 
     needs: ['deployment'],
 
-    rhevIsSelfHosted: Ember['default'].computed.alias('controllers.deployment.model.rhev_is_self_hosted'),
+    rhevIsSelfHosted: Ember['default'].computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
 
     rhevSetup: (function () {
-      return this.get('rhevIsSelfHosted') ? 'selfhost' : 'rhevhost';
+      return this.get('rhevIsSelfHosted') ? "selfhost" : "rhevhost";
     }).property('rhevIsSelfHosted'),
 
     rhevSetupTitle: (function () {
-      return this.get('rhevIsSelfHosted') ? 'Self Hosted' : 'Host + Engine';
+      return this.get('rhevIsSelfHosted') ? "Self Hosted" : "Host + Engine";
     }).property('rhevIsSelfHosted'),
 
     isSelfHosted: (function () {
@@ -3181,7 +3087,7 @@ define('fusor-ember-cli/controllers/rhev', ['exports', 'ember'], function (expor
   exports['default'] = Ember['default'].Controller.extend({
     needs: ['application', 'rhev-setup', 'deployment', 'storage', 'rhev-options'],
 
-    rhevSetup: Ember['default'].computed.alias('controllers.rhev-setup.rhevSetup'),
+    rhevSetup: Ember['default'].computed.alias("controllers.rhev-setup.rhevSetup"),
 
     isSelfHost: (function () {
       return this.get('rhevSetup') === 'selfhost';
@@ -3219,10 +3125,10 @@ define('fusor-ember-cli/controllers/rhev', ['exports', 'ember'], function (expor
     }).property('controllers.deployment.model.rhev_root_password', 'controllers.deployment.model.rhev_engine_admin_password'),
 
     validRhevSetup: true,
-    validRhevEngine: Ember['default'].computed.alias('hasEngine'),
-    validRhevHypervisor: Ember['default'].computed.not('disableTabRhevConfiguration'),
-    validRhevOptions: Ember['default'].computed.alias('controllers.rhev-options.validRhevOptions'),
-    validRhevStorage: Ember['default'].computed.alias('controllers.storage.validRhevStorage'),
+    validRhevEngine: Ember['default'].computed.alias("hasEngine"),
+    validRhevHypervisor: Ember['default'].computed.not("disableTabRhevConfiguration"),
+    validRhevOptions: Ember['default'].computed.alias("controllers.rhev-options.validRhevOptions"),
+    validRhevStorage: Ember['default'].computed.alias("controllers.storage.validRhevStorage"),
 
     validRhev: (function () {
       return this.get('validRhevSetup') && this.get('validRhevEngine') && this.get('validRhevHypervisor') && this.get('validRhevOptions') && this.get('validRhevStorage');
@@ -3238,13 +3144,13 @@ define('fusor-ember-cli/controllers/satellite', ['exports', 'ember'], function (
 
     needs: ['deployment'],
 
-    satelliteTabRouteName: Ember['default'].computed.alias('controllers.deployment.satelliteTabRouteName'),
-    organizationTabRouteName: Ember['default'].computed.alias('controllers.deployment.organizationTabRouteName'),
-    lifecycleEnvironmentTabRouteName: Ember['default'].computed.alias('controllers.deployment.lifecycleEnvironmentTabRouteName'),
+    satelliteTabRouteName: Ember['default'].computed.alias("controllers.deployment.satelliteTabRouteName"),
+    organizationTabRouteName: Ember['default'].computed.alias("controllers.deployment.organizationTabRouteName"),
+    lifecycleEnvironmentTabRouteName: Ember['default'].computed.alias("controllers.deployment.lifecycleEnvironmentTabRouteName"),
 
-    disableTabDeploymentName: Ember['default'].computed.alias('controllers.deployment.disableTabDeploymentName'),
-    disableTabConfigureOrganization: Ember['default'].computed.alias('controllers.deployment.disableTabConfigureOrganization'),
-    disableTabLifecycleEnvironment: Ember['default'].computed.alias('controllers.deployment.disableTabLifecycleEnvironment')
+    disableTabDeploymentName: Ember['default'].computed.alias("controllers.deployment.disableTabDeploymentName"),
+    disableTabConfigureOrganization: Ember['default'].computed.alias("controllers.deployment.disableTabConfigureOrganization"),
+    disableTabLifecycleEnvironment: Ember['default'].computed.alias("controllers.deployment.disableTabLifecycleEnvironment")
 
   });
 
@@ -3257,20 +3163,20 @@ define('fusor-ember-cli/controllers/satellite/index', ['exports', 'ember'], func
 
     needs: ['satellite', 'deployment', 'application'],
 
-    name: Ember['default'].computed.alias('controllers.deployment.name'),
-    description: Ember['default'].computed.alias('controllers.deployment.description'),
-    isStarted: Ember['default'].computed.alias('controllers.deployment.isStarted'),
+    name: Ember['default'].computed.alias("controllers.deployment.name"),
+    description: Ember['default'].computed.alias("controllers.deployment.description"),
+    isStarted: Ember['default'].computed.alias("controllers.deployment.isStarted"),
 
-    organizationTabRouteName: Ember['default'].computed.alias('controllers.deployment.organizationTabRouteName'),
+    organizationTabRouteName: Ember['default'].computed.alias("controllers.deployment.organizationTabRouteName"),
 
-    disableNextOnDeploymentName: Ember['default'].computed.alias('controllers.deployment.disableNextOnDeploymentName'),
+    disableNextOnDeploymentName: Ember['default'].computed.alias("controllers.deployment.disableNextOnDeploymentName"),
 
     idSatName: 'deployment_sat_name',
     idSatDesc: 'deployment_sat_desc',
 
     backRouteNameOnSatIndex: 'deployment.start',
 
-    deploymentNames: Ember['default'].computed.alias('controllers.application.deploymentNames')
+    deploymentNames: Ember['default'].computed.alias("controllers.application.deploymentNames")
 
   });
 
@@ -3283,17 +3189,17 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember'], function (ex
 
     needs: ['deployment'],
 
-    rhev_storage_type: Ember['default'].computed.alias('controllers.deployment.model.rhev_storage_type'),
-    rhev_storage_name: Ember['default'].computed.alias('controllers.deployment.model.rhev_storage_name'),
-    rhev_storage_address: Ember['default'].computed.alias('controllers.deployment.model.rhev_storage_address'),
-    rhev_share_path: Ember['default'].computed.alias('controllers.deployment.model.rhev_share_path'),
+    rhev_storage_type: Ember['default'].computed.alias("controllers.deployment.model.rhev_storage_type"),
+    rhev_storage_name: Ember['default'].computed.alias("controllers.deployment.model.rhev_storage_name"),
+    rhev_storage_address: Ember['default'].computed.alias("controllers.deployment.model.rhev_storage_address"),
+    rhev_share_path: Ember['default'].computed.alias("controllers.deployment.model.rhev_share_path"),
 
-    rhev_export_domain_name: Ember['default'].computed.alias('controllers.deployment.model.rhev_export_domain_name'),
-    rhev_export_domain_address: Ember['default'].computed.alias('controllers.deployment.model.rhev_export_domain_address'),
-    rhev_export_domain_path: Ember['default'].computed.alias('controllers.deployment.model.rhev_export_domain_path'),
+    rhev_export_domain_name: Ember['default'].computed.alias("controllers.deployment.model.rhev_export_domain_name"),
+    rhev_export_domain_address: Ember['default'].computed.alias("controllers.deployment.model.rhev_export_domain_address"),
+    rhev_export_domain_path: Ember['default'].computed.alias("controllers.deployment.model.rhev_export_domain_path"),
 
-    step3RouteName: Ember['default'].computed.alias('controllers.deployment.step3RouteName'),
-    isCloudForms: Ember['default'].computed.alias('controllers.deployment.isCloudForms'),
+    step3RouteName: Ember['default'].computed.alias("controllers.deployment.step3RouteName"),
+    isCloudForms: Ember['default'].computed.alias("controllers.deployment.isCloudForms"),
 
     hasEndingSlashInSharePath: (function () {
       if (Ember['default'].isPresent(this.get('rhev_share_path'))) {
@@ -3309,7 +3215,7 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember'], function (ex
 
     errorsHashSharePath: (function () {
       if (this.get('hasEndingSlashInSharePath')) {
-        return { 'name': 'You cannot have a trailing slash' };
+        return { "name": 'You cannot have a trailing slash' };
       } else {
         return {};
       }
@@ -3317,7 +3223,7 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember'], function (ex
 
     errorsHashExportPath: (function () {
       if (this.get('hasEndingSlashInExportPath')) {
-        return { 'name': 'You cannot have a trailing slash' };
+        return { "name": 'You cannot have a trailing slash' };
       } else {
         return {};
       }
@@ -3343,13 +3249,41 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember'], function (ex
       return Ember['default'].isBlank(this.get('rhev_export_domain_name')) || Ember['default'].isBlank(this.get('rhev_export_domain_address')) || Ember['default'].isBlank(this.get('rhev_export_domain_path')) || this.get('hasEndingSlashInExportPath');
     }).property('rhev_export_domain_name', 'rhev_export_domain_address', 'rhev_export_domain_path', 'hasEndingSlashInExportPath'),
 
+    invalidStorageName: (function () {
+      var validAlphaNumbericRegex = new RegExp(/^[A-Za-z0-9_-]+$/);
+      if (Ember['default'].isPresent(this.get('rhev_storage_name'))) {
+        return !this.get('rhev_storage_name').match(validAlphaNumbericRegex);
+      }
+    }).property('rhev_storage_name'),
+
+    invalidStorageAddress: (function () {
+      var validHostnameRegex = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$";
+      if (Ember['default'].isPresent(this.get('rhev_storage_address'))) {
+        return !this.get('rhev_storage_address').match(validHostnameRegex);
+      }
+    }).property('rhev_storage_address'),
+
+    invalidExportDomainName: (function () {
+      var validAlphaNumbericRegex = new RegExp(/^[A-Za-z0-9_-]+$/);
+      if (Ember['default'].isPresent(this.get('rhev_export_domain_name'))) {
+        return !this.get('rhev_export_domain_name').match(validAlphaNumbericRegex);
+      }
+    }).property('rhev_export_domain_name'),
+
+    invalidExportAddress: (function () {
+      var validHostnameRegex = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$";
+      if (Ember['default'].isPresent(this.get('rhev_export_domain_address'))) {
+        return !this.get('rhev_export_domain_address').match(validHostnameRegex);
+      }
+    }).property('rhev_export_domain_address'),
+
     disableNextStorage: (function () {
       if (this.get('isCloudForms')) {
-        return this.get('isInvalidStorageFields') || this.get('isInvalidExportDomainFields');
+        return this.get('isInvalidStorageFields') || this.get('isInvalidExportDomainFields') || this.get('invalidStorageName') || this.get('invalidStorageAddress') || this.get('invalidExportDomainName') || this.get('invalidExportAddress');
       } else {
-        return this.get('isInvalidStorageFields');
+        return this.get('isInvalidStorageFields') || this.get('invalidStorageName') || this.get('invalidStorageAddress');
       }
-    }).property('isInvalidStorageFields', 'isInvalidExportDomainFields'),
+    }).property('isInvalidStorageFields', 'isInvalidExportDomainFields', 'invalidStorageName', 'invalidStorageAddress', 'invalidExportDomainName', 'invalidExportAddress'),
 
     validRhevStorage: Ember['default'].computed.not('disableNextStorage')
 
@@ -3363,14 +3297,14 @@ define('fusor-ember-cli/controllers/subscriptions', ['exports', 'ember'], functi
   exports['default'] = Ember['default'].Controller.extend({
     needs: ['deployment', 'subscriptions/credentials', 'subscriptions/management-application'],
 
-    stepNumberSubscriptions: Ember['default'].computed.alias('controllers.deployment.stepNumberSubscriptions'),
-    isStarted: Ember['default'].computed.alias('controllers.deployment.isStarted'),
+    stepNumberSubscriptions: Ember['default'].computed.alias("controllers.deployment.stepNumberSubscriptions"),
+    isStarted: Ember['default'].computed.alias("controllers.deployment.isStarted"),
 
     disableTabManagementApplication: (function () {
       return !this.get('isStarted') && !this.get('model.isAuthenticated');
     }).property('model.isAuthenticated', 'isStarted'),
 
-    upstreamConsumerUuid: Ember['default'].computed.alias('controllers.deployment.model.upstream_consumer_uuid'),
+    upstreamConsumerUuid: Ember['default'].computed.alias("controllers.deployment.model.upstream_consumer_uuid"),
 
     disableTabSelectSubsciptions: (function () {
       return Ember['default'].isBlank(this.get('upstreamConsumerUuid')) || !this.get('model.isAuthenticated');
@@ -3387,12 +3321,12 @@ define('fusor-ember-cli/controllers/subscriptions/credentials', ['exports', 'emb
 
     needs: ['deployment'],
 
-    upstreamConsumerUuid: Ember['default'].computed.alias('controllers.deployment.model.upstream_consumer_uuid'),
-    upstreamConsumerName: Ember['default'].computed.alias('controllers.deployment.model.upstream_consumer_name'),
+    upstreamConsumerUuid: Ember['default'].computed.alias("controllers.deployment.model.upstream_consumer_uuid"),
+    upstreamConsumerName: Ember['default'].computed.alias("controllers.deployment.model.upstream_consumer_name"),
 
-    isRhev: Ember['default'].computed.alias('controllers.deployment.model.deploy_rhev'),
-    isOpenStack: Ember['default'].computed.alias('controllers.deployment.model.deploy_openstack'),
-    isCloudForms: Ember['default'].computed.alias('controllers.deployment.model.deploy_cfme'),
+    isRhev: Ember['default'].computed.alias("controllers.deployment.model.deploy_rhev"),
+    isOpenStack: Ember['default'].computed.alias("controllers.deployment.model.deploy_openstack"),
+    isCloudForms: Ember['default'].computed.alias("controllers.deployment.model.deploy_cfme"),
 
     validCredentials: (function () {
       // password is not saved in the model
@@ -3448,8 +3382,8 @@ define('fusor-ember-cli/controllers/subscriptions/management-application', ['exp
     showManagementApplications: true,
 
     sessionPortal: Ember['default'].computed.alias('controllers.subscriptions.model'),
-    upstreamConsumerUuid: Ember['default'].computed.alias('controllers.deployment.model.upstream_consumer_uuid'),
-    upstreamConsumerName: Ember['default'].computed.alias('controllers.deployment.model.upstream_consumer_name'),
+    upstreamConsumerUuid: Ember['default'].computed.alias("controllers.deployment.model.upstream_consumer_uuid"),
+    upstreamConsumerName: Ember['default'].computed.alias("controllers.deployment.model.upstream_consumer_name"),
 
     showAlertMessage: false,
 
@@ -3480,14 +3414,14 @@ define('fusor-ember-cli/controllers/subscriptions/management-application', ['exp
         return new Ember['default'].RSVP.Promise(function (resolve, reject) {
           Ember['default'].$.ajax({
             url: url,
-            type: 'POST',
+            type: "POST",
             data: JSON.stringify({ name: newSatelliteName,
-              type: 'satellite',
-              facts: { 'distributor_version': 'sat-6.0', 'system.certificate_version': '3.2' } }),
+              type: "satellite",
+              facts: { "distributor_version": "sat-6.0", "system.certificate_version": "3.2" } }),
             headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'X-CSRF-Token': token
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "X-CSRF-Token": token
             },
             success: function success(response) {
               self.get('model').pushObject(response);
@@ -3520,7 +3454,7 @@ define('fusor-ember-cli/controllers/subscriptions/management-application/consume
 
     //  queryParams: ['cuuid'],
 
-    cuuid: Ember['default'].computed.alias('controllers.deployment.upstream_consumer_uuid')
+    cuuid: Ember['default'].computed.alias("controllers.deployment.upstream_consumer_uuid")
 
   });
 
@@ -3536,7 +3470,7 @@ define('fusor-ember-cli/controllers/subscriptions/management-application/consume
     arrayQuantities: Ember['default'].computed.mapBy('model', 'quantity'),
     totalQuantity: Ember['default'].computed.sum('arrayQuantities'),
 
-    upstream_consumer_uuid: Ember['default'].computed.alias('controllers.deployment.upstream_consumer_uuid')
+    upstream_consumer_uuid: Ember['default'].computed.alias("controllers.deployment.upstream_consumer_uuid")
 
   });
 
@@ -3549,10 +3483,10 @@ define('fusor-ember-cli/controllers/subscriptions/management-application/consume
 
     needs: ['application', 'deployment'],
 
-    isUpstream: Ember['default'].computed.alias('controllers.application.isUpstream'),
-    stepNumberSubscriptions: Ember['default'].computed.alias('controllers.deployment.stepNumberSubscriptions'),
-    enableAccessInsights: Ember['default'].computed.alias('controllers.deployment.model.enable_access_insights'),
-    numSubscriptionsRequired: Ember['default'].computed.alias('controllers.deployment.numSubscriptionsRequired'),
+    isUpstream: Ember['default'].computed.alias("controllers.application.isUpstream"),
+    stepNumberSubscriptions: Ember['default'].computed.alias("controllers.deployment.stepNumberSubscriptions"),
+    enableAccessInsights: Ember['default'].computed.alias("controllers.deployment.model.enable_access_insights"),
+    numSubscriptionsRequired: Ember['default'].computed.alias("controllers.deployment.numSubscriptionsRequired"),
 
     enableAnalytics: (function () {
       if (this.get('enableAccessInsights')) {
@@ -3612,11 +3546,11 @@ define('fusor-ember-cli/controllers/subscriptions/select-subscriptions', ['expor
   exports['default'] = Ember['default'].ArrayController.extend({
     needs: ['application', 'deployment'],
 
-    isUpstream: Ember['default'].computed.alias('controllers.application.isUpstream'),
-    stepNumberSubscriptions: Ember['default'].computed.alias('controllers.deployment.stepNumberSubscriptions'),
-    enableAccessInsights: Ember['default'].computed.alias('controllers.deployment.model.enable_access_insights'),
-    numSubscriptionsRequired: Ember['default'].computed.alias('controllers.deployment.numSubscriptionsRequired'),
-    isStarted: Ember['default'].computed.alias('controllers.deployment.isStarted'),
+    isUpstream: Ember['default'].computed.alias("controllers.application.isUpstream"),
+    stepNumberSubscriptions: Ember['default'].computed.alias("controllers.deployment.stepNumberSubscriptions"),
+    enableAccessInsights: Ember['default'].computed.alias("controllers.deployment.model.enable_access_insights"),
+    numSubscriptionsRequired: Ember['default'].computed.alias("controllers.deployment.numSubscriptionsRequired"),
+    isStarted: Ember['default'].computed.alias("controllers.deployment.isStarted"),
 
     hasSubscriptionPools: (function () {
       return this.get('subscriptionPools.length') > 0;
@@ -3628,13 +3562,13 @@ define('fusor-ember-cli/controllers/subscriptions/select-subscriptions', ['expor
 
     contractNumbersInPool: (function () {
       if (this.get('hasSubscriptionPools')) {
-        return this.get('subscriptionPools').getEach('contractNumber');
+        return this.get('subscriptionPools').getEach("contractNumber");
       }
     }).property('subscriptionPools.[]', 'hasSubscriptionPools'),
 
     contractNumbersInModel: (function () {
       if (this.get('hasSubscriptionSavedInModel')) {
-        return this.get('model').getEach('contract_number');
+        return this.get('model').getEach("contract_number");
       }
     }).property('model.[]', 'hasSubscriptionSavedInModel'),
 
@@ -3681,15 +3615,15 @@ define('fusor-ember-cli/controllers/where-install', ['exports', 'ember'], functi
 
     needs: ['deployment', 'cloudforms'],
 
-    cfmeInstallLoc: Ember['default'].computed.alias('controllers.deployment.model.cfme_install_loc'),
-    isRhev: Ember['default'].computed.alias('controllers.deployment.isRhev'),
-    isNotRhev: Ember['default'].computed.not('isRhev'),
-    isOpenStack: Ember['default'].computed.alias('controllers.deployment.isOpenStack'),
-    isNotOpenStack: Ember['default'].computed.not('isOpenStack'),
-    satelliteTabRouteName: Ember['default'].computed.alias('controllers.deployment.satelliteTabRouteName'),
-    organizationTabRouteName: Ember['default'].computed.alias('controllers.deployment.organizationTabRouteName'),
-    lifecycleEnvironmentTabRouteName: Ember['default'].computed.alias('controllers.deployment.lifecycleEnvironmentTabRouteName'),
-    isStarted: Ember['default'].computed.alias('controllers.deployment.isStarted'),
+    cfmeInstallLoc: Ember['default'].computed.alias("controllers.deployment.model.cfme_install_loc"),
+    isRhev: Ember['default'].computed.alias("controllers.deployment.isRhev"),
+    isNotRhev: Ember['default'].computed.not("isRhev"),
+    isOpenStack: Ember['default'].computed.alias("controllers.deployment.isOpenStack"),
+    isNotOpenStack: Ember['default'].computed.not("isOpenStack"),
+    satelliteTabRouteName: Ember['default'].computed.alias("controllers.deployment.satelliteTabRouteName"),
+    organizationTabRouteName: Ember['default'].computed.alias("controllers.deployment.organizationTabRouteName"),
+    lifecycleEnvironmentTabRouteName: Ember['default'].computed.alias("controllers.deployment.lifecycleEnvironmentTabRouteName"),
+    isStarted: Ember['default'].computed.alias("controllers.deployment.isStarted"),
 
     setupController: function setupController(controller, model) {
       controller.set('model', model);
@@ -3761,58 +3695,58 @@ define('fusor-ember-cli/helpers/fa-icon', ['exports', 'ember'], function (export
    */
   var faIcon = function faIcon(name, options) {
     if (Ember['default'].typeOf(name) !== 'string') {
-      var message = 'fa-icon: no icon specified';
+      var message = "fa-icon: no icon specified";
       warn(message);
       return Ember['default'].String.htmlSafe(message);
     }
 
     var params = options.hash,
         classNames = [],
-        html = '';
+        html = "";
 
-    classNames.push('fa');
+    classNames.push("fa");
     if (!name.match(FA_PREFIX)) {
-      name = 'fa-' + name;
+      name = "fa-" + name;
     }
     classNames.push(name);
     if (params.spin) {
-      classNames.push('fa-spin');
+      classNames.push("fa-spin");
     }
     if (params.flip) {
-      classNames.push('fa-flip-' + params.flip);
+      classNames.push("fa-flip-" + params.flip);
     }
     if (params.rotate) {
-      classNames.push('fa-rotate-' + params.rotate);
+      classNames.push("fa-rotate-" + params.rotate);
     }
     if (params.lg) {
-      warn('fa-icon: the \'lg\' parameter is deprecated. Use \'size\' instead. I.e. {{fa-icon size="lg"}}');
-      classNames.push('fa-lg');
+      warn("fa-icon: the 'lg' parameter is deprecated. Use 'size' instead. I.e. {{fa-icon size=\"lg\"}}");
+      classNames.push("fa-lg");
     }
     if (params.x) {
-      warn('fa-icon: the \'x\' parameter is deprecated. Use \'size\' instead. I.e. {{fa-icon size="' + params.x + '"}}');
-      classNames.push('fa-' + params.x + 'x');
+      warn("fa-icon: the 'x' parameter is deprecated. Use 'size' instead. I.e. {{fa-icon size=\"" + params.x + "\"}}");
+      classNames.push("fa-" + params.x + "x");
     }
     if (params.size) {
-      if (Ember['default'].typeOf(params.size) === 'string' && params.size.match(/\d+/)) {
+      if (Ember['default'].typeOf(params.size) === "string" && params.size.match(/\d+/)) {
         params.size = Number(params.size);
       }
-      if (Ember['default'].typeOf(params.size) === 'number') {
-        classNames.push('fa-' + params.size + 'x');
+      if (Ember['default'].typeOf(params.size) === "number") {
+        classNames.push("fa-" + params.size + "x");
       } else {
-        classNames.push('fa-' + params.size);
+        classNames.push("fa-" + params.size);
       }
     }
     if (params.fixedWidth) {
-      classNames.push('fa-fw');
+      classNames.push("fa-fw");
     }
     if (params.listItem) {
-      classNames.push('fa-li');
+      classNames.push("fa-li");
     }
     if (params.pull) {
-      classNames.push('pull-' + params.pull);
+      classNames.push("pull-" + params.pull);
     }
     if (params.border) {
-      classNames.push('fa-border');
+      classNames.push("fa-border");
     }
     if (params.classNames && !Ember['default'].isArray(params.classNames)) {
       params.classNames = [params.classNames];
@@ -3821,17 +3755,17 @@ define('fusor-ember-cli/helpers/fa-icon', ['exports', 'ember'], function (export
       Array.prototype.push.apply(classNames, params.classNames);
     }
 
-    html += '<';
+    html += "<";
     var tagName = params.tagName || 'i';
     html += tagName;
-    html += ' class=\'' + classNames.join(' ') + '\'';
+    html += " class='" + classNames.join(" ") + "'";
     if (params.title) {
-      html += ' title=\'' + params.title + '\'';
+      html += " title='" + params.title + "'";
     }
     if (params.ariaHidden === undefined || params.ariaHidden) {
-      html += ' aria-hidden="true"';
+      html += " aria-hidden=\"true\"";
     }
-    html += '></' + tagName + '>';
+    html += "></" + tagName + ">";
     return Ember['default'].String.htmlSafe(html);
   };
 
@@ -3842,11 +3776,11 @@ define('fusor-ember-cli/helpers/fa-icon', ['exports', 'ember'], function (export
 });
 define('fusor-ember-cli/helpers/log', ['exports'], function (exports) {
 
-	'use strict';
+  'use strict';
 
-	exports['default'] = function () {};
-
-	//console.debug(str);
+  exports['default'] = function () {
+    //console.debug(str);
+  };
 
 });
 define('fusor-ember-cli/initialize', ['exports', 'ember', 'ember-idx-utils/config'], function (exports, Em, IdxConfig) {
@@ -3925,7 +3859,7 @@ define('fusor-ember-cli/initializers/ember-moment', ['exports', 'ember-moment/he
 
   'use strict';
 
-  var initialize = function initialize() {
+  var initialize = function initialize() /* container, app */{
     var registerHelper;
 
     if (Ember['default'].HTMLBars) {
@@ -3946,7 +3880,6 @@ define('fusor-ember-cli/initializers/ember-moment', ['exports', 'ember-moment/he
 
     initialize: initialize
   };
-  /* container, app */
 
   exports.initialize = initialize;
 
@@ -3958,10 +3891,26 @@ define('fusor-ember-cli/initializers/export-application-global', ['exports', 'em
   exports.initialize = initialize;
 
   function initialize(container, application) {
-    var classifiedName = Ember['default'].String.classify(config['default'].modulePrefix);
+    if (config['default'].exportApplicationGlobal !== false) {
+      var value = config['default'].exportApplicationGlobal;
+      var globalName;
 
-    if (config['default'].exportApplicationGlobal && !window[classifiedName]) {
-      window[classifiedName] = application;
+      if (typeof value === 'string') {
+        globalName = value;
+      } else {
+        globalName = Ember['default'].String.classify(config['default'].modulePrefix);
+      }
+
+      if (!window[globalName]) {
+        window[globalName] = application;
+
+        application.reopen({
+          willDestroy: function willDestroy() {
+            this._super.apply(this, arguments);
+            delete window[globalName];
+          }
+        });
+      }
     }
   }
 
@@ -3980,7 +3929,7 @@ define('fusor-ember-cli/mixins/configure-environment-mixin', ['exports', 'ember'
 
   exports['default'] = Ember['default'].Mixin.create({
 
-    selectedEnvironment: Ember['default'].computed.alias('model'),
+    selectedEnvironment: Ember['default'].computed.alias("model"),
 
     useDefaultOrgViewForEnv: (function () {
       return Ember['default'].isBlank(this.get('model'));
@@ -4005,7 +3954,7 @@ define('fusor-ember-cli/mixins/configure-environment-mixin', ['exports', 'ember'
         return this.get('name').underscore();
       }
     }).property('name'),
-    label: Ember['default'].computed.alias('envLabelName'),
+    label: Ember['default'].computed.alias("envLabelName"),
 
     hasNoEnvironments: (function () {
       return Ember['default'].isEmpty(this.get('lifecycleEnvironments'));
@@ -4026,7 +3975,7 @@ define('fusor-ember-cli/mixins/configure-organization-mixin', ['exports', 'ember
 
     needs: ['application', 'deployment'],
 
-    selectedOrganization: Ember['default'].computed.alias('model'),
+    selectedOrganization: Ember['default'].computed.alias("model"),
 
     fields_org: {},
 
@@ -4072,9 +4021,9 @@ define('fusor-ember-cli/mixins/deployment-controller-mixin', ['exports', 'ember'
 
     needs: ['application', 'subscriptions', 'configure-organization', 'configure-environment', 'subscriptions/select-subscriptions'],
 
-    isRhev: Ember['default'].computed.alias('model.deploy_rhev'),
-    isOpenStack: Ember['default'].computed.alias('model.deploy_openstack'),
-    isCloudForms: Ember['default'].computed.alias('model.deploy_cfme'),
+    isRhev: Ember['default'].computed.alias("model.deploy_rhev"),
+    isOpenStack: Ember['default'].computed.alias("model.deploy_openstack"),
+    isCloudForms: Ember['default'].computed.alias("model.deploy_cfme"),
 
     // default is downstream
     isUpstream: false,
@@ -4104,82 +4053,82 @@ define('fusor-ember-cli/mixins/deployment-controller-mixin', ['exports', 'ember'
     // names
     nameRHCI: (function () {
       if (this.get('isUpstream')) {
-        return 'Fusor';
+        return "Fusor";
       } else {
-        return 'RHCI';
+        return "RHCI";
       }
     }).property('isUpstream'),
 
     nameRedHat: (function () {
       if (this.get('isUpstream')) {
-        return '';
+        return "";
       } else {
-        return 'Red Hat';
+        return "Red Hat";
       }
     }).property('isUpstream'),
 
     nameSatellite: (function () {
       if (this.get('isUpstream')) {
-        return 'Foreman';
+        return "Foreman";
       } else {
-        return 'Satellite';
+        return "Satellite";
       }
     }).property('isUpstream'),
 
     nameRhev: (function () {
       if (this.get('isUpstream')) {
-        return 'oVirt';
+        return "oVirt";
       } else {
-        return 'RHEV';
+        return "RHEV";
       }
     }).property('isUpstream'),
 
     nameOpenStack: (function () {
       if (this.get('isUpstream')) {
-        return 'RDO';
+        return "RDO";
       } else {
-        return 'RHELOSP';
+        return "RHELOSP";
       }
     }).property('isUpstream'),
 
     nameCloudForms: (function () {
       if (this.get('isUpstream')) {
-        return 'ManageIQ';
+        return "ManageIQ";
       } else {
-        return 'CloudForms';
+        return "CloudForms";
       }
     }).property('isUpstream'),
 
     fullnameRhev: (function () {
       if (this.get('isUpstream')) {
-        return 'oVirt Project';
+        return "oVirt Project";
       } else {
-        return 'Red Hat Enterprise Virtualization';
+        return "Red Hat Enterprise Virtualization";
       }
     }).property('isUpstream'),
 
     fullnameOpenStack: (function () {
       if (this.get('isUpstream')) {
-        return 'RDO Project';
+        return "RDO Project";
       } else {
-        return 'Red Hat Enterprise Linux OpenStack Platform';
+        return "Red Hat Enterprise Linux OpenStack Platform";
       }
     }).property('isUpstream'),
 
     fullnameCloudForms: (function () {
       if (this.get('isUpstream')) {
-        return 'ManageIQ';
+        return "ManageIQ";
       } else {
-        return 'Red Hat Cloud Forms Management Engine';
+        return "Red Hat Cloud Forms Management Engine";
       }
     }).property('isUpstream'),
 
     // logo
     logoPath: (function () {
       if (this.get('isUpstream')) {
-        return 'assets/foreman.png';
+        return "assets/foreman.png";
       } else {
-        return 'assets/Header-logotype.png';
+        return "assets/Header-logotype.png";
       }
     }).property('isUpstream'),
 
@@ -4355,7 +4304,7 @@ define('fusor-ember-cli/mixins/disable-tab-mixin', ['exports', 'ember'], functio
     }).property('model.organization.id'),
     hasNoOrganization: Ember['default'].computed.not('hasOrganization'),
 
-    deploymentNames: Ember['default'].computed.alias('controllers.application.deploymentNames'),
+    deploymentNames: Ember['default'].computed.alias("controllers.application.deploymentNames"),
 
     isDuplicateName: (function () {
       if (this.get('model').get('isNew')) {
@@ -4377,10 +4326,10 @@ define('fusor-ember-cli/mixins/disable-tab-mixin', ['exports', 'ember'], functio
     }).property('model.name'),
 
     // disable All if there is no deployment name
-    disableAll: Ember['default'].computed.alias('hasNoName'),
+    disableAll: Ember['default'].computed.alias("hasNoName"),
 
     // disable Next on Deployment Name if there is no deployment name
-    disableNextOnDeploymentName: Ember['default'].computed.or('hasNoName', 'isDuplicateName'),
+    disableNextOnDeploymentName: Ember['default'].computed.or("hasNoName", 'isDuplicateName'),
 
     // disable Next on Configure Organization if no organization is selected
     disableNextOnConfigureOrganization: Ember['default'].computed.or('hasNoOrganization', 'disableAll'),
@@ -4393,7 +4342,39 @@ define('fusor-ember-cli/mixins/disable-tab-mixin', ['exports', 'ember'], functio
     // Satellite Tabs Only
     disableTabDeploymentName: false, // always enable tab for entering deployment name
     disableTabConfigureOrganization: Ember['default'].computed.alias('disableNextOnDeploymentName'),
-    disableTabLifecycleEnvironment: Ember['default'].computed.alias('disableNextOnConfigureOrganization')
+    disableTabLifecycleEnvironment: Ember['default'].computed.alias("disableNextOnConfigureOrganization")
+
+  });
+
+});
+define('fusor-ember-cli/mixins/discovered-host-route-mixin', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].Mixin.create({
+
+    setupController: function setupController(controller, model) {
+      controller.set('model', model);
+      if (this.modelFor('deployment').get('isNotStarted')) {
+        controller.set('isLoadingHosts', true);
+        this.store.find('discovered-host').then(function (results) {
+          controller.set('allDiscoveredHosts', results.filterBy('is_discovered', true));
+          controller.set('isLoadingHosts', false);
+        });
+      }
+    },
+
+    actions: {
+      refreshDiscoveredHosts: function refreshDiscoveredHosts() {
+        console.log('refresh allDiscoveredHosts');
+        var controller = this.get('controller');
+        controller.set('isLoadingHosts', true);
+        this.store.find('discovered-host').then(function (results) {
+          controller.set('allDiscoveredHosts', results.filterBy('is_discovered', true));
+          controller.set('isLoadingHosts', false);
+        });
+      }
+    }
 
   });
 
@@ -4455,74 +4436,74 @@ define('fusor-ember-cli/mixins/start-controller-mixin', ['exports', 'ember'], fu
     // names
     nameRHCI: (function () {
       if (this.get('isUpstream')) {
-        return 'Fusor';
+        return "Fusor";
       } else {
-        return 'RHCI';
+        return "RHCI";
       }
     }).property('isUpstream'),
 
     nameRedHat: (function () {
       if (this.get('isUpstream')) {
-        return '';
+        return "";
       } else {
-        return 'Red Hat';
+        return "Red Hat";
       }
     }).property('isUpstream'),
 
     nameSatellite: (function () {
       if (this.get('isUpstream')) {
-        return 'Foreman';
+        return "Foreman";
       } else {
-        return 'Satellite';
+        return "Satellite";
       }
     }).property('isUpstream'),
 
     nameRhev: (function () {
       if (this.get('isUpstream')) {
-        return 'oVirt';
+        return "oVirt";
       } else {
-        return 'RHEV';
+        return "RHEV";
       }
     }).property('isUpstream'),
 
     nameOpenStack: (function () {
       if (this.get('isUpstream')) {
-        return 'RDO';
+        return "RDO";
       } else {
-        return 'RHELOSP';
+        return "RHELOSP";
       }
     }).property('isUpstream'),
 
     nameCloudForms: (function () {
       if (this.get('isUpstream')) {
-        return 'ManageIQ';
+        return "ManageIQ";
       } else {
-        return 'CloudForms';
+        return "CloudForms";
       }
     }).property('isUpstream'),
 
     // images
     imgRhev: (function () {
       if (this.get('isUpstream')) {
-        return '/assets/r/ovirt-640-210.png';
+        return "/assets/r/ovirt-640-210.png";
       } else {
-        return '/assets/r/rhci-rhev-640-210.png';
+        return "/assets/r/rhci-rhev-640-210.png";
       }
     }).property('isUpstream'),
 
     imgOpenStack: (function () {
       if (this.get('isUpstream')) {
-        return '/assets/r/rdo-640-210.png';
+        return "/assets/r/rdo-640-210.png";
       } else {
-        return '/assets/r/rhci-openstack-640-210.png';
+        return "/assets/r/rhci-openstack-640-210.png";
       }
     }).property('isUpstream'),
 
     imgCloudForms: (function () {
       if (this.get('isUpstream')) {
-        return '/assets/r/manageiq-640-210.png';
+        return "/assets/r/manageiq-640-210.png";
       } else {
-        return '/assets/r/rhci-cloudforms-640-210.png';
+        return "/assets/r/rhci-cloudforms-640-210.png";
       }
     }).property('isUpstream')
 
@@ -4554,14 +4535,14 @@ define('fusor-ember-cli/mixins/tr-engine-hypervisor-mixin', ['exports', 'ember']
     }).property('host.id'),
 
     selectedIds: (function () {
-      return this.get('model').getEach('id');
+      return this.get('model').getEach("id");
     }).property('model.[]'),
 
     hostType: (function () {
       if (this.get('host.is_virtual')) {
-        return 'Virtual';
+        return "Virtual";
       } else {
-        return 'Bare Metal';
+        return "Bare Metal";
       }
     }).property('host.is_virtual'),
 
@@ -4574,13 +4555,13 @@ define('fusor-ember-cli/mixins/tr-engine-hypervisor-mixin', ['exports', 'ember']
         return new Ember['default'].RSVP.Promise(function (resolve, reject) {
           Ember['default'].$.ajax({
             url: '/api/v21/discovered_hosts/' + host.get('id') + '/rename',
-            type: 'PUT',
+            type: "PUT",
             data: JSON.stringify({ 'discovered_host': { 'name': host.get('name') } }),
             headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'X-CSRF-Token': token,
-              'Authorization': 'Basic ' + self.get('session.basicAuthToken')
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "X-CSRF-Token": token,
+              "Authorization": "Basic " + self.get('session.basicAuthToken')
             },
             success: function success(response) {
               resolve(response);
@@ -4630,7 +4611,7 @@ define('fusor-ember-cli/models/coordinator', ['exports', 'ember', 'fusor-ember-c
         payload.ops.target.sendAction('action', payload.obj);
       }
 
-      this.trigger('objectMoved', { obj: payload.obj, source: payload.ops.source, target: ops.target });
+      this.trigger("objectMoved", { obj: payload.obj, source: payload.ops.source, target: ops.target });
 
       return payload.obj;
     },
@@ -4970,14 +4951,14 @@ define('fusor-ember-cli/models/obj-hash', ['exports', 'ember'], function (export
     add: function add(obj) {
       var id = this.generateId();
       this.get('content')[id] = obj;
-      this.incrementProperty('contentLength');
+      this.incrementProperty("contentLength");
       return id;
     },
 
     getObj: function getObj(key) {
       var res = this.get('content')[key];
       if (!res) {
-        throw 'no obj for key ' + key;
+        throw "no obj for key " + key;
       }
       return res;
     },
@@ -4985,7 +4966,7 @@ define('fusor-ember-cli/models/obj-hash', ['exports', 'ember'], function (export
     generateId: function generateId() {
       var num = Math.random() * 1000000000000.0;
       num = parseInt(num);
-      num = '' + num;
+      num = "" + num;
       return num;
     },
 
@@ -4997,7 +4978,7 @@ define('fusor-ember-cli/models/obj-hash', ['exports', 'ember'], function (export
       return Ember['default'].A(res);
     },
 
-    lengthBinding: 'contentLength'
+    lengthBinding: "contentLength"
   });
 
 });
@@ -5126,17 +5107,17 @@ define('fusor-ember-cli/router', ['exports', 'ember', 'fusor-ember-cli/config/en
 
     this.resource('deployments');
 
-    this.resource('deployment-new', { path: '/deployments/new' }, function () {
-      this.route('start');
+    this.resource("deployment-new", { path: '/deployments/new' }, function () {
+      this.route("start");
       this.route('satellite', function () {
         this.route('configure-environment');
-        this.route('configure-organization');
+        this.route("configure-organization");
       });
     });
 
     this.resource('deployment', { path: '/deployments/:deployment_id' }, function () {
 
-      this.route('start');
+      this.route("start");
 
       this.resource('satellite', function () {
         this.resource('configure-organization');
@@ -5423,12 +5404,12 @@ define('fusor-ember-cli/routes/deployment-new/satellite/configure-environment', 
           return controller.set('selectedEnvironment', null);
           // default to Library if it is only env that exists
         } else if (results.get('length') === 1) {
-          var libraryEnv = results.get('firstObject');
-          self.controllerFor('deployment-new').set('lifecycle_environment', libraryEnv);
-          return controller.set('selectedEnvironment', libraryEnv);
-        } else {
-          return controller.set('useDefaultOrgViewForEnv', false);
-        }
+            var libraryEnv = results.get('firstObject');
+            self.controllerFor('deployment-new').set('lifecycle_environment', libraryEnv);
+            return controller.set('selectedEnvironment', libraryEnv);
+          } else {
+            return controller.set('useDefaultOrgViewForEnv', false);
+          }
       });
     }
 
@@ -5546,12 +5527,12 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cl
         return new Ember['default'].RSVP.Promise(function (resolve, reject) {
           Ember['default'].$.ajax({
             url: '/fusor/api/v21/deployments/' + deployment.get('id') + '/deploy',
-            type: 'PUT',
+            type: "PUT",
             headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'X-CSRF-Token': token,
-              'Authorization': 'Basic ' + self.get('session.basicAuthToken')
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "X-CSRF-Token": token,
+              "Authorization": "Basic " + self.get('session.basicAuthToken')
             },
             success: function success(response) {
               resolve(response);
@@ -5602,16 +5583,16 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cl
           if (item.get('isSelectedSubscription')) {
 
             // POST /customer_portal/consumers/#{CONSUMER['uuid']}/entitlements?pool=#{POOL['id']}&quantity=#{QUANTITY}
-            var url = '/customer_portal/consumers/' + consumerUUID + '/entitlements?pool=' + item.get('id') + '&quantity=' + item.get('qtyToAttach');
+            var url = '/customer_portal/consumers/' + consumerUUID + "/entitlements?pool=" + item.get('id') + "&quantity=" + item.get('qtyToAttach');
 
             return new Ember['default'].RSVP.Promise(function (resolve, reject) {
               Ember['default'].$.ajax({
                 url: url,
-                type: 'POST',
+                type: "POST",
                 headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json',
-                  'X-CSRF-Token': token
+                  "Accept": "application/json",
+                  "Content-Type": "application/json",
+                  "X-CSRF-Token": token
                 },
 
                 success: function success() {
@@ -5723,43 +5704,19 @@ define('fusor-ember-cli/routes/engine', ['exports', 'ember'], function (exports,
   });
 
 });
-define('fusor-ember-cli/routes/engine/discovered-host', ['exports', 'ember'], function (exports, Ember) {
+define('fusor-ember-cli/routes/engine/discovered-host', ['exports', 'ember', 'fusor-ember-cli/mixins/discovered-host-route-mixin'], function (exports, Ember, DiscoveredHostRouteMixin) {
 
   'use strict';
 
-  exports['default'] = Ember['default'].Route.extend({
+  exports['default'] = Ember['default'].Route.extend(DiscoveredHostRouteMixin['default'], {
     model: function model() {
       return this.modelFor('deployment').get('discovered_host').then(function (results) {
         return results;
       });
     },
 
-    setupController: function setupController(controller, model) {
-      controller.set('model', model);
-      if (this.modelFor('deployment').get('isNotStarted')) {
-        controller.set('isLoadingHosts', true);
-        this.store.find('discovered-host').then(function (results) {
-          controller.set('allDiscoveredHosts', results);
-          controller.set('isLoadingHosts', false);
-        });
-      }
-    },
-
     deactivate: function deactivate() {
       return this.send('saveDeployment', null);
-    },
-
-    // TODO - make mixin - same on route hypervisor/discovered-host
-    actions: {
-      refreshDiscoveredHosts: function refreshDiscoveredHosts() {
-        console.log('refresh allDiscoveredHosts');
-        var controller = this.get('controller');
-        controller.set('isLoadingHosts', true);
-        this.store.find('discovered-host').then(function (results) {
-          controller.set('allDiscoveredHosts', results);
-          controller.set('isLoadingHosts', false);
-        });
-      }
     }
 
   });
@@ -5776,24 +5733,13 @@ define('fusor-ember-cli/routes/hypervisor', ['exports', 'ember'], function (expo
   });
 
 });
-define('fusor-ember-cli/routes/hypervisor/discovered-host', ['exports', 'ember'], function (exports, Ember) {
+define('fusor-ember-cli/routes/hypervisor/discovered-host', ['exports', 'ember', 'fusor-ember-cli/mixins/discovered-host-route-mixin'], function (exports, Ember, DiscoveredHostRouteMixin) {
 
   'use strict';
 
-  exports['default'] = Ember['default'].Route.extend({
+  exports['default'] = Ember['default'].Route.extend(DiscoveredHostRouteMixin['default'], {
     model: function model() {
       return this.modelFor('deployment').get('discovered_hosts');
-    },
-
-    setupController: function setupController(controller, model) {
-      controller.set('model', model);
-      if (this.modelFor('deployment').get('isNotStarted')) {
-        controller.set('isLoadingHosts', true);
-        this.store.find('discovered-host').then(function (results) {
-          controller.set('allDiscoveredHosts', results);
-          controller.set('isLoadingHosts', false);
-        });
-      }
     },
 
     deactivate: function deactivate() {
@@ -5810,13 +5756,13 @@ define('fusor-ember-cli/routes/hypervisor/discovered-host', ['exports', 'ember']
         return new Ember['default'].RSVP.Promise(function (resolve, reject) {
           Ember['default'].$.ajax({
             url: '/fusor/api/v21/deployments/' + deployment.get('id'),
-            type: 'PUT',
+            type: "PUT",
             data: JSON.stringify({ 'deployment': { 'discovered_host_ids': hypervisorModelIds } }),
             headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'X-CSRF-Token': token,
-              'Authorization': 'Basic ' + self.get('session.basicAuthToken')
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "X-CSRF-Token": token,
+              "Authorization": "Basic " + self.get('session.basicAuthToken')
             },
             success: function success(response) {
               resolve(response);
@@ -5830,19 +5776,7 @@ define('fusor-ember-cli/routes/hypervisor/discovered-host', ['exports', 'ember']
             }
           });
         });
-      },
-
-      // TODO - make mixin - same on route engine/discovered-host
-      refreshDiscoveredHosts: function refreshDiscoveredHosts() {
-        console.log('refresh allDiscoveredHosts');
-        var controller = this.get('controller');
-        controller.set('isLoadingHosts', true);
-        this.store.find('discovered-host').then(function (results) {
-          controller.set('allDiscoveredHosts', results);
-          controller.set('isLoadingHosts', false);
-        });
       }
-
     }
 
   });
@@ -6029,7 +5963,7 @@ define('fusor-ember-cli/routes/review/progress/details', ['exports', 'ember'], f
       if (model.manageContentTask) {
         var manageContentTaskUuid = model.manageContentTask.get('id');
         console.log(manageContentTaskUuid);
-        return this.store.find('foreman-task', { search: 'parent_task_id=' + manageContentTaskUuid }).then(function (synctasks) {
+        return this.store.find('foreman-task', { search: "parent_task_id=" + manageContentTaskUuid }).then(function (synctasks) {
           controller.set('synctasks', synctasks);
           return controller.set('isLoadingMoreTasks', false);
         });
@@ -6101,8 +6035,8 @@ define('fusor-ember-cli/routes/review/progress/overview', ['exports', 'ember'], 
   exports['default'] = Ember['default'].Route.extend({
     model: function model() {
       var deployment = this.modelFor('deployment');
-      var deployTaskPromise = this.store.find('foreman-task', { search: 'id = ' + deployment.get('foreman_task_uuid') });
-      var subtasksOfDeployPromise = this.store.find('foreman-task', { search: 'parent_task_id = ' + deployment.get('foreman_task_uuid') });
+      var deployTaskPromise = this.store.find('foreman-task', { search: "id = " + deployment.get('foreman_task_uuid') });
+      var subtasksOfDeployPromise = this.store.find('foreman-task', { search: "parent_task_id = " + deployment.get('foreman_task_uuid') });
       var self = this;
       return Ember['default'].RSVP.Promise.all([deployTaskPromise, subtasksOfDeployPromise]).then(function (results) {
         var deployTask = results[0].get('firstObject');
@@ -6151,7 +6085,7 @@ define('fusor-ember-cli/routes/review/summary', ['exports', 'ember'], function (
 
     model: function model() {
       var deployment_id = this.modelFor('deployment').get('id');
-      return this.store.find('deployment', { search: 'id = ' + deployment_id }).then(function (results) {
+      return this.store.find('deployment', { search: "id = " + deployment_id }).then(function (results) {
         return results.get('firstObject');
       });
     }
@@ -6327,8 +6261,10 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
 
       if (model.get('isAuthenticated')) {
         // verify isAuthenticated: true is accurate, since Satellite session may have changed.
-        var urlVerify = '/customer_portal/users/' + model.get('identification') + '/owners';
-        Ember['default'].$.getJSON(urlVerify).then(function (results) {}, function (results) {
+        var urlVerify = '/customer_portal/users/' + model.get('identification') + "/owners";
+        Ember['default'].$.getJSON(urlVerify).then(function (results) {
+          //do nothing
+        }, function (results) {
           model.set('isAuthenticated', false);
           model.save();
         });
@@ -6351,17 +6287,17 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
         var identification = controller.get('model.identification');
         var password = controller.get('password');
         var token = Ember['default'].$('meta[name="csrf-token"]').attr('content');
-        controller.set('nextButtonTitle', 'Logging in ...');
+        controller.set('nextButtonTitle', "Logging in ...");
         controller.set('disableCredentialsNext', true);
         return new Ember['default'].RSVP.Promise(function (resolve, reject) {
           Ember['default'].$.ajax({
             url: '/customer_portal/login/',
-            type: 'POST',
+            type: "POST",
             data: JSON.stringify({ username: identification, password: password }),
             headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'X-CSRF-Token': token
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "X-CSRF-Token": token
             },
             success: function success(response) {
               //show always be {} empty successful 200 response
@@ -6369,7 +6305,7 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
             },
             error: function error(response) {
               console.log('error on loginPortal');
-              controller.set('nextButtonTitle', 'Next');
+              controller.set('nextButtonTitle', "Next");
               controller.set('disableCredentialsNext', false);
               return self.send('error');
             }
@@ -6384,11 +6320,11 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
         return new Ember['default'].RSVP.Promise(function (resolve, reject) {
           Ember['default'].$.ajax({
             url: '/customer_portal/logout/',
-            type: 'POST',
+            type: "POST",
             headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'X-CSRF-Token': token
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "X-CSRF-Token": token
             },
             success: function success(response) {
               //show always be {} empty successful 200 response
@@ -6422,7 +6358,7 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
           return self.send('authenticatePortal');
         }, function (response) {
           console.log('error saving session-portal');
-          controller.set('nextButtonTitle', 'Next');
+          controller.set('nextButtonTitle', "Next");
           controller.set('disableCredentialsNext', false);
           return self.send('error');
         });
@@ -6434,16 +6370,16 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
         var identification = controller.get('model.identification');
         var token = Ember['default'].$('meta[name="csrf-token"]').attr('content');
         var self = this;
-        var url = '/customer_portal/users/' + identification + '/owners';
+        var url = '/customer_portal/users/' + identification + "/owners";
 
         return new Ember['default'].RSVP.Promise(function (resolve, reject) {
           Ember['default'].$.ajax({
             url: url,
-            type: 'GET',
+            type: "GET",
             headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'X-CSRF-Token': token
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "X-CSRF-Token": token
             },
 
             success: function success(response) {
@@ -6454,11 +6390,11 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
               sessionPortal.set('isAuthenticated', true);
               sessionPortal.save().then(function (result) {
                 console.log('saved ownerKey in session-portal');
-                controller.set('nextButtonTitle', 'Next');
+                controller.set('nextButtonTitle', "Next");
                 controller.set('disableCredentialsNext', false);
                 return self.transitionTo('subscriptions.management-application');
               }, function (response) {
-                controller.set('nextButtonTitle', 'Next');
+                controller.set('nextButtonTitle', "Next");
                 controller.set('disableCredentialsNext', false);
                 console.log('error saving ownerKey session-portal');
               });
@@ -6466,7 +6402,7 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
 
             error: function error(response) {
               console.log('error on authenticatePortal');
-              controller.set('nextButtonTitle', 'Next');
+              controller.set('nextButtonTitle', "Next");
               controller.set('disableCredentialsNext', false);
               controller.setProperties({ 'showErrorMessage': true,
                 'errorMsg': 'Your username or password is incorrect. Please try again.'
@@ -6483,8 +6419,6 @@ define('fusor-ember-cli/routes/subscriptions/credentials', ['exports', 'ember'],
     }
 
   });
-
-  //do nothing
 
 });
 define('fusor-ember-cli/routes/subscriptions/index', ['exports', 'ember'], function (exports, Ember) {
@@ -6706,7 +6640,10 @@ define('fusor-ember-cli/routes/subscriptions/select-subscriptions', ['exports', 
       }
     },
 
-    deactivate: function deactivate() {},
+    deactivate: function deactivate() {
+      // uncommeting causes inFlight issues
+      // return this.send('saveSubscriptions', null);
+    },
 
     actions: {
 
@@ -6755,9 +6692,6 @@ define('fusor-ember-cli/routes/subscriptions/select-subscriptions', ['exports', 
     }
 
   });
-
-  // uncommeting causes inFlight issues
-  // return this.send('saveSubscriptions', null);
 
 });
 define('fusor-ember-cli/routes/where-install', ['exports', 'ember'], function (exports, Ember) {
@@ -6918,7 +6852,7 @@ define('fusor-ember-cli/services/validations', ['exports', 'ember'], function (e
 
   var set = Ember['default'].set;
 
-  exports['default'] = Ember['default'].Object.extend({
+  exports['default'] = Ember['default'].Service.extend({
     init: function init() {
       set(this, 'cache', {});
     }
@@ -11690,7 +11624,7 @@ define('fusor-ember-cli/templates/components/labeled-radio-button', ['exports'],
         var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
         var morph1 = dom.createMorphAt(fragment,2,2,contextualElement);
         dom.insertBoundary(fragment, 0);
-        inline(env, morph0, context, "radio-button", [], {"changed": "innerRadioChanged", "disabled": get(env, context, "disabled"), "groupValue": get(env, context, "groupValue"), "name": get(env, context, "name"), "required": get(env, context, "required"), "value": get(env, context, "value")});
+        inline(env, morph0, context, "radio-button", [], {"radioClass": get(env, context, "radioClass"), "radioId": get(env, context, "radioId"), "changed": "innerRadioChanged", "disabled": get(env, context, "disabled"), "groupValue": get(env, context, "groupValue"), "name": get(env, context, "name"), "required": get(env, context, "required"), "value": get(env, context, "value")});
         content(env, morph1, context, "yield");
         return fragment;
       }
@@ -13318,6 +13252,156 @@ define('fusor-ember-cli/templates/components/radio-button-f', ['exports'], funct
         inline(env, morph0, context, "radio-button", [], {"name": get(env, context, "name"), "value": get(env, context, "value"), "checked": get(env, context, "checked"), "id": get(env, context, "cssId")});
         content(env, morph1, context, "value");
         content(env, morph2, context, "label");
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('fusor-ember-cli/templates/components/radio-button', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    var child0 = (function() {
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("label");
+          var el2 = dom.createTextNode("\n    ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n\n    ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n  ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, get = hooks.get, subexpr = hooks.subexpr, concat = hooks.concat, attribute = hooks.attribute, inline = hooks.inline, content = hooks.content;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          var element0 = dom.childAt(fragment, [1]);
+          var morph0 = dom.createMorphAt(element0,1,1);
+          var morph1 = dom.createMorphAt(element0,3,3);
+          var attrMorph0 = dom.createAttrMorph(element0, 'class');
+          var attrMorph1 = dom.createAttrMorph(element0, 'for');
+          attribute(env, attrMorph0, element0, "class", concat(env, ["ember-radio-button ", subexpr(env, context, "if", [get(env, context, "checked"), "checked"], {}), " ", get(env, context, "joinedClassNames")]));
+          attribute(env, attrMorph1, element0, "for", get(env, context, "radioId"));
+          inline(env, morph0, context, "radio-button-input", [], {"class": get(env, context, "radioClass"), "id": get(env, context, "radioId"), "disabled": get(env, context, "disabled"), "name": get(env, context, "name"), "required": get(env, context, "required"), "groupValue": get(env, context, "groupValue"), "value": get(env, context, "value"), "changed": "changed"});
+          content(env, morph1, context, "yield");
+          return fragment;
+        }
+      };
+    }());
+    var child1 = (function() {
+      return {
+        isHTMLBars: true,
+        revision: "Ember@1.11.1",
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
+          inline(env, morph0, context, "radio-button-input", [], {"class": get(env, context, "radioClass"), "id": get(env, context, "radioId"), "disabled": get(env, context, "disabled"), "name": get(env, context, "name"), "required": get(env, context, "required"), "groupValue": get(env, context, "groupValue"), "value": get(env, context, "value"), "changed": "changed"});
+          return fragment;
+        }
+      };
+    }());
+    return {
+      isHTMLBars: true,
+      revision: "Ember@1.11.1",
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, get = hooks.get, block = hooks.block;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
+        dom.insertBoundary(fragment, null);
+        dom.insertBoundary(fragment, 0);
+        block(env, morph0, context, "if", [get(env, context, "hasBlock")], {}, child0, child1);
         return fragment;
       }
     };
@@ -15020,6 +15104,92 @@ define('fusor-ember-cli/templates/components/text-f', ['exports'], function (exp
             }
           };
         }());
+        var child3 = (function() {
+          return {
+            isHTMLBars: true,
+            revision: "Ember@1.11.1",
+            blockParams: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            build: function build(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("        ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createElement("span");
+              dom.setAttribute(el1,"class","error errorForValidation");
+              var el2 = dom.createTextNode("\n            must contain only 'A-Z', 'a-z', '0-9', '_' or '-' characters\n        ");
+              dom.appendChild(el1, el2);
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            render: function render(context, env, contextualElement) {
+              var dom = env.dom;
+              dom.detectNamespace(contextualElement);
+              var fragment;
+              if (env.useFragmentCache && dom.canClone) {
+                if (this.cachedFragment === null) {
+                  fragment = this.build(dom);
+                  if (this.hasRendered) {
+                    this.cachedFragment = fragment;
+                  } else {
+                    this.hasRendered = true;
+                  }
+                }
+                if (this.cachedFragment) {
+                  fragment = dom.cloneNode(this.cachedFragment, true);
+                }
+              } else {
+                fragment = this.build(dom);
+              }
+              return fragment;
+            }
+          };
+        }());
+        var child4 = (function() {
+          return {
+            isHTMLBars: true,
+            revision: "Ember@1.11.1",
+            blockParams: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            build: function build(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("        ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createElement("span");
+              dom.setAttribute(el1,"class","error errorForValidation");
+              var el2 = dom.createTextNode("\n            invalid hostname\n        ");
+              dom.appendChild(el1, el2);
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            render: function render(context, env, contextualElement) {
+              var dom = env.dom;
+              dom.detectNamespace(contextualElement);
+              var fragment;
+              if (env.useFragmentCache && dom.canClone) {
+                if (this.cachedFragment === null) {
+                  fragment = this.build(dom);
+                  if (this.hasRendered) {
+                    this.cachedFragment = fragment;
+                  } else {
+                    this.hasRendered = true;
+                  }
+                }
+                if (this.cachedFragment) {
+                  fragment = dom.cloneNode(this.cachedFragment, true);
+                }
+              } else {
+                fragment = this.build(dom);
+              }
+              return fragment;
+            }
+          };
+        }());
         return {
           isHTMLBars: true,
           revision: "Ember@1.11.1",
@@ -15028,6 +15198,14 @@ define('fusor-ember-cli/templates/components/text-f', ['exports'], function (exp
           hasRendered: false,
           build: function build(dom) {
             var el0 = dom.createDocumentFragment();
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
             var el1 = dom.createComment("");
             dom.appendChild(el0, el1);
             var el1 = dom.createTextNode("\n");
@@ -15065,10 +15243,14 @@ define('fusor-ember-cli/templates/components/text-f', ['exports'], function (exp
             var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
             var morph1 = dom.createMorphAt(fragment,2,2,contextualElement);
             var morph2 = dom.createMorphAt(fragment,4,4,contextualElement);
+            var morph3 = dom.createMorphAt(fragment,6,6,contextualElement);
+            var morph4 = dom.createMorphAt(fragment,8,8,contextualElement);
             dom.insertBoundary(fragment, 0);
             block(env, morph0, context, "if", [get(env, context, "validIsRequiredAndBlank")], {}, child0, null);
             block(env, morph1, context, "if", [get(env, context, "passwordTooShort")], {}, child1, null);
             block(env, morph2, context, "if", [get(env, context, "validIsUnique")], {}, child2, null);
+            block(env, morph3, context, "if", [get(env, context, "invalidIsAlphaNumeric")], {}, child3, null);
+            block(env, morph4, context, "if", [get(env, context, "invalidIsHostname")], {}, child4, null);
             return fragment;
           }
         };
@@ -28926,8 +29108,8 @@ define('fusor-ember-cli/templates/rhev-options', ['exports'], function (exports)
         var morph5 = dom.createMorphAt(fragment,4,4,contextualElement);
         inline(env, morph0, context, "text-f", [], {"label": "Root password for Engine & Hypervisor", "type": "password", "value": get(env, context, "rhev_root_password"), "cssId": "rhev_root_password", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted"), "minChars": 8, "help-inline": "must be 8 or more characters", "placeholder": "must be 8 or more characters"});
         inline(env, morph1, context, "text-f", [], {"label": "Engine admin password", "type": "password", "value": get(env, context, "rhev_engine_admin_password"), "cssId": "rhev_engine_admin_password", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted"), "minChars": 8, "help-inline": "must be 8 or more characters", "placeholder": "must be 8 or more characters"});
-        inline(env, morph2, context, "text-f", [], {"label": "Datacenter Name", "value": get(env, context, "rhev_database_name"), "placeholder": "Leave blank for default", "cssId": "rhev_database_name", "disabled": get(env, context, "controllers.deployment.isStarted")});
-        inline(env, morph3, context, "text-f", [], {"label": "Cluster Name", "value": get(env, context, "rhev_cluster_name"), "placeholder": "Leave blank for default", "cssId": "rhev_cluster_name", "disabled": get(env, context, "controllers.deployment.isStarted")});
+        inline(env, morph2, context, "text-f", [], {"label": "Datacenter Name", "value": get(env, context, "rhev_database_name"), "placeholder": "Leave blank for default", "cssId": "rhev_database_name", "disabled": get(env, context, "controllers.deployment.isStarted"), "isAlphaNumeric": true});
+        inline(env, morph3, context, "text-f", [], {"label": "Cluster Name", "value": get(env, context, "rhev_cluster_name"), "placeholder": "Leave blank for default", "cssId": "rhev_cluster_name", "disabled": get(env, context, "controllers.deployment.isStarted"), "isAlphaNumeric": true});
         inline(env, morph4, context, "select-simple-f", [], {"label": "CPU Type", "content": get(env, context, "cpuTypes"), "value": get(env, context, "rhev_cpu_type"), "prompt": "Leave blank for default", "cssId": "rhev_cpu_type", "disabled": get(env, context, "controllers.deployment.isStarted")});
         inline(env, morph5, context, "cancel-back-next", [], {"backRouteName": get(env, context, "optionsBackRouteName"), "disableBack": false, "nextRouteName": "storage", "disableNext": get(env, context, "disableNextRhevOptions"), "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
         return fragment;
@@ -30132,8 +30314,8 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
           var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
           var morph1 = dom.createMorphAt(fragment,3,3,contextualElement);
           var morph2 = dom.createMorphAt(fragment,5,5,contextualElement);
-          inline(env, morph0, context, "text-f", [], {"label": "Data Domain Name", "value": get(env, context, "rhev_storage_name"), "isRequired": true, "cssId": "rhev_storage_name", "disabled": get(env, context, "controllers.deployment.isStarted")});
-          inline(env, morph1, context, "text-f", [], {"label": "Storage Address", "value": get(env, context, "rhev_storage_address"), "isRequired": true, "cssId": "rhev_storage_address", "disabled": get(env, context, "controllers.deployment.isStarted")});
+          inline(env, morph0, context, "text-f", [], {"label": "Data Domain Name", "value": get(env, context, "rhev_storage_name"), "isRequired": true, "cssId": "rhev_storage_name", "disabled": get(env, context, "controllers.deployment.isStarted"), "isAlphaNumeric": true});
+          inline(env, morph1, context, "text-f", [], {"label": "Storage Address", "value": get(env, context, "rhev_storage_address"), "isRequired": true, "cssId": "rhev_storage_address", "disabled": get(env, context, "controllers.deployment.isStarted"), "isHostname": true});
           inline(env, morph2, context, "text-f", [], {"label": "Share Path", "value": get(env, context, "rhev_share_path"), "isRequired": true, "cssId": "rhev_share_path", "disabled": get(env, context, "controllers.deployment.isStarted"), "errors": get(env, context, "errorsHashSharePath")});
           return fragment;
         }
@@ -30387,8 +30569,8 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
           var morph0 = dom.createMorphAt(element0,1,1);
           var morph1 = dom.createMorphAt(element0,3,3);
           var morph2 = dom.createMorphAt(element0,5,5);
-          inline(env, morph0, context, "text-f", [], {"label": "Export Domain Name", "value": get(env, context, "rhev_export_domain_name"), "cssId": "rhev_export_domain_name", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted")});
-          inline(env, morph1, context, "text-f", [], {"label": "Storage Address", "value": get(env, context, "rhev_export_domain_address"), "cssId": "rhev_export_domain_address", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted")});
+          inline(env, morph0, context, "text-f", [], {"label": "Export Domain Name", "value": get(env, context, "rhev_export_domain_name"), "cssId": "rhev_export_domain_name", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted"), "isAlphaNumeric": true});
+          inline(env, morph1, context, "text-f", [], {"label": "Storage Address", "value": get(env, context, "rhev_export_domain_address"), "cssId": "rhev_export_domain_address", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted"), "isHostname": true});
           inline(env, morph2, context, "text-f", [], {"label": "Share Path", "value": get(env, context, "rhev_export_domain_path"), "cssId": "rhev_export_domain_path", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted"), "errors": get(env, context, "errorsHashExportPath")});
           return fragment;
         }
@@ -30411,8 +30593,6 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
         var el2 = dom.createTextNode("\n\n");
         dom.appendChild(el1, el2);
         var el2 = dom.createComment("");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\n");
         dom.appendChild(el1, el2);
         var el2 = dom.createComment("");
         dom.appendChild(el1, el2);
@@ -30454,7 +30634,7 @@ define('fusor-ember-cli/templates/storage', ['exports'], function (exports) {
         var element2 = dom.childAt(fragment, [2]);
         var morph0 = dom.createMorphAt(fragment,0,0,contextualElement);
         var morph1 = dom.createMorphAt(element2,1,1);
-        var morph2 = dom.createMorphAt(element2,3,3);
+        var morph2 = dom.createMorphAt(element2,2,2);
         var morph3 = dom.createMorphAt(fragment,4,4,contextualElement);
         var morph4 = dom.createMorphAt(fragment,6,6,contextualElement);
         dom.insertBoundary(fragment, 0);
@@ -35128,6 +35308,76 @@ define('fusor-ember-cli/tests/helpers/start-app.jshint', function () {
   });
 
 });
+define('fusor-ember-cli/tests/helpers/validate-properties', ['exports', 'ember', 'ember-qunit'], function (exports, Ember, ember_qunit) {
+
+  'use strict';
+
+  exports.testValidPropertyValues = testValidPropertyValues;
+  exports.testInvalidPropertyValues = testInvalidPropertyValues;
+
+  var run = Ember['default'].run;
+
+  function validateValues(object, propertyName, values, isTestForValid) {
+    var promise = null;
+    var validatedValues = [];
+
+    values.forEach(function (value) {
+      function handleValidation(errors) {
+        var hasErrors = object.get('errors.' + propertyName + '.firstObject');
+        if (hasErrors && !isTestForValid || !hasErrors && isTestForValid) {
+          validatedValues.push(value);
+        }
+      }
+
+      run(object, 'set', propertyName, value);
+
+      var objectPromise = null;
+      run(function () {
+        objectPromise = object.validate().then(handleValidation, handleValidation);
+      });
+
+      // Since we are setting the values in a different run loop as we are validating them,
+      // we need to chain the promises so that they run sequentially. The wrong value will
+      // be validated if the promises execute concurrently
+      promise = promise ? promise.then(objectPromise) : objectPromise;
+    });
+
+    return promise.then(function () {
+      return validatedValues;
+    });
+  }
+
+  function testPropertyValues(propertyName, values, isTestForValid, context) {
+    var validOrInvalid = isTestForValid ? 'Valid' : 'Invalid';
+    var testName = validOrInvalid + ' ' + propertyName;
+
+    ember_qunit.test(testName, function (assert) {
+      var object = this.subject();
+
+      if (context && typeof context === 'function') {
+        context(object);
+      }
+
+      // Use QUnit.dump.parse so null and undefined can be printed as literal 'null' and
+      // 'undefined' strings in the assert message.
+      var valuesString = QUnit.dump.parse(values).replace(/\n(\s+)?/g, '').replace(/,/g, ', ');
+      var assertMessage = 'Expected ' + propertyName + ' to have ' + validOrInvalid.toLowerCase() + ' values: ' + valuesString;
+
+      return validateValues(object, propertyName, values, isTestForValid).then(function (validatedValues) {
+        assert.deepEqual(validatedValues, values, assertMessage);
+      });
+    });
+  }
+
+  function testValidPropertyValues(propertyName, values, context) {
+    testPropertyValues(propertyName, values, true, context);
+  }
+
+  function testInvalidPropertyValues(propertyName, values, context) {
+    testPropertyValues(propertyName, values, false, context);
+  }
+
+});
 define('fusor-ember-cli/tests/mixins/configure-environment-mixin.jshint', function () {
 
   'use strict';
@@ -35195,6 +35445,16 @@ define('fusor-ember-cli/tests/mixins/disable-tab-mixin.jshint', function () {
   module('JSHint - mixins');
   test('mixins/disable-tab-mixin.js should pass jshint', function() { 
     ok(true, 'mixins/disable-tab-mixin.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/mixins/discovered-host-route-mixin.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - mixins');
+  test('mixins/discovered-host-route-mixin.js should pass jshint', function() { 
+    ok(true, 'mixins/discovered-host-route-mixin.js should pass jshint.'); 
   });
 
 });
@@ -36069,16 +36329,16 @@ define('fusor-ember-cli/tests/unit/adapters/application-test', ['ember-qunit'], 
 
   'use strict';
 
-  ember_qunit.moduleFor('adapter:application', 'Unit | Adapter | application', {});
+  ember_qunit.moduleFor('adapter:application', 'Unit | Adapter | application', {
+    // Specify the other units that are required for this test.
+    // needs: ['serializer:foo']
+  });
 
   // Replace this with your real tests.
   ember_qunit.test('it exists', function (assert) {
     var adapter = this.subject();
     assert.ok(adapter);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['serializer:foo']
 
 });
 define('fusor-ember-cli/tests/unit/adapters/application-test.jshint', function () {
@@ -36095,16 +36355,16 @@ define('fusor-ember-cli/tests/unit/adapters/deployment-test', ['ember-qunit'], f
 
   'use strict';
 
-  ember_qunit.moduleFor('adapter:deployment', 'Unit | Adapter | deployment', {});
+  ember_qunit.moduleFor('adapter:deployment', 'Unit | Adapter | deployment', {
+    // Specify the other units that are required for this test.
+    // needs: ['serializer:foo']
+  });
 
   // Replace this with your real tests.
   ember_qunit.test('it exists', function (assert) {
     var adapter = this.subject();
     assert.ok(adapter);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['serializer:foo']
 
 });
 define('fusor-ember-cli/tests/unit/adapters/deployment-test.jshint', function () {
@@ -36121,16 +36381,16 @@ define('fusor-ember-cli/tests/unit/adapters/entitlement-test', ['ember-qunit'], 
 
   'use strict';
 
-  ember_qunit.moduleFor('adapter:entitlement', 'Unit | Adapter | entitlement', {});
+  ember_qunit.moduleFor('adapter:entitlement', 'Unit | Adapter | entitlement', {
+    // Specify the other units that are required for this test.
+    // needs: ['serializer:foo']
+  });
 
   // Replace this with your real tests.
   ember_qunit.test('it exists', function (assert) {
     var adapter = this.subject();
     assert.ok(adapter);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['serializer:foo']
 
 });
 define('fusor-ember-cli/tests/unit/adapters/entitlement-test.jshint', function () {
@@ -36147,16 +36407,16 @@ define('fusor-ember-cli/tests/unit/adapters/foreman-task-test', ['ember-qunit'],
 
   'use strict';
 
-  ember_qunit.moduleFor('adapter:foreman-task', 'Unit | Adapter | foreman task', {});
+  ember_qunit.moduleFor('adapter:foreman-task', 'Unit | Adapter | foreman task', {
+    // Specify the other units that are required for this test.
+    // needs: ['serializer:foo']
+  });
 
   // Replace this with your real tests.
   ember_qunit.test('it exists', function (assert) {
     var adapter = this.subject();
     assert.ok(adapter);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['serializer:foo']
 
 });
 define('fusor-ember-cli/tests/unit/adapters/foreman-task-test.jshint', function () {
@@ -36173,16 +36433,16 @@ define('fusor-ember-cli/tests/unit/adapters/management-application-test', ['embe
 
   'use strict';
 
-  ember_qunit.moduleFor('adapter:management-application', 'Unit | Adapter | management application', {});
+  ember_qunit.moduleFor('adapter:management-application', 'Unit | Adapter | management application', {
+    // Specify the other units that are required for this test.
+    // needs: ['serializer:foo']
+  });
 
   // Replace this with your real tests.
   ember_qunit.test('it exists', function (assert) {
     var adapter = this.subject();
     assert.ok(adapter);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['serializer:foo']
 
 });
 define('fusor-ember-cli/tests/unit/adapters/management-application-test.jshint', function () {
@@ -36199,16 +36459,16 @@ define('fusor-ember-cli/tests/unit/adapters/pool-test', ['ember-qunit'], functio
 
   'use strict';
 
-  ember_qunit.moduleFor('adapter:pool', 'Unit | Adapter | pool', {});
+  ember_qunit.moduleFor('adapter:pool', 'Unit | Adapter | pool', {
+    // Specify the other units that are required for this test.
+    // needs: ['serializer:foo']
+  });
 
   // Replace this with your real tests.
   ember_qunit.test('it exists', function (assert) {
     var adapter = this.subject();
     assert.ok(adapter);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['serializer:foo']
 
 });
 define('fusor-ember-cli/tests/unit/adapters/pool-test.jshint', function () {
@@ -36225,16 +36485,16 @@ define('fusor-ember-cli/tests/unit/adapters/session-portal-test', ['ember-qunit'
 
   'use strict';
 
-  ember_qunit.moduleFor('adapter:session-portal', 'Unit | Adapter | session portal', {});
+  ember_qunit.moduleFor('adapter:session-portal', 'Unit | Adapter | session portal', {
+    // Specify the other units that are required for this test.
+    // needs: ['serializer:foo']
+  });
 
   // Replace this with your real tests.
   ember_qunit.test('it exists', function (assert) {
     var adapter = this.subject();
     assert.ok(adapter);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['serializer:foo']
 
 });
 define('fusor-ember-cli/tests/unit/adapters/session-portal-test.jshint', function () {
@@ -37334,16 +37594,16 @@ define('fusor-ember-cli/tests/unit/controllers/entitlements-test', ['ember-qunit
 
   'use strict';
 
-  ember_qunit.moduleFor('controller:entitlements', {});
+  ember_qunit.moduleFor('controller:entitlements', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   // Replace this with your real tests.
   ember_qunit.test('it exists', function (assert) {
     var controller = this.subject();
     assert.ok(controller);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/controllers/entitlements-test.jshint', function () {
@@ -37599,6 +37859,30 @@ define('fusor-ember-cli/tests/unit/mixins/disable-tab-mixin-test.jshint', functi
   module('JSHint - unit/mixins');
   test('unit/mixins/disable-tab-mixin-test.js should pass jshint', function() { 
     ok(true, 'unit/mixins/disable-tab-mixin-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/mixins/discovered-host-route-mixin-test', ['ember', 'fusor-ember-cli/mixins/discovered-host-route-mixin', 'qunit'], function (Ember, DiscoveredHostRouteMixinMixin, qunit) {
+
+  'use strict';
+
+  qunit.module('Unit | Mixin | discovered host route mixin');
+
+  // Replace this with your real tests.
+  qunit.test('it works', function (assert) {
+    var DiscoveredHostRouteMixinObject = Ember['default'].Object.extend(DiscoveredHostRouteMixinMixin['default']);
+    var subject = DiscoveredHostRouteMixinObject.create();
+    assert.ok(subject);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/mixins/discovered-host-route-mixin-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/mixins');
+  test('unit/mixins/discovered-host-route-mixin-test.js should pass jshint', function() { 
+    ok(true, 'unit/mixins/discovered-host-route-mixin-test.js should pass jshint.'); 
   });
 
 });
@@ -38094,15 +38378,15 @@ define('fusor-ember-cli/tests/unit/routes/application-test', ['ember-qunit'], fu
 
   'use strict';
 
-  ember_qunit.moduleFor('route:application', 'Unit | Route | application', {});
+  ember_qunit.moduleFor('route:application', 'Unit | Route | application', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/application-test.jshint', function () {
@@ -38119,15 +38403,15 @@ define('fusor-ember-cli/tests/unit/routes/assign-nodes-test', ['ember-qunit'], f
 
   'use strict';
 
-  ember_qunit.moduleFor('route:assign-nodes', 'Unit | Route | assign nodes', {});
+  ember_qunit.moduleFor('route:assign-nodes', 'Unit | Route | assign nodes', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/assign-nodes-test.jshint', function () {
@@ -38144,15 +38428,15 @@ define('fusor-ember-cli/tests/unit/routes/cloudforms-test', ['ember-qunit'], fun
 
   'use strict';
 
-  ember_qunit.moduleFor('route:cloudforms', 'Unit | Route | cloudforms', {});
+  ember_qunit.moduleFor('route:cloudforms', 'Unit | Route | cloudforms', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/cloudforms-test.jshint', function () {
@@ -38169,15 +38453,15 @@ define('fusor-ember-cli/tests/unit/routes/cloudforms/cfme-configuration-test', [
 
   'use strict';
 
-  ember_qunit.moduleFor('route:cloudforms/cfme-configuration', 'Unit | Route | cloudforms/cfme configuration', {});
+  ember_qunit.moduleFor('route:cloudforms/cfme-configuration', 'Unit | Route | cloudforms/cfme configuration', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/cloudforms/cfme-configuration-test.jshint', function () {
@@ -38194,15 +38478,15 @@ define('fusor-ember-cli/tests/unit/routes/cloudforms/index-test', ['ember-qunit'
 
   'use strict';
 
-  ember_qunit.moduleFor('route:cloudforms/index', 'Unit | Route | cloudforms/index', {});
+  ember_qunit.moduleFor('route:cloudforms/index', 'Unit | Route | cloudforms/index', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/cloudforms/index-test.jshint', function () {
@@ -38219,15 +38503,15 @@ define('fusor-ember-cli/tests/unit/routes/configure-environment-test', ['ember-q
 
   'use strict';
 
-  ember_qunit.moduleFor('route:configure-environment', 'Unit | Route | configure environment', {});
+  ember_qunit.moduleFor('route:configure-environment', 'Unit | Route | configure environment', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/configure-environment-test.jshint', function () {
@@ -38244,15 +38528,15 @@ define('fusor-ember-cli/tests/unit/routes/configure-organization-test', ['ember-
 
   'use strict';
 
-  ember_qunit.moduleFor('route:configure-organization', 'Unit | Route | configure organization', {});
+  ember_qunit.moduleFor('route:configure-organization', 'Unit | Route | configure organization', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/configure-organization-test.jshint', function () {
@@ -38269,15 +38553,15 @@ define('fusor-ember-cli/tests/unit/routes/consumer-test', ['ember-qunit'], funct
 
   'use strict';
 
-  ember_qunit.moduleFor('route:consumer', 'Unit | Route | consumer', {});
+  ember_qunit.moduleFor('route:consumer', 'Unit | Route | consumer', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/consumer-test.jshint', function () {
@@ -38294,15 +38578,15 @@ define('fusor-ember-cli/tests/unit/routes/consumers-test', ['ember-qunit'], func
 
   'use strict';
 
-  ember_qunit.moduleFor('route:consumers', 'Unit | Route | consumers', {});
+  ember_qunit.moduleFor('route:consumers', 'Unit | Route | consumers', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/consumers-test.jshint', function () {
@@ -38319,15 +38603,15 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new-test', ['ember-qunit'],
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment-new', 'Unit | Route | deployment new', {});
+  ember_qunit.moduleFor('route:deployment-new', 'Unit | Route | deployment new', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployment-new-test.jshint', function () {
@@ -38344,15 +38628,15 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/index-test', ['ember-qu
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment-new/index', 'Unit | Route | deployment new/index', {});
+  ember_qunit.moduleFor('route:deployment-new/index', 'Unit | Route | deployment new/index', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployment-new/index-test.jshint', function () {
@@ -38369,15 +38653,15 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite-test', ['embe
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment-new/satellite', 'Unit | Route | deployment new/satellite', {});
+  ember_qunit.moduleFor('route:deployment-new/satellite', 'Unit | Route | deployment new/satellite', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite-test.jshint', function () {
@@ -38394,15 +38678,15 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-env
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment-new/satellite/configure-environment', 'Unit | Route | deployment new/satellite/configure environment', {});
+  ember_qunit.moduleFor('route:deployment-new/satellite/configure-environment', 'Unit | Route | deployment new/satellite/configure environment', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-environment-test.jshint', function () {
@@ -38419,15 +38703,15 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-org
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment-new/satellite/configure-organization', 'Unit | Route | deployment new/satellite/configure organization', {});
+  ember_qunit.moduleFor('route:deployment-new/satellite/configure-organization', 'Unit | Route | deployment new/satellite/configure organization', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/configure-organization-test.jshint', function () {
@@ -38444,15 +38728,15 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/index-test', 
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment-new/satellite/index', 'Unit | Route | deployment new/satellite/index', {});
+  ember_qunit.moduleFor('route:deployment-new/satellite/index', 'Unit | Route | deployment new/satellite/index', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployment-new/satellite/index-test.jshint', function () {
@@ -38469,15 +38753,15 @@ define('fusor-ember-cli/tests/unit/routes/deployment-new/start-test', ['ember-qu
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment-new/start', 'Unit | Route | deployment new/start', {});
+  ember_qunit.moduleFor('route:deployment-new/start', 'Unit | Route | deployment new/start', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployment-new/start-test.jshint', function () {
@@ -38494,15 +38778,15 @@ define('fusor-ember-cli/tests/unit/routes/deployment-test', ['ember-qunit'], fun
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment', 'Unit | Route | deployment', {});
+  ember_qunit.moduleFor('route:deployment', 'Unit | Route | deployment', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployment-test.jshint', function () {
@@ -38519,15 +38803,15 @@ define('fusor-ember-cli/tests/unit/routes/deployment/index-test', ['ember-qunit'
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment/index', 'Unit | Route | deployment/index', {});
+  ember_qunit.moduleFor('route:deployment/index', 'Unit | Route | deployment/index', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployment/index-test.jshint', function () {
@@ -38544,15 +38828,15 @@ define('fusor-ember-cli/tests/unit/routes/deployment/start-test', ['ember-qunit'
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployment/start', 'Unit | Route | deployment/start', {});
+  ember_qunit.moduleFor('route:deployment/start', 'Unit | Route | deployment/start', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployment/start-test.jshint', function () {
@@ -38569,15 +38853,15 @@ define('fusor-ember-cli/tests/unit/routes/deployments-test', ['ember-qunit'], fu
 
   'use strict';
 
-  ember_qunit.moduleFor('route:deployments', 'Unit | Route | deployments', {});
+  ember_qunit.moduleFor('route:deployments', 'Unit | Route | deployments', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/deployments-test.jshint', function () {
@@ -38594,15 +38878,15 @@ define('fusor-ember-cli/tests/unit/routes/engine-test', ['ember-qunit'], functio
 
   'use strict';
 
-  ember_qunit.moduleFor('route:engine', 'Unit | Route | engine', {});
+  ember_qunit.moduleFor('route:engine', 'Unit | Route | engine', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/engine-test.jshint', function () {
@@ -38619,15 +38903,15 @@ define('fusor-ember-cli/tests/unit/routes/engine/discovered-host-test', ['ember-
 
   'use strict';
 
-  ember_qunit.moduleFor('route:engine/discovered-host', 'Unit | Route | engine/discovered host', {});
+  ember_qunit.moduleFor('route:engine/discovered-host', 'Unit | Route | engine/discovered host', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/engine/discovered-host-test.jshint', function () {
@@ -38644,15 +38928,15 @@ define('fusor-ember-cli/tests/unit/routes/hypervisor-test', ['ember-qunit'], fun
 
   'use strict';
 
-  ember_qunit.moduleFor('route:hypervisor', 'Unit | Route | hypervisor', {});
+  ember_qunit.moduleFor('route:hypervisor', 'Unit | Route | hypervisor', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/hypervisor-test.jshint', function () {
@@ -38669,15 +38953,15 @@ define('fusor-ember-cli/tests/unit/routes/hypervisor/discovered-host-test', ['em
 
   'use strict';
 
-  ember_qunit.moduleFor('route:hypervisor/discovered-host', 'Unit | Route | hypervisor/discovered host', {});
+  ember_qunit.moduleFor('route:hypervisor/discovered-host', 'Unit | Route | hypervisor/discovered host', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/hypervisor/discovered-host-test.jshint', function () {
@@ -38694,15 +38978,15 @@ define('fusor-ember-cli/tests/unit/routes/index-test', ['ember-qunit'], function
 
   'use strict';
 
-  ember_qunit.moduleFor('route:index', 'Unit | Route | index', {});
+  ember_qunit.moduleFor('route:index', 'Unit | Route | index', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/index-test.jshint', function () {
@@ -38719,15 +39003,15 @@ define('fusor-ember-cli/tests/unit/routes/new-environment-test', ['ember-qunit']
 
   'use strict';
 
-  ember_qunit.moduleFor('route:new-environment', 'Unit | Route | new environment', {});
+  ember_qunit.moduleFor('route:new-environment', 'Unit | Route | new environment', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/new-environment-test.jshint', function () {
@@ -38744,15 +39028,15 @@ define('fusor-ember-cli/tests/unit/routes/new-node-registration-test', ['ember-q
 
   'use strict';
 
-  ember_qunit.moduleFor('route:new-node-registration', 'Unit | Route | new node registration', {});
+  ember_qunit.moduleFor('route:new-node-registration', 'Unit | Route | new node registration', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/new-node-registration-test.jshint', function () {
@@ -38769,15 +39053,15 @@ define('fusor-ember-cli/tests/unit/routes/new-organization-test', ['ember-qunit'
 
   'use strict';
 
-  ember_qunit.moduleFor('route:new-organization', 'Unit | Route | new organization', {});
+  ember_qunit.moduleFor('route:new-organization', 'Unit | Route | new organization', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/new-organization-test.jshint', function () {
@@ -38794,15 +39078,15 @@ define('fusor-ember-cli/tests/unit/routes/openstack-test', ['ember-qunit'], func
 
   'use strict';
 
-  ember_qunit.moduleFor('route:openstack', 'Unit | Route | openstack', {});
+  ember_qunit.moduleFor('route:openstack', 'Unit | Route | openstack', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/openstack-test.jshint', function () {
@@ -38819,15 +39103,15 @@ define('fusor-ember-cli/tests/unit/routes/openstack/index-test', ['ember-qunit']
 
   'use strict';
 
-  ember_qunit.moduleFor('route:openstack/index', 'Unit | Route | openstack/index', {});
+  ember_qunit.moduleFor('route:openstack/index', 'Unit | Route | openstack/index', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/openstack/index-test.jshint', function () {
@@ -38844,15 +39128,15 @@ define('fusor-ember-cli/tests/unit/routes/register-nodes-test', ['ember-qunit'],
 
   'use strict';
 
-  ember_qunit.moduleFor('route:register-nodes', 'Unit | Route | register nodes', {});
+  ember_qunit.moduleFor('route:register-nodes', 'Unit | Route | register nodes', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/register-nodes-test.jshint', function () {
@@ -38869,15 +39153,15 @@ define('fusor-ember-cli/tests/unit/routes/review-test', ['ember-qunit'], functio
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review', 'Unit | Route | review', {});
+  ember_qunit.moduleFor('route:review', 'Unit | Route | review', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/review-test.jshint', function () {
@@ -38894,15 +39178,15 @@ define('fusor-ember-cli/tests/unit/routes/review/index-test', ['ember-qunit'], f
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/index', 'Unit | Route | review/index', {});
+  ember_qunit.moduleFor('route:review/index', 'Unit | Route | review/index', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/review/index-test.jshint', function () {
@@ -38919,15 +39203,15 @@ define('fusor-ember-cli/tests/unit/routes/review/installation-test', ['ember-qun
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/installation', 'Unit | Route | review/installation', {});
+  ember_qunit.moduleFor('route:review/installation', 'Unit | Route | review/installation', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/review/installation-test.jshint', function () {
@@ -38944,15 +39228,15 @@ define('fusor-ember-cli/tests/unit/routes/review/progress-test', ['ember-qunit']
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress', 'Unit | Route | review/progress', {});
+  ember_qunit.moduleFor('route:review/progress', 'Unit | Route | review/progress', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/review/progress-test.jshint', function () {
@@ -38969,15 +39253,15 @@ define('fusor-ember-cli/tests/unit/routes/review/progress/details-test', ['ember
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress/details', 'Unit | Route | review/progress/details', {});
+  ember_qunit.moduleFor('route:review/progress/details', 'Unit | Route | review/progress/details', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/review/progress/details-test.jshint', function () {
@@ -38994,15 +39278,15 @@ define('fusor-ember-cli/tests/unit/routes/review/progress/details/task-test', ['
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress/details/task', 'Unit | Route | review/progress/details/task', {});
+  ember_qunit.moduleFor('route:review/progress/details/task', 'Unit | Route | review/progress/details/task', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/review/progress/details/task-test.jshint', function () {
@@ -39019,15 +39303,15 @@ define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/index-tes
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress/details/task/index', 'Unit | Route | review/progress/details/task/index', {});
+  ember_qunit.moduleFor('route:review/progress/details/task/index', 'Unit | Route | review/progress/details/task/index', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/index-test.jshint', function () {
@@ -39044,15 +39328,15 @@ define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/running-s
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress/details/task/running-steps', 'Unit | Route | review/progress/details/task/running steps', {});
+  ember_qunit.moduleFor('route:review/progress/details/task/running-steps', 'Unit | Route | review/progress/details/task/running steps', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/running-steps-test.jshint', function () {
@@ -39069,15 +39353,15 @@ define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/task-erro
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress/details/task/task-errors', 'Unit | Route | review/progress/details/task/task errors', {});
+  ember_qunit.moduleFor('route:review/progress/details/task/task-errors', 'Unit | Route | review/progress/details/task/task errors', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/task-errors-test.jshint', function () {
@@ -39094,15 +39378,15 @@ define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/task-lock
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress/details/task/task-locks', 'Unit | Route | review/progress/details/task/task locks', {});
+  ember_qunit.moduleFor('route:review/progress/details/task/task-locks', 'Unit | Route | review/progress/details/task/task locks', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/task-locks-test.jshint', function () {
@@ -39119,15 +39403,15 @@ define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/task-raw-
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress/details/task/task-raw', 'Unit | Route | review/progress/details/task/task raw', {});
+  ember_qunit.moduleFor('route:review/progress/details/task/task-raw', 'Unit | Route | review/progress/details/task/task raw', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/review/progress/details/task/task-raw-test.jshint', function () {
@@ -39144,15 +39428,15 @@ define('fusor-ember-cli/tests/unit/routes/review/progress/overview-test', ['embe
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/progress/overview', 'Unit | Route | review/progress/overview', {});
+  ember_qunit.moduleFor('route:review/progress/overview', 'Unit | Route | review/progress/overview', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/review/progress/overview-test.jshint', function () {
@@ -39169,15 +39453,15 @@ define('fusor-ember-cli/tests/unit/routes/review/summary-test', ['ember-qunit'],
 
   'use strict';
 
-  ember_qunit.moduleFor('route:review/summary', 'Unit | Route | review/summary', {});
+  ember_qunit.moduleFor('route:review/summary', 'Unit | Route | review/summary', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/review/summary-test.jshint', function () {
@@ -39194,15 +39478,15 @@ define('fusor-ember-cli/tests/unit/routes/rhci-test', ['ember-qunit'], function 
 
   'use strict';
 
-  ember_qunit.moduleFor('route:rhci', 'Unit | Route | rhci', {});
+  ember_qunit.moduleFor('route:rhci', 'Unit | Route | rhci', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/rhci-test.jshint', function () {
@@ -39219,15 +39503,15 @@ define('fusor-ember-cli/tests/unit/routes/rhev-options-test', ['ember-qunit'], f
 
   'use strict';
 
-  ember_qunit.moduleFor('route:rhev-options', 'Unit | Route | rhev options', {});
+  ember_qunit.moduleFor('route:rhev-options', 'Unit | Route | rhev options', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/rhev-options-test.jshint', function () {
@@ -39244,15 +39528,15 @@ define('fusor-ember-cli/tests/unit/routes/rhev-setup-test', ['ember-qunit'], fun
 
   'use strict';
 
-  ember_qunit.moduleFor('route:rhev-setup', 'Unit | Route | rhev setup', {});
+  ember_qunit.moduleFor('route:rhev-setup', 'Unit | Route | rhev setup', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/rhev-setup-test.jshint', function () {
@@ -39269,15 +39553,15 @@ define('fusor-ember-cli/tests/unit/routes/rhev-test', ['ember-qunit'], function 
 
   'use strict';
 
-  ember_qunit.moduleFor('route:rhev', 'Unit | Route | rhev', {});
+  ember_qunit.moduleFor('route:rhev', 'Unit | Route | rhev', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/rhev-test.jshint', function () {
@@ -39294,15 +39578,15 @@ define('fusor-ember-cli/tests/unit/routes/rhev/index-test', ['ember-qunit'], fun
 
   'use strict';
 
-  ember_qunit.moduleFor('route:rhev/index', 'Unit | Route | rhev/index', {});
+  ember_qunit.moduleFor('route:rhev/index', 'Unit | Route | rhev/index', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/rhev/index-test.jshint', function () {
@@ -39319,15 +39603,15 @@ define('fusor-ember-cli/tests/unit/routes/satellite-test', ['ember-qunit'], func
 
   'use strict';
 
-  ember_qunit.moduleFor('route:satellite', 'Unit | Route | satellite', {});
+  ember_qunit.moduleFor('route:satellite', 'Unit | Route | satellite', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/satellite-test.jshint', function () {
@@ -39344,15 +39628,15 @@ define('fusor-ember-cli/tests/unit/routes/satellite/index-test', ['ember-qunit']
 
   'use strict';
 
-  ember_qunit.moduleFor('route:satellite/index', 'Unit | Route | satellite/index', {});
+  ember_qunit.moduleFor('route:satellite/index', 'Unit | Route | satellite/index', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/satellite/index-test.jshint', function () {
@@ -39369,15 +39653,15 @@ define('fusor-ember-cli/tests/unit/routes/storage-test', ['ember-qunit'], functi
 
   'use strict';
 
-  ember_qunit.moduleFor('route:storage', 'Unit | Route | storage', {});
+  ember_qunit.moduleFor('route:storage', 'Unit | Route | storage', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/storage-test.jshint', function () {
@@ -39394,15 +39678,15 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions-test', ['ember-qunit'], 
 
   'use strict';
 
-  ember_qunit.moduleFor('route:subscriptions', 'Unit | Route | subscriptions', {});
+  ember_qunit.moduleFor('route:subscriptions', 'Unit | Route | subscriptions', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/subscriptions-test.jshint', function () {
@@ -39419,15 +39703,15 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/credentials-test', ['emb
 
   'use strict';
 
-  ember_qunit.moduleFor('route:subscriptions/credentials', 'Unit | Route | subscriptions/credentials', {});
+  ember_qunit.moduleFor('route:subscriptions/credentials', 'Unit | Route | subscriptions/credentials', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/subscriptions/credentials-test.jshint', function () {
@@ -39444,15 +39728,15 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/index-test', ['ember-qun
 
   'use strict';
 
-  ember_qunit.moduleFor('route:subscriptions/index', 'Unit | Route | subscriptions/index', {});
+  ember_qunit.moduleFor('route:subscriptions/index', 'Unit | Route | subscriptions/index', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/subscriptions/index-test.jshint', function () {
@@ -39469,15 +39753,15 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/management-application-t
 
   'use strict';
 
-  ember_qunit.moduleFor('route:subscriptions/management-application', 'Unit | Route | subscriptions/management application', {});
+  ember_qunit.moduleFor('route:subscriptions/management-application', 'Unit | Route | subscriptions/management application', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/subscriptions/management-application-test.jshint', function () {
@@ -39494,15 +39778,15 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/management-application/c
 
   'use strict';
 
-  ember_qunit.moduleFor('route:subscriptions/management-application/consumer', 'Unit | Route | subscriptions/management application/consumer', {});
+  ember_qunit.moduleFor('route:subscriptions/management-application/consumer', 'Unit | Route | subscriptions/management application/consumer', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/subscriptions/management-application/consumer-test.jshint', function () {
@@ -39519,15 +39803,15 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/management-application/c
 
   'use strict';
 
-  ember_qunit.moduleFor('route:subscriptions/management-application/consumer/entitlements', 'Unit | Route | subscriptions/management application/consumer/entitlements', {});
+  ember_qunit.moduleFor('route:subscriptions/management-application/consumer/entitlements', 'Unit | Route | subscriptions/management application/consumer/entitlements', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/subscriptions/management-application/consumer/entitlements-test.jshint', function () {
@@ -39544,15 +39828,15 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/management-application/c
 
   'use strict';
 
-  ember_qunit.moduleFor('route:subscriptions/management-application/consumer/pools', 'Unit | Route | subscriptions/management application/consumer/pools', {});
+  ember_qunit.moduleFor('route:subscriptions/management-application/consumer/pools', 'Unit | Route | subscriptions/management application/consumer/pools', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/subscriptions/management-application/consumer/pools-test.jshint', function () {
@@ -39569,15 +39853,15 @@ define('fusor-ember-cli/tests/unit/routes/subscriptions/select-subscriptions-tes
 
   'use strict';
 
-  ember_qunit.moduleFor('route:subscriptions/select-subscriptions', 'Unit | Route | subscriptions/select subscriptions', {});
+  ember_qunit.moduleFor('route:subscriptions/select-subscriptions', 'Unit | Route | subscriptions/select subscriptions', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/subscriptions/select-subscriptions-test.jshint', function () {
@@ -39594,15 +39878,15 @@ define('fusor-ember-cli/tests/unit/routes/where-install-test', ['ember-qunit'], 
 
   'use strict';
 
-  ember_qunit.moduleFor('route:where-install', 'Unit | Route | where install', {});
+  ember_qunit.moduleFor('route:where-install', 'Unit | Route | where install', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
 
   ember_qunit.test('it exists', function (assert) {
     var route = this.subject();
     assert.ok(route);
   });
-
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
 
 });
 define('fusor-ember-cli/tests/unit/routes/where-install-test.jshint', function () {
@@ -39738,13 +40022,13 @@ define('fusor-ember-cli/tests/unit/serializers/pool-test.jshint', function () {
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.e91168c9"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.860334ba"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.e91168c9"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.860334ba"});
 }
 
 /* jshint ignore:end */
