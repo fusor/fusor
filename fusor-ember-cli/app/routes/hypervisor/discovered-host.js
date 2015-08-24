@@ -1,19 +1,9 @@
 import Ember from 'ember';
+import DiscoveredHostRouteMixin from "../../mixins/discovered-host-route-mixin";
 
-export default Ember.Route.extend({
+export default Ember.Route.extend(DiscoveredHostRouteMixin, {
   model: function () {
     return this.modelFor('deployment').get('discovered_hosts');
-  },
-
-  setupController: function(controller, model) {
-    controller.set('model', model);
-    if (this.modelFor('deployment').get('isNotStarted')) {
-        controller.set('isLoadingHosts', true);
-        this.store.find('discovered-host').then(function(results) {
-          controller.set('allDiscoveredHosts', results);
-          controller.set('isLoadingHosts', false);
-        });
-    }
   },
 
   deactivate: function() {
@@ -50,19 +40,7 @@ export default Ember.Route.extend({
             }
         });
       });
-    },
-
-    // TODO - make mixin - same on route engine/discovered-host
-    refreshDiscoveredHosts: function(){
-      console.log('refresh allDiscoveredHosts');
-      var controller = this.get('controller');
-      controller.set('isLoadingHosts', true);
-      this.store.find('discovered-host').then(function(results) {
-        controller.set('allDiscoveredHosts', results);
-        controller.set('isLoadingHosts', false);
-      });
     }
-
   }
 
 });
