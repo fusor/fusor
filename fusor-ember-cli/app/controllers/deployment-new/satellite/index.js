@@ -18,6 +18,4 @@ export default Ember.Controller.extend({
 
   deploymentNames: Ember.computed.alias("controllers.application.deploymentNames")
 
-  backRouteNameOnSatIndex: 'deployment-new.start',
-
 });

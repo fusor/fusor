@@ -14,6 +14,4 @@ export default Ember.Controller.extend({
 
   backRouteNameOnSatIndex: 'deployment-new.start'
 
-  backRouteNameOnSatIndex: 'deployment-new.start',
-
 });
