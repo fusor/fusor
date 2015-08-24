@@ -73,13 +73,50 @@ export default Ember.Controller.extend({
            );
   }.property('rhev_export_domain_name', 'rhev_export_domain_address', 'rhev_export_domain_path', 'hasEndingSlashInExportPath'),
 
+  invalidStorageName: function() {
+      var validAlphaNumbericRegex = new RegExp(/^[A-Za-z0-9_-]+$/);
+      if (Ember.isPresent(this.get('rhev_storage_name'))) {
+          return !(this.get('rhev_storage_name').match(validAlphaNumbericRegex));
+      }
+  }.property('rhev_storage_name'),
+
+  invalidStorageAddress: function() {
+      var validHostnameRegex = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$";
+      if (Ember.isPresent(this.get('rhev_storage_address'))) {
+          return !(this.get('rhev_storage_address').match(validHostnameRegex));
+      }
+  }.property('rhev_storage_address'),
+
+  invalidExportDomainName: function() {
+      var validAlphaNumbericRegex = new RegExp(/^[A-Za-z0-9_-]+$/);
+      if (Ember.isPresent(this.get('rhev_export_domain_name'))) {
+          return !(this.get('rhev_export_domain_name').match(validAlphaNumbericRegex));
+      }
+  }.property('rhev_export_domain_name'),
+
+  invalidExportAddress: function() {
+      var validHostnameRegex = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$";
+      if (Ember.isPresent(this.get('rhev_export_domain_address'))) {
+          return !(this.get('rhev_export_domain_address').match(validHostnameRegex));
+      }
+  }.property('rhev_export_domain_address'),
+
   disableNextStorage: function () {
     if (this.get('isCloudForms')) {
-      return (this.get('isInvalidStorageFields') || this.get('isInvalidExportDomainFields'));
+      return (this.get('isInvalidStorageFields') ||
+              this.get('isInvalidExportDomainFields') ||
+              this.get('invalidStorageName') ||
+              this.get('invalidStorageAddress') ||
+              this.get('invalidExportDomainName') ||
+              this.get('invalidExportAddress'));
     } else {
-      return (this.get('isInvalidStorageFields'));
+      return (this.get('isInvalidStorageFields') ||
+              this.get('invalidStorageName') ||
+              this.get('invalidStorageAddress'));
     }
-  }.property('isInvalidStorageFields', 'isInvalidExportDomainFields'),
+  }.property('isInvalidStorageFields', 'isInvalidExportDomainFields',
+             'invalidStorageName', 'invalidStorageAddress',
+             'invalidExportDomainName', 'invalidExportAddress'),
 
   validRhevStorage: Ember.computed.not('disableNextStorage')
 
