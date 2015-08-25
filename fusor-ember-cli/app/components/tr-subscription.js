@@ -57,6 +57,15 @@ export default Ember.Component.extend({
     this.get('subscription').set('isSelectedSubscription', yesno);
   }.on('didInsertElement'),
 
-  isChecked: Ember.computed.alias('subscription.isSelectedSubscription')
+  isChecked: Ember.computed.alias('subscription.isSelectedSubscription'),
+
+  actions: {
+    setValidQty: function() {
+      debugger
+      if (this.get('isQtyInValid')) {
+          return this.set('subscription.qtyToAttach', this.get('subscription.qtyAvailable') );
+      }
+    }
+  }
 
 });

@@ -15,7 +15,9 @@
                           size=5
                           maxlength=5
                           classBinding=":center isQtyInValid:invalid-input"
-                          disabled=disableQty}}
+                          disabled=disableQty
+                          focus-out="setValidQty"
+                          }}
   {{else}}
     Not Selected
   {{/if}}
