@@ -114,7 +114,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 		console.log(response);
             },
             error: function(error) {
-		me.set('deploymentError', 'Undercloud deployment start failed');
+		me.set('deploymentError', error.responseJSON.errors);
 		me.set('showLoadingSpinner', false);
 		console.log('create failed');
 		console.log(error);
@@ -171,7 +171,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       };
 
       var promise = new Ember.RSVP.Promise(promiseFunction);
-      me.set('loadingSpinnerText', "Deploying Undercloud. This may take a few minutes...");
+      me.set('loadingSpinnerText', "Detecting Undercloud...");
       me.set('showLoadingSpinner', true);
 
     }
