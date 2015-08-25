@@ -7,7 +7,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
 
   organizationTabRouteName: Ember.computed.alias("controllers.deployment-new.organizationTabRouteName"),
 
-  selectedOrganization: Ember.computed.alias("controllers.deployment-new.organization"),
+  selectedOrganization: Ember.computed.alias("controllers.deployment-new.model.organization"),
 
   step2RouteName: Ember.computed.alias("controllers.deployment-new.step2RouteName"),
 
