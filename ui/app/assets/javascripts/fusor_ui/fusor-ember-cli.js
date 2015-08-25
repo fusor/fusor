@@ -938,9 +938,20 @@ define('fusor-ember-cli/components/rhci-item', ['exports', 'ember'], function (e
 });
 define('fusor-ember-cli/components/rhci-start', ['exports', 'ember'], function (exports, Ember) {
 
-	'use strict';
+  'use strict';
 
-	exports['default'] = Ember['default'].Component.extend({});
+  exports['default'] = Ember['default'].Component.extend({
+
+    setIsDisabledCfme: (function () {
+      if (this.get('isRhev') || this.get('isOpenStack')) {
+        return this.set('isDisabledCfme', false);
+      } else {
+        this.set('isCloudForms', false);
+        return this.set('isDisabledCfme', true);
+      }
+    }).observes('isRhev', 'isOpenStack')
+
+  });
 
 });
 define('fusor-ember-cli/components/rhci-wizard', ['exports', 'ember'], function (exports, Ember) {
@@ -1322,7 +1333,16 @@ define('fusor-ember-cli/components/tr-subscription', ['exports', 'ember'], funct
       this.get('subscription').set('isSelectedSubscription', yesno);
     }).on('didInsertElement'),
 
-    isChecked: Ember['default'].computed.alias('subscription.isSelectedSubscription')
+    isChecked: Ember['default'].computed.alias('subscription.isSelectedSubscription'),
+
+    actions: {
+      setValidQty: function setValidQty() {
+        debugger;
+        if (this.get('isQtyInValid')) {
+          return this.set('subscription.qtyToAttach', this.get('subscription.qtyAvailable'));
+        }
+      }
+    }
 
   });
 
@@ -14427,7 +14447,7 @@ define('fusor-ember-cli/templates/components/rhci-start', ['exports'], function 
         content(env, morph0, context, "nameRedHat");
         inline(env, morph1, context, "rhci-item", [], {"srcImage": get(env, context, "imgRhev"), "isChecked": get(env, context, "isRhev"), "name": get(env, context, "nameRhev"), "cssId": "is_rhev"});
         inline(env, morph2, context, "rhci-item", [], {"srcImage": get(env, context, "imgOpenStack"), "isChecked": get(env, context, "isOpenStack"), "name": get(env, context, "nameOpenStack"), "cssId": "is_openstack", "isDisabled": true});
-        inline(env, morph3, context, "rhci-item", [], {"srcImage": get(env, context, "imgCloudForms"), "isChecked": get(env, context, "isCloudForms"), "name": get(env, context, "nameCloudForms"), "cssId": "is_cloudforms"});
+        inline(env, morph3, context, "rhci-item", [], {"srcImage": get(env, context, "imgCloudForms"), "isChecked": get(env, context, "isCloudForms"), "name": get(env, context, "nameCloudForms"), "cssId": "is_cloudforms", "isDisabled": get(env, context, "isDisabledCfme")});
         block(env, morph4, context, "unless", [get(env, context, "isUpstream")], {}, child0, null);
         block(env, morph5, context, "link-to", ["deployments"], {"class": "btn btn-default"}, child1, null);
         block(env, morph6, context, "link-to", [get(env, context, "satelliteTabRouteName")], {"class": "btn btn-primary", "disabled": get(env, context, "disableNextOnStart")}, child2, null);
@@ -16832,7 +16852,7 @@ define('fusor-ember-cli/templates/components/tr-subscription', ['exports'], func
             fragment = this.build(dom);
           }
           var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
-          inline(env, morph0, context, "input", [], {"type": "input", "name": "qtyToAttach", "value": get(env, context, "subscription.qtyToAttach"), "size": 5, "maxlength": 5, "classBinding": ":center isQtyInValid:invalid-input", "disabled": get(env, context, "disableQty")});
+          inline(env, morph0, context, "input", [], {"type": "input", "name": "qtyToAttach", "value": get(env, context, "subscription.qtyToAttach"), "size": 5, "maxlength": 5, "classBinding": ":center isQtyInValid:invalid-input", "disabled": get(env, context, "disableQty"), "focus-out": "setValidQty"});
           return fragment;
         }
       };
@@ -34087,7 +34107,7 @@ define('fusor-ember-cli/templates/subscriptions/select-subscriptions', ['exports
           var morph2 = dom.createMorphAt(element1,11,11);
           var morph3 = dom.createMorphAt(fragment,2,2,contextualElement);
           content(env, morph0, context, "controllers.deployment.model.upstream_consumer_name");
-          inline(env, morph1, context, "input", [], {"type": "checkbox", "name": "enable_access_insights", "disabled": get(env, context, "isStarted"), "checked": get(env, context, "enable_access_insights")});
+          inline(env, morph1, context, "input", [], {"type": "checkbox", "name": "enable_access_insights", "disabled": get(env, context, "isStarted"), "checked": get(env, context, "enableAccessInsights")});
           attribute(env, attrMorph0, element2, "class", get(env, context, "analyticsColor"));
           block(env, morph2, context, "unless", [get(env, context, "isStarted")], {}, child0, child1);
           block(env, morph3, context, "cancel-back-next", [], {"backRouteName": "subscriptions.management-application", "disableBack": false, "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")}, child2, null);
@@ -34737,7 +34757,7 @@ define('fusor-ember-cli/tests/components/tr-subscription.jshint', function () {
 
   module('JSHint - components');
   test('components/tr-subscription.js should pass jshint', function() { 
-    ok(true, 'components/tr-subscription.js should pass jshint.'); 
+    ok(false, 'components/tr-subscription.js should pass jshint.\ncomponents/tr-subscription.js: line 64, col 7, Forgotten \'debugger\' statement?\ncomponents/tr-subscription.js: line 64, col 15, Missing semicolon.\n\n2 errors'); 
   });
 
 });
@@ -40022,13 +40042,13 @@ define('fusor-ember-cli/tests/unit/serializers/pool-test.jshint', function () {
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.860334ba"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.8d21a9a5"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.860334ba"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.8d21a9a5"});
 }
 
 /* jshint ignore:end */
