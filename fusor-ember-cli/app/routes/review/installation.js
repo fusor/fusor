@@ -10,10 +10,9 @@ export default Ember.Route.extend({
     controller.set('showSpinner', false);
     controller.set('showErrorMessage', false);
     this.store.find('hostgroup').then(function(results) {
-        var engineDomain = results.filterBy('name', 'RHEV-Engine').get('firstObject').get('domain.name');
-        var hypervisorDomain = results.filterBy('name', 'RHEV-Hypervisor').get('firstObject').get('domain.name');
-        controller.set('engineDomain', engineDomain);
-        controller.set('hypervisorDomain', hypervisorDomain);
+        var fusorBaseDomain = results.filterBy('name', 'Fusor Base').get('firstObject').get('domain.name');
+        controller.set('engineDomain', fusorBaseDomain);
+        controller.set('hypervisorDomain', fusorBaseDomain);
     });
   }
 
