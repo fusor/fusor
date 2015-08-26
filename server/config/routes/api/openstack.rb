@@ -14,6 +14,7 @@ Fusor::Engine.routes.draw do
         resources :nodes
         get '/nodes/:id/ready', to: 'nodes#ready', as: 'nodes_ready'
         resources :openstack_deployments
+        resources :underclouds
       end
     end
   end

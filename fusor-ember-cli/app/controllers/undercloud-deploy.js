@@ -82,37 +82,98 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
     deployUndercloud: function () {
       var me = this;
+      var model = this.get('model');
+      console.log('deployUndercloud');
+      console.log("deploymentMode " + model.deploymentMode);
+      console.log("imagePath " + model.imagePath);
+      console.log("host " + model.undercloudIP);
+      console.log("user " + model.sshUser);
+      var deployment = this.controllerFor('deployment');
+      var id = deployment.model.id;
+
+      // TODO: Insert actual satellite url, org, key here
+      var data = { 'underhost': model.undercloudIP,
+	           'underuser': model.sshUser,
+		   'underpass': model.sshPassword,
+		   'deployment_id': id,
+		   'satellite_url': 'http://www.yahoo.com',
+		   'satellite_org': 'test',
+		   'satellite_key': 'test'};
+
       var promiseFunction = function (resolve) {
-        var checkForDone = function () {
-          resolve(true);
-        };
+        me.set('deploymentError', null);
+
+	Ember.$.ajax({
+            url: '/fusor/api/openstack/underclouds',
+            type: 'POST',
+	    data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function(response) {
+                promise.then(fulfill);
+		console.log('create success');
+		console.log(response);
+            },
+            error: function(error) {
+		me.set('deploymentError', error.responseJSON.errors);
+		me.set('showLoadingSpinner', false);
+		console.log('create failed');
+		console.log(error);
+            }
+	});
+
+	  // TODO: need to continue checks until the api
+	  // returns deployed = true
+          var checkForDone = function () {
+	    console.log("running check for done for id " + id);
+	    Ember.$.ajax({
+	      url: '/fusor/api/openstack/underclouds/' + id,
+	      type: 'GET',
+	      contentType: 'application/json',
+	      success: function(response) {
+	        console.log('api check success');
+	          console.log(response);
+		  if (response['deployed']) {
+		      console.log('deployment finished');
+		      if (response['failed']) {
+			  console.log('deployment failed');
+			  me.set('deploymentError', 'Please check foreman logs.');
+                          me.set('showLoadingSpinner', false);
+		      } else {
+			  console.log('deployment success');
+                          me.set('deploymentError', null);
+   		          resolve(true);
+		      }
+		  } else {
+		      console.log('deployment ongoing');
+	              Ember.run.later(checkForDone, 3000);
+		  }
+	      },
+	      error: function(error) {
+                 console.log('api check error');
+                 console.log(error);
+                 me.set('deploymentError', 'Status check failed');
+                 me.set('showLoadingSpinner', false);
+	      }
+            });
+	  };
 
         Ember.run.later(checkForDone, 3000);
       };
 
       var fulfill = function (isDone) {
         if (isDone)
-        {
-          me.set('showLoadingSpinner', false);
-          var randomPercent = Math.round(Math.random() * 100);
-          if (randomPercent <= 5)
           {
-            me.set('deploymentError', "Undercloud deployment failed. Please check your settings and try again.");
+	      console.log("fulfill");
+              me.set('showLoadingSpinner', false);
+              me.set('deployed', true);
+              me.set('isDirty', false);
           }
-          else
-          {
-            me.set('deploymentError', null);
-            me.set('deployed', true);
-            me.set('isDirty', false);
-          }
-        }
       };
 
       var promise = new Ember.RSVP.Promise(promiseFunction);
-      me.set('loadingSpinnerText', "Deploying Undercloud. This may take a few minutes...");
+      me.set('loadingSpinnerText', "Detecting Undercloud...");
       me.set('showLoadingSpinner', true);
 
-      promise.then(fulfill);
     }
   }
 });
