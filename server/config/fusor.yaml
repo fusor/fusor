@@ -49,6 +49,41 @@
         :basearch: "x86_64"
         #:image_file_name: "cfme-rhevm-5.3-54.x86_64.rhevm.ova" # Default behavior uses the 'latest' image file.
 
+    :openstack:
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server (RPMs)"
+        :basearch: "x86_64"
+        :releasever: "7Server"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
+        :basearch: "x86_64"
+        :releasever: "7.1"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server - Extras (RPMs)"
+        :basearch: "x86_64"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server - Optional (RPMs)"
+        :basearch: "x86_64"
+        :releasever: "7Server"
+
+      - :product_name: "Red Hat OpenStack"
+        :repository_set_name: "Red Hat OpenStack 7.0 for RHEL 7 (RPMs)"
+        :basearch: "x86_64"
+        :releasever: "7Server"
+
+      - :product_name: "Red Hat OpenStack"
+        :repository_set_name: "Red Hat OpenStack 7.0 for RHEL 7 Platform director (RPMs)"
+        :basearch: "x86_64"
+        :releasever: "7Server"
+
+      - :product_name: "Red Hat OpenStack"
+        :repository_set_name: "Red Hat OpenStack 7.0 for RHEL 7 (Files)"
+        :basearch: "x86_64"
+        :releasever: "7Server"
+
   :puppet_classes:
     - :name: "ovirt"
     - :name: "ovirt::engine::config"
@@ -92,6 +127,16 @@
              - :name: "product"
                :override: "RHEV"
            - :name: "ovirt::hypervisor::packages"
+    :openstack:
+     :root_name: "Fusor Base" # seeded by the fusor-installer
+     :host_groups:
+       - :parent: "Fusor Base"
+
+       - :name: "OpenStack-Undercloud"
+         :parent: :root_deployment
+         :os: "RedHat"
+         :major: "7"
+         :minor: "1"
 
   :activation_key:
     :name: "Fusor_Key"

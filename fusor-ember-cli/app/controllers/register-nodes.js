@@ -415,7 +415,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       driverInfo = {
         ssh_address: node.ipAddress,
         ssh_username: node.ipmiUsername,
-        ssh_key_contents: node.ipmiPassword,
+        ssh_password: node.ipmiPassword,
         ssh_virt_type: 'virsh',
         deploy_kernel: this.get('model').bmDeployKernelImage.image.id,
         deploy_ramdisk: this.get('model').bmDeployRamdiskImage.image.id
