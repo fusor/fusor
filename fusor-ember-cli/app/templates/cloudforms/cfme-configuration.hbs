@@ -7,6 +7,14 @@
                minChars=8
                help-inline='must be 8 or more characters'
                placeholder='must be 8 or more characters'}}
+
+      {{text-f label="CFME Admin password" type='password' value=cfmeAdminPassword
+               cssId='cfme_admin_password'
+               isRequired=true disabled=controllers.deployment.isStarted
+               minChars=8
+               help-inline='must be 8 or more characters'
+               placeholder='must be 8 or more characters'}}
+
     </form>
   </div>
 </div>
@@ -14,6 +22,6 @@
 {{cancel-back-next backRouteName='where-install'
                    disableBack=false
                    nextRouteName=nextRouteNameAfterCFME
-                   disableNext=controllers.cloudforms.hasNoCFRootPassword
+                   disableNext=controllers.cloudforms.notValidCloudforms
                    parentController=controller
                    disableCancel=controllers.deployment.isStarted}}

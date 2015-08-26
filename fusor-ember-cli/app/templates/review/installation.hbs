@@ -108,8 +108,8 @@
       {{#accordion-item name="Cloud Forms Management Engine" isOpen=isCloudFormsOpen}}
           {{review-link label='Installation Location' routeName='where-install' isRequired=true
                         value=controllers.deployment.model.cfme_install_loc }}
-          {{review-link label='CFME Root password' routeName='cloudforms.cfme-configuration' isRequired=true
-                      isPassword=true value=controllers.deployment.model.cfme_root_password }}
+          {{review-link label='CFME Root password' routeName='cloudforms.cfme-configuration' isRequired=true isPassword=true value=controllers.deployment.model.cfme_root_password }}
+          {{review-link label='CFME Admin password' routeName='cloudforms.cfme-configuration' isRequired=true isPassword=true value=controllers.deployment.model.cfme_admin_password }}
       {{/accordion-item}}
     {{/if}}
 
