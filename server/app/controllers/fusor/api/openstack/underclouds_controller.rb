@@ -19,9 +19,9 @@ module Fusor
 
         def show
           deployment = Deployment.find(params[:id])
-          dep_has_password = deployment.openstack_undercloud_password != nil && not deployment.openstack_undercloud_password.empty?
+          dep_has_password = (deployment.openstack_undercloud_password != nil && !deployment.openstack_undercloud_password.empty?)
           render :json => {:deployed => dep_has_password,
-                           :failed => not dep_has_password}
+                           :failed => !dep_has_password}
         end
 
         def create
