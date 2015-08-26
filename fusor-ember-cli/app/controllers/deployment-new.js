@@ -18,7 +18,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   isDisabledReview: true,
 
   hasLifecycleEnvironment: function() {
-    return (!!(this.get('lifecycle_environment.id')) || this.get('useDefaultOrgViewForEnv'));
+    return (!!(this.get('model.lifecycle_environment.id')) || this.get('useDefaultOrgViewForEnv'));
   }.property('lifecycle_environment', 'useDefaultOrgViewForEnv'),
   hasNoLifecycleEnvironment: Ember.computed.not('hasLifecycleEnvironment')
 
