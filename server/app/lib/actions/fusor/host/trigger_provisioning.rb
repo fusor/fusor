@@ -96,12 +96,6 @@ module Actions
           # clear all virtual devices that may have been created during previous assignment
           # host.clean_vlan....
           host.interfaces.virtual.map(&:destroy)
-          # by default foreman will try to manage all NICs unless user disables manually after assignment
-          #host.make_all_interfaces_managed
-          host.interfaces.each do |interface|
-            interface.managed = true
-            interface.save!
-          end
 
           # I do not [know] why but the final save! adds following condytion to the update SQL command
           # "WHERE "hosts"."type" IN ('Host::Managed') AND "hosts"."id" = 283"
