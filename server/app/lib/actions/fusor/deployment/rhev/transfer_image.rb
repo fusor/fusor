@@ -53,7 +53,7 @@ module Actions
           def scp_image_file(deployment, image_file)
             # scp the cfme file over to the rhev host, assume root user
             host_address = deployment.rhev_engine_host.facts['ipaddress']
-            Net::SCP.start(host_address, "root", :password => deployment.rhev_root_password) do |scp|
+            Net::SCP.start(host_address, "root", :password => deployment.rhev_root_password, :paranoid => false) do |scp|
               scp.upload!(image_file, "/root")
             end
           end

@@ -73,7 +73,7 @@ module Utils
           # :timeout => how long to wait for the initial connection to be made
           Net::SSH.start(@host, @user, :password => @password, :timeout => 2,
                          :auth_methods => ["password"],
-                         :number_of_password_prompts => 0) do |ssh|
+                         :number_of_password_prompts => 0, :paranoid => false) do |ssh|
             # open a new channel and configure a minimal set of callbacks, then run
             # the event loop until the channel finishes (closes)
             channel = ssh.open_channel do |ch|
