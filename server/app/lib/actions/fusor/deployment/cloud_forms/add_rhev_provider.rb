@@ -38,7 +38,7 @@ module Actions
                          :hypervisors => deployment.discovered_hosts
             }
 
-            Utils::CloudForms::Provider.add(input[:vm_ip], provider)
+            Utils::CloudForms::Provider.add(input[:vm_ip], provider, deployment)
             Rails.logger.info "================ Leaving AddRhevProvider run method ===================="
           end
         end

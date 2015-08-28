@@ -79,6 +79,10 @@ module Actions
               plan_action(::Actions::Fusor::Deployment::CloudForms::WaitForConsole,
                           get_ip_action.output[:ip])
 
+              plan_action(::Actions::Fusor::Deployment::CloudForms::UpdateAdminPassword,
+                          deployment,
+                          get_ip_action.output[:ip])
+
               plan_action(::Actions::Fusor::Deployment::CloudForms::AddRhevProvider,
                           deployment,
                           get_ip_action.output[:ip])
