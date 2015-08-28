@@ -1700,9 +1700,15 @@ define('fusor-ember-cli/controllers/cloudforms', ['exports', 'ember'], function 
     }).property('controllers.deployment.model.cfme_root_password'),
     hasNoCFRootPassword: Ember['default'].computed.not("hasCFRootPassword"),
 
+    hasCFAdminPassword: (function () {
+      return Ember['default'].isPresent(this.get('controllers.deployment.model.cfme_admin_password')) && this.get('controllers.deployment.model.cfme_admin_password.length') > 7;
+    }).property('controllers.deployment.model.cfme_admin_password'),
+    hasNoCFAdminPassword: Ember['default'].computed.not("hasCFAdminPassword"),
+
     validCloudforms: (function () {
-      return this.get('hasInstallLocation') && this.get('hasCFRootPassword');
-    }).property('hasInstallLocation', 'hasCFRootPassword')
+      return this.get('hasInstallLocation') && this.get('hasCFRootPassword') && this.get('hasCFAdminPassword');
+    }).property('hasInstallLocation', 'hasCFRootPassword', 'hasCFAdminPassword'),
+    notValidCloudforms: Ember['default'].computed.not("validCloudforms")
 
   });
 
@@ -1716,6 +1722,7 @@ define('fusor-ember-cli/controllers/cloudforms/cfme-configuration', ['exports', 
     needs: ['deployment', 'cloudforms'],
 
     cfmeRootPassword: Ember['default'].computed.alias("controllers.deployment.model.cfme_root_password"),
+    cfmeAdminPassword: Ember['default'].computed.alias("controllers.deployment.model.cfme_admin_password"),
     isSubscriptions: Ember['default'].computed.alias("controllers.deployment.isSubscriptions"),
 
     nextRouteNameAfterCFME: (function () {
@@ -4671,6 +4678,7 @@ define('fusor-ember-cli/models/deployment', ['exports', 'ember-data', 'ember'], 
 
     rhev_root_password: DS['default'].attr('string'),
     cfme_root_password: DS['default'].attr('string'),
+    cfme_admin_password: DS['default'].attr('string'),
 
     foreman_task_uuid: DS['default'].attr('string'),
     upstream_consumer_uuid: DS['default'].attr('string'),
@@ -8013,7 +8021,11 @@ define('fusor-ember-cli/templates/cloudforms/cfme-configuration', ['exports'], f
         dom.appendChild(el3, el4);
         var el4 = dom.createComment("");
         dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n    ");
+        var el4 = dom.createTextNode("\n\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n\n    ");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n  ");
@@ -8050,10 +8062,13 @@ define('fusor-ember-cli/templates/cloudforms/cfme-configuration', ['exports'], f
         } else {
           fragment = this.build(dom);
         }
-        var morph0 = dom.createMorphAt(dom.childAt(fragment, [0, 1, 1]),1,1);
-        var morph1 = dom.createMorphAt(fragment,2,2,contextualElement);
+        var element0 = dom.childAt(fragment, [0, 1, 1]);
+        var morph0 = dom.createMorphAt(element0,1,1);
+        var morph1 = dom.createMorphAt(element0,3,3);
+        var morph2 = dom.createMorphAt(fragment,2,2,contextualElement);
         inline(env, morph0, context, "text-f", [], {"label": "CFME Root password", "type": "password", "value": get(env, context, "cfmeRootPassword"), "cssId": "cfme_root_password", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted"), "minChars": 8, "help-inline": "must be 8 or more characters", "placeholder": "must be 8 or more characters"});
-        inline(env, morph1, context, "cancel-back-next", [], {"backRouteName": "where-install", "disableBack": false, "nextRouteName": get(env, context, "nextRouteNameAfterCFME"), "disableNext": get(env, context, "controllers.cloudforms.hasNoCFRootPassword"), "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
+        inline(env, morph1, context, "text-f", [], {"label": "CFME Admin password", "type": "password", "value": get(env, context, "cfmeAdminPassword"), "cssId": "cfme_admin_password", "isRequired": true, "disabled": get(env, context, "controllers.deployment.isStarted"), "minChars": 8, "help-inline": "must be 8 or more characters", "placeholder": "must be 8 or more characters"});
+        inline(env, morph2, context, "cancel-back-next", [], {"backRouteName": "where-install", "disableBack": false, "nextRouteName": get(env, context, "nextRouteNameAfterCFME"), "disableNext": get(env, context, "controllers.cloudforms.notValidCloudforms"), "parentController": get(env, context, "controller"), "disableCancel": get(env, context, "controllers.deployment.isStarted")});
         return fragment;
       }
     };
@@ -26140,6 +26155,10 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
               dom.appendChild(el0, el1);
               var el1 = dom.createComment("");
               dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n          ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
               var el1 = dom.createTextNode("\n");
               dom.appendChild(el0, el1);
               return el0;
@@ -26166,8 +26185,10 @@ define('fusor-ember-cli/templates/review/installation', ['exports'], function (e
               }
               var morph0 = dom.createMorphAt(fragment,1,1,contextualElement);
               var morph1 = dom.createMorphAt(fragment,3,3,contextualElement);
+              var morph2 = dom.createMorphAt(fragment,5,5,contextualElement);
               inline(env, morph0, context, "review-link", [], {"label": "Installation Location", "routeName": "where-install", "isRequired": true, "value": get(env, context, "controllers.deployment.model.cfme_install_loc")});
               inline(env, morph1, context, "review-link", [], {"label": "CFME Root password", "routeName": "cloudforms.cfme-configuration", "isRequired": true, "isPassword": true, "value": get(env, context, "controllers.deployment.model.cfme_root_password")});
+              inline(env, morph2, context, "review-link", [], {"label": "CFME Admin password", "routeName": "cloudforms.cfme-configuration", "isRequired": true, "isPassword": true, "value": get(env, context, "controllers.deployment.model.cfme_admin_password")});
               return fragment;
             }
           };
@@ -40041,13 +40062,13 @@ define('fusor-ember-cli/tests/unit/serializers/pool-test.jshint', function () {
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.2b85d3ac"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.afbb4f33"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.2b85d3ac"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.afbb4f33"});
 }
 
 /* jshint ignore:end */
