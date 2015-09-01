@@ -50,7 +50,7 @@ export default Ember.ArrayController.extend({
   }.property('enableAccessInsights'),
 
   analyticsColor: function() {
-    if (this.get('enableAnalytics')) { return ''; } else { return 'disabled-color'; }
+    if (this.get('enableAnalytics')) { return ''; } else { return 'disabled'; }
   }.property('enableAccessInsights')
 
 });

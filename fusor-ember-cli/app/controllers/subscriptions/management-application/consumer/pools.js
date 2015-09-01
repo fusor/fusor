@@ -14,7 +14,7 @@ export default Ember.ArrayController.extend({
   }.property('enableAccessInsights'),
 
   analyticsColor: function() {
-    if (this.get('enableAccessInsights')) { return ''; } else { return 'disabled-color'; }
+    if (this.get('enableAccessInsights')) { return ''; } else { return 'disabled'; }
   }.property('enableAccessInsights'),
 
   totalCountSubscriptions: Ember.computed.alias('model.length'),
