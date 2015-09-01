@@ -245,7 +245,6 @@
   }
 }
 
-/***** Joseph added from below ****/
 .rhci-steps  > li > a.active {
   text-decoration: none;
 }
@@ -254,6 +253,11 @@
   padding-top: 20px;
 }
 
-/*.sidebar-pf.sidebar-pf-left {
-  min-height: 850px;   to expand left bar to be gray -- temp fix rather than calculating page height  in jQuery
-}*/
+.sidebar-pf-left {
+  border: 1px solid #d0d0d0;
+  background-color:  #f5f5f5;
+}
+
+.sidebar-pf .nav-stacked {
+  margin-top: 0px;
+}
