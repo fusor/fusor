@@ -34,14 +34,14 @@
         </div>
         <div class='col-md-10'>
                 <button class="btn btn-primary pull-left" {{action "deployUndercloud"}} {{bindAttr disabled="deployDisabled"}}>
-                    Deploy Undercloud
+                    Detect Undercloud
                 </button>
         </div>
         {{#if deployed}}
             <div class='col-md-12' style="padding-top: 10px;">
                 <div class="alert alert-success" style="margin-bottom: 0px;">
                     <span class="pficon pficon-ok"></span>
-                    Undercloud has been successfully deployed.
+                    Undercloud has been successfully detected.
                 </div>
             </div>
         {{else}}

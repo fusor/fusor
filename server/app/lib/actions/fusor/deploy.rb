@@ -33,6 +33,11 @@ module Actions
                         deployment)
           end
 
+          if deployment.deploy_openstack
+            plan_action(::Actions::Fusor::Deployment::OpenStack::DeployAsSubPlan,
+                        deployment)
+          end
+
           if deployment.deploy_cfme
             plan_action(::Actions::Fusor::Deployment::CloudForms::DeployAsSubPlan,
                         deployment)
