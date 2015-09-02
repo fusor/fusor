@@ -1,7 +1,5 @@
-{{#wizard-step outlet=outlet minHeightStyle=minHeightStyle}}
+{{#wizard-step outlet=outlet}}
 
-<div class="col-sm-4 col-md-3 col-lg-2 col-sm-pull-8 col-md-pull-9 col-lg-pull-10 sidebar-pf sidebar-pf-left">
-  <ul class="nav nav-pills nav-stacked">
       {{#link-to 'undercloud-deploy' tagName='li'}}
         <a>{{stepNumberOpenstack}}A. Deploy Undercloud</a>
       {{/link-to}}
@@ -13,7 +11,5 @@
       {{#link-to 'assign-nodes' tagName='li' disabled=disableTabAssignNodes}}
         <a>{{stepNumberOpenstack}}C. Assign Nodes</a>
       {{/link-to}}
-  </ul>
-</div>
 
 {{/wizard-step}}
