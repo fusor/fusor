@@ -10,7 +10,6 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
-# rubocop:disable SymbolName
 module Fusor
   module Resources
     require 'rest_client'
@@ -18,13 +17,13 @@ module Fusor
     module CustomerPortal
       class Proxy
         def self.post(path, credentials, body)
-          Rails.logger.debug "Sending POST request to Customer Portal: #{ path }"
+          Rails.logger.debug "Sending POST request to Customer Portal: #{path}"
           client = CustomerPortalResource.rest_client(path, credentials)
           client.post(body, { :accept => :json, :content_type => :json })
         end
 
         def self.delete(path, credentials, body = nil)
-          Rails.logger.debug "Sending DELETE request to Customer Portal: #{ path }"
+          Rails.logger.debug "Sending DELETE request to Customer Portal: #{path}"
           client = CustomerPortalResource.rest_client(path, credentials)
           # Some candlepin calls will set the body in DELETE requests.
           client.options[:payload] = body unless body.nil?
@@ -32,7 +31,7 @@ module Fusor
         end
 
         def self.get(path, credentials)
-          Rails.logger.debug "Sending GET request to Customer Portal: #{ path }"
+          Rails.logger.debug "Sending GET request to Customer Portal: #{path}"
           client = CustomerPortalResource.rest_client(path, credentials)
           client.get({ :accept => :json })
         end

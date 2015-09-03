@@ -101,12 +101,12 @@ module Actions
           end
 
           def image_file_name(product_content)
-            product = product_content.find{ |content| !content[:image_file_name].nil? }
+            product = product_content.find { |content| !content[:image_file_name].nil? }
             product[:image_file_name] if product
           end
 
           def file_repositories(repositories)
-            repositories.select{ |repo| repo.content_type == ::Katello::Repository::FILE_TYPE }
+            repositories.select { |repo| repo.content_type == ::Katello::Repository::FILE_TYPE }
           end
 
           def find_repository(organization, repo_details)

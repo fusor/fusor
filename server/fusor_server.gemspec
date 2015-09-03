@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
   s.summary     = "Fusor installer"
   s.description = "Fusor installer"
 
-  s.files      = Dir["{app,config,db,lib}/**/*"] + ["LICENSE", "Rakefile", "README.md"]
-  s.files     += Dir["config/fusor.yaml"]
+  s.files = Dir["{app,config,db,lib}/**/*"] + ["LICENSE", "Rakefile", "README.md"]
+  s.files += Dir["config/fusor.yaml"]
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency "active_model_serializers", '~> 0.9'

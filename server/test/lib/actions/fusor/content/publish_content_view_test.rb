@@ -8,7 +8,7 @@ module Actions::Fusor::Content
 
     def setup
       @deployment = fusor_deployments(:rhev)
-      @repositories = [ katello_repositories(:fedora_17_x86_64) ]
+      @repositories = [katello_repositories(:fedora_17_x86_64)]
       @rpm_view = katello_content_views(:library_dev_staging_view)
       @rpm_view.repositories = @repositories
       @rpm_view.save
@@ -73,7 +73,7 @@ module Actions::Fusor::Content
       refute_action_planed @action, Promote
     end
 
-    test "plan should promote the composite view if we're deploying to dev" do 
+    test "plan should promote the composite view if we're deploying to dev" do
       PublishContentView.any_instance.stubs(:composite_content_view_name).returns(@composite_view.name)
       # this content view has no repositories
       PublishContentView.any_instance.stubs(:rpm_content_view_name).returns(@rpm_view.name)

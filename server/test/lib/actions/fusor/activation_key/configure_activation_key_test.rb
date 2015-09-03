@@ -8,7 +8,7 @@ module Actions::Fusor::ActivationKey
 
     def setup
       @deployment = fusor_deployments(:rhev)
-      @repositories = [ katello_repositories(:fedora_17_x86_64) ]
+      @repositories = [katello_repositories(:fedora_17_x86_64)]
       @content_view = katello_content_views(:library_view)
       @action = create_action ConfigureActivationKey
       set_user
@@ -42,7 +42,7 @@ module Actions::Fusor::ActivationKey
     end
 
     test "there is no run method for ConfigureActivationKey Actions" do
-      plan = plan_action(@action, @deployment, @repositories) 
+      plan = plan_action(@action, @deployment, @repositories)
       assert_raises(NoMethodError) {
         silence_stream(STDOUT) do
           run_action plan

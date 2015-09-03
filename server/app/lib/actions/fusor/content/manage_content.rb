@@ -76,7 +76,7 @@ module Actions
 
         def enable_smart_class_parameter_overrides
           # Enable parameter overrides for all parameters supported by the configured puppet classes
-          puppet_classes = ::Puppetclass.where(:name => SETTINGS[:fusor][:puppet_classes].map{ |p| p[:name] })
+          puppet_classes = ::Puppetclass.where(:name => SETTINGS[:fusor][:puppet_classes].map { |p| p[:name] })
           puppet_classes.each do |puppet_class|
             puppet_class.smart_class_parameters.each do |parameter|
               unless parameter.override
@@ -96,7 +96,7 @@ module Actions
         end
 
         def yum_repositories(repositories)
-          repositories.select{ |repo| repo.content_type == ::Katello::Repository::YUM_TYPE }
+          repositories.select { |repo| repo.content_type == ::Katello::Repository::YUM_TYPE }
         end
 
         def retrieve_deployment_repositories(organization, product_content)

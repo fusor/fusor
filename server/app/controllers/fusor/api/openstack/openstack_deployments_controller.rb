@@ -20,7 +20,7 @@ module Fusor
         def index
           render :json => undercloud_handle.list_stacks
         end
-        
+
         def show
           render :json => {:openstack_deployment => undercloud_handle.get_stack_by_name(params[:id])}
         end

@@ -48,7 +48,7 @@ module Actions
 
               # retry if necessary
               sleep_seconds = 20
-              if not @success && @retry
+              if !@success && @retry
                 Rails.logger.info "UpdateRootPassword will retry again once in #{sleep_seconds}."
 
                 # pause for station identification, actually pausing to give
@@ -58,9 +58,9 @@ module Actions
 
                 @io = StringIO.new
                 client.execute(cmd, @io)
-                if not @success
-                    # if retry didn't work, we're done
-                    fail _("Failed to update root password on appliance, after a retry. Error message: #{@io.string}")
+                if !@success
+                  # if retry didn't work, we're done
+                  fail _("Failed to update root password on appliance, after a retry. Error message: #{@io.string}")
                 end
                 @io.close unless @io.closed?
               end
@@ -86,7 +86,7 @@ module Actions
 
           def update_root_password_failed
             Rails.logger.debug "=========== failed entered ============="
-            if not @success
+            if !@success
               if @io.string.include? "execution expired"
                 @retry = true
               end

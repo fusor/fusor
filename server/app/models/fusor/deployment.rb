@@ -40,7 +40,7 @@ module Fusor
     scoped_search :on => [:id, :name], :complete_value => true
 
     # used by ember-data for .find('model', {id: [1,2,3]})
-    scope :by_id, lambda { |n=nil| where(:id => n) if n.present? }
+    scope :by_id, proc { |n| where(:id => n) if n.present? }
 
   end
 end
