@@ -25,6 +25,7 @@ module Actions::Fusor::Content
       def initialize(value)
         @value = value
       end
+
       def find_repository
         return @value
       end

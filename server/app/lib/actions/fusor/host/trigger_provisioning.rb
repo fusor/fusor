@@ -27,7 +27,7 @@ module Actions
           hostgroup = find_hostgroup(deployment, input[:hostgroup_name])
           host = ::Host::Base.find(input[:host_id])
 
-          success, host = assign_host_to_hostgroup(host, hostgroup)
+          _success, host = assign_host_to_hostgroup(host, hostgroup)
           sleep_before_reboot
           reboot_host(host) if host
         end

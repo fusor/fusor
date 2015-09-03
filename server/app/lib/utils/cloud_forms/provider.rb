@@ -24,9 +24,9 @@ module Utils
         agent.open_timeout = 180
 
         # 20150825 jesusr - use cfme_admin_password from deployment
-        logged_in_page = agent.post("https://#{cfme_ip}/dashboard/authenticate?button=login",
-                                    { "user_name" => "admin",
-                                      "user_password" => deployment.cfme_admin_password })
+        agent.post("https://#{cfme_ip}/dashboard/authenticate?button=login",
+                   { "user_name" => "admin",
+                     "user_password" => deployment.cfme_admin_password })
 
         # The referer is VERY IMPORTANT in manageIQ
         # If 'agent.page.uri' is removed in below request it will not function
@@ -62,7 +62,7 @@ module Utils
             "Content-Type" => "application/x-www-form-urlencoded"
         }
         request_data = new_provider_form.request_data
-        provider_added = agent.post("https://#{cfme_ip}/ems_infra/create/new?button=add", request_data, submit_headers)
+        agent.post("https://#{cfme_ip}/ems_infra/create/new?button=add", request_data, submit_headers)
 
         get_provider_hosts(cfme_ip, agent, provider_params).each do |host_link|
           add_host_credentials(host_link, cfme_ip, agent, provider_params, submit_headers)

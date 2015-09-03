@@ -43,8 +43,8 @@ module Actions
               @io.close unless @io.closed?
 
             rescue Exception => e
+              @io.close if @io && !@io.closed?
               fail _("Failed to update admin password on appliance. Error message: #{e.message}")
-              @io.close unless @io.closed?
             end
             Rails.logger.info "================ Leaving UpdateAdminPassword run method ===================="
           end

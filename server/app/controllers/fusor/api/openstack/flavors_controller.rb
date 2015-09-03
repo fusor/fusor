@@ -16,7 +16,6 @@ module Fusor
       class FlavorsController < Api::Openstack::BaseController
 
         def index
-          flavors = undercloud_handle.list_flavors
           flavor_json_array = Array.new
           for flavor in undercloud_handle.list_flavors
             flavor_json_array << flavor_json_with_extra_specs(flavor)

@@ -23,7 +23,6 @@ module Actions::Fusor::Deployment::OpenStack
     end
 
     def run
-      deployment = ::Fusor::Deployment.find(input[:deployment_id])
       @plan = undercloud_handle.deploy_plan('overcloud')
     end
 
@@ -34,7 +33,7 @@ module Actions::Fusor::Deployment::OpenStack
     end
 
     def undercloud_handle
-      return Overcloud::UndercloudHandle.new('admin','27f71320a3ab816412a47120ca370a7441c79b6e','192.0.2.1', 5000)
+      return Overcloud::UndercloudHandle.new('admin', '27f71320a3ab816412a47120ca370a7441c79b6e', '192.0.2.1', 5000)
     end
   end
 end
