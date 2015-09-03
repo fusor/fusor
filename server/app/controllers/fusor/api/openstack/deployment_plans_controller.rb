@@ -21,7 +21,7 @@ module Fusor
           @plan = undercloud_handle.deploy_plan(params[:id])
           redirect_to :action => 'show', :id => params[:id]
         end
-        
+
         def show
           render :json => {:deployment_plan => undercloud_handle.get_plan(params[:id])}
         end
@@ -40,7 +40,7 @@ module Fusor
           @plan = undercloud_handle.edit_plan_parameters(params[:id], params[:parameters])
           redirect_to :action => 'show', :id => params[:id]
         end
-        
+
       end
     end
   end

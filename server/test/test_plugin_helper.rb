@@ -19,7 +19,7 @@ module FixtureTestCase
     # foreman fixtures
     # No need to specify fixture_class for foreman fixtures, class can be
     # inferred due to namespace
-    
+
     # katello fixtures
     self.set_fixture_class :katello_activation_keys => "Katello::ActivationKey"
     self.set_fixture_class :katello_content_views => "Katello::ContentView"
@@ -76,5 +76,5 @@ class ActiveSupport::TestCase
 end
 
 class FusorActionTest < ActiveSupport::TestCase
-    include Dynflow::Testing
+  include Dynflow::Testing
 end

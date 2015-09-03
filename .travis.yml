@@ -22,5 +22,6 @@ install: ./.travis.sh install
 before_script: ./.travis.sh migrate
 
 script: 
+ - gem install rubocop -v 0.33 && rubocop
  - cd ../foreman
  - rake test:fusor

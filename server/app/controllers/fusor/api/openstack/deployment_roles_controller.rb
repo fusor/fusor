@@ -16,11 +16,11 @@ module Fusor
   module Api
     module Openstack
       class DeploymentRolesController < Api::Openstack::BaseController
-        
+
         def index
           render :json => {:deployment_roles => undercloud_handle.list_deployment_roles}.to_json
         end
-        
+
       end
     end
   end

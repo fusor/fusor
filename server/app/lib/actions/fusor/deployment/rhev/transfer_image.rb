@@ -62,12 +62,12 @@ module Actions
             images = ::Katello.pulp_server.extensions.repository.unit_search(repository.pulp_id)
 
             if image_file_name
-              image_name = images.find{ |image| image[:metadata][:name] == image_file_name }
+              image_name = images.find { |image| image[:metadata][:name] == image_file_name }
               image_path = image_file[:metadata][:_storage_path] if image_name
             else
-              images = images.find_all{ |image| image[:metadata][:name].starts_with?("cfme-rhevm") }
-              image_name = images.compact.sort_by{ |k| k[:name] }.last[:metadata][:name]
-              image_path = images.compact.sort_by{ |k| k[:name] }.last[:metadata][:_storage_path]
+              images = images.find_all { |image| image[:metadata][:name].starts_with?("cfme-rhevm") }
+              image_name = images.compact.sort_by { |k| k[:name] }.last[:metadata][:name]
+              image_path = images.compact.sort_by { |k| k[:name] }.last[:metadata][:_storage_path]
             end
 
             return image_path, image_name

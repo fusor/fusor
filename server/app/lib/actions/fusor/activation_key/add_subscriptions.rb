@@ -44,8 +44,8 @@ module Actions
 
         def associate_subscriptions(key)
           subscription_descriptions.each do |description|
-            subscriptions = key.available_subscriptions.find_all{ |key| key.description == description }
-            subscriptions.each{ |subscription| key.subscribe(subscription.cp_id, 0) } if subscriptions
+            subscriptions = key.available_subscriptions.find_all { |key| key.description == description }
+            subscriptions.each { |subscription| key.subscribe(subscription.cp_id, 0) } if subscriptions
           end
         end
 

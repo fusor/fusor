@@ -12,7 +12,7 @@ module Fusor
       # Add additional paths below if you want logging silenced
       #  we want the polling of ForemanTasksController#show silenced to reduce noise in logs
       silenced_paths = ["api/v21/foreman_tasks"]
-        
+
       if Katello.config.respond_to? 'logging' and Katello.config.logging.respond_to? 'ignored_paths'
         for sil_path in silenced_paths
           Katello.config.logging.ignored_paths.push(sil_path)
@@ -80,7 +80,7 @@ module Fusor
       ::Host::Managed.send :include, Fusor::Concerns::HostOrchestrationBuildHook
       # The following line disabled CSRF and should only be uncommented in development environments
       # ::ActionController::Base.send :include, Fusor::Concerns::ApplicationControllerExtension
-  
+
       # preload all the Foreman's lib files but only in production
       #   Based on workaround Staypuft identified, related to race condition of loading certain foreman modules
       #   https://github.com/theforeman/foreman/pull/1577#issuecomment-48703612

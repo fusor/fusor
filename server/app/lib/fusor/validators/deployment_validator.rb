@@ -1,8 +1,9 @@
 module Fusor
   module Validators
     class DeploymentValidator < ActiveModel::Validator
+      # rubocop:disable Metrics/MethodLength
       def validate(deployment)
-        if not (deployment.deploy_rhev or deployment.deploy_cfme or deployment.deploy_openstack)
+        if !(deployment.deploy_rhev or deployment.deploy_cfme or deployment.deploy_openstack)
           deployment.errors[:base] << _('You must deploy something...')
         end
 
@@ -21,7 +22,7 @@ module Fusor
             deployment.errors[:rhev_engine_admin_password] << _('RHEV deployments must specify an admin password for the RHEV Engine')
           end
 
-          if deployment.rhev_storage_type.empty? or not ['NFS', 'Local', 'Gluster'].include?(deployment.rhev_storage_type)
+          if deployment.rhev_storage_type.empty? or !['NFS', 'Local', 'Gluster'].include?(deployment.rhev_storage_type)
             deployment.errors[:rhev_storage_type] << _('RHEV deployments must specify a valid storage type (NFS, Local, Gluster)')
           end
 
@@ -39,7 +40,7 @@ module Fusor
                 deployment.errors[:rhev_share_path] << _('NFS path specified ends in a "/", which is invalid')
               end
 
-              if not deployment.rhev_share_path.ascii_only?
+              if !deployment.rhev_share_path.ascii_only?
                 deployment.errors[:rhev_share_path] << _('NFS path specified contains non-ascii characters, which is invalid')
               end
             end
@@ -78,7 +79,7 @@ module Fusor
           # 1) must also deploy either rhev or openstack
           # 2) must have install location
           # 3) must have cfme root password
-          if not (deployment.deploy_rhev or deployment.deploy_openstack)
+          if !(deployment.deploy_rhev or deployment.deploy_openstack)
             deployment.errors[:deploy_cfme] << _("CloudForms deployments must also deploy either RHEV or OpenStack")
           end
 

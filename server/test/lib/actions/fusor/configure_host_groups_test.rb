@@ -62,8 +62,7 @@ module Actions::Fusor
 
       # fake an os
       id = stub(:id, 1)
-      
-      
+
       plan = plan_action @action, @deployment, 'rhev', @rhev_hostgroup
       run_action plan
     end

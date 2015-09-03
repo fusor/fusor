@@ -47,6 +47,8 @@ module Actions
 
       private
 
+      # TODO: break up this method
+      # rubocop:disable Metrics/MethodLength
       def find_or_ensure_hostgroup(deployment, product_type, organization_id, lifecycle_environment_id,
                                    hostgroup_settings)
 
@@ -74,7 +76,7 @@ module Actions
           puppet_environment = content_view_puppet_environment.puppet_environment
 
           if puppet_class_settings = hostgroup_settings[:puppet_classes]
-            puppet_classes = Puppetclass.where(:name => puppet_class_settings.map{ |c| c[:name] }).
+            puppet_classes = Puppetclass.where(:name => puppet_class_settings.map { |c| c[:name] }).
                 joins(:environment_classes).
                 where("environment_classes.environment_id in (?)", puppet_environment.id).uniq
             puppet_class_ids = puppet_classes.map(&:id)
@@ -102,7 +104,7 @@ module Actions
               # Puppetclass names are unique, there is only one access insights
               # puppet class regardless of how many environments or orgs there are
               insights_class = Puppetclass.find("access_insights_client")
-              hostgroup_params[:puppetclass_ids] = [ insights_class.id ]
+              hostgroup_params[:puppetclass_ids] = [insights_class.id]
             end
 
             default_capsule_id = ::Katello::CapsuleContent.default_capsule.try(:capsule).try(:id)
@@ -151,7 +153,7 @@ module Actions
             if parameter_settings = puppet_class_setting[:parameters]
               parameter_settings.each do |parameter_setting|
                 unless parameter_setting[:override].blank?
-                  puppet_class = Puppetclass.where(:name =>puppet_class_setting[:name]).
+                  puppet_class = Puppetclass.where(:name => puppet_class_setting[:name]).
                       joins(:environment_classes).
                       where("environment_classes.environment_id in (?)", puppet_environment.id).first
 
@@ -223,7 +225,7 @@ module Actions
 
         # Check if the host group has some overrides specified for this deployment.
         # If it does, set them for the host group.
-        if overrides = deployment_overrides.find{ |hg| hg[:hostgroup_name] == hostgroup.name }
+        if overrides = deployment_overrides.find { |hg| hg[:hostgroup_name] == hostgroup.name }
           overrides[:puppet_classes].each do |pclass|
             puppet_class = Puppetclass.where(:name => pclass[:name]).
                 joins(:environment_classes).

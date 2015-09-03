@@ -16,7 +16,7 @@ module Fusor
   module Api
     module Openstack
       class ImagesController < Api::Openstack::BaseController
-        
+
         def index
           render :json => undercloud_handle.list_images.as_json
         end
@@ -24,7 +24,7 @@ module Fusor
         def show_by_name
           render :json => {:image => undercloud_handle.find_image_by_name(params[:name]).as_json}
         end
-        
+
       end
     end
   end

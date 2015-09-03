@@ -19,7 +19,7 @@ module Fusor
 
         def show
           deployment = Deployment.find(params[:id])
-          dep_has_password = (deployment.openstack_undercloud_password != nil && !deployment.openstack_undercloud_password.empty?)
+          dep_has_password = (!deployment.openstack_undercloud_password.nil? && !deployment.openstack_undercloud_password.empty?)
           render :json => {:deployed => dep_has_password,
                            :failed => !dep_has_password}
         end
@@ -44,7 +44,7 @@ module Fusor
           # a possible workaround.
           # See bug https://bugzilla.redhat.com/show_bug.cgi?id=1255412
           routable = system("ping " + ip_addr + " -c 1 -W 1")
-          if not routable
+          if !routable
             render json: {errors: "Error: The Undercloud's provisioning network is not routable. Please run 'ip route add " + ip_addr + ' via ' + underhost + "' as root on the Satellite and try again."}, status: 422
             #system('sudo route add ' + ip_addr + ' via ' + underhost)
           else

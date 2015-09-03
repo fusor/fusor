@@ -16,7 +16,7 @@ module Fusor
   module Api
     module Openstack
       class NodesController < Api::Openstack::BaseController
-        
+
         def index
           render :json => undercloud_handle.list_nodes
         end
@@ -34,7 +34,7 @@ module Fusor
           ready = undercloud_handle.introspect_node_status(params[:id])
           render :json => {:node => {:id => params[:id], :ready => ready}}.to_json
         end
-        
+
       end
     end
   end

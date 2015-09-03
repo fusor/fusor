@@ -5,7 +5,7 @@ module Actions::Fusor::ActivationKey
 
     def setup
       @deployment = fusor_deployments(:rhev)
-      @repositories = [ katello_repositories(:fedora_17_x86_64) ]
+      @repositories = [katello_repositories(:fedora_17_x86_64)]
       @activation_key = katello_activation_keys(:simple_key)
       @action = create_action AddSubscriptions
       # use one of the keys already defined by katllo, we won't have

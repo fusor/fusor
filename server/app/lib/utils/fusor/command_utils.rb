@@ -13,7 +13,7 @@
 module Utils
   module Fusor
     class CommandUtils
-      def self.run_command(cmd, log_on_success=false)
+      def self.run_command(cmd, log_on_success = false)
         # popen2e merges stdout and stderr, which we have put into
         # the the output variable
         stdin, stdout_err, wait_thr = Open3.popen2e(cmd)
@@ -29,13 +29,13 @@ module Utils
         output = stdout_err.readlines
 
         if status > 0
-            Rails.logger.error "Error running command: #{cmd}"
-            Rails.logger.error "Status code: #{status}"
-            Rails.logger.error "Command output: #{output}"
+          Rails.logger.error "Error running command: #{cmd}"
+          Rails.logger.error "Status code: #{status}"
+          Rails.logger.error "Command output: #{output}"
         elsif log_on_success
-            Rails.logger.info "Command: #{cmd}"
-            Rails.logger.info "Status code: #{status}"
-            Rails.logger.info "Command output: #{output}"
+          Rails.logger.info "Command: #{cmd}"
+          Rails.logger.info "Status code: #{status}"
+          Rails.logger.info "Command output: #{output}"
         end
 
         # need to close these explicitly as per the docs

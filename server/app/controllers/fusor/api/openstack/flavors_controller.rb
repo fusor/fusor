@@ -14,7 +14,7 @@ module Fusor
   module Api
     module Openstack
       class FlavorsController < Api::Openstack::BaseController
-        
+
         def index
           flavors = undercloud_handle.list_flavors
           flavor_json_array = Array.new
@@ -23,11 +23,11 @@ module Fusor
           end
           render :json => {:flavors => flavor_json_array}
         end
-        
+
         def show
           render :json => {:flavor => flavor_json_with_extra_specs(undercloud_handle.get_flavor(params[:id]))}
         end
-        
+
         private
 
         def flavor_json_with_extra_specs(flavor)
