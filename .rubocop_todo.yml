@@ -42,12 +42,6 @@ Lint/ShadowingOuterLocalVariable:
     - 'server/app/lib/actions/fusor/host/trigger_provisioning.rb'
     - 'server/app/lib/utils/fusor/ssh_connection.rb'
 
-# Offense count: 2
-Lint/UnreachableCode:
-  Exclude:
-    - 'server/app/lib/actions/fusor/deployment/cloud_forms/update_admin_password.rb'
-    - 'server/app/lib/actions/fusor/deployment/cloud_forms/update_root_password.rb'
-
 # Offense count: 8
 # Cop supports --auto-correct.
 Lint/UnusedBlockArgument:
@@ -55,14 +49,6 @@ Lint/UnusedBlockArgument:
     - 'server/app/lib/utils/fusor/ssh_connection.rb'
     - 'server/lib/fusor/engine.rb'
     - 'ui/lib/fusor_ui/engine.rb'
-
-# Offense count: 5
-Lint/UselessAssignment:
-  Exclude:
-    - 'server/app/controllers/fusor/api/openstack/flavors_controller.rb'
-    - 'server/app/lib/actions/fusor/host/trigger_provisioning.rb'
-    - 'server/app/lib/utils/cloud_forms/provider.rb'
-    - 'server/test/lib/actions/fusor/configure_host_groups_test.rb'
 
 # Offense count: 46
 Metrics/AbcSize:
@@ -160,13 +146,6 @@ Style/CommentAnnotation:
 Style/DefWithParentheses:
   Exclude:
     - 'server/test/test_plugin_helper.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AllowAdjacentOneLineDefs.
-Style/EmptyLineBetweenDefs:
-  Exclude:
-    - 'server/test/lib/actions/fusor/content/enable_repositories_test.rb'
 
 # Offense count: 6
 # Cop supports --auto-correct.
@@ -324,24 +303,9 @@ Style/SignalException:
 
 # Offense count: 1
 # Cop supports --auto-correct.
-# Configuration parameters: MultiSpaceAllowedForOperators.
-Style/SpaceAroundOperators:
-  Exclude:
-    - 'ui/lib/fusor_ui/engine.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
 Style/SpecialGlobalVars:
   Exclude:
     - 'cli/hammer_cli_fusor.gemspec'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/TrailingBlankLines:
-  Exclude:
-    - 'cli/Gemfile'
-    - 'cli/lib/hammer_cli_fusor.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.

@@ -6,7 +6,7 @@ module FusorUi
       app.middleware.insert_before(::ActionDispatch::Static, ::ActionDispatch::Static, "#{config.root}/public")
     end
 
-    initializer 'fusor_ui.register_plugin', :after=> :finisher_hook do |app|
+    initializer 'fusor_ui.register_plugin', :after => :finisher_hook do |app|
       Foreman::Plugin.register :fusor_ui do
         requires_foreman '>= 1.4'
 

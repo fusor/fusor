@@ -60,9 +60,6 @@ module Actions::Fusor
       ::Hostgroup.expects(:create!).times(@rhev_hostgroup_length)
       ::GroupParameter.expects(:create!).times(@rhev_hostgroup_length)
 
-      # fake an os
-      id = stub(:id, 1)
-
       plan = plan_action @action, @deployment, 'rhev', @rhev_hostgroup
       run_action plan
     end
