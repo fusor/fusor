@@ -34,7 +34,7 @@ module Fusor
           io = StringIO.new
           ssh.execute("sudo hiera admin_password", io)
           admin = io.string.strip
-          if admin.include?('failed') or admin.include?('error')
+          if admin.include?('failed') || admin.include?('error')
             render json: {errors: admin}, status: 422
           else
             io = StringIO.new
@@ -48,7 +48,8 @@ module Fusor
             # See bug https://bugzilla.redhat.com/show_bug.cgi?id=1255412
             routable = system("ping " + ip_addr + " -c 1 -W 1")
             if !routable
-              render json: {errors: "Error: The Undercloud's provisioning network is not routable. Please run 'ip route add " + ip_addr + ' via ' + underhost + "' as root on the Satellite and try again."}, status: 422
+              render(json: {errors: "Error: The Undercloud's provisioning network is not routable. Please run 'ip route add " + ip_addr + ' via ' + underhost + "' as root on the Satellite and try again."},
+                     status: 422)
               #system('sudo route add ' + ip_addr + ' via ' + underhost)
             else
               deployment.openstack_undercloud_password = admin
