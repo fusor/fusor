@@ -7,31 +7,7 @@
 {{/if}}
 
 {{#if isOpenStack}}
-<div class='row'>
-  <div class='col-md-1'>
-    Openstack
-  </div>
-
-  <div class='col-md-8'>
-    <div class='progress-bar-label'>
-      {{#if openstackIsFinished}}
-        <i class="fa fa-check-circle-o green-circle"></i>&nbsp;
-      {{else if openstackIsError}}
-        <i class="fa fa-exclamation-triangle errorForValidation"></i>&nbsp;
-      {{else}}
-        <div class="spinner spinner-xs spinner-inline"></div>
-      {{/if}}
-      &nbsp;{{model.openstackDeployment.stack_status}}: <span class='no-bold'> {{model.openstackDeployment.stack_status_reason}}</span>
-      <div class='pull-right'>
-        {{openstackDeploymentPercent}}%
-      </div>
-    </div>
-    <div class="progress">
-      <div class="progress-bar" role="progressbar" aria-valuenow={{openstackDeploymentPercent}} aria-valuemin="0" aria-valuemax="100" style="width: {{openstackDeploymentPercent}}%;">
-      </div>
-    </div>
-  </div>
-</div>
+  {{progress-bar model=openstackTask name=openstackRhev isSatelliteProgressBar=false}}
 {{/if}}
 
 {{#if isCloudForms}}
