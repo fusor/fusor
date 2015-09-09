@@ -34,25 +34,28 @@ module Fusor
           io = StringIO.new
           ssh.execute("sudo hiera admin_password", io)
           admin = io.string.strip
-          io = StringIO.new
-          ssh.execute("sudo hiera controller_host", io)
-          ip_addr = io.string.strip
-
-          # This is deplorable, but the undercloud services only listen on the
-          # provisioning network, which may or may not be accessible from here.
-          # See if it is, and if not then throw an error saying so and suggesting
-          # a possible workaround.
-          # See bug https://bugzilla.redhat.com/show_bug.cgi?id=1255412
-          routable = system("ping " + ip_addr + " -c 1 -W 1")
-          if !routable
-            render json: {errors: "Error: The Undercloud's provisioning network is not routable. Please run 'ip route add " + ip_addr + ' via ' + underhost + "' as root on the Satellite and try again."}, status: 422
-            #system('sudo route add ' + ip_addr + ' via ' + underhost)
+          if admin.include?('failed') or admin.include?('error')
+            render json: {errors: admin}, status: 422
           else
-            deployment.openstack_undercloud_password = admin
-            deployment.openstack_undercloud_ip_addr = ip_addr
-            deployment.save(:validate => false)
+            io = StringIO.new
+            ssh.execute("sudo hiera controller_host", io)
+            ip_addr = io.string.strip
 
-            render :json => {:undercloud => deployment.id}
+            # This is deplorable, but the undercloud services only listen on the
+            # provisioning network, which may or may not be accessible from here.
+            # See if it is, and if not then throw an error saying so and suggesting
+            # a possible workaround.
+            # See bug https://bugzilla.redhat.com/show_bug.cgi?id=1255412
+            routable = system("ping " + ip_addr + " -c 1 -W 1")
+            if !routable
+              render json: {errors: "Error: The Undercloud's provisioning network is not routable. Please run 'ip route add " + ip_addr + ' via ' + underhost + "' as root on the Satellite and try again."}, status: 422
+              #system('sudo route add ' + ip_addr + ' via ' + underhost)
+            else
+              deployment.openstack_undercloud_password = admin
+              deployment.openstack_undercloud_ip_addr = ip_addr
+              deployment.save(:validate => false)
+              render :json => {:undercloud => deployment.id}
+            end
           end
         end
 

@@ -13,6 +13,12 @@ require 'egon'
 
 module Actions::Fusor::Deployment::OpenStack
   class Deploy < Actions::Base
+    include Actions::Base::Polling
+
+    input_format do
+      param :deployment_id
+    end
+
     def humanized_name
       _("Deploy Red Hat OpenStack Platform overcloud")
     end
@@ -22,18 +28,35 @@ module Actions::Fusor::Deployment::OpenStack
       plan_self(deployment_id: deployment.id)
     end
 
-    def run
-      @plan = undercloud_handle.deploy_plan('overcloud')
+    def done?
+      external_task
+    end
+
+    def invoke_external_task
+      deployment = ::Fusor::Deployment.find(input[:deployment_id])
+      undercloud_handle(deployment).deploy_plan('overcloud')
+      false # it's not done yet, return false so we'll start polling
+    end
+
+    def poll_external_task
+      deployment = ::Fusor::Deployment.find(input[:deployment_id])
+      stack = undercloud_handle(deployment).get_stack_by_name('overcloud')
+      if stack == nil
+        raise "ERROR: deployment not found on undercloud."
+      end
+      if stack.stack_status == 'CREATE_COMPLETE'
+        return true # done!
+      elsif stack.stack_status == 'CREATE_IN_PROGRESS'
+        return false # not done yet, try again later
+      else
+        raise "ERROR: deployment failed with status: " + stack.stack_status + " and reason: " + stack.stack_status_reason # errored, barf
+      end
     end
 
     private
 
-    def hosts_to_provision(deployment)
-      deployment.discovered_hosts + [deployment.rhev_engine_host]
-    end
-
-    def undercloud_handle
-      return Overcloud::UndercloudHandle.new('admin', '27f71320a3ab816412a47120ca370a7441c79b6e', '192.0.2.1', 5000)
+    def undercloud_handle(deployment)
+      return Overcloud::UndercloudHandle.new('admin', deployment.openstack_undercloud_password, deployment.openstack_undercloud_ip_addr, 5000)
     end
   end
 end
