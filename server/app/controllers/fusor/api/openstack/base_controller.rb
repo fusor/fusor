@@ -38,12 +38,7 @@ module Fusor
         private
 
         def undercloud_handle
-          deployment = Deployment.find(params[:id])
-          user = "admin"
-          password = deployment.openstack_undercloud_password
-          ip_addr = deployment.openstack_undercloud_ip_addr
-
-          return Overcloud::UndercloudHandle.new(user, password, ip_addr, 5000)
+          return Overcloud::UndercloudHandle.new('admin', '6a818a9995c61555142a13006ad2129826503165', '192.0.2.1', 5001)
         end
 
       end
