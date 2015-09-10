@@ -11,16 +11,15 @@ export default Ember.Route.extend({
         var subtasksOfDeploy = results[1];
         var manageContentTask = subtasksOfDeploy.findBy('humanized_name', 'Manage Content');
         var rhevTask          = subtasksOfDeploy.findBy('humanized_name', 'Deploy Red Hat Enterprise Virtualization');
+        var openstackTask     = subtasksOfDeploy.findBy('humanized_name', 'Deploy Red Hat OpenStack Platform overcloud');
         var cfmeTask          = subtasksOfDeploy.findBy('humanized_name', 'Deploy CloudForms Management Engine');
 
         return Ember.RSVP.hash({
            deployTask: deployTask,
            manageContentTask: manageContentTask,
            rhevTask: rhevTask,
+           openstackTask: openstackTask,
            cfmeTask: cfmeTask,
-           openstackDeployment: this.store.find('openstack-deployment', 'overcloud'),
-           openstackPlan: this.store.find('deployment-plan', 'overcloud'),
-           openstackNodes: this.store.find('node')
         });
 
       });
@@ -31,6 +30,7 @@ export default Ember.Route.extend({
     controller.set('deployTask', model.deployTask);
     controller.set('manageContentTask', model.manageContentTask);
     controller.set('rhevTask', model.rhevTask);
+    controller.set('openstackTask', model.openstackTask);
     controller.set('cfmeTask', model.cfmeTask);
     controller.stopPolling();
     controller.startPolling();
