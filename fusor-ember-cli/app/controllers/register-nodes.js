@@ -441,12 +441,17 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
       },
       address: node.nicMacAddress
     };
+    var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
     this.set('initRegInProcess', true);
     Ember.$.ajax({
       url: '/fusor/api/openstack/nodes',
       type: 'POST',
-      contentType: 'application/json',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-CSRF-Token": token,
+      },
       data: JSON.stringify({ 'node': createdNode }),
       success: function(registeredNode) {
         me.set('initRegInProcess', false);
