@@ -50,12 +50,17 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
       var promiseFunction = function (resolve) {
         me.set('deploymentError', null);
+      var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
       Ember.$.ajax({
           url: '/fusor/api/openstack/underclouds',
           type: 'POST',
           data: JSON.stringify(data),
-          contentType: 'application/json',
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "X-CSRF-Token": token,
+          },
           success: function(response) {
             promise.then(fulfill);
             console.log('create success');

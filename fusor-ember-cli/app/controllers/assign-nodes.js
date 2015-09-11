@@ -108,11 +108,16 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
     me.set('loadingSpinnerText', "Loading...");
     me.set('showLoadingSpinner', true);
+    var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
     Ember.$.ajax({
       url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_role_flavor',
       type: 'PUT',
-      contentType: 'application/json',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-CSRF-Token": token,
+      },
       data: JSON.stringify(data),
       success: function() {
         me.set('showLoadingSpinner', false);
