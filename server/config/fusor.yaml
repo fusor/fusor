@@ -69,6 +69,11 @@
         :basearch: "x86_64"
         :releasever: "7Server"
 
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server - RH Common (RPMs)"
+        :basearch: "x86_64"
+        :releasever: "7Server"
+
       - :product_name: "Red Hat OpenStack"
         :repository_set_name: "Red Hat OpenStack 7.0 for RHEL 7 (RPMs)"
         :basearch: "x86_64"
