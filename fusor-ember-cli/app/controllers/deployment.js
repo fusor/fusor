@@ -4,7 +4,7 @@ import DisableTabMixin from "../mixins/disable-tab-mixin";
 
 export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixin, {
 
-  needs: ['configure-environment', 'deployments', 'rhev', 'cloudforms',
+  needs: ['configure-environment', 'deployments', 'rhev', 'openstack', 'cloudforms',
           'subscriptions/credentials', 'subscriptions/select-subscriptions'],
 
   routeNameSatellite: 'satellite',
@@ -14,21 +14,34 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   isOpenModal: Ember.computed.alias("controllers.deployments.isOpenModal"),
   deploymentInModal: Ember.computed.alias("controllers.deployments.deploymentInModal"),
 
+  validRhev: Ember.computed.alias("controllers.rhev.validRhev"),
+  validOpenStack: Ember.computed.alias("controllers.openstack.validOpenStack"),
+  validCloudforms: Ember.computed.alias("controllers.cloudforms.validCloudforms"),
+  disableNextOnSelectSubscriptions: Ember.computed.alias("controllers.subscriptions/select-subscriptions.disableNextOnSelectSubscriptions"),
+
   isDisabledRhev: Ember.computed.alias("satelliteInvalid"),
-  isDisabledOpenstack: Ember.computed.alias("satelliteInvalid"),
+
+  isDisabledOpenstack: function() {
+    return (this.get('satelliteInvalid') ||
+            (this.get('isRhev') && !(this.get('validRhev')))
+           );
+  }.property("satelliteInvalid", 'isRhev', 'validRhev'),
 
   isDisabledCloudForms: function() {
     return (this.get('satelliteInvalid') ||
-            (this.get('isRhev') && !(this.get('controllers.rhev.validRhev')))
-           );
-  }.property("satelliteInvalid", 'isRhev', 'controllers.rhev.validRhev'),
+            (this.get('isRhev') && !(this.get('validRhev'))) ||
+            (this.get('isOpenStack') && !(this.get('validOpenStack')))
+            );
+  }.property("satelliteInvalid", 'isRhev', 'isOpenStack', 'validRhev', 'validOpenStack'),
 
   isDisabledSubscriptions: function() {
     return (this.get('satelliteInvalid') ||
-            (this.get('isRhev') && !(this.get('controllers.rhev.validRhev'))) ||
-            (this.get('isCloudForms') && !(this.get('controllers.cloudforms.validCloudforms')))
+            (this.get('isRhev') && !(this.get('validRhev'))) ||
+            (this.get('isOpenStack') && !(this.get('validOpenStack'))) ||
+            (this.get('isCloudForms') && !(this.get('validCloudforms')))
            );
-  }.property("satelliteInvalid", 'isRhev', 'controllers.rhev.validRhev', 'controllers.cloudforms.validCloudforms'),
+  }.property("satelliteInvalid", 'isRhev', 'isOpenStack', 'validRhev', 'validOpenStack', 'isCloudForms', 'validCloudforms'),
+
 
   hasSubscriptionUUID: function() {
     return (Ember.isPresent(this.get('organizationUpstreamConsumerUUID')) ||
@@ -37,8 +50,8 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   }.property('organizationUpstreamConsumerUUID', 'model.upstream_consumer_uuid'),
 
   isDisabledReview: function() {
-    return (this.get('isDisabledSubscriptions') || !this.get("hasSubscriptionUUID") || this.get('controllers.subscriptions/select-subscriptions.disableNextOnSelectSubscriptions'));
-  }.property('isDisabledSubscriptions', 'hasSubscriptionUUID', 'controllers.subscriptions/select-subscriptions.disableNextOnSelectSubscriptions'),
+    return (this.get('isDisabledSubscriptions') || !this.get("hasSubscriptionUUID") || this.get('disableNextOnSelectSubscriptions'));
+  }.property('isDisabledSubscriptions', 'hasSubscriptionUUID', 'disableNextOnSelectSubscriptions'),
 
   hasLifecycleEnvironment: function() {
     return (!!(this.get('model.lifecycle_environment.id')) || this.get('useDefaultOrgViewForEnv'));
