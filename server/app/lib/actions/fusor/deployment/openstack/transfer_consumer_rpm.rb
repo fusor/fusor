@@ -29,7 +29,6 @@ module Actions::Fusor::Deployment::OpenStack
       latest_consumer_rpm = '/var/www/html/pub/katello-ca-consumer-latest.noarch.rpm'
       scp_file(deployment, latest_consumer_rpm)
 
-
       Rails.logger.debug "================ Leaving TransferConsumerRpm run method ===================="
     end
 
