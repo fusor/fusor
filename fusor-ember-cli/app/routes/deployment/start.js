@@ -13,6 +13,7 @@ export default Ember.Route.extend({
 
   deactivate: function() {
     this.controllerFor('deployment').set('isHideWizard', false);
+    return this.send('saveDeployment', null);
   }
 
 });

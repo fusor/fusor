@@ -1,9 +1,10 @@
 import Ember from 'ember';
-import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
 
-export default Ember.Controller.extend(DeploymentControllerMixin, {
+export default Ember.Controller.extend({
 
   needs: ['deployment'],
+
+  isRhev: Ember.computed.alias("controllers.deployment.isRhev"),
 
   undercloudIPHelp: "The IP address that the already-installed Red Hat Enterprise Linux OpenStack Platform undercloud is running on.",
 
@@ -25,13 +26,20 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     return !this.get('deployed');
   }.property('deployed'),
 
-
   isDirty: false,
 
   watchModel: function() {
     this.set('isDirty', true);
   }.observes('model.undercloudIP', 'model.sshUser',
              'model.sshPassword'),
+
+  backRouteNameUndercloud: function() {
+    if (this.get('isRhev')) {
+      return 'storage';
+    } else {
+      return 'configure-environment';
+    }
+  }.property('isRhev'),
 
   actions: {
     deployUndercloud: function () {
