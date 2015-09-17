@@ -5,6 +5,8 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   needs: ['deployment', 'register-nodes'],
 
+  isCloudForms: Ember.computed.alias("controllers.deployment.isCloudForms"),
+
   getParamValue: function(paramName, params) {
     var paramValue = null;
     var numParams = params.get('length');
@@ -394,7 +396,11 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
     return false;
   }.property('profiles'),
 
-  nextStepRouteName: function() {
-    return ('review');
-  }.property('step2RouteName', 'step3RouteName')
+  nextStepRouteNameAssignNodes: function() {
+    if (this.get('isCloudForms')) {
+      return 'cloudforms';
+    } else {
+      return 'review';
+    }
+  }.property('isCloudForms')
 });
