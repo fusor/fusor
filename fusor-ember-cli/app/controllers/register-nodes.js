@@ -1,7 +1,6 @@
 import Ember from 'ember';
-import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
 
-export default Ember.Controller.extend(DeploymentControllerMixin, {
+export default Ember.Controller.extend({
 
   needs: ['deployment'],
 

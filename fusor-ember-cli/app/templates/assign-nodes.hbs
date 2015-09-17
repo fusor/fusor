@@ -39,16 +39,12 @@
 </div>
 
 <br />
-<div class="row">
-    <div class="col-md-12 rhci-steps-buttons">
-        <div class='pull-right'>
-          {{#link-to 'register-nodes' class='btn btn-default'}}
-              Back
-          {{/link-to}}
-          {{#link-to nextStepRouteNameAssignNodes class='btn btn-primary' disabled=disableAssignNodesNext}}Next{{/link-to}}
-        </div>
-    </div>
-</div>
+{{cancel-back-next backRouteName='register-nodes'
+                   disableBack=false
+                   nextRouteName=nextStepRouteNameAssignNodes
+                   disableNext=disableAssignNodesNext
+                   parentController=controller
+                   disableCancel=controllers.deployment.isStarted}}
 
 {{partial 'edit-deployment-role'}}
 {{partial 'edit-global-service-config'}}

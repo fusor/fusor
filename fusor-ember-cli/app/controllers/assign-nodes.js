@@ -1,7 +1,6 @@
 import Ember from 'ember';
-import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
 
-export default Ember.Controller.extend(DeploymentControllerMixin, {
+export default Ember.Controller.extend({
 
   needs: ['deployment', 'register-nodes'],
 
@@ -46,20 +45,19 @@ export default Ember.Controller.extend(DeploymentControllerMixin, {
 
   profiles: function() {
     return this.get('model.profiles');
-  }.property('model.profiles', 'model.profiles.length'),
+  }.property('model.profiles'),
 
   numProfiles: function() {
-    var profiles = this.get('model.profiles');
-    return profiles.length;
-  }.property('model.profiles', 'model.profiles.length'),
+    return this.get('model.profiles.length');
+  }.property('model.profiles.[]'),
 
   nodes: function() {
     return this.get('model.nodes');
   }.property('model.nodes'),
 
   nodeCount: function() {
-    return this.get('model.nodes').length;
-  }.property('model.nodes'),
+    return this.get('model.nodes.length');
+  }.property('model.nodes.[]'),
 
   assignedNodeCount: function() {
     var count = 0;

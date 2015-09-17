@@ -78,16 +78,13 @@
 {{/unless}}
 
 <br />
-<div class="row">
-    <div class="col-md-12 rhci-steps-buttons">
-        <div class='pull-right'>
-          {{#link-to 'undercloud-deploy' class='btn btn-default'}}
-              Back
-          {{/link-to}}
-          {{#link-to 'assign-nodes' class='btn btn-primary' disabled=disableRegisterNodesNext}}Next{{/link-to}}
-        </div>
-    </div>
-</div>
+
+{{cancel-back-next backRouteName='undercloud-deploy'
+                   disableBack=false
+                   nextRouteName='assign-nodes'
+                   disableNext=disableRegisterNodesNext
+                   parentController=controller
+                   disableCancel=controllers.deployment.isStarted}}
 
 {{partial 'new-node-registration'}}
 
