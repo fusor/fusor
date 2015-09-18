@@ -18,8 +18,8 @@ module Actions
           _("Configure Activation Key")
         end
 
-        def plan(deployment, repositories)
-          unless activation_key_name(deployment)
+        def plan(deployment, hostgroup, repositories)
+          unless activation_key_name(deployment, hostgroup)
             fail _("Unable to locate activation key settings in config/settings.plugins.d/fusor.yaml")
           end
 
@@ -32,22 +32,24 @@ module Actions
           end
 
           sequence do
-            find_or_ensure_key(deployment, content_view)
+            key = find_or_ensure_key(deployment, content_view, hostgroup)
             # TODO: update to support UpdateSubscriptions, which could add or remove based
             # on changes in configuration... not urgent, since currently there is only a single
             # subscription in the configuration
-            plan_action(::Actions::Fusor::ActivationKey::AddSubscriptions, deployment, repositories)
+            plan_action(::Actions::Fusor::ActivationKey::AddSubscriptions, key.id,
+                        subscription_descriptions(hostgroup),
+                        repositories)
           end
         end
 
         private
 
-        def find_or_ensure_key(deployment, content_view)
+        def find_or_ensure_key(deployment, content_view, hostgroup)
           key = ::Katello::ActivationKey.where(:organization_id => deployment.organization.id,
-                                               :name => activation_key_name(deployment)).first
+                                               :name => activation_key_name(deployment, hostgroup)).first
 
           if key
-            attributes = { :name => activation_key_name(deployment),
+            attributes = { :name => activation_key_name(deployment, hostgroup),
                            :organization_id => deployment.organization.id,
                            :environment_id => lifecycle_environment(deployment),
                            :content_view_id => content_view.id,
@@ -56,7 +58,7 @@ module Actions
 
             plan_action(::Actions::Katello::ActivationKey::Update, key, attributes)
           else
-            key = ::Katello::ActivationKey.new(:name => activation_key_name(deployment),
+            key = ::Katello::ActivationKey.new(:name => activation_key_name(deployment, hostgroup),
                                                :organization_id => deployment.organization.id,
                                                :environment_id => lifecycle_environment(deployment),
                                                :content_view_id => content_view.id,
@@ -65,6 +67,8 @@ module Actions
 
             plan_action(::Actions::Fusor::ActivationKey::Create, key)
           end
+
+          key
         end
 
         def find_content_view(deployment)
@@ -89,9 +93,16 @@ module Actions
           end
         end
 
-        def activation_key_name(deployment)
-          name = SETTINGS[:fusor][:activation_key][:name]
-          return [name, deployment.name].join('-') if name
+        def activation_key_name(deployment, hostgroup)
+          return unless hostgroup[:activation_key] && hostgroup[:activation_key][:name]
+
+          name = hostgroup[:activation_key][:name]
+          hg_name = hostgroup[:name]
+          [name, deployment.name, hg_name].map { |str| str.tr("-", "_") }.join('-')
+        end
+
+        def subscription_descriptions(hostgroup)
+          hostgroup[:activation_key][:subscription_descriptions]
         end
       end
     end

@@ -5,7 +5,7 @@
       :rpm_component_view_name: "Fusor RPM Content"
       :puppet_component_view_name: "Fusor Puppet Content"
 
-    :rhev:
+    :rhevm:
       - :product_name: "Red Hat Enterprise Linux Server"
         :repository_set_name: "Red Hat Enterprise Linux 6 Server (RPMs)"
         :basearch: "x86_64"
@@ -26,17 +26,32 @@
         :releasever: "6Server"
 
       - :product_name: "Red Hat Enterprise Virtualization"
-        :repository_set_name: "Red Hat Enterprise Virtualization Management Agents (RPMs)"
-        :basearch: "x86_64"
-        :releasever: "6Server"
-
-      - :product_name: "Red Hat Enterprise Virtualization"
         :repository_set_name: "Red Hat Enterprise Virtualization Manager 3.5 (RPMs)"
         :basearch: "x86_64"
         :releasever: "6Server"
 
       - :product_name: "JBoss Enterprise Application Platform"
         :repository_set_name: "JBoss Enterprise Application Platform 6 (RHEL 6 Server) (RPMs)"
+        :basearch: "x86_64"
+        :releasever: "6Server"
+
+    :rhevh:
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :repository_set_name: "Red Hat Enterprise Linux 6 Server (RPMs)"
+        :basearch: "x86_64"
+        :releasever: "6Server"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :repository_set_name: "Red Hat Enterprise Linux 6 Server (Kickstart)"
+        :basearch: "x86_64"
+        :releasever: "6.7"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :repository_set_name: "Red Hat Satellite Tools 6.1 (for RHEL 6 Server) (RPMs)"
+        :basearch: "x86_64"
+
+      - :product_name: "Red Hat Enterprise Virtualization"
+        :repository_set_name: "Red Hat Enterprise Virtualization Management Agents (RPMs)"
         :basearch: "x86_64"
         :releasever: "6Server"
 
@@ -122,6 +137,11 @@
              :parameters:
              - :name: "firewall_manager"
                :override: "iptables"
+         :activation_key:
+           :name: "RHEV-Engine"
+           :content: :rhevm
+           :subscription_descriptions:
+             - "Red Hat Cloud Infrastructure"
 
        - :name: "RHEV-Hypervisor"
          :os: "RedHat"
@@ -134,6 +154,12 @@
              - :name: "product"
                :override: "RHEV"
            - :name: "ovirt::hypervisor::packages"
+         :activation_key:
+           :name: "RHEV-Hypervisor"
+           :content: :rhevh
+           :subscription_descriptions:
+             - "Red Hat Cloud Infrastructure"
+
     :openstack:
      :root_name: "Fusor Base" # seeded by the fusor-installer
      :host_groups:
@@ -144,9 +170,9 @@
          :os: "RedHat"
          :major: "7"
          :minor: "1"
-
-  :activation_key:
-    :name: "Fusor_Key"
-    :subscription_descriptions:
-      - "Red Hat Cloud Infrastructure"
+         :activation_key:
+           :name: "OpenStack-Undercloud"
+           :content: :openstack
+           :subscription_descriptions:
+             - "Red Hat Cloud Infrastructure"
 

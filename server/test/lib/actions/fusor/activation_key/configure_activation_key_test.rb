@@ -11,38 +11,45 @@ module Actions::Fusor::ActivationKey
       @repositories = [katello_repositories(:fedora_17_x86_64)]
       @content_view = katello_content_views(:library_view)
       @action = create_action ConfigureActivationKey
+      @hostgroup_params = {
+        :name => "testhg",
+        :activation_key => {:name => "test-key",
+                            :subscription_descriptions => ["Test"]
+      }}
       set_user
       ::Katello::ContentView.stubs(:where).returns([@content_view])
     end
 
     test "plan call should create activation key and plan AddSubscriptions action" do
-      plan_action @action, @deployment, @repositories
+      key = stub(:id => 100)
+      ::Katello::ActivationKey.stubs(:new).returns(key)
+      plan_action @action, @deployment, @hostgroup_params, @repositories
       assert_action_planed(@action, Create)
       refute_action_planed(@action, Update)
       assert_action_planed_with(@action,
                                 AddSubscriptions,
-                                @deployment,
+                                100,
+                                ["Test"],
                                 @repositories)
     end
 
     test "if AK already exists plan call should update AK and plan AddSubscriptions action" do
-      # name is dependent on the definition of activation_key_name()...
-      # Not the best...
       key = ::Katello::ActivationKey.new(:organization_id => @deployment.organization.id,
-                                         :name => [SETTINGS[:fusor][:activation_key][:name], @deployment.name].join('-'))
+                                         :name => "test_key-rhev-testhg")
       key.save!
 
-      plan_action @action, @deployment, @repositories
+      plan_action @action, @deployment, @hostgroup_params, @repositories
       refute_action_planed(@action, Create)
       assert_action_planed(@action, Update)
       assert_action_planed_with(@action,
                                 AddSubscriptions,
-                                @deployment,
+                                key.id,
+                                ["Test"],
                                 @repositories)
     end
 
     test "there is no run method for ConfigureActivationKey Actions" do
-      plan = plan_action(@action, @deployment, @repositories)
+      plan = plan_action(@action, @deployment, @hostgroup_params, @repositories)
       assert_raises(NoMethodError) {
         silence_stream(STDOUT) do
           run_action plan

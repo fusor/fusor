@@ -71,8 +71,11 @@ module Actions::Fusor::Deployment::OpenStack
     end
 
     def activation_key(deployment)
-      name = SETTINGS[:fusor][:activation_key][:name]
-      return [name, deployment.name].join('-') if name
+      hostgroup = SETTINGS[:fusor][:host_groups][:openstack][:host_groups].last
+      hg_name = hostgroup[:name]
+      name = hostgroup[:activation_key][:name]
+
+      [name, deployment.name, hg_name].map { |str| str.tr("-", "_") }.join('-')
     end
   end
 end
