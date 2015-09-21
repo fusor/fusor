@@ -1,7 +1,4 @@
 :fusor:
-  :provision:
-    :sleep_before_reboot: "60"
-
   :content:
     :content_view:
       :composite_view_name: "Fusor Deployment"
