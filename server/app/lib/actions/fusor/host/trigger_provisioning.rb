@@ -30,6 +30,8 @@ module Actions
 
           host = assign_host_to_hostgroup(host, hostgroup)
 
+          Rails.logger.debug "XXX assign_host_to_hostgroup returned id: #{host.id} type: #{host.type}"
+
           Rails.logger.debug "========================= TriggerProvisioning.run EXIT ========================="
         end
 
@@ -87,7 +89,6 @@ module Actions
 
             return host
           end
-
         end
 
         private
