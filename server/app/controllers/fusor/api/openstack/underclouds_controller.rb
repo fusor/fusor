@@ -54,6 +54,8 @@ module Fusor
             else
               deployment.openstack_undercloud_password = admin
               deployment.openstack_undercloud_ip_addr = ip_addr
+              deployment.openstack_undercloud_user = underuser
+              deployment.openstack_undercloud_user_password = underpass
               deployment.save(:validate => false)
               render :json => {:undercloud => deployment.id}
             end

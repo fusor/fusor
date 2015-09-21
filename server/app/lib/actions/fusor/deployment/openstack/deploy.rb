@@ -25,6 +25,17 @@ module Actions::Fusor::Deployment::OpenStack
 
     def plan(deployment)
       fail _("Unable to locate a RHEL OSP undercloud") unless deployment.openstack_undercloud_password
+      sequence do
+        plan_action(TransferConsumerRpm, deployment)
+        plan_action(SshCommand, deployment, "sudo yum -y localinstall /tmp/katello-ca-consumer-latest.noarch.rpm")
+        plan_action(SshCommand, deployment, "sudo subscription-manager register --org " + deployment.organization.label + " --activationkey " + activation_key(deployment))
+        plan_action(SshCommand, deployment, "sudo yum -y install katello-agent")
+        if deployment.enable_access_insights
+          plan_action(SshCommand, deployment, "sudo yum -y install redhat-access-insights")
+          plan_action(SshCommand, deployment, "sudo redhat-access-insights --register")
+        end
+      end
+
       plan_self(deployment_id: deployment.id)
     end
 
@@ -57,6 +68,11 @@ module Actions::Fusor::Deployment::OpenStack
 
     def undercloud_handle(deployment)
       return Overcloud::UndercloudHandle.new('admin', deployment.openstack_undercloud_password, deployment.openstack_undercloud_ip_addr, 5000)
+    end
+
+    def activation_key(deployment)
+      name = SETTINGS[:fusor][:activation_key][:name]
+      return [name, deployment.name].join('-') if name
     end
   end
 end
