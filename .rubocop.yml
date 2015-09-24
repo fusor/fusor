@@ -99,3 +99,6 @@ Style/EachWithObject:
 
 Style/SymbolProc:
   Enabled: false # don't force usage of symbol procs
+
+Style/AndOr:
+  EnforcedStyle: conditionals
