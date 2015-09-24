@@ -23,10 +23,6 @@ export default Ember.Controller.extend({
       ipmiUsername: '',
       ipmiPassword: '',
       nicMacAddress: '',
-      architecture: null,
-      cpu: 0,
-      ram: 0,
-      disk: 0,
 
       isSelected: false,
       isActiveClass: function() {
@@ -50,7 +46,6 @@ export default Ember.Controller.extend({
   introspectionNodes: [],
 
   drivers: ['pxe_ipmitool', 'pxe_ssh'],
-  architectures: ['amd64', 'x86', 'x86_64'],
   selectedNode: null,
 
 
@@ -271,7 +266,6 @@ export default Ember.Controller.extend({
           var text = reader.result;
           var data = $.csv.toArrays(text);
           var edittedNodes = me.get('edittedNodes');
-
           // If the default added node is still listed, remove it
           if (edittedNodes.length === 1 && edittedNodes[0].isDefault && Ember.isEmpty(edittedNodes[0].get('ipAddress'))) {
             edittedNodes.removeObject(edittedNodes[0]);
@@ -279,16 +273,12 @@ export default Ember.Controller.extend({
 
           for (var row in data) {
             var node_data = data[row];
-            if (Array.isArray(node_data) && node_data.length >=9) {
-              var memory_mb = node_data[0].trim();
-              var local_gb = node_data[1].trim();
-              var cpus = node_data[2].trim();
-              var cpu_arch = node_data[3].trim();
-              var driver = node_data[4].trim();
-              var ipmi_address = node_data[5].trim();
-              var ipmi_username = node_data[6].trim();
-              var ipmi_password = node_data[7].trim();
-              var mac_address = node_data[8].trim();
+            if (Array.isArray(node_data) && node_data.length >=5) {
+              var driver = node_data[0].trim();
+              var ipmi_address = node_data[1].trim();
+              var ipmi_username = node_data[2].trim();
+              var ipmi_password = node_data[3].trim();
+              var mac_address = node_data[4].trim();
 
               var newNode = me.Node.create({
                 driver: driver,
@@ -296,10 +286,6 @@ export default Ember.Controller.extend({
                 ipmiUsername: ipmi_username,
                 ipmiPassword: ipmi_password,
                 nicMacAddress: mac_address,
-                architecture: cpu_arch,
-                cpu: cpus,
-                ram: memory_mb,
-                disk: local_gb
               });
               edittedNodes.insertAt(0, newNode);
               me.updateNodeSelection(newNode);
@@ -432,10 +418,6 @@ export default Ember.Controller.extend({
       driver: node.driver,
       driver_info: driverInfo,
       properties: {
-        memory_mb: node.ram,
-        cpus: node.cpu,
-        local_gb: node.disk,
-        cpu_arch: node.architecture,
         capabilities: 'boot_option:local'
       },
       address: node.nicMacAddress
