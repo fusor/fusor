@@ -4,6 +4,7 @@ export default Ember.Controller.extend({
 
   needs: ['deployment', 'register-nodes'],
 
+  deploymentId: Ember.computed.alias("controllers.deployment.model.id"),
   isCloudForms: Ember.computed.alias("controllers.deployment.isCloudForms"),
 
   getParamValue: function(paramName, params) {
@@ -111,7 +112,7 @@ export default Ember.Controller.extend({
     var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
     Ember.$.ajax({
-      url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_role_flavor',
+      url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_role_flavor',
       type: 'PUT',
       headers: {
         "Accept": "application/json",
@@ -246,7 +247,7 @@ export default Ember.Controller.extend({
       me.set('loadingSpinnerText', "Saving...");
       me.set('showLoadingSpinner', true);
       Ember.$.ajax({
-        url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_parameters',
+        url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_parameters',
         type: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify({ 'parameters': params }),
@@ -275,7 +276,7 @@ export default Ember.Controller.extend({
       me.set('showLoadingSpinner', true);
 
       Ember.$.ajax({
-        url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_role_count',
+        url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_role_count',
         type: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(data),
@@ -367,7 +368,7 @@ export default Ember.Controller.extend({
       me.set('loadingSpinnerText', "Saving...");
       me.set('showLoadingSpinner', true);
       Ember.$.ajax({
-        url: '/fusor/api/openstack/deployment_plans/' + plan.get('id') + '/update_parameters',
+        url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_parameters',
         type: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify({ 'parameters': params }),

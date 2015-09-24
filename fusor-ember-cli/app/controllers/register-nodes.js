@@ -4,6 +4,7 @@ export default Ember.Controller.extend({
 
   needs: ['deployment'],
 
+  deploymentId: Ember.computed.alias("controllers.deployment.model.id"),
   init: function() {
     this._super();
     this.Node = Ember.Object.extend({
@@ -398,7 +399,7 @@ export default Ember.Controller.extend({
   },
 
   getImage: function(imageName) {
-    return Ember.$.getJSON('/fusor/api/openstack/images/show_by_name/' + imageName);
+    return Ember.$.getJSON('/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/images/show_by_name/' + imageName);
   },
 
   addIntrospectionNode: function(node) {
@@ -444,7 +445,7 @@ export default Ember.Controller.extend({
 
     this.set('initRegInProcess', true);
     Ember.$.ajax({
-      url: '/fusor/api/openstack/nodes',
+      url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/nodes',
       type: 'POST',
       headers: {
         "Accept": "application/json",
@@ -491,7 +492,7 @@ export default Ember.Controller.extend({
     var promiseFunction = function(resolve) {
       var checkForDone = function() {
         Ember.$.ajax({
-          url: '/fusor/api/openstack/nodes/' + node.uuid + '/ready',
+          url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/nodes/' + node.uuid + '/ready',
           type: 'GET',
           contentType: 'application/json',
           success: function(results) {
