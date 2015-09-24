@@ -23,13 +23,16 @@ module Actions
         end
 
         def run
+          Rails.logger.debug "========================= TriggerProvisioning.run ENTER ========================="
           deployment = ::Fusor::Deployment.find(input[:deployment_id])
           hostgroup = find_hostgroup(deployment, input[:hostgroup_name])
           host = ::Host::Base.find(input[:host_id])
 
-          _success, host = assign_host_to_hostgroup(host, hostgroup)
-          sleep_before_reboot
-          reboot_host(host) if host
+          host = assign_host_to_hostgroup(host, hostgroup)
+
+          Rails.logger.debug "XXX assign_host_to_hostgroup returned id: #{host.id} type: #{host.type}"
+
+          Rails.logger.debug "========================= TriggerProvisioning.run EXIT ========================="
         end
 
         #
@@ -41,13 +44,13 @@ module Actions
 
           converting_discovered = assignee_host.is_a? ::Host::Discovered
           if converting_discovered
-            Rails.logger.warn "XXX ================ Converting a discovered host ===================="
+            Rails.logger.debug "================ Validate discovered host facts ===================="
 
             hosts_facts = FactValue.joins(:fact_name).where(host_id: assignee_host.id)
             discovery_bootif = hosts_facts.where(fact_names: { name: 'discovery_bootif' }).first or
                 raise 'unknown discovery_bootif fact'
 
-            Rails.logger.warn "XXX the discovery bootif is #{discovery_bootif.value}"
+            Rails.logger.debug "XXX the discovery bootif is #{discovery_bootif.value}"
 
             interface = hosts_facts.
                 includes(:fact_name).
@@ -55,74 +58,40 @@ module Actions
                 find { |v| v.fact_name.name =~ /^macaddress_.*$/ }.
                 fact_name.name.split('_').last
 
-            Rails.logger.warn "XXX the interface is #{interface}"
+            Rails.logger.debug "XXX the interface is #{interface}"
 
             network = hosts_facts.where(fact_names: { name: "network_#{interface}" }).first
 
-            Rails.logger.warn "XXX the network is #{network.value}"
+            Rails.logger.debug "XXX the network is #{network.value}"
 
             if hostgroup.subnet
               hostgroup.subnet.network == network.value or
                   raise "networks do not match: #{hostgroup.subnet.network} #{network.value}"
-            else
-              Rails.logger.warn "XXX subnet is NIL! why?"
             end
 
-            ip = hosts_facts.where(fact_names: { name: "ipaddress_#{interface}" }).first
-
-            Rails.logger.warn "XXX ip address is #{ip.value}"
-            Rails.logger.warn "XXX ================ Finished converting discovered host ===================="
+            Rails.logger.debug "================ Finished validating discovered host facts ===================="
           end
 
-          original_type = assignee_host.type
-          host          = if converting_discovered
-                            assignee_host.becomes(::Host::Managed).tap do |host|
-                              host.type    = 'Host::Managed'
-                              host.managed = true
-                              host.ip      = ip.value
-                              host.mac     = discovery_bootif.value
-                            end
-                          else
-                            assignee_host
-                          end
+          ::Host.transaction do
+            host = ::ForemanDiscovery::HostConverter.to_managed(assignee_host, true, true)
 
-          host.hostgroup = hostgroup
-          # set build to true so the PXE config-template takes effect under discovery environment
-          host.build = true if assignee_host.managed?
+            # assign the hostgroup
+            host.hostgroup = hostgroup
 
-          # root_pass is not copied for some reason
-          host.root_pass = hostgroup.root_pass
+            # root_pass is not copied for some reason
+            host.root_pass = hostgroup.root_pass
 
-          # clear all virtual devices that may have been created during previous assignment
-          # host.clean_vlan....
-          host.interfaces.virtual.map(&:destroy)
+            Rails.logger.debug "XXX assignee host type is now: #{assignee_host.type}"
+            Rails.logger.debug "XXX saving host of type: #{host.type}"
+            Rails.logger.debug "XXX calling save"
 
-          # I do not [know] why but the final save! adds following condytion to the update SQL command
-          # "WHERE "hosts"."type" IN ('Host::Managed') AND "hosts"."id" = 283"
-          # which will not find the record since it's still Host::Discovered.
-          # Using #update_column to change it directly in DB
-          # (assignee_host is used to avoid same WHERE condition problem here).
-          # FIXME this is definitely ugly, needs to be properly fixed
-          assignee_host.update_column :type, 'Host::Managed'
+            host.save
 
-          Rails.logger.warn "XXX assignee host type is now: #{assignee_host.type}"
-
-          host.save!
-
-          [host.save, host].tap do |saved, _|
-            assignee_host.becomes(Host::Base).update_column(:type, original_type) unless saved
-            Rails.logger.warn "XXX we finished becoming a Host::Base"
-            assignee_host
+            return host
           end
         end
 
         private
-
-        def reboot_host(host)
-          Rails.logger.warn "XXX About to reboot host"
-          host.becomes(::Host::Discovered).reboot unless host.nil?
-          Rails.logger.warn "XXX host rebooted"
-        end
 
         def find_hostgroup(deployment, name)
           # locate the top-level hostgroup for the deployment...
@@ -148,20 +117,6 @@ module Actions
               where(:ancestry => ancestry).
               joins(:organizations).
               where("taxonomies.id in (?)", [deployment.organization.id]).first
-        end
-
-        def sleep_before_reboot
-          sleep_seconds = 60
-          if SETTINGS[:fusor][:provision]
-            if SETTINGS[:fusor][:provision][:sleep_before_reboot]
-              sleep_seconds = SETTINGS[:fusor][:provision][:sleep_before_reboot].to_i
-              Rails.logger.warn "XXX using setting for [:fusor][:provision][:sleep_before_reboot] = #{sleep_seconds} seconds"
-            end
-          end
-
-          Rails.logger.warn "XXX sleeping for #{sleep_seconds} seconds"
-          sleep sleep_seconds
-          Rails.logger.warn "XXX woke up from sleep for #{sleep_seconds} seconds"
         end
 
       end
