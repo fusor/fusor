@@ -1,11 +1,11 @@
 {{#base-f label=label labelSize=labelSize inputSize=rangeSize unitsSize=unitsSize unitsLabel=unitsLabel help-inline=help-inline errors=errors isRequired=isRequired helpText=helpText}}
 
   <div>
-      <div {{bind-attr class="inputSize"}}>
+      <div class="{{inputSize}}">
         {{input class="form-control" value=value1 placeholder=placeholder1 type=typeInput focus-out="showErrors" id=cssId1}}
       </div>
       <span style="float: left;padding-left:5px;padding-right:5px;"> - </span>
-      <div {{bind-attr class="inputSize"}}>
+      <div class="{{inputSize}}">
         {{input class="form-control" value=value2 placeholder=placeholder2 type=typeInput id=cssId2}}
       </div>
   </div>
