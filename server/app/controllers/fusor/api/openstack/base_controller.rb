@@ -39,11 +39,14 @@ module Fusor
         private
 
         def find_deployment
-          not_found and return false if params[:deployment_id].blank?
-          @deployment = Deployment.find(params[:deployment_id])
+          id = params[:deployment_id] || params[:id]
+          not_found and return false if id.blank?
+          @deployment = Deployment.find(id)
         end
 
         def undercloud_handle
+          id = params[:deployment_id] || params[:id]
+          @deployment = Deployment.find(id)
           return Overcloud::UndercloudHandle.new('admin', @deployment.openstack_undercloud_password, @deployment.openstack_undercloud_ip_addr, 5000)
         end
 

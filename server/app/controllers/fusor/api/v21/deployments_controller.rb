@@ -55,11 +55,16 @@ module Fusor
       end
     end
 
+    def resource_name
+      'deployment'
+    end
+
     private
 
     def find_deployment
-      not_found and return false if params[:id].blank?
-      @deployment = Deployment.find(params[:id])
+      id = params[:deployment_id] || params[:id]
+      not_found and return false if id.blank?
+      @deployment = Deployment.find(id)
     end
 
     def ignore_it
