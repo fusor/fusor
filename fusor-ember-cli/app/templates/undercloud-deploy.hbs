@@ -1,16 +1,31 @@
-<br />
-<form class="form-horizontal" role="form">
-    <div class="row">
-        <div class='col-md-12'>
-          {{text-f label="Undercloud IP"            valueBinding=model.undercloudIP labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=true helpText=undercloudIPHelp}}
-          {{text-f label="SSH User"                 valueBinding=model.sshUser      labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=true helpText=sshUserHelp}}
-          {{text-f label="SSH Password"             value=model.sshPassword         labelSize='deploy-undercloud-param-label' inputSize='deploy-undercloud-param-input' isRequired=true helpText=sshPasswordHelp}}
-        </div>
-        <div class='col-md-10'>
-                <button class="btn btn-primary pull-left" {{action "deployUndercloud"}} {{bindAttr disabled="deployDisabled"}}>
-                    Detect Undercloud
-                </button>
-        </div>
+<div class="row">
+  <div class='col-md-9'>
+    <form class="form-horizontal" role="form">
+        {{text-f label="Undercloud IP"
+                 value=model.undercloudIP
+                 labelSize='deploy-undercloud-param-label'
+                 inputSize='deploy-undercloud-param-input'
+                 isRequired=true
+                 helpText=undercloudIPHelp}}
+        {{text-f label="SSH User"
+                 value=model.sshUser
+                 labelSize='deploy-undercloud-param-label'
+                 inputSize='deploy-undercloud-param-input'
+                 isRequired=true
+                 helpText=sshUserHelp}}
+        {{text-f label="SSH Password"
+                 value=model.sshPassword
+                 labelSize='deploy-undercloud-param-label'
+                 inputSize='deploy-undercloud-param-input'
+                 isRequired=true
+                 helpText=sshPasswordHelp}}
+
+        <button class="btn btn-primary pull-left"
+                {{action "deployUndercloud"}}
+                disabled={{deployDisabled}}>
+            Detect Undercloud
+        </button>
+
         {{#if deployed}}
             <div class='col-md-12' style="padding-top: 10px;">
                 <div class="alert alert-success" style="margin-bottom: 0px;">
@@ -28,9 +43,9 @@
                 </div>
             {{/if}}
         {{/if}}
-    </div>
-</form>
-<br />
+    </form>
+  </div>
+</div>
 {{cancel-back-next backRouteName=backRouteNameUndercloud
                    disableBack=false
                    nextRouteName='register-nodes'

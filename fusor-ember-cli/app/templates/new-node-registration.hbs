@@ -34,7 +34,7 @@
                         </div>
                     <ul class="nav nav-pills nav-stacked nav-registered-nodes">
                         {{#each node in edittedNodes}}
-                            <li {{bind-attr class=node.isActiveClass}}>
+                            <li class="{{node.isActiveClass}}">
                                 <a {{action "selectNode" node}}>{{node.name}}</a>
                               {{#if node.isSelected}}
                                   <i class="fa fa-trash-o" {{action "removeNode" node}}></i>
