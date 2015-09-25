@@ -4,6 +4,15 @@ export default Ember.Controller.extend({
 
   needs: ['deployment'],
 
+  deploymentId: Ember.computed.alias("model.id"),
+  undercloudPassword: Ember.computed.alias("model.openstack_undercloud_password"),
+
+  // these 3 attributes are not persisted by UI.
+  // backend controller will persist these
+  undercloudIP: null,
+  sshUser: null,
+  sshPassword: null,
+
   isRhev: Ember.computed.alias("controllers.deployment.isRhev"),
 
   undercloudIPHelp: "The IP address that the already-installed Red Hat Enterprise Linux OpenStack Platform undercloud is running on.",
@@ -30,8 +39,8 @@ export default Ember.Controller.extend({
 
   watchModel: function() {
     this.set('isDirty', true);
-  }.observes('model.undercloudIP', 'model.sshUser',
-             'model.sshPassword'),
+  }.observes('model.openstack_undercloud_ip_addr', 'model.openstack_undercloud_user',
+             'model.openstack_undercloud_user_password'),
 
   backRouteNameUndercloud: function() {
     if (this.get('isRhev')) {
@@ -43,25 +52,21 @@ export default Ember.Controller.extend({
 
   actions: {
     deployUndercloud: function () {
-      var me = this;
+      var self = this;
       var model = this.get('model');
       console.log('detectUndercloud');
-      console.log("host " + model.undercloudIP);
-      console.log("user " + model.sshUser);
-      var deployment = this.controllerFor('deployment');
-      var id = deployment.model.id;
-
-      var data = { 'underhost': model.undercloudIP,
-        'underuser': model.sshUser,
-        'underpass': model.sshPassword,
-        'deployment_id': id};
+      console.log("host " + this.get('undercloudIP'));
+      console.log("user " + this.get('sshUser'));
+      var data = { 'underhost': this.get('undercloudIP'),
+        'underuser': this.get('sshUser'),
+        'underpass': this.get('sshPassword'),
+        'deployment_id': this.get('deploymentId')};
 
       var promiseFunction = function (resolve) {
-        me.set('deploymentError', null);
+        self.set('deploymentError', null);
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
-
       Ember.$.ajax({
-          url: '/fusor/api/openstack/underclouds',
+          url: '/fusor/api/openstack/deployments/' + self.get('deploymentId') + '/underclouds',
           type: 'POST',
           data: JSON.stringify(data),
           headers: {
@@ -76,17 +81,17 @@ export default Ember.Controller.extend({
             Ember.run.later(checkForDone, 3000);
           },
           error: function(error) {
-            me.set('deploymentError', error.responseJSON.errors);
-            me.set('showLoadingSpinner', false);
+            self.set('deploymentError', error.responseJSON.errors);
+            self.set('showLoadingSpinner', false);
             console.log('create failed');
             console.log(error);
           }
       });
 
       var checkForDone = function () {
-        console.log("running check for done for id " + id);
+        console.log("running check for done for id " + self.get('deploymentId'));
         Ember.$.ajax({
-          url: '/fusor/api/openstack/underclouds/' + id,
+          url: '/fusor/api/openstack/deployments/' + self.get('deploymentId') + '/underclouds/' + self.get('deploymentId'),
           type: 'GET',
           contentType: 'application/json',
           success: function(response) {
@@ -96,11 +101,11 @@ export default Ember.Controller.extend({
               console.log('detection finished');
               if (response['failed']) {
                 console.log('detection failed');
-                me.set('deploymentError', 'Please check foreman logs.');
-                me.set('showLoadingSpinner', false);
+                self.set('deploymentError', 'Please check foreman logs.');
+                self.set('showLoadingSpinner', false);
               } else {
                 console.log('detection success');
-                me.set('deploymentError', null);
+                self.set('deploymentError', null);
                 resolve(true);
               }
             } else {
@@ -111,8 +116,8 @@ export default Ember.Controller.extend({
           error: function(error) {
             console.log('api check error');
             console.log(error);
-            me.set('deploymentError', 'Status check failed');
-            me.set('showLoadingSpinner', false);
+            self.set('deploymentError', 'Status check failed');
+            self.set('showLoadingSpinner', false);
           }
         });
       };
@@ -121,15 +126,15 @@ export default Ember.Controller.extend({
     var fulfill = function (isDone) {
       if (isDone) {
         console.log("fulfill");
-        me.set('showLoadingSpinner', false);
-        me.set('deployed', true);
-        me.set('isDirty', false);
+        self.set('showLoadingSpinner', false);
+        self.set('deployed', true);
+        self.set('isDirty', false);
       }
     };
 
     var promise = new Ember.RSVP.Promise(promiseFunction);
-    me.set('loadingSpinnerText', "Detecting Undercloud...");
-    me.set('showLoadingSpinner', true);
+    self.set('loadingSpinnerText', "Detecting Undercloud...");
+    self.set('showLoadingSpinner', true);
 
     }
   }
