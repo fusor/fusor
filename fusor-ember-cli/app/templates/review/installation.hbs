@@ -91,9 +91,9 @@
 
     {{#if isOpenStack}}
       {{#accordion-item name=controllers.deployment.nameOpenStack isOpen=isOpenStackOpen}}
-            {{#review-link label='Assigned Nodes' routeName='assign-nodes' isRequired=true value=model.openstackProfiles useYieldInstead=true}}
-                {{#each profile in model.openstackProfiles}}
-                    {{node-profile profile=profile nodes=model.openstackNodes plan=model.openstackPlan doAssign=true readOnly=true}}
+            {{#review-link label='Assigned Nodes' routeName='assign-nodes' isRequired=true value=openstackProfiles useYieldInstead=true}}
+                {{#each profile in openstackProfiles}}
+                    {{node-profile profile=profile nodes=openstackNodes plan=openstackPlan doAssign=true readOnly=true}}
                 {{/each}}
             {{/review-link}}
       {{/accordion-item}}
