@@ -17,7 +17,7 @@ export default Ember.Controller.extend({
 
   undercloudIPHelp: "The IP address that the already-installed Red Hat Enterprise Linux OpenStack Platform undercloud is running on.",
 
-  deployed: false,
+  deployed: Ember.computed.notEmpty("model.openstack_undercloud_password"),
 
   deployDisabled: function() {
     return this.get('deployed') && !this.get('isDirty');
@@ -51,6 +51,11 @@ export default Ember.Controller.extend({
   }.property('isRhev'),
 
   actions: {
+    resetCredentials: function() {
+      this.set('model.openstack_undercloud_password', null);
+      return this.get('model').save();
+    },
+
     deployUndercloud: function () {
       var self = this;
       var model = this.get('model');
