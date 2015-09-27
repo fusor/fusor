@@ -3,8 +3,6 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   assignMenuOpenClass: '',
 
-  profile: null,
-  plan: null,
   nodes: [],
 
   getParamValue: function(paramName, params) {
@@ -25,7 +23,8 @@ export default Ember.Component.extend({
     var profile = this.get('profile');
     var params = this.get('plan.parameters');
     var self = this;
-    this.get('plan.roles').forEach(function(role) {
+    var roles = this.get('plan.roles') || [];
+    roles.forEach(function(role) {
       if ( self.getParamValue(role.get('flavorParameterName'), params) === profile.get('name') ) {
         assignedRoles.pushObject(role);
       }
@@ -36,7 +35,8 @@ export default Ember.Component.extend({
   unassignedRoles: function() {
     var unassignedRoles = [];
     var assignedRoles = this.get('assignedRoles');
-    this.get('plan.roles').forEach(function(role) {
+    var roles = this.get('plan.roles') || [];
+    roles.forEach(function(role) {
       var unassignedRole = true;
       for (var i=0; i<assignedRoles.length; i++) {
         if ( role.get('name') === assignedRoles[i].get('name') ) {

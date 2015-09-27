@@ -1,13 +1,15 @@
 import DS from 'ember-data';
 
+var token = Ember.$('meta[name="csrf-token"]').attr('content');
 export default DS.ActiveModelAdapter.extend({
-    buildURL: function (type, query) {
-        var url = '/fusor/api/openstack/deployments/' + query['deployment_id'] + '/deployment_plans';
-        return url;
+    headers: {
+        "X-CSRF-Token": token
     },
 
-    findQuery: function(store, type, query) {
-      // customization here - add query as a parameter fto buildURL
-      return this.ajax(this.buildURL(type, query), 'GET');
+    // 'overcloud' is harded
+    // ex. /fusor/api/openstack/deployments/:id/deployment_plans/overcloud
+    buildURL: function (type, id, snapshot) {
+        var url = '/fusor/api/openstack/deployments/' + id + '/deployment_plans/overcloud';
+        return url;
     }
 });
