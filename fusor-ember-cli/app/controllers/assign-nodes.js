@@ -253,7 +253,8 @@ export default Ember.Controller.extend({
         data: JSON.stringify({ 'parameters': params }),
         success: function() {
           console.log('SUCCESS');
-          me.get('model').plan.reload().then(function() {
+          me.store.find('deployment-plan', deploymentId).then(function (result) {
+            me.set('model.plan', result);
             me.set('showLoadingSpinner', false);
           });
         },
@@ -271,18 +272,20 @@ export default Ember.Controller.extend({
       var me = this;
       var plan = this.get('model.plan');
       var data = { 'role_name': role.get('name'), 'count': count };
+      var deploymentId = this.get('deploymentId');
 
       me.set('loadingSpinnerText', "Saving...");
       me.set('showLoadingSpinner', true);
 
       Ember.$.ajax({
-        url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_role_count',
+        url: '/fusor/api/openstack/deployments/' + deploymentId + '/deployment_plans/' + plan.get('id') + '/update_role_count',
         type: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(data),
         success: function() {
           console.log('SUCCESS');
-          me.get('model').plan.reload().then(function() {
+          me.store.find('deployment-plan', deploymentId).then(function (result) {
+            me.set('model.plan', result);
             me.set('showLoadingSpinner', false);
           });
         },
