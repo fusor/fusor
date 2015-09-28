@@ -3,7 +3,7 @@ Fusor::Engine.routes.draw do
     namespace :api do
       scope :openstack, :module => :openstack, :path => :openstack do
         resources :deployments do
-          resources :deployment_plans, :only => :show do
+          resources :deployment_plans, :only => [:show, :update] do
             member do
               post 'deploy', to: 'deployment_plans#deploy'
               put 'update_parameters', to: 'deployment_plans#update_parameters'
