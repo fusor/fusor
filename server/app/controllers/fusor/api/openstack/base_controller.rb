@@ -17,6 +17,7 @@ module Fusor
   module Api
     module Openstack
       class BaseController < ::Katello::Api::V2::ApiController
+        before_filter :find_deployment
 
         # TODO: REMOVE CORS FILTER ONCE EMBER PROXY IS UNNEEDED
         after_filter :cors_set_access_control_headers
@@ -37,8 +38,16 @@ module Fusor
 
         private
 
+        def find_deployment
+          id = params[:deployment_id] || params[:id]
+          not_found and return false if id.blank?
+          @deployment = Deployment.find(id)
+        end
+
         def undercloud_handle
-          return Overcloud::UndercloudHandle.new('admin', '6a818a9995c61555142a13006ad2129826503165', '192.0.2.1', 5001)
+          id = params[:deployment_id] || params[:id]
+          @deployment = Deployment.find(id)
+          return Overcloud::UndercloudHandle.new('admin', @deployment.openstack_undercloud_password, @deployment.openstack_undercloud_ip_addr, 5000)
         end
 
       end

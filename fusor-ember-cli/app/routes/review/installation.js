@@ -17,9 +17,15 @@ export default Ember.Route.extend({
         });
     }
     if (model.get('deploy_openstack')) {
-        controller.set('openstackPlan', this.store.find('deployment-plan', 'overcloud'));
-        controller.set('openstackNodes', this.store.find('node'));
-        controller.set('openstackProfiles', this.store.find('flavor'));
+        this.store.find('deployment-plan', model.get('id')).then(function (plan) {
+            controller.set('openstackPlan', plan);
+        });
+        this.store.find('node', {deployment_id: model.get('id')}).then(function (nodes) {
+            controller.set('openstackNodes', nodes);
+        });
+        this.store.find('flavor', {deployment_id: model.get('id')}).then(function (flavors) {
+            controller.set('openstackProfiles', flavors);
+        });
     }
   }
 

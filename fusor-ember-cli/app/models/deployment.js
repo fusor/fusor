@@ -47,6 +47,11 @@ export default DS.Model.extend({
   enable_access_insights: DS.attr('boolean'),
   cfme_address: DS.attr('string'),
 
+  openstack_undercloud_password: DS.attr('string'),
+  openstack_undercloud_ip_addr: DS.attr('string'),
+  openstack_undercloud_user: DS.attr('string'),
+  openstack_undercloud_user_password: DS.attr('string'),
+
   created_at: DS.attr('date'),
   updated_at: DS.attr('date'),
 

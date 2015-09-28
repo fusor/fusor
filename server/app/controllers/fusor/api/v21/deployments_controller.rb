@@ -36,6 +36,13 @@ module Fusor
     end
 
     def update
+      # OpenStack Undercloud attributes should only be set by the undercloud
+      # controller (after it has validated them), never by directly updating
+      # the deployment object.
+      params[:deployment].delete :openstack_undercloud_password
+      params[:deployment].delete :openstack_undercloud_ip_addr
+      params[:deployment].delete :openstack_undercloud_user
+      params[:deployment].delete :openstack_undercloud_user_password
       @deployment.attributes = params[:deployment]
       @deployment.save(:validate => false)
       render :json => @deployment, :serializer => Fusor::DeploymentSerializer
@@ -55,11 +62,16 @@ module Fusor
       end
     end
 
+    def resource_name
+      'deployment'
+    end
+
     private
 
     def find_deployment
-      not_found and return false if params[:id].blank?
-      @deployment = Deployment.find(params[:id])
+      id = params[:deployment_id] || params[:id]
+      not_found and return false if id.blank?
+      @deployment = Deployment.find(id)
     end
 
     def ignore_it

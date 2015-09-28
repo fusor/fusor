@@ -17,6 +17,10 @@ module Fusor
                :host_naming_scheme, :custom_preprend_name, :enable_access_insights,
                :cfme_address,
                :rhev_engine_host_id,
+               :openstack_undercloud_password,
+               :openstack_undercloud_ip_addr,
+               :openstack_undercloud_user,
+               :openstack_undercloud_user_password,
                :created_at, :updated_at
 
     has_one :organization, serializer: ::OrganizationSerializer

@@ -18,14 +18,12 @@ module Fusor
       class UndercloudsController < Api::Openstack::BaseController
 
         def show
-          deployment = Deployment.find(params[:id])
-          dep_has_password = (!deployment.openstack_undercloud_password.nil? && !deployment.openstack_undercloud_password.empty?)
+          dep_has_password = (!@deployment.openstack_undercloud_password.nil? && !@deployment.openstack_undercloud_password.empty?)
           render :json => {:deployed => dep_has_password,
                            :failed => !dep_has_password}
         end
 
         def create
-          deployment = Deployment.find(params[:deployment_id])
           underhost = params[:underhost]
           underuser = params[:underuser]
           underpass = params[:underpass]
@@ -52,12 +50,12 @@ module Fusor
                      status: 422)
               #system('sudo route add ' + ip_addr + ' via ' + underhost)
             else
-              deployment.openstack_undercloud_password = admin
-              deployment.openstack_undercloud_ip_addr = ip_addr
-              deployment.openstack_undercloud_user = underuser
-              deployment.openstack_undercloud_user_password = underpass
-              deployment.save(:validate => false)
-              render :json => {:undercloud => deployment.id}
+              @deployment.openstack_undercloud_password = admin
+              @deployment.openstack_undercloud_ip_addr = ip_addr
+              @deployment.openstack_undercloud_user = underuser
+              @deployment.openstack_undercloud_user_password = underpass
+              @deployment.save(:validate => false)
+              render :json => {:undercloud => @deployment.id}
             end
           end
         end
