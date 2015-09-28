@@ -340,9 +340,9 @@ export default Ember.Controller.extend({
 
   updateAfterRegistration: function(resolve) {
     var me = this;
-
-    me.get('model').nodes.store.findAll('node', {reload: true}).then(function() {
-      me.get('model').profiles.store.findAll('flavor', {reload: true}).then(function () {
+    var deploymentId = this.get('deploymentId');
+    me.get('model').nodes.store.find('node', {deployment_id: deploymentId, reload: true}).then(function() {
+      me.get('model').profiles.store.find('flavor', {deployment_id: deploymentId, reload: true}).then(function () {
         if (resolve)
         {
           resolve();
