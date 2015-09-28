@@ -492,7 +492,7 @@ export default Ember.Controller.extend({
     var promiseFunction = function(resolve) {
       var checkForDone = function() {
         Ember.$.ajax({
-          url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/nodes/' + node.uuid + '/ready',
+          url: '/fusor/api/openstack/deployments/' + me.get('deploymentId') + '/nodes/' + node.uuid + '/ready',
           type: 'GET',
           contentType: 'application/json',
           success: function(results) {
