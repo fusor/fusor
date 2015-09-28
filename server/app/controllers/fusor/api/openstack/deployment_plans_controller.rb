@@ -28,17 +28,17 @@ module Fusor
 
         def update_role_count
           @plan = undercloud_handle.edit_plan_deployment_role_count(params[:id], params[:role_name], params[:count])
-          redirect_to :action => 'show', :id => params[:id]
+          render :json => {:deployment_plan => undercloud_handle.get_plan(params[:id])}
         end
 
         def update_role_flavor
           @plan = undercloud_handle.edit_plan_deployment_role_flavor(params[:id], params[:role_name], params[:flavor_name])
-          redirect_to :action => 'show', :id => params[:id]
+          render :json => {:deployment_plan => undercloud_handle.get_plan(params[:id])}
         end
 
         def update_parameters
           @plan = undercloud_handle.edit_plan_parameters(params[:id], params[:parameters])
-          redirect_to :action => 'show', :id => params[:id]
+          render :json => {:deployment_plan => undercloud_handle.get_plan(params[:id])}
         end
 
       end
