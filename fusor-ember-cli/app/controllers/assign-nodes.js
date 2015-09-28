@@ -120,9 +120,10 @@ export default Ember.Controller.extend({
         "X-CSRF-Token": token,
       },
       data: JSON.stringify(data),
-      success: function() {
+      success: function(result) {
         me.set('showLoadingSpinner', false);
         console.log('SUCCESS');
+        me.store.push('deployment_plan', me.store.normalize('deployment_plan', result.deployment_plan));
       },
       error: function(error) {
         console.log('ERROR');
@@ -243,13 +244,18 @@ export default Ember.Controller.extend({
       this.get('edittedRoleParameters').forEach(function(param) {
         params.push({'name': param.get('id'), 'value': param.get('value')});
       });
+      var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
       me.set('loadingSpinnerText', "Saving...");
       me.set('showLoadingSpinner', true);
       Ember.$.ajax({
         url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_parameters',
         type: 'PUT',
-        contentType: 'application/json',
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "X-CSRF-Token": token,
+        },
         data: JSON.stringify({ 'parameters': params }),
         success: function() {
           console.log('SUCCESS');
@@ -273,6 +279,7 @@ export default Ember.Controller.extend({
       var plan = this.get('model.plan');
       var data = { 'role_name': role.get('name'), 'count': count };
       var deploymentId = this.get('deploymentId');
+      var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
       me.set('loadingSpinnerText', "Saving...");
       me.set('showLoadingSpinner', true);
@@ -280,9 +287,13 @@ export default Ember.Controller.extend({
       Ember.$.ajax({
         url: '/fusor/api/openstack/deployments/' + deploymentId + '/deployment_plans/' + plan.get('id') + '/update_role_count',
         type: 'PUT',
-        contentType: 'application/json',
         data: JSON.stringify(data),
-        success: function() {
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "X-CSRF-Token": token,
+        },
+        success: function(result) {
           console.log('SUCCESS');
           me.store.find('deployment-plan', deploymentId).then(function (result) {
             me.set('model.plan', result);
@@ -367,13 +378,18 @@ export default Ember.Controller.extend({
       this.get('edittedPlanParameters').forEach(function(param) {
         params.push({'name': param.get('id'), 'value': param.get('value')});
       });
+      var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
       me.set('loadingSpinnerText', "Saving...");
       me.set('showLoadingSpinner', true);
       Ember.$.ajax({
         url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_parameters',
         type: 'PUT',
-        contentType: 'application/json',
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "X-CSRF-Token": token,
+        },
         data: JSON.stringify({ 'parameters': params }),
         success: function() {
           console.log('SUCCESS');

@@ -19,7 +19,7 @@ module Fusor
 
         def deploy
           @plan = undercloud_handle.deploy_plan(params[:id])
-          redirect_to :action => 'show', :id => params[:id]
+          render :json => {:deployment_plan => undercloud_handle.get_plan(params[:id])}
         end
 
         def show
