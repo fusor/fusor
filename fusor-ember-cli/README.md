@@ -16,12 +16,13 @@ The fuser-ember-cli/dist distory is generated automatically by [ember-cli](http:
 2. Clone [fusor](https://github.com/fusor/fusor/) to your local workstation.
 3. `cd fusor-ember-cli`
 4. In [controllers/application.js](https://github.com/fusor/fusor-ember-cli/blob/master/app/controllers/application.js#L8), change `deployAsPlugin` from `true` to `false`. If `false`, it shows a menu bar for development which is not needed when running inside Foreman/Katello.
-5. Run $ ember server --proxy http://0.0.0.0:3000. This assumes you have a local Foreman/Katello instance on port 3000. This tells the ember server to proxy API calls to Foreman/Katello:
-6. HAPPY HACKING!
-7. BEFORE running next step, in [controllers/application.js](https://github.com/fusor/fusor-ember-cli/blob/master/app/controllers/application.js#L8), change `deployAsPlugin` back to `true`.
-8. Run bash script [`./copy-fusor-ember-cli-to-ui-assets`](https://github.com/fusor/fusor-ember-cli/blob/master/copy-fusor-ember-cli-to-ui-assets) which copies files from `fusor/fusor-ember-cli/dist` to the `fusor/ui` repo
-9. Git commit code
-10. Send pull request. CAREFUL: Ensure that you're pull request does not include `deployAsPlugin: false`.
+5. Update your Brocfile.js to include [these lines](https://github.com/isratrade/fusor/blob/Brocfile-dev/fusor-ember-cli/Brocfile.js#L23-L59)
+6. Run $ ember server --proxy http://sat61dev.example.com/ or whatever URL of your Foreman/Katello instance. This tells the ember server to proxy API calls to Foreman/Katello:
+7. HAPPY HACKING!
+8. BEFORE running next step, in [controllers/application.js](https://github.com/fusor/fusor-ember-cli/blob/master/app/controllers/application.js#L8), change `deployAsPlugin` back to `true` and remove the app.import() lines you added to the Brocfile.js in step 4
+9. Run bash script [`./copy-fusor-ember-cli-to-ui-assets`](https://github.com/fusor/fusor-ember-cli/blob/master/copy-fusor-ember-cli-to-ui-assets) which copies files from `fusor/fusor-ember-cli/dist` to the `fusor/ui` repo
+10. Git commit code
+11. Send pull request. CAREFUL: Ensure that you're pull request does not include `deployAsPlugin: false` or the extra app.import() lines.
 
 ## Prerequisites
 
