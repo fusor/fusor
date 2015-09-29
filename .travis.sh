@@ -16,7 +16,7 @@ if [ $1 == "install" ]; then
   git clone https://github.com/fusor/foretello_api_v21.git
 
   cd katello
-  git checkout 533b428661ad588f17dfc3981e6aca1398f2f681
+  git checkout 068062449b30e985695aa6071837290e4afbd3df
   cp script/ci/katello.yml config/katello.yml
   # Hack out some qpid dependencies in katello so that it can build on ubuntu 12.04
   sed -i 's/gem.add_dependency "qpid_messaging"/#gem.add_dependency "qpid_messaging"/' katello.gemspec
@@ -25,7 +25,7 @@ if [ $1 == "install" ]; then
   sed -i "s/Qpid::Messaging::Duration/1#Qpid::Messaging::Duration'/" app/lib/actions/candlepin/candlepin_listening_service.rb
 
   cd ../foreman
-  git checkout b131eda1464e57b978007e9dd5c5daeb5b90af10
+  git checkout efd68ba5f97db034b6f99d25668f7fe9fb556ea4
   sed -e 's/:locations_enabled: false/:locations_enabled: true/' config/settings.yaml.example > config/settings.yaml
   sed -i 's/:organizations_enabled: false/:organizations_enabled: true/' config/settings.yaml
   cp ../fusor/.foreman_database.yml config/database.yml
@@ -37,7 +37,6 @@ if [ $1 == "install" ]; then
   echo "gem 'less-rails'" >> bundler.d/local.rb
   echo "gem 'logger'" >> bundler.d/local.rb
   echo "gem 'egon'" >> bundler.d/local.rb
-  echo "gem 'net-ssh'" >> bundler.d/local.rb
   bundle install
 
   # hacky, find a better way to do this...
