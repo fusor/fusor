@@ -76,6 +76,12 @@ export default Ember.Controller.extend({
   selectedRhevEngine: Ember.computed.alias("model.discovered_host"),
   isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
   subscriptions: Ember.computed.alias("model.subscriptions"),
+  undercloudUsername: 'admin',
+  undercloudPassword: Ember.computed.alias("model.openstack_undercloud_password"),
+
+  undercloudUrl: function() {
+    return ('https://' + this.get('model.openstack_undercloud_ip_addr'));
+  }.property('model.openstack_undercloud_ip_addr'),
 
   engineNamePlusDomain: function() {
     if (this.get("selectedRhevEngine.is_discovered")) {

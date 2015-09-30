@@ -12,6 +12,14 @@
       {{/accordion-item}}
     {{/if}}
 
+    {{#if isOpenStack}}
+        {{#accordion-item name="Red Hat Enterprise Linux - OpenStack Platform" isOpen=isOpenStackOpen}}
+            {{review-link label='Director URL' value=undercloudUrl isRequired=true isExternalURL=true}}
+            {{review-link label='Director username' value=undercloudUsername isRequired=true}}
+            {{review-link label='Director password' value=undercloudPassword isRequired=true}}
+        {{/accordion-item}}
+    {{/if}}
+
     {{#if isCloudForms}}
       {{#accordion-item name="Cloud Forms Management Engine" isOpen=true}}
 
