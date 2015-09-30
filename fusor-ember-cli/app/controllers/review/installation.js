@@ -11,23 +11,23 @@ export default Ember.Controller.extend({
 
   rhevValidated: function() {
     if (this.get('isRhev')) {
-      return Ember.isPresent(this.get('controllers.deployment.model.rhev_engine_admin_password')) &&
+      return Ember.isPresent(this.get('model.rhev_engine_admin_password')) &&
              Ember.isPresent(this.get('selectedRhevEngine')) &&
              (this.get('isSelfHost') || Ember.isPresent(this.get('selectedHypervisorHosts'))) &&
-             Ember.isPresent(this.get('controllers.deployment.model.rhev_storage_type'));
+             Ember.isPresent(this.get('model.rhev_storage_type'));
     } else {
       return true;
     }
-  }.property('controllers.deployment.model.rhev_engine_admin_password', 'controllers.deployment.model.rhev_storage_type',
+  }.property('model.rhev_engine_admin_password', 'model.rhev_storage_type',
              'selectedRhevEngine', 'selectedHypervisorHosts', 'isSelfHost'),
 
   cfmeValidated: function() {
     if (this.get('isCloudForms')) {
-      return Ember.isPresent(this.get('controllers.deployment.model.cfme_install_loc'));
+      return Ember.isPresent(this.get('model.cfme_install_loc'));
     } else {
       return true;
     }
-  }.property('controllers.deployment.model.cfme_install_loc'),
+  }.property('model.cfme_install_loc'),
 
   buttonDeployTitle: function() {
     if (this.get('controllers.deployment.isStarted')) {
@@ -59,7 +59,7 @@ export default Ember.Controller.extend({
   hostAddress: Ember.computed.alias("controllers.rhev-options.hostAddress"),
   engineHostName: Ember.computed.alias("controllers.rhev-options.engineHostName"),
 
-  nameDeployment: Ember.computed.alias("controllers.deployment.model.name"),
+  nameDeployment: Ember.computed.alias("model.name"),
   selectedOrganization: Ember.computed.alias("controllers.deployment.selectedOrganzation"),
   selectedEnvironment: Ember.computed.alias("controllers.deployment.selectedEnvironment"),
   rhevSetup: Ember.computed.alias("controllers.deployment.rhevSetup"),
@@ -69,13 +69,13 @@ export default Ember.Controller.extend({
   isCloudForms: Ember.computed.alias("controllers.deployment.isCloudForms"),
   isSubscriptions: Ember.computed.alias("controllers.deployment.isSubscriptions"),
 
-  isSelfHosted: Ember.computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
-  selectedHypervisorHosts: Ember.computed.alias("controllers.deployment.model.discovered_hosts"),
+  isSelfHosted: Ember.computed.alias("model.rhev_is_self_hosted"),
+  selectedHypervisorHosts: Ember.computed.alias("model.discovered_hosts"),
 
-  rhev_engine_host: Ember.computed.alias("controllers.deployment.model.discovered_host"),
-  selectedRhevEngine: Ember.computed.alias("controllers.deployment.model.discovered_host"),
+  rhev_engine_host: Ember.computed.alias("model.discovered_host"),
+  selectedRhevEngine: Ember.computed.alias("model.discovered_host"),
   isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
-  subscriptions: Ember.computed.alias("controllers.deployment.model.subscriptions"),
+  subscriptions: Ember.computed.alias("model.subscriptions"),
 
   engineNamePlusDomain: function() {
     if (this.get("selectedRhevEngine.is_discovered")) {
@@ -94,7 +94,7 @@ export default Ember.Controller.extend({
 
   backRouteNameonReviewInstallation: function() {
     if (this.get('isSubscriptions')) {
-      if (Ember.isPresent(this.get('controllers.deployment.model.upstream_consumer_uuid'))) {
+      if (Ember.isPresent(this.get('model.upstream_consumer_uuid'))) {
         return 'subscriptions.select-subscriptions';
       } else {
         return 'subscriptions.credentials';
@@ -108,16 +108,16 @@ export default Ember.Controller.extend({
         return 'storage';
       }
     }
-  }.property('isSubscriptions', 'isRhev', 'isOpenStack', 'isCloudForms', 'controllers.deployment.model.upstream_consumer_uuid'),
+  }.property('isSubscriptions', 'isRhev', 'isOpenStack', 'isCloudForms', 'model.upstream_consumer_uuid'),
 
   lifecycleEnvironmentName: function() {
-    var name = this.get('controllers.deployment.model.lifecycle_environment.name');
+    var name = this.get('model.lifecycle_environment.name');
     if (name) {
       return name;
     } else {
       return "Default Organization View";
     }
-  }.property('controllers.deployment.model.lifecycle_environment.name'),
+  }.property('model.lifecycle_environment.name'),
 
   deploymentButtonAction: function() {
     if (this.get('hasSubscriptionsToAttach')) {
