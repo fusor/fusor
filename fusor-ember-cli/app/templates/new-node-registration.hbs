@@ -60,13 +60,6 @@
                                       <legend>Networking</legend>
                                       {{textarea-f label="NIC MAC Address" labelSize='form-label-nowrap col-xs-4' inputSize='col-xs-6' value=selectedNode.nicMacAddress cols="40" placeholder="unspecified" rows="2" isRequired=true}}
                                   </fieldset>
-                                  <fieldset>
-                                      <legend>Hardware</legend>
-                                      {{select-simple-f label="Architecture" labelSize='form-label-nowrap col-xs-4' inputSize='col-xs-6' content=architectures selection=selectedNode.architecture prompt='unspecified' isRequired=true}}
-                                      {{text-f label="CPUs" type='number' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedNode.cpu isRequired=true unitsSize="input-units-label col-xs-2 muted" unitsLabel="cores"}}
-                                      {{text-f label="Memory" type='number' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedNode.ram isRequired=true unitsSize="input-units-label col-xs-2 muted" unitsLabel="MB"}}
-                                      {{text-f label="Local Disk" type='number' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedNode.disk isRequired=true unitsSize="input-units-label col-xs-2 muted" unitsLabel="GB"}}
-                                  </fieldset>
                               </div>
                           </div>
                       </div>
