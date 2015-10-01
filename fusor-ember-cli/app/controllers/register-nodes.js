@@ -45,10 +45,10 @@ export default Ember.Controller.extend({
     });
   },
 
-  newNodes: [],
-  errorNodes: [],
-  edittedNodes: [],
-  introspectionNodes: [],
+  newNodes: Ember.A(),
+  errorNodes: Ember.A(),
+  edittedNodes: Ember.A(),
+  introspectionNodes: Ember.A(),
 
   drivers: ['pxe_ipmitool', 'pxe_ssh'],
   architectures: ['amd64', 'x86', 'x86_64'],
@@ -63,8 +63,8 @@ export default Ember.Controller.extend({
   modalOpen: false,
 
   registrationError: function() {
-    return this.get('errorNodes').length > 0;
-  }.property('errorNodes', 'errorNodes.length'),
+    return this.get('errorNodes.length') > 0;
+  }.property('errorNodes.[]'),
 
   registrationErrorMessage: function() {
     var count = this.get('errorNodes').length;
@@ -77,7 +77,7 @@ export default Ember.Controller.extend({
     else {
       return '';
     }
-  }.property('errorNodes.length'),
+  }.property('errorNodes.[]'),
 
   registrationErrorTip: function() {
     var tip = '';
@@ -90,32 +90,31 @@ export default Ember.Controller.extend({
       tip += item.errorMessage;
     });
     return tip;
-  }.property('errorNodes', 'errorNodes.length'),
+  }.property('errorNodes.[]'),
 
   preRegistered: 0,
 
   successNodesLength: function() {
-    if (this.get('introspectionInProgress') !== true) {
+    if (!this.get('introspectionInProgress')) {
       return 0;
     }
-    // Nodes in introspection are in the model so we have to un-count them as well as any pre-registered nodes
-    return this.get('model').nodes.get('length') - this.get('introspectionNodes').length - this.get('preRegistered');
-  }.property('model.nodes.length', 'introspectionNodes.length', 'preRegistered', 'introspectionInProgress'),
+    return this.get('model.nodes.length') - this.get('preRegistered');
+  }.property('model.nodes.[]', 'introspectionNodes.[]', 'preRegistered', 'introspectionInProgress'),
 
   nodeRegComplete: function() {
-    return this.get('successNodesLength') + this.get('errorNodes').length;
-  }.property('successNodesLength', 'errorNodes.length'),
+    return this.get('successNodesLength') + this.get('errorNodes.length');
+  }.property('successNodesLength', 'errorNodes.[]'),
 
   nodeRegTotal: function() {
     var total = this.get('nodeRegComplete') + this.get('newNodes').length + this.get('introspectionNodes').length;
 
     // During the initial registration process there is a node in limbo...
-    if (this.get('initRegInProcess') === true) {
+    if (this.get('initRegInProcess')) {
       total++;
     }
 
     return total;
-  }.property('nodeRegComplete', 'newNodes.length', 'introspectionNodes.length', 'registrationInProgress', 'introspectionInProgress'),
+  }.property('nodeRegComplete', 'newNodes.[]', 'introspectionNodes.[]', 'registrationInProgress', 'introspectionInProgress'),
 
   nodeRegPercentComplete: function() {
     var nodeRegTotal = this.get('nodeRegTotal');
@@ -129,22 +128,22 @@ export default Ember.Controller.extend({
   }.property('nodeRegComplete', 'nodeRegTotal', 'newNodes', 'introspectionNodes'),
 
   noRegisteredNodes: function() {
-      return (this.get('model').nodes.get('length') < 1);
-  }.property('model.nodes', 'model.nodes.length'),
+      return (this.get('model.nodes.length') < 1);
+  }.property('model.nodes.[]'),
 
   hasSelectedNode: function() {
     return this.get('selectedNode') != null;
   }.property('selectedNode'),
 
   nodeFormStyle:function() {
-    if (this.get('edittedNodes').length > 0 && this.get('hasSelectedNode') === true)
+    if (this.get('edittedNodes.length') > 0 && this.get('hasSelectedNode'))
     {
       return 'visibility:visible;';
     }
     else {
       return 'visibility:hidden;';
     }
-  }.property('edittedNodes.length', 'hasSelectedNode'),
+  }.property('edittedNodes.[]', 'hasSelectedNode'),
 
   updateNodeSelection: function(node) {
     var oldSelection = this.get('selectedNode');
@@ -186,7 +185,7 @@ export default Ember.Controller.extend({
       var edittedNodes = this.get('edittedNodes');
 
       edittedNodes.setObjects(newNodes);
-      var savedErrors = [];
+      var savedErrors = Ember.A();
       errorNodes.forEach(function(item) {
         if (!item.isIntrospectionError) {
           edittedNodes.pushObject(item);
@@ -198,7 +197,7 @@ export default Ember.Controller.extend({
       this.set('errorNodes', savedErrors);
 
       // Always start with at least one profile
-      if (edittedNodes.length === 0) {
+      if (edittedNodes.get('length') === 0) {
         var newNode = this.Node.create({});
         newNode.isDefault = true;
         edittedNodes.pushObject(newNode);
@@ -221,14 +220,14 @@ export default Ember.Controller.extend({
       });
 
       newNodes.setObjects(edittedNodes);
-      this.set('edittedNodes', []);
+      this.set('edittedNodes', Ember.A());
       this.set('newNodes', newNodes);
       this.registerNewNodes();
     },
 
     cancelRegisterNodes: function() {
       this.closeRegDialog();
-      this.set('edittedNodes', []);
+      this.set('edittedNodes', Ember.A());
       // Unpause if necessary
       if (this.get('registrationPaused'))
       {
@@ -274,22 +273,18 @@ export default Ember.Controller.extend({
           var edittedNodes = me.get('edittedNodes');
 
           // If the default added node is still listed, remove it
-          if (edittedNodes.length === 1 && edittedNodes[0].isDefault && Ember.isEmpty(edittedNodes[0].get('ipAddress'))) {
+          if (edittedNodes.get('length') === 1 && edittedNodes[0].isDefault && Ember.isEmpty(edittedNodes[0].get('ipAddress'))) {
             edittedNodes.removeObject(edittedNodes[0]);
           }
 
           for (var row in data) {
             var node_data = data[row];
-            if (Array.isArray(node_data) && node_data.length >=9) {
-              var memory_mb = node_data[0].trim();
-              var local_gb = node_data[1].trim();
-              var cpus = node_data[2].trim();
-              var cpu_arch = node_data[3].trim();
-              var driver = node_data[4].trim();
-              var ipmi_address = node_data[5].trim();
-              var ipmi_username = node_data[6].trim();
-              var ipmi_password = node_data[7].trim();
-              var mac_address = node_data[8].trim();
+            if (Array.isArray(node_data) && node_data.length >=5) {
+              var driver = node_data[0].trim();
+              var ipmi_address = node_data[1].trim();
+              var ipmi_username = node_data[2].trim();
+              var ipmi_password = node_data[3].trim();
+              var mac_address = node_data[4].trim();
 
               var newNode = me.Node.create({
                 driver: driver,
@@ -325,11 +320,11 @@ export default Ember.Controller.extend({
 
   registerNewNodes: function() {
     var newNodes = this.get('newNodes');
-    if (newNodes && newNodes.length > 0) {
+    if (newNodes && newNodes.get('length') > 0) {
       if (!this.get('registrationInProgress'))
       {
-        this.set('introspectionNodes', []);
-        this.set('preRegistered', this.get('model').nodes.get('length'));
+        this.set('introspectionNodes', Ember.A());
+        this.set('preRegistered', this.get('model.nodes.length'));
         this.doNextNodeRegistration();
       }
       else if (this.get('registrationPaused') || this.get('introspectionInProgress')) {
@@ -360,19 +355,18 @@ export default Ember.Controller.extend({
       this.set('registrationPaused', false);
 
       var remaining = this.get('newNodes');
-      if (remaining && remaining.length > 0)
+      if (remaining && remaining.get('length') > 0)
       {
         this.set('registrationInProgress', true);
-        var lastIndex = remaining.length - 1;
-        var nextNode = remaining[lastIndex];
+        var lastIndex = remaining.get('length') - 1;
+        var nextNode = remaining.objectAt(lastIndex);
         this.set('newNodes', remaining.slice(0, lastIndex));
         this.registerNode(nextNode);
       }
       else
       {
         var me = this;
-        this.updateAfterRegistration();
-        if (me.get('introspectionInProgress') !== true)
+        if (!me.get('introspectionInProgress'))
         {
           me.startCheckingNodeIntrospection();
         }
@@ -386,7 +380,7 @@ export default Ember.Controller.extend({
   startCheckingNodeIntrospection: function() {
     var me = this;
     var introspectionNodes = me.get('introspectionNodes');
-    if (introspectionNodes.length > 0) {
+    if (introspectionNodes.get('length') > 0) {
       me.set('introspectionInProgress', true);
       introspectionNodes.forEach(function(node) {
         me.checkNodeIntrospection(node);
@@ -528,7 +522,7 @@ export default Ember.Controller.extend({
         var introspectionNodes = me.get('introspectionNodes');
         introspectionNodes.removeObject(node);
         me.set('introspectionNodes', introspectionNodes);
-        if (introspectionNodes.length === 0 && me.get('newNodes').length === 0) {
+        if (introspectionNodes.get('length') === 0 && me.get('newNodes.length') === 0) {
           me.set('registrationInProgress', false);
           me.set('introspectionInProgress', false);
         }
@@ -546,6 +540,7 @@ export default Ember.Controller.extend({
           node.isIntrospectionError = true;
           me.get('errorNodes').pushObject(node);
         }
+        me.updateAfterRegistration();
       }
       else {
         var promise = new Ember.RSVP.Promise(promiseFunction);
