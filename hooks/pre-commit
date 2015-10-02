@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# To use this pre-commit hook, run this from the root of your fusor checkout:
+# cd .git/hooks && ln -s ../../hooks/pre-commit .
+#
+# To bypass this pre-commit hook, use the "--manual" option when committing
+
+REQUIRED_RUBCOP_VERSION='0.33.0'
+
+RUBOCOP_MISSING_ERROR="Cannot find rubocop. Please install \
+  rubocop with 'gem install rubocop -v $REQUIRED_RUBCOP_VERSION'"
+command -v rubocop >/dev/null 2>&1 || { echo >&2 $RUBOCOP_MISSING_ERROR; exit 1; }
+
+RUBOCOP_VERSION=$(rubocop -v)
+RUBOCOP_VERSION_ERROR="Required rubocop version is \
+  $REQUIRED_RUBCOP_VERSION. You are using $RUBOCOP_VERSION."
+[[ "$RUBOCOP_VERSION" != "$REQUIRED_RUBCOP_VERSION" ]] && { echo >&2 $RUBOCOP_VERSION_ERROR; exit 1; }
+
+echo "Checking Ruby code with rubocop..."
+rubocop
