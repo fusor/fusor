@@ -16,7 +16,7 @@ if [ $1 == "install" ]; then
   git clone https://github.com/fusor/foretello_api_v21.git
 
   cd katello
-  git checkout 068062449b30e985695aa6071837290e4afbd3df
+  git checkout 1765e9b9893af03262dbda764b4c69e7bb825631
   cp script/ci/katello.yml config/katello.yml
   # Hack out some qpid dependencies in katello so that it can build on ubuntu 12.04
   sed -i 's/gem.add_dependency "qpid_messaging"/#gem.add_dependency "qpid_messaging"/' katello.gemspec
@@ -25,7 +25,7 @@ if [ $1 == "install" ]; then
   sed -i "s/Qpid::Messaging::Duration/1#Qpid::Messaging::Duration'/" app/lib/actions/candlepin/candlepin_listening_service.rb
 
   cd ../foreman
-  git checkout efd68ba5f97db034b6f99d25668f7fe9fb556ea4
+  git checkout a321281764f022eb0d2fc11265575e2a145a6ef9
   sed -e 's/:locations_enabled: false/:locations_enabled: true/' config/settings.yaml.example > config/settings.yaml
   sed -i 's/:organizations_enabled: false/:organizations_enabled: true/' config/settings.yaml
   cp ../fusor/.foreman_database.yml config/database.yml
