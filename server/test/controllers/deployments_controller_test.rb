@@ -48,6 +48,7 @@ module Fusor
     end
 
     test "delete request should successfully delete deployment" do
+      # failing after recent changes in foreman / katello. TODO: investigate and fix
       skip
       response = nil # set scope
       assert_difference('Deployment.count', -1, 'The number of deployments should decrease by one if we delete one') do
