@@ -69,17 +69,8 @@ module Actions::Fusor::Deployment::OpenStack
         end
 
         # Figure out how many total nodes we have
-        if !defined?(@total_nodes)
-          plan = undercloud_handle(deployment).get_plan('overcloud')
-          @total_nodes = 0
-          for role in plan.attributes['roles']
-            param_name = role['name'] + '-' + role['version'].to_s + '::count'
-            for param in plan.parameters
-              if param['name'] == param_name
-                @total_nodes += param['value'].to_i
-              end
-            end
-          end
+        unless defined?(@total_nodes)
+          @total_nodes = count_nodes(undercloud_handle(deployment).get_plan('overcloud'))
         end
 
         @progress = 0.1 + 0.7 * provisioned_nodes / @total_nodes
@@ -102,6 +93,19 @@ module Actions::Fusor::Deployment::OpenStack
     end
 
     private
+
+    def count_nodes(plan)
+      total_nodes = 0
+      for role in plan.attributes['roles']
+        param_name = role['name'] + '-' + role['version'].to_s + '::count'
+        for param in plan.parameters
+          if param['name'] == param_name
+            total_nodes += param['value'].to_i
+          end
+        end
+      end
+      return total_nodes
+    end
 
     def undercloud_handle(deployment)
       return Overcloud::UndercloudHandle.new('admin', deployment.openstack_undercloud_password, deployment.openstack_undercloud_ip_addr, 5000)
