@@ -82,7 +82,7 @@ export default Ember.Component.extend({
       }
     });
     return nodeCount;
-  }.property('profile', 'nodes'),
+  }.property('profile', 'nodes.[]'),
 
   hideAssignMenu: function() {
     this.set('assignMenuOpenClass', '');
