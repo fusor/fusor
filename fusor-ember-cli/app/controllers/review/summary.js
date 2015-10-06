@@ -8,6 +8,17 @@ export default Ember.Controller.extend({
   isOpenStack: Ember.computed.alias('controllers.deployment.isOpenStack'),
   isCloudForms: Ember.computed.alias('controllers.deployment.isCloudForms'),
 
+  isRhevOpen: true,
+  isOpenStackOpen: true,
+  isCloudFormsOpen: true,
+
+  undercloudUsername: 'admin',
+  undercloudPassword: Ember.computed.alias("model.openstack_undercloud_password"),
+
+  undercloudUrl: function() {
+    return ('https://' + this.get('model.openstack_undercloud_ip_addr'));
+  }.property('model.openstack_undercloud_ip_addr'),
+
   selectedRhevEngine: Ember.computed.alias("controllers.deployment.model.discovered_host"),
 
   // TODO - make mixin, same method as installation

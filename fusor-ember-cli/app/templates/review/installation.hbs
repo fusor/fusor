@@ -17,10 +17,10 @@
 
       {{#accordion-item name="Red Hat Satellite" isOpen=true}}
         {{review-link label='Name' routeName='satellite' isRequired=true
-                          value=controllers.deployment.model.name}}
+                          value=model.name}}
 
         {{review-link label='Organization' routeName='configure-organization' isRequired=true
-                          value=controllers.deployment.model.organization.name}}
+                          value=model.organization.name}}
 
         {{review-link label='Environment' routeName='configure-environment'
                           value=lifecycleEnvironmentName}}
@@ -46,42 +46,42 @@
         {{/if}}
 
         {{review-link label='Root password Engine & Hypervisor' routeName='rhev-options' isRequired=true
-                      isPassword=true value=controllers.deployment.model.rhev_root_password }}
+                      isPassword=true value=model.rhev_root_password }}
 
         {{review-link label='Engine admin password' routeName='rhev-options' isRequired=true isPassword=true
-                      value=controllers.deployment.model.rhev_engine_admin_password }}
+                      value=model.rhev_engine_admin_password }}
 
         {{review-link label='Datacenter Name' routeName='rhev-options' isDefault=true
-                      value=controllers.deployment.model.rhev_database_name}}
+                      value=model.rhev_database_name}}
 
         {{review-link label='Cluster Name' routeName='rhev-options' isDefault=true
-                      value=controllers.deployment.model.rhev_cluster_name}}
+                      value=model.rhev_cluster_name}}
 
         {{review-link label='CPU Type' routeName='rhev-options' isDefault=true
-                      value=controllers.deployment.model.rhev_cpu_type}}
+                      value=model.rhev_cpu_type}}
 
         {{review-link label='Storage Type' routeName='storage' isRequired=true
-                      value=controllers.deployment.model.rhev_storage_type}}
+                      value=model.rhev_storage_type}}
 
         {{review-link label='Data Domain Name' routeName='storage' isDefault=true
-                      value=controllers.deployment.model.rhev_storage_name}}
+                      value=model.rhev_storage_name}}
 
         {{review-link label='Data Storage Address' routeName='storage' isDefault=true
-                      value=controllers.deployment.model.rhev_storage_address}}
+                      value=model.rhev_storage_address}}
 
         {{review-link label='Data Storage Path' routeName='storage' isDefault=true
-                      value=controllers.deployment.model.rhev_share_path}}
+                      value=model.rhev_share_path}}
 
         {{#if isCloudForms}}
 
             {{review-link label='Export Domain Name' routeName='storage' isDefault=true
-                          value=controllers.deployment.model.rhev_export_domain_name}}
+                          value=model.rhev_export_domain_name}}
 
             {{review-link label='Export Storage Address' routeName='storage' isDefault=true
-                          value=controllers.deployment.model.rhev_export_domain_address}}
+                          value=model.rhev_export_domain_address}}
 
             {{review-link label='Export Storage Path' routeName='storage' isDefault=true
-                          value=controllers.deployment.model.rhev_export_domain_path}}
+                          value=model.rhev_export_domain_path}}
 
         {{/if}}
 
@@ -91,6 +91,9 @@
 
     {{#if isOpenStack}}
       {{#accordion-item name=controllers.deployment.nameOpenStack isOpen=isOpenStackOpen}}
+            {{review-link label='Director URL' value=undercloudUrl isRequired=true isExternalURL=true}}
+            {{review-link label='Director username' value=undercloudUsername isRequired=true}}
+            {{review-link label='Director password' value=undercloudPassword isRequired=true}}
             {{#review-link label='Assigned Nodes' routeName='assign-nodes' isRequired=true value=openstackProfiles useYieldInstead=true}}
                 {{#each profile in openstackProfiles}}
                     {{node-profile profile=profile nodes=openstackNodes plan=openstackPlan doAssign=true readOnly=true}}
@@ -102,9 +105,9 @@
     {{#if isCloudForms}}
       {{#accordion-item name="Cloud Forms Management Engine" isOpen=isCloudFormsOpen}}
           {{review-link label='Installation Location' routeName='where-install' isRequired=true
-                        value=controllers.deployment.model.cfme_install_loc }}
-          {{review-link label='CFME Root password' routeName='cloudforms.cfme-configuration' isRequired=true isPassword=true value=controllers.deployment.model.cfme_root_password }}
-          {{review-link label='CFME Admin password' routeName='cloudforms.cfme-configuration' isRequired=true isPassword=true value=controllers.deployment.model.cfme_admin_password }}
+                        value=model.cfme_install_loc }}
+          {{review-link label='CFME Root password' routeName='cloudforms.cfme-configuration' isRequired=true isPassword=true value=model.cfme_root_password }}
+          {{review-link label='CFME Admin password' routeName='cloudforms.cfme-configuration' isRequired=true isPassword=true value=model.cfme_admin_password }}
       {{/accordion-item}}
     {{/if}}
 
