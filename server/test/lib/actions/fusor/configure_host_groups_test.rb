@@ -38,6 +38,10 @@ module Actions::Fusor
       @content_view = katello_content_views(:library_view)
       ::Katello::ContentView.stubs(:where).returns([@content_view])
       @hostgroup = hostgroups(:parent)
+      key_params = @rhev_hostgroup[:host_groups].select do |hg|
+        hg[:activation_key].present?
+      end
+      @activation_key_length = key_params.length
       ::Hostgroup.stubs(:where).returns([@hostgroup])
       ::GroupParameter.stubs(:where).returns([parameters(:group)])
       ConfigureHostGroups.any_instance.stubs(:find_hostgroup).returns(@hostgroup)
@@ -58,7 +62,7 @@ module Actions::Fusor
       ConfigureHostGroups.any_instance.expects(:apply_setting_parameter_overrides).times(@rhev_hostgroup_length)
       ConfigureHostGroups.any_instance.expects(:apply_deployment_parameter_overrides).times(@rhev_hostgroup_length)
       ::Hostgroup.expects(:create!).times(@rhev_hostgroup_length)
-      ::GroupParameter.expects(:create!).times(@rhev_hostgroup_length)
+      ::GroupParameter.expects(:create!).times(@activation_key_length)
 
       plan = plan_action @action, @deployment, 'rhev', @rhev_hostgroup
       run_action plan
@@ -70,7 +74,7 @@ module Actions::Fusor
       ConfigureHostGroups.any_instance.expects(:apply_setting_parameter_overrides).times(@rhev_hostgroup_length)
       ConfigureHostGroups.any_instance.expects(:apply_deployment_parameter_overrides).times(@rhev_hostgroup_length)
       @hostgroup.expects(:update_attributes!).times(@rhev_hostgroup_length)
-      ::GroupParameter.any_instance.expects(:update_attributes!).times(@rhev_hostgroup_length)
+      ::GroupParameter.any_instance.expects(:update_attributes!).times(@activation_key_length)
       @rhev_hostgroup[:parent] = nil
       plan = plan_action @action, @deployment, 'rhev', @rhev_hostgroup
       run_action plan

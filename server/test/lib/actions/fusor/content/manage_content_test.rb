@@ -20,7 +20,9 @@ module Actions::Fusor::Content
     test "plan call should schedule appropriate actions" do
       plan_action(@deploy, fusor_deployments(:rhev_and_cfme))
 
-      content = SETTINGS[:fusor][:content][:rhev] + SETTINGS[:fusor][:content][:cloudforms]
+      content = SETTINGS[:fusor][:content][:rhevm] + SETTINGS[:fusor][:content][:rhevh] +
+        SETTINGS[:fusor][:content][:cloudforms]
+      content.uniq!
       assert_action_planed_with(@deploy,
                                 EnableRepositories,
                                 @deployment.organization,
@@ -33,9 +35,16 @@ module Actions::Fusor::Content
                                 @deployment,
                                 @repositories)
 
+      rhev = SETTINGS[:fusor][:host_groups][:rhev][:host_groups]
       assert_action_planed_with(@deploy,
                                 ConfigureActivationKey,
                                 @deployment,
+                                rhev[1],
+                                @repositories)
+      assert_action_planed_with(@deploy,
+                                ConfigureActivationKey,
+                                @deployment,
+                                rhev.last,
                                 @repositories)
 
       assert_action_planed_with(@deploy,

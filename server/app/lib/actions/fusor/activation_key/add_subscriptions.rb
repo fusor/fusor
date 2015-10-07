@@ -18,23 +18,24 @@ module Actions
           _("Activation Key - Add Subscriptions")
         end
 
-        def plan(deployment, repositories)
-          unless activation_key_name(deployment.name) && subscription_descriptions
+        def plan(activation_key_id, subscription_descriptions, repositories)
+          key = ::Katello::ActivationKey.find_by_id(activation_key_id)
+
+          fail _("Unable to add subscriptions without an activation key") unless key
+          unless subscription_descriptions
             fail _("Unable to locate activation key settings in config/settings.plugins.d/fusor.yaml")
           end
 
-          plan_self(:deployment_name => deployment.name,
-                    :organization_id => deployment.organization.id,
+          plan_self(:activation_key_id => activation_key_id,
+                    :subscription_descriptions => subscription_descriptions,
                     :user_id => ::User.current.id,
                     :repository_cp_labels => repositories.map(&:cp_label))
         end
 
         def run
           ::User.current = ::User.find(input[:user_id])
-
-          key = ::Katello::ActivationKey.where(:organization_id => input[:organization_id],
-                                               :name => activation_key_name(input[:deployment_name])).first
-          associate_subscriptions(key)
+          key = ::Katello::ActivationKey.find(input[:activation_key_id])
+          associate_subscriptions(key, input[:subscription_descriptions])
           enable_repositories(key, input[:repository_cp_labels])
         ensure
           ::User.current = nil
@@ -42,9 +43,9 @@ module Actions
 
         private
 
-        def associate_subscriptions(key)
+        def associate_subscriptions(key, subscription_descriptions)
           subscription_descriptions.each do |description|
-            subscriptions = key.available_subscriptions.find_all { |key| key.description == description }
+            subscriptions = key.available_subscriptions.find_all { |sub| sub.description == description }
             subscriptions.each { |subscription| key.subscribe(subscription.cp_id, 0) } if subscriptions
           end
         end
@@ -53,15 +54,6 @@ module Actions
           repository_cp_labels.each do |cp_label|
             key.set_content_override(cp_label, 'enabled', 1)
           end
-        end
-
-        def activation_key_name(deployment_name)
-          name = SETTINGS[:fusor][:activation_key][:name]
-          return [name, deployment_name].join('-') if name
-        end
-
-        def subscription_descriptions
-          SETTINGS[:fusor][:activation_key][:subscription_descriptions]
         end
       end
     end

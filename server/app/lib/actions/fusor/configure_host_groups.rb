@@ -127,18 +127,23 @@ module Actions
           parameter = ::GroupParameter.where(:type => "GroupParameter",
                                              :reference_id => hostgroup.id,
                                              :name => "kt_activation_keys").first
-          parameter.update_attributes!(:reference_id => hostgroup.id,
-                                       :name => "kt_activation_keys",
-                                       :value => activation_key_name(deployment))
+
+          if activation_key_name = activation_key_name(deployment, hostgroup_settings)
+            parameter.update_attributes!(:reference_id => hostgroup.id,
+                                         :name => "kt_activation_keys",
+                                         :value => activation_key_name)
+          end
         else
           # Note: when setting the arch, medium and ptable, we assume that there will only be 1
           # associated with the operating system.  If we need to support multiple in the future,
           # we'll need to update this behavior.
           hostgroup = ::Hostgroup.create!(hostgroup_params)
 
-          ::GroupParameter.create!(:hostgroup => hostgroup,
-                                   :name => "kt_activation_keys",
-                                   :value => activation_key_name(deployment))
+          if activation_key_name = activation_key_name(deployment, hostgroup_settings)
+            ::GroupParameter.create!(:hostgroup => hostgroup,
+                                     :name => "kt_activation_keys",
+                                     :value => activation_key_name)
+          end
         end
         apply_setting_parameter_overrides(hostgroup, hostgroup_settings, puppet_environment)
         apply_deployment_parameter_overrides(hostgroup, deployment, product_type, puppet_environment)
@@ -288,9 +293,12 @@ module Actions
         SETTINGS[:fusor][:content][:content_view][:puppet_component_view_name]
       end
 
-      def activation_key_name(deployment)
-        name = SETTINGS[:fusor][:activation_key][:name]
-        return [name, deployment.name].join('-') if name
+      def activation_key_name(deployment, hostgroup)
+        return unless hostgroup[:activation_key] && hostgroup[:activation_key][:name]
+
+        name = hostgroup[:activation_key][:name]
+        hg_name = hostgroup[:name]
+        return [name, deployment.name, hg_name].map { |str| str.tr('-', "_") }.join('-')
       end
     end
   end

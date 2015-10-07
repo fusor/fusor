@@ -26,30 +26,27 @@ module Actions
           fail _("Unable to locate puppet class settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:puppet_classes]
 
           sequence do
-            product_types = [:rhev, :cfme, :openstack]  # array of supported products
-            products_enabled = [deployment.deploy_rhev, deployment.deploy_cfme, deployment.deploy_openstack]
-
             content = SETTINGS[:fusor][:content]
-            products_content = [content[:rhev], content[:cloudforms], content[:openstack]]
             host_groups = SETTINGS[:fusor][:host_groups]
-            products_host_groups = [host_groups[:rhev], host_groups[:cloudforms], host_groups[:openstack]]
+            product_map = {rhev: [:rhevm, :rhevh],
+                           cfme: [:cloudforms],
+                           openstack: [:openstack]
+            }
 
             enable_smart_class_parameter_overrides
 
-            products_content_details = []
-            products_enabled.each_with_index do |product_enabled, i|
-              if product_enabled
-                products_content_details = (products_content_details << products_content[i]).flatten.uniq
-              end
+            product_content_details = product_map.each_with_object([]) do |(deploy, product_types), details|
+              details << product_types.map { |type| content[type] } if deployment.deploy?(deploy)
             end
+            product_content_details = product_content_details.flatten(2).uniq.compact
 
             plan_action(::Actions::Fusor::Content::EnableRepositories,
                         deployment.organization,
-                        products_content_details)
+                        product_content_details)
 
             # As part of enabling repositories, zero or more repos will be created.  Let's
             # retrieve the repos needed for the deployment and use them in actions that follow
-            repositories = retrieve_deployment_repositories(deployment.organization, products_content_details)
+            repositories = retrieve_deployment_repositories(deployment.organization, product_content_details)
 
             plan_action(::Actions::Fusor::Content::SyncRepositories, repositories)
 
@@ -57,16 +54,15 @@ module Actions
                         deployment,
                         yum_repositories(repositories)) if deployment.lifecycle_environment_id
 
-            plan_configure_activation_key(deployment, yum_repositories(repositories))
+            product_map.keys.each do |deploy|
+              hostgroup = host_groups[deploy]
 
-            products_enabled.each_with_index do |product_enabled, index|
-              if product_enabled
-                if products_host_groups[index]
-                  plan_action(::Actions::Fusor::ConfigureHostGroups,
-                          deployment,
-                          product_types[index],
-                          products_host_groups[index])
-                end
+              if deployment.deploy?(deploy) && hostgroup
+                configure_activation_keys(deployment, hostgroup)
+                plan_action(::Actions::Fusor::ConfigureHostGroups,
+                            deployment,
+                            deploy,
+                            hostgroup)
               end
             end
           end
@@ -87,14 +83,6 @@ module Actions
           end
         end
 
-        def plan_configure_activation_key(deployment, repositories)
-          # At this time, 1 activation key can be used to support all products; therefore,
-          # we only need to plan the action once.
-          return if @configure_activation_key_planned
-          plan_action(::Actions::Fusor::ActivationKey::ConfigureActivationKey, deployment, repositories)
-          @configure_activation_key_planned = true
-        end
-
         def yum_repositories(repositories)
           repositories.select { |repo| repo.content_type == ::Katello::Repository::YUM_TYPE }
         end
@@ -103,6 +91,27 @@ module Actions
           repos = []
           product_content.each { |details| repos << find_repository(organization, details) }
           repos
+        end
+
+        def configure_activation_keys(deployment, hostgroup)
+          content = SETTINGS[:fusor][:content]
+
+          hostgroup[:host_groups].each do |subgroup|
+            next unless subgroup[:activation_key]
+
+            content_key = subgroup[:activation_key][:content]
+            product_content = content[content_key]
+
+            # find the subset of repos that belong to this activation key
+            repositories = retrieve_deployment_repositories(deployment.organization, product_content)
+            repositories = yum_repositories(repositories)
+
+            plan_action(::Actions::Fusor::ActivationKey::ConfigureActivationKey,
+                        deployment,
+                        subgroup,
+                        repositories
+                       )
+          end
         end
 
         def find_repository(organization, repo_details)
