@@ -87,17 +87,17 @@
         :releasever: "7Server"
 
       - :product_name: "Red Hat OpenStack"
-        :repository_set_name: "Red Hat OpenStack 7.0 for RHEL 7 (RPMs)"
+        :repository_set_name: "Red Hat Enterprise Linux OpenStack Platform 7.0 for RHEL 7 (RPMs)"
         :basearch: "x86_64"
         :releasever: "7Server"
 
       - :product_name: "Red Hat OpenStack"
-        :repository_set_name: "Red Hat OpenStack 7.0 for RHEL 7 Platform director (RPMs)"
+        :repository_set_name: "Red Hat Enterprise Linux OpenStack Platform 7.0 director for RHEL 7 (RPMs)"
         :basearch: "x86_64"
         :releasever: "7Server"
 
       - :product_name: "Red Hat OpenStack"
-        :repository_set_name: "Red Hat OpenStack 7.0 for RHEL 7 (Files)"
+        :repository_set_name: "Red Hat Enterprise Linux OpenStack Platform 7.0 for RHEL 7 (Files)"
         :basearch: "x86_64"
         :releasever: "7Server"
 
