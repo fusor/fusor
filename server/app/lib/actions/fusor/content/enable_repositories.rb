@@ -29,11 +29,11 @@ module Actions
 
         def enable_repo(organization, repo_details)
           product = ::Katello::Product.where(:organization_id => organization.id,
-                                             :name => repo_details[:product_name]).first
+                                             :cp_id => repo_details[:product_id]).first
 
           if product
             product_content = product.productContent.find do |content|
-              content.content.name == repo_details[:repository_set_name]
+              content.content.id == repo_details[:repository_set_id]
             end
 
             substitutions = { basearch: repo_details[:basearch] }
