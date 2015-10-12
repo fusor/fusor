@@ -65,9 +65,23 @@ export default Ember.Component.extend({
     }
   }.property('uniqueValues', 'value', 'isUnique'),
 
+  eyeIcon: 'fa-eye',
+  isEyeOpen: true,
+
   actions: {
     showValidationErrors: function() {
       this.set("showValidationError", true);
+    },
+
+    showPassword: function() {
+      this.set('isEyeOpen', this.toggleProperty('isEyeOpen'));
+      if (this.get('isEyeOpen')) {
+          this.set('typeInput', 'password');
+          return this.set('eyeIcon', "fa-eye");
+      } else {
+          this.set('typeInput', 'text');
+          return this.set('eyeIcon', "fa-eye-slash");
+      }
     }
   }
 });
