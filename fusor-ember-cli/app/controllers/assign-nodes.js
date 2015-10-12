@@ -418,7 +418,7 @@ export default Ember.Controller.extend({
     if (this.get('isCloudForms')) {
       return 'cloudforms';
     } else {
-      return 'review';
+      return 'subscriptions';
     }
   }.property('isCloudForms')
 });
