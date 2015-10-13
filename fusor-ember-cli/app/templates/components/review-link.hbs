@@ -16,6 +16,9 @@
             {{valueFormatted}}
           {{/if}}
       {{/link-to}}
+      {{#if isPassword}}
+              <i {{action 'showPassword'}} class="fa {{eyeIcon}}"></i>
+      {{/if}}
     {{/if}}
 
     {{#if showValidationMessage}}

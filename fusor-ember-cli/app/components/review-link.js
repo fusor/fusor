@@ -6,10 +6,12 @@ export default Ember.Component.extend({
   isRequired: false,
   isDefault: false,
   useYieldInstead: false,
-  isPassword: false,
   isExternalURL: false,
   validationMessage: 'required field',
   defaultMessage: 'default',
+
+  eyeIcon: 'fa-eye',
+  isEyeOpen: true,
 
   showValidationMessage: function() {
     return (this.get('isRequired') && Ember.isBlank(this.get('value')));
@@ -20,15 +22,26 @@ export default Ember.Component.extend({
   }.property('isDefault', 'value'),
 
   valueFormatted: function() {
-    if (this.get('isPassword') && Ember.isPresent(this.get('value'))) {
+    if (this.get('isPassword') && this.get('isEyeOpen') && Ember.isPresent(this.get('value'))) {
       return '********';
     } else {
       return this.get('value');
     }
-  }.property('isPassword', 'value'),
+  }.property('isPassword', 'isEyeOpen', 'value'),
 
   isNotALink: function() {
     return (Ember.isBlank(this.get('routeName')) && !(this.get('isExternalURL')));
-  }.property('isExternalURL', 'routeName')
+  }.property('isExternalURL', 'routeName'),
+
+  actions: {
+    showPassword: function() {
+      this.set('isEyeOpen', this.toggleProperty('isEyeOpen'));
+      if (this.get('isEyeOpen')) {
+          return this.set('eyeIcon', "fa-eye");
+      } else {
+          return this.set('eyeIcon', "fa-eye-slash");
+      }
+    }
+  }
 
 });
