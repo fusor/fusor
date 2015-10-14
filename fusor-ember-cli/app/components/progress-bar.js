@@ -58,13 +58,7 @@ export default Ember.Component.extend({
   }.property('deploymentStatus', 'model.result'),
 
   progressBarMsg: function() {
-    if (this.get('isFinished')) {
-      if (this.get('isSatelliteProgressBar')) {
-        return "Sync content and setup successful";
-      } else {
-        return "Deployment successful";
-      }
-    } else if ((this.get('deploymentStatus') === 'In Process') && (this.get('model.result') === 'pending')) {
+    if ((this.get('deploymentStatus') === 'In Process') && (this.get('model.result') === 'pending')) {
       if (this.get('isSatelliteProgressBar')) {
         return "Syncing content";
       } else {
@@ -76,6 +70,12 @@ export default Ember.Component.extend({
       return "Warning";
     } else if (!this.get('isStarted')) {
       return "Waiting for content";
+    } else if (this.get('isFinished')) {
+      if (this.get('isSatelliteProgressBar')) {
+        return "Sync content and setup successful";
+      } else {
+        return "Deployment successful";
+      }
     }
   }.property('deploymentStatus', 'model.result', 'isFinished', 'isSatelliteProgressBar'),
 
