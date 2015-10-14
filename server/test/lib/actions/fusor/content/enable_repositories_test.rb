@@ -61,5 +61,15 @@ module Actions::Fusor::Content
       }
     end
 
+    test "plan should throw error if repo set doesn't exist" do
+      EnableRepositories.any_instance.stubs(:repo_mapper).returns(Mapper.new(false))
+      @product.stubs(:productContent).returns(stub(:find => nil))
+
+      err = assert_raises(RuntimeError) do
+        plan_action @action, @deployment.organization, SETTINGS[:fusor][:content][:cloudforms]
+      end
+
+      assert_match(/does not exist/, err.message)
+    end
   end
 end
