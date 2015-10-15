@@ -12,14 +12,12 @@
                  value=sshUser
                  labelSize='deploy-undercloud-param-label'
                  inputSize='deploy-undercloud-param-input'
-                 isRequired=true
-                 helpText=sshUserHelp}}
+                 isRequired=true}}
         {{text-f label="SSH Password"
                  value=sshPassword
                  labelSize='deploy-undercloud-param-label'
                  inputSize='deploy-undercloud-param-input'
-                 isRequired=true
-                 helpText=sshPasswordHelp}}
+                 isRequired=true}}
 
         <button class="btn btn-primary pull-left"
                 {{action "deployUndercloud"}}
@@ -57,5 +55,3 @@
                    disableNext=disableDeployUndercloudNext
                    parentController=controller}}
 {{loading-spinner show=showLoadingSpinner text=loadingSpinnerText}}
-
-{{base-popover selector='popover'}}
