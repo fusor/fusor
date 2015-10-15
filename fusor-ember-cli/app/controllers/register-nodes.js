@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import request from 'ic-ajax';
 
 export default Ember.Controller.extend({
 
@@ -424,7 +425,11 @@ export default Ember.Controller.extend({
     var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
     this.set('initRegInProcess', true);
-    Ember.$.ajax({
+
+    //ic-ajax request
+    console.log('action: registerNode');
+    console.log('POST /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/nodes');
+    request({
       url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/nodes',
       type: 'POST',
       headers: {
@@ -432,19 +437,18 @@ export default Ember.Controller.extend({
         "Content-Type": "application/json",
         "X-CSRF-Token": token,
       },
-      data: JSON.stringify({ 'node': createdNode }),
-      success: function(registeredNode) {
+      data: JSON.stringify({ 'node': createdNode })
+    }).then(function(registeredNode) {
         me.set('initRegInProcess', false);
         me.addIntrospectionNode(registeredNode);
         me.doNextNodeRegistration(registeredNode);
-      },
-      error: function(reason) {
-        me.set('initRegInProcess', false);
-        node.errorMessage = node.ipAddress + ": " + me.getErrorMessageFromReason(reason);
-        me.get('errorNodes').pushObject(node);
-        me.doNextNodeRegistration();
-      }
-    });
+      }, function(reason) {
+            me.set('initRegInProcess', false);
+            node.errorMessage = node.ipAddress + ": " + me.getErrorMessageFromReason(reason);
+            me.get('errorNodes').pushObject(node);
+            me.doNextNodeRegistration();
+        }
+    );
   },
 
   getErrorMessageFromReason: function(reason) {
@@ -471,32 +475,35 @@ export default Ember.Controller.extend({
 
     var promiseFunction = function(resolve) {
       var checkForDone = function() {
-        Ember.$.ajax({
+        //ic-ajax request
+        console.log('action: checkNodeIntrospection');
+        console.log('POST /fusor/api/openstack/deployments/' + me.get('deploymentId') + '/nodes/' + node.uuid + '/ready');
+
+        request({
           url: '/fusor/api/openstack/deployments/' + me.get('deploymentId') + '/nodes/' + node.uuid + '/ready',
           type: 'GET',
-          contentType: 'application/json',
-          success: function(results) {
+          contentType: 'application/json'
+        }).then(function(results) {
             resolve({done: results.node.ready});
-          },
-          error: function(results) {
-            if (results.status === 0) {
-              // Known problem during introspection, return response is empty, keep trying
-              resolve({done: false});
-            }
-            else if (results.status === 500) {
-              var error = me.getErrorMessageFromReason(results);
-              if (error.indexOf('timeout') >= 0) {
-                resolve({done: false});
+          },  function(results) {
+                if (results.status === 0) {
+                  // Known problem during introspection, return response is empty, keep trying
+                  resolve({done: false});
+                }
+                else if (results.status === 500) {
+                  var error = me.getErrorMessageFromReason(results);
+                  if (error.indexOf('timeout') >= 0) {
+                    resolve({done: false});
+                  }
+                  else {
+                    resolve({done: true, errorResults: results});
+                  }
+                }
+                else {
+                  resolve({done: true, errorResults: results});
+                }
               }
-              else {
-                resolve({done: true, errorResults: results});
-              }
-            }
-            else {
-              resolve({done: true, errorResults: results});
-            }
-          }
-        });
+        );
       };
 
       Ember.run.later(checkForDone, 15 * 1000);

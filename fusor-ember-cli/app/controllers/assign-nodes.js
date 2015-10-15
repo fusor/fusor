@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import request from 'ic-ajax';
 
 export default Ember.Controller.extend({
 
@@ -110,22 +111,22 @@ export default Ember.Controller.extend({
     me.set('loadingSpinnerText', "Loading...");
     me.set('showLoadingSpinner', true);
     var token = Ember.$('meta[name="csrf-token"]').attr('content');
-
-    Ember.$.ajax({
-      url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_role_flavor',
-      type: 'PUT',
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "X-CSRF-Token": token,
-      },
-      data: JSON.stringify(data),
-      success: function(result) {
+    //ic-ajax request
+    console.log('PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_role_flavor');
+    request({
+        url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_role_flavor',
+        type: 'PUT',
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "X-CSRF-Token": token,
+        },
+        data: JSON.stringify(data)
+      }).then(function(result) {
         me.set('showLoadingSpinner', false);
         console.log('SUCCESS');
         me.store.push('deployment_plan', me.store.normalize('deployment_plan', result.deployment_plan));
-      },
-      error: function(error) {
+      }, function(error) {
         console.log('ERROR');
         console.log(error);
         // TODO: Remove the reload call once we determine how to get around the failure
@@ -134,7 +135,7 @@ export default Ember.Controller.extend({
           me.set('showLoadingSpinner', false);
         });
       }
-    });
+    );
   },
 
   edittedRole: null,
@@ -248,7 +249,9 @@ export default Ember.Controller.extend({
 
       me.set('loadingSpinnerText', "Saving...");
       me.set('showLoadingSpinner', true);
-      Ember.$.ajax({
+      console.log('action: saveRole, PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_parameters');
+      //ic-ajax request
+      request({
         url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_parameters',
         type: 'PUT',
         headers: {
@@ -256,21 +259,19 @@ export default Ember.Controller.extend({
           "Content-Type": "application/json",
           "X-CSRF-Token": token,
         },
-        data: JSON.stringify({ 'parameters': params }),
-        success: function() {
+        data: JSON.stringify({ 'parameters': params })
+      }).then( function() {
           console.log('SUCCESS');
           me.store.find('deployment-plan', deploymentId).then(function (result) {
             me.set('model.plan', result);
             me.set('showLoadingSpinner', false);
           });
-        },
-        error: function(error) {
+        }, function(error) {
           console.log('ERROR');
           console.log(error);
           me.set('showLoadingSpinner', false);
         }
-      });
-
+      );
       this.closeEditDialog();
     },
 
@@ -283,29 +284,29 @@ export default Ember.Controller.extend({
 
       me.set('loadingSpinnerText', "Saving...");
       me.set('showLoadingSpinner', true);
-
-      Ember.$.ajax({
-        url: '/fusor/api/openstack/deployments/' + deploymentId + '/deployment_plans/' + plan.get('id') + '/update_role_count',
-        type: 'PUT',
-        data: JSON.stringify(data),
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-          "X-CSRF-Token": token,
-        },
-        success: function(result) {
+      //ic-ajax request
+      console.log('PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_role_count');
+      request({
+          url: '/fusor/api/openstack/deployments/' + deploymentId + '/deployment_plans/' + plan.get('id') + '/update_role_count',
+          type: 'PUT',
+          data: JSON.stringify(data),
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "X-CSRF-Token": token,
+          }
+        }).then(function(result) {
           console.log('SUCCESS');
           me.store.find('deployment-plan', deploymentId).then(function (result) {
             me.set('model.plan', result);
             me.set('showLoadingSpinner', false);
           });
-        },
-        error: function(error) {
-          console.log('ERROR');
-          console.log(error);
-          me.set('showLoadingSpinner', false);
-        }
-      });
+        }, function(error) {
+             console.log('ERROR');
+             console.log(error);
+             me.set('showLoadingSpinner', false);
+           }
+        );
     },
 
     cancelEditRole: function() {
@@ -382,7 +383,10 @@ export default Ember.Controller.extend({
 
       me.set('loadingSpinnerText', "Saving...");
       me.set('showLoadingSpinner', true);
-      Ember.$.ajax({
+
+      //ic-ajax request
+      console.log('action: saveGlobalServiceConfig, PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_parameters');
+      request({
         url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_parameters',
         type: 'PUT',
         headers: {
@@ -390,19 +394,20 @@ export default Ember.Controller.extend({
           "Content-Type": "application/json",
           "X-CSRF-Token": token,
         },
-        data: JSON.stringify({ 'parameters': params }),
-        success: function() {
+        data: JSON.stringify({ 'parameters': params })
+      }).then( function() {
           console.log('SUCCESS');
           me.set('showLoadingSpinner', false);
         },
-        error: function(error) {
-          console.log('ERROR');
-          console.log(error);
-          me.set('showLoadingSpinner', false);
+          function(error) {
+            console.log('ERROR');
+            console.log(error);
+            me.set('showLoadingSpinner', false);
         }
-      });
+      );
 
       this.closeGlobalServiceConfigDialog();
+
     },
 
     cancelGlobalServiceConfig: function() {

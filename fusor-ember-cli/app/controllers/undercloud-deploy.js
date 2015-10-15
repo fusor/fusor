@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import request from 'ic-ajax';
 
 export default Ember.Controller.extend({
 
@@ -70,7 +71,11 @@ export default Ember.Controller.extend({
       var promiseFunction = function (resolve) {
         self.set('deploymentError', null);
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
-      Ember.$.ajax({
+
+      //ic-ajax request
+      console.log('action: deployUndercloud');
+      console.log('POST /fusor/api/openstack/deployments/' + self.get('deploymentId') + '/underclouds');
+      request({
           url: '/fusor/api/openstack/deployments/' + self.get('deploymentId') + '/underclouds',
           type: 'POST',
           data: JSON.stringify(data),
@@ -78,28 +83,27 @@ export default Ember.Controller.extend({
             "Accept": "application/json",
             "Content-Type": "application/json",
             "X-CSRF-Token": token,
-          },
-          success: function(response) {
-            promise.then(fulfill);
-            console.log('create success');
-            console.log(response);
-            Ember.run.later(checkForDone, 3000);
-          },
-          error: function(error) {
-            self.set('deploymentError', error.responseJSON.errors);
-            self.set('showLoadingSpinner', false);
-            console.log('create failed');
-            console.log(error);
           }
-      });
+        }).then(function(response) {
+                promise.then(fulfill);
+                console.log('create success');
+                console.log(response);
+                Ember.run.later(checkForDone, 3000);
+              },  function(error) {
+                self.set('deploymentError', error.responseJSON.errors);
+                self.set('showLoadingSpinner', false);
+                console.log('create failed');
+                console.log(error);
+              }
+        );
 
       var checkForDone = function () {
         console.log("running check for done for id " + self.get('deploymentId'));
-        Ember.$.ajax({
+        request({
           url: '/fusor/api/openstack/deployments/' + self.get('deploymentId') + '/underclouds/' + self.get('deploymentId'),
           type: 'GET',
-          contentType: 'application/json',
-          success: function(response) {
+          contentType: 'application/json'
+        }).then(function(response) {
             console.log('api check success');
             console.log(response);
             if (response['deployed'] || response['failed']) {
@@ -117,14 +121,13 @@ export default Ember.Controller.extend({
               console.log('detection ongoing');
               Ember.run.later(checkForDone, 3000);
             }
-          },
-          error: function(error) {
-            console.log('api check error');
-            console.log(error);
-            self.set('deploymentError', 'Status check failed');
-            self.set('showLoadingSpinner', false);
+          }, function(error) {
+              console.log('api check error');
+              console.log(error);
+              self.set('deploymentError', 'Status check failed');
+              self.set('showLoadingSpinner', false);
           }
-        });
+        );
       };
     };
 
