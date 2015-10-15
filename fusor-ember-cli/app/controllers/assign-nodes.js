@@ -112,9 +112,9 @@ export default Ember.Controller.extend({
     me.set('showLoadingSpinner', true);
     var token = Ember.$('meta[name="csrf-token"]').attr('content');
     //ic-ajax request
-    console.log('PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_role_flavor');
+    console.log('PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_role_flavor');
     request({
-        url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_role_flavor',
+        url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_role_flavor',
         type: 'PUT',
         headers: {
           "Accept": "application/json",
@@ -249,10 +249,10 @@ export default Ember.Controller.extend({
 
       me.set('loadingSpinnerText', "Saving...");
       me.set('showLoadingSpinner', true);
-      console.log('action: saveRole, PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_parameters');
+      console.log('action: saveRole, PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_parameters');
       //ic-ajax request
       request({
-        url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_parameters',
+        url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_parameters',
         type: 'PUT',
         headers: {
           "Accept": "application/json",
@@ -285,9 +285,9 @@ export default Ember.Controller.extend({
       me.set('loadingSpinnerText', "Saving...");
       me.set('showLoadingSpinner', true);
       //ic-ajax request
-      console.log('PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_role_count');
+      console.log('PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_role_count');
       request({
-          url: '/fusor/api/openstack/deployments/' + deploymentId + '/deployment_plans/' + plan.get('id') + '/update_role_count',
+          url: '/fusor/api/openstack/deployments/' + deploymentId + '/deployment_plans/overcloud/update_role_count',
           type: 'PUT',
           data: JSON.stringify(data),
           headers: {
@@ -385,9 +385,9 @@ export default Ember.Controller.extend({
       me.set('showLoadingSpinner', true);
 
       //ic-ajax request
-      console.log('action: saveGlobalServiceConfig, PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_parameters');
+      console.log('action: saveGlobalServiceConfig, PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_parameters');
       request({
-        url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_parameters',
+        url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_parameters',
         type: 'PUT',
         headers: {
           "Accept": "application/json",
