@@ -95,7 +95,7 @@ export default Ember.Controller.extend({
 
   doAssignRole: function(plan, role, profile) {
     var data;
-    var me = this;
+    var self = this;
 
     if (profile == null ) {
       var unassignedRoles = this.get('unassignedRoles');
@@ -108,8 +108,8 @@ export default Ember.Controller.extend({
       data = { 'role_name': role.get('name'), 'flavor_name': profile.get('name') };
     }
 
-    me.set('loadingSpinnerText', "Loading...");
-    me.set('showLoadingSpinner', true);
+    self.set('loadingSpinnerText', "Loading...");
+    self.set('showLoadingSpinner', true);
     var token = Ember.$('meta[name="csrf-token"]').attr('content');
     //ic-ajax request
     console.log('PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_role_flavor');
@@ -123,16 +123,16 @@ export default Ember.Controller.extend({
         },
         data: JSON.stringify(data)
       }).then(function(result) {
-        me.set('showLoadingSpinner', false);
+        self.set('showLoadingSpinner', false);
         console.log('SUCCESS');
-        me.store.push('deployment_plan', me.store.normalize('deployment_plan', result.deployment_plan));
+        self.store.push('deployment_plan', self.store.normalize('deployment_plan', result.deployment_plan));
       }, function(error) {
         console.log('ERROR');
         console.log(error);
         // TODO: Remove the reload call once we determine how to get around the failure
         //       that appears to be due to port forwarding. But make sure to leave the show spinner setting.
-        me.get('model').plan.reload().then(function() {
-          me.set('showLoadingSpinner', false);
+        self.get('model').plan.reload().then(function() {
+          self.set('showLoadingSpinner', false);
         });
       }
     );
@@ -232,7 +232,7 @@ export default Ember.Controller.extend({
     },
 
     saveRole: function() {
-      var me = this;
+      var self = this;
       var plan = this.get('model.plan');
       var role = this.get('edittedRole');
 
@@ -247,8 +247,8 @@ export default Ember.Controller.extend({
       });
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
-      me.set('loadingSpinnerText', "Saving...");
-      me.set('showLoadingSpinner', true);
+      self.set('loadingSpinnerText', "Saving...");
+      self.set('showLoadingSpinner', true);
       console.log('action: saveRole, PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_parameters');
       //ic-ajax request
       request({
@@ -262,28 +262,28 @@ export default Ember.Controller.extend({
         data: JSON.stringify({ 'parameters': params })
       }).then( function() {
           console.log('SUCCESS');
-          me.store.find('deployment-plan', deploymentId).then(function (result) {
-            me.set('model.plan', result);
-            me.set('showLoadingSpinner', false);
+          self.store.find('deployment-plan', deploymentId).then(function (result) {
+            self.set('model.plan', result);
+            self.set('showLoadingSpinner', false);
           });
         }, function(error) {
           console.log('ERROR');
           console.log(error);
-          me.set('showLoadingSpinner', false);
+          self.set('showLoadingSpinner', false);
         }
       );
       this.closeEditDialog();
     },
 
     setRoleCount: function(role, count) {
-      var me = this;
+      var self = this;
       var plan = this.get('model.plan');
       var data = { 'role_name': role.get('name'), 'count': count };
       var deploymentId = this.get('deploymentId');
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
-      me.set('loadingSpinnerText', "Saving...");
-      me.set('showLoadingSpinner', true);
+      self.set('loadingSpinnerText', "Saving...");
+      self.set('showLoadingSpinner', true);
       //ic-ajax request
       console.log('PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_role_count');
       request({
@@ -297,14 +297,14 @@ export default Ember.Controller.extend({
           }
         }).then(function(result) {
           console.log('SUCCESS');
-          me.store.find('deployment-plan', deploymentId).then(function (result) {
-            me.set('model.plan', result);
-            me.set('showLoadingSpinner', false);
+          self.store.find('deployment-plan', deploymentId).then(function (result) {
+            self.set('model.plan', result);
+            self.set('showLoadingSpinner', false);
           });
         }, function(error) {
              console.log('ERROR');
              console.log(error);
-             me.set('showLoadingSpinner', false);
+             self.set('showLoadingSpinner', false);
            }
         );
     },
@@ -372,7 +372,7 @@ export default Ember.Controller.extend({
     },
 
     saveGlobalServiceConfig: function() {
-      var me = this;
+      var self = this;
       var plan = this.get('model.plan');
 
       var params = [];
@@ -381,8 +381,8 @@ export default Ember.Controller.extend({
       });
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
-      me.set('loadingSpinnerText', "Saving...");
-      me.set('showLoadingSpinner', true);
+      self.set('loadingSpinnerText', "Saving...");
+      self.set('showLoadingSpinner', true);
 
       //ic-ajax request
       console.log('action: saveGlobalServiceConfig, PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_parameters');
@@ -397,12 +397,12 @@ export default Ember.Controller.extend({
         data: JSON.stringify({ 'parameters': params })
       }).then( function() {
           console.log('SUCCESS');
-          me.set('showLoadingSpinner', false);
+          self.set('showLoadingSpinner', false);
         },
           function(error) {
             console.log('ERROR');
             console.log(error);
-            me.set('showLoadingSpinner', false);
+            self.set('showLoadingSpinner', false);
         }
       );
 

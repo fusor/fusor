@@ -260,13 +260,13 @@ export default Ember.Controller.extend({
     csvFileChosen: function() {
       var fileInput = this.getCSVFileInput();
       var file = fileInput.files[0];
-      var me = this;
+      var self = this;
       if (file) {
         var reader = new FileReader();
         reader.onload = function() {
           var text = reader.result;
           var data = $.csv.toArrays(text);
-          var edittedNodes = me.get('edittedNodes');
+          var edittedNodes = self.get('edittedNodes');
           // If the default added node is still listed, remove it
           if (edittedNodes.get('length') === 1 && edittedNodes[0].isDefault && Ember.isEmpty(edittedNodes[0].get('ipAddress'))) {
             edittedNodes.removeObject(edittedNodes[0]);
@@ -281,7 +281,7 @@ export default Ember.Controller.extend({
               var ipmi_password = node_data[3].trim();
               var mac_address = node_data[4].trim();
 
-              var newNode = me.Node.create({
+              var newNode = self.Node.create({
                 driver: driver,
                 ipAddress: ipmi_address,
                 ipmiUsername: ipmi_username,
@@ -289,7 +289,7 @@ export default Ember.Controller.extend({
                 nicMacAddress: mac_address,
               });
               edittedNodes.insertAt(0, newNode);
-              me.updateNodeSelection(newNode);
+              self.updateNodeSelection(newNode);
             }
           }
         };
@@ -305,9 +305,9 @@ export default Ember.Controller.extend({
   },
 
   disableRegisterNodesNext: function() {
-    var nodeCount = this.get('model').nodes.get('length');
+    var nodeCount = this.get('model.nodes.length');
     return (nodeCount < 2);
-  }.property('model.nodes.length'),
+  }.property('model.nodes.[]'),
 
   registerNewNodes: function() {
     var newNodes = this.get('newNodes');
@@ -325,10 +325,10 @@ export default Ember.Controller.extend({
   },
 
   updateAfterRegistration: function(resolve) {
-    var me = this;
+    var self = this;
     var deploymentId = this.get('deploymentId');
-    me.get('model').nodes.store.find('node', {deployment_id: deploymentId, reload: true}).then(function() {
-      me.get('model').profiles.store.find('flavor', {deployment_id: deploymentId, reload: true}).then(function () {
+    self.get('model').nodes.store.find('node', {deployment_id: deploymentId, reload: true}).then(function() {
+      self.get('model').profiles.store.find('flavor', {deployment_id: deploymentId, reload: true}).then(function () {
         if (resolve)
         {
           resolve();
@@ -356,25 +356,25 @@ export default Ember.Controller.extend({
       }
       else
       {
-        var me = this;
-        if (!me.get('introspectionInProgress'))
+        var self = this;
+        if (!self.get('introspectionInProgress'))
         {
-          me.startCheckingNodeIntrospection();
+          self.startCheckingNodeIntrospection();
         }
         else if (lastNode !== undefined) {
-          me.checkNodeIntrospection(lastNode);
+          self.checkNodeIntrospection(lastNode);
         }
       }
     }
   },
 
   startCheckingNodeIntrospection: function() {
-    var me = this;
-    var introspectionNodes = me.get('introspectionNodes');
+    var self = this;
+    var introspectionNodes = self.get('introspectionNodes');
     if (introspectionNodes.get('length') > 0) {
-      me.set('introspectionInProgress', true);
+      self.set('introspectionInProgress', true);
       introspectionNodes.forEach(function(node) {
-        me.checkNodeIntrospection(node);
+        self.checkNodeIntrospection(node);
       });
     }
     else
@@ -394,7 +394,7 @@ export default Ember.Controller.extend({
   },
 
   registerNode: function(node) {
-    var me = this;
+    var self = this;
     var driverInfo = {};
     if ( node.driver === 'pxe_ssh' ) {
       driverInfo = {
@@ -439,14 +439,14 @@ export default Ember.Controller.extend({
       },
       data: JSON.stringify({ 'node': createdNode })
     }).then(function(registeredNode) {
-        me.set('initRegInProcess', false);
-        me.addIntrospectionNode(registeredNode);
-        me.doNextNodeRegistration(registeredNode);
+        self.set('initRegInProcess', false);
+        self.addIntrospectionNode(registeredNode);
+        self.doNextNodeRegistration(registeredNode);
       }, function(reason) {
-            me.set('initRegInProcess', false);
-            node.errorMessage = node.ipAddress + ": " + me.getErrorMessageFromReason(reason);
-            me.get('errorNodes').pushObject(node);
-            me.doNextNodeRegistration();
+            self.set('initRegInProcess', false);
+            node.errorMessage = node.ipAddress + ": " + self.getErrorMessageFromReason(reason);
+            self.get('errorNodes').pushObject(node);
+            self.doNextNodeRegistration();
         }
     );
   },
@@ -471,16 +471,16 @@ export default Ember.Controller.extend({
   },
 
   checkNodeIntrospection: function(node) {
-    var me = this;
+    var self = this;
 
     var promiseFunction = function(resolve) {
       var checkForDone = function() {
         //ic-ajax request
         console.log('action: checkNodeIntrospection');
-        console.log('POST /fusor/api/openstack/deployments/' + me.get('deploymentId') + '/nodes/' + node.uuid + '/ready');
+        console.log('POST /fusor/api/openstack/deployments/' + self.get('deploymentId') + '/nodes/' + node.uuid + '/ready');
 
         request({
-          url: '/fusor/api/openstack/deployments/' + me.get('deploymentId') + '/nodes/' + node.uuid + '/ready',
+          url: '/fusor/api/openstack/deployments/' + self.get('deploymentId') + '/nodes/' + node.uuid + '/ready',
           type: 'GET',
           contentType: 'application/json'
         }).then(function(results) {
@@ -491,7 +491,7 @@ export default Ember.Controller.extend({
                   resolve({done: false});
                 }
                 else if (results.status === 500) {
-                  var error = me.getErrorMessageFromReason(results);
+                  var error = self.getErrorMessageFromReason(results);
                   if (error.indexOf('timeout') >= 0) {
                     resolve({done: false});
                   }
@@ -512,12 +512,12 @@ export default Ember.Controller.extend({
     var fulfill = function(results) {
       if (results.done)
       {
-        var introspectionNodes = me.get('introspectionNodes');
+        var introspectionNodes = self.get('introspectionNodes');
         introspectionNodes.removeObject(node);
-        me.set('introspectionNodes', introspectionNodes);
-        if (introspectionNodes.get('length') === 0 && me.get('newNodes.length') === 0) {
-          me.set('registrationInProgress', false);
-          me.set('introspectionInProgress', false);
+        self.set('introspectionNodes', introspectionNodes);
+        if (introspectionNodes.get('length') === 0 && self.get('newNodes.length') === 0) {
+          self.set('registrationInProgress', false);
+          self.set('introspectionInProgress', false);
         }
 
         if (results.errorResults) {
@@ -529,11 +529,11 @@ export default Ember.Controller.extend({
           {
             nodeID = node.driver_info.ipmi_address;
           }
-          node.errorMessage = nodeID + ": " + me.getErrorMessageFromReason(results.errorResults);
+          node.errorMessage = nodeID + ": " + self.getErrorMessageFromReason(results.errorResults);
           node.isIntrospectionError = true;
-          me.get('errorNodes').pushObject(node);
+          self.get('errorNodes').pushObject(node);
         }
-        me.updateAfterRegistration();
+        self.updateAfterRegistration();
       }
       else {
         var promise = new Ember.RSVP.Promise(promiseFunction);
