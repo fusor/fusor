@@ -424,6 +424,12 @@ table.fusor-table {
   padding: 0 !important;
   cursor: pointer; }
 
+.eye-icon {
+  position: relative;
+  top: -20px;
+  float: right;
+  padding-right: 10px; }
+
 /* wizard.scss */
 .page-header-rhci {
   background: #fafafa;
