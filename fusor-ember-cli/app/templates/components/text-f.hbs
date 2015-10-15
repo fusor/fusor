@@ -3,6 +3,10 @@
   {{input class="form-control" value=value placeholder=placeholder type=typeInput focus-out="showValidationErrors" id=cssId disabled=disabled autocomplete='off'
   maxlength="250"}}
 
+  {{#if isPassword}}
+          <i {{action 'showPassword'}} class="fa {{eyeIcon}} eye-icon"></i>
+  {{/if}}
+
   {{#if showValidationError}}
     {{#if validIsRequiredAndBlank}}
         <span class="error errorForValidation">
