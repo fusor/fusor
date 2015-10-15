@@ -24,14 +24,6 @@ export default Ember.Mixin.create({
     return this.get('model').getEach("id");
   }.property('model.[]'),
 
-  hostType: function() {
-    if (this.get('host.is_virtual')) {
-      return "Virtual";
-    } else {
-      return "Bare Metal";
-    }
-  }.property('host.is_virtual'),
-
   actions: {
     saveHostname: function() {
       var host = this.get('host');
