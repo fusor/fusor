@@ -18,23 +18,27 @@ export default Ember.Controller.extend({
 
   undercloudIPHelp: "The IP address that the already-installed Red Hat Enterprise Linux OpenStack Platform undercloud is running on.",
 
-  deployed: Ember.computed.notEmpty("model.openstack_undercloud_password"),
+  isDeployed: Ember.computed.notEmpty("model.openstack_undercloud_password"),
 
   deployDisabled: function() {
-    return this.get('deployed') && !this.get('isDirty');
-  }.property('deployed', 'isDirty'),
+    return ((this.get('isDeployed') && !this.get('isDirty')) ||
+            Ember.isBlank(this.get('undercloudIP')) ||
+            Ember.isBlank(this.get('sshUser')) ||
+            Ember.isBlank(this.get('sshPassword'))
+           );
+  }.property('isDeployed', 'isDirty', 'undercloudIP', 'sshUser', 'sshPassword'),
 
   disableDeployUndercloudNext: function() {
-    return !this.get('deployed');
-  }.property('deployed'),
+    return !this.get('isDeployed');
+  }.property('isDeployed'),
 
   disableTabRegisterNodes: function() {
-    return !this.get('deployed');
-  }.property('deployed'),
+    return !this.get('isDeployed');
+  }.property('isDeployed'),
 
   disableTabAssignNodes: function() {
-    return !this.get('deployed');
-  }.property('deployed'),
+    return !this.get('isDeployed');
+  }.property('isDeployed'),
 
   isDirty: false,
 
@@ -53,6 +57,7 @@ export default Ember.Controller.extend({
 
   actions: {
     resetCredentials: function() {
+      this.set('isDeployed', false);
       this.set('model.openstack_undercloud_password', null);
       return this.get('model').save();
     },
@@ -135,7 +140,7 @@ export default Ember.Controller.extend({
       if (isDone) {
         console.log("fulfill");
         self.set('showLoadingSpinner', false);
-        self.set('deployed', true);
+        self.set('isDeployed', true);
         self.set('isDirty', false);
       }
     };
