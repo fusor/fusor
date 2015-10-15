@@ -23,6 +23,7 @@ export default Ember.Route.extend({
   },
 
   deactivate: function() {
+    this.get('controller').set('showAlertMessage', false);
     return this.send('saveDeployment', null);
   }
 

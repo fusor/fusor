@@ -26,6 +26,10 @@ export default Ember.Route.extend(DeploymentNewSatelliteRouteMixin, {
         return controller.set('useDefaultOrgViewForEnv', false);
       }
     });
+  },
+
+  deactivate: function() {
+    this.get('controller').set('showAlertMessage', false);
   }
 
 });
