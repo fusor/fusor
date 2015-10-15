@@ -2,6 +2,14 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
+  didInsertElement: function(){
+    return Ember.$('[data-toggle="popover"]').popover();
+  },
+
+  willDestroyElement: function(){
+    return Ember.$('[data-toggle="popover"]').popover('destroy');
+  },
+
   labelClassSize: function () {
     return this.getWithDefault('labelSize', 'col-md-4');
   }.property(),
