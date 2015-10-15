@@ -402,16 +402,16 @@ export default Ember.Controller.extend({
         ssh_username: node.ipmiUsername,
         ssh_password: node.ipmiPassword,
         ssh_virt_type: 'virsh',
-        deploy_kernel: this.get('model.bmDeployKernelImage.image.id'),
-        deploy_ramdisk: this.get('model.bmDeployRamdiskImage.image.id')
+        deploy_kernel: this.get('bmDeployKernelImage.id'),
+        deploy_ramdisk: this.get('bmDeployRamdiskImage.id')
       };
     } else if (node.driver === 'pxe_ipmitool')  {
       driverInfo = {
         ipmi_address: node.ipAddress,
         ipmi_username: node.ipmiUsername,
         ipmi_password: node.ipmiPassword,
-        deploy_kernel: this.get('model.bmDeployKernelImage.image.id'),
-        deploy_ramdisk: this.get('model.bmDeployRamdiskImage.image.id')
+        deploy_kernel: this.get('bmDeployKernelImage.id'),
+        deploy_ramdisk: this.get('bmDeployRamdiskImage.id')
       };
     }
     var createdNode = {
