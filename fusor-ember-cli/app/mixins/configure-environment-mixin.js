@@ -23,8 +23,9 @@ export default Ember.Mixin.create({
   showAlertMessage: false,
 
   envLabelName: function() {
-    if(this.get('name')) {
-      return this.get('name').underscore();
+    if (this.get('name')) {
+      var label = this.get('name').underscore();
+      return label.replace(/[^A-Z0-9]/ig, "_");
     }
   }.property('name'),
   label: Ember.computed.alias("envLabelName"),
