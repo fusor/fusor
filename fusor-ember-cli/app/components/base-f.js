@@ -3,11 +3,11 @@ import Ember from 'ember';
 export default Ember.Component.extend({
 
   labelClassSize: function () {
-    return this.getWithDefault('labelSize', 'col-md-4');
+    return this.getWithDefault('labelSize', 'col-lg-2 col-md-3 col-sm-5');
   }.property(),
 
   inputClassSize: function () {
-    return this.getWithDefault('inputSize', 'col-md-4');
+    return this.getWithDefault('inputSize', 'col-lg-4 col-md-6 col-sm-7');
   }.property(),
 
   showUnits: function() {
