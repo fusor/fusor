@@ -212,6 +212,28 @@ define('fusor-ember-cli/adapters/subscription', ['exports', 'ember-data', 'ember
     });
 
 });
+define('fusor-ember-cli/adapters/undercloud', ['exports', 'ember-data'], function (exports, DS) {
+
+    'use strict';
+
+    exports['default'] = DS['default'].ActiveModelAdapter.extend({
+        buildURL: function buildURL(type, query) {
+            alert(this.controllerFor('deployment'));
+            var url = '/fusor/api/openstack/deployments/' + query['deployment_id'] + '/underclouds';
+            return url;
+        }
+
+    });
+    // createRecord: function(store, type, snapshot) {
+    //   var data = {};
+    //   var serializer = store.serializerFor(type.typeKey);
+
+    //   serializer.serializeIntoHash(data, type, snapshot, { includeId: true });
+
+    //   return this.ajax(this.buildURL(type.typeKey, null, snapshot), "POST", { data: data });
+    // },
+
+});
 define('fusor-ember-cli/app', ['exports', 'ember', 'ember/resolver', 'ember/load-initializers', 'fusor-ember-cli/config/environment'], function (exports, Ember, Resolver, loadInitializers, config) {
 
   'use strict';
@@ -1670,7 +1692,7 @@ define('fusor-ember-cli/controllers/application', ['exports', 'ember'], function
   });
 
 });
-define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember'], function (exports, Ember) {
+define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'ic-ajax'], function (exports, Ember, request) {
 
   'use strict';
 
@@ -1767,7 +1789,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember'], functio
 
     doAssignRole: function doAssignRole(plan, role, profile) {
       var data;
-      var me = this;
+      var self = this;
 
       if (profile == null) {
         var unassignedRoles = this.get('unassignedRoles');
@@ -1780,33 +1802,32 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember'], functio
         data = { 'role_name': role.get('name'), 'flavor_name': profile.get('name') };
       }
 
-      me.set('loadingSpinnerText', "Loading...");
-      me.set('showLoadingSpinner', true);
+      self.set('loadingSpinnerText', "Loading...");
+      self.set('showLoadingSpinner', true);
       var token = Ember['default'].$('meta[name="csrf-token"]').attr('content');
-
-      Ember['default'].$.ajax({
-        url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_role_flavor',
+      //ic-ajax request
+      console.log('PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_role_flavor');
+      request['default']({
+        url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_role_flavor',
         type: 'PUT',
         headers: {
           "Accept": "application/json",
           "Content-Type": "application/json",
           "X-CSRF-Token": token
         },
-        data: JSON.stringify(data),
-        success: function success(result) {
-          me.set('showLoadingSpinner', false);
-          console.log('SUCCESS');
-          me.store.push('deployment_plan', me.store.normalize('deployment_plan', result.deployment_plan));
-        },
-        error: function error(_error) {
-          console.log('ERROR');
-          console.log(_error);
-          // TODO: Remove the reload call once we determine how to get around the failure
-          //       that appears to be due to port forwarding. But make sure to leave the show spinner setting.
-          me.get('model').plan.reload().then(function () {
-            me.set('showLoadingSpinner', false);
-          });
-        }
+        data: JSON.stringify(data)
+      }).then(function (result) {
+        self.set('showLoadingSpinner', false);
+        console.log('SUCCESS');
+        self.store.push('deployment_plan', self.store.normalize('deployment_plan', result.deployment_plan));
+      }, function (error) {
+        console.log('ERROR');
+        console.log(error);
+        // TODO: Remove the reload call once we determine how to get around the failure
+        //       that appears to be due to port forwarding. But make sure to leave the show spinner setting.
+        self.get('model').plan.reload().then(function () {
+          self.set('showLoadingSpinner', false);
+        });
       });
     },
 
@@ -1898,7 +1919,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember'], functio
       },
 
       saveRole: function saveRole() {
-        var me = this;
+        var self = this;
         var plan = this.get('model.plan');
         var role = this.get('edittedRole');
 
@@ -1909,65 +1930,63 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember'], functio
         });
         var token = Ember['default'].$('meta[name="csrf-token"]').attr('content');
 
-        me.set('loadingSpinnerText', "Saving...");
-        me.set('showLoadingSpinner', true);
-        Ember['default'].$.ajax({
-          url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_parameters',
+        self.set('loadingSpinnerText', "Saving...");
+        self.set('showLoadingSpinner', true);
+        console.log('action: saveRole, PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_parameters');
+        //ic-ajax request
+        request['default']({
+          url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_parameters',
           type: 'PUT',
           headers: {
             "Accept": "application/json",
             "Content-Type": "application/json",
             "X-CSRF-Token": token
           },
-          data: JSON.stringify({ 'parameters': params }),
-          success: function success() {
-            console.log('SUCCESS');
-            me.store.find('deployment-plan', deploymentId).then(function (result) {
-              me.set('model.plan', result);
-              me.set('showLoadingSpinner', false);
-            });
-          },
-          error: function error(_error2) {
-            console.log('ERROR');
-            console.log(_error2);
-            me.set('showLoadingSpinner', false);
-          }
+          data: JSON.stringify({ 'parameters': params })
+        }).then(function () {
+          console.log('SUCCESS');
+          self.store.find('deployment-plan', deploymentId).then(function (result) {
+            self.set('model.plan', result);
+            self.set('showLoadingSpinner', false);
+          });
+        }, function (error) {
+          console.log('ERROR');
+          console.log(error);
+          self.set('showLoadingSpinner', false);
         });
-
         this.closeEditDialog();
       },
 
       setRoleCount: function setRoleCount(role, count) {
-        var me = this;
+        var self = this;
         var plan = this.get('model.plan');
         var data = { 'role_name': role.get('name'), 'count': count };
         var deploymentId = this.get('deploymentId');
         var token = Ember['default'].$('meta[name="csrf-token"]').attr('content');
 
-        me.set('loadingSpinnerText', "Saving...");
-        me.set('showLoadingSpinner', true);
-
-        Ember['default'].$.ajax({
-          url: '/fusor/api/openstack/deployments/' + deploymentId + '/deployment_plans/' + plan.get('id') + '/update_role_count',
+        self.set('loadingSpinnerText', "Saving...");
+        self.set('showLoadingSpinner', true);
+        //ic-ajax request
+        console.log('PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_role_count');
+        request['default']({
+          url: '/fusor/api/openstack/deployments/' + deploymentId + '/deployment_plans/overcloud/update_role_count',
           type: 'PUT',
           data: JSON.stringify(data),
           headers: {
             "Accept": "application/json",
             "Content-Type": "application/json",
             "X-CSRF-Token": token
-          },
-          success: function success(result) {
-            console.log('SUCCESS');
-            me.store.find('deployment-plan', deploymentId).then(function (result) {
-              me.set('model.plan', result);
-              me.set('showLoadingSpinner', false);
-            });
-          },
-          error: function error(_error3) {
-            console.log('ERROR');
-            console.log(_error3);
-            me.set('showLoadingSpinner', false);
           }
+        }).then(function (result) {
+          console.log('SUCCESS');
+          self.store.find('deployment-plan', deploymentId).then(function (result) {
+            self.set('model.plan', result);
+            self.set('showLoadingSpinner', false);
+          });
+        }, function (error) {
+          console.log('ERROR');
+          console.log(error);
+          self.set('showLoadingSpinner', false);
         });
       },
 
@@ -2033,7 +2052,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember'], functio
       },
 
       saveGlobalServiceConfig: function saveGlobalServiceConfig() {
-        var me = this;
+        var self = this;
         var plan = this.get('model.plan');
 
         var params = [];
@@ -2042,26 +2061,27 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember'], functio
         });
         var token = Ember['default'].$('meta[name="csrf-token"]').attr('content');
 
-        me.set('loadingSpinnerText', "Saving...");
-        me.set('showLoadingSpinner', true);
-        Ember['default'].$.ajax({
-          url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/' + plan.get('id') + '/update_parameters',
+        self.set('loadingSpinnerText', "Saving...");
+        self.set('showLoadingSpinner', true);
+
+        //ic-ajax request
+        console.log('action: saveGlobalServiceConfig, PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_parameters');
+        request['default']({
+          url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_parameters',
           type: 'PUT',
           headers: {
             "Accept": "application/json",
             "Content-Type": "application/json",
             "X-CSRF-Token": token
           },
-          data: JSON.stringify({ 'parameters': params }),
-          success: function success() {
-            console.log('SUCCESS');
-            me.set('showLoadingSpinner', false);
-          },
-          error: function error(_error4) {
-            console.log('ERROR');
-            console.log(_error4);
-            me.set('showLoadingSpinner', false);
-          }
+          data: JSON.stringify({ 'parameters': params })
+        }).then(function () {
+          console.log('SUCCESS');
+          self.set('showLoadingSpinner', false);
+        }, function (error) {
+          console.log('ERROR');
+          console.log(error);
+          self.set('showLoadingSpinner', false);
         });
 
         this.closeGlobalServiceConfigDialog();
@@ -2893,7 +2913,7 @@ define('fusor-ember-cli/controllers/openstack', ['exports', 'ember'], function (
   });
 
 });
-define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember'], function (exports, Ember) {
+define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-ajax'], function (exports, Ember, request) {
 
   'use strict';
 
@@ -3142,13 +3162,13 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember'], funct
       csvFileChosen: function csvFileChosen() {
         var fileInput = this.getCSVFileInput();
         var file = fileInput.files[0];
-        var me = this;
+        var self = this;
         if (file) {
           var reader = new FileReader();
           reader.onload = function () {
             var text = reader.result;
             var data = $.csv.toArrays(text);
-            var edittedNodes = me.get('edittedNodes');
+            var edittedNodes = self.get('edittedNodes');
             // If the default added node is still listed, remove it
             if (edittedNodes.get('length') === 1 && edittedNodes[0].isDefault && Ember['default'].isEmpty(edittedNodes[0].get('ipAddress'))) {
               edittedNodes.removeObject(edittedNodes[0]);
@@ -3163,7 +3183,7 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember'], funct
                 var ipmi_password = node_data[3].trim();
                 var mac_address = node_data[4].trim();
 
-                var newNode = me.Node.create({
+                var newNode = self.Node.create({
                   driver: driver,
                   ipAddress: ipmi_address,
                   ipmiUsername: ipmi_username,
@@ -3171,7 +3191,7 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember'], funct
                   nicMacAddress: mac_address
                 });
                 edittedNodes.insertAt(0, newNode);
-                me.updateNodeSelection(newNode);
+                self.updateNodeSelection(newNode);
               }
             }
           };
@@ -3187,9 +3207,9 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember'], funct
     },
 
     disableRegisterNodesNext: (function () {
-      var nodeCount = this.get('model').nodes.get('length');
+      var nodeCount = this.get('model.nodes.length');
       return nodeCount < 2;
-    }).property('model.nodes.length'),
+    }).property('model.nodes.[]'),
 
     registerNewNodes: function registerNewNodes() {
       var newNodes = this.get('newNodes');
@@ -3205,10 +3225,10 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember'], funct
     },
 
     updateAfterRegistration: function updateAfterRegistration(resolve) {
-      var me = this;
+      var self = this;
       var deploymentId = this.get('deploymentId');
-      me.get('model').nodes.store.find('node', { deployment_id: deploymentId, reload: true }).then(function () {
-        me.get('model').profiles.store.find('flavor', { deployment_id: deploymentId, reload: true }).then(function () {
+      self.get('model').nodes.store.find('node', { deployment_id: deploymentId, reload: true }).then(function () {
+        self.get('model').profiles.store.find('flavor', { deployment_id: deploymentId, reload: true }).then(function () {
           if (resolve) {
             resolve();
           }
@@ -3230,23 +3250,23 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember'], funct
           this.set('newNodes', remaining.slice(0, lastIndex));
           this.registerNode(nextNode);
         } else {
-          var me = this;
-          if (!me.get('introspectionInProgress')) {
-            me.startCheckingNodeIntrospection();
+          var self = this;
+          if (!self.get('introspectionInProgress')) {
+            self.startCheckingNodeIntrospection();
           } else if (lastNode !== undefined) {
-            me.checkNodeIntrospection(lastNode);
+            self.checkNodeIntrospection(lastNode);
           }
         }
       }
     },
 
     startCheckingNodeIntrospection: function startCheckingNodeIntrospection() {
-      var me = this;
-      var introspectionNodes = me.get('introspectionNodes');
+      var self = this;
+      var introspectionNodes = self.get('introspectionNodes');
       if (introspectionNodes.get('length') > 0) {
-        me.set('introspectionInProgress', true);
+        self.set('introspectionInProgress', true);
         introspectionNodes.forEach(function (node) {
-          me.checkNodeIntrospection(node);
+          self.checkNodeIntrospection(node);
         });
       } else {
         this.set('registrationInProgress', false);
@@ -3264,7 +3284,7 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember'], funct
     },
 
     registerNode: function registerNode(node) {
-      var me = this;
+      var self = this;
       var driverInfo = {};
       if (node.driver === 'pxe_ssh') {
         driverInfo = {
@@ -3272,16 +3292,16 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember'], funct
           ssh_username: node.ipmiUsername,
           ssh_password: node.ipmiPassword,
           ssh_virt_type: 'virsh',
-          deploy_kernel: this.get('model.bmDeployKernelImage.image.id'),
-          deploy_ramdisk: this.get('model.bmDeployRamdiskImage.image.id')
+          deploy_kernel: this.get('bmDeployKernelImage.id'),
+          deploy_ramdisk: this.get('bmDeployRamdiskImage.id')
         };
       } else if (node.driver === 'pxe_ipmitool') {
         driverInfo = {
           ipmi_address: node.ipAddress,
           ipmi_username: node.ipmiUsername,
           ipmi_password: node.ipmiPassword,
-          deploy_kernel: this.get('model.bmDeployKernelImage.image.id'),
-          deploy_ramdisk: this.get('model.bmDeployRamdiskImage.image.id')
+          deploy_kernel: this.get('bmDeployKernelImage.id'),
+          deploy_ramdisk: this.get('bmDeployRamdiskImage.id')
         };
       }
       var createdNode = {
@@ -3295,7 +3315,11 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember'], funct
       var token = Ember['default'].$('meta[name="csrf-token"]').attr('content');
 
       this.set('initRegInProcess', true);
-      Ember['default'].$.ajax({
+
+      //ic-ajax request
+      console.log('action: registerNode');
+      console.log('POST /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/nodes');
+      request['default']({
         url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/nodes',
         type: 'POST',
         headers: {
@@ -3303,18 +3327,16 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember'], funct
           "Content-Type": "application/json",
           "X-CSRF-Token": token
         },
-        data: JSON.stringify({ 'node': createdNode }),
-        success: function success(registeredNode) {
-          me.set('initRegInProcess', false);
-          me.addIntrospectionNode(registeredNode);
-          me.doNextNodeRegistration(registeredNode);
-        },
-        error: function error(reason) {
-          me.set('initRegInProcess', false);
-          node.errorMessage = node.ipAddress + ": " + me.getErrorMessageFromReason(reason);
-          me.get('errorNodes').pushObject(node);
-          me.doNextNodeRegistration();
-        }
+        data: JSON.stringify({ 'node': createdNode })
+      }).then(function (registeredNode) {
+        self.set('initRegInProcess', false);
+        self.addIntrospectionNode(registeredNode);
+        self.doNextNodeRegistration(registeredNode);
+      }, function (reason) {
+        self.set('initRegInProcess', false);
+        node.errorMessage = node.ipAddress + ": " + self.getErrorMessageFromReason(reason);
+        self.get('errorNodes').pushObject(node);
+        self.doNextNodeRegistration();
       });
     },
 
@@ -3337,31 +3359,33 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember'], funct
     },
 
     checkNodeIntrospection: function checkNodeIntrospection(node) {
-      var me = this;
+      var self = this;
 
       var promiseFunction = function promiseFunction(resolve) {
         var checkForDone = function checkForDone() {
-          Ember['default'].$.ajax({
-            url: '/fusor/api/openstack/deployments/' + me.get('deploymentId') + '/nodes/' + node.uuid + '/ready',
+          //ic-ajax request
+          console.log('action: checkNodeIntrospection');
+          console.log('POST /fusor/api/openstack/deployments/' + self.get('deploymentId') + '/nodes/' + node.uuid + '/ready');
+
+          request['default']({
+            url: '/fusor/api/openstack/deployments/' + self.get('deploymentId') + '/nodes/' + node.uuid + '/ready',
             type: 'GET',
-            contentType: 'application/json',
-            success: function success(results) {
-              resolve({ done: results.node.ready });
-            },
-            error: function error(results) {
-              if (results.status === 0) {
-                // Known problem during introspection, return response is empty, keep trying
+            contentType: 'application/json'
+          }).then(function (results) {
+            resolve({ done: results.node.ready });
+          }, function (results) {
+            if (results.status === 0) {
+              // Known problem during introspection, return response is empty, keep trying
+              resolve({ done: false });
+            } else if (results.status === 500) {
+              var error = self.getErrorMessageFromReason(results);
+              if (error.indexOf('timeout') >= 0) {
                 resolve({ done: false });
-              } else if (results.status === 500) {
-                var error = me.getErrorMessageFromReason(results);
-                if (error.indexOf('timeout') >= 0) {
-                  resolve({ done: false });
-                } else {
-                  resolve({ done: true, errorResults: results });
-                }
               } else {
                 resolve({ done: true, errorResults: results });
               }
+            } else {
+              resolve({ done: true, errorResults: results });
             }
           });
         };
@@ -3371,12 +3395,12 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember'], funct
 
       var fulfill = function fulfill(results) {
         if (results.done) {
-          var introspectionNodes = me.get('introspectionNodes');
+          var introspectionNodes = self.get('introspectionNodes');
           introspectionNodes.removeObject(node);
-          me.set('introspectionNodes', introspectionNodes);
-          if (introspectionNodes.get('length') === 0 && me.get('newNodes.length') === 0) {
-            me.set('registrationInProgress', false);
-            me.set('introspectionInProgress', false);
+          self.set('introspectionNodes', introspectionNodes);
+          if (introspectionNodes.get('length') === 0 && self.get('newNodes.length') === 0) {
+            self.set('registrationInProgress', false);
+            self.set('introspectionInProgress', false);
           }
 
           if (results.errorResults) {
@@ -3386,11 +3410,11 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember'], funct
             } else if (node.driver === 'pxe_ipmitool') {
               nodeID = node.driver_info.ipmi_address;
             }
-            node.errorMessage = nodeID + ": " + me.getErrorMessageFromReason(results.errorResults);
+            node.errorMessage = nodeID + ": " + self.getErrorMessageFromReason(results.errorResults);
             node.isIntrospectionError = true;
-            me.get('errorNodes').pushObject(node);
+            self.get('errorNodes').pushObject(node);
           }
-          me.updateAfterRegistration();
+          self.updateAfterRegistration();
         } else {
           var promise = new Ember['default'].RSVP.Promise(promiseFunction);
           promise.then(fulfill);
@@ -4330,7 +4354,7 @@ define('fusor-ember-cli/controllers/subscriptions/select-subscriptions', ['expor
   });
 
 });
-define('fusor-ember-cli/controllers/undercloud-deploy', ['exports', 'ember'], function (exports, Ember) {
+define('fusor-ember-cli/controllers/undercloud-deploy', ['exports', 'ember', 'ic-ajax'], function (exports, Ember, request) {
 
   'use strict';
 
@@ -4351,23 +4375,23 @@ define('fusor-ember-cli/controllers/undercloud-deploy', ['exports', 'ember'], fu
 
     undercloudIPHelp: "The IP address that the already-installed Red Hat Enterprise Linux OpenStack Platform undercloud is running on.",
 
-    deployed: Ember['default'].computed.notEmpty("model.openstack_undercloud_password"),
+    isDeployed: Ember['default'].computed.notEmpty("model.openstack_undercloud_password"),
 
     deployDisabled: (function () {
-      return this.get('deployed') && !this.get('isDirty');
-    }).property('deployed', 'isDirty'),
+      return this.get('isDeployed') && !this.get('isDirty') || Ember['default'].isBlank(this.get('undercloudIP')) || Ember['default'].isBlank(this.get('sshUser')) || Ember['default'].isBlank(this.get('sshPassword'));
+    }).property('isDeployed', 'isDirty', 'undercloudIP', 'sshUser', 'sshPassword'),
 
     disableDeployUndercloudNext: (function () {
-      return !this.get('deployed');
-    }).property('deployed'),
+      return !this.get('isDeployed');
+    }).property('isDeployed'),
 
     disableTabRegisterNodes: (function () {
-      return !this.get('deployed');
-    }).property('deployed'),
+      return !this.get('isDeployed');
+    }).property('isDeployed'),
 
     disableTabAssignNodes: (function () {
-      return !this.get('deployed');
-    }).property('deployed'),
+      return !this.get('isDeployed');
+    }).property('isDeployed'),
 
     isDirty: false,
 
@@ -4385,6 +4409,7 @@ define('fusor-ember-cli/controllers/undercloud-deploy', ['exports', 'ember'], fu
 
     actions: {
       resetCredentials: function resetCredentials() {
+        this.set('isDeployed', false);
         this.set('model.openstack_undercloud_password', null);
         return this.get('model').save();
       },
@@ -4403,7 +4428,11 @@ define('fusor-ember-cli/controllers/undercloud-deploy', ['exports', 'ember'], fu
         var promiseFunction = function promiseFunction(resolve) {
           self.set('deploymentError', null);
           var token = Ember['default'].$('meta[name="csrf-token"]').attr('content');
-          Ember['default'].$.ajax({
+
+          //ic-ajax request
+          console.log('action: deployUndercloud');
+          console.log('POST /fusor/api/openstack/deployments/' + self.get('deploymentId') + '/underclouds');
+          request['default']({
             url: '/fusor/api/openstack/deployments/' + self.get('deploymentId') + '/underclouds',
             type: 'POST',
             data: JSON.stringify(data),
@@ -4411,52 +4440,48 @@ define('fusor-ember-cli/controllers/undercloud-deploy', ['exports', 'ember'], fu
               "Accept": "application/json",
               "Content-Type": "application/json",
               "X-CSRF-Token": token
-            },
-            success: function success(response) {
-              promise.then(fulfill);
-              console.log('create success');
-              console.log(response);
-              Ember['default'].run.later(checkForDone, 3000);
-            },
-            error: function error(_error) {
-              self.set('deploymentError', _error.responseJSON.errors);
-              self.set('showLoadingSpinner', false);
-              console.log('create failed');
-              console.log(_error);
             }
+          }).then(function (response) {
+            promise.then(fulfill);
+            console.log('create success');
+            console.log(response);
+            Ember['default'].run.later(checkForDone, 3000);
+          }, function (error) {
+            self.set('deploymentError', error.responseJSON.errors);
+            self.set('showLoadingSpinner', false);
+            console.log('create failed');
+            console.log(error);
           });
 
           var checkForDone = function checkForDone() {
             console.log("running check for done for id " + self.get('deploymentId'));
-            Ember['default'].$.ajax({
+            request['default']({
               url: '/fusor/api/openstack/deployments/' + self.get('deploymentId') + '/underclouds/' + self.get('deploymentId'),
               type: 'GET',
-              contentType: 'application/json',
-              success: function success(response) {
-                console.log('api check success');
-                console.log(response);
-                if (response['deployed'] || response['failed']) {
-                  console.log('detection finished');
-                  if (response['failed']) {
-                    console.log('detection failed');
-                    self.set('deploymentError', 'Please check foreman logs.');
-                    self.set('showLoadingSpinner', false);
-                  } else {
-                    console.log('detection success');
-                    self.set('deploymentError', null);
-                    resolve(true);
-                  }
+              contentType: 'application/json'
+            }).then(function (response) {
+              console.log('api check success');
+              console.log(response);
+              if (response['deployed'] || response['failed']) {
+                console.log('detection finished');
+                if (response['failed']) {
+                  console.log('detection failed');
+                  self.set('deploymentError', 'Please check foreman logs.');
+                  self.set('showLoadingSpinner', false);
                 } else {
-                  console.log('detection ongoing');
-                  Ember['default'].run.later(checkForDone, 3000);
+                  console.log('detection success');
+                  self.set('deploymentError', null);
+                  resolve(true);
                 }
-              },
-              error: function error(_error2) {
-                console.log('api check error');
-                console.log(_error2);
-                self.set('deploymentError', 'Status check failed');
-                self.set('showLoadingSpinner', false);
+              } else {
+                console.log('detection ongoing');
+                Ember['default'].run.later(checkForDone, 3000);
               }
+            }, function (error) {
+              console.log('api check error');
+              console.log(error);
+              self.set('deploymentError', 'Status check failed');
+              self.set('showLoadingSpinner', false);
             });
           };
         };
@@ -4465,7 +4490,7 @@ define('fusor-ember-cli/controllers/undercloud-deploy', ['exports', 'ember'], fu
           if (isDone) {
             console.log("fulfill");
             self.set('showLoadingSpinner', false);
-            self.set('deployed', true);
+            self.set('isDeployed', true);
             self.set('isDirty', false);
           }
         };
@@ -5878,7 +5903,22 @@ define('fusor-ember-cli/models/image', ['exports', 'ember-data'], function (expo
   'use strict';
 
   exports['default'] = DS['default'].Model.extend({
-    name: DS['default'].attr('string')
+    name: DS['default'].attr('string'),
+    checksum: DS['default'].attr('string'),
+    container_format: DS['default'].attr('string'),
+    deleted: DS['default'].attr('boolean'),
+    deleted_at: DS['default'].attr('date'),
+    disk_format: DS['default'].attr('string'),
+    is_public: DS['default'].attr('boolean'),
+    min_disk: DS['default'].attr('number'),
+    min_ram: DS['default'].attr('number'),
+    owner: DS['default'].attr('string'),
+    'protected': DS['default'].attr('boolean'),
+    size: DS['default'].attr('number'),
+    status: DS['default'].attr('string'),
+    updated_at: DS['default'].attr('date'),
+    virtual_size: DS['default'].attr('string')
+
   });
 
 });
@@ -6108,6 +6148,13 @@ define('fusor-ember-cli/models/subscription', ['exports', 'ember-data'], functio
     deployment: DS['default'].belongsTo('deployment', { inverse: 'subscriptions', async: true })
 
   });
+
+});
+define('fusor-ember-cli/models/undercloud', ['exports', 'ember-data'], function (exports, DS) {
+
+	'use strict';
+
+	exports['default'] = DS['default'].Model.extend({});
 
 });
 define('fusor-ember-cli/router', ['exports', 'ember', 'fusor-ember-cli/config/environment'], function (exports, Ember, config) {
@@ -6912,15 +6959,21 @@ define('fusor-ember-cli/routes/register-nodes', ['exports', 'ember'], function (
       var deploymentId = this.modelFor('deployment').get('id');
       return Ember['default'].RSVP.hash({
         nodes: this.store.find('node', { deployment_id: deploymentId }),
-        profiles: this.store.find('flavor', { deployment_id: deploymentId }),
-        bmDeployKernelImage: Ember['default'].$.getJSON('/fusor/api/openstack/deployments/' + deploymentId + '/images/show_by_name/bm-deploy-kernel'),
-        bmDeployRamdiskImage: Ember['default'].$.getJSON('/fusor/api/openstack/deployments/' + deploymentId + '/images/show_by_name/bm-deploy-ramdisk')
+        profiles: this.store.find('flavor', { deployment_id: deploymentId })
       });
     },
 
     setupController: function setupController(controller, model) {
       controller.set('model', model);
       controller.set('showAlertMessage', false);
+      var self = this;
+      var deploymentId = this.modelFor('deployment').get('id');
+      this.store.find('image', { deployment_id: deploymentId }).then(function (results) {
+        var bmDeployKernelImage = results.findBy('name', 'bm-deploy-kernel');
+        var bmDeployRamdiskImage = results.findBy('name', 'bm-deploy-ramdisk');
+        controller.set('bmDeployKernelImage', bmDeployKernelImage);
+        controller.set('bmDeployRamdiskImage', bmDeployRamdiskImage);
+      });
     },
 
     deactivate: function deactivate() {
@@ -38227,7 +38280,7 @@ define('fusor-ember-cli/templates/undercloud-deploy', ['exports'], function (exp
         var morph1 = dom.createMorphAt(fragment,2,2,contextualElement);
         var morph2 = dom.createMorphAt(fragment,4,4,contextualElement);
         dom.insertBoundary(fragment, 0);
-        block(env, morph0, context, "unless", [get(env, context, "deployed")], {}, child0, child1);
+        block(env, morph0, context, "unless", [get(env, context, "isDeployed")], {}, child0, child1);
         inline(env, morph1, context, "cancel-back-next", [], {"backRouteName": get(env, context, "backRouteNameUndercloud"), "disableBack": false, "nextRouteName": "register-nodes", "disableNext": get(env, context, "disableDeployUndercloudNext"), "parentController": get(env, context, "controller")});
         inline(env, morph2, context, "loading-spinner", [], {"show": get(env, context, "showLoadingSpinner"), "text": get(env, context, "loadingSpinnerText")});
         return fragment;
@@ -38581,6 +38634,16 @@ define('fusor-ember-cli/tests/adapters/subscription.jshint', function () {
   module('JSHint - adapters');
   test('adapters/subscription.js should pass jshint', function() { 
     ok(true, 'adapters/subscription.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/adapters/undercloud.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - adapters');
+  test('adapters/undercloud.js should pass jshint', function() { 
+    ok(true, 'adapters/undercloud.js should pass jshint.'); 
   });
 
 });
@@ -39971,6 +40034,16 @@ define('fusor-ember-cli/tests/models/subscription.jshint', function () {
   });
 
 });
+define('fusor-ember-cli/tests/models/undercloud.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - models');
+  test('models/undercloud.js should pass jshint', function() { 
+    ok(true, 'models/undercloud.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/router.jshint', function () {
 
   'use strict';
@@ -40887,6 +40960,32 @@ define('fusor-ember-cli/tests/unit/adapters/session-portal-test.jshint', functio
   module('JSHint - unit/adapters');
   test('unit/adapters/session-portal-test.js should pass jshint', function() { 
     ok(true, 'unit/adapters/session-portal-test.js should pass jshint.'); 
+  });
+
+});
+define('fusor-ember-cli/tests/unit/adapters/undercloud-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('adapter:undercloud', 'Unit | Adapter | undercloud', {
+    // Specify the other units that are required for this test.
+    // needs: ['serializer:foo']
+  });
+
+  // Replace this with your real tests.
+  ember_qunit.test('it exists', function (assert) {
+    var adapter = this.subject();
+    assert.ok(adapter);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/adapters/undercloud-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/adapters');
+  test('unit/adapters/undercloud-test.js should pass jshint', function() { 
+    ok(true, 'unit/adapters/undercloud-test.js should pass jshint.'); 
   });
 
 });
@@ -42813,6 +42912,32 @@ define('fusor-ember-cli/tests/unit/models/subscription-test.jshint', function ()
   });
 
 });
+define('fusor-ember-cli/tests/unit/models/undercloud-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForModel('undercloud', 'Unit | Model | undercloud', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  ember_qunit.test('it exists', function (assert) {
+    var model = this.subject();
+    // var store = this.store();
+    assert.ok(!!model);
+  });
+
+});
+define('fusor-ember-cli/tests/unit/models/undercloud-test.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - unit/models');
+  test('unit/models/undercloud-test.js should pass jshint', function() { 
+    ok(true, 'unit/models/undercloud-test.js should pass jshint.'); 
+  });
+
+});
 define('fusor-ember-cli/tests/unit/routes/application-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -44461,13 +44586,13 @@ define('fusor-ember-cli/tests/unit/serializers/pool-test.jshint', function () {
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.a144e0ca"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.c075e4e8"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.a144e0ca"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.c075e4e8"});
 }
 
 /* jshint ignore:end */
