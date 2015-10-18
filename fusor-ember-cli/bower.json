@@ -14,7 +14,7 @@
     "loader.js": "ember-cli/loader.js#3.2.0",
     "qunit": "~1.17.1",
     "bootstrap-sass": "~3.3.4",
-    "patternfly": "git://github.com/patternfly/patternfly",
+    "patternfly": "git://github.com/patternfly/patternfly#2.4.0",
     "ember-cli-moment-shim": "~0.1.0",
     "matchmedia": "0.2.0"
   }
