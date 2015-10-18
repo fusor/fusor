@@ -20,7 +20,12 @@ var app = new EmberApp({
 // please specify an object with the list of modules as keys
 // along with the exports of each module as its value.
 
+// these app.import lines are used in 'master' branch
+app.import('bower_components/patternfly/components/bootstrap/js/tooltip.js');
+app.import('bower_components/patternfly/components/bootstrap/js/popover.js');
 app.import('bower_components/jquery-csv/src/jquery.csv.js');
 app.import('bower_components/matchmedia/matchMedia.js');
+
+// any app.import lines below are should ONLY appear in development ember-cli branches and not in 'master branch'
 
 module.exports = app.toTree();
