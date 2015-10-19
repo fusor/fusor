@@ -63,7 +63,7 @@ export default Ember.Controller.extend({
   }.property('errorNodes.[]'),
 
   registrationErrorMessage: function() {
-    var count = this.get('errorNodes').length;
+    var count = this.get('errorNodes.length');
     if (count === 1) {
       return '1 node not registered';
     }
@@ -102,7 +102,7 @@ export default Ember.Controller.extend({
   }.property('successNodesLength', 'errorNodes.[]'),
 
   nodeRegTotal: function() {
-    var total = this.get('nodeRegComplete') + this.get('newNodes').length + this.get('introspectionNodes').length;
+    var total = this.get('nodeRegComplete') + this.get('newNodes.length') + this.get('introspectionNodes.length');
 
     // During the initial registration process there is a node in limbo...
     if (this.get('initRegInProcess')) {
@@ -115,7 +115,7 @@ export default Ember.Controller.extend({
   nodeRegPercentComplete: function() {
     var nodeRegTotal = this.get('nodeRegTotal');
     var nodeRegComplete = this.get('nodeRegComplete');
-    var nodesIntrospection = this.get('introspectionNodes').length;
+    var nodesIntrospection = this.get('introspectionNodes.length');
 
     var numSteps = nodeRegTotal * 4;
     var stepsComplete = (nodeRegComplete * 4) + (nodesIntrospection * 1);
@@ -327,10 +327,9 @@ export default Ember.Controller.extend({
   updateAfterRegistration: function(resolve) {
     var self = this;
     var deploymentId = this.get('deploymentId');
-    self.get('model').nodes.store.find('node', {deployment_id: deploymentId, reload: true}).then(function() {
-      self.get('model').profiles.store.find('flavor', {deployment_id: deploymentId, reload: true}).then(function () {
-        if (resolve)
-        {
+    this.store.find('node', {deployment_id: deploymentId, reload: true}).then(function() {
+      self.store.find('flavor', {deployment_id: deploymentId, reload: true}).then(function () {
+        if (resolve) {
           resolve();
         }
       });
@@ -338,30 +337,23 @@ export default Ember.Controller.extend({
   },
 
   doNextNodeRegistration: function(lastNode) {
-    if (this.get('modalOpen') === true) {
+    if (this.get('modalOpen')) {
       this.set('registrationPaused', true);
-    }
-    else
-    {
+    } else {
       this.set('registrationPaused', false);
 
       var remaining = this.get('newNodes');
-      if (remaining && remaining.get('length') > 0)
-      {
+      if (remaining && remaining.get('length') > 0) {
         this.set('registrationInProgress', true);
         var lastIndex = remaining.get('length') - 1;
         var nextNode = remaining.objectAt(lastIndex);
         this.set('newNodes', remaining.slice(0, lastIndex));
         this.registerNode(nextNode);
-      }
-      else
-      {
+      } else {
         var self = this;
-        if (!self.get('introspectionInProgress'))
-        {
+        if (!self.get('introspectionInProgress')) {
           self.startCheckingNodeIntrospection();
-        }
-        else if (lastNode !== undefined) {
+        } else if (lastNode !== undefined) {
           self.checkNodeIntrospection(lastNode);
         }
       }
@@ -383,10 +375,6 @@ export default Ember.Controller.extend({
     }
   },
 
-  getImage: function(imageName) {
-    return Ember.$.getJSON('/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/images/show_by_name/' + imageName);
-  },
-
   addIntrospectionNode: function(node) {
     var introspectionNodes = this.get('introspectionNodes');
     introspectionNodes.pushObject(node);
@@ -396,31 +384,31 @@ export default Ember.Controller.extend({
   registerNode: function(node) {
     var self = this;
     var driverInfo = {};
-    if ( node.driver === 'pxe_ssh' ) {
+    if ( node.get('driver') === 'pxe_ssh' ) {
       driverInfo = {
-        ssh_address: node.ipAddress,
-        ssh_username: node.ipmiUsername,
-        ssh_password: node.ipmiPassword,
+        ssh_address: node.get('ipAddress'),
+        ssh_username: node.get('ipmiUsername'),
+        ssh_password: node.get('ipmiPassword'),
         ssh_virt_type: 'virsh',
         deploy_kernel: this.get('bmDeployKernelImage.id'),
         deploy_ramdisk: this.get('bmDeployRamdiskImage.id')
       };
-    } else if (node.driver === 'pxe_ipmitool')  {
+    } else if (node.get('driver') === 'pxe_ipmitool')  {
       driverInfo = {
-        ipmi_address: node.ipAddress,
-        ipmi_username: node.ipmiUsername,
-        ipmi_password: node.ipmiPassword,
+        ipmi_address: node.get('ipAddress'),
+        ipmi_username: node.get('ipmiUsername'),
+        ipmi_password: node.get('ipmiPassword'),
         deploy_kernel: this.get('bmDeployKernelImage.id'),
         deploy_ramdisk: this.get('bmDeployRamdiskImage.id')
       };
     }
     var createdNode = {
-      driver: node.driver,
+      driver: node.get('driver'),
       driver_info: driverInfo,
       properties: {
         capabilities: 'boot_option:local'
       },
-      address: node.nicMacAddress
+      address: node.get('nicMacAddress')
     };
     var token = Ember.$('meta[name="csrf-token"]').attr('content');
 

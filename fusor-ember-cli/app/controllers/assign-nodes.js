@@ -23,7 +23,7 @@ export default Ember.Controller.extend({
 
   images: function() {
     return this.get('model.images');
-  }.property('model.images'),
+  }.property('model.images.[]'),
 
   unassignedRoles: function() {
     var unassignedRoles = [];
@@ -35,19 +35,19 @@ export default Ember.Controller.extend({
       }
     });
     return unassignedRoles;
-  }.property('model.plan.roles', 'model.plan.parameters'),
+  }.property('model.plan.roles.[]', 'model.plan.parameters.[]'),
 
   allRolesAssigned: function() {
-    return (this.get('unassignedRoles').length === 0);
-  }.property('unassignedRoles'),
+    return (this.get('unassignedRoles.length') === 0);
+  }.property('unassignedRoles.[]'),
 
   noRolesAssigned: function() {
-    return (this.get('unassignedRoles').length === this.get('model.plan.roles').length);
-  }.property('unassignedRoles'),
+    return (this.get('unassignedRoles.length') === this.get('model.plan.roles.length'));
+  }.property('unassignedRoles.[]', 'model.plan.roles.[]'),
 
   profiles: function() {
     return this.get('model.profiles');
-  }.property('model.profiles'),
+  }.property('model.profiles.[]'),
 
   numProfiles: function() {
     return this.get('model.profiles.length');
@@ -55,7 +55,7 @@ export default Ember.Controller.extend({
 
   nodes: function() {
     return this.get('model.nodes');
-  }.property('model.nodes'),
+  }.property('model.nodes.[]'),
 
   nodeCount: function() {
     return this.get('model.nodes.length');
@@ -69,7 +69,7 @@ export default Ember.Controller.extend({
       count += parseInt(self.getParamValue(role.get('countParameterName'), params), 10);
     });
     return count;
-  }.property('model.plan.roles', 'model.plan.parameters'),
+  }.property('model.plan.roles.[]', 'model.plan.parameters.[]'),
 
   isDraggingRole: function() {
     var isDragging = false;
@@ -79,7 +79,7 @@ export default Ember.Controller.extend({
           }
     });
     return isDragging;
-  }.property('model.plan.roles', 'model.plan.roles.@each.isDraggingObject'),
+  }.property('model.plan.roles.[]', 'model.plan.roles.@each.isDraggingObject'),
 
   droppableClass: function() {
     if (this.get('isDraggingRole')) {
@@ -235,6 +235,7 @@ export default Ember.Controller.extend({
       var self = this;
       var plan = this.get('model.plan');
       var role = this.get('edittedRole');
+      var deploymentId = this.get('deploymentId');
 
       var params = [
         {'name': role.get('imageParameterName'), 'value': this.get('edittedRoleImage')},
@@ -249,10 +250,10 @@ export default Ember.Controller.extend({
 
       self.set('loadingSpinnerText', "Saving...");
       self.set('showLoadingSpinner', true);
-      console.log('action: saveRole, PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_parameters');
+      console.log('action: saveRole, PUT /fusor/api/openstack/deployments/' + deploymentId + '/deployment_plans/overcloud/update_parameters');
       //ic-ajax request
       request({
-        url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_parameters',
+        url: '/fusor/api/openstack/deployments/' + deploymentId + '/deployment_plans/overcloud/update_parameters',
         type: 'PUT',
         headers: {
           "Accept": "application/json",

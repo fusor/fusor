@@ -50,15 +50,44 @@
                               <div class="form-horizontal">
                                   <fieldset>
                                       <legend>Management</legend>
-                                      {{select-simple-f label="Driver" labelSize='col-xs-4' inputSize='col-xs-6' content=drivers selection=selectedNode.driver prompt='unspecified' isRequired=true}}
-                                      {{text-f label="IP Address" type='text' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedNode.ipAddress isRequired=true }}
-                                      {{text-f label="IPMI User" type='text' labelSize='col-xs-4' inputSize='col-xs-6' value=selectedNode.ipmiUsername isRequired=false}}
-                                      {{text-f label="IPMI Password" type='password' labelSize='form-label-nowrap col-xs-4' inputSize='col-xs-6' value=selectedNode.ipmiPassword isRequired=false}}
+                                      {{select-simple-f label="Driver"
+                                                        labelSize='col-xs-4'
+                                                        inputSize='col-xs-6'
+                                                        content=drivers
+                                                        selection=selectedNode.driver prompt='unspecified'
+                                                        isRequired=true}}
+
+                                      {{text-f label="IP Address"
+                                               type='text'
+                                               labelSize='col-xs-4'
+                                               inputSize='col-xs-6'
+                                               value=selectedNode.ipAddress
+                                               isRequired=true}}
+
+                                      {{text-f label="IPMI User"
+                                               type='text'
+                                               labelSize='col-xs-4'
+                                               inputSize='col-xs-6'
+                                               value=selectedNode.ipmiUsername
+                                               isRequired=false}}
+
+                                      {{text-f label="IPMI Password"
+                                               type='password'
+                                               labelSize='form-label-nowrap col-xs-4'
+                                               inputSize='col-xs-6'
+                                               value=selectedNode.ipmiPassword
+                                               isRequired=false}}
 
                                   </fieldset>
                                   <fieldset>
                                       <legend>Networking</legend>
-                                      {{textarea-f label="NIC MAC Address" labelSize='form-label-nowrap col-xs-4' inputSize='col-xs-6' value=selectedNode.nicMacAddress cols="40" placeholder="unspecified" rows="2" isRequired=true}}
+                                      {{textarea-f label="NIC MAC Address"
+                                                   labelSize='form-label-nowrap col-xs-4' inputSize='col-xs-6'
+                                                   value=selectedNode.nicMacAddress
+                                                   cols="40"
+                                                   placeholder="unspecified"
+                                                   rows="2"
+                                                   isRequired=true}}
                                   </fieldset>
                               </div>
                           </div>
