@@ -24,6 +24,10 @@ The fuser-ember-cli/dist distory is generated automatically by [ember-cli](http:
 10. Git commit code
 11. Send pull request. CAREFUL: Ensure that you're pull request does not include `deployAsPlugin: false` or the extra app.import() lines.
 
+## API MOCKS for RHEV and OpenStack
+
+If you want to use use API mock responses for development only using ember-cli, please apply [this commit](https://github.com/fusor/fusor/commit/367fbb466c2a7a14f1b12c1f3a4ee9f3f15bb6bc).
+
 ## Prerequisites
 
 You will need the following things properly installed on your computer.
