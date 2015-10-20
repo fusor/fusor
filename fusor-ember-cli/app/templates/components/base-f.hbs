@@ -2,10 +2,10 @@
    <div class="form-group {{if hasError 'has-error'}}">
 
       <label class="control-label {{labelClassSize}} {{class}}">
-        {{#if isRequired}}
-          <span class='errorForValidation'>*</span>
-        {{/if}}
         <label class="class">
+          {{#if isRequired}}
+            <span class='errorForValidation'>*</span>
+          {{/if}}
           {{label}}
         </label>
         {{#if showHelpPopover}}
