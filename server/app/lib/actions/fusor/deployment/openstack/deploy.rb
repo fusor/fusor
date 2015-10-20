@@ -34,6 +34,9 @@ module Actions::Fusor::Deployment::OpenStack
           plan_action(SshCommand, deployment, "sudo yum -y install redhat-access-insights")
           plan_action(SshCommand, deployment, "sudo redhat-access-insights --register")
         end
+      end
+
+      sequence do
         plan_self(deployment_id: deployment.id)
         plan_action(SshCommand, deployment, "/opt/rh/ruby193/root/bin/initialize_overcloud.sh")
       end
