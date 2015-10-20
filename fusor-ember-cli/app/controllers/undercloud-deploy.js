@@ -95,6 +95,7 @@ export default Ember.Controller.extend({
                 console.log(response);
                 Ember.run.later(checkForDone, 3000);
               },  function(error) {
+                error = error.jqXHR;
                 self.set('deploymentError', error.responseJSON.errors);
                 self.set('showLoadingSpinner', false);
                 console.log('create failed');
@@ -127,6 +128,7 @@ export default Ember.Controller.extend({
               Ember.run.later(checkForDone, 3000);
             }
           }, function(error) {
+              error = error.jqXHR;
               console.log('api check error');
               console.log(error);
               self.set('deploymentError', 'Status check failed');

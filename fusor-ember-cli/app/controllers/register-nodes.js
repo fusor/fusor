@@ -431,6 +431,7 @@ export default Ember.Controller.extend({
         self.addIntrospectionNode(registeredNode);
         self.doNextNodeRegistration(registeredNode);
       }, function(reason) {
+            reason = reason.jqXHR;
             self.set('initRegInProcess', false);
             node.errorMessage = node.ipAddress + ": " + self.getErrorMessageFromReason(reason);
             self.get('errorNodes').pushObject(node);
@@ -474,6 +475,7 @@ export default Ember.Controller.extend({
         }).then(function(results) {
             resolve({done: results.node.ready});
           },  function(results) {
+                results = results.jqXHR;
                 if (results.status === 0) {
                   // Known problem during introspection, return response is empty, keep trying
                   resolve({done: false});
