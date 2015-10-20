@@ -52,8 +52,8 @@ export default Ember.Component.extend({
   }.property('assignedRoles', 'plan', 'plan.roles'),
 
   allRolesAssigned: function() {
-    return (this.get('unassignedRoles').length === 0);
-  }.property('unassignedRoles'),
+    return (this.get('unassignedRoles.length') === 0);
+  }.property('unassignedRoles.[]'),
 
   /* jshint ignore:start */
   nodeMatchesProfile: function(node, profile) {
@@ -99,7 +99,7 @@ export default Ember.Component.extend({
 
   actions: {
     showAssignMenu: function() {
-      if (this.get('unassignedRoles').length > 0) {
+      if (this.get('unassignedRoles.length') > 0) {
         this.set('assignMenuOpenClass', 'open');
       }
     },
