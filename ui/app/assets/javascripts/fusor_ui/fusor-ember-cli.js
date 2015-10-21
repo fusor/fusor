@@ -796,8 +796,8 @@ define('fusor-ember-cli/components/node-profile', ['exports', 'ember'], function
     }).property('assignedRoles', 'plan', 'plan.roles'),
 
     allRolesAssigned: (function () {
-      return this.get('unassignedRoles').length === 0;
-    }).property('unassignedRoles'),
+      return this.get('unassignedRoles.length') === 0;
+    }).property('unassignedRoles.[]'),
 
     /* jshint ignore:start */
     nodeMatchesProfile: function nodeMatchesProfile(node, profile) {
@@ -839,7 +839,7 @@ define('fusor-ember-cli/components/node-profile', ['exports', 'ember'], function
 
     actions: {
       showAssignMenu: function showAssignMenu() {
-        if (this.get('unassignedRoles').length > 0) {
+        if (this.get('unassignedRoles.length') > 0) {
           this.set('assignMenuOpenClass', 'open');
         }
       },
@@ -1718,7 +1718,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'ic-ajax
 
     images: (function () {
       return this.get('model.images');
-    }).property('model.images'),
+    }).property('model.images.[]'),
 
     unassignedRoles: (function () {
       var unassignedRoles = [];
@@ -1730,19 +1730,19 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'ic-ajax
         }
       });
       return unassignedRoles;
-    }).property('model.plan.roles', 'model.plan.parameters'),
+    }).property('model.plan.roles.[]', 'model.plan.parameters.[]'),
 
     allRolesAssigned: (function () {
-      return this.get('unassignedRoles').length === 0;
-    }).property('unassignedRoles'),
+      return this.get('unassignedRoles.length') === 0;
+    }).property('unassignedRoles.[]'),
 
     noRolesAssigned: (function () {
-      return this.get('unassignedRoles').length === this.get('model.plan.roles').length;
-    }).property('unassignedRoles'),
+      return this.get('unassignedRoles.length') === this.get('model.plan.roles.length');
+    }).property('unassignedRoles.[]', 'model.plan.roles.[]'),
 
     profiles: (function () {
       return this.get('model.profiles');
-    }).property('model.profiles'),
+    }).property('model.profiles.[]'),
 
     numProfiles: (function () {
       return this.get('model.profiles.length');
@@ -1750,7 +1750,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'ic-ajax
 
     nodes: (function () {
       return this.get('model.nodes');
-    }).property('model.nodes'),
+    }).property('model.nodes.[]'),
 
     nodeCount: (function () {
       return this.get('model.nodes.length');
@@ -1764,7 +1764,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'ic-ajax
         count += parseInt(self.getParamValue(role.get('countParameterName'), params), 10);
       });
       return count;
-    }).property('model.plan.roles', 'model.plan.parameters'),
+    }).property('model.plan.roles.[]', 'model.plan.parameters.[]'),
 
     isDraggingRole: (function () {
       var isDragging = false;
@@ -1774,7 +1774,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'ic-ajax
         }
       });
       return isDragging;
-    }).property('model.plan.roles', 'model.plan.roles.@each.isDraggingObject'),
+    }).property('model.plan.roles.[]', 'model.plan.roles.@each.isDraggingObject'),
 
     droppableClass: (function () {
       if (this.get('isDraggingRole')) {
@@ -1821,6 +1821,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'ic-ajax
         console.log('SUCCESS');
         self.store.push('deployment_plan', self.store.normalize('deployment_plan', result.deployment_plan));
       }, function (error) {
+        error = error.jqXHR;
         console.log('ERROR');
         console.log(error);
         // TODO: Remove the reload call once we determine how to get around the failure
@@ -1922,6 +1923,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'ic-ajax
         var self = this;
         var plan = this.get('model.plan');
         var role = this.get('edittedRole');
+        var deploymentId = this.get('deploymentId');
 
         var params = [{ 'name': role.get('imageParameterName'), 'value': this.get('edittedRoleImage') }, { 'name': role.get('countParameterName'), 'value': this.get('edittedRoleNodeCount') }, { 'name': role.get('flavorParameterName'), 'value': this.get('edittedRoleProfile') }];
 
@@ -1932,10 +1934,10 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'ic-ajax
 
         self.set('loadingSpinnerText', "Saving...");
         self.set('showLoadingSpinner', true);
-        console.log('action: saveRole, PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_parameters');
+        console.log('action: saveRole, PUT /fusor/api/openstack/deployments/' + deploymentId + '/deployment_plans/overcloud/update_parameters');
         //ic-ajax request
         request['default']({
-          url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_parameters',
+          url: '/fusor/api/openstack/deployments/' + deploymentId + '/deployment_plans/overcloud/update_parameters',
           type: 'PUT',
           headers: {
             "Accept": "application/json",
@@ -1950,6 +1952,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'ic-ajax
             self.set('showLoadingSpinner', false);
           });
         }, function (error) {
+          error = error.jqXHR;
           console.log('ERROR');
           console.log(error);
           self.set('showLoadingSpinner', false);
@@ -1984,6 +1987,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'ic-ajax
             self.set('showLoadingSpinner', false);
           });
         }, function (error) {
+          error = error.jqXHR;
           console.log('ERROR');
           console.log(error);
           self.set('showLoadingSpinner', false);
@@ -2079,6 +2083,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'ic-ajax
           console.log('SUCCESS');
           self.set('showLoadingSpinner', false);
         }, function (error) {
+          error = error.jqXHR;
           console.log('ERROR');
           console.log(error);
           self.set('showLoadingSpinner', false);
@@ -2972,7 +2977,7 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
     }).property('errorNodes.[]'),
 
     registrationErrorMessage: (function () {
-      var count = this.get('errorNodes').length;
+      var count = this.get('errorNodes.length');
       if (count === 1) {
         return '1 node not registered';
       } else if (count > 1) {
@@ -3009,7 +3014,7 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
     }).property('successNodesLength', 'errorNodes.[]'),
 
     nodeRegTotal: (function () {
-      var total = this.get('nodeRegComplete') + this.get('newNodes').length + this.get('introspectionNodes').length;
+      var total = this.get('nodeRegComplete') + this.get('newNodes.length') + this.get('introspectionNodes.length');
 
       // During the initial registration process there is a node in limbo...
       if (this.get('initRegInProcess')) {
@@ -3022,7 +3027,7 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
     nodeRegPercentComplete: (function () {
       var nodeRegTotal = this.get('nodeRegTotal');
       var nodeRegComplete = this.get('nodeRegComplete');
-      var nodesIntrospection = this.get('introspectionNodes').length;
+      var nodesIntrospection = this.get('introspectionNodes.length');
 
       var numSteps = nodeRegTotal * 4;
       var stepsComplete = nodeRegComplete * 4 + nodesIntrospection * 1;
@@ -3227,8 +3232,8 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
     updateAfterRegistration: function updateAfterRegistration(resolve) {
       var self = this;
       var deploymentId = this.get('deploymentId');
-      self.get('model').nodes.store.find('node', { deployment_id: deploymentId, reload: true }).then(function () {
-        self.get('model').profiles.store.find('flavor', { deployment_id: deploymentId, reload: true }).then(function () {
+      this.store.find('node', { deployment_id: deploymentId, reload: true }).then(function () {
+        self.store.find('flavor', { deployment_id: deploymentId, reload: true }).then(function () {
           if (resolve) {
             resolve();
           }
@@ -3237,7 +3242,7 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
     },
 
     doNextNodeRegistration: function doNextNodeRegistration(lastNode) {
-      if (this.get('modalOpen') === true) {
+      if (this.get('modalOpen')) {
         this.set('registrationPaused', true);
       } else {
         this.set('registrationPaused', false);
@@ -3273,10 +3278,6 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
       }
     },
 
-    getImage: function getImage(imageName) {
-      return Ember['default'].$.getJSON('/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/images/show_by_name/' + imageName);
-    },
-
     addIntrospectionNode: function addIntrospectionNode(node) {
       var introspectionNodes = this.get('introspectionNodes');
       introspectionNodes.pushObject(node);
@@ -3286,31 +3287,31 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
     registerNode: function registerNode(node) {
       var self = this;
       var driverInfo = {};
-      if (node.driver === 'pxe_ssh') {
+      if (node.get('driver') === 'pxe_ssh') {
         driverInfo = {
-          ssh_address: node.ipAddress,
-          ssh_username: node.ipmiUsername,
-          ssh_password: node.ipmiPassword,
+          ssh_address: node.get('ipAddress'),
+          ssh_username: node.get('ipmiUsername'),
+          ssh_password: node.get('ipmiPassword'),
           ssh_virt_type: 'virsh',
           deploy_kernel: this.get('bmDeployKernelImage.id'),
           deploy_ramdisk: this.get('bmDeployRamdiskImage.id')
         };
-      } else if (node.driver === 'pxe_ipmitool') {
+      } else if (node.get('driver') === 'pxe_ipmitool') {
         driverInfo = {
-          ipmi_address: node.ipAddress,
-          ipmi_username: node.ipmiUsername,
-          ipmi_password: node.ipmiPassword,
+          ipmi_address: node.get('ipAddress'),
+          ipmi_username: node.get('ipmiUsername'),
+          ipmi_password: node.get('ipmiPassword'),
           deploy_kernel: this.get('bmDeployKernelImage.id'),
           deploy_ramdisk: this.get('bmDeployRamdiskImage.id')
         };
       }
       var createdNode = {
-        driver: node.driver,
+        driver: node.get('driver'),
         driver_info: driverInfo,
         properties: {
           capabilities: 'boot_option:local'
         },
-        address: node.nicMacAddress
+        address: node.get('nicMacAddress')
       };
       var token = Ember['default'].$('meta[name="csrf-token"]').attr('content');
 
@@ -3333,6 +3334,7 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
         self.addIntrospectionNode(registeredNode);
         self.doNextNodeRegistration(registeredNode);
       }, function (reason) {
+        reason = reason.jqXHR;
         self.set('initRegInProcess', false);
         node.errorMessage = node.ipAddress + ": " + self.getErrorMessageFromReason(reason);
         self.get('errorNodes').pushObject(node);
@@ -3374,6 +3376,7 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
           }).then(function (results) {
             resolve({ done: results.node.ready });
           }, function (results) {
+            results = results.jqXHR;
             if (results.status === 0) {
               // Known problem during introspection, return response is empty, keep trying
               resolve({ done: false });
@@ -4447,6 +4450,7 @@ define('fusor-ember-cli/controllers/undercloud-deploy', ['exports', 'ember', 'ic
             console.log(response);
             Ember['default'].run.later(checkForDone, 3000);
           }, function (error) {
+            error = error.jqXHR;
             self.set('deploymentError', error.responseJSON.errors);
             self.set('showLoadingSpinner', false);
             console.log('create failed');
@@ -4478,6 +4482,7 @@ define('fusor-ember-cli/controllers/undercloud-deploy', ['exports', 'ember', 'ic
                 Ember['default'].run.later(checkForDone, 3000);
               }
             }, function (error) {
+              error = error.jqXHR;
               console.log('api check error');
               console.log(error);
               self.set('deploymentError', 'Status check failed');
@@ -9597,7 +9602,7 @@ define('fusor-ember-cli/templates/components/base-f', ['exports'], function (exp
         hasRendered: false,
         build: function build(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("          ");
+          var el1 = dom.createTextNode("            ");
           dom.appendChild(el0, el1);
           var el1 = dom.createElement("span");
           dom.setAttribute(el1,"class","errorForValidation");
@@ -9749,15 +9754,15 @@ define('fusor-ember-cli/templates/components/base-f', ['exports'], function (exp
         var el3 = dom.createTextNode("\n\n      ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("label");
-        var el4 = dom.createTextNode("\n");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createComment("");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("        ");
+        var el4 = dom.createTextNode("\n        ");
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("label");
         dom.setAttribute(el4,"class","class");
-        var el5 = dom.createTextNode("\n          ");
+        var el5 = dom.createTextNode("\n");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createComment("");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createTextNode("          ");
         dom.appendChild(el4, el5);
         var el5 = dom.createComment("");
         dom.appendChild(el4, el5);
@@ -9826,14 +9831,15 @@ define('fusor-ember-cli/templates/components/base-f', ['exports'], function (exp
         }
         var element2 = dom.childAt(fragment, [0, 1]);
         var element3 = dom.childAt(element2, [1]);
-        var element4 = dom.childAt(element2, [3]);
+        var element4 = dom.childAt(element3, [1]);
+        var element5 = dom.childAt(element2, [3]);
         var attrMorph0 = dom.createAttrMorph(element2, 'class');
-        var morph0 = dom.createMorphAt(element3,1,1);
         var attrMorph1 = dom.createAttrMorph(element3, 'class');
-        var morph1 = dom.createMorphAt(dom.childAt(element3, [3]),1,1);
-        var morph2 = dom.createMorphAt(element3,5,5);
-        var morph3 = dom.createMorphAt(element4,1,1);
-        var attrMorph2 = dom.createAttrMorph(element4, 'class');
+        var morph0 = dom.createMorphAt(element4,1,1);
+        var morph1 = dom.createMorphAt(element4,3,3);
+        var morph2 = dom.createMorphAt(element3,3,3);
+        var morph3 = dom.createMorphAt(element5,1,1);
+        var attrMorph2 = dom.createAttrMorph(element5, 'class');
         var morph4 = dom.createMorphAt(element2,5,5);
         var morph5 = dom.createMorphAt(dom.childAt(element2, [7]),1,1);
         attribute(env, attrMorph0, element2, "class", concat(env, ["form-group ", subexpr(env, context, "if", [get(env, context, "hasError"), "has-error"], {})]));
@@ -9841,7 +9847,7 @@ define('fusor-ember-cli/templates/components/base-f', ['exports'], function (exp
         block(env, morph0, context, "if", [get(env, context, "isRequired")], {}, child0, null);
         content(env, morph1, context, "label");
         block(env, morph2, context, "if", [get(env, context, "showHelpPopover")], {}, child1, null);
-        attribute(env, attrMorph2, element4, "class", concat(env, [get(env, context, "inputClassSize")]));
+        attribute(env, attrMorph2, element5, "class", concat(env, [get(env, context, "inputClassSize")]));
         content(env, morph3, context, "yield");
         block(env, morph4, context, "if", [get(env, context, "showUnits")], {}, child2, null);
         content(env, morph5, context, "help-inline");
@@ -24647,7 +24653,7 @@ define('fusor-ember-cli/templates/engine/discovered-host', ['exports'], function
           var el4 = dom.createTextNode("\n            ");
           dom.appendChild(el3, el4);
           var el4 = dom.createElement("th");
-          dom.setAttribute(el4,"class","text-center");
+          dom.setAttribute(el4,"class","rhev-host-type text-center");
           var el5 = dom.createTextNode(" Host Type ");
           dom.appendChild(el4, el5);
           dom.appendChild(el3, el4);
@@ -25347,6 +25353,7 @@ define('fusor-ember-cli/templates/hypervisor/discovered-host', ['exports'], func
           var el4 = dom.createTextNode("\n            ");
           dom.appendChild(el3, el4);
           var el4 = dom.createElement("th");
+          dom.setAttribute(el4,"class","rhev-host-type text-center");
           var el5 = dom.createTextNode(" Host Type ");
           dom.appendChild(el4, el5);
           dom.appendChild(el3, el4);
@@ -26718,15 +26725,15 @@ define('fusor-ember-cli/templates/new-node-registration', ['exports'], function 
               dom.appendChild(el6, el7);
               var el7 = dom.createComment("");
               dom.appendChild(el6, el7);
-              var el7 = dom.createTextNode("\n                                      ");
+              var el7 = dom.createTextNode("\n\n                                      ");
               dom.appendChild(el6, el7);
               var el7 = dom.createComment("");
               dom.appendChild(el6, el7);
-              var el7 = dom.createTextNode("\n                                      ");
+              var el7 = dom.createTextNode("\n\n                                      ");
               dom.appendChild(el6, el7);
               var el7 = dom.createComment("");
               dom.appendChild(el6, el7);
-              var el7 = dom.createTextNode("\n                                      ");
+              var el7 = dom.createTextNode("\n\n                                      ");
               dom.appendChild(el6, el7);
               var el7 = dom.createComment("");
               dom.appendChild(el6, el7);
@@ -44586,13 +44593,13 @@ define('fusor-ember-cli/tests/unit/serializers/pool-test.jshint', function () {
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.c075e4e8"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.0a5a597e"},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.c075e4e8"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0.0a5a597e"});
 }
 
 /* jshint ignore:end */
