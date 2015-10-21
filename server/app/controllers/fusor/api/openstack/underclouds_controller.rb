@@ -32,7 +32,7 @@ module Fusor
           io = StringIO.new
           ssh.execute("sudo hiera admin_password", io)
           admin = io.string.strip
-          if admin.include?('failed') || admin.include?('error')
+          if admin.include?('failed') || admin.include?('error') || admin.include?('fingerprint')
             render json: {errors: admin}, status: 422
           else
             io = StringIO.new
