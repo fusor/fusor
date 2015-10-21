@@ -127,6 +127,7 @@ export default Ember.Controller.extend({
         console.log('SUCCESS');
         self.store.push('deployment_plan', self.store.normalize('deployment_plan', result.deployment_plan));
       }, function(error) {
+        error = error.jqXHR;
         console.log('ERROR');
         console.log(error);
         // TODO: Remove the reload call once we determine how to get around the failure
@@ -268,6 +269,7 @@ export default Ember.Controller.extend({
             self.set('showLoadingSpinner', false);
           });
         }, function(error) {
+          error = error.jqXHR;
           console.log('ERROR');
           console.log(error);
           self.set('showLoadingSpinner', false);
@@ -303,6 +305,7 @@ export default Ember.Controller.extend({
             self.set('showLoadingSpinner', false);
           });
         }, function(error) {
+             error = error.jqXHR;
              console.log('ERROR');
              console.log(error);
              self.set('showLoadingSpinner', false);
@@ -401,6 +404,7 @@ export default Ember.Controller.extend({
           self.set('showLoadingSpinner', false);
         },
           function(error) {
+            error = error.jqXHR;
             console.log('ERROR');
             console.log(error);
             self.set('showLoadingSpinner', false);
