@@ -12,7 +12,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     controller.set('satelliteTabRouteName', 'deployment-new.satellite.index');
     controller.set('organizationTabRouteName', 'deployment-new.satellite.configure-organization');
     controller.set('lifecycleEnvironmentTabRouteName', 'deployment-new.satellite.configure-environment');
-    controller.set('model.enable_access_insights', true);
+    controller.set('model.enable_access_insights', false);
     controller.set('model.rhev_cluster_name', 'Default');
     controller.set('model.rhev_storage_name', 'my_storage');
     controller.set('model.rhev_export_domain_name', 'my_export');

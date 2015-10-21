@@ -36,6 +36,7 @@ export default Router.map(function() {
     this.resource('satellite', function() {
       this.resource('configure-organization');
       this.resource('configure-environment');
+      this.route('access-insights');
     });
 
     this.resource('rhev', function() {

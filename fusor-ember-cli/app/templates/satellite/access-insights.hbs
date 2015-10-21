@@ -1,0 +1,21 @@
+<div class="row">
+  <div class='col-md-6'>
+    <p>
+      Select whether to enable Red Hat Access Insights for this deployment.
+    </p>
+
+    {{input type="checkbox" name="enable_access_insights" disabled=isStarted checked=model.enable_access_insights}}
+    <span class={{analyticsColor}}>
+      Enable Red Hat Access Insights
+    </span>
+
+  </div>
+</div>
+
+<br />
+{{cancel-back-next backRouteName='configure-environment'
+                   disableBack=false
+                   nextRouteName=step2RouteName
+                   disableNext=false
+                   parentController=controller
+                   disableCancel=isStarted}}

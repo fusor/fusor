@@ -92,7 +92,7 @@
                     parentController=controller
                     disableCancel=isStarted}}
     {{#if deployment.isNew}}
-      <button {{action 'saveDeployment' step2RouteName}}
+      <button {{action 'saveDeployment' step1DRouteName}}
               disabled={{disableNextOnLifecycleEnvironment}}
               class='btn btn-primary'>
           {{#if deployment.isSaving}}
@@ -102,7 +102,7 @@
           {{/if}}
       </button>
     {{else}}
-      <button {{action 'saveDeployment' step2RouteName}}
+      <button {{action 'saveDeployment' step1DRouteName}}
               disabled={{disableNextOnLifecycleEnvironment}}
               class='btn btn-primary'>
           Next <i class="fa fa-angle-right"></i>
