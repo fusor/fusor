@@ -49,8 +49,8 @@ module Fusor
             # See bug https://bugzilla.redhat.com/show_bug.cgi?id=1255412
             routable = tcp_pingable?(ip_addr)
             if !routable
-              render(json: {errors: "Error: The Undercloud is not accessible. Please check that" + ip_addr +
-                     "is your Undercloud's provisioning interface, you have logged in and run fusor-undercloud-installer"\
+              render(json: {errors: "Error: The Undercloud is not accessible. Please check that the address specified"\
+                     " is your Undercloud's provisioning interface, you have logged in and run fusor-undercloud-installer"\
                      " on the Underlcoud, and that it can be reached by your RHCI server."}, status: 422)
               #system('sudo route add ' + ip_addr + ' via ' + underhost)
             else
@@ -87,7 +87,7 @@ module Fusor
                 else
                   @exception = err
                 end
-              rescue StandardError? => err
+              rescue StandardError => err
                 @exception = err
               else
                 bool = true
