@@ -27,7 +27,8 @@ module Fusor
 
         def create
           @node = undercloud_handle.create_node(params[:node])
-          redirect_to :action => 'show', :id => @node.uuid
+          task = async_task(::Actions::Fusor::Host::IntrospectOpenStackNode, @deployment, @node.uuid)
+          respond_for_async :resource => task
         end
 
         def ready
