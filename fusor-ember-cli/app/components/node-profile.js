@@ -19,11 +19,11 @@ export default Ember.Component.extend({
   },
 
   assignedRoles: function() {
-    var assignedRoles = [];
+    var assignedRoles = Ember.A();
     var profile = this.get('profile');
     var params = this.get('plan.parameters');
     var self = this;
-    var roles = this.get('plan.roles') || [];
+    var roles = this.get('plan.roles') || Ember.A();
     roles.forEach(function(role) {
       if ( self.getParamValue(role.get('flavorParameterName'), params) === profile.get('name') ) {
         assignedRoles.pushObject(role);
@@ -33,9 +33,9 @@ export default Ember.Component.extend({
   }.property('profile', 'plan', 'plan.roles', 'plan.parameters'),
 
   unassignedRoles: function() {
-    var unassignedRoles = [];
+    var unassignedRoles = Ember.A();
     var assignedRoles = this.get('assignedRoles');
-    var roles = this.get('plan.roles') || [];
+    var roles = this.get('plan.roles') || Ember.A();
     roles.forEach(function(role) {
       var unassignedRole = true;
       for (var i=0; i<assignedRoles.length; i++) {
