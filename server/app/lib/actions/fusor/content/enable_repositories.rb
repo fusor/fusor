@@ -31,23 +31,28 @@ module Actions
           product = ::Katello::Product.where(:organization_id => organization.id,
                                              :cp_id => repo_details[:product_id]).first
 
-          if product
-            product_content = product.productContent.find do |content|
-              content.content.id == repo_details[:repository_set_id]
-            end
-
-            substitutions = { basearch: repo_details[:basearch] }
-            substitutions[:releasever] = repo_details[:releasever] if repo_details[:releasever]
-            if repo_mapper(product, product_content.content, substitutions).find_repository
-              Rails.logger.info("Repository already enabled for: Product: #{product.name},"\
-                                " Repository Set: #{product_content.content.name}")
-            else
-              plan_action(::Actions::Katello::RepositorySet::EnableRepository, product,
-                          product_content.content, substitutions)
-            end
-          else
+          unless product
             fail _("Product '%{product_name}' does not exist. Confirm that a manifest"\
                    " containing it has been imported.") % { :product_name => repo_details[:product_name] }
+          end
+
+          product_content = product.productContent.find do |content|
+            content.content.id == repo_details[:repository_set_id]
+          end
+
+          unless product_content
+            fail _("Repository set '%{product_name} - %{repository_set_name}' does not exist. Confirm that a manifest "\
+                   "containing it has been imported.") % repo_details.slice(:product_name, :repository_set_name)
+          end
+
+          substitutions = { basearch: repo_details[:basearch] }
+          substitutions[:releasever] = repo_details[:releasever] if repo_details[:releasever]
+          if repo_mapper(product, product_content.content, substitutions).find_repository
+            Rails.logger.info("Repository already enabled for: Product: #{product.name},"\
+                              " Repository Set: #{product_content.content.name}")
+          else
+            plan_action(::Actions::Katello::RepositorySet::EnableRepository, product,
+                        product_content.content, substitutions)
           end
         end
 
