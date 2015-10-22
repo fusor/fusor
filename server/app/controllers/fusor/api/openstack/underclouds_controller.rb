@@ -11,6 +11,9 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 require 'egon/undercloud/ssh-connection'
+require 'timeout'
+require 'socket'
+require 'ipaddr'
 
 module Fusor
   module Api
@@ -44,10 +47,11 @@ module Fusor
             # See if it is, and if not then throw an error saying so and suggesting
             # a possible workaround.
             # See bug https://bugzilla.redhat.com/show_bug.cgi?id=1255412
-            routable = system("ping " + ip_addr + " -c 1 -W 1")
+            routable = tcp_pingable?(ip_addr)
             if !routable
-              render(json: {errors: "Error: The Undercloud's provisioning network is not routable. Please run 'ip route add " + ip_addr + ' via ' + underhost + "' as root on the Satellite and try again."},
-                     status: 422)
+              render(json: {errors: "Error: The Undercloud is not accessible. Please check that" + ip_addr +
+                     "is your Undercloud's provisioning interface, you have logged in and run fusor-undercloud-installer"\
+                     " on the Underlcoud, and that it can be reached by your RHCI server."}, status: 422)
               #system('sudo route add ' + ip_addr + ' via ' + underhost)
             else
               @deployment.openstack_undercloud_password = admin
@@ -60,6 +64,43 @@ module Fusor
           end
         end
 
+        private
+
+        def tcp_pingable?(ip)
+          # This code is from net-ping, and stripped down for use here
+          # We don't need all the ldap dependencies net-ping brings in
+
+          @service_check = true
+          @port          = 80
+          @timeout       = 1
+          @exception     = nil
+          bool           = false
+          tcp            = nil
+
+          begin
+            Timeout.timeout(@timeout) do
+              begin
+                tcp = TCPSocket.new(ip, @port)
+              rescue Errno::ECONNREFUSED => err
+                if @service_check
+                  bool = false
+                else
+                  @exception = err
+                end
+              rescue StandardError? => err
+                @exception = err
+              else
+                bool = true
+              end
+            end
+          rescue Timeout::Error => err
+            @exception = err
+          ensure
+            tcp.close if tcp
+          end
+
+          bool
+        end
       end
     end
   end
