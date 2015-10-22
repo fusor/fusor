@@ -29,8 +29,10 @@ export default Ember.Controller.extend({
     var unassignedRoles = Ember.A();
     var params = this.get('model.plan.parameters');
     var self = this;
+    var value = null;
     this.get('model.plan.roles').forEach(function(role) {
-      if ( self.getParamValue(role.get('flavorParameterName'), params) == null ) {
+      value = self.getParamValue(role.get('flavorParameterName'), params);
+      if (value === 'baremetal' || Ember.isNone(value)) {
         unassignedRoles.pushObject(role);
       }
     });
