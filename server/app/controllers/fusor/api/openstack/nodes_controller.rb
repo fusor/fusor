@@ -26,8 +26,25 @@ module Fusor
         end
 
         def create
-          @node = undercloud_handle.create_node(params[:node])
-          task = async_task(::Actions::Fusor::Host::IntrospectOpenStackNode, @deployment, @node.uuid)
+          handle = undercloud_handle
+          node_uuids = handle.list_nodes().map {|i| i.uuid}
+          begin
+            node = handle.create_node_only(params[:node])
+          rescue Excon::Errors::Conflict => e
+            if e.response[:body] =~ /A port with MAC address .* already exists/
+              # We've registered this node already, This request caused
+              # a bad node to get created in the director. Delete it to
+              # clean up after ourselves if we can figure out which one it is
+              # and then re-throw the error.
+              current_node_uuids = handle.list_nodes().map {|i| i.uuid}
+              new_nodes = current_node_uuids - node_uuids
+              if new_nodes.length == 1
+                handle.delete_node(new_nodes.first)
+              end
+            end
+            raise e
+          end
+          task = async_task(::Actions::Fusor::Host::IntrospectOpenStackNode, @deployment, node.uuid)
           respond_for_async :resource => task
         end
 

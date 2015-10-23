@@ -34,14 +34,42 @@ module Actions::Fusor::Host
     end
 
     def invoke_external_task
-      false # it's not done yet, return false so we'll start polling
+      deployment = ::Fusor::Deployment.find(input[:deployment_id])
+      handle = undercloud_handle(deployment)
+      begin
+        handle.introspect_node(input[:node_id])
+      rescue Excon::Errors::BadRequest => e
+        if e.response[:body] =~ /Failed validation of power interface for node/
+          # We gave it bad data for the ipmi server. Delete node so user
+          # can re-try and then re-throw the error.
+          handle.delete_node(input[:node_id])
+        end
+        raise e
+      end
+      false # just starting, return false so we'll start polling
     end
 
     def poll_external_task
       deployment = ::Fusor::Deployment.find(input[:deployment_id])
-      # returns true if node introspection is done, which is what this
-      # method wants as a return so it works out swimingly
-      undercloud_handle(deployment).introspect_node_status(input[:node_id])
+      begin
+        # returns true if node introspection is done, which is what this
+        # method wants as a return so it works out swimingly
+        undercloud_handle(deployment).introspect_node_status(input[:node_id])
+      rescue Excon::Errors::Conflict => e
+        if e.response[:body] =~ /Flavor with name .* already exists/
+          # There's a timing window where two introspecting nodes can attempt
+          # to create the same flavor. That's fine, the other one will
+          # succeed, ignore this error and return true cause we're done.
+          true
+        else
+          raise e
+        end
+      rescue Excon::Errors::Timeout
+        # A few requests timing out is an unfortunate but normal part of node
+        # introspection. Catch / ignore them so that the task doesn't error.
+        # Return false, we're not done yet.
+        false
+      end
     end
 
     def run_progress
