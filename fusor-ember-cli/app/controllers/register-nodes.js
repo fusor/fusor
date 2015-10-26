@@ -478,18 +478,17 @@ export default Ember.Controller.extend({
 
     var promiseFunction = function(resolve) {
       var checkForDone = function() {
-        //refresh model
-        self.send('refreshNodesAndFlavors');
-
         //ic-ajax request
         console.log('action: checkNodeIntrospection');
-        console.log('POST /fusor/api/openstack/deployments/' + self.get('deploymentId') + '/nodes/' + node.uuid + '/ready');
+        console.log('GET /fusor/api/openstack/deployments/' + self.get('deploymentId') + '/nodes/' + node.uuid + '/ready');
 
         request({
           url: '/fusor/api/openstack/deployments/' + self.get('deploymentId') + '/nodes/' + node.uuid + '/ready',
           type: 'GET',
           contentType: 'application/json'
         }).then(function(results) {
+            //refresh model
+            self.send('refreshNodesAndFlavors');
             resolve({done: results.node.ready});
           },  function(results) {
                 results = results.jqXHR;
