@@ -441,6 +441,8 @@ export default Ember.Controller.extend({
       },
       data: JSON.stringify({ 'node': createdNode })
     }).then(function(registeredNode) {
+        // node was added on the backend, but model.nodes needs to be freshed
+        self.send('refreshNodesAndFlavors');
         self.set('initRegInProcess', false);
         self.addIntrospectionNode(registeredNode);
         self.doNextNodeRegistration(registeredNode);
