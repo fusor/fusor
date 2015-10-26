@@ -44,13 +44,23 @@ module Fusor
             end
             raise e
           end
+
           task = async_task(::Actions::Fusor::Host::IntrospectOpenStackNode, @deployment, node.uuid)
+          it = Fusor::IntrospectionTask.new()
+          it.deployment = @deployment
+          it.task_id = task.id
+          @deployment.introspection_tasks.push(it)
+          @deployment.save(:validate => false)
           respond_for_async :resource => task
         end
 
         def ready
           ready = undercloud_handle.introspect_node_status(params[:id])
           render :json => {:node => {:id => params[:id], :ready => ready}}.to_json
+        end
+
+        def introspection_tasks
+          render :json => {:introspection_tasks => @deployment.introspection_tasks}
         end
 
       end

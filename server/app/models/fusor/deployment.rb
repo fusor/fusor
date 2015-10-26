@@ -36,6 +36,7 @@ module Fusor
     alias_attribute :discovered_host_id, :rhev_engine_host_id
 
     has_many :subscriptions, :class_name => "Fusor::Subscription", :foreign_key => :deployment_id
+    has_many :introspection_tasks, :class_name => 'Fusor::IntrospectionTask'
 
     scoped_search :on => [:id, :name], :complete_value => true
 
