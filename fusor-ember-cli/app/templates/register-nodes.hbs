@@ -68,9 +68,12 @@
       <div class="row">
           <div class='col-md-7'>
             {{#if model.nodes}}
-              {{node-profile profile=profile nodes=model.nodes stepNumberOpenstack=stepNumberOpenstack}}
+              {{node-profile profile=profile
+                             nodes=model.nodes
+                             stepNumberOpenstack=stepNumberOpenstack}}
             {{else}}
-              {{node-profile profile=profile stepNumberOpenstack=stepNumberOpenstack}}
+              {{node-profile profile=profile
+                             stepNumberOpenstack=stepNumberOpenstack}}
             {{/if}}
           </div>
       </div>

@@ -121,7 +121,7 @@ export default Ember.Controller.extend({
     var stepsComplete = (nodeRegComplete * 4) + (nodesIntrospection * 1);
 
     return Math.round(stepsComplete / numSteps * 100);
-  }.property('nodeRegComplete', 'nodeRegTotal', 'newNodes', 'introspectionNodes'),
+  }.property('nodeRegComplete', 'nodeRegTotal', 'newNodes.[]', 'introspectionNodes.[]'),
 
   noRegisteredNodes: function() {
       return (this.get('model.nodes.length') < 1);
@@ -175,6 +175,20 @@ export default Ember.Controller.extend({
   },
 
   actions: {
+
+    refreshNodesAndFlavors: function() {
+      // manually set manual rather than using this.get('model').reload() which looks at data store changes
+      // since the nodes changes or db changes happened outside of ember-data.
+      console.log('refreshing model.nodes and model.profiles');
+      var deploymentId = this.get('deploymentId');
+      var self = this;
+      Ember.RSVP.hash({nodes: this.store.find('node', {deployment_id: deploymentId}),
+                       profiles: this.store.find('flavor', {deployment_id: deploymentId})
+                     }).then(function(result) {
+                         return self.set('model', result);
+                     });
+    },
+
     showNodeRegistrationModal: function() {
       var newNodes = this.get('newNodes');
       var errorNodes = this.get('errorNodes');
@@ -427,6 +441,8 @@ export default Ember.Controller.extend({
       },
       data: JSON.stringify({ 'node': createdNode })
     }).then(function(registeredNode) {
+        // node was added on the backend, but model.nodes needs to be freshed
+        self.send('refreshNodesAndFlavors');
         self.set('initRegInProcess', false);
         self.addIntrospectionNode(registeredNode);
         self.doNextNodeRegistration(registeredNode);
@@ -466,13 +482,17 @@ export default Ember.Controller.extend({
       var checkForDone = function() {
         //ic-ajax request
         console.log('action: checkNodeIntrospection');
-        console.log('POST /fusor/api/openstack/deployments/' + self.get('deploymentId') + '/nodes/' + node.uuid + '/ready');
+        console.log('GET /fusor/api/openstack/deployments/' + self.get('deploymentId') + '/nodes/' + node.uuid + '/ready');
 
         request({
           url: '/fusor/api/openstack/deployments/' + self.get('deploymentId') + '/nodes/' + node.uuid + '/ready',
           type: 'GET',
           contentType: 'application/json'
         }).then(function(results) {
+            //refresh model if ready is true
+            if (results.node.ready) {
+              self.send('refreshNodesAndFlavors');
+            }
             resolve({done: results.node.ready});
           },  function(results) {
                 results = results.jqXHR;

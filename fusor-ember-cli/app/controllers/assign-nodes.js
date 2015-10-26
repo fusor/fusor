@@ -26,11 +26,13 @@ export default Ember.Controller.extend({
   }.property('model.images.[]'),
 
   unassignedRoles: function() {
-    var unassignedRoles = [];
+    var unassignedRoles = Ember.A();
     var params = this.get('model.plan.parameters');
     var self = this;
+    var value = null;
     this.get('model.plan.roles').forEach(function(role) {
-      if ( self.getParamValue(role.get('flavorParameterName'), params) == null ) {
+      value = self.getParamValue(role.get('flavorParameterName'), params);
+      if (value === 'baremetal' || Ember.isNone(value)) {
         unassignedRoles.pushObject(role);
       }
     });
@@ -192,19 +194,19 @@ export default Ember.Controller.extend({
     editRole: function(role) {
       this.set('showRoleSettings', 'active');
       this.set('showRoleConfig',   'inactive');
-      var roleParams = [];
-      var advancedParams = [];
+      var roleParams = Ember.A();
+      var advancedParams = Ember.A();
       this.get('model.plan.parameters').forEach(function(param) {
         var paramId = param.get('id');
         if (paramId.indexOf(role.get('parameterPrefix')) === 0) {
           param.displayId = paramId.substring(role.get('parameterPrefix').length);
           param.displayId = param.displayId.replace(/([a-z])([A-Z])/g, '$1 $2');
 
-/* Using boolean breaks saving...
-          if (param.get('parameter_type') === 'boolean') {
-            param.set('isBoolean', true);
-          }
-*/
+          /* Using boolean breaks saving...
+                    if (param.get('parameter_type') === 'boolean') {
+                      param.set('isBoolean', true);
+                    }
+          */
           if (param.get('hidden')) {
             param.set('inputType', 'password');
           }
@@ -350,7 +352,7 @@ export default Ember.Controller.extend({
     },
 
     editGlobalServiceConfig: function() {
-      var planParams = [];
+      var planParams = Ember.A();
       this.get('model.plan.parameters').forEach(function(param) {
         if (param.get('id').indexOf('::') === -1) {
           param.displayId = param.get('id').replace(/([a-z])([A-Z])/g, '$1 $2');
@@ -379,7 +381,7 @@ export default Ember.Controller.extend({
       var self = this;
       var plan = this.get('model.plan');
 
-      var params = [];
+      var params = Ember.A();
       this.get('edittedPlanParameters').forEach(function(param) {
         params.push({'name': param.get('id'), 'value': param.get('value')});
       });

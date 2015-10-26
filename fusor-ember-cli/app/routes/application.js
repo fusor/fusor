@@ -5,8 +5,8 @@ export default Ember.Route.extend({
 
   setupController: function(controller, model) {
     controller.set('model', model);
-    var deploymentNames = [];
-    controller.set('deploymentNames', []);
+    var deploymentNames = Ember.A();
+    controller.set('deploymentNames', Ember.A());
     this.store.find('deployment').then(function(results) {
       deploymentNames = results.getEach('name');
       console.log(deploymentNames);

@@ -52,7 +52,7 @@ export default Ember.Component.extend({
   }.property('totalNodes'),
 
   availableOptions: function() {
-    var avail = [];
+    var avail = Ember.A();
     var increment = 1;
     var maxNodes = Math.max(this.get('nodeCount'), this.get('roleNodeCount'));
 
