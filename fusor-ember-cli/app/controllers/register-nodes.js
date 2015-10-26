@@ -489,8 +489,10 @@ export default Ember.Controller.extend({
           type: 'GET',
           contentType: 'application/json'
         }).then(function(results) {
-            //refresh model
-            self.send('refreshNodesAndFlavors');
+            //refresh model if ready is true
+            if (results.node.ready) {
+              self.send('refreshNodesAndFlavors');
+            }
             resolve({done: results.node.ready});
           },  function(results) {
                 results = results.jqXHR;
