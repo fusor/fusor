@@ -287,6 +287,10 @@ table.fusor-table {
   padding-bottom: 10px;
 }
 
+.accordion-item-title {
+  cursor: pointer;
+}
+
 .invalid-input {
   border:2px solid red;
 }
