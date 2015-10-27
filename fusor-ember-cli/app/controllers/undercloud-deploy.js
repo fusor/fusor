@@ -51,7 +51,7 @@ export default Ember.Controller.extend({
     if (this.get('isRhev')) {
       return 'storage';
     } else {
-      return 'configure-environment';
+      return 'satellite.access-insights';
     }
   }.property('isRhev'),
 

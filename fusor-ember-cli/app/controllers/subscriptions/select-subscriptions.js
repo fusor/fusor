@@ -5,7 +5,6 @@ export default Ember.ArrayController.extend({
 
   isUpstream: Ember.computed.alias("controllers.application.isUpstream"),
   stepNumberSubscriptions: Ember.computed.alias("controllers.deployment.stepNumberSubscriptions"),
-  enableAccessInsights: Ember.computed.alias("controllers.deployment.model.enable_access_insights"),
   numSubscriptionsRequired: Ember.computed.alias("controllers.deployment.numSubscriptionsRequired"),
   isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
 
@@ -43,14 +42,6 @@ export default Ember.ArrayController.extend({
 
   hasSubscriptionsToAttach: function() {
     return (this.get('model.length') > 0);
-  }.property('model.[]'),
-
-  enableAnalytics: function() {
-    if (this.get('enableAccessInsights')) { return 'Enabled'; } else { return 'Disabled'; }
-  }.property('enableAccessInsights'),
-
-  analyticsColor: function() {
-    if (this.get('enableAnalytics')) { return ''; } else { return 'disabled'; }
-  }.property('enableAccessInsights')
+  }.property('model.[]')
 
 });

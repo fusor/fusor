@@ -52,6 +52,7 @@ export default Ember.Mixin.create({
   // Satellite Tabs Only
   disableTabDeploymentName: false, // always enable tab for entering deployment name
   disableTabConfigureOrganization: Ember.computed.alias('disableNextOnDeploymentName'),
-  disableTabLifecycleEnvironment: Ember.computed.alias("disableNextOnConfigureOrganization")
+  disableTabLifecycleEnvironment: Ember.computed.alias("disableNextOnConfigureOrganization"),
+  disableTabAccessInsights: Ember.computed.or("disableNextOnDeploymentName", 'hasNoOrganization', 'disableNextOnLifecycleEnvironment')
 
 });

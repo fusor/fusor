@@ -4,6 +4,8 @@ export default Ember.Mixin.create({
 
   selectedEnvironment: Ember.computed.alias("model"),
 
+  step1DRouteName: 'satellite.access-insights',
+
   useDefaultOrgViewForEnv: function() {
     return Ember.isBlank(this.get('model'));
   }.property('model'),

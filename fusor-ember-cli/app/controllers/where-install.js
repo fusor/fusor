@@ -55,7 +55,7 @@ export default Ember.Controller.extend({
     } else if (this.get('isRhev')) {
       return 'storage';
     } else {
-      return 'satellite.configure-environment';
+      return 'satellite.access-insights';
     }
   }.property('isOpenStack', 'isRhev'),
 
