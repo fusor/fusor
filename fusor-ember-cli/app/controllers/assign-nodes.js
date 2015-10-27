@@ -423,8 +423,8 @@ export default Ember.Controller.extend({
   },
 
   disableAssignNodesNext: function() {
-    return false;
-  }.property('profiles'),
+    return (this.get('unassignedRoles.length') > 0);
+  }.property('unassignedRoles.[]'),
 
   nextStepRouteNameAssignNodes: function() {
     if (this.get('isCloudForms')) {
