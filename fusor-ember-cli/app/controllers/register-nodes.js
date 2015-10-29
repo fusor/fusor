@@ -181,9 +181,9 @@ export default Ember.Controller.extend(ProgressBarMixin, {
     return this.get('deployment.introspection_tasks');
   }.property("deployment.@each.introspection_tasks"),
 
-  hasDeploymentTasks: function() {
-    return (this.get('deploymentTasks.length') > 0);
-  }.property("deploymentTasks.[]"),
+  hasIntrospectionTasks: function() {
+    return (this.get('introspectionTasks.length') > 0);
+  }.property("introspectionTasks.[]"),
 
   actions: {
     saveOspTask: function(task_id) {
