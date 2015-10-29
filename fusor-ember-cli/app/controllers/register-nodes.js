@@ -463,6 +463,12 @@ export default Ember.Controller.extend(ProgressBarMixin, {
         // node was added on the backend, but model.nodes needs to be freshed
         self.send('refreshNodesAndFlavors');
         self.set('initRegInProcess', false);
+        //push task_id into data store
+        self.store.push('introspection-task', {
+              id: (Math.floor(Math.random() * 1000000000)),
+              task_id: result.id,
+              deployment_id: self.get('deploymentId')
+        });
       }, function(reason) {
             reason = reason.jqXHR;
             self.set('initRegInProcess', false);
