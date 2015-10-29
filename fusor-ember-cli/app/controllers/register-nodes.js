@@ -464,11 +464,12 @@ export default Ember.Controller.extend(ProgressBarMixin, {
         self.send('refreshNodesAndFlavors');
         self.set('initRegInProcess', false);
         //push task_id into data store
-        self.store.push('introspection-task', {
+        var newTask = self.store.push('introspection-task', {
               id: (Math.floor(Math.random() * 1000000000)),
               task_id: result.id,
               deployment_id: self.get('deploymentId')
         });
+        self.get('deployment.introspection_tasks').addObject(newTask);
       }, function(reason) {
             reason = reason.jqXHR;
             self.set('initRegInProcess', false);
