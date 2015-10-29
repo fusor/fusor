@@ -13,6 +13,9 @@ export default Ember.Route.extend({
     controller.set('model', model);
     controller.set('showAlertMessage', false);
     var self = this;
+
+    controller.set('allIntrospectionTasks', this.store.find('introspection-task'));
+
     var introspection_tasks = this.modelFor('deployment').get('introspection_tasks');
 
     // TODO - use forEach with index rather than limiting to 5 tasks.

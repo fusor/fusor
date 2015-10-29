@@ -484,7 +484,6 @@ export default Ember.Controller.extend(ProgressBarMixin, {
         // node was added on the backend, but model.nodes needs to be freshed
         self.send('refreshNodesAndFlavors');
         self.set('initRegInProcess', false);
-        self.send('saveOspTask', result.id);
       }, function(reason) {
             reason = reason.jqXHR;
             self.set('initRegInProcess', false);
