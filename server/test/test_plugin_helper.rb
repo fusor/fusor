@@ -1,4 +1,7 @@
 # This calls the main test_helper in Foreman-core
+require 'coveralls'
+Coveralls.wear!
+
 require 'yaml'
 require 'test_helper'
 require 'dynflow/testing'
