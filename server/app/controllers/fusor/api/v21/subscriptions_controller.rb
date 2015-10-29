@@ -63,7 +63,6 @@ module Fusor
         temp_file.close
       end
 
-
       render json: {}, status: 200
     end
 
