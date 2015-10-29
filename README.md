@@ -1,0 +1,1 @@
+# Fusor  [![Build Status](https://travis-ci.org/fusor/fusor.svg)](https://travis-ci.org/fusor/fusor) [![Coverage Status](https://coveralls.io/repos/fusor/fusor/badge.svg?branch=master&service=github)](https://coveralls.io/github/fusor/fusor?branch=master)
