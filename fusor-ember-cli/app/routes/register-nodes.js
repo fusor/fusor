@@ -61,8 +61,7 @@ export default Ember.Route.extend({
   },
 
   deactivate: function() {
-    this.get('controller').stopPolling();
-    return this.send('saveDeployment', null);
+    return this.get('controller').stopPolling();
   },
 
   actions: {

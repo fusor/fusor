@@ -185,6 +185,10 @@ export default Ember.Controller.extend(ProgressBarMixin, {
     return (this.get('introspectionTasks.length') > 0);
   }.property("introspectionTasks.[]"),
 
+  intervalPolling: function() {
+    return 10000; // overwrite mixin (5000) between refreshing (in ms)
+  }.property().readOnly(),
+
   actions: {
     refreshNodesAndFlavors: function() {
       // manually set manual rather than using this.get('model').reload() which looks at data store changes
