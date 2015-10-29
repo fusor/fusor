@@ -36,6 +36,10 @@ export default Ember.Route.extend({
     controller.startPolling();
   },
 
+  activate: function() {
+    window.scrollTo(0,0);
+  },
+
   deactivate: function() {
     this.get('controller').stopPolling();
   },
