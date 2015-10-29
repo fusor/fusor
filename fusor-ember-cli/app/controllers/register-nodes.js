@@ -186,31 +186,6 @@ export default Ember.Controller.extend(ProgressBarMixin, {
   }.property("introspectionTasks.[]"),
 
   actions: {
-    saveOspTask: function(task_id) {
-      var self = this;
-      var token = Ember.$('meta[name="csrf-token"]').attr('content');
-      return new Ember.RSVP.Promise(function (resolve, reject) {
-        Ember.$.ajax({
-            url: '/fusor/api/v21/deployments/' + self.get('deploymentId') + '/add_task',
-            type: "POST",
-            data: JSON.stringify({'task_id': task_id }),
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "X-CSRF-Token": token,
-                "Authorization": "Basic " + self.get('session.basicAuthToken')
-            },
-            success: function(response) {
-              resolve(response);
-            },
-
-            error: function(response){
-              reject(response);
-            }
-        });
-      });
-    },
-
     refreshNodesAndFlavors: function() {
       // manually set manual rather than using this.get('model').reload() which looks at data store changes
       // since the nodes changes or db changes happened outside of ember-data.
