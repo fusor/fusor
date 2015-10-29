@@ -27,7 +27,7 @@ module Fusor
 
         def create
           handle = undercloud_handle
-          node_uuids = handle.list_nodes().map {|i| i.uuid}
+          node_uuids = handle.list_nodes.map { |i| i.uuid }
           begin
             node = handle.create_node_only(params[:node])
           rescue Excon::Errors::Conflict => e
@@ -36,7 +36,7 @@ module Fusor
               # a bad node to get created in the director. Delete it to
               # clean up after ourselves if we can figure out which one it is
               # and then re-throw the error.
-              current_node_uuids = handle.list_nodes().map {|i| i.uuid}
+              current_node_uuids = handle.list_nodes.map { |i| i.uuid }
               new_nodes = current_node_uuids - node_uuids
               if new_nodes.length == 1
                 handle.delete_node(new_nodes.first)
@@ -46,7 +46,7 @@ module Fusor
           end
 
           task = async_task(::Actions::Fusor::Host::IntrospectOpenStackNode, @deployment, node.uuid)
-          it = Fusor::IntrospectionTask.new()
+          it = Fusor::IntrospectionTask.new
           it.deployment = @deployment
           it.task_id = task.id
           @deployment.introspection_tasks.push(it)
