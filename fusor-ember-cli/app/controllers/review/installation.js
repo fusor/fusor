@@ -90,7 +90,7 @@ export default Ember.Controller.extend({
       // name is fqdn for managed host
       return (this.get("selectedRhevEngine.name"));
     }
-  }.property('selectedRhevEngine', 'selectedRhevEngine.name', 'engineDomain'),
+  }.property('selectedRhevEngine.is_discovered', 'selectedRhevEngine.name', 'engineDomain'),
 
   nameRHCI: Ember.computed.alias("controllers.deployment.nameRHCI"),
   nameRhev: Ember.computed.alias("controllers.deployment.nameRhev"),
