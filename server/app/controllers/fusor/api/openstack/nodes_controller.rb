@@ -59,10 +59,6 @@ module Fusor
           render :json => {:node => {:id => params[:id], :ready => ready}}.to_json
         end
 
-        def introspection_tasks
-          render :json => {:introspection_tasks => @deployment.introspection_tasks}
-        end
-
       end
     end
   end

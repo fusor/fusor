@@ -18,7 +18,6 @@ Fusor::Engine.routes.draw do
           resources :images, :only => :index
           get '/images/show_by_name/:name', to: 'images#show_by_name', as: 'images_show_by_name'
 
-          get '/nodes/introspection_tasks', to: 'nodes#introspection_tasks', on: :member
           resources :nodes, :only => [:index, :show, :create]
 
           resources :openstack_deployments, :only => [:index, :show]
