@@ -46,6 +46,7 @@ module Actions
                                   [], agent.page.uri)
 
             address = dashboard.link_with(href: /^http.*admin/).uri.to_s
+                               .gsub('http://', '').gsub('/dashboard/admin', '')
             document = Nokogiri::HTML(dashboard.body)
             password = document.css('span.password-button')
                        .attribute('data-content').value
