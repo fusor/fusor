@@ -61,6 +61,8 @@ export default Ember.Component.extend({
     if ((this.get('deploymentStatus') === 'In Process') && (this.get('model.result') === 'pending')) {
       if (this.get('isSatelliteProgressBar')) {
         return "Syncing content";
+      } else if (this.get('isNodeProgressBar')) {
+        return "Registering Node";
       } else {
         return "Installing components";
       }

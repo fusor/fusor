@@ -1,6 +1,8 @@
-<div class='col-lg-2 col-md-2 col-sm-3 rhci-review-product-name'>
+{{#unless isNodeProgressBar}}
+ <div class='col-lg-2 col-md-2 col-sm-3 rhci-review-product-name'>
   <h3>{{name}}</h3>
 </div>
+{{/unless}}
 <div class='col-lg-8 col-md-7 col-sm-6'>
   <div class='progress-bar-label'>
     {{#if isFinished}}

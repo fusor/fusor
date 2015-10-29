@@ -26,12 +26,28 @@
         </span>
   {{/if}}
 </div>
-{{#if registrationInProgress}}
-    <div class="progress progress-label-top-right" style="width:50%;">
-        <div class="progress-bar" role="progressbar" aria-valuenow="{{nodeRegPercentComplete}}%" aria-valuemin="0" aria-valuemax="100" style="width: {{nodeRegPercentComplete}}%;">
-            <span>{{nodeRegPercentComplete}}% ({{nodeRegComplete}} of {{nodeRegTotal}})</span>
-        </div>
-    </div>
+{{#if hasDeploymentTasks}}
+
+    {{#if taskRegisterNode_1}}
+      {{progress-bar model=taskRegisterNode_1 isNodeProgressBar=true}}
+    {{/if}}
+
+    {{#if taskRegisterNode_2}}
+      {{progress-bar model=taskRegisterNode_2 isNodeProgressBar=true}}
+    {{/if}}
+
+    {{#if taskRegisterNode_3}}
+      {{progress-bar model=taskRegisterNode_3 isNodeProgressBar=true}}
+    {{/if}}
+
+    {{#if taskRegisterNode_4}}
+      {{progress-bar model=taskRegisterNode_4 isNodeProgressBar=true}}
+    {{/if}}
+
+    {{#if taskRegisterNode_5}}
+      {{progress-bar model=taskRegisterNode_5 isNodeProgressBar=true}}
+    {{/if}}
+
 {{else}}
   <div class="row">
     <div class='col-md-7'>

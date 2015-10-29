@@ -1,11 +1,14 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
+import ProgressBarMixin from "../mixins/progress-bar-mixin";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(ProgressBarMixin, {
 
   needs: ['deployment'],
 
   deploymentId: Ember.computed.alias("controllers.deployment.model.id"),
+  deployment: Ember.computed.alias("controllers.deployment.model"),
+
   init: function() {
     this._super();
     this.Node = Ember.Object.extend({
@@ -174,7 +177,39 @@ export default Ember.Controller.extend({
     return $('#regNodesUploadFileInput')[0];
   },
 
+  introspectionTasks: function() {
+    return this.get('deployment.introspection_tasks');
+  }.property("deployment.@each.introspection_tasks"),
+
+  hasDeploymentTasks: function() {
+    return (this.get('deploymentTasks.length') > 0);
+  }.property("deploymentTasks.[]"),
+
   actions: {
+    saveOspTask: function(task_id) {
+      var self = this;
+      var token = Ember.$('meta[name="csrf-token"]').attr('content');
+      return new Ember.RSVP.Promise(function (resolve, reject) {
+        Ember.$.ajax({
+            url: '/fusor/api/v21/deployments/' + self.get('deploymentId') + '/add_task',
+            type: "POST",
+            data: JSON.stringify({'task_id': task_id }),
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "X-CSRF-Token": token,
+                "Authorization": "Basic " + self.get('session.basicAuthToken')
+            },
+            success: function(response) {
+              resolve(response);
+            },
+
+            error: function(response){
+              reject(response);
+            }
+        });
+      });
+    },
 
     refreshNodesAndFlavors: function() {
       // manually set manual rather than using this.get('model').reload() which looks at data store changes
@@ -190,6 +225,9 @@ export default Ember.Controller.extend({
     },
 
     showNodeRegistrationModal: function() {
+      // stop polling when opening the modal
+      this.stopPolling();
+
       var newNodes = this.get('newNodes');
       var errorNodes = this.get('errorNodes');
       var edittedNodes = this.get('edittedNodes');
@@ -220,6 +258,8 @@ export default Ember.Controller.extend({
 
     registerNodes: function() {
       this.closeRegDialog();
+      // restart polling after closing modal
+      this.startPolling();
       var edittedNodes = this.get('edittedNodes');
       var errorNodes = this.get('errorNodes');
       var newNodes = this.get('newNodes');
@@ -440,12 +480,11 @@ export default Ember.Controller.extend({
         "X-CSRF-Token": token,
       },
       data: JSON.stringify({ 'node': createdNode })
-    }).then(function(registeredNode) {
+    }).then(function(result) {
         // node was added on the backend, but model.nodes needs to be freshed
         self.send('refreshNodesAndFlavors');
         self.set('initRegInProcess', false);
-        self.addIntrospectionNode(registeredNode);
-        self.doNextNodeRegistration(registeredNode);
+        self.send('saveOspTask', result.id);
       }, function(reason) {
             reason = reason.jqXHR;
             self.set('initRegInProcess', false);
