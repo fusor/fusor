@@ -14,7 +14,6 @@ module Fusor
   class Api::V21::SubscriptionsController < Api::V2::BaseController
     skip_before_filter :check_content_type, :only => [:upload]
 
-
     def index
       @subscriptions = Subscription.all
       render :json => @subscriptions, :each_serializer => Fusor::SubscriptionSerializer
@@ -54,8 +53,6 @@ module Fusor
       fail HttpErrors::BadRequest, _("No deployment specified") if params[:deployment_id].blank?
 
       deployment = Deployment.find(params[:deployment_id])
-
-      Rails.logger.warn "XXX upload orgid: #{params[:organization_id].to_s}, repourl: #{params[:repository_url].to_s}"
 
       begin
         # candlepin requires that the file has a zip file extension
