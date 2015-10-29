@@ -66,7 +66,9 @@ module Actions::Fusor::Content
       @product.stubs(:productContent).returns(stub(:find => nil))
 
       err = assert_raises(RuntimeError) do
-        plan_action @action, @deployment.organization, SETTINGS[:fusor][:content][:cloudforms]
+        silence_stream(STDOUT) do
+          plan_action @action, @deployment.organization, SETTINGS[:fusor][:content][:cloudforms]
+        end
       end
 
       assert_match(/does not exist/, err.message)
