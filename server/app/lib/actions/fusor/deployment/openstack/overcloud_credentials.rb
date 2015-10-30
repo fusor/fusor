@@ -10,7 +10,8 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
-require 'mechanize'
+require 'egon'
+require 'fog'
 
 module Actions
   module Fusor
@@ -28,33 +29,10 @@ module Actions
 
           def run
             Rails.logger.debug '====== OvercloudCredentials run method ======'
-
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
-            ucloud = deployment.openstack_undercloud_ip_addr
-
-            agent = Mechanize.new
-            agent.verify_mode = OpenSSL::SSL::VERIFY_NONE
-            agent.open_timeout = 180
-            csrf = agent.post("http://#{ucloud}").form.csrfmiddlewaretoken
-
-            agent.post("http://#{ucloud}/dashboard/auth/login/?button=loginBtn",
-                       'username' => 'admin', 'csrfmiddlewaretoken' => csrf,
-                       'password' => deployment.openstack_undercloud_password,
-                       'region' => "http://#{ucloud}:5000/v2.0")
-
-            dashboard = agent.get("http://#{ucloud}/dashboard/infrastructure",
-                                  [], agent.page.uri)
-
-            address = dashboard.link_with(href: /^http.*admin/).uri.to_s
-                               .gsub('http://', '').gsub('/dashboard/admin', '')
-            document = Nokogiri::HTML(dashboard.body)
-            password = document.css('span.password-button')
-                       .attribute('data-content').value
-
-            deployment.openstack_overcloud_address = address
-            deployment.openstack_overcloud_password = password
+            deployment.openstack_overcloud_password = get_passwd(deployment)
+            deployment.openstack_overcloud_address = get_address(deployment)
             deployment.save!
-
             Rails.logger.debug '=== Leaving OvercloudCredentials run method ==='
           end
 
@@ -64,6 +42,24 @@ module Actions
 
           def overcloud_credentials_failed
             fail _('Failed to Retreive Overcloud Credentials')
+          end
+
+          def get_passwd(deployment)
+            undercloud = Overcloud::UndercloudHandle.new('admin',
+                                                         deployment.openstack_undercloud_password,
+                                                         deployment.openstack_undercloud_ip_addr,
+                                                         5000)
+            undercloud.get_plan_parameter_value('overcloud', 'Compute-1::AdminPassword')
+          end
+
+          def get_address(deployment)
+            service = Fog::Orchestration::OpenStack.new(
+              :openstack_auth_url  => "http://#{deployment.openstack_undercloud_ip_addr}:5000/v2.0/tokens",
+              :openstack_username  => 'admin',
+              :openstack_tenant    => 'admin',
+              :openstack_api_key   => deployment.openstack_undercloud_password)
+            stack = service.stacks.get("overcloud", service.stacks.first.id)
+            stack.outputs.find { |hash| hash["output_key"] == "PublicVip" }["output_value"]
           end
         end
       end
