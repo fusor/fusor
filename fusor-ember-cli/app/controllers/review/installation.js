@@ -100,7 +100,9 @@ export default Ember.Controller.extend({
 
   backRouteNameonReviewInstallation: function() {
     if (this.get('isSubscriptions')) {
-      if (Ember.isPresent(this.get('model.upstream_consumer_uuid'))) {
+      if (this.get('model.is_disconnected')) {
+        return 'subscriptions.review-subscriptions';
+      } else if (Ember.isPresent(this.get('model.upstream_consumer_uuid'))) {
         return 'subscriptions.select-subscriptions';
       } else {
         return 'subscriptions.credentials';

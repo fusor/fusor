@@ -69,6 +69,7 @@ export default Router.map(function() {
         });
       });
       this.route('select-subscriptions', {path: 'select'});
+      this.route('review-subscriptions', {path: 'review'});
     });
     this.resource('review', function() {
       this.route('installation');
