@@ -49,6 +49,11 @@ module Actions::Fusor::Host
       false # just starting, return false so we'll start polling
     end
 
+    # if there's an error don't keep trying, just stop
+    def poll_max_retries
+      1
+    end
+
     def poll_external_task
       deployment = ::Fusor::Deployment.find(input[:deployment_id])
       begin

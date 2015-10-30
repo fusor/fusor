@@ -179,11 +179,11 @@ export default Ember.Controller.extend(ProgressBarMixin, {
 
   introspectionTasks: function() {
     return this.get('deployment.introspection_tasks');
-  }.property("deployment.@each.introspection_tasks"),
+  }.property("deployment.introspection_tasks.[]"),
 
   hasIntrospectionTasks: function() {
     return (this.get('introspectionTasks.length') > 0);
-  }.property("introspectionTasks.[]"),
+  }.property("deployment.introspection_tasks.[]"),
 
   intervalPolling: function() {
     return 10000; // overwrite mixin (5000) between refreshing (in ms)
