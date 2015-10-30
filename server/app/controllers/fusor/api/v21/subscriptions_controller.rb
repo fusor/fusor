@@ -12,6 +12,7 @@
 
 module Fusor
   class Api::V21::SubscriptionsController < Api::V2::BaseController
+    skip_before_filter :check_content_type, :only => [:upload]
 
     def index
       @subscriptions = Subscription.all
@@ -45,6 +46,24 @@ module Fusor
       @subscription = Fusor::Subscription.find(params[:id])
       @subscription.destroy
       render json: {}, status: 204
+    end
+
+    def upload
+      fail HttpErrors::BadRequest, _("No manifest file uploaded") if params[:content].blank?
+      fail HttpErrors::BadRequest, _("No deployment specified") if params[:deployment_id].blank?
+
+      deployment = Deployment.find(params[:deployment_id])
+
+      begin
+        # candlepin requires that the file has a zip file extension
+        temp_file = File.new(File.join("#{Rails.root}/tmp", "import_#{SecureRandom.hex(10)}.zip"), 'wb+', 0600)
+        temp_file.write params[:content].read
+        deployment.update_attribute("manifest_file", temp_file.path)
+      ensure
+        temp_file.close
+      end
+
+      render json: {}, status: 200
     end
 
   end

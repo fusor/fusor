@@ -21,17 +21,28 @@ module Actions
 
         def plan(deployment, customer_portal_credentials)
           upstream_consumer = deployment.organization.owner_details['upstreamConsumer']
+          Rails.logger.debug "XXX provider url #{deployment.organization.redhat_provider.repository_url}"
           if upstream_consumer.blank?
             # If there isn't an upstream consumer, a manifest has not yet been imported
 
             download_file_path = File.join("#{Rails.root}/tmp", "import_#{SecureRandom.hex(10)}.zip")
+            if deployment.cdn_url?
+              download_file_path = deployment.manifest_file
+            end
+
+            Rails.logger.debug("XXX with no upstream_consumer: #{download_file_path}")
 
             sequence do
-              plan_action(::Actions::Fusor::Subscription::DownloadManifest,
-                          deployment,
-                          customer_portal_credentials,
-                          download_file_path)
-
+              # consider creating an UploadManifest which will get the file from
+              # the client? Or just have ember upload it to a temp directory
+              # automagically.
+              # only download it if we didn't supply our own cdn_url
+              if deployment.cdn_url.blank?
+                plan_action(::Actions::Fusor::Subscription::DownloadManifest,
+                            deployment,
+                            customer_portal_credentials,
+                            download_file_path)
+              end
               plan_action(::Actions::Katello::Provider::ManifestImport,
                           deployment.organization.redhat_provider,
                           download_file_path,
@@ -54,12 +65,19 @@ module Actions
 
             else
               download_file_path = File.join("#{Rails.root}/tmp", "import_#{SecureRandom.hex(10)}.zip")
+              if deployment.cdn_url?
+                download_file_path = deployment.manifest_file
+              end
+
+              Rails.logger.debug("XXX existing upstream_consumer: #{download_file_path}")
 
               sequence do
-                plan_action(::Actions::Fusor::Subscription::DownloadManifest,
-                            deployment,
-                            customer_portal_credentials,
-                            download_file_path)
+                if deployment.cdn_url.blank?
+                  plan_action(::Actions::Fusor::Subscription::DownloadManifest,
+                              deployment,
+                              customer_portal_credentials,
+                              download_file_path)
+                end
 
                 plan_action(::Actions::Katello::Provider::ManifestDelete,
                             deployment.organization.redhat_provider)

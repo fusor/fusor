@@ -7,7 +7,11 @@ Fusor::Engine.routes.draw do
             put :deploy
           end
         end
-        resources :subscriptions
+        resources :subscriptions do
+          collection do
+            put :upload
+          end
+        end
       end
     end
   end
