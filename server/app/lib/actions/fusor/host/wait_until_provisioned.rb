@@ -29,6 +29,11 @@ module Actions
         end
 
         def run(event = nil)
+          host = ::Host::Base.find(input[:host_id])
+          if host.error?
+            fail _("Failed to provision host '%s'. Please check the host's puppet report and logs.") % host.name
+          end
+
           case event
           when nil
             suspend do |suspended_action|
