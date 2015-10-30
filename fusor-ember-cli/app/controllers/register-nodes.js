@@ -1,11 +1,14 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
+import ProgressBarMixin from "../mixins/progress-bar-mixin";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(ProgressBarMixin, {
 
   needs: ['deployment'],
 
   deploymentId: Ember.computed.alias("controllers.deployment.model.id"),
+  deployment: Ember.computed.alias("controllers.deployment.model"),
+
   init: function() {
     this._super();
     this.Node = Ember.Object.extend({
@@ -174,8 +177,19 @@ export default Ember.Controller.extend({
     return $('#regNodesUploadFileInput')[0];
   },
 
-  actions: {
+  introspectionTasks: function() {
+    return this.get('deployment.introspection_tasks');
+  }.property("deployment.introspection_tasks.[]"),
 
+  hasIntrospectionTasks: function() {
+    return (this.get('introspectionTasks.length') > 0);
+  }.property("deployment.introspection_tasks.[]"),
+
+  intervalPolling: function() {
+    return 10000; // overwrite mixin (5000) between refreshing (in ms)
+  }.property().readOnly(),
+
+  actions: {
     refreshNodesAndFlavors: function() {
       // manually set manual rather than using this.get('model').reload() which looks at data store changes
       // since the nodes changes or db changes happened outside of ember-data.
@@ -190,6 +204,9 @@ export default Ember.Controller.extend({
     },
 
     showNodeRegistrationModal: function() {
+      // stop polling when opening the modal
+      this.stopPolling();
+
       var newNodes = this.get('newNodes');
       var errorNodes = this.get('errorNodes');
       var edittedNodes = this.get('edittedNodes');
@@ -220,6 +237,8 @@ export default Ember.Controller.extend({
 
     registerNodes: function() {
       this.closeRegDialog();
+      // restart polling after closing modal
+      this.startPolling();
       var edittedNodes = this.get('edittedNodes');
       var errorNodes = this.get('errorNodes');
       var newNodes = this.get('newNodes');
@@ -440,12 +459,17 @@ export default Ember.Controller.extend({
         "X-CSRF-Token": token,
       },
       data: JSON.stringify({ 'node': createdNode })
-    }).then(function(registeredNode) {
+    }).then(function(result) {
         // node was added on the backend, but model.nodes needs to be freshed
         self.send('refreshNodesAndFlavors');
         self.set('initRegInProcess', false);
-        self.addIntrospectionNode(registeredNode);
-        self.doNextNodeRegistration(registeredNode);
+        //push task_id into data store
+        var newTask = self.store.push('introspection-task', {
+              id: (Math.floor(Math.random() * 1000000000)),
+              task_id: result.id,
+              deployment_id: self.get('deploymentId')
+        });
+        self.get('deployment.introspection_tasks').addObject(newTask);
       }, function(reason) {
             reason = reason.jqXHR;
             self.set('initRegInProcess', false);

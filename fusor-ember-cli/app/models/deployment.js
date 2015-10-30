@@ -64,6 +64,7 @@ export default DS.Model.extend({
 
   // has many Subscriptions
   subscriptions: DS.hasMany('subscription', {inverse: 'deployment', async: true}),
+  introspection_tasks: DS.hasMany('introspection-task', {async: true}),
 
   // Ember Data doesn't have DS.attr('array') so I did this
   rhev_hypervisor_host_ids: function() {

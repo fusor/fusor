@@ -31,6 +31,7 @@ module Fusor
     has_many :discovered_hosts, serializer: ::HostBaseSerializer
 
     has_many :subscriptions, serializer: Fusor::SubscriptionSerializer
+    has_many :introspection_tasks, serializer: Fusor::IntrospectionTaskSerializer
 
   end
 end

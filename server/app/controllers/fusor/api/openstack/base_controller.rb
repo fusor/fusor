@@ -45,8 +45,6 @@ module Fusor
         end
 
         def undercloud_handle
-          id = params[:deployment_id] || params[:id]
-          @deployment = Deployment.find(id)
           return Overcloud::UndercloudHandle.new('admin', @deployment.openstack_undercloud_password, @deployment.openstack_undercloud_ip_addr, 5000)
         end
 

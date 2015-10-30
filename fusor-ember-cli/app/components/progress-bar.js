@@ -61,6 +61,8 @@ export default Ember.Component.extend({
     if ((this.get('deploymentStatus') === 'In Process') && (this.get('model.result') === 'pending')) {
       if (this.get('isSatelliteProgressBar')) {
         return "Syncing content";
+      } else if (this.get('isNodeProgressBar')) {
+        return "Registering Node";
       } else {
         return "Installing components";
       }
@@ -74,7 +76,11 @@ export default Ember.Component.extend({
       if (this.get('isSatelliteProgressBar')) {
         return "Sync content and setup successful";
       } else {
-        return "Deployment successful";
+        if (this.get('isNodeProgressBar')) {
+          return "Node registration successful";
+        } else {
+          return "Deployment successful";
+        }
       }
     }
   }.property('deploymentStatus', 'model.result', 'isFinished', 'isSatelliteProgressBar'),
