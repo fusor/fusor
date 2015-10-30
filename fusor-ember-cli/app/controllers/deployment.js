@@ -18,6 +18,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   validOpenStack: Ember.computed.alias("controllers.openstack.validOpenStack"),
   validCloudforms: Ember.computed.alias("controllers.cloudforms.validCloudforms"),
   disableNextOnSelectSubscriptions: Ember.computed.alias("controllers.subscriptions/select-subscriptions.disableNextOnSelectSubscriptions"),
+  isDisconnected: Ember.computed.alias("model.is_disconnected"),
 
   isDisabledRhev: Ember.computed.alias("satelliteInvalid"),
 
@@ -50,8 +51,8 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   }.property('organizationUpstreamConsumerUUID', 'model.upstream_consumer_uuid'),
 
   isDisabledReview: function() {
-    return (this.get('isDisabledSubscriptions') || !this.get("hasSubscriptionUUID") || this.get('disableNextOnSelectSubscriptions'));
-  }.property('isDisabledSubscriptions', 'hasSubscriptionUUID', 'disableNextOnSelectSubscriptions'),
+    return (!this.get('isDisconnected') && (this.get('isDisabledSubscriptions') || !this.get("hasSubscriptionUUID") || this.get('disableNextOnSelectSubscriptions')));
+  }.property('isDisconnected', 'isDisabledSubscriptions', 'hasSubscriptionUUID', 'disableNextOnSelectSubscriptions'),
 
   hasLifecycleEnvironment: function() {
     return (!!(this.get('model.lifecycle_environment.id')) || this.get('useDefaultOrgViewForEnv'));

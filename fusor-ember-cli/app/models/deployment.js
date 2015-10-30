@@ -11,6 +11,7 @@ export default DS.Model.extend({
   deploy_cfme: DS.attr('boolean'),
   deploy_openstack: DS.attr('boolean'),
 
+  is_disconnected: DS.attr('boolean'),
   rhev_is_self_hosted: DS.attr('boolean'),
 
   rhev_engine_admin_password: DS.attr('string'),
@@ -53,6 +54,9 @@ export default DS.Model.extend({
   openstack_undercloud_user_password: DS.attr('string'),
   openstack_overcloud_address: DS.attr('string'),
   openstack_overcloud_password: DS.attr('string'),
+
+  cdn_url: DS.attr('string'),
+  manifest_file: DS.attr('string'),
 
   created_at: DS.attr('date'),
   updated_at: DS.attr('date'),

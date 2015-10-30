@@ -9,6 +9,7 @@ export default Ember.Route.extend({
   setupController: function(controller, model) {
     controller.set('model', model);
     var self = this;
+    var isDisconnected = this.controllerFor('deployment').get('isDisconnected');
 
     if (!(this.controllerFor('deployment').get('isStarted'))) {
         controller.set('isLoading', true);

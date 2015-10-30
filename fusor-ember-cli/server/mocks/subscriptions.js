@@ -1109,11 +1109,8 @@ module.exports = function(app) {
     });
   });
 
-  subscriptionsRouter.put('/:id', function(req, res) {
+  subscriptionsRouter.put('/upload', function(req, res) {
     res.send({
-      'subscription': {
-        id: req.params.id
-      }
     });
   });
 
@@ -1121,5 +1118,5 @@ module.exports = function(app) {
     res.status(204).end();
   });
 
-  app.use('/api-mock/customer_portal/consumers/50f73b81-0242-4f9e-bcd5-d9fac11715af/entitlements', subscriptionsRouter);
+  app.use('/fusor/api222/v21/subscriptions', subscriptionsRouter);
 };

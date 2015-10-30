@@ -1,0 +1,42 @@
+<div class="row">
+  <div class='col-md-9'>
+
+    <table class="table table-bordered small">
+      <thead>
+        <tr>
+          <th> Subscription Name </th>
+          <th> Contract Number </th>
+          <th> System Type </th>
+          <th> Start Date </th>
+          <th> End Date </th>
+          <th> Attached </th>
+          <th> Available </th>
+          <th> Quantity </th>
+        </tr>
+        </thead>
+
+      <tbody>
+      {{#each subscription in subscriptionPools}}
+        {{tr-subscription subscription=subscription numSubscriptionsRequired=numSubscriptionsRequired model=model}}
+      {{else}}
+        <tr>
+          <td colspan="8">
+            <p class='no_subscriptions'>
+              <h3> Get JSON response for API endpoint that parses manifests and display table here</h3>
+            </p>
+          </td>
+        </tr>
+      {{/each}}
+
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+{{cancel-back-next backRouteName='subscriptions.credentials'
+                   disableBack=false
+                   nextRouteName='review'
+                   disableNext=false
+                   parentController=controller
+                   disableCancel=isStarted}}
