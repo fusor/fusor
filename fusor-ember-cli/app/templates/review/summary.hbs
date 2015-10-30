@@ -14,9 +14,21 @@
 
     {{#if isOpenStack}}
         {{#accordion-item name="Red Hat Enterprise Linux - OpenStack Platform" isOpen=isOpenStackOpen}}
-            {{review-link label='Director URL' value=undercloudUrl isRequired=true isExternalURL=true}}
-            {{review-link label='Director username' value=undercloudUsername isRequired=true}}
-            {{review-link label='Director password' value=undercloudPassword isRequired=true}}
+            {{review-link label='Director URL'
+                          value=undercloudUrl
+                          isExternalURL=true}}
+            {{review-link label='Director username'
+                          value=undercloudUsername}}
+            {{review-link label='Director password'
+                          value=undercloudPassword}}
+
+            {{review-link label='Overcloud URL'
+                          value=overcloudUrl
+                          isExternalURL=true}}
+            {{review-link label='Overcloud username'
+                          value=overcloudUsername}}
+            {{review-link label='Overcloud password'
+                          value=overcloudPassword}}
         {{/accordion-item}}
     {{/if}}
 

@@ -19,6 +19,13 @@ export default Ember.Controller.extend({
     return ('http://' + this.get('model.openstack_undercloud_ip_addr'));
   }.property('model.openstack_undercloud_ip_addr'),
 
+  overcloudUsername: 'admin',
+  overcloudPassword: Ember.computed.alias("model.openstack_overcloud_password"),
+
+  overcloudUrl: function() {
+    return ('http://' + this.get('model.openstack_overcloud_address') + '/dashboard/admin');
+  }.property('model.openstack_overcloud_address'),
+
   selectedRhevEngine: Ember.computed.alias("controllers.deployment.model.discovered_host"),
 
   // TODO - make mixin, same method as installation
