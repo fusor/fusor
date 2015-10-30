@@ -37,6 +37,7 @@ if [ $1 == "install" ]; then
   echo "gem 'less-rails'" >> bundler.d/local.rb
   echo "gem 'logger'" >> bundler.d/local.rb
   echo "gem 'egon'" >> bundler.d/local.rb
+  echo "gem 'coveralls', require: false" >> bundler.d/local.rb
   bundle install
 
   # hacky, find a better way to do this...
