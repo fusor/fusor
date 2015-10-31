@@ -49,15 +49,16 @@ module Fusor
     end
 
     def upload
-      fail HttpErrors::BadRequest, _("No manifest file uploaded") if params[:content].blank?
-      fail HttpErrors::BadRequest, _("No deployment specified") if params[:deployment_id].blank?
+      Rails.logger.debug "XXX upload params #{params}"
+      fail ::Katello::HttpErrors::BadRequest, _("No manifest file uploaded") if params[:manifest_file][:file].blank?
+      fail ::Katello::HttpErrors::BadRequest, _("No deployment specified") if params[:manifest_file][:deployment_id].blank?
 
-      deployment = Deployment.find(params[:deployment_id])
+      deployment = Deployment.find(params[:manifest_file][:deployment_id])
 
       begin
         # candlepin requires that the file has a zip file extension
         temp_file = File.new(File.join("#{Rails.root}/tmp", "import_#{SecureRandom.hex(10)}.zip"), 'wb+', 0600)
-        temp_file.write params[:content].read
+        temp_file.write params[:manifest_file][:file].read
         deployment.update_attribute("manifest_file", temp_file.path)
       ensure
         temp_file.close
