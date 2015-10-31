@@ -98,8 +98,8 @@ export default Ember.Controller.extend({
         processData: false,
         headers: {'X-CSRF-Token': token},
         contentType: false
-      }).then( function() {
-            //self.get('controllers.deployment.model').set('manifest_file', manifestFile.name);
+      }).then( function(result) {
+            self.get('controllers.deployment.model').set('manifest_file', result.manifest_file);
             self.get('controllers.deployment.model').save().then(function () {
               return console.log('Manifest successfully uploaded');
             });

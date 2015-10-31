@@ -64,7 +64,7 @@ module Fusor
         temp_file.close
       end
 
-      render json: {}, status: 200
+      render json: {manifest_file: temp_file.path}, status: 200
     end
 
   end
