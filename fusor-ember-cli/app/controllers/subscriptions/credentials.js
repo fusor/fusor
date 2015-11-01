@@ -84,6 +84,7 @@ export default Ember.Controller.extend({
       var self = this;
       var manifestFile = document.getElementById('manifest-file-field').files[0];
       var formData = new FormData();
+      var token = Ember.$('meta[name="csrf-token"]').attr('content');
       formData.append('manifest_file[name]', manifestFile.name);
       formData.append('manifest_file[file]', manifestFile);
       formData.append('manifest_file[deployment_id]', this.get('deploymentId'));
@@ -95,9 +96,10 @@ export default Ember.Controller.extend({
         url: '/fusor/api/v21/subscriptions/upload',
         data: formData,
         processData: false,
+        headers: {'X-CSRF-Token': token},
         contentType: false
-      }).then( function() {
-            self.get('controllers.deployment.model').set('manifest_file', manifestFile.name);
+      }).then( function(result) {
+            self.get('controllers.deployment.model').set('manifest_file', result.manifest_file);
             self.get('controllers.deployment.model').save().then(function () {
               return console.log('Manifest successfully uploaded');
             });
