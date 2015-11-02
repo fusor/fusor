@@ -26,6 +26,7 @@
     {{#if hasHumanizedErrors}}
       <span class='errorForValidation'>
           {{#link-to 'review.progress.details'}}{{model.humanized_errors}}{{/link-to}}
+          {{{hostErrorInfo}}}
       </span>
     {{/if}}
 

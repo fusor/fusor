@@ -99,6 +99,18 @@ export default Ember.Component.extend({
 
   hasHumanizedErrors: function() {
     return (Ember.isPresent(this.get('model.humanized_errors')));
+  }.property('model.humanized_errors'),
+
+  hostErrorInfo: function() {
+    var error = this.get('model.humanized_errors'),
+      host = '';
+
+    if (error.match(/Failed to provision/)) {
+      host = error.match(/host '(.*)'\./)[1];
+
+      return "Please check the host logs or <a href='/hosts/" + host +
+          "/reports'>puppet reports</a>.";
+    }
   }.property('model.humanized_errors')
 
 });
