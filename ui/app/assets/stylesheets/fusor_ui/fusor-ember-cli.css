@@ -395,6 +395,9 @@ table.fusor-table {
 .accordion-item {
   padding-bottom: 10px; }
 
+.accordion-item-title {
+  cursor: pointer; }
+
 .invalid-input {
   border: 2px solid red; }
 
