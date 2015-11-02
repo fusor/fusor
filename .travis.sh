@@ -38,7 +38,7 @@ if [ $1 == "install" ]; then
   echo "gem 'logger'" >> bundler.d/local.rb
   echo "gem 'egon'" >> bundler.d/local.rb
   echo "gem 'coveralls', require: false" >> bundler.d/local.rb
-  bundle install
+  bundle install --retry 3
 
   # hacky, find a better way to do this...
   # rails only supports loading fixtures from one directory, so link the
