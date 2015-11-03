@@ -8,6 +8,10 @@ export default Ember.Component.extend({
     return !!(this.get('deployment.foreman_task_uuid'));
   }.property('deployment.foreman_task_uuid'),
 
+  isComplete: function() {
+   return this.get('deployment.progress') === '1';
+  }.property('deployment.progress'),
+
   formanTaskResult: function() {
     var self = this;
     if (this.get('deployment.foreman_task_uuid')) {
@@ -33,14 +37,14 @@ export default Ember.Component.extend({
   }.property('isStarted', 'isError'),
 
   routeNameForEdit: function() {
-    if (Ember.isBlank(this.get('deployment.state'))) {
-      return "deployment";
-    } else if (this.get('model.state') === '1') {
-      return "review.summary";
-    } else {
-      return "review.progress.overview";
+    if (this.get('isComplete')) {
+      return 'review.summary';
+    } else if (this.get('isStarted')) {
+      return 'review.progress.overview';
     }
-  }.property('deployment.progress'),
+
+    return 'deployment';
+  }.property('isComplete', 'isStarted'),
 
   actions: {
     openDeploymentModal: function (item) {
