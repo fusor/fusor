@@ -15,7 +15,15 @@ export default Ember.Controller.extend({
   idSatName: 'deployment_sat_name',
   idSatDesc: 'deployment_sat_desc',
 
-  backRouteNameOnSatIndex: 'deployment.start',
+  isBackToDeployments: Ember.computed.alias("controllers.deployment.isBackToDeployments"),
+
+  backRouteNameOnSatIndex: function() {
+    if (this.get('isBackToDeployments')) {
+      return 'deployments';
+    } else {
+      return 'deployment.start';
+    }
+  }.property('isBackToDeployments'),
 
   deploymentNames: Ember.computed.alias("controllers.application.deploymentNames")
 
