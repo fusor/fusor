@@ -22,6 +22,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
   hasLifecycleEnvironment: Ember.computed.alias("controllers.deployment-new.hasLifecycleEnvironment"),
   hasNoLifecycleEnvironment: Ember.computed.alias("controllers.deployment-new.hasNoLifecycleEnvironment"),
   disableNextOnLifecycleEnvironment: Ember.computed.alias("controllers.deployment-new.disableNextOnLifecycleEnvironment"),
+  openNewEnvironmentModal: false,
 
   deployment: Ember.computed.alias("controllers.deployment-new"),
 
@@ -30,6 +31,13 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
       this.set('showAlertMessage', false);
       this.set('selectedEnvironment', environment);
       return this.get('controllers.deployment-new.model').set('lifecycle_environment', environment);
+    },
+
+    newEnvironment: function() {
+      this.set('name', '');
+      this.set('label', '');
+      this.set('description', '');
+      this.set('openNewEnvironmentModal', true);
     },
 
     createEnvironment: function() {
