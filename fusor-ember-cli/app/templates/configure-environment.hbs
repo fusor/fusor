@@ -73,9 +73,9 @@
     {{/if}}
 
     <div style='margin-top:15px;'>
-      {{#em-modal-toggler modal-id="newLifecycleEnvironmentModal" class="btn btn-default" disabled=isStarted}}
+      <button class="btn btn-default" {{action 'newEnvironment'}} disabled={{isStarted}}>
         New Environment Path
-      {{/em-modal-toggler}}
+      </button>
     </div>
 
   </div>

@@ -1,4 +1,8 @@
-{{#em-modal-form configName="bs" id="newLifecycleEnvironmentModal" on-submit="createEnvironment" in-async=async}}
+{{#em-modal-form configName="bs"
+                 id="newLifecycleEnvironmentModal"
+                 open-if=openNewEnvironmentModal
+                 on-submit="createEnvironment"
+                 in-async=async}}
 
     {{#em-modal-title}}
         {{#em-modal-toggler class="close"}}
