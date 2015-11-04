@@ -21,6 +21,8 @@ module Fusor
                :openstack_undercloud_ip_addr,
                :openstack_undercloud_user,
                :openstack_undercloud_user_password,
+               :openstack_overcloud_address,
+               :openstack_overcloud_password,
                :is_disconnected,
                :cdn_url, :manifest_file,
                :created_at, :updated_at
