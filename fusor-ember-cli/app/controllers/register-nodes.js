@@ -48,7 +48,6 @@ export default Ember.Controller.extend(ProgressBarMixin, {
   newNodes: Ember.A(),
   errorNodes: Ember.A(),
   edittedNodes: Ember.A(),
-  introspectionNodes: Ember.A(),
 
   drivers: ['pxe_ipmitool', 'pxe_ssh'],
   selectedNode: null,
@@ -90,41 +89,6 @@ export default Ember.Controller.extend(ProgressBarMixin, {
     });
     return tip;
   }.property('errorNodes.[]'),
-
-  preRegistered: 0,
-
-  successNodesLength: function() {
-    if (!this.get('introspectionInProgress')) {
-      return 0;
-    }
-    return this.get('model.nodes.length') - this.get('preRegistered');
-  }.property('model.nodes.[]', 'introspectionNodes.[]', 'preRegistered', 'introspectionInProgress'),
-
-  nodeRegComplete: function() {
-    return this.get('successNodesLength') + this.get('errorNodes.length');
-  }.property('successNodesLength', 'errorNodes.[]'),
-
-  nodeRegTotal: function() {
-    var total = this.get('nodeRegComplete') + this.get('newNodes.length') + this.get('introspectionNodes.length');
-
-    // During the initial registration process there is a node in limbo...
-    if (this.get('initRegInProcess')) {
-      total++;
-    }
-
-    return total;
-  }.property('nodeRegComplete', 'newNodes.[]', 'introspectionNodes.[]', 'registrationInProgress', 'introspectionInProgress'),
-
-  nodeRegPercentComplete: function() {
-    var nodeRegTotal = this.get('nodeRegTotal');
-    var nodeRegComplete = this.get('nodeRegComplete');
-    var nodesIntrospection = this.get('introspectionNodes.length');
-
-    var numSteps = nodeRegTotal * 4;
-    var stepsComplete = (nodeRegComplete * 4) + (nodesIntrospection * 1);
-
-    return Math.round(stepsComplete / numSteps * 100);
-  }.property('nodeRegComplete', 'nodeRegTotal', 'newNodes.[]', 'introspectionNodes.[]'),
 
   noRegisteredNodes: function() {
       return (this.get('model.nodes.length') < 1);
@@ -251,17 +215,15 @@ export default Ember.Controller.extend(ProgressBarMixin, {
       newNodes.setObjects(edittedNodes);
       this.set('edittedNodes', Ember.A());
       this.set('newNodes', newNodes);
-      this.registerNewNodes();
+      var my = this;
+      newNodes.forEach(function(node) {
+        my.registerNode(node);
+      });
     },
 
     cancelRegisterNodes: function() {
       this.closeRegDialog();
       this.set('edittedNodes', Ember.A());
-      // Unpause if necessary
-      if (this.get('registrationPaused'))
-      {
-        this.doNextNodeRegistration();
-      }
     },
 
     selectNode: function(node) {
@@ -342,21 +304,6 @@ export default Ember.Controller.extend(ProgressBarMixin, {
     return (nodeCount < 2);
   }.property('model.nodes.[]'),
 
-  registerNewNodes: function() {
-    var newNodes = this.get('newNodes');
-    if (newNodes && newNodes.get('length') > 0) {
-      if (!this.get('registrationInProgress'))
-      {
-        this.set('introspectionNodes', Ember.A());
-        this.set('preRegistered', this.get('model.nodes.length'));
-        this.doNextNodeRegistration();
-      }
-      else if (this.get('registrationPaused') || this.get('introspectionInProgress')) {
-        this.doNextNodeRegistration();
-      }
-    }
-  },
-
   updateAfterRegistration: function(resolve) {
     var self = this;
     var deploymentId = this.get('deploymentId');
@@ -367,51 +314,6 @@ export default Ember.Controller.extend(ProgressBarMixin, {
         }
       });
     });
-  },
-
-  doNextNodeRegistration: function(lastNode) {
-    if (this.get('modalOpen')) {
-      this.set('registrationPaused', true);
-    } else {
-      this.set('registrationPaused', false);
-
-      var remaining = this.get('newNodes');
-      if (remaining && remaining.get('length') > 0) {
-        this.set('registrationInProgress', true);
-        var lastIndex = remaining.get('length') - 1;
-        var nextNode = remaining.objectAt(lastIndex);
-        this.set('newNodes', remaining.slice(0, lastIndex));
-        this.registerNode(nextNode);
-      } else {
-        var self = this;
-        if (!self.get('introspectionInProgress')) {
-          self.startCheckingNodeIntrospection();
-        } else if (lastNode !== undefined) {
-          self.checkNodeIntrospection(lastNode);
-        }
-      }
-    }
-  },
-
-  startCheckingNodeIntrospection: function() {
-    var self = this;
-    var introspectionNodes = self.get('introspectionNodes');
-    if (introspectionNodes.get('length') > 0) {
-      self.set('introspectionInProgress', true);
-      introspectionNodes.forEach(function(node) {
-        self.checkNodeIntrospection(node);
-      });
-    }
-    else
-    {
-      this.set('registrationInProgress', false);
-    }
-  },
-
-  addIntrospectionNode: function(node) {
-    var introspectionNodes = this.get('introspectionNodes');
-    introspectionNodes.pushObject(node);
-    this.set('introspectionNodes', introspectionNodes);
   },
 
   registerNode: function(node) {
@@ -475,7 +377,6 @@ export default Ember.Controller.extend(ProgressBarMixin, {
             self.set('initRegInProcess', false);
             node.errorMessage = node.ipAddress + ": " + self.getErrorMessageFromReason(reason);
             self.get('errorNodes').pushObject(node);
-            self.doNextNodeRegistration();
         }
     );
   },
@@ -499,83 +400,4 @@ export default Ember.Controller.extend(ProgressBarMixin, {
     }
   },
 
-  checkNodeIntrospection: function(node) {
-    var self = this;
-
-    var promiseFunction = function(resolve) {
-      var checkForDone = function() {
-        //ic-ajax request
-        console.log('action: checkNodeIntrospection');
-        console.log('GET /fusor/api/openstack/deployments/' + self.get('deploymentId') + '/nodes/' + node.uuid + '/ready');
-
-        request({
-          url: '/fusor/api/openstack/deployments/' + self.get('deploymentId') + '/nodes/' + node.uuid + '/ready',
-          type: 'GET',
-          contentType: 'application/json'
-        }).then(function(results) {
-            //refresh model if ready is true
-            if (results.node.ready) {
-              self.send('refreshNodesAndFlavors');
-            }
-            resolve({done: results.node.ready});
-          },  function(results) {
-                results = results.jqXHR;
-                if (results.status === 0) {
-                  // Known problem during introspection, return response is empty, keep trying
-                  resolve({done: false});
-                }
-                else if (results.status === 500) {
-                  var error = self.getErrorMessageFromReason(results);
-                  if (error.indexOf('timeout') >= 0) {
-                    resolve({done: false});
-                  }
-                  else {
-                    resolve({done: true, errorResults: results});
-                  }
-                }
-                else {
-                  resolve({done: true, errorResults: results});
-                }
-              }
-        );
-      };
-
-      Ember.run.later(checkForDone, 15 * 1000);
-    };
-
-    var fulfill = function(results) {
-      if (results.done)
-      {
-        var introspectionNodes = self.get('introspectionNodes');
-        introspectionNodes.removeObject(node);
-        self.set('introspectionNodes', introspectionNodes);
-        if (introspectionNodes.get('length') === 0 && self.get('newNodes.length') === 0) {
-          self.set('registrationInProgress', false);
-          self.set('introspectionInProgress', false);
-        }
-
-        if (results.errorResults) {
-          var nodeID;
-          if (node.driver === 'pxe_ssh' ) {
-            nodeID = node.driver_info.ssh_address;
-          }
-          else if (node.driver === 'pxe_ipmitool')
-          {
-            nodeID = node.driver_info.ipmi_address;
-          }
-          node.errorMessage = nodeID + ": " + self.getErrorMessageFromReason(results.errorResults);
-          node.isIntrospectionError = true;
-          self.get('errorNodes').pushObject(node);
-        }
-        self.updateAfterRegistration();
-      }
-      else {
-        var promise = new Ember.RSVP.Promise(promiseFunction);
-        promise.then(fulfill);
-      }
-    };
-
-    var promise = new Ember.RSVP.Promise(promiseFunction);
-    promise.then(fulfill);
-  }
 });
