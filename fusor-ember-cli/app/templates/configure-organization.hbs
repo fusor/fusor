@@ -31,7 +31,7 @@
         <th>Description</th>
       </thead>
       <tbody>
-        {{#each org in organizations}}
+        {{#each organizations as |org|}}
           {{tr-organization org=org
                             selectedOrganization=selectedOrganization
                             action="selectOrganization"
@@ -50,5 +50,5 @@
                    disableBack=false
                    nextRouteName=lifecycleEnvironmentTabRouteName
                    disableNext=disableNextOnConfigureOrganization
-                   parentController=controller
+
                    disableCancel=isStarted}}

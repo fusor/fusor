@@ -1,8 +1,9 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../../../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['deployment', 'review/progress/overview'],
+  needs: ['review/progress/overview'],
 
   isRhevOpen: true,
   isOpenStackOpen: false,

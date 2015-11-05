@@ -1,13 +1,18 @@
 <br />
-<h1>Deployments<span style='float:right;'>{{#link-to 'deployment-new.start' class='btn btn-success'}}New Deployment{{/link-to}}</span>
-</h1>
+<h1>Deployments</h1>
+
+<div class='new-deployment-button'>
+  {{#link-to 'deployment-new.start' class='btn btn-success'}}
+      New Deployment
+  {{/link-to}}
+</div>
 
 <br />
 <form class='form'>
 <div class="clearfix">
-   <div class="form-group" style='margin-left: -18px;'>
+   <div class="form-group filter-deployments">
      <div class='col-md-5'>
-       {{input type='text' class='form-control'
+       {{input type='text' class='form-control filter-input'
                            placeholder='Filter ...'
                            value=searchDeploymentString}}
      </div>
@@ -16,7 +21,7 @@
 </div>
 </form>
 <br />
-<table class="table table-bordered table-striped small">
+<table class="table table-bordered table-striped small deployments-table">
   <thead>
     <tr>
       <th> Name </th>
@@ -28,14 +33,15 @@
     </thead>
 
   <tbody>
-  {{#each deployment in filteredDeployments}}
+  {{#each filteredDeployments as |deployment|}}
       {{tr-deployment deployment=deployment}}
   {{/each}}
   </tbody>
 </table>
 
-<br />
-Displaying <strong>{{filteredDeployments.length}} of {{model.length}}</strong> entries
+<p class='displaying-entries'>
+  Displaying <strong>{{filteredDeployments.length}} of {{model.length}}</strong> entries
+</p>
 
 {{outlet}}
 

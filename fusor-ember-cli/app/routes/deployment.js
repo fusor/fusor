@@ -4,7 +4,7 @@ import DeploymentRouteMixin from "../mixins/deployment-route-mixin";
 export default Ember.Route.extend(DeploymentRouteMixin, {
 
   model: function(params) {
-    return this.store.find('deployment', params.deployment_id);
+    return this.store.findRecord('deployment', params.deployment_id);
   },
 
   setupController: function(controller, model) {

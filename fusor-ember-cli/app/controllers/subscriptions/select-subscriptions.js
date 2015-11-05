@@ -1,7 +1,9 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
-export default Ember.ArrayController.extend({
-  needs: ['application', 'deployment'],
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
+
+  needs: ['application'],
 
   isUpstream: Ember.computed.alias("controllers.application.isUpstream"),
   stepNumberSubscriptions: Ember.computed.alias("controllers.deployment.stepNumberSubscriptions"),

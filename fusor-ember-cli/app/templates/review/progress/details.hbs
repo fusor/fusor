@@ -23,7 +23,7 @@
               {{tr-task task=model.manageContentTask}}
               {{tr-task task=model.rhevTask}}
               {{tr-task task=model.cfmeTask}}
-              {{#each synctask in synctasks}}
+              {{#each synctasks as |synctask|}}
                   {{tr-task task=synctask}}
               {{/each}}
           </tbody>

@@ -1,7 +1,8 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
-  needs: ['deployment'],
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
+
   stepNumberCloudForms: Ember.computed.alias("controllers.deployment.stepNumberCloudForms"),
 
   hasInstallLocation: function() {

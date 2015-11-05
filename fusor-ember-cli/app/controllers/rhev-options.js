@@ -1,8 +1,7 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
-
-  needs: ['deployment'],
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   rhev_root_password: Ember.computed.alias("controllers.deployment.model.rhev_root_password"),
   rhev_engine_admin_password: Ember.computed.alias("controllers.deployment.model.rhev_engine_admin_password"),

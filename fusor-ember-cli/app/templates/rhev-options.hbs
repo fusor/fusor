@@ -4,24 +4,24 @@
   <div class='col-md-12'>
     <br />
     <form class="form form-horizontal">
-      {{text-f label="Root password for Engine & Hypervisor" type='password' value=rhev_root_password cssId='rhev_root_password' isRequired=true disabled=controllers.deployment.isStarted
+      {{text-f label="Root password for Engine & Hypervisor" type='password' value=rhev_root_password cssId='rhev_root_password' isRequired=true disabled=isStarted
       minChars=8
       help-inline='must be 8 or more characters'
       placeholder='must be 8 or more characters'}}
 
-      {{text-f label="Engine admin password" type='password' value=rhev_engine_admin_password cssId='rhev_engine_admin_password' isRequired=true disabled=controllers.deployment.isStarted
+      {{text-f label="Engine admin password" type='password' value=rhev_engine_admin_password cssId='rhev_engine_admin_password' isRequired=true disabled=isStarted
       minChars=8
       help-inline='must be 8 or more characters'
       placeholder='must be 8 or more characters'}}
 
-      {{text-f label="Datacenter Name" value=rhev_database_name placeholder='Leave blank for default' cssId='rhev_database_name' disabled=controllers.deployment.isStarted isAlphaNumeric=true}}
-      {{text-f label="Cluster Name" value=rhev_cluster_name placeholder='Leave blank for default' cssId='rhev_cluster_name' disabled=controllers.deployment.isStarted isAlphaNumeric=true}}
+      {{text-f label="Datacenter Name" value=rhev_database_name placeholder='Leave blank for default' cssId='rhev_database_name' disabled=isStarted isAlphaNumeric=true}}
+      {{text-f label="Cluster Name" value=rhev_cluster_name placeholder='Leave blank for default' cssId='rhev_cluster_name' disabled=isStarted isAlphaNumeric=true}}
       {{select-simple-f label="CPU Type"
                         content=cpuTypes
                         value=rhev_cpu_type
                         prompt='Leave blank for default'
                         cssId='rhev_cpu_type'
-                        disabled=controllers.deployment.isStarted}}
+                        disabled=isStarted}}
     </form>
   </div>
 </div>
@@ -30,6 +30,6 @@
                    disableBack=false
                    nextRouteName='storage'
                    disableNext=disableNextRhevOptions
-                   parentController=controller
-                   disableCancel=controllers.deployment.isStarted}}
+
+                   disableCancel=isStarted}}
 

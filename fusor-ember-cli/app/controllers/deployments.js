@@ -1,11 +1,10 @@
 import Ember from 'ember';
 
-export default Ember.ArrayController.extend({
+export default Ember.Controller.extend({
 
-  sortProperties: ['name'],
-  sortAscending: true,
-
-  sortedDeployments: Ember.computed.sort('model', 'sortProperties'),
+  sortedDeployments: Ember.computed('model.[]', 'model.@each.name', function() {
+    return this.get('model').sortBy('name');
+  }),
 
   searchDeploymentString: '',
 

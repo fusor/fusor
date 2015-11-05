@@ -1,8 +1,9 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['subscriptions', 'application', 'deployment', 'review/progress/overview'],
+  needs: ['subscriptions', 'application', 'review/progress/overview'],
 
   isUpstream: Ember.computed.alias("controllers.application.isUpstream"),
   disableNext: Ember.computed.alias("controllers.subscriptions.disableNext"),
@@ -17,9 +18,7 @@ export default Ember.Controller.extend({
     return (this.get('disableNext') && (!(this.get('isUpstream'))));
   }.property('disableNext', 'isUpstream'),
 
-  disableTabProgress: function() {
-    return !(this.get('controllers.deployment.isStarted'));
-  }.property('controllers.deployment.isStarted'),
+  disableTabProgress: Ember.computed.not("isStarted"),
 
   disableTabSummary: Ember.computed.not("deployTaskIsFinished")
 

@@ -95,7 +95,7 @@ export default DS.Model.extend({
 
   foremanTask: function() {
     if (this.get('isStarted')) {
-        return this.store.find('foreman-task', this.get('foreman_task_uuid'));
+        return this.store.findRecord('foreman-task', this.get('foreman_task_uuid'));
     }
   }.property('foreman_task_uuid', 'isStarted'),
 

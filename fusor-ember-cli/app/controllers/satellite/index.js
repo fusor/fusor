@@ -1,12 +1,12 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['satellite', 'deployment', 'application'],
+  needs: ['satellite', 'application'],
 
   name: Ember.computed.alias("controllers.deployment.name"),
   description: Ember.computed.alias("controllers.deployment.description"),
-  isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
 
   organizationTabRouteName: Ember.computed.alias("controllers.deployment.organizationTabRouteName"),
 

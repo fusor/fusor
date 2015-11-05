@@ -7,8 +7,8 @@
   {{#base-f label="Storage Type" isRequired=true}}
 
     {{#radio-button value="NFS" groupValue=rhev_storage_type id='nfs'
-                    disabled=controllers.deployment.isStarted}}
-      <span class="{{if controllers.deployment.isStarted 'disabled'}}">
+                    disabled=isStarted}}
+      <span class="{{if isStarted 'disabled'}}">
         NFS
       </span>
     {{/radio-button}}
@@ -26,10 +26,10 @@
     {{/radio-button}}
   {{/base-f}}
   {{#if isNFS}}
-      {{text-f label="Data Domain Name" value=rhev_storage_name isRequired=true cssId='rhev_storage_name' disabled=controllers.deployment.isStarted isAlphaNumeric=true}}
-      {{text-f label="Storage Address" value=rhev_storage_address isRequired=true cssId='rhev_storage_address' disabled=controllers.deployment.isStarted
+      {{text-f label="Data Domain Name" value=rhev_storage_name isRequired=true cssId='rhev_storage_name' disabled=isStarted isAlphaNumeric=true}}
+      {{text-f label="Storage Address" value=rhev_storage_address isRequired=true cssId='rhev_storage_address' disabled=isStarted
       isHostname=true}}
-      {{text-f label="Share Path" value=rhev_share_path isRequired=true cssId='rhev_share_path' disabled=controllers.deployment.isStarted errors=errorsHashSharePath}}
+      {{text-f label="Share Path" value=rhev_share_path isRequired=true cssId='rhev_share_path' disabled=isStarted errors=errorsHashSharePath}}
 
       {{#if isCloudForms}}
         <h4> Export Domain </h4>
@@ -39,20 +39,32 @@
       {{/if}}
 
   {{else if isLocal}}
-      {{text-f label="Storage Path" value=rhev_local_storage_path placeholder='Ex. /rhev/data_storage' isRequired=true cssId='rhev_local_storage_path' help-inline='This path will be created and given appropriate permissions - chown 36:36;chmod 0755, etc' disabled=controllers.deployment.isStarted}}
+      {{text-f label="Storage Path" value=rhev_local_storage_path placeholder='Ex. /rhev/data_storage' isRequired=true cssId='rhev_local_storage_path' help-inline='This path will be created and given appropriate permissions - chown 36:36;chmod 0755, etc' disabled=isStarted}}
 
   {{else if isGluster}}
-      {{text-f label="Node Name" value=rhev_gluster_node_name placeholder='Ex. node.example.com' isRequired=true cssId='rhev_gluster_node_name' isRequired=true disabled=controllers.deployment.isStarted}}
-      {{text-f label="Node Address" value=rhev_gluster_node_address placeholder='Ex. 1.2.3.4' isRequired=true cssId='rhev_gluster_node_address' disabled=controllers.deployment.isStarted}}
-      {{text-f label="SSH Port" value=rhev_gluster_ssh_port isRequired=true cssId='rhev_gluster_ssh_port' disabled=controllers.deployment.isStarted}}
-      {{text-f label="Root Password" value=rhev_gluster_root_password isRequired=true cssId='rhev_gluster_root_password' type='password' disabled=controllers.deployment.isStarted}}
+      {{text-f label="Node Name" value=rhev_gluster_node_name placeholder='Ex. node.example.com' isRequired=true cssId='rhev_gluster_node_name' isRequired=true disabled=isStarted}}
+      {{text-f label="Node Address" value=rhev_gluster_node_address placeholder='Ex. 1.2.3.4' isRequired=true cssId='rhev_gluster_node_address' disabled=isStarted}}
+      {{text-f label="SSH Port" value=rhev_gluster_ssh_port isRequired=true cssId='rhev_gluster_ssh_port' disabled=isStarted}}
+      {{text-f label="Root Password" value=rhev_gluster_root_password isRequired=true cssId='rhev_gluster_root_password' type='password' disabled=isStarted}}
   {{/if}}
 
 </form>
+
+{{#if isCloudForms}}
+  <h4> Export Domain </h4>
+
+  <form class="form form-horizontal">
+
+    {{text-f label="Export Domain Name" value=rhev_export_domain_name cssId='rhev_export_domain_name' isRequired=true disabled=isStarted isAlphaNumeric=true}}
+    {{text-f label="Storage Address" value=rhev_export_domain_address cssId='rhev_export_domain_address' isRequired=true disabled=isStarted isHostname=true}}
+    {{text-f label="Share Path" value=rhev_export_domain_path cssId='rhev_export_domain_path' isRequired=true disabled=isStarted errors=errorsHashExportPath}}
+
+  </form>
+{{/if}}
 
 {{cancel-back-next backRouteName='rhev-options'
                    disableBack=false
                    nextRouteName=step3RouteName
                    disableNext=disableNextStorage
-                   parentController=controller
-                   disableCancel=controllers.deployment.isStarted}}
+
+                   disableCancel=isStarted}}

@@ -1,7 +1,8 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
-  needs: ['rhev', 'deployment'],
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
+  needs: ['rhev'],
 
   hostNamingScheme: Ember.computed.alias("controllers.deployment.model.host_naming_scheme"),
   customPreprendName: Ember.computed.alias("controllers.deployment.model.custom_preprend_name"),

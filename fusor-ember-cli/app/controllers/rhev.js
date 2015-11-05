@@ -1,7 +1,9 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
-  needs: ['application', 'rhev-setup', 'deployment', 'storage', 'rhev-options'],
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
+
+  needs: ['application', 'rhev-setup', 'storage', 'rhev-options'],
 
   rhevSetup: Ember.computed.alias("controllers.rhev-setup.rhevSetup"),
 

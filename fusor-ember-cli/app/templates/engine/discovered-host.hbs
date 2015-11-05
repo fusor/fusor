@@ -1,3 +1,4 @@
+model - {{model}}
 <div class='row'>
   <div class='col-lg-9'>
 
@@ -49,7 +50,7 @@
           </tr>
         </thead>
         <tbody>
-          {{#each host in filteredHosts}}
+          {{#each filteredHosts as |host|}}
              {{tr-engine host=host
                          selectedRhevEngineHost=selectedRhevEngineHost
                          disabled=isStarted
@@ -67,5 +68,5 @@
                    disableBack=false
                    nextRouteName=engineNextRouteName
                    disableNext=controllers.deployment.hasNoEngine
-                   parentController=controller
+
                    disableCancel=isStarted}}

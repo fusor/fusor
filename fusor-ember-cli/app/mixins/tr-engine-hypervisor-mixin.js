@@ -21,7 +21,9 @@ export default Ember.Mixin.create({
   }.property('host.id'),
 
   selectedIds: function () {
-    return this.get('model').getEach("id");
+    if (this.get('model')) {
+      return this.get('model').getEach("id");
+    }
   }.property('model.[]'),
 
   actions: {

@@ -39,7 +39,7 @@
                           value=engineNamePlusDomain}}
 
             {{#review-link label='Hypervisor Host Name' routeName='hypervisor.discovered-host' isRequired=true value=selectedHypervisorHosts useYieldInstead=true}}
-                {{#each host in selectedHypervisorHosts}}
+                {{#each selectedHypervisorHosts as |host|}}
                    {{hypervisor-name host=host hypervisorDomain=hypervisorDomain}}
                 {{/each}}
             {{/review-link}}
@@ -95,7 +95,7 @@
             {{review-link label='Director username' value=undercloudUsername isRequired=true}}
             {{review-link label='Director password' value=undercloudPassword isRequired=true}}
             {{#review-link label='Assigned Nodes' routeName='assign-nodes' isRequired=true value=openstackProfiles useYieldInstead=true}}
-                {{#each profile in openstackProfiles}}
+                {{#each openstackProfiles as |profile|}}
                     {{node-profile profile=profile nodes=openstackNodes plan=openstackPlan doAssign=true readOnly=true}}
                 {{/each}}
             {{/review-link}}
@@ -121,7 +121,7 @@
                         value=controllers.subscriptions/select-subscriptions.enableAnalytics }}
 
 
-          {{#each sub in subscriptions}}
+          {{#each subscriptions as |sub|}}
               {{review-link label='Subscription Name'
                             routeName='subscriptions.select-subscriptions'
                             value=sub.product_name }}
@@ -145,9 +145,9 @@
 
   {{#cancel-back-next backRouteName=backRouteNameonReviewInstallation
                       disableBack=false
-                      parentController=controller
-                      disableCancel=controllers.deployment.isStarted}}
-      {{#if controllers.deployment.isStarted}}
+
+                      disableCancel=isStarted}}
+      {{#if isStarted}}
           {{#link-to 'review.progress.overview' role="button" class='btn btn-primary'}}
             Next <i class="fa fa-angle-right"></i>
           {{/link-to}}

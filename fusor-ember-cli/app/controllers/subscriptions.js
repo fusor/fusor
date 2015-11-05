@@ -1,7 +1,9 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
-  needs: ['deployment', 'subscriptions/credentials', 'subscriptions/management-application'],
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
+
+  needs: ['subscriptions/credentials', 'subscriptions/management-application'],
 
   stepNumberSubscriptions: Ember.computed.alias("controllers.deployment.stepNumberSubscriptions"),
   isStarted: Ember.computed.alias("controllers.deployment.isStarted"),

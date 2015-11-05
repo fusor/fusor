@@ -1,9 +1,8 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
+import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
-
-  needs: ['deployment'],
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   deploymentId: Ember.computed.alias("controllers.deployment.model.id"),
   upstreamConsumerUuid: Ember.computed.alias("controllers.deployment.model.upstream_consumer_uuid"),

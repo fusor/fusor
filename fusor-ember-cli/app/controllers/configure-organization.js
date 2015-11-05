@@ -1,9 +1,8 @@
 import Ember from 'ember';
 import ConfigureOrganizationMixin from "../mixins/configure-organization-mixin";
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend(ConfigureOrganizationMixin, {
-
-  needs: ['deployment', 'application'],
+export default Ember.Controller.extend(ConfigureOrganizationMixin, NeedsDeploymentMixin, {
 
   organization: Ember.computed.alias("controllers.deployment.organization"),
 

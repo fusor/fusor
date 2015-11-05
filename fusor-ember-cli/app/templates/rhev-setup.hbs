@@ -13,8 +13,8 @@
     </div>
 
     <div class='ident-radio'>
-      {{#radio-button value="rhevhost" groupValue=rhevSetup changed="rhevSetupChanged" id='rhevhost' disabled=controllers.deployment.isStarted}}
-      <span class="{{if controllers.deployment.isStarted 'disabled'}}">
+      {{#radio-button value="rhevhost" groupValue=rhevSetup changed="rhevSetupChanged" id='rhevhost' disabled=isStarted}}
+      <span class="{{if isStarted 'disabled'}}">
         Hypervisor + engine
       </span>
       {{/radio-button}}
@@ -29,6 +29,6 @@
                    disableBack=false
                    nextRouteName='engine.discovered-host'
                    disableNext=false
-                   parentController=controller
-                   disableCancel=controllers.deployment.isStarted}}
+
+                   disableCancel=isStarted}}
 

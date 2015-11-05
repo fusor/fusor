@@ -3,14 +3,16 @@
     <form class="form form-horizontal">
       {{text-f label="CFME Root password" type='password' value=cfmeRootPassword
                cssId='cfme_root_password'
-               isRequired=true disabled=controllers.deployment.isStarted
+               isRequired=true
+               disabled=isStarted
                minChars=8
                help-inline='must be 8 or more characters'
                placeholder='must be 8 or more characters'}}
 
       {{text-f label="CFME Admin password" type='password' value=cfmeAdminPassword
                cssId='cfme_admin_password'
-               isRequired=true disabled=controllers.deployment.isStarted
+               isRequired=true
+               disabled=isStarted
                minChars=8
                help-inline='must be 8 or more characters'
                placeholder='must be 8 or more characters'}}
@@ -22,6 +24,6 @@
 {{cancel-back-next backRouteName='where-install'
                    disableBack=false
                    nextRouteName=nextRouteNameAfterCFME
-                   disableNext=controllers.cloudforms.notValidCloudforms
-                   parentController=controller
-                   disableCancel=controllers.deployment.isStarted}}
+                   disableNext=notValidCloudforms
+
+                   disableCancel=isStarted}}

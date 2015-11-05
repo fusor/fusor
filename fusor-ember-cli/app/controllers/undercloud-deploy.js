@@ -1,9 +1,9 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
+import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
-
-  needs: ['deployment'],
+export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
 
   deploymentId: Ember.computed.alias("model.id"),
   undercloudPassword: Ember.computed.alias("model.openstack_undercloud_password"),

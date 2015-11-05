@@ -30,8 +30,8 @@
 
 {{#cancel-back-next backRouteName='review.installation'
                     disableBack=false
-                    parentController=controller
-                    disableCancel=controllers.deployment.isStarted}}
+
+                    disableCancel=isStarted}}
   {{#if deployTaskIsFinished}}
     {{#link-to 'review.summary' role="button" class='btn btn-primary'}}
         Next <i class="fa fa-angle-right"></i>

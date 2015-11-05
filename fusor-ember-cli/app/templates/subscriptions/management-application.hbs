@@ -18,7 +18,7 @@
   <div class='col-md-9'>
     <div class='pull-right'>
       {{#em-modal-toggler modal-id="registerNewSatellite" class="btn btn-primary"
-                          disabled=controllers.deployment.isStarted}}
+                          disabled=isStarted}}
           New Subscription Management Application
       {{/em-modal-toggler}}
     </div>
@@ -37,11 +37,11 @@
         <th>UUID</th>
       </thead>
       <tbody>
-        {{#each managementApp in model}}
+        {{#each model as |managementApp|}}
           {{tr-management-app managementApp=managementApp
                               consumerUUID=sessionPortal.consumerUUID
                               action="selectManagementApp"
-                              disabled=controllers.deployment.isStarted}}
+                              disabled=isStarted}}
         {{/each}}
       </tbody>
     </table>
@@ -54,8 +54,8 @@
                    disableBack=false
                    nextRouteName='subscriptions.select-subscriptions'
                    disableNext=disableNextOnManagementApp
-                   parentController=controller
-                   disableCancel=controllers.deployment.isStarted}}
+
+                   disableCancel=isStarted}}
 
 {{/if}}
 

@@ -6,7 +6,7 @@
         </p>
         {{#draggable-object-target action="unassignRole"}}
             <div class="row col-md-12 deployment-roles deployment-roles-unassigned deployment-roles-assignable {{droppableClass}}">
-              {{#each role in unassignedRoles}}
+              {{#each unassignedRoles as |role|}}
                 {{#draggable-object content=role}}
                   {{deployment-role role=role edit="editRole"}}
                 {{/draggable-object}}
@@ -21,7 +21,7 @@
 <div class="row">
     <div class="col-md-12">
         <h2>Flavors</h2>
-        {{#each profile in profiles}}
+        {{#each profiles as |profile|}}
             <div class="row">
                 <div class='col-md-7'>
                   {{#if nodes}}
@@ -43,7 +43,7 @@
                    disableBack=false
                    nextRouteName=nextStepRouteNameAssignNodes
                    disableNext=disableAssignNodesNext
-                   parentController=controller
+
                    disableCancel=controllers.deployment.isStarted}}
 
 {{partial 'edit-deployment-role'}}

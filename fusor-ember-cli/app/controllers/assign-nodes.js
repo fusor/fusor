@@ -1,9 +1,11 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
+import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
 
-  needs: ['deployment', 'register-nodes'],
+  needs: ['register-nodes'],
 
   deploymentId: Ember.computed.alias("controllers.deployment.model.id"),
   isCloudForms: Ember.computed.alias("controllers.deployment.isCloudForms"),

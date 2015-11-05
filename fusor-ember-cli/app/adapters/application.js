@@ -6,5 +6,9 @@ export default DS.ActiveModelAdapter.extend({
     namespace: 'api/v21',
     headers: {
         "X-CSRF-Token": token
+    },
+    shouldReloadRecord: function(store, ticketSnapshot) {
+      return true;
     }
+
 });

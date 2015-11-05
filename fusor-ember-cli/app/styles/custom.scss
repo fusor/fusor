@@ -336,3 +336,21 @@ table.fusor-table {
   float: right;
   padding-right: 10px;
 }
+
+.rhci-popover-button {
+  outline: none;
+  color:#0099d3;
+  background:none!important;
+  border:none;
+  padding:0!important;
+  cursor: pointer;
+}
+
+.new-deployment-button {
+  float:right;
+  margin-top: -33px;
+}
+
+.filter-deployments {
+  margin-left: -18px;
+}

@@ -1,8 +1,9 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['deployment', 'cloudforms'],
+  needs: ['cloudforms'],
 
   cfmeInstallLoc: Ember.computed.alias("controllers.deployment.model.cfme_install_loc"),
   isRhev: Ember.computed.alias("controllers.deployment.isRhev"),
@@ -12,7 +13,7 @@ export default Ember.Controller.extend({
   satelliteTabRouteName: Ember.computed.alias("controllers.deployment.satelliteTabRouteName"),
   organizationTabRouteName: Ember.computed.alias("controllers.deployment.organizationTabRouteName"),
   lifecycleEnvironmentTabRouteName: Ember.computed.alias("controllers.deployment.lifecycleEnvironmentTabRouteName"),
-  isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
+  hasNoInstallLocation: Ember.computed.alias("controllers.cloudforms.hasNoInstallLocation"),
 
   setupController: function(controller, model) {
     controller.set('model', model);
@@ -42,12 +43,12 @@ export default Ember.Controller.extend({
   }.property('isStarted', 'isNotOpenStack'),
 
   disableRHEVradio: function () {
-    return (this.get('disableRHEV') || this.get('controllers.deployment.isStarted'));
-  }.property('disableRHEV', 'controllers.deployment.isStarted'),
+    return (this.get('disableRHEV') || this.get('isStarted'));
+  }.property('disableRHEV', 'isStarted'),
 
   disableOpenstackradio: function () {
-    return (this.get('disableOpenStack') || this.get('controllers.deployment.isStarted'));
-  }.property('disableOpenStack', 'controllers.deployment.isStarted'),
+    return (this.get('disableOpenStack') || this.get('isStarted'));
+  }.property('disableOpenStack', 'isStarted'),
 
   backRouteName: function() {
     if (this.get('isOpenStack')) {

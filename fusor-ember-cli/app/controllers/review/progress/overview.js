@@ -1,8 +1,8 @@
 import Ember from 'ember';
 import ProgressBarMixin from "../../../mixins/progress-bar-mixin";
+import NeedsDeploymentMixin from "../../../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend(ProgressBarMixin, {
-  needs: ['deployment'],
+export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
   isRhev: Ember.computed.alias("controllers.deployment.isRhev"),
   isOpenStack: Ember.computed.alias("controllers.deployment.isOpenStack"),

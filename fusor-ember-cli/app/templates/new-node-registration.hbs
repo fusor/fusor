@@ -33,7 +33,7 @@
                             <input id="regNodesUploadFileInput" value=selectedFile type="file" accept='text/csv' {{action "csvFileChosen" on="change"}}>
                         </div>
                     <ul class="nav nav-pills nav-stacked nav-registered-nodes">
-                        {{#each node in edittedNodes}}
+                        {{#each edittedNodes as |node|}}
                             <li class="{{node.isActiveClass}}">
                                 <a {{action "selectNode" node}}>{{node.name}}</a>
                               {{#if node.isSelected}}

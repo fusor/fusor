@@ -61,10 +61,10 @@
         </thead>
 
         <tbody>
-        {{#each host in filteredHosts}}
+        {{#each filteredHosts as |host|}}
            {{tr-hypervisor host=host
                            model=model
-                           parentController=controller
+
                            isCustomScheme=isCustomScheme
                            isMac=isMac
                            isHypervisorN=isHypervisorN
@@ -84,7 +84,7 @@
 
 {{#cancel-back-next backRouteName=hypervisorBackRouteName
                     disableBack=false
-                    parentController=controller
-                    disableCancel=controllers.deployment.isStarted}}
+
+                    disableCancel=isStarted}}
   <button {{action 'saveHyperVisors' 'rhev-options'}} class='btn btn-primary' disabled={{controllers.rhev.hasNoHypervisor}}>Next</button>
 {{/cancel-back-next}}

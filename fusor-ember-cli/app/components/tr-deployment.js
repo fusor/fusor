@@ -4,6 +4,8 @@ export default Ember.Component.extend({
 
   tagName: 'tr',
 
+  classNames: ['deployment-row'],
+
   isStarted: function() {
     return !!(this.get('deployment.foreman_task_uuid'));
   }.property('deployment.foreman_task_uuid'),
@@ -15,7 +17,7 @@ export default Ember.Component.extend({
   formanTaskResult: function() {
     var self = this;
     if (this.get('deployment.foreman_task_uuid')) {
-      var call = this.get('targetObject.store').find('foreman-task', this.get('deployment.foreman_task_uuid'));
+      var call = this.get('targetObject.store').findRecord('foreman-task', this.get('deployment.foreman_task_uuid'));
       return call.then(function(result) {
           return self.set('formanTaskResult', result.get('result'));
       });

@@ -1,7 +1,9 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
-  needs: ['application','deployment', 'satellite', 'configure-organization',
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
+
+  needs: ['application', 'satellite', 'configure-organization',
           'configure-environment', 'rhev-setup', 'rhev', 'hypervisor', 'hypervisor/discovered-host',
           'engine/discovered-host', 'storage',
           'rhev-options', 'where-install',
@@ -30,12 +32,12 @@ export default Ember.Controller.extend({
   }.property('model.cfme_install_loc'),
 
   buttonDeployTitle: function() {
-    if (this.get('controllers.deployment.isStarted')) {
+    if (this.get('isStarted')) {
       return 'Next';
     } else {
       return 'Deploy';
     }
-  }.property('controllers.deployment.isStarted'),
+  }.property('isStarted'),
 
   buttonDeployDisabled: function() {
     return (!(this.get('rhevValidated')) || !(this.get('cfmeValidated')));
@@ -74,7 +76,7 @@ export default Ember.Controller.extend({
 
   rhev_engine_host: Ember.computed.alias("model.discovered_host"),
   selectedRhevEngine: Ember.computed.alias("model.discovered_host"),
-  isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
+  isStarted: Ember.computed.alias("model.isStarted"),
   subscriptions: Ember.computed.alias("model.subscriptions"),
   undercloudUsername: 'admin',
   undercloudPassword: Ember.computed.alias("model.openstack_undercloud_password"),

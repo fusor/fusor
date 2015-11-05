@@ -1,8 +1,7 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
-
-  needs: ['deployment'],
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   rhev_storage_type: Ember.computed.alias("controllers.deployment.model.rhev_storage_type"),
   rhev_storage_name: Ember.computed.alias("controllers.deployment.model.rhev_storage_name"),

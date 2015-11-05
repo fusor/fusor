@@ -55,7 +55,7 @@
               </thead>
 
             <tbody>
-            {{#each subscription in subscriptionPools}}
+            {{#each subscriptionPools as |subscription|}}
               {{tr-subscription subscription=subscription numSubscriptionsRequired=numSubscriptionsRequired model=model}}
             {{else}}
               <tr>
@@ -95,7 +95,7 @@
                     </thead>
 
                     <tbody>
-                    {{#each sub in model}}
+                    {{#each model as |sub|}}
                       {{tr-subscription-saved subscription=sub}}
                     {{/each}}
                     </tbody>
@@ -117,7 +117,7 @@
               </thead>
 
               <tbody>
-              {{#each sub in model}}
+              {{#each model as |sub|}}
                 {{tr-subscription-saved subscription=sub}}
               {{else}}
                 <tr>
@@ -135,8 +135,8 @@
 
 {{#cancel-back-next backRouteName='subscriptions.management-application'
                    disableBack=false
-                   parentController=controller
-                   disableCancel=controllers.deployment.isStarted}}
+
+                   disableCancel=isStarted}}
   <button {{action 'saveSubscriptions' 'review'}} class='btn btn-primary'>Next <i class="fa fa-angle-right"></i></button>
 {{/cancel-back-next}}
 

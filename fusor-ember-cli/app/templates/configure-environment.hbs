@@ -51,7 +51,7 @@
           </ul>
         </div>
     {{else}}
-      {{#each env in priorLibraryEnvironments}}
+      {{#each priorLibraryEnvironments as |env|}}
         <div class="path-selector">
           <ul class="path-list">
             {{env-path-list-item env=libraryEnv
@@ -89,7 +89,7 @@
 
 {{#cancel-back-next backRouteName=organizationTabRouteName
                     disableBack=false
-                    parentController=controller
+
                     disableCancel=isStarted}}
     {{#if deployment.isNew}}
       <button {{action 'saveDeployment' step1DRouteName}}
