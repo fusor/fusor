@@ -11,12 +11,6 @@
     </div>
 {{/if}}
 
-<div class="row">
-    <div class='col-md-5'>
-      <h2>Registering Nodes</h2>
-    </div>
-</div>
-
 <div class="progress-description">
   {{#if registrationError}}
       <span class="pficon-layered" data-toggle="tooltip" data-placement="top" title={{registrationErrorTip}}>
@@ -27,6 +21,12 @@
   {{/if}}
 </div>
 {{#if hasIntrospectionTasks}}
+
+    <div class="row">
+        <div class='col-md-5'>
+            <h2>Registering Nodes</h2>
+        </div>
+    </div>
 
     {{#if taskRegisterNode_1}}
       {{progress-bar model=taskRegisterNode_1 isNodeProgressBar=true}}
@@ -50,15 +50,20 @@
 
 {{else}}
   <div class="row">
+    <div class='col-md-5'>
+      <h2>Register Nodes</h2>
+    </div>
+  </div>
+
+  <div class="row">
     <div class='col-md-7'>
     {{#if noRegisteredNodes}}
       <p>
-        Currently, there are no registered nodes available. You must have at least 3 nodes in order to continue
-        this deployment. Use the Register Nodes button below to begin the registration process.
+        Currently, there are no registered nodes available. You must have at least 2 nodes in order to continue this deployment. Use the Register Nodes button below to begin the registration process.
       </p>
     {{else}}
       <p>
-        You can register more nodes to coalesce into Node Profiles. Use the Register Nodes button below to begin the registration process.
+        You can register more nodes to coalesce into Flavors. Use the Register Nodes button below to begin the registration process.
       </p>
     {{/if}}
     </div>
@@ -73,10 +78,10 @@
     </div>
 </div>
 
-{{#unless noRegisteredNodes}}
+{{#unless noProfiles}}
   <div class="row">
       <div class='col-md-5'>
-          <h2>Coalescing Node Profiles</h2>
+          <h2>Flavors</h2>
       </div>
   </div>
 

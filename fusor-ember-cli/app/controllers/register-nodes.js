@@ -94,6 +94,10 @@ export default Ember.Controller.extend(ProgressBarMixin, {
       return (this.get('model.nodes.length') < 1);
   }.property('model.nodes.[]'),
 
+  noProfiles: function() {
+      return (this.get('model.profiles.length') < 1);
+  }.property('model.profiles.[]'),
+
   hasSelectedNode: function() {
     return this.get('selectedNode') != null;
   }.property('selectedNode'),
