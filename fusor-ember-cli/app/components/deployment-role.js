@@ -64,7 +64,7 @@ export default Ember.Component.extend({
         selected: (i == this.get('roleNodeCount'))
         /* jshint ignore:end */
       });
-      avail.pushObject(nextOption);
+      avail.addObject(nextOption);
     }
 
     return avail;

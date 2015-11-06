@@ -54,7 +54,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
                 "X-CSRF-Token": token,
             },
             success: function(response) {
-              self.get('model').pushObject(response);
+              self.get('model').addObject(response);
               self.get('sessionPortal').set('consumerUUID', response.uuid);
               self.get('sessionPortal').save();
               self.set('showAlertMessage', true);

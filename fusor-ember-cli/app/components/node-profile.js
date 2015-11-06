@@ -26,7 +26,7 @@ export default Ember.Component.extend({
     var roles = this.get('plan.roles') || Ember.A();
     roles.forEach(function(role) {
       if ( self.getParamValue(role.get('flavorParameterName'), params) === profile.get('name') ) {
-        assignedRoles.pushObject(role);
+        assignedRoles.addObject(role);
       }
     });
     return assignedRoles;
@@ -45,7 +45,7 @@ export default Ember.Component.extend({
         }
       }
       if ( unassignedRole ) {
-        unassignedRoles.pushObject(role);
+        unassignedRoles.addObject(role);
       }
     });
     return unassignedRoles;

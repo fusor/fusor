@@ -35,7 +35,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     this.get('model.plan.roles').forEach(function(role) {
       value = self.getParamValue(role.get('flavorParameterName'), params);
       if (value === 'baremetal' || Ember.isNone(value)) {
-        unassignedRoles.pushObject(role);
+        unassignedRoles.addObject(role);
       }
     });
     return unassignedRoles;
@@ -219,10 +219,10 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
           if ((paramId === role.get('imageParameterName')) ||
               (paramId === role.get('countParameterName')) ||
               (paramId === role.get('flavorParameterName'))) {
-            roleParams.pushObject(param);
+            roleParams.addObject(param);
           }
           else if (param.get('parameter_type') !== 'json') {
-            advancedParams.pushObject(param);
+            advancedParams.addObject(param);
           }
         }
       });
@@ -370,7 +370,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
             param.set('inputType', param.get('parameter_type'));
           }
           if (param.get('parameter_type') !== 'json') {
-            planParams.pushObject(param);
+            planParams.addObject(param);
           }
         }
       });

@@ -183,7 +183,7 @@ export default Ember.Controller.extend(ProgressBarMixin, {
       var savedErrors = Ember.A();
       errorNodes.forEach(function(item) {
         if (!item.isIntrospectionError) {
-          edittedNodes.pushObject(item);
+          edittedNodes.addObject(item);
         }
         else {
           savedErrors.push(item);
@@ -195,7 +195,7 @@ export default Ember.Controller.extend(ProgressBarMixin, {
       if (edittedNodes.get('length') === 0) {
         var newNode = this.Node.create({});
         newNode.isDefault = true;
-        edittedNodes.pushObject(newNode);
+        edittedNodes.addObject(newNode);
       }
 
       this.set('edittedNodes', edittedNodes);
@@ -380,7 +380,7 @@ export default Ember.Controller.extend(ProgressBarMixin, {
             reason = reason.jqXHR;
             self.set('initRegInProcess', false);
             node.errorMessage = node.ipAddress + ": " + self.getErrorMessageFromReason(reason);
-            self.get('errorNodes').pushObject(node);
+            self.get('errorNodes').addObject(node);
         }
     );
   },
