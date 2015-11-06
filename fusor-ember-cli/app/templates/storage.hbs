@@ -50,18 +50,6 @@
 
 </form>
 
-{{#if isCloudForms}}
-  <h4> Export Domain </h4>
-
-  <form class="form form-horizontal">
-
-    {{text-f label="Export Domain Name" value=rhev_export_domain_name cssId='rhev_export_domain_name' isRequired=true disabled=isStarted isAlphaNumeric=true}}
-    {{text-f label="Storage Address" value=rhev_export_domain_address cssId='rhev_export_domain_address' isRequired=true disabled=isStarted isHostname=true}}
-    {{text-f label="Share Path" value=rhev_export_domain_path cssId='rhev_export_domain_path' isRequired=true disabled=isStarted errors=errorsHashExportPath}}
-
-  </form>
-{{/if}}
-
 {{cancel-back-next backRouteName='rhev-options'
                    disableBack=false
                    nextRouteName=step3RouteName
