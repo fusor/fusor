@@ -1,7 +1,7 @@
 <div class="col-md-9 rhci-steps-buttons">
-  {{#em-modal-toggler modal-id="cancelDeploymentModal" class="btn btn-default" disabled=disableCancel}}
+  <button class="btn btn-default" {{action 'openCancelDeploymentModal'}} disabled={{disableCancel}}>
       Cancel
-  {{/em-modal-toggler}}
+  </button>
   {{#link-to backRouteName disabled=disableBack role="button" class='btn btn-default'}}
       <i class="fa fa-angle-left"></i> Back
   {{/link-to}}

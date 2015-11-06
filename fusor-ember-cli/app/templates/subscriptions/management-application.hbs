@@ -17,10 +17,9 @@
 <div class="row">
   <div class='col-md-9'>
     <div class='pull-right'>
-      {{#em-modal-toggler modal-id="registerNewSatellite" class="btn btn-primary"
-                          disabled=isStarted}}
-          New Subscription Management Application
-      {{/em-modal-toggler}}
+      <button class="btn btn-primary" {{action 'registerNewSatellite'}} disabled={{isStarted}}>
+        New Subscription Management Application
+      </button>
     </div>
   </div>
 </div>

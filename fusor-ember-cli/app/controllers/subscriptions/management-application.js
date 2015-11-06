@@ -18,6 +18,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   }.property('upstreamConsumerUuid'),
 
   actions: {
+    registerNewSatellite: function() {
+      this.set('openRegisterNewSatelliteModal', true);
+    },
+
     selectManagementApp: function(managementApp) {
       this.set('showAlertMessage', false);
       this.get('sessionPortal').set('consumerUUID', managementApp.get('id'));
