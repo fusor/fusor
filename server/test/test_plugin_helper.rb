@@ -1,6 +1,26 @@
 # This calls the main test_helper in Foreman-core
+require 'simplecov'
 require 'coveralls'
-Coveralls.wear!
+
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+  SimpleCov::Formatter::HTMLFormatter,
+  Coveralls::SimpleCov::Formatter
+]
+
+# Configures simplecov to only track fusor, egon, and foretello_api_v21 gems
+SimpleCov.root(File.join(File.dirname(__FILE__), '../app'))
+SimpleCov.start 'rails' do
+  filters.clear # This will remove the :root_filter and :bundler_filter that come via simplecov's defaults
+  add_filter do |src|
+    !(src.filename =~ /^#{SimpleCov.root}/) unless ( (src.filename =~ /egon/) or (src.filename =~ /foretello_api_v21/) )
+  end
+  add_group "Egon" do |src_file|
+    src_file.filename =~ /egon/
+  end
+  add_group "Foretello_api_v21" do |src_file|
+    src_file.filename =~ /foretello_api_v21/
+  end
+end
 
 require 'yaml'
 require 'test_helper'
