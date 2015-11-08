@@ -20,6 +20,9 @@ SimpleCov.start 'rails' do
   add_group "Foretello_api_v21" do |src_file|
     src_file.filename =~ /foretello_api_v21/
   end
+  add_group "Fusor" do |src_file|
+    src_file.filename =~ /fusor/
+  end
 end
 
 require 'yaml'
