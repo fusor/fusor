@@ -73,14 +73,7 @@ export default Router.map(function() {
       this.route('installation');
       this.route('progress', function() {
         this.route('overview');
-        this.route('details', function() {
-          this.route('task', {path: '/:task_id' }, function () {
-            this.route('running_steps');
-            this.route('task_errors');
-            this.route('task_locks');
-            this.route('task_raw');
-          });
-        });
+        this.route('details');
       });
       this.route('summary');
     });
