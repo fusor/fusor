@@ -3,17 +3,17 @@ import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['cloudforms'],
+  cloudformsController: Ember.inject.controller('cloudforms'),
 
-  cfmeInstallLoc: Ember.computed.alias("controllers.deployment.model.cfme_install_loc"),
-  isRhev: Ember.computed.alias("controllers.deployment.isRhev"),
+  cfmeInstallLoc: Ember.computed.alias("deploymentController.model.cfme_install_loc"),
+  isRhev: Ember.computed.alias("deploymentController.isRhev"),
   isNotRhev: Ember.computed.not("isRhev"),
-  isOpenStack: Ember.computed.alias("controllers.deployment.isOpenStack"),
+  isOpenStack: Ember.computed.alias("deploymentController.isOpenStack"),
   isNotOpenStack: Ember.computed.not("isOpenStack"),
-  satelliteTabRouteName: Ember.computed.alias("controllers.deployment.satelliteTabRouteName"),
-  organizationTabRouteName: Ember.computed.alias("controllers.deployment.organizationTabRouteName"),
-  lifecycleEnvironmentTabRouteName: Ember.computed.alias("controllers.deployment.lifecycleEnvironmentTabRouteName"),
-  hasNoInstallLocation: Ember.computed.alias("controllers.cloudforms.hasNoInstallLocation"),
+  satelliteTabRouteName: Ember.computed.alias("deploymentController.satelliteTabRouteName"),
+  organizationTabRouteName: Ember.computed.alias("deploymentController.organizationTabRouteName"),
+  lifecycleEnvironmentTabRouteName: Ember.computed.alias("deploymentController.lifecycleEnvironmentTabRouteName"),
+  hasNoInstallLocation: Ember.computed.alias("cloudformsController.hasNoInstallLocation"),
 
   setupController: function(controller, model) {
     controller.set('model', model);

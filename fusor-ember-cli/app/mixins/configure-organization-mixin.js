@@ -1,8 +1,7 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "./needs-deployment-mixin";
 
-export default Ember.Mixin.create({
-
-  needs: ['application', 'deployment'],
+export default Ember.Mixin.create(NeedsDeploymentMixin, {
 
   selectedOrganization: Ember.computed.alias("model"),
 
@@ -34,7 +33,7 @@ export default Ember.Mixin.create({
           self.set('organization', org);
           return self.set('showAlertMessage', true);
         }, function(error) {
-          self.get('controllers.deployment').set('errorMsg', 'error saving organization' + error);
+          self.get('deploymentController').set('errorMsg', 'error saving organization' + error);
         });
     }
   }

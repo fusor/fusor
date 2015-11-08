@@ -3,12 +3,12 @@ import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['cloudforms'],
+  cloudformsController: Ember.inject.controller('cloudforms'),
 
-  cfmeRootPassword: Ember.computed.alias("controllers.deployment.model.cfme_root_password"),
-  cfmeAdminPassword: Ember.computed.alias("controllers.deployment.model.cfme_admin_password"),
-  isSubscriptions: Ember.computed.alias("controllers.deployment.isSubscriptions"),
-  notValidCloudforms: Ember.computed.alias("controllers.cloudforms.notValidCloudforms"),
+  cfmeRootPassword: Ember.computed.alias("deploymentController.model.cfme_root_password"),
+  cfmeAdminPassword: Ember.computed.alias("deploymentController.model.cfme_admin_password"),
+  isSubscriptions: Ember.computed.alias("deploymentController.isSubscriptions"),
+  notValidCloudforms: Ember.computed.alias("cloudformsController.notValidCloudforms"),
 
   nextRouteNameAfterCFME: function() {
     if (this.get('isSubscriptions')) {

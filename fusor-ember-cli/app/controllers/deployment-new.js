@@ -4,12 +4,12 @@ import DisableTabMixin from "../mixins/disable-tab-mixin";
 
 export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixin, {
 
-  needs: ['deployment-new/satellite/configure-environment', 'application'],
+  deploymentNewConfigureEnvironment: Ember.inject.controller('deployment-new/satellite/configure-environment'),
 
   routeNameSatellite: 'deployment-new.satellite',
 
-  useDefaultOrgViewForEnv: Ember.computed.alias("controllers.deployment-new/satellite/configure-environment.useDefaultOrgViewForEnv"),
-  selectedEnvironmentDeploymentNew: Ember.computed.alias("controllers.deployment-new/satellite/configure-environment.selectedEnvironment"),
+  useDefaultOrgViewForEnv: Ember.computed.alias("deploymentNewConfigureEnvironment.useDefaultOrgViewForEnv"),
+  selectedEnvironmentDeploymentNew: Ember.computed.alias("deploymentNewConfigureEnvironment.selectedEnvironment"),
 
   // these tabs will always be disabled within deployment-new
   isDisabledRhev: true,

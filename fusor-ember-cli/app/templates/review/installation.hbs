@@ -30,7 +30,7 @@
       {{#accordion-item name="Red Hat Enterprise Virtualization" isOpen=isRhevOpen}}
 
         {{review-link label='Setup Type' routeName='rhev-setup' isRequired=true
-                          value=controllers.rhev-setup.rhevSetupTitle}}
+                          value=rhevSetupController.rhevSetupTitle}}
         {{#if isSelfHosted}}
             {{review-link label='Engine/Hypervisor' routeName='engine.discovered-host' isRequired=true
                           value=engineNamePlusDomain}}
@@ -90,7 +90,7 @@
     {{/if}}
 
     {{#if isOpenStack}}
-      {{#accordion-item name=controllers.deployment.nameOpenStack isOpen=isOpenStackOpen}}
+      {{#accordion-item name=deploymentController.nameOpenStack isOpen=isOpenStackOpen}}
             {{review-link label='Director URL' value=undercloudUrl isRequired=true isExternalURL=true}}
             {{review-link label='Director username' value=undercloudUsername isRequired=true}}
             {{review-link label='Director password' value=undercloudPassword isRequired=true}}
@@ -115,10 +115,10 @@
       {{#accordion-item name='Subscriptions' isOpen=isSubscriptionsOpen}}
           {{review-link label='Subscription Management Application'
                         routeName='subscriptions.management-application' isRequired=true
-                        value=controllers.deployment.managementApplicationName }}
+                        value=deploymentController.managementApplicationName }}
           {{review-link label='Red Hat Access Insights'
                         routeName='subscriptions.select-subscriptions'
-                        value=controllers.subscriptions/select-subscriptions.enableAnalytics }}
+                        value=selectSubscriptionsController.enableAnalytics }}
 
 
           {{#each subscriptions as |sub|}}
@@ -145,7 +145,6 @@
 
   {{#cancel-back-next backRouteName=backRouteNameonReviewInstallation
                       disableBack=false
-
                       disableCancel=isStarted}}
       {{#if isStarted}}
           {{#link-to 'review.progress.overview' role="button" class='btn btn-primary'}}

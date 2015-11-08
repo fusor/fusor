@@ -3,20 +3,20 @@ import ConfigureOrganizationMixin from "../../../mixins/configure-organization-m
 
 export default Ember.Controller.extend(ConfigureOrganizationMixin, {
 
-  needs: ['deployment-new', 'deployment', 'application'],
+  deploymentNewController: Ember.inject.controller('deployment-new'),
 
-  organization: Ember.computed.alias("controllers.deployment-new.model.organization"),
+  organization: Ember.computed.alias("deploymentNewController.model.organization"),
 
-  disableNextOnConfigureOrganization: Ember.computed.alias("controllers.deployment-new.disableNextOnConfigureOrganization"),
-  satelliteTabRouteName: Ember.computed.alias("controllers.deployment-new.satelliteTabRouteName"),
-  lifecycleEnvironmentTabRouteName: Ember.computed.alias("controllers.deployment-new.lifecycleEnvironmentTabRouteName"),
-  deploymentName: Ember.computed.alias("controllers.deployment-new.model.name"),
+  disableNextOnConfigureOrganization: Ember.computed.alias("deploymentNewController.disableNextOnConfigureOrganization"),
+  satelliteTabRouteName: Ember.computed.alias("deploymentNewController.satelliteTabRouteName"),
+  lifecycleEnvironmentTabRouteName: Ember.computed.alias("deploymentNewController.lifecycleEnvironmentTabRouteName"),
+  deploymentName: Ember.computed.alias("deploymentNewController.model.name"),
 
   actions: {
     selectOrganization: function(organization) {
       this.set('showAlertMessage', false);
       this.set('selectedOrganization', organization);
-      return this.get('controllers.deployment-new.model').set('organization', organization);
+      return this.get('deploymentNewController.model').set('organization', organization);
     }
   }
 

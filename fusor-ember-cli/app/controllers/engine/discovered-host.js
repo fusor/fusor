@@ -3,14 +3,16 @@ import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['hypervisor/discovered-host', 'rhev'],
+  //todo - delete hypervisorDiscoveredHostController, not used?
+  //hypervisorDiscoveredHostController: Ember.inject.controller('hypervisor/discovered-host'),
+  rhevController: Ember.inject.controller('rhev'),
 
   selectedRhevEngineHost: Ember.computed.alias("model"),
-  rhevIsSelfHosted: Ember.computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
+  rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
 
   hypervisorModelIds: function() {
-    return this.get('controllers.deployment.model.discovered_hosts').getEach('id');
-  }.property('controllers.deployment.model.discovered_hosts.[]'),
+    return this.get('deploymentController.model.discovered_hosts').getEach('id');
+  }.property('deploymentController.model.discovered_hosts.[]'),
 
   engineNextRouteName: function() {
     if (this.get('rhevIsSelfHosted')) {
@@ -62,7 +64,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   actions: {
     setEngine: function(host) {
-      var deployment = this.get('controllers.deployment');
+      var deployment = this.get('deploymentController');
       deployment.set('model.discovered_host', host);
     }
   }

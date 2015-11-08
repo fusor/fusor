@@ -14,7 +14,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   sshUser: null,
   sshPassword: null,
 
-  isRhev: Ember.computed.alias("controllers.deployment.isRhev"),
+  isRhev: Ember.computed.alias("deploymentController.isRhev"),
 
   undercloudIPHelp: "The IP address that the already-installed Red Hat Enterprise Linux OpenStack Platform undercloud is running on.",
 

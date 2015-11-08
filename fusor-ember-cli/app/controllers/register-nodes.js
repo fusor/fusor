@@ -4,10 +4,10 @@ import ProgressBarMixin from "../mixins/progress-bar-mixin";
 
 export default Ember.Controller.extend(ProgressBarMixin, {
 
-  needs: ['deployment'],
+  deploymentController: Ember.inject.controller('deployment'),
 
-  deploymentId: Ember.computed.alias("controllers.deployment.model.id"),
-  deployment: Ember.computed.alias("controllers.deployment.model"),
+  deploymentId: Ember.computed.alias("deploymentController.model.id"),
+  deployment: Ember.computed.alias("deploymentController.model"),
 
   init: function() {
     this._super();
@@ -164,8 +164,8 @@ export default Ember.Controller.extend(ProgressBarMixin, {
       console.log('refreshing model.nodes and model.profiles');
       var deploymentId = this.get('deploymentId');
       var self = this;
-      Ember.RSVP.hash({nodes: this.store.find('node', {deployment_id: deploymentId}),
-                       profiles: this.store.find('flavor', {deployment_id: deploymentId})
+      Ember.RSVP.hash({nodes: this.store.query('node', {deployment_id: deploymentId}),
+                       profiles: this.store.query('flavor', {deployment_id: deploymentId})
                      }).then(function(result) {
                          return self.set('model', result);
                      });
@@ -311,8 +311,8 @@ export default Ember.Controller.extend(ProgressBarMixin, {
   updateAfterRegistration: function(resolve) {
     var self = this;
     var deploymentId = this.get('deploymentId');
-    this.store.find('node', {deployment_id: deploymentId, reload: true}).then(function() {
-      self.store.find('flavor', {deployment_id: deploymentId, reload: true}).then(function () {
+    this.store.query('node', {deployment_id: deploymentId, reload: true}).then(function() {
+      self.store.query('flavor', {deployment_id: deploymentId, reload: true}).then(function () {
         if (resolve) {
           resolve();
         }

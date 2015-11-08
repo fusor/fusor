@@ -3,9 +3,9 @@ import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  isRhev: Ember.computed.alias('controllers.deployment.isRhev'),
-  isOpenStack: Ember.computed.alias('controllers.deployment.isOpenStack'),
-  isCloudForms: Ember.computed.alias('controllers.deployment.isCloudForms'),
+  isRhev: Ember.computed.alias('deploymentController.isRhev'),
+  isOpenStack: Ember.computed.alias('deploymentController.isOpenStack'),
+  isCloudForms: Ember.computed.alias('deploymentController.isCloudForms'),
 
   isRhevOpen: true,
   isOpenStackOpen: true,
@@ -25,7 +25,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return ('http://' + this.get('model.openstack_overcloud_address') + '/dashboard/admin');
   }.property('model.openstack_overcloud_address'),
 
-  selectedRhevEngine: Ember.computed.alias("controllers.deployment.model.discovered_host"),
+  selectedRhevEngine: Ember.computed.alias("deploymentController.model.discovered_host"),
 
   // TODO - make mixin, same method as installation
   engineNamePlusDomain: function() {

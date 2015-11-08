@@ -1,4 +1,3 @@
-model - {{model}}
 <div class='row'>
   <div class='col-lg-9'>
 
@@ -67,6 +66,5 @@ model - {{model}}
 {{cancel-back-next backRouteName='rhev-setup'
                    disableBack=false
                    nextRouteName=engineNextRouteName
-                   disableNext=controllers.deployment.hasNoEngine
-
+                   disableNext=deploymentController.hasNoEngine
                    disableCancel=isStarted}}

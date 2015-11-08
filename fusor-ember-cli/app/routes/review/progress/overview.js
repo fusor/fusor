@@ -3,8 +3,8 @@ import Ember from 'ember';
 export default Ember.Route.extend({
   model: function () {
       var deployment = this.modelFor('deployment');
-      var deployTaskPromise = this.store.find('foreman-task', {search: "id = " + deployment.get('foreman_task_uuid')});
-      var subtasksOfDeployPromise = this.store.find('foreman-task', {search: "parent_task_id = " + deployment.get('foreman_task_uuid')});
+      var deployTaskPromise = this.store.query('foreman-task', {search: "id = " + deployment.get('foreman_task_uuid')});
+      var subtasksOfDeployPromise = this.store.query('foreman-task', {search: "parent_task_id = " + deployment.get('foreman_task_uuid')});
       var self = this;
       return Ember.RSVP.Promise.all([deployTaskPromise, subtasksOfDeployPromise]).then(function(results) {
         var deployTask = results[0].get('firstObject');

@@ -89,7 +89,6 @@
 
 {{#cancel-back-next backRouteName=organizationTabRouteName
                     disableBack=false
-
                     disableCancel=isStarted}}
     {{#if deployment.isNew}}
       <button {{action 'saveDeployment' step1DRouteName}}

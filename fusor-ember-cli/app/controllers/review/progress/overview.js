@@ -4,15 +4,15 @@ import NeedsDeploymentMixin from "../../../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
-  isRhev: Ember.computed.alias("controllers.deployment.isRhev"),
-  isOpenStack: Ember.computed.alias("controllers.deployment.isOpenStack"),
-  isCloudForms: Ember.computed.alias("controllers.deployment.isCloudForms"),
+  isRhev: Ember.computed.alias("deploymentController.isRhev"),
+  isOpenStack: Ember.computed.alias("deploymentController.isOpenStack"),
+  isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
 
-  nameRHCI: Ember.computed.alias("controllers.deployment.nameRHCI"),
-  nameRhev: Ember.computed.alias("controllers.deployment.nameRhev"),
-  nameOpenStack: Ember.computed.alias("controllers.deployment.nameOpenStack"),
-  nameCloudForms: Ember.computed.alias("controllers.deployment.nameCloudForms"),
-  nameSatellite: Ember.computed.alias("controllers.deployment.nameSatellite"),
+  nameRHCI: Ember.computed.alias("deploymentController.nameRHCI"),
+  nameRhev: Ember.computed.alias("deploymentController.nameRhev"),
+  nameOpenStack: Ember.computed.alias("deploymentController.nameOpenStack"),
+  nameCloudForms: Ember.computed.alias("deploymentController.nameCloudForms"),
+  nameSatellite: Ember.computed.alias("deploymentController.nameSatellite"),
   progressDeployment: Ember.computed.alias("deployTask.progress"),
   resultDeployment: Ember.computed.alias("deployTask.result"),
   stateDeployment: Ember.computed.alias("deployTask.state"),

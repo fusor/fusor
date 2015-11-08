@@ -4,15 +4,15 @@ import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  deploymentId: Ember.computed.alias("controllers.deployment.model.id"),
-  upstreamConsumerUuid: Ember.computed.alias("controllers.deployment.model.upstream_consumer_uuid"),
-  upstreamConsumerName: Ember.computed.alias("controllers.deployment.model.upstream_consumer_name"),
-  cdnUrl: Ember.computed.alias("controllers.deployment.model.cdn_url"),
-  manifestFile: Ember.computed.alias("controllers.deployment.model.manifest_file"),
+  deploymentId: Ember.computed.alias("deploymentController.model.id"),
+  upstreamConsumerUuid: Ember.computed.alias("deploymentController.model.upstream_consumer_uuid"),
+  upstreamConsumerName: Ember.computed.alias("deploymentController.model.upstream_consumer_name"),
+  cdnUrl: Ember.computed.alias("deploymentController.model.cdn_url"),
+  manifestFile: Ember.computed.alias("deploymentController.model.manifest_file"),
 
-  isRhev: Ember.computed.alias("controllers.deployment.model.deploy_rhev"),
-  isOpenStack: Ember.computed.alias("controllers.deployment.model.deploy_openstack"),
-  isCloudForms: Ember.computed.alias("controllers.deployment.model.deploy_cfme"),
+  isRhev: Ember.computed.alias("deploymentController.model.deploy_rhev"),
+  isOpenStack: Ember.computed.alias("deploymentController.model.deploy_openstack"),
+  isCloudForms: Ember.computed.alias("deploymentController.model.deploy_cfme"),
 
   //overwritten by setupController
   organizationUpstreamConsumerUUID: null,
@@ -58,7 +58,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   }.property('model.isAuthenticated'),
 
-  isDisconnected: Ember.computed.alias('controllers.deployment.model.is_disconnected'),
+  isDisconnected: Ember.computed.alias('deploymentController.model.is_disconnected'),
   hasManifestFile: Ember.computed.notEmpty('manifestFile'),
   noManifestFile: Ember.computed.empty('manifestFile'),
 
@@ -98,8 +98,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
         headers: {'X-CSRF-Token': token},
         contentType: false
       }).then( function(result) {
-            self.get('controllers.deployment.model').set('manifest_file', result.manifest_file);
-            self.get('controllers.deployment.model').save().then(function () {
+            self.get('deploymentController.model').set('manifest_file', result.manifest_file);
+            self.get('deploymentController.model').save().then(function () {
               return console.log('Manifest successfully uploaded');
             });
         }, function(error) {

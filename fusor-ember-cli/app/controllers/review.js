@@ -3,16 +3,17 @@ import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['subscriptions', 'application', 'review/progress/overview'],
+  subscriptionsController: Ember.inject.controller('subscriptions'),
+  overviewController: Ember.inject.controller('review/progress/overview'),
 
-  isUpstream: Ember.computed.alias("controllers.application.isUpstream"),
-  disableNext: Ember.computed.alias("controllers.subscriptions.disableNext"),
+  isUpstream: Ember.computed.alias("applicationController.isUpstream"),
+  disableNext: Ember.computed.alias("subscriptionsController.disableNext"),
 
-  nameSelectSubscriptions: Ember.computed.alias("controllers.deployment.nameSelectSubscriptions"),
+  nameSelectSubscriptions: Ember.computed.alias("deploymentController.nameSelectSubscriptions"),
 
-  stepNumberReview: Ember.computed.alias("controllers.deployment.stepNumberReview"),
+  stepNumberReview: Ember.computed.alias("deploymentController.stepNumberReview"),
 
-  deployTaskIsFinished: Ember.computed.alias("controllers.review/progress/overview.deployTaskIsFinished"),
+  deployTaskIsFinished: Ember.computed.alias("overviewController.deployTaskIsFinished"),
 
   disableTabInstallation: function() {
     return (this.get('disableNext') && (!(this.get('isUpstream'))));

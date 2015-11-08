@@ -10,7 +10,7 @@ export default Ember.Route.extend({
     controller.set('model', model);
     var self = this;
     var organization = this.modelFor('deployment').get('organization');
-    var lifecycleEnvironments = this.store.find('lifecycle-environment', {organization_id: organization.get('id')});
+    var lifecycleEnvironments = this.store.query('lifecycle-environment', {organization_id: organization.get('id')});
     lifecycleEnvironments.then(function(results){
       controller.set('lifecycleEnvironments', results);
       // nullify environment if organization has no environments

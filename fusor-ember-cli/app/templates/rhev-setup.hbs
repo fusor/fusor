@@ -5,8 +5,8 @@
     </p>
 
     <div class='ident-radio'>
-      {{#radio-button value="selfhost" groupValue=rhevSetup changed="rhevSetupChanged" id='selfhost' disabled=controllers.deployment.isStarted}}
-        <span class="{{if controllers.deployment.isStarted 'disabled'}}">
+      {{#radio-button value="selfhost" groupValue=rhevSetup changed="rhevSetupChanged" id='selfhost' disabled=deploymentController.isStarted}}
+        <span class="{{if deploymentController.isStarted 'disabled'}}">
           Self-hosted
         </span>
       {{/radio-button}}
@@ -29,6 +29,5 @@
                    disableBack=false
                    nextRouteName='engine.discovered-host'
                    disableNext=false
-
                    disableCancel=isStarted}}
 

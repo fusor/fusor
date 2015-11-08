@@ -3,13 +3,12 @@ import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['application', 'satellite', 'configure-organization',
-          'configure-environment', 'rhev-setup', 'rhev', 'hypervisor', 'hypervisor/discovered-host',
-          'engine/discovered-host', 'storage',
-          'rhev-options', 'where-install',
-          'review', 'subscriptions/select-subscriptions'],
+  rhevController: Ember.inject.controller('rhev'),
+  rhevSetupController: Ember.inject.controller('rhev-setup'),
+  rhevOptionsController: Ember.inject.controller('rhev-options'),
+  selectSubscriptionsController: Ember.inject.controller('subscriptions/select-subscriptions'),
 
-  isSelfHost: Ember.computed.alias("controllers.rhev.isSelfHost"),
+  isSelfHost: Ember.computed.alias("rhevController.isSelfHost"),
 
   rhevValidated: function() {
     if (this.get('isRhev')) {
@@ -46,11 +45,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   showErrorMessage: false,
   errorMsg: null,
   foremanTasksURL: null,
-  skipContent: Ember.computed.alias("controllers.deployment.skipContent"),
+  skipContent: Ember.computed.alias("deploymentController.skipContent"),
 
   showSpinner: false,
   spinnerTextMessage: null,
-  hasSubscriptionsToAttach: Ember.computed.alias("controllers.subscriptions/select-subscriptions.hasSubscriptionsToAttach"),
+  hasSubscriptionsToAttach: Ember.computed.alias("selectSubscriptionsController.hasSubscriptionsToAttach"),
 
   isRhevOpen: true,
   isOpenStackOpen: true,
@@ -58,18 +57,18 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isSubscriptionsOpen: true,
 
   engineHostAddressDefault: 'ovirt-hypervisor.rhci.redhat.com',
-  hostAddress: Ember.computed.alias("controllers.rhev-options.hostAddress"),
-  engineHostName: Ember.computed.alias("controllers.rhev-options.engineHostName"),
+  hostAddress: Ember.computed.alias("rhevOptionsController.hostAddress"),
+  engineHostName: Ember.computed.alias("rhevOptionsController.engineHostName"),
 
   nameDeployment: Ember.computed.alias("model.name"),
-  selectedOrganization: Ember.computed.alias("controllers.deployment.selectedOrganzation"),
-  selectedEnvironment: Ember.computed.alias("controllers.deployment.selectedEnvironment"),
-  rhevSetup: Ember.computed.alias("controllers.deployment.rhevSetup"),
+  selectedOrganization: Ember.computed.alias("deploymentController.selectedOrganzation"),
+  selectedEnvironment: Ember.computed.alias("deploymentController.selectedEnvironment"),
+  rhevSetup: Ember.computed.alias("deploymentController.rhevSetup"),
 
-  isRhev: Ember.computed.alias("controllers.deployment.isRhev"),
-  isOpenStack: Ember.computed.alias("controllers.deployment.isOpenStack"),
-  isCloudForms: Ember.computed.alias("controllers.deployment.isCloudForms"),
-  isSubscriptions: Ember.computed.alias("controllers.deployment.isSubscriptions"),
+  isRhev: Ember.computed.alias("deploymentController.isRhev"),
+  isOpenStack: Ember.computed.alias("deploymentController.isOpenStack"),
+  isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
+  isSubscriptions: Ember.computed.alias("deploymentController.isSubscriptions"),
 
   isSelfHosted: Ember.computed.alias("model.rhev_is_self_hosted"),
   selectedHypervisorHosts: Ember.computed.alias("model.discovered_hosts"),
@@ -94,11 +93,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   }.property('selectedRhevEngine.is_discovered', 'selectedRhevEngine.name', 'engineDomain'),
 
-  nameRHCI: Ember.computed.alias("controllers.deployment.nameRHCI"),
-  nameRhev: Ember.computed.alias("controllers.deployment.nameRhev"),
-  nameOpenStack: Ember.computed.alias("controllers.deployment.nameOpenStack"),
-  nameCloudForms: Ember.computed.alias("controllers.deployment.nameCloudForms"),
-  nameSatellite: Ember.computed.alias("controllers.deployment.nameSatellite"),
+  nameRHCI: Ember.computed.alias("deploymentController.nameRHCI"),
+  nameRhev: Ember.computed.alias("deploymentController.nameRhev"),
+  nameOpenStack: Ember.computed.alias("deploymentController.nameOpenStack"),
+  nameCloudForms: Ember.computed.alias("deploymentController.nameCloudForms"),
+  nameSatellite: Ember.computed.alias("deploymentController.nameSatellite"),
 
   backRouteNameonReviewInstallation: function() {
     if (this.get('isSubscriptions')) {

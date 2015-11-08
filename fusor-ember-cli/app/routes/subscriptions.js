@@ -4,7 +4,7 @@ export default Ember.Route.extend({
 
   model: function() {
     var self = this;
-    return this.store.find('session-portal').then(function(results) {
+    return this.store.findAll('session-portal').then(function(results) {
       if (Ember.isBlank(results)) {
         return self.store.createRecord('session-portal');
       } else {

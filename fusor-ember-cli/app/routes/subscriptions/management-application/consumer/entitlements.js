@@ -9,7 +9,7 @@ export default Ember.Route.extend({
   model: function(params) {
     var uuid = this.modelFor('deployment').get('upstream_consumer_uuid');
     console.log('uuid is ' + uuid);
-    return this.store.find('entitlement', {uuid: uuid});
+    return this.store.query('entitlement', {uuid: uuid});
   },
 
   // setupController: function(controller, model) {

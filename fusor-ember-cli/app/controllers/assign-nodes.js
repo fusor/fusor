@@ -5,10 +5,8 @@ import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
 
-  needs: ['register-nodes'],
-
-  deploymentId: Ember.computed.alias("controllers.deployment.model.id"),
-  isCloudForms: Ember.computed.alias("controllers.deployment.isCloudForms"),
+  deploymentId: Ember.computed.alias("deploymentController.model.id"),
+  isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
 
   getParamValue: function(paramName, params) {
     var paramValue = null;
@@ -268,7 +266,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
         data: JSON.stringify({ 'parameters': params })
       }).then( function() {
           console.log('SUCCESS');
-          self.store.find('deployment-plan', deploymentId).then(function (result) {
+          self.store.findRecord('deployment-plan', deploymentId).then(function (result) {
             self.set('model.plan', result);
             self.set('showLoadingSpinner', false);
           });
@@ -304,7 +302,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
           }
         }).then(function(result) {
           console.log('SUCCESS');
-          self.store.find('deployment-plan', deploymentId).then(function (result) {
+          self.store.findRecord('deployment-plan', deploymentId).then(function (result) {
             self.set('model.plan', result);
             self.set('showLoadingSpinner', false);
           });

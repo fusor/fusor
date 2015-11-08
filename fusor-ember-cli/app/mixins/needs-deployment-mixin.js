@@ -2,9 +2,10 @@ import Ember from 'ember';
 
 export default Ember.Mixin.create({
 
-  needs: ['deployment', 'application'],
+  deploymentController: Ember.inject.controller('deployment'),
+  applicationController: Ember.inject.controller('application'),
 
-  isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
-  isNotStarted: Ember.computed.alias("controllers.deployment.isNotStarted")
+  isStarted: Ember.computed.alias("deploymentController.isStarted"),
+  isNotStarted: Ember.computed.alias("deploymentController.isNotStarted")
 
 });

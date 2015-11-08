@@ -19,7 +19,7 @@ export default Ember.Route.extend({
     if (model.manageContentTask) {
         var manageContentTaskUuid = model.manageContentTask.get('id');
         console.log(manageContentTaskUuid);
-        return this.store.find('foreman-task', {search: "parent_task_id=" + manageContentTaskUuid}).then(function(synctasks) {
+        return this.store.query('foreman-task', {search: "parent_task_id=" + manageContentTaskUuid}).then(function(synctasks) {
               controller.set('synctasks', synctasks);
               return controller.set('isLoadingMoreTasks', false);
         });

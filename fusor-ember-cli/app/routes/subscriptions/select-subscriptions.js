@@ -16,8 +16,8 @@ export default Ember.Route.extend({
 
         var consumerUUID = this.modelFor('deployment').get('upstream_consumer_uuid');
 
-        var entitlements = this.store.find('entitlement', {uuid: consumerUUID});
-        var pools        = this.store.find('pool',        {uuid: consumerUUID});
+        var entitlements = this.store.query('entitlement', {uuid: consumerUUID});
+        var pools        = this.store.query('pool',        {uuid: consumerUUID});
 
         return Ember.RSVP.Promise.all([entitlements, pools]).then(function(results) {
           var entitlementsResults = results[0];

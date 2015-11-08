@@ -14,7 +14,7 @@ export default Ember.Route.extend({
                                                  name: deployment.get('upstream_consumer_name')});
         return Ember.A([managementApp]);
     } else {
-        return this.store.find('management-application', {owner_key: ownerKey}).then(function(results) {
+        return this.store.query('management-application', {owner_key: ownerKey}).then(function(results) {
             sessionPortal.set('isAuthenticated', true); // in case go to this route from URL
             sessionPortal.save();
             return results;

@@ -1,6 +1,7 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "./needs-deployment-mixin";
 
-export default Ember.Mixin.create({
+export default Ember.Mixin.create(NeedsDeploymentMixin, {
 
   selectedEnvironment: Ember.computed.alias("model"),
 

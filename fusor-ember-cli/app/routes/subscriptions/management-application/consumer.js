@@ -3,7 +3,7 @@ import Ember from 'ember';
 export default Ember.Route.extend({
 
   model: function(params) {
-    return this.store.find('management-application', params.management_application_uuid);
+    return this.store.findRecord('management-application', params.management_application_uuid);
   },
 
   setupController: function(controller, model) {

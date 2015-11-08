@@ -3,7 +3,7 @@ import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  rhevIsSelfHosted: Ember.computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
+  rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
 
   rhevSetup: function() {
     return (this.get('rhevIsSelfHosted') ? "selfhost" : "rhevhost");
@@ -19,7 +19,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   actions: {
     rhevSetupChanged: function() {
-      return this.get('controllers.deployment').set('model.rhev_is_self_hosted', this.get('isSelfHosted'));
+      return this.get('deploymentController').set('model.rhev_is_self_hosted', this.get('isSelfHosted'));
     }
   }
 

@@ -3,13 +3,13 @@ import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['subscriptions'],
+  subscriptionsController: Ember.inject.controller('subscriptions'),
 
   showManagementApplications: true,
 
-  sessionPortal: Ember.computed.alias('controllers.subscriptions.model'),
-  upstreamConsumerUuid: Ember.computed.alias("controllers.deployment.model.upstream_consumer_uuid"),
-  upstreamConsumerName: Ember.computed.alias("controllers.deployment.model.upstream_consumer_name"),
+  sessionPortal: Ember.computed.alias('subscriptionsController.model'),
+  upstreamConsumerUuid: Ember.computed.alias("deploymentController.model.upstream_consumer_uuid"),
+  upstreamConsumerName: Ember.computed.alias("deploymentController.model.upstream_consumer_name"),
 
   showAlertMessage: false,
 

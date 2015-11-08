@@ -13,14 +13,14 @@
       </span>
     {{/radio-button}}
     &nbsp;&nbsp;&nbsp;&nbsp;
-    {{#radio-button value="Local" groupValue=rhev_storage_type id='local' disabled=controllers.deployment.isStarted}}
-      <span class="{{if controllers.deployment.isStarted 'disabled'}}">
+    {{#radio-button value="Local" groupValue=rhev_storage_type id='local' disabled=deploymentController.isStarted}}
+      <span class="{{if deploymentController.isStarted 'disabled'}}">
         Local
       </span>
     {{/radio-button}}
     &nbsp;&nbsp;&nbsp;&nbsp;
-    {{#radio-button value="Gluster" groupValue=rhev_storage_type id='gluster' disabled=controllers.deployment.isStarted}}
-      <span class="{{if controllers.deployment.isStarted 'disabled'}}">
+    {{#radio-button value="Gluster" groupValue=rhev_storage_type id='gluster' disabled=deploymentController.isStarted}}
+      <span class="{{if deploymentController.isStarted 'disabled'}}">
         Gluster
       </span>
     {{/radio-button}}
@@ -33,9 +33,9 @@
 
       {{#if isCloudForms}}
         <h4> Export Domain </h4>
-          {{text-f label="Export Domain Name" value=rhev_export_domain_name cssId='rhev_export_domain_name' isRequired=true disabled=controllers.deployment.isStarted isAlphaNumeric=true}}
-          {{text-f label="Storage Address" value=rhev_export_domain_address cssId='rhev_export_domain_address' isRequired=true disabled=controllers.deployment.isStarted isHostname=true}}
-          {{text-f label="Share Path" value=rhev_export_domain_path cssId='rhev_export_domain_path' isRequired=true disabled=controllers.deployment.isStarted errors=errorsHashExportPath}}
+          {{text-f label="Export Domain Name" value=rhev_export_domain_name cssId='rhev_export_domain_name' isRequired=true disabled=deploymentController.isStarted isAlphaNumeric=true}}
+          {{text-f label="Storage Address" value=rhev_export_domain_address cssId='rhev_export_domain_address' isRequired=true disabled=deploymentController.isStarted isHostname=true}}
+          {{text-f label="Share Path" value=rhev_export_domain_path cssId='rhev_export_domain_path' isRequired=true disabled=deploymentController.isStarted errors=errorsHashExportPath}}
       {{/if}}
 
   {{else if isLocal}}
@@ -54,5 +54,4 @@
                    disableBack=false
                    nextRouteName=step3RouteName
                    disableNext=disableNextStorage
-
                    disableCancel=isStarted}}

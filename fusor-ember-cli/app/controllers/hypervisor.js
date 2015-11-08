@@ -2,10 +2,9 @@ import Ember from 'ember';
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
-  needs: ['rhev'],
 
-  hostNamingScheme: Ember.computed.alias("controllers.deployment.model.host_naming_scheme"),
-  customPreprendName: Ember.computed.alias("controllers.deployment.model.custom_preprend_name"),
+  hostNamingScheme: Ember.computed.alias("deploymentController.model.host_naming_scheme"),
+  customPreprendName: Ember.computed.alias("deploymentController.model.custom_preprend_name"),
 
   namingOptions: ['Freeform', 'MAC address', 'hypervisorN', 'Custom scheme'],
 

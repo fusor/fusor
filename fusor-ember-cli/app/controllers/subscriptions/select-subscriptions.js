@@ -3,13 +3,11 @@ import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['application'],
-
-  isUpstream: Ember.computed.alias("controllers.application.isUpstream"),
-  stepNumberSubscriptions: Ember.computed.alias("controllers.deployment.stepNumberSubscriptions"),
-  numSubscriptionsRequired: Ember.computed.alias("controllers.deployment.numSubscriptionsRequired"),
-  isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
-  isDisconnected: Ember.computed.alias('controllers.deployment.model.is_disconnected'),
+  isUpstream: Ember.computed.alias("applicationController.isUpstream"),
+  stepNumberSubscriptions: Ember.computed.alias("deploymentController.stepNumberSubscriptions"),
+  numSubscriptionsRequired: Ember.computed.alias("deploymentController.numSubscriptionsRequired"),
+  isStarted: Ember.computed.alias("deploymentController.isStarted"),
+  isDisconnected: Ember.computed.alias('deploymentController.model.is_disconnected'),
 
   hasSubscriptionPools: function() {
       return (this.get('subscriptionPools.length') > 0);

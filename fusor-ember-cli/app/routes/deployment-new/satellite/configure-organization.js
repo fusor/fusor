@@ -11,7 +11,7 @@ export default Ember.Route.extend(DeploymentNewSatelliteRouteMixin, {
     var self = this;
     controller.set('model', model);
     controller.set('showAlertMessage', false);
-    this.store.find('organization').then(function(results) {
+    this.store.findAll('organization').then(function(results) {
       controller.set('organizations', results);
       if (results.get('length') === 1) {
         var defaultOrg = results.get('firstObject');

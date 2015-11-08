@@ -4,20 +4,25 @@ import DisableTabMixin from "../mixins/disable-tab-mixin";
 
 export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixin, {
 
-  needs: ['configure-environment', 'deployments', 'rhev', 'openstack', 'cloudforms',
-          'subscriptions/credentials', 'subscriptions/select-subscriptions'],
+  deploymentsController: Ember.inject.controller('deployments'),
+  configureEnvironmentController: Ember.inject.controller('configure-environment'),
+  rhevController: Ember.inject.controller('rhev'),
+  openstackController: Ember.inject.controller('openstack'),
+  cloudformsController: Ember.inject.controller('cloudforms'),
+  credentialsController: Ember.inject.controller('subscriptions/credentials'),
+  selectSubscriptionsController: Ember.inject.controller('subscriptions/select-subscriptions'),
 
   routeNameSatellite: 'satellite',
 
-  useDefaultOrgViewForEnv: Ember.computed.alias("controllers.configure-environment.useDefaultOrgViewForEnv"),
+  useDefaultOrgViewForEnv: Ember.computed.alias("configureEnvironmentController.useDefaultOrgViewForEnv"),
 
-  isOpenModal: Ember.computed.alias("controllers.deployments.isOpenModal"),
-  deploymentInModal: Ember.computed.alias("controllers.deployments.deploymentInModal"),
+  isOpenModal: Ember.computed.alias("deploymentsController.isOpenModal"),
+  deploymentInModal: Ember.computed.alias("deploymentsController.deploymentInModal"),
 
-  validRhev: Ember.computed.alias("controllers.rhev.validRhev"),
-  validOpenStack: Ember.computed.alias("controllers.openstack.validOpenStack"),
-  validCloudforms: Ember.computed.alias("controllers.cloudforms.validCloudforms"),
-  disableNextOnSelectSubscriptions: Ember.computed.alias("controllers.subscriptions/select-subscriptions.disableNextOnSelectSubscriptions"),
+  validRhev: Ember.computed.alias("rhevController.validRhev"),
+  validOpenStack: Ember.computed.alias("openstackController.validOpenStack"),
+  validCloudforms: Ember.computed.alias("cloudformsController.validCloudforms"),
+  disableNextOnSelectSubscriptions: Ember.computed.alias("selectSubscriptionsController.disableNextOnSelectSubscriptions"),
   isDisconnected: Ember.computed.alias("model.is_disconnected"),
 
   isDisabledRhev: Ember.computed.alias("satelliteInvalid"),
@@ -78,9 +83,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
     if (Ember.isPresent(this.get('model.upstream_consumer_name'))) {
       return this.get('model.upstream_consumer_name');
     } else {
-      return this.get('controllers.subscriptions/credentials.organizationUpstreamConsumerName');
+      return this.get('credentialsController.organizationUpstreamConsumerName');
     }
-  }.property('model.upstream_consumer_name', 'controllers.subscriptions/credentials.organizationUpstreamConsumerName'),
+  }.property('model.upstream_consumer_name', 'credentialsController.organizationUpstreamConsumerName'),
 
   hasEngine: function() {
     return Ember.isPresent(this.get("model.discovered_host.id"));

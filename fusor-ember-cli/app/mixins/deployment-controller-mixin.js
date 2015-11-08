@@ -2,9 +2,11 @@ import Ember from 'ember';
 
 export default Ember.Mixin.create({
 
-  needs: ['application', 'subscriptions',
-          'configure-organization', 'configure-environment',
-          'subscriptions/select-subscriptions'],
+  applicationController: Ember.inject.controller('application'),
+  subscriptionsController: Ember.inject.controller('subscriptions'),
+  configureOrganizationController: Ember.inject.controller('configure-organization'),
+  configureEnvironmentController: Ember.inject.controller('configure-environment'),
+  selectSubscriptionsController: Ember.inject.controller('subscriptions/select-subscriptions'),
 
   isRhev: Ember.computed.alias("model.deploy_rhev"),
   isOpenStack: Ember.computed.alias("model.deploy_openstack"),

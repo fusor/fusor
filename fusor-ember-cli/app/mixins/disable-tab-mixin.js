@@ -2,7 +2,10 @@ import Ember from 'ember';
 
 export default Ember.Mixin.create({
 
-  needs: ['deployment', 'configure-organization', 'configure-environment', 'application'],
+  deploymentController: Ember.inject.controller('deployment'),
+  applicationController: Ember.inject.controller('application'),
+  configureOrganizationController: Ember.inject.controller('configure-organization'),
+  configureEnvironmentController: Ember.inject.controller('configure-environment'),
 
   hasName: function() {
     return (this.get('model.name.length') > 0);
@@ -14,7 +17,7 @@ export default Ember.Mixin.create({
   }.property('model.organization.id'),
   hasNoOrganization: Ember.computed.not('hasOrganization'),
 
-  deploymentNames: Ember.computed.alias("controllers.application.deploymentNames"),
+  deploymentNames: Ember.computed.alias("applicationController.deploymentNames"),
 
   isDuplicateName: function() {
     if (this.get('model').get('isNew')) {

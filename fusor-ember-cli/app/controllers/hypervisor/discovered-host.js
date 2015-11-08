@@ -3,18 +3,20 @@ import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['hypervisor', 'rhev'],
+  hypervisorController: Ember.inject.controller('hypervisor'),
+  // todo - delete rhevcontroller - not used?
+  // rhevController: Ember.inject.controller('rhev'),
 
-  selectedRhevEngine: Ember.computed.alias("controllers.deployment.model.discovered_host"),
-  rhevIsSelfHosted: Ember.computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
-  isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
-  isNotStarted: Ember.computed.alias("controllers.deployment.isNotStarted"),
+  selectedRhevEngine: Ember.computed.alias("deploymentController.model.discovered_host"),
+  rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
+  isStarted: Ember.computed.alias("deploymentController.isStarted"),
+  isNotStarted: Ember.computed.alias("deploymentController.isNotStarted"),
 
-  isCustomScheme: Ember.computed.alias("controllers.hypervisor.isCustomScheme"),
-  isHypervisorN: Ember.computed.alias("controllers.hypervisor.isHypervisorN"),
-  customPreprendName: Ember.computed.alias("controllers.hypervisor.model.custom_preprend_name"),
-  isFreeform: Ember.computed.alias("controllers.hypervisor.isFreeform"),
-  isMac: Ember.computed.alias("controllers.hypervisor.isMac"),
+  isCustomScheme: Ember.computed.alias("hypervisorController.isCustomScheme"),
+  isHypervisorN: Ember.computed.alias("hypervisorController.isHypervisorN"),
+  customPreprendName: Ember.computed.alias("hypervisorController.model.custom_preprend_name"),
+  isFreeform: Ember.computed.alias("hypervisorController.isFreeform"),
+  isMac: Ember.computed.alias("hypervisorController.isMac"),
 
   // Filter out hosts selected as Engine
   availableHosts: function() {
