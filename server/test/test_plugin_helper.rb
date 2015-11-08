@@ -12,7 +12,7 @@ SimpleCov.root(File.join(File.dirname(__FILE__), '../app'))
 SimpleCov.start 'rails' do
   filters.clear # This will remove the :root_filter and :bundler_filter that come via simplecov's defaults
   add_filter do |src|
-    !(src.filename =~ /^#{SimpleCov.root}/) unless ( (src.filename =~ /egon/) or (src.filename =~ /foretello_api_v21/) )
+    !(src.filename =~ /^#{SimpleCov.root}/) unless ((src.filename =~ /egon/) || (src.filename =~ /foretello_api_v21/))
   end
   add_group "Egon" do |src_file|
     src_file.filename =~ /egon/
