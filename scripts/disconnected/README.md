@@ -14,31 +14,31 @@ https://access.redhat.com/documentation/en-US/Red_Hat_Satellite/6.0/html/User_Gu
 1) Create a VM for use as the Synchronization Host with RHEL installed.
 2) Register the VM with Customer Portal using subscription manager:
 
-   subscription-manager register
+   ```subscription-manager register```
 
 3) Find the pool id for Red Hat Satellite:
 
-   subscription-manager list --available --all
+   ```subscription-manager list --available --all```
 
 4) Download the manifest required for your Satellite.
 
 
 5) Now you can run setup-sync.sh script from this repo:
 
-   sudo setup-sync.sh POOL_ID MANIFEST_FILE
+   ```sudo setup-sync.sh POOL_ID MANIFEST_FILE```
 
 6) You should now be able to begin syncing content for RHCI:
 
-   sudo sync.sh
+   ```sudo sync.sh```
 
 7) Once the syncing is finished, you can then export said content:
 
-   sudo export.sh PATH_FOR_EXPORT # path will be created for you
+   ```sudo export.sh PATH_FOR_EXPORT``` # path will be created for you
 
 8) Once the content has been exported you can now sync it to the satellite.
    This will put all the content in /var/www/html/pub/sat-import/
 
-   sudo setup-sat.sh
+   ```sudo setup-sat.sh```
 
 
 Disconnected Satellite (using ISOs)
