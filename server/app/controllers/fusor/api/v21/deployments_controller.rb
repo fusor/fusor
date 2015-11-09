@@ -13,7 +13,8 @@
 module Fusor
   class Api::V21::DeploymentsController < Api::V2::DeploymentsController
 
-    before_filter :find_deployment, :only => [:destroy, :show, :update, :deploy]
+    before_filter :find_deployment, :only => [:destroy, :show, :update,
+                                              :deploy, :validate]
 
     rescue_from Encoding::UndefinedConversionError, :with => :ignore_it
 
@@ -62,6 +63,15 @@ module Fusor
       rescue ::ActiveRecord::RecordInvalid
         render json: {errors: @deployment.errors}, status: 422
       end
+    end
+
+    def validate
+      status = @deployment.valid? ? 200 : 422
+
+      render status: status, json: {
+        :errors => @deployment.errors.full_messages,
+        :warnings => @deployment.warnings
+      }
     end
 
     def resource_name

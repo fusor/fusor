@@ -38,12 +38,20 @@ module Fusor
     has_many :subscriptions, :class_name => "Fusor::Subscription", :foreign_key => :deployment_id
     has_many :introspection_tasks, :class_name => 'Fusor::IntrospectionTask'
 
+    after_initialize :setup_warnings
+
     scoped_search :on => [:id, :name], :complete_value => true
 
     # used by ember-data for .find('model', {id: [1,2,3]})
     scope :by_id, proc { |n| where(:id => n) if n.present? }
 
     DEPLOYMENT_TYPES = [:rhev, :cfme, :openstack]
+
+    attr_accessor :warnings
+
+    def setup_warnings
+      self.warnings = []
+    end
 
     def deploy?(deploy_type)
       fail _("Invalid deployment type: %s") % deploy_type unless DEPLOYMENT_TYPES.include?(deploy_type.to_sym)

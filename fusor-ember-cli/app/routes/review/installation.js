@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import request from 'ic-ajax';
 
 export default Ember.Route.extend({
   model() {
@@ -7,7 +8,6 @@ export default Ember.Route.extend({
 
   setupController(controller, model) {
     controller.set('model', model);
-    controller.set('showSpinner', false);
     controller.set('showErrorMessage', false);
     if (model.get('deploy_rhev')) {
         this.store.findAll('hostgroup').then(function(results) {
@@ -25,6 +25,37 @@ export default Ember.Route.extend({
         });
         this.store.query('flavor', {deployment_id: model.get('id')}).then(function (flavors) {
             controller.set('openstackProfiles', flavors);
+        });
+    }
+    if (!model.get('isStarted')) {
+        var self = this;
+        var deployment = self.modelFor('deployment');
+        var token = Ember.$('meta[name="csrf-token"]').attr('content');
+
+        controller.set('showSpinner', true);
+        controller.set('spinnerTextMessage', "Validating deployment...");
+
+        request({
+            url: `/fusor/api/v21/deployments/${model.get('id')}/validate`,
+            type: "GET",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "X-CSRF-Token": token
+            }
+        }).then(function(response) {
+            controller.set('showSpinner', false);
+
+            controller.set('showErrorMessage', response.errors.length > 0);
+            controller.set('errorMsg', response.errors.join("\n"));
+
+            controller.set('showWarningMessage', response.warnings.length > 0);
+            controller.set('warningMsg', response.warnings.join("\n"));
+        }, function(response){
+            controller.set('showSpinner', false);
+            console.log(response);
+            var errorMsg = response.responseText;
+            controller.set('errorMsg', errorMsg);
         });
     }
   }

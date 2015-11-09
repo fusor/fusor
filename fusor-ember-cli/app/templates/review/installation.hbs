@@ -12,6 +12,18 @@
     </div>
   {{/if}}
 
+  {{#if showWarningMessage}}
+    <div class="row">
+      <div class='col-md-9'>
+        <div class='alert alert-warning rhci-alert'>
+            <i class="fa fa-2x fa-exclamation-triangle warningForValidation"></i>
+            &nbsp;
+            {{warningMsg}}
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
   <div class='row'>
     <div class='col-md-12'>
 
@@ -165,3 +177,5 @@
   </span>
 
 {{/unless}}
+
+{{partial 'continue-deployment-modal'}}
