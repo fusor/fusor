@@ -7,7 +7,7 @@ export default DS.ActiveModelAdapter.extend({
     headers: {
         "X-CSRF-Token": token
     },
-    shouldReloadRecord: function(store, ticketSnapshot) {
+    shouldReloadRecord(store, ticketSnapshot) {
       return true;
     }
 
