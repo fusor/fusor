@@ -18,11 +18,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   }),
 
   actions: {
-    registerNewSatellite: function() {
+    registerNewSatellite() {
       this.set('openRegisterNewSatelliteModal', true);
     },
 
-    selectManagementApp: function(managementApp) {
+    selectManagementApp(managementApp) {
       this.set('showAlertMessage', false);
       this.get('sessionPortal').set('consumerUUID', managementApp.get('id'));
       this.get('sessionPortal').save();
@@ -32,7 +32,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       return this.transitionTo('subscriptions.management-application.consumer', managementApp.get('id'));
     },
 
-    createSatellite: function() {
+    createSatellite() {
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
       var newSatelliteName = this.get('newSatelliteName');
       var ownerKey = this.get('sessionPortal').get('ownerKey');
@@ -53,7 +53,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
                 "Content-Type": "application/json",
                 "X-CSRF-Token": token,
             },
-            success: function(response) {
+            success(response) {
               self.get('model').addObject(response);
               self.get('sessionPortal').set('consumerUUID', response.uuid);
               self.get('sessionPortal').save();
@@ -61,7 +61,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
               console.log(response);
               resolve(response);
             },
-            error: function(){
+            error() {
               console.log('error on createSatellite');
               return self.send('error');
             }

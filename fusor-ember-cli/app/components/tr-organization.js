@@ -17,7 +17,7 @@ export default Ember.Component.extend({
   }),
 
   actions: {
-    organizationChanged: function() {
+    organizationChanged() {
       this.sendAction('action', this.get('org'));
     }
   }

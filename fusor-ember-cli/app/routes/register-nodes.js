@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.Route.extend({
-  model: function () {
+  model() {
       var deploymentId = this.modelFor('deployment').get('id');
       return Ember.RSVP.hash({
           nodes: this.store.query('node', {deployment_id: deploymentId}),
@@ -9,7 +9,7 @@ export default Ember.Route.extend({
       });
   },
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
     controller.set('showAlertMessage', false);
     var self = this;
@@ -39,12 +39,12 @@ export default Ember.Route.extend({
     controller.startPolling();
   },
 
-  deactivate: function() {
+  deactivate() {
     return this.get('controller').stopPolling();
   },
 
   actions: {
-    refreshModelOnOverviewRoute: function(){
+    refreshModelOnOverviewRoute() {
         console.log('refreshing introspection progress bar tasks');
         var self = this;
         var controller = this.get('controller');

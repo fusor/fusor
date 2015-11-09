@@ -63,7 +63,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   }),
 
   actions: {
-    setEngine: function(host) {
+    setEngine(host) {
       var deployment = this.get('deploymentController');
       deployment.set('model.discovered_host', host);
     }

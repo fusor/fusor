@@ -2,11 +2,11 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
 
-  model: function () {
+  model() {
     return this.modelFor('deployment').get('subscriptions');
   },
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
     var self = this;
     var isDisconnected = this.controllerFor('deployment').get('isDisconnected');
@@ -47,14 +47,14 @@ export default Ember.Route.extend({
     }
   },
 
-  deactivate: function() {
+  deactivate() {
     // uncommeting causes inFlight issues
     // return this.send('saveSubscriptions', null);
   },
 
   actions: {
 
-    saveSubscriptions: function(redirectPath) {
+    saveSubscriptions(redirectPath) {
       var self = this;
       var deployment = this.modelFor('deployment');
       var subscriptionPools = this.controllerFor('subscriptions/select-subscriptions').get('subscriptionPools');
@@ -93,7 +93,7 @@ export default Ember.Route.extend({
 
     },
 
-    error: function(reason, transition) {
+    error(reason, transition) {
       // bubble up this error event:
       return true;
     }

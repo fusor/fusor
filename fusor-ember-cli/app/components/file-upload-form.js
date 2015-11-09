@@ -12,21 +12,21 @@ export default Ember.Component.extend({
   acceptValue: Ember.computed(function() {
     return this.getWithDefault('accept', '*');
   }),
-  getFileInput: function() {
+  getFileInput() {
     var idValue = this.get('inputId');
     return this.$('#' + idValue)[0];
   },
   actions: {
-    fileChosen: function() {
+    fileChosen() {
       var fileInput = this.getFileInput();
       this.set('selectedFile', fileInput.files[0]);
     },
-    doUpload: function() {
+    doUpload() {
       var fileInput = this.getFileInput();
       this.sendAction('doUpload', this.get('selectedFile'), fileInput);
 
     },
-    doCancel: function() {
+    doCancel() {
       var fileInput = this.getFileInput();
       this.sendAction('doCancel', fileInput);
 

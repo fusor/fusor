@@ -6,7 +6,7 @@ export default Ember.Component.extend({
   classNames: ['accordion-item'],
 
   actions: {
-    openItem: function() {
+    openItem() {
       this.set('isOpen', this.toggleProperty('isOpen'));
     }
   }

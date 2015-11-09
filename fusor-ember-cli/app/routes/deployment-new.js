@@ -3,11 +3,11 @@ import DeploymentRouteMixin from "../mixins/deployment-route-mixin";
 
 export default Ember.Route.extend(DeploymentRouteMixin, {
 
-  model: function() {
+  model() {
     return this.store.createRecord('deployment');
   },
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
     controller.set('satelliteTabRouteName', 'deployment-new.satellite.index');
     controller.set('organizationTabRouteName', 'deployment-new.satellite.configure-organization');
@@ -22,7 +22,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
 
   // rollback if new deployment not saved
   // TODO modal confirm/cancel
-  deactivate: function() {
+  deactivate() {
     var deployment = this.modelFor('deployment-new');
     if (deployment.get('isNew')) {
       return deployment.rollback();

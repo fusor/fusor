@@ -14,7 +14,7 @@ export default Ember.Component.extend(TrEngineHypervisorMixin, {
   }),
 
   actions: {
-    engineHostChanged: function(host) {
+    engineHostChanged(host) {
       return this.sendAction("action", host);
     }
   }

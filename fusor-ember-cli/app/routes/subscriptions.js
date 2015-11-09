@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
 
-  model: function() {
+  model() {
     var self = this;
     return this.store.findAll('session-portal').then(function(results) {
       if (Ember.isBlank(results)) {
@@ -13,14 +13,14 @@ export default Ember.Route.extend({
     });
   },
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
     var stepNumberSubscriptions = this.controllerFor('deployment').get('stepNumberSubscriptions');
     return this.controllerFor('deployment').set('currentStepNumber', stepNumberSubscriptions);
   },
 
   actions: {
-    error: function(reason, transition) {
+    error(reason, transition) {
       // bubble up this error event:
       return true;
     }

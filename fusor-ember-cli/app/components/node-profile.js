@@ -5,7 +5,7 @@ export default Ember.Component.extend({
 
   nodes: [],
 
-  getParamValue: function(paramName, params) {
+  getParamValue(paramName, params) {
     var paramValue = null;
     var numParams = params.get('length');
     for (var i=0; i<numParams; i++) {
@@ -56,7 +56,7 @@ export default Ember.Component.extend({
   }),
 
   /* jshint ignore:start */
-  nodeMatchesProfile: function(node, profile) {
+  nodeMatchesProfile(node, profile) {
     var nodeMemory = node.get('properties.memory_mb');
     var nodeCPUs = node.get('properties.cpus');
     var nodeDisk = node.get('properties.local_gb');
@@ -84,7 +84,7 @@ export default Ember.Component.extend({
     return nodeCount;
   }),
 
-  hideAssignMenu: function() {
+  hideAssignMenu() {
     this.set('assignMenuOpenClass', '');
   },
 
@@ -98,19 +98,19 @@ export default Ember.Component.extend({
   }),
 
   actions: {
-    showAssignMenu: function() {
+    showAssignMenu() {
       if (this.get('unassignedRoles.length') > 0) {
         this.set('assignMenuOpenClass', 'open');
       }
     },
 
-    assignRole: function(role) {
+    assignRole(role) {
       var profile = this.get('profile');
       var plan = this.get('plan');
       this.sendAction('assignRole', plan, role, profile);
     },
 
-    assignDroppedRole: function(role) {
+    assignDroppedRole(role) {
       role.set('isDraggingObject', false);
       var profile = this.get('profile');
       var plan = this.get('plan');
@@ -119,20 +119,20 @@ export default Ember.Component.extend({
         this.sendAction('assignRole', plan, role, profile);
       }
     },
-    editRole: function(role) {
+    editRole(role) {
       this.sendAction('editRole', role);
     },
 
-    setRoleCount: function(role, count) {
+    setRoleCount(role, count) {
       this.sendAction('setRoleCount', role, count);
     },
 
-    removeRole: function(role) {
+    removeRole(role) {
       var profile = this.get('profile');
       this.sendAction('removeRole', profile, role);
     }
   },
-  didInsertElement: function() {
+  didInsertElement() {
     var self = this;
     Ember.$('body').on('click', function() {
       try {

@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Mixin.create({
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
     if (this.modelFor('deployment').get('isNotStarted')) {
         controller.set('isLoadingHosts', true);
@@ -14,7 +14,7 @@ export default Ember.Mixin.create({
   },
 
   actions: {
-    refreshDiscoveredHosts: function(){
+    refreshDiscoveredHosts() {
       console.log('refresh allDiscoveredHosts');
       var controller = this.get('controller');
       controller.set('isLoadingHosts', true);

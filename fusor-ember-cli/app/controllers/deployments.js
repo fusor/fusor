@@ -29,7 +29,7 @@ export default Ember.Controller.extend({
   deploymentInModal: null,
 
   actions: {
-    openDeploymentModal: function (item) {
+    openDeploymentModal(item) {
       this.set('deploymentInModal', item);
       return this.set('isOpenModal', true);
     }

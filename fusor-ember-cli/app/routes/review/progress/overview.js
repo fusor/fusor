@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.Route.extend({
-  model: function () {
+  model() {
       var deployment = this.modelFor('deployment');
       var deployTaskPromise = this.store.query('foreman-task', {search: "id = " + deployment.get('foreman_task_uuid')});
       var subtasksOfDeployPromise = this.store.query('foreman-task', {search: "parent_task_id = " + deployment.get('foreman_task_uuid')});
@@ -25,7 +25,7 @@ export default Ember.Route.extend({
       });
   },
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
     controller.set('deployTask', model.deployTask);
     controller.set('manageContentTask', model.manageContentTask);
@@ -36,16 +36,16 @@ export default Ember.Route.extend({
     controller.startPolling();
   },
 
-  activate: function() {
+  activate() {
     window.scrollTo(0,0);
   },
 
-  deactivate: function() {
+  deactivate() {
     this.get('controller').stopPolling();
   },
 
   actions: {
-    refreshModelOnOverviewRoute: function(){
+    refreshModelOnOverviewRoute() {
       return this.refresh();
     }
   }

@@ -76,11 +76,11 @@ export default Ember.Component.extend({
   isEyeOpen: true,
 
   actions: {
-    showValidationErrors: function() {
+    showValidationErrors() {
       this.set("showValidationError", true);
     },
 
-    showPassword: function() {
+    showPassword() {
       this.set('isEyeOpen', this.toggleProperty('isEyeOpen'));
       if (this.get('isEyeOpen')) {
           this.set('typeInput', 'password');

@@ -2,11 +2,11 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
-  didInsertElement: function(){
+  didInsertElement() {
     return Ember.$('[data-toggle="popover"]').popover();
   },
 
-  willDestroyElement: function(){
+  willDestroyElement() {
     return Ember.$('[data-toggle="popover"]').popover('destroy');
   },
 

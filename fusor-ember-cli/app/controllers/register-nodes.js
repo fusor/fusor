@@ -9,7 +9,7 @@ export default Ember.Controller.extend(ProgressBarMixin, {
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
   deployment: Ember.computed.alias("deploymentController.model"),
 
-  init: function() {
+  init() {
     this._super();
     this.Node = Ember.Object.extend({
       name: Ember.computed('ipAddress', function () {
@@ -112,7 +112,7 @@ export default Ember.Controller.extend(ProgressBarMixin, {
     }
   }),
 
-  updateNodeSelection: function(node) {
+  updateNodeSelection(node) {
     var oldSelection = this.get('selectedNode');
     if (oldSelection) {
       oldSelection.set('isSelected', false);
@@ -125,23 +125,23 @@ export default Ember.Controller.extend(ProgressBarMixin, {
     this.set('selectedNode', node);
   },
 
-  handleOutsideClick: function() {
+  handleOutsideClick() {
     // do nothing, this overrides the closing of the dialog when clicked outside of it
   },
 
-  openRegDialog: function() {
+  openRegDialog() {
     this.set('registerNodesModalOpened', true);
     this.set('registerNodesModalClosed', false);
     this.set('modalOpen', true);
   },
 
-  closeRegDialog: function() {
+  closeRegDialog() {
     this.set('registerNodesModalOpened', false);
     this.set('registerNodesModalClosed', true);
     this.set('modalOpen', false);
   },
 
-  getCSVFileInput: function() {
+  getCSVFileInput() {
     return $('#regNodesUploadFileInput')[0];
   },
 
@@ -158,7 +158,7 @@ export default Ember.Controller.extend(ProgressBarMixin, {
   }).readOnly(),
 
   actions: {
-    refreshNodesAndFlavors: function() {
+    refreshNodesAndFlavors() {
       // manually set manual rather than using this.get('model').reload() which looks at data store changes
       // since the nodes changes or db changes happened outside of ember-data.
       console.log('refreshing model.nodes and model.profiles');
@@ -171,7 +171,7 @@ export default Ember.Controller.extend(ProgressBarMixin, {
                      });
     },
 
-    showNodeRegistrationModal: function() {
+    showNodeRegistrationModal() {
       // stop polling when opening the modal
       this.stopPolling();
 
@@ -203,7 +203,7 @@ export default Ember.Controller.extend(ProgressBarMixin, {
       this.openRegDialog();
     },
 
-    registerNodes: function() {
+    registerNodes() {
       this.closeRegDialog();
       // restart polling after closing modal
       this.startPolling();
@@ -225,23 +225,23 @@ export default Ember.Controller.extend(ProgressBarMixin, {
       });
     },
 
-    cancelRegisterNodes: function() {
+    cancelRegisterNodes() {
       this.closeRegDialog();
       this.set('edittedNodes', Ember.A());
     },
 
-    selectNode: function(node) {
+    selectNode(node) {
       this.updateNodeSelection(node);
     },
 
-    addNode: function() {
+    addNode() {
       var edittedNodes = this.get('edittedNodes');
       var newNode = this.Node.create({});
       edittedNodes.insertAt(0, newNode);
       this.updateNodeSelection(newNode);
     },
 
-    removeNode: function(node) {
+    removeNode(node) {
       var nodes = this.get('edittedNodes');
       nodes.removeObject(node);
       this.set('edittedNodes', nodes);
@@ -251,12 +251,12 @@ export default Ember.Controller.extend(ProgressBarMixin, {
       }
     },
 
-    updloadCsvFile: function() {
+    updloadCsvFile() {
       var uploadfile = this.getCSVFileInput();
       uploadfile.click();
     },
 
-    csvFileChosen: function() {
+    csvFileChosen() {
       var fileInput = this.getCSVFileInput();
       var file = fileInput.files[0];
       var self = this;
@@ -308,7 +308,7 @@ export default Ember.Controller.extend(ProgressBarMixin, {
     return (nodeCount < 2);
   }),
 
-  updateAfterRegistration: function(resolve) {
+  updateAfterRegistration(resolve) {
     var self = this;
     var deploymentId = this.get('deploymentId');
     this.store.query('node', {deployment_id: deploymentId, reload: true}).then(function() {
@@ -320,7 +320,7 @@ export default Ember.Controller.extend(ProgressBarMixin, {
     });
   },
 
-  registerNode: function(node) {
+  registerNode(node) {
     var self = this;
     var driverInfo = {};
     if ( node.get('driver') === 'pxe_ssh' ) {
@@ -385,7 +385,7 @@ export default Ember.Controller.extend(ProgressBarMixin, {
     );
   },
 
-  getErrorMessageFromReason: function(reason) {
+  getErrorMessageFromReason(reason) {
     try {
       var displayMessage = reason.responseJSON.displayMessage;
       if (displayMessage.indexOf('{') >= 0 && displayMessage.indexOf('}') >= 1) {

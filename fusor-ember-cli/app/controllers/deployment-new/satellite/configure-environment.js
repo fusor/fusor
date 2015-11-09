@@ -27,20 +27,20 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
   deployment: Ember.computed.alias("deploymentNewController"),
 
   actions: {
-    selectEnvironment: function(environment) {
+    selectEnvironment(environment) {
       this.set('showAlertMessage', false);
       this.set('selectedEnvironment', environment);
       return this.get('deploymentNewController.model').set('lifecycle_environment', environment);
     },
 
-    newEnvironment: function() {
+    newEnvironment() {
       this.set('name', '');
       this.set('label', '');
       this.set('description', '');
       this.set('openNewEnvironmentModal', true);
     },
 
-    createEnvironment: function() {
+    createEnvironment() {
       var self = this;
       var selectedOrganization = this.get('selectedOrganization');
       this.set('fields_env.name', this.get('name'));

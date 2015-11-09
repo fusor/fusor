@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
     controller.set('showErrorMessage', false);
 
@@ -37,17 +37,17 @@ export default Ember.Route.extend({
 
   },
 
-  deactivate: function() {
+  deactivate() {
     return this.send('saveDeployment', null);
   },
 
   actions: {
-    error: function(reason, transition) {
+    error(reason, transition) {
       // bubble up this error event:
       return true;
     },
 
-  loginPortal: function() {
+  loginPortal() {
       var self = this;
       var controller = this.controllerFor('subscriptions/credentials');
       var identification = controller.get('model.identification');
@@ -65,11 +65,11 @@ export default Ember.Route.extend({
                 "Content-Type": "application/json",
                 "X-CSRF-Token": token,
             },
-            success: function(response) {
+            success(response) {
               //show always be {} empty successful 200 response
               self.send('saveCredentials');
             },
-            error: function(response){
+            error(response) {
               console.log('error on loginPortal');
               controller.set('nextButtonTitle', "Next");
               controller.set('disableCredentialsNext', false);
@@ -79,7 +79,7 @@ export default Ember.Route.extend({
       });
     },
 
-    logoutPortal: function() {
+    logoutPortal() {
       var self = this;
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
@@ -92,7 +92,7 @@ export default Ember.Route.extend({
                 "Content-Type": "application/json",
                 "X-CSRF-Token": token,
             },
-            success: function(response) {
+            success(response) {
               //show always be {} empty successful 200 response
               self.modelFor('subscriptions').setProperties({'isAuthenticated': false,
                                                'identification': null,
@@ -100,7 +100,7 @@ export default Ember.Route.extend({
                                                'consumerUUID': null});
               self.modelFor('subscriptions').save();
             },
-            error: function(response){
+            error(response) {
               console.log('error on loginPortal');
               return self.send('error');
             }
@@ -108,7 +108,7 @@ export default Ember.Route.extend({
       });
     },
 
-    saveCredentials: function() {
+    saveCredentials() {
       var self = this;
       var controller = this.controllerFor('subscriptions/credentials');
       var identification = controller.get('model.identification');
@@ -130,7 +130,7 @@ export default Ember.Route.extend({
       });
     },
 
-    authenticatePortal: function() {
+    authenticatePortal() {
 
       var controller = this.controllerFor('subscriptions/credentials');
       var identification = controller.get('model.identification');
@@ -148,7 +148,7 @@ export default Ember.Route.extend({
                 "X-CSRF-Token": token,
             },
 
-            success: function(response) {
+            success(response) {
               var ownerKey = response[0]['key'];
               console.log('owner key is ' + ownerKey);
               var sessionPortal = self.modelFor('subscriptions');
@@ -166,7 +166,7 @@ export default Ember.Route.extend({
               });
             },
 
-            error: function(response){
+            error(response) {
                 console.log('error on authenticatePortal');
                 controller.set('nextButtonTitle', "Next");
                 controller.set('disableCredentialsNext', false);
@@ -179,7 +179,7 @@ export default Ember.Route.extend({
 
     },
 
-    redirectToManagementApplication: function() {
+    redirectToManagementApplication() {
       return this.transitionTo('subscriptions.management-application');
     }
 

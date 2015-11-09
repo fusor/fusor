@@ -2,16 +2,16 @@ import Ember from 'ember';
 import DiscoveredHostRouteMixin from "../../mixins/discovered-host-route-mixin";
 
 export default Ember.Route.extend(DiscoveredHostRouteMixin, {
-  model: function () {
+  model() {
     return this.modelFor('deployment').get('discovered_hosts');
   },
 
-  deactivate: function() {
+  deactivate() {
     return this.send('saveHyperVisors', null);
   },
 
   actions: {
-    saveHyperVisors: function(redirectPath) {
+    saveHyperVisors(redirectPath) {
       var self = this;
       var deployment = this.modelFor('deployment');
       var hypervisorModelIds = this.controllerFor('hypervisor/discovered-host').get('hypervisorModelIds');
@@ -28,14 +28,14 @@ export default Ember.Route.extend(DiscoveredHostRouteMixin, {
                 "X-CSRF-Token": token,
                 "Authorization": "Basic " + self.get('session.basicAuthToken')
             },
-            success: function(response) {
+            success(response) {
               resolve(response);
               if (redirectPath) {
                 self.transitionTo('rhev-options');
               }
             },
 
-            error: function(response){
+            error(response) {
               reject(response);
             }
         });

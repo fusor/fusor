@@ -6,7 +6,7 @@ export default Ember.Mixin.create({
     return 5000; // Time between refreshing (in ms)
   }).readOnly(),
 
-  scheduleNextRefresh: function(f) {
+  scheduleNextRefresh(f) {
     return Ember.run.later(this, function() {
       f.apply(this);
       this.set('timer', this.scheduleNextRefresh(f));
@@ -14,15 +14,15 @@ export default Ember.Mixin.create({
   },
 
   // executes `refreshModelOnRoute` for every intervalPolling.
-  startPolling: function() {
+  startPolling() {
     this.set('timer', this.scheduleNextRefresh(this.get('refreshModelOnRoute'))); //and then repeats
   },
 
-  stopPolling: function() {
+  stopPolling() {
     Ember.run.cancel(this.get('timer'));
   },
 
-  refreshModelOnRoute: function(){
+  refreshModelOnRoute() {
     return this.send('refreshModelOnOverviewRoute');
   }
 

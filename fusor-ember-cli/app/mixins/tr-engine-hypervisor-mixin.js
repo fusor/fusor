@@ -27,7 +27,7 @@ export default Ember.Mixin.create({
   }),
 
   actions: {
-    saveHostname: function() {
+    saveHostname() {
       var host = this.get('host');
       var self = this;
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
@@ -43,11 +43,11 @@ export default Ember.Mixin.create({
                 "X-CSRF-Token": token,
                 "Authorization": "Basic " + self.get('session.basicAuthToken')
             },
-            success: function(response) {
+            success(response) {
               resolve(response);
             },
 
-            error: function(response){
+            error(response) {
               reject(response);
             }
         });

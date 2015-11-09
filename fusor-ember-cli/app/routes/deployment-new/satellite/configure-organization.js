@@ -3,11 +3,11 @@ import DeploymentNewSatelliteRouteMixin from "../../../mixins/deployment-new-sat
 
 export default Ember.Route.extend(DeploymentNewSatelliteRouteMixin, {
 
-  model: function () {
+  model() {
     return this.modelFor('deployment-new').get('organization');
   },
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     var self = this;
     controller.set('model', model);
     controller.set('showAlertMessage', false);

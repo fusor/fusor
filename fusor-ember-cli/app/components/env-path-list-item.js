@@ -22,7 +22,7 @@ export default Ember.Component.extend({
     return ('env_' + this.get('env.id'));
   }),
 
-  click: function() {
+  click() {
     if (!this.get('disabled')) {
       return this.sendAction('action', this.get('env'));
     }

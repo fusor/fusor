@@ -5,16 +5,16 @@ export default Ember.Component.extend({
   classNames: ['row'],
 
   actions: {
-    openCancelDeploymentModal: function() {
+    openCancelDeploymentModal() {
       this.set('openModal', true);
     },
 
-    saveAndCancelDeployment: function() {
+    saveAndCancelDeployment() {
       this.get('targetObject').send('saveAndCancelDeployment');
       this.set('openModal', false);
     },
 
-    cancelAndDeleteDeployment: function() {
+    cancelAndDeleteDeployment() {
       this.get('targetObject').send('cancelAndDeleteDeployment');
       this.set('openModal', false);
     }

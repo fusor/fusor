@@ -67,13 +67,13 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   }),
 
   actions: {
-    resetCredentials: function() {
+    resetCredentials() {
       this.set('isDeployed', false);
       this.set('model.openstack_undercloud_password', null);
       return this.get('model').save();
     },
 
-    deployUndercloud: function () {
+    deployUndercloud() {
       var self = this;
       var model = this.get('model');
       console.log('detectUndercloud');

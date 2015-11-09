@@ -21,11 +21,11 @@ export default Ember.Controller.extend({
   logoPath: Ember.computed.alias("deploymentController.logoPath"),
 
   actions: {
-    invalidate: function() {
+    invalidate() {
       return this.transitionTo('login');
     },
 
-    signOut: function() {
+    signOut() {
       return this.transitionTo('login');
     }
   }

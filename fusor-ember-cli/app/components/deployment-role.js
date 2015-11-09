@@ -6,7 +6,7 @@ export default Ember.Component.extend({
   plan: null,
   nodeCount: 0,
 
-  getParamValue: function(paramName, params) {
+  getParamValue(paramName, params) {
     var paramValue = null;
     var numParams = params.get('length');
     for (var i=0; i<numParams; i++) {
@@ -71,16 +71,16 @@ export default Ember.Component.extend({
   }),
 
   actions: {
-    updateNodeCount: function() {
+    updateNodeCount() {
       var nodeCount = parseInt(this.$('select').val());
       this.sendAction('setRoleCount', this.get('role'), nodeCount);
     },
 
-    editRole: function() {
+    editRole() {
       this.sendAction('edit', this.get('role'));
     },
 
-    removeRole: function() {
+    removeRole() {
       this.sendAction('remove', this.get('role'));
     }
   }

@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
 
     var isRhev = this.controllerFor('deployment').get('isRhev');
@@ -14,7 +14,7 @@ export default Ember.Route.extend({
     }
   },
 
-  deactivate: function() {
+  deactivate() {
     return this.send('saveDeployment', null);
   }
 

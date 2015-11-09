@@ -3,7 +3,7 @@ import DeploymentRouteMixin from "../mixins/deployment-route-mixin";
 
 export default Ember.Route.extend(DeploymentRouteMixin, {
 
-  model: function () {
+  model() {
       var deploymentId = this.modelFor('deployment').get('id');
       return Ember.RSVP.hash({
           plan: this.store.findRecord('deployment-plan', deploymentId),
@@ -13,7 +13,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       });
   },
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
   }
 });

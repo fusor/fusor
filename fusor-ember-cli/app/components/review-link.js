@@ -34,7 +34,7 @@ export default Ember.Component.extend({
   }),
 
   actions: {
-    showPassword: function() {
+    showPassword() {
       this.set('isEyeOpen', this.toggleProperty('isEyeOpen'));
       if (this.get('isEyeOpen')) {
           return this.set('eyeIcon', "fa-eye");

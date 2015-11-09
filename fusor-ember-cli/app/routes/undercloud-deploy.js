@@ -1,16 +1,16 @@
 import Ember from 'ember';
 
 export default Ember.Route.extend({
-  model: function() {
+  model() {
     return this.modelFor('deployment');
   },
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
     controller.set('showAlertMessage', false);
   },
 
-  deactivate: function() {
+  deactivate() {
     return this.send('saveDeployment', null);
   }
 

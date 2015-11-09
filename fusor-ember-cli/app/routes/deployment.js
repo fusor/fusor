@@ -3,11 +3,11 @@ import DeploymentRouteMixin from "../mixins/deployment-route-mixin";
 
 export default Ember.Route.extend(DeploymentRouteMixin, {
 
-  model: function(params) {
+  model(params) {
     return this.store.findRecord('deployment', params.deployment_id);
   },
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
     controller.set('satelliteTabRouteName', 'satellite.index');
     controller.set('organizationTabRouteName', 'configure-organization');
@@ -37,7 +37,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
   },
 
   actions: {
-    installDeployment: function() {
+    installDeployment() {
       var self = this;
       var deployment = self.modelFor('deployment');
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
@@ -57,7 +57,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
                 "X-CSRF-Token": token,
                 "Authorization": "Basic " + self.get('session.basicAuthToken')
             },
-            success: function(response) {
+            success(response) {
               resolve(response);
               var uuid = response.id;
               deployment.set('foreman_task_uuid', uuid);
@@ -69,7 +69,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
               });
             },
 
-            error: function(response){
+            error(response) {
               controller.set('showSpinner', false);
               console.log(response);
               var errorMsg = response.responseText;
@@ -81,7 +81,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       });
     },
 
-    attachSubscriptions: function() {
+    attachSubscriptions() {
       var self = this;
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
       var sessionPortal = this.modelFor('subscriptions');
@@ -118,12 +118,12 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
                     "X-CSRF-Token": token,
                 },
 
-                success: function() {
+                success() {
                   console.log('successfully attached ' + item.qtyToAttach + ' subscription for pool ' + item.id);
                   self.send('installDeployment');
                 },
 
-                error: function(){
+                error() {
                   console.log('error on attachSubscriptions');
                   return self.send('error');
                 }
@@ -134,11 +134,11 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       });
     },
 
-    saveAndCancelDeployment: function() {
+    saveAndCancelDeployment() {
       return this.send('saveDeployment', 'deployments');
     },
 
-    cancelAndDeleteDeployment: function() {
+    cancelAndDeleteDeployment() {
       var deployment = this.get('controller.model');
       var self = this;
       deployment.destroyRecord().then(function() {
@@ -146,13 +146,13 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       });
     },
 
-    error: function(reason) {
+    error(reason) {
       console.log(reason);
       var controller = this.controllerFor('deployment');
       controller.set('errorMsg', reason.responseJSON.error.message);
     },
 
-    refreshModel: function(){
+    refreshModel() {
       console.log('refreshModelOnDeploymentRoute');
       return this.refresh();
     }

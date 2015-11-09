@@ -60,7 +60,7 @@ export default Ember.Component.extend({
   isChecked: Ember.computed.alias('subscription.isSelectedSubscription'),
 
   actions: {
-    setValidQty: function() {
+    setValidQty() {
       if (this.get('isQtyInValid')) {
           return this.set('subscription.qtyToAttach', this.get('subscription.qtyAvailable') );
       }

@@ -8,7 +8,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
 
-  getParamValue: function(paramName, params) {
+  getParamValue(paramName, params) {
     var paramValue = null;
     var numParams = params.get('length');
     for (var i=0; i<numParams; i++) {
@@ -99,7 +99,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   showLoadingSpinner: false,
   loadingSpinnerText: "Loading...",
 
-  doAssignRole: function(plan, role, profile) {
+  doAssignRole(plan, role, profile) {
     var data;
     var self = this;
 
@@ -152,22 +152,22 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   edittedRoleParameters: null,
   showSettings: true,
 
-  openEditDialog: function() {
+  openEditDialog() {
     this.set('editRoleModalOpened', true);
     this.set('editRoleModalClosed', false);
   },
 
-  closeEditDialog: function() {
+  closeEditDialog() {
     this.set('editRoleModalOpened', false);
     this.set('editRoleModalClosed', true);
   },
 
-  openGlobalServiceConfigDialog: function() {
+  openGlobalServiceConfigDialog() {
     this.set('editGlobalServiceConfigModalOpened', true);
     this.set('editGlobalServiceConfigModalClosed', false);
   },
 
-  closeGlobalServiceConfigDialog: function() {
+  closeGlobalServiceConfigDialog() {
     this.set('editGlobalServiceConfigModalOpened', false);
     this.set('editGlobalServiceConfigModalClosed', true);
   },
@@ -190,12 +190,12 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     }
   }),
 
-  handleOutsideClick: function(e) {
+  handleOutsideClick(e) {
     // do nothing, this overrides the closing of the dialog when clicked outside of it
   },
 
   actions: {
-    editRole: function(role) {
+    editRole(role) {
       this.set('showRoleSettings', 'active');
       this.set('showRoleConfig',   'inactive');
       var roleParams = Ember.A();
@@ -238,7 +238,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       this.openEditDialog();
     },
 
-    saveRole: function() {
+    saveRole() {
       var self = this;
       var plan = this.get('model.plan');
       var role = this.get('edittedRole');
@@ -284,7 +284,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       this.closeEditDialog();
     },
 
-    setRoleCount: function(role, count) {
+    setRoleCount(role, count) {
       var self = this;
       var plan = this.get('model.plan');
       var data = { 'role_name': role.get('name'), 'count': count };
@@ -319,25 +319,25 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
         );
     },
 
-    cancelEditRole: function() {
+    cancelEditRole() {
       this.closeEditDialog();
     },
 
-    assignRoleType: function(profile, roleType) {
+    assignRoleType(profile, roleType) {
       var role = this.getRoleByType(roleType);
       this.doAssignRole(profile, role);
     },
 
-    assignRole: function(plan, role, profile) {
+    assignRole(plan, role, profile) {
       this.doAssignRole(plan, role, profile);
     },
 
-    removeRole: function(profile, role) {
+    removeRole(profile, role) {
       var plan = this.get('model.plan');
       this.doAssignRole(plan, role, null);
     },
 
-    unassignRole: function(role) {
+    unassignRole(role) {
       var plan = this.get('model.plan');
       this.doAssignRole(plan, role, null);
     },
@@ -345,17 +345,17 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     showRoleSettings: 'active',
     showRoleConfig:   'inactive',
 
-    doShowSettings: function() {
+    doShowSettings() {
       this.set('showRoleSettings', 'active');
       this.set('showRoleConfig',   'inactive');
     },
 
-    doShowConfig: function() {
+    doShowConfig() {
       this.set('showRoleSettings', 'inactive');
       this.set('showRoleConfig',   'active');
     },
 
-    editGlobalServiceConfig: function() {
+    editGlobalServiceConfig() {
       var planParams = Ember.A();
       this.get('model.plan.parameters').forEach(function(param) {
         if (param.get('id').indexOf('::') === -1) {
@@ -381,7 +381,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       this.openGlobalServiceConfigDialog();
     },
 
-    saveGlobalServiceConfig: function() {
+    saveGlobalServiceConfig() {
       var self = this;
       var plan = this.get('model.plan');
 
@@ -421,7 +421,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
 
     },
 
-    cancelGlobalServiceConfig: function() {
+    cancelGlobalServiceConfig() {
       this.closeGlobalServiceConfigDialog();
     }
   },

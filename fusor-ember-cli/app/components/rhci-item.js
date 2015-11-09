@@ -4,7 +4,7 @@ export default Ember.Component.extend({
   classNames: ['rhci-item'],
   classNameBindings: ['isChecked:rhci-item-selected'],
 
-  click: function() {
+  click() {
     if (!this.get('isDisabled')) {
       this.set('isChecked', this.toggleProperty('isChecked'));
     }
@@ -18,11 +18,11 @@ export default Ember.Component.extend({
     return ( (this.get('isHover')) && (this.get('isChecked')) );
   }),
 
-  mouseEnter: function(){
+  mouseEnter() {
     this.set('isHover', true);
   },
 
-  mouseLeave: function(){
+  mouseLeave() {
     this.set('isHover', false);
   }
 

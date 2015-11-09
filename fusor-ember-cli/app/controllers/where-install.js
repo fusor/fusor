@@ -15,7 +15,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   lifecycleEnvironmentTabRouteName: Ember.computed.alias("deploymentController.lifecycleEnvironmentTabRouteName"),
   hasNoInstallLocation: Ember.computed.alias("cloudformsController.hasNoInstallLocation"),
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
 
     var isRhev = this.controllerFor('deployment').get('isRhev');
@@ -61,7 +61,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   }),
 
   actions: {
-    cfmeLocationChanged: function() {
+    cfmeLocationChanged() {
     }
   }
 

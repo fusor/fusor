@@ -13,7 +13,7 @@ export default Ember.Controller.extend(ConfigureOrganizationMixin, NeedsDeployme
   isStarted: Ember.computed.alias("deploymentController.isStarted"),
 
   actions: {
-    selectOrganization: function(organization) {
+    selectOrganization(organization) {
       this.set('showAlertMessage', false);
       this.set('selectedOrganization', organization);
       return this.get('deploymentController').set('organization', organization);

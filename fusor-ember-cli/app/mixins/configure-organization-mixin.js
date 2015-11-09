@@ -21,7 +21,7 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
   }),
 
   actions: {
-    createOrganization: function() {
+    createOrganization() {
         var self = this;
         this.set('fields_org.name', this.get('defaultOrgName'));
         var organization = this.store.createRecord('organization', this.get('fields_org'));

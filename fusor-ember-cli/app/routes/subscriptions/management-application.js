@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
 
-  model: function() {
+  model() {
     var self = this;
     var deployment = this.modelFor('deployment');
     var sessionPortal = this.modelFor('subscriptions');
@@ -32,7 +32,7 @@ export default Ember.Route.extend({
     }
   },
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
     controller.set('showManagementApplications', true);
 
@@ -65,12 +65,12 @@ export default Ember.Route.extend({
     }
   },
 
-  deactivate: function() {
+  deactivate() {
     return this.send('saveDeployment', null);
   },
 
   actions: {
-      error: function(reason, transition) {
+      error(reason, transition) {
         // bubble up this error event:
         return true;
       }

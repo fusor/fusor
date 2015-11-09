@@ -2,17 +2,17 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
 
-  beforeModel: function() {
+  beforeModel() {
     if (Ember.isBlank(this.modelFor('review.progress.overview'))) {
       this.transitionTo('review.progress.overview');
     }
   },
 
-  model: function () {
+  model() {
     return this.modelFor('review.progress.overview');
   },
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
     controller.set('isLoadingMoreTasks', true);
 

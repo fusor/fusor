@@ -17,7 +17,7 @@ export default Ember.Component.extend({
   }),
 
   actions: {
-    changeManagementApp: function() {
+    changeManagementApp() {
       this.sendAction('action', this.get('managementApp'));
     }
   }

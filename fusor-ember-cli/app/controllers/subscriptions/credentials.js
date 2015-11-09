@@ -75,11 +75,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   }),
 
   actions: {
-    providerTypeChanged: function() {
+    providerTypeChanged() {
       return this.set('isDisconnected', this.get('isDisconnectedSelected'));
     },
 
-    uploadManifest: function() {
+    uploadManifest() {
       var self = this;
       var manifestFile = document.getElementById('manifest-file-field').files[0];
       var formData = new FormData();
@@ -110,7 +110,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
     },
 
-    uploadDifferentManifest: function() {
+    uploadDifferentManifest() {
       return this.set("manifestFile", null);
     }
   }
