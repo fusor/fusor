@@ -51,6 +51,7 @@
     "express": "^4.13.0",
     "glob": "^4.5.3",
     "morgan": "^1.6.0",
-    "phantomjs": "~1.9.18"
+    "phantomjs": "~1.9.18",
+    "ember-watson": "~0.7.0"
   }
 }
