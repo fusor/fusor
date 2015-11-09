@@ -2,11 +2,11 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
-  minHeightStyle: function() {
+  minHeightStyle: Ember.computed('minHeight', function() {
       return new Ember.Handlebars.SafeString('min-height: ' + this.get('minHeight') + 'px;');
-  }.property('minHeight'),
+  }),
 
-  resizeWizard: function() {
+  resizeWizard: Ember.on('didInsertElement', function() {
     var self = this;
     this.resizeHandler = function() {
             // Rob's jquery code for resizing in
@@ -30,10 +30,10 @@ export default Ember.Component.extend({
     Ember.$(window).on('resize', this.resizeHandler);
     this.resizeHandler();
 
-  }.on('didInsertElement'),
+  }),
 
-  removeResize: function() {
+  removeResize: Ember.on('willDestroyElement', function() {
     Ember.$(window).off('resize', this.resizeHandler);
-  }.on('willDestroyElement')
+  })
 
 });

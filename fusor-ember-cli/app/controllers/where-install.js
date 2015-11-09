@@ -34,23 +34,23 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   },
 
-  disableRHEV: function() {
+  disableRHEV: Ember.computed('isStarted', 'isNotRhev', function() {
     return (this.get('isStarted') || this.get('isNotRhev'));
-  }.property('isStarted', 'isNotRhev'),
+  }),
 
-  disableOpenStack: function() {
+  disableOpenStack: Ember.computed('isStarted', 'isNotOpenStack', function() {
     return (this.get('isStarted') || this.get('isNotOpenStack'));
-  }.property('isStarted', 'isNotOpenStack'),
+  }),
 
-  disableRHEVradio: function () {
+  disableRHEVradio: Ember.computed('disableRHEV', 'isStarted', function () {
     return (this.get('disableRHEV') || this.get('isStarted'));
-  }.property('disableRHEV', 'isStarted'),
+  }),
 
-  disableOpenstackradio: function () {
+  disableOpenstackradio: Ember.computed('disableOpenStack', 'isStarted', function () {
     return (this.get('disableOpenStack') || this.get('isStarted'));
-  }.property('disableOpenStack', 'isStarted'),
+  }),
 
-  backRouteName: function() {
+  backRouteName: Ember.computed('isOpenStack', 'isRhev', function() {
     if (this.get('isOpenStack')) {
       return 'assign-nodes';
     } else if (this.get('isRhev')) {
@@ -58,7 +58,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     } else {
       return 'satellite.access-insights';
     }
-  }.property('isOpenStack', 'isRhev'),
+  }),
 
   actions: {
     cfmeLocationChanged: function() {

@@ -6,15 +6,15 @@ export default Ember.Component.extend({
 
   classNameBindings: ['bgColor'],
 
-  isChecked: function () {
+  isChecked: Ember.computed('selectedOrganization', 'org', function () {
     return (this.get('selectedOrganization') === this.get('org'));
-  }.property('selectedOrganization', 'org'),
+  }),
 
-  bgColor: function () {
+  bgColor: Ember.computed('isChecked', function () {
     if (this.get('isChecked')) {
       return 'white-on-blue';
     }
-  }.property('isChecked'),
+  }),
 
   actions: {
     organizationChanged: function() {

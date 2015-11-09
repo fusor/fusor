@@ -20,40 +20,51 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
 
   isDeployed: Ember.computed.notEmpty("model.openstack_undercloud_password"),
 
-  deployDisabled: function() {
-    return ((this.get('isDeployed') && !this.get('isDirty')) ||
-            Ember.isBlank(this.get('undercloudIP')) ||
-            Ember.isBlank(this.get('sshUser')) ||
-            Ember.isBlank(this.get('sshPassword'))
-           );
-  }.property('isDeployed', 'isDirty', 'undercloudIP', 'sshUser', 'sshPassword'),
+  deployDisabled: Ember.computed(
+    'isDeployed',
+    'isDirty',
+    'undercloudIP',
+    'sshUser',
+    'sshPassword',
+    function() {
+      return ((this.get('isDeployed') && !this.get('isDirty')) ||
+              Ember.isBlank(this.get('undercloudIP')) ||
+              Ember.isBlank(this.get('sshUser')) ||
+              Ember.isBlank(this.get('sshPassword'))
+             );
+    }
+  ),
 
-  disableDeployUndercloudNext: function() {
+  disableDeployUndercloudNext: Ember.computed('isDeployed', function() {
     return !this.get('isDeployed');
-  }.property('isDeployed'),
+  }),
 
-  disableTabRegisterNodes: function() {
+  disableTabRegisterNodes: Ember.computed('isDeployed', function() {
     return !this.get('isDeployed');
-  }.property('isDeployed'),
+  }),
 
-  disableTabAssignNodes: function() {
+  disableTabAssignNodes: Ember.computed('isDeployed', function() {
     return !this.get('isDeployed');
-  }.property('isDeployed'),
+  }),
 
   isDirty: false,
 
-  watchModel: function() {
-    this.set('isDirty', true);
-  }.observes('model.openstack_undercloud_ip_addr', 'model.openstack_undercloud_user',
-             'model.openstack_undercloud_user_password'),
+  watchModel: Ember.observer(
+    'model.openstack_undercloud_ip_addr',
+    'model.openstack_undercloud_user',
+    'model.openstack_undercloud_user_password',
+    function() {
+      this.set('isDirty', true);
+    }
+  ),
 
-  backRouteNameUndercloud: function() {
+  backRouteNameUndercloud: Ember.computed('isRhev', function() {
     if (this.get('isRhev')) {
       return 'storage';
     } else {
       return 'satellite.access-insights';
     }
-  }.property('isRhev'),
+  }),
 
   actions: {
     resetCredentials: function() {

@@ -6,15 +6,15 @@ export default Ember.Component.extend({
 
   classNames: ['deployment-row'],
 
-  isStarted: function() {
+  isStarted: Ember.computed('deployment.foreman_task_uuid', function() {
     return !!(this.get('deployment.foreman_task_uuid'));
-  }.property('deployment.foreman_task_uuid'),
+  }),
 
-  isComplete: function() {
+  isComplete: Ember.computed('deployment.progress', function() {
    return this.get('deployment.progress') === '1';
-  }.property('deployment.progress'),
+  }),
 
-  formanTaskResult: function() {
+  formanTaskResult: Ember.computed('deployment.foreman_task_uuid', function() {
     var self = this;
     if (this.get('deployment.foreman_task_uuid')) {
       var call = this.get('targetObject.store').findRecord('foreman-task', this.get('deployment.foreman_task_uuid'));
@@ -24,21 +24,21 @@ export default Ember.Component.extend({
     } else {
       return null;
     }
-  }.property('deployment.foreman_task_uuid'),
+  }),
 
-  isError: function() {
+  isError: Ember.computed('formanTaskResult', function() {
     return (this.get('formanTaskResult') === 'error');
-  }.property('formanTaskResult'),
+  }),
 
-  canDelete: function() {
+  canDelete: Ember.computed('isStarted', 'isError', function() {
     if (!(this.get('isStarted'))) {
       return true;
     } else {
       return this.get('isError');
     }
-  }.property('isStarted', 'isError'),
+  }),
 
-  routeNameForEdit: function() {
+  routeNameForEdit: Ember.computed('isComplete', 'isStarted', function() {
     if (this.get('isComplete')) {
       return 'review.summary';
     } else if (this.get('isStarted')) {
@@ -46,7 +46,7 @@ export default Ember.Component.extend({
     }
 
     return 'deployment';
-  }.property('isComplete', 'isStarted'),
+  }),
 
   actions: {
     openDeploymentModal: function (item) {

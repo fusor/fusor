@@ -9,40 +9,45 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isStarted: Ember.computed.alias("deploymentController.isStarted"),
   isDisconnected: Ember.computed.alias('deploymentController.model.is_disconnected'),
 
-  hasSubscriptionPools: function() {
+  hasSubscriptionPools: Ember.computed('subscriptionPools.[]', function() {
       return (this.get('subscriptionPools.length') > 0);
-  }.property('subscriptionPools.[]'),
+  }),
 
-  hasSubscriptionSavedInModel: function() {
+  hasSubscriptionSavedInModel: Ember.computed('model.[]', function() {
       return (this.get('model.length') > 0);
-  }.property('model.[]'),
+  }),
 
-  contractNumbersInPool: function() {
+  contractNumbersInPool: Ember.computed('subscriptionPools.[]', 'hasSubscriptionPools', function() {
     if (this.get('hasSubscriptionPools')) {
       return this.get('subscriptionPools').getEach("contractNumber");
     }
-  }.property('subscriptionPools.[]', 'hasSubscriptionPools'),
+  }),
 
-  contractNumbersInModel: function() {
+  contractNumbersInModel: Ember.computed('model.[]', 'hasSubscriptionSavedInModel', function() {
     if (this.get('hasSubscriptionSavedInModel')) {
       return this.get('model').getEach("contract_number");
     }
-  }.property('model.[]', 'hasSubscriptionSavedInModel'),
+  }),
 
-  contractNumbersInModelNotInPool: function() {
-     if (this.get('hasSubscriptionSavedInModel')) {
-        return this.get('contractNumbersInModel').removeObjects(Ember.A(this.get('contractNumbersInPool')));
-     } else {
-       return Ember.A([]);
-     }
-  }.property('contractNumbersInPool', 'contractNumbersInModel', 'hasSubscriptionSavedInModel'),
+  contractNumbersInModelNotInPool: Ember.computed(
+    'contractNumbersInPool',
+    'contractNumbersInModel',
+    'hasSubscriptionSavedInModel',
+    function() {
+       if (this.get('hasSubscriptionSavedInModel')) {
+          return this.get('contractNumbersInModel').removeObjects(Ember.A(this.get('contractNumbersInPool')));
+       } else {
+         return Ember.A([]);
+       }
+    }
+  ),
 
-  hasContractNumbersInModelNotInPool: function() {
+  hasContractNumbersInModelNotInPool: Ember.computed('contractNumbersInModelNotInPool', function() {
      return (this.get('contractNumbersInModelNotInPool.length') > 0);
-  }.property('contractNumbersInModelNotInPool'),
+  }),
 
-  hasSubscriptionsToAttach: function() {
+  hasSubscriptionsToAttach: Ember.computed('model.[]', function() {
     return (this.get('model.length') > 0);
-  }.property('model.[]')
+  })
 
 });

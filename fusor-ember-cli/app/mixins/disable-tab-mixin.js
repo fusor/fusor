@@ -7,19 +7,19 @@ export default Ember.Mixin.create({
   configureOrganizationController: Ember.inject.controller('configure-organization'),
   configureEnvironmentController: Ember.inject.controller('configure-environment'),
 
-  hasName: function() {
+  hasName: Ember.computed('model.name', function() {
     return (this.get('model.name.length') > 0);
-  }.property('model.name'),
+  }),
   hasNoName: Ember.computed.not('hasName'),
 
-  hasOrganization: function() {
+  hasOrganization: Ember.computed('model.organization.id', function() {
     return !!(this.get('model.organization.id'));
-  }.property('model.organization.id'),
+  }),
   hasNoOrganization: Ember.computed.not('hasOrganization'),
 
   deploymentNames: Ember.computed.alias("applicationController.deploymentNames"),
 
-  isDuplicateName: function() {
+  isDuplicateName: Ember.computed('model.name', function() {
     if (this.get('model').get('isNew')) {
       return this.get('deploymentNames').contains(this.get('model.name'));
     } else {
@@ -36,7 +36,7 @@ export default Ember.Mixin.create({
         return false;
       }
     }
-  }.property('model.name'),
+  }),
 
   // disable All if there is no deployment name
   disableAll: Ember.computed.alias("hasNoName"),

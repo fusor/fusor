@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import DS from 'ember-data';
 
 export default DS.Model.extend({
@@ -18,13 +19,13 @@ export default DS.Model.extend({
   created: DS.attr('date'),
   updated: DS.attr('date'),
 
-  qtyAvailable: function() {
+  qtyAvailable: Ember.computed('quantity', 'consumed', function() {
     return this.get('quantity') - this.get('consumed');
-  }.property('quantity', 'consumed'),
+  }),
 
-  qtyAvailableOfTotal: function() {
+  qtyAvailableOfTotal: Ember.computed('qtyAvailable', 'quantity', function() {
     return this.get('qtyAvailable') + ' of ' + this.get('quantity');
-  }.property('qtyAvailable', 'quantity')
+  })
 
 });
 

@@ -15,9 +15,9 @@ export default Ember.Mixin.create({
   // default is downstream
   isUpstream: false,
   hideSubscriptions: false,
-  isSubscriptions: function () {
+  isSubscriptions: Ember.computed('isUpstream', 'hideSubscriptions', function () {
     return (!(this.get('hideSubscriptions') && !(this.get('isUpstream'))));
-  }.property('isUpstream', 'hideSubscriptions'),
+  }),
 
   // will be overwritten be routes
   isHideWizard: null,
@@ -33,66 +33,66 @@ export default Ember.Mixin.create({
   organizationTabRouteName: null,
   lifecycleEnvironmentTabRouteName: null,
 
-  disableNextOnStart: function () {
+  disableNextOnStart: Ember.computed('isRhev', 'isOpenStack', 'isCloudForms', function () {
     return (!(this.get('isRhev') || this.get('isOpenStack') || this.get('isCloudForms')));
-  }.property('isRhev', 'isOpenStack', 'isCloudForms'),
+  }),
 
   // names
-  nameRHCI: function() {
+  nameRHCI: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "Fusor"; } else { return "RHCI"; }
-  }.property('isUpstream'),
+  }),
 
-  nameRedHat: function() {
+  nameRedHat: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return ""; } else { return "Red Hat"; }
-  }.property('isUpstream'),
+  }),
 
-  nameSatellite: function() {
+  nameSatellite: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "Foreman"; } else { return "Satellite"; }
-  }.property('isUpstream'),
+  }),
 
-  nameRhev: function() {
+  nameRhev: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "oVirt"; } else { return "RHEV"; }
-  }.property('isUpstream'),
+  }),
 
-  nameOpenStack: function() {
+  nameOpenStack: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "RDO"; } else { return "RHELOSP"; }
-  }.property('isUpstream'),
+  }),
 
-  nameCloudForms: function() {
+  nameCloudForms: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "ManageIQ"; } else { return "CloudForms"; }
-  }.property('isUpstream'),
+  }),
 
-  fullnameRhev: function() {
+  fullnameRhev: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "oVirt Project"; } else { return "Red Hat Enterprise Virtualization"; }
-  }.property('isUpstream'),
+  }),
 
-  fullnameOpenStack: function() {
+  fullnameOpenStack: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "RDO Project"; } else { return "Red Hat Enterprise Linux OpenStack Platform"; }
-  }.property('isUpstream'),
+  }),
 
-  fullnameCloudForms: function() {
+  fullnameCloudForms: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "ManageIQ"; } else { return "Red Hat Cloud Forms Management Engine"; }
-  }.property('isUpstream'),
+  }),
 
   // logo
-  logoPath: function() {
+  logoPath: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "assets/foreman.png"; } else { return "assets/Header-logotype.png"; }
-  }.property('isUpstream'),
+  }),
 
   currentStepNumber: null, //set by setupController,
 
   // steps
   stepNumberRhev: 2,
 
-  stepNumberOpenstack: function() {
+  stepNumberOpenstack: Ember.computed('isRhev', function() {
     if (this.get('isRhev')) {
       return 3;
     } else {
       return 2;
     }
-  }.property('isRhev'),
+  }),
 
-  stepNumberCloudForms: function() {
+  stepNumberCloudForms: Ember.computed('isRhev', 'isOpenStack', function() {
     if (this.get('isRhev') && this.get('isOpenStack')) {
       return 4;
     } else if (this.get('isRhev') || this.get('isOpenStack'))  {
@@ -100,9 +100,9 @@ export default Ember.Mixin.create({
     } else {
       return 2;
     }
-  }.property('isRhev', 'isOpenStack'),
+  }),
 
-  stepNumberSubscriptions: function() {
+  stepNumberSubscriptions: Ember.computed('isRhev', 'isOpenStack', 'isCloudForms', function() {
     if (this.get('isRhev') && this.get('isOpenStack') && this.get('isCloudForms')) {
       return 5;
     } else if ((this.get('isRhev') && this.get('isOpenStack')) || (this.get('isRhev') && this.get('isCloudForms')) ||  (this.get('isOpenStack') && this.get('isCloudForms')))  {
@@ -112,10 +112,10 @@ export default Ember.Mixin.create({
     } else {
       return 2;
     }
-  }.property('isRhev', 'isOpenStack', 'isCloudForms'),
+  }),
 
   // calculate temporary without isSubscriptions
-  stepNumberReviewTemp: function() {
+  stepNumberReviewTemp: Ember.computed('isRhev', 'isOpenStack', 'isCloudForms', function() {
     if (this.get('isRhev') && this.get('isOpenStack') && this.get('isCloudForms')) {
       return 6;
     } else if ((this.get('isRhev') && this.get('isOpenStack')) || (this.get('isRhev') && this.get('isCloudForms')) ||  (this.get('isOpenStack') && this.get('isCloudForms')))  {
@@ -125,17 +125,17 @@ export default Ember.Mixin.create({
     } else {
       return 3;
     }
-  }.property('isRhev', 'isOpenStack', 'isCloudForms'),
+  }),
 
-  stepNumberReview: function() {
+  stepNumberReview: Ember.computed('stepNumberReviewTemp', 'isSubscriptions', function() {
     if (this.get('isSubscriptions')) {
       return this.get('stepNumberReviewTemp');
     } else {
       return (this.get('stepNumberReviewTemp') - 1);
     }
-  }.property('stepNumberReviewTemp', 'isSubscriptions'),
+  }),
 
-  step2RouteName: function() {
+  step2RouteName: Ember.computed('isRhev', 'isOpenStack', 'isCloudForms', function() {
     if (this.get('isRhev')) {
       return 'rhev';
     } else if (this.get('isOpenStack')) {
@@ -143,34 +143,40 @@ export default Ember.Mixin.create({
     } else if (this.get('isCloudForms')) {
       return 'cloudforms';
     }
-  }.property('isRhev', 'isOpenStack', 'isCloudForms'),
+  }),
 
-  step3RouteName: function() {
-    if (this.get('step2RouteName') === 'rhev') {
-      if (this.get('isOpenStack')) {
-        return 'openstack';
-      } else if (this.get('isCloudForms')) {
-        return 'cloudforms';
-      } else if (this.get('isSubscriptions')) {
-        return 'subscriptions';
-      } else {
-        return 'review';
-      }
-    } else if (this.get('step2RouteName') === 'openstack') {
-      if (this.get('isCloudForms')) {
-        return 'cloudforms';
-      } else if (this.get('isSubscriptions')) {
-        return 'subscriptions';
-      } else {
-        return 'review';
-      }
-    } else if (this.get('step2RouteName') === 'cloudforms') {
-      if (this.get('isSubscriptions')) {
-        return 'subscriptions';
-      } else {
-        return 'review';
+  step3RouteName: Ember.computed(
+    'step2RouteName',
+    'isOpenStack',
+    'isCloudForms',
+    'isSubscriptions',
+    function() {
+      if (this.get('step2RouteName') === 'rhev') {
+        if (this.get('isOpenStack')) {
+          return 'openstack';
+        } else if (this.get('isCloudForms')) {
+          return 'cloudforms';
+        } else if (this.get('isSubscriptions')) {
+          return 'subscriptions';
+        } else {
+          return 'review';
+        }
+      } else if (this.get('step2RouteName') === 'openstack') {
+        if (this.get('isCloudForms')) {
+          return 'cloudforms';
+        } else if (this.get('isSubscriptions')) {
+          return 'subscriptions';
+        } else {
+          return 'review';
+        }
+      } else if (this.get('step2RouteName') === 'cloudforms') {
+        if (this.get('isSubscriptions')) {
+          return 'subscriptions';
+        } else {
+          return 'review';
+        }
       }
     }
-  }.property('step2RouteName', 'isOpenStack', 'isCloudForms', 'isSubscriptions')
+  )
 
 });

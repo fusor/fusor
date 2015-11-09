@@ -11,13 +11,13 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
 
   step2RouteName: Ember.computed.alias("deploymentNewController.step2RouteName"),
 
-  nullifyLifecycleEnvIfSelected: function(){
+  nullifyLifecycleEnvIfSelected: Ember.observer('useDefaultOrgViewForEnv', function(){
     this.set('showAlertMessage', false);
     if (this.get('useDefaultOrgViewForEnv')) {
       this.set('selectedEnvironment', null);
       return this.get('deploymentNewController.model').set('lifecycle_environment', null);
     }
-  }.observes('useDefaultOrgViewForEnv'),
+  }),
 
   hasLifecycleEnvironment: Ember.computed.alias("deploymentNewController.hasLifecycleEnvironment"),
   hasNoLifecycleEnvironment: Ember.computed.alias("deploymentNewController.hasNoLifecycleEnvironment"),

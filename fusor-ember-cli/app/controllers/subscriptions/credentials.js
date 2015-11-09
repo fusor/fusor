@@ -18,25 +18,25 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   organizationUpstreamConsumerUUID: null,
   organizationUpstreamConsumerName: null,
 
-  validCredentials: function() {
+  validCredentials: Ember.computed('model.identification', 'password', function() {
     // password is not saved in the model
     return (Ember.isPresent(this.get('model.identification')) && Ember.isPresent(this.get('password')));
-  }.property('model.identification', 'password'),
+  }),
 
-  enableCredentialsNext: function() {
+  enableCredentialsNext: Ember.computed('validCredentials', 'model.isAuthenticated', function() {
     return this.get('validCredentials') || this.get('model.isAuthenticated');
-  }.property('validCredentials', 'model.isAuthenticated'),
+  }),
   disableCredentialsNext: Ember.computed.not('enableCredentialsNext'),
 
-  hasUpstreamConsumerUuid: function() {
+  hasUpstreamConsumerUuid: Ember.computed('upstreamConsumerUuid', function() {
     return Ember.isPresent(this.get('upstreamConsumerUuid'));
-  }.property('upstreamConsumerUuid'),
+  }),
 
-  hasOrganizationUpstreamConsumerUUID: function() {
+  hasOrganizationUpstreamConsumerUUID: Ember.computed('organizationUpstreamConsumerUUID', function() {
     return Ember.isPresent(this.get('organizationUpstreamConsumerUUID'));
-  }.property('organizationUpstreamConsumerUUID'),
+  }),
 
-  backRouteNameonCredentials: function() {
+  backRouteNameonCredentials: Ember.computed('isRhev', 'isOpenStack', 'isCloudForms', function() {
     if (this.get('isCloudForms')) {
       return 'cloudforms.cfme-configuration';
     } else if (this.get('isOpenStack')) {
@@ -46,33 +46,33 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     } else {
       return 'configure-environment';
     }
-  }.property('isRhev', 'isOpenStack', 'isCloudForms'),
+  }),
 
   nextButtonTitle: 'Next',
 
-  actionCredentialsNext: function() {
+  actionCredentialsNext: Ember.computed('model.isAuthenticated', function() {
     if (this.get('model.isAuthenticated')) {
       return 'redirectToManagementApplication';
     } else {
       return 'loginPortal';
     }
-  }.property('model.isAuthenticated'),
+  }),
 
   isDisconnected: Ember.computed.alias('deploymentController.model.is_disconnected'),
   hasManifestFile: Ember.computed.notEmpty('manifestFile'),
   noManifestFile: Ember.computed.empty('manifestFile'),
 
-  contentProviderType: function() {
+  contentProviderType: Ember.computed('isDisconnected', function() {
     return (this.get('isDisconnected') ? "disconnected" : "redhat_cdn");
-  }.property('isDisconnected'),
+  }),
 
-  contentProviderTitle: function() {
+  contentProviderTitle: Ember.computed('isDisconnected', function() {
     return (this.get('isDisconnected') ? "Disconnected" : "Red Hat CDN");
-  }.property('isDisconnected'),
+  }),
 
-  isDisconnectedSelected: function() {
+  isDisconnectedSelected: Ember.computed('contentProviderType', function() {
     return (this.get('contentProviderType') === 'disconnected');
-  }.property('contentProviderType'),
+  }),
 
   actions: {
     providerTypeChanged: function() {

@@ -2,9 +2,9 @@ import Ember from 'ember';
 
 export default Ember.Mixin.create({
 
-  intervalPolling: function() {
+  intervalPolling: Ember.computed(function() {
     return 5000; // Time between refreshing (in ms)
-  }.property().readOnly(),
+  }).readOnly(),
 
   scheduleNextRefresh: function(f) {
     return Ember.run.later(this, function() {

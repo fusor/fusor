@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import DS from 'ember-data';
 
 export default DS.Model.extend({
@@ -5,23 +6,23 @@ export default DS.Model.extend({
   description: DS.attr('string'),
   version: DS.attr('number'),
 
-  parameterPrefix: function() {
+  parameterPrefix: Ember.computed('name', 'version', function() {
       return this.get('name') + '-' + this.get('version') + '::';
-  }.property('name', 'version'),
+  }),
 
-  countParameterName: function() {
+  countParameterName: Ember.computed('name', 'version', function() {
       return this.get('parameterPrefix') + 'count';
-  }.property('name', 'version'),
+  }),
 
-  flavorParameterName: function() {
+  flavorParameterName: Ember.computed('name', 'version', function() {
       return this.get('parameterPrefix') + 'Flavor';
-  }.property('name', 'version'),
+  }),
 
-  imageParameterName: function() {
+  imageParameterName: Ember.computed('name', 'version', function() {
       return this.get('parameterPrefix') + 'Image';
-  }.property('name', 'version'),
+  }),
 
-  roleType: function() {
+  roleType: Ember.computed('name', function() {
     var name = this.get('name').toLowerCase();
     if (name.indexOf('controller') >= 0) {
       return 'controller';
@@ -40,5 +41,5 @@ export default DS.Model.extend({
     }
 
     return name;
-  }.property('name')
+  })
 });

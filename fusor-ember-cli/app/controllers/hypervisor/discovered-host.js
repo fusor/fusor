@@ -19,7 +19,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isMac: Ember.computed.alias("hypervisorController.isMac"),
 
   // Filter out hosts selected as Engine
-  availableHosts: function() {
+  availableHosts: Ember.computed('allDiscoveredHosts.[]', 'hypervisorModelIds.[]', function() {
     // TODO: Ember.computed.filter() caused problems. error item.get is not a function
     var self = this;
      var allDiscoveredHosts = this.get('allDiscoveredHosts');
@@ -32,10 +32,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
           }
         });
       }
-  }.property('allDiscoveredHosts.[]', 'hypervisorModelIds.[]'),
+  }),
 
   // same as Engine. TODO. put it mixin
-  filteredHosts: function(){
+  filteredHosts: Ember.computed('availableHosts.[]', 'searchString', 'isStarted', function(){
     var searchString = this.get('searchString');
     var rx = new RegExp(searchString, 'gi');
     var availableHosts = this.get('availableHosts');
@@ -52,43 +52,43 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     } else {
       return availableHosts;
     }
-  }.property('availableHosts.[]', 'searchString', 'isStarted'),
+  }),
 
-  hypervisorModelIds: function() {
+  hypervisorModelIds: Ember.computed('model.[]', 'selectedRhevEngine', function() {
     if (this.get('model')) {
       var allIds = this.get('model').getEach('id');
       return allIds.removeObject(this.get('selectedRhevEngine').get('id'));
     } else {
       return [];
     }
-  }.property('model.[]', 'selectedRhevEngine'),
+  }),
 
   cntSelectedHypervisorHosts: Ember.computed.alias('hypervisorModelIds.length'),
 
-  hostInflection: function() {
+  hostInflection: Ember.computed('cntSelectedHypervisorHosts', function() {
       return this.get('cntSelectedHypervisorHosts') === 1 ? 'host' : 'hosts';
-  }.property('cntSelectedHypervisorHosts'),
+  }),
 
-  isAllChecked: function() {
+  isAllChecked: Ember.computed('availableHosts.@each', 'cntSelectedHypervisorHosts', function() {
     return (this.get('cntSelectedHypervisorHosts') === this.get('availableHosts.length'));
-  }.property('availableHosts.@each', 'cntSelectedHypervisorHosts'),
+  }),
 
-  observeAllChecked: function(row) {
+  observeAllChecked: Ember.observer('allChecked', function(row) {
     // TODO
     if (this.get('allChecked')) {
       return this.send('setCheckAll');
     } else {
       return this.send('setUncheckAll');
     }
-  }.observes('allChecked'),
+  }),
 
-  hypervisorBackRouteName: function() {
+  hypervisorBackRouteName: Ember.computed('rhevIsSelfHosted', function() {
     if (this.get('rhevIsSelfHosted')) {
       return 'rhev-setup';
     } else {
       return 'engine.discovered-host';
     }
-  }.property('rhevIsSelfHosted'),
+  }),
 
   actions: {
 

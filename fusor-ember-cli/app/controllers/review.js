@@ -15,9 +15,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   deployTaskIsFinished: Ember.computed.alias("overviewController.deployTaskIsFinished"),
 
-  disableTabInstallation: function() {
+  disableTabInstallation: Ember.computed('disableNext', 'isUpstream', function() {
     return (this.get('disableNext') && (!(this.get('isUpstream'))));
-  }.property('disableNext', 'isUpstream'),
+  }),
 
   disableTabProgress: Ember.computed.not("isStarted"),
 

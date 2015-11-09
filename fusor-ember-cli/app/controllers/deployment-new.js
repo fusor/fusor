@@ -19,9 +19,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   isDisabledReview: true,
 
   // selectedEnvironmentDeploymentNew is set to 'Library' by routes/deployment-new/satellite/configure-environment.js if Library is only environment
-  hasLifecycleEnvironment: function() {
+  hasLifecycleEnvironment: Ember.computed('lifecycle_environment', 'useDefaultOrgViewForEnv', function() {
     return (!!(this.get('model.lifecycle_environment.id')) || this.get('useDefaultOrgViewForEnv') || this.get('selectedEnvironmentDeploymentNew'));
-  }.property('lifecycle_environment', 'useDefaultOrgViewForEnv'),
+  }),
   hasNoLifecycleEnvironment: Ember.computed.not('hasLifecycleEnvironment')
 
 });

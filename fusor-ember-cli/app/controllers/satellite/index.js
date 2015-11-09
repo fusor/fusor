@@ -15,13 +15,13 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   isBackToDeployments: Ember.computed.alias("deploymentController.isBackToDeployments"),
 
-  backRouteNameOnSatIndex: function() {
+  backRouteNameOnSatIndex: Ember.computed('isBackToDeployments', function() {
     if (this.get('isBackToDeployments')) {
       return 'deployments';
     } else {
       return 'deployment.start';
     }
-  }.property('isBackToDeployments'),
+  }),
 
   deploymentNames: Ember.computed.alias("applicationController.deploymentNames")
 

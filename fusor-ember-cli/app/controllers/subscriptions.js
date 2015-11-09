@@ -7,16 +7,16 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isStarted: Ember.computed.alias("deploymentController.isStarted"),
   isDisconnected: Ember.computed.alias("deploymentController.model.is_disconnected"),
 
-  disableTabManagementApplication: function() {
+  disableTabManagementApplication: Ember.computed('model.isAuthenticated', 'isStarted', function() {
      return (!this.get('isStarted') && !this.get('model.isAuthenticated'));
-  }.property('model.isAuthenticated', 'isStarted'),
+  }),
 
   disableTabReviewSubsciptions: Ember.computed.empty("deploymentController.model.manifest_file"),
 
   upstreamConsumerUuid: Ember.computed.alias("deploymentController.model.upstream_consumer_uuid"),
 
-  disableTabSelectSubsciptions: function() {
+  disableTabSelectSubsciptions: Ember.computed('model.isAuthenticated', 'upstreamConsumerUuid', function() {
     return (Ember.isBlank(this.get('upstreamConsumerUuid')) || !this.get('model.isAuthenticated'));
-  }.property('model.isAuthenticated', 'upstreamConsumerUuid')
+  })
 
 });

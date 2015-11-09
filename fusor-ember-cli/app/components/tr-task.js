@@ -4,28 +4,28 @@ export default Ember.Component.extend({
 
   tagName: 'tr',
 
-  actionNameAndRepository: function() {
+  actionNameAndRepository: Ember.computed('task.humanized_name', 'task.repository', function() {
     return (this.get('task.humanized_name') + ' ' + (this.get('task.repository') || ''));
-  }.property('task.humanized_name', 'task.repository'),
+  }),
 
-  isError: function () {
+  isError: Ember.computed('task.result', function () {
     return (this.get('task.result') === 'error');
-  }.property('task.result'),
+  }),
 
-  textBold: function () {
+  textBold: Ember.computed('isError', function () {
     if (this.get('isError')) {
       return 'bold';
     }
-  }.property('isError'),
+  }),
 
-  textColor: function () {
+  textColor: Ember.computed('isError', function () {
     if (this.get('isError')) {
       return 'errorForValidation';
     }
-  }.property('isError'),
+  }),
 
-  percentProgress: function() {
+  percentProgress: Ember.computed('task.progress', function() {
     return ((this.get('task.progress') * 100).toFixed(0) + '%');
-  }.property('task.progress')
+  })
 
 });

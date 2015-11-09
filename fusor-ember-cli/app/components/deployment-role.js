@@ -19,39 +19,39 @@ export default Ember.Component.extend({
     return paramValue;
   },
 
-  roleAssigned: function() {
+  roleAssigned: Ember.computed('profile', function() {
     return this.get('profile') !== null;
-  }.property('profile'),
+  }),
 
-  assignedClass: function() {
+  assignedClass: Ember.computed('role-assigned', function() {
     if (this.get('roleAssigned')) {
       return ('role-assigned');
     }
     else {
       return 'role-unassigned';
     }
-  }.property('role-assigned'),
+  }),
 
-  roleNodeCount: function() {
+  roleNodeCount: Ember.computed('role', 'plan.parameters', function() {
     var role = this.get('role');
     var params = this.get('plan.parameters');
     return this.getParamValue(role.get('countParameterName'), params);
-  }.property('role', 'plan.parameters'),
+  }),
 
-  hasAssignedNodes: function() {
+  hasAssignedNodes: Ember.computed('roleNodeCount', function() {
     return this.get('roleNodeCount') >= 1;
-  }.property('roleNodeCount'),
+  }),
 
-  multipleAssignedNodes: function() {
+  multipleAssignedNodes: Ember.computed('roleNodeCount', function() {
     return this.get('roleNodeCount') >= 2;
-  }.property('roleNodeCount'),
+  }),
 
-  profileNodes: function() {
+  profileNodes: Ember.computed('totalNodes', function() {
     var totalNodes = 10;
     return totalNodes;
-  }.property('totalNodes'),
+  }),
 
-  availableOptions: function() {
+  availableOptions: Ember.computed('roleNodeCount', function() {
     var avail = Ember.A();
     var increment = 1;
     var maxNodes = Math.max(this.get('nodeCount'), this.get('roleNodeCount'));
@@ -68,7 +68,7 @@ export default Ember.Component.extend({
     }
 
     return avail;
-  }.property('roleNodeCount'),
+  }),
 
   actions: {
     updateNodeCount: function() {

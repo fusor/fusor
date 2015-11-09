@@ -10,11 +10,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isSubscriptions: Ember.computed.alias("deploymentController.isSubscriptions"),
   notValidCloudforms: Ember.computed.alias("cloudformsController.notValidCloudforms"),
 
-  nextRouteNameAfterCFME: function() {
+  nextRouteNameAfterCFME: Ember.computed('isSubscriptions', function() {
     if (this.get('isSubscriptions')) {
       return 'subscriptions';
     } else {
       return 'review';
     }
-  }.property('isSubscriptions')
+  })
 });

@@ -3,15 +3,15 @@ import TrEngineHypervisorMixin from "../mixins/tr-engine-hypervisor-mixin";
 
 export default Ember.Component.extend(TrEngineHypervisorMixin, {
 
-  isSelectedAsEngine: function() {
+  isSelectedAsEngine: Ember.computed('host', 'selectedRhevEngineHost', function() {
       if (this.get('selectedRhevEngineHost')) {
           return (this.get('selectedRhevEngineHost.id') === this.get('host.id'));
       }
-  }.property('host', 'selectedRhevEngineHost'),
+  }),
 
-  isChecked: function () {
+  isChecked: Ember.computed('isSelectedAsEngine', function () {
       return this.get('isSelectedAsEngine');
-  }.property('isSelectedAsEngine'),
+  }),
 
   actions: {
     engineHostChanged: function(host) {

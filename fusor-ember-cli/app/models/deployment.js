@@ -73,46 +73,46 @@ export default DS.Model.extend({
   introspection_tasks: DS.hasMany('introspection-task', {async: true}),
 
   // Ember Data doesn't have DS.attr('array') so I did this
-  rhev_hypervisor_host_ids: function() {
+  rhev_hypervisor_host_ids: Ember.computed('discovered_hosts', function() {
     var discovered_hosts = this.get('discovered_hosts');
     if (Ember.isPresent(discovered_hosts)) {
       return discovered_hosts.getEach('id');
     } else {
       return [];
     }
-  }.property('discovered_hosts'),
+  }),
 
   // controller.deployment.isStarted returns false if refreshing child route,
   // so best to have it on model as well
-  isStarted: function() {
+  isStarted: Ember.computed('foreman_task_uuid', function() {
     return !!(this.get('foreman_task_uuid'));
-  }.property('foreman_task_uuid'),
+  }),
   isNotStarted: Ember.computed.not('isStarted'),
 
   // also put these in model rather than controller so it is accessible
   progress: null,
   state: null,
 
-  foremanTask: function() {
+  foremanTask: Ember.computed('foreman_task_uuid', 'isStarted', function() {
     if (this.get('isStarted')) {
         return this.store.findRecord('foreman-task', this.get('foreman_task_uuid'));
     }
-  }.property('foreman_task_uuid', 'isStarted'),
+  }),
 
-  setProgress: function() {
+  setProgress: Ember.observer('foremanTask', 'foreman_task_uuid', function() {
     if (this.get('foremanTask')) {
       this.get('foremanTask').then(function(result) {
           this.set('progress', result.get('progress'));
           this.set('state', result.get('state'));
       }.bind(this));
     }
-  }.observes('foremanTask', 'foreman_task_uuid'),
+  }),
 
-  progressPercent: function() {
+  progressPercent: Ember.computed('progress', function() {
     if (this.get('progress')) {
         return (this.get('progress') * 100).toFixed(1) + '%';
     }
-  }.property('progress')
+  })
 
 });
 

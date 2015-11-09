@@ -13,9 +13,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   showAlertMessage: false,
 
-  disableNextOnManagementApp: function() {
+  disableNextOnManagementApp: Ember.computed('upstreamConsumerUuid', function() {
     return (Ember.isBlank(this.get('upstreamConsumerUuid')));
-  }.property('upstreamConsumerUuid'),
+  }),
 
   actions: {
     registerNewSatellite: function() {

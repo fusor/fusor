@@ -8,7 +8,7 @@ export default Ember.Controller.extend({
 
   searchDeploymentString: '',
 
-  filteredDeployments: function(){
+  filteredDeployments: Ember.computed('sortedDeployments', 'searchDeploymentString', 'model.[]', function(){
     var searchDeploymentString = this.get('searchDeploymentString');
     var rx = new RegExp(searchDeploymentString, 'gi');
     var sortedDeployments = this.get('sortedDeployments');
@@ -22,7 +22,7 @@ export default Ember.Controller.extend({
     } else {
       return sortedDeployments;
     }
-  }.property('sortedDeployments', 'searchDeploymentString', 'model.[]'),
+  }),
 
   // related to deleted-deployment-modal
   isOpenModal: false,

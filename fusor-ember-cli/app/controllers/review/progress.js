@@ -17,12 +17,12 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   deployTaskIsFinished: Ember.computed.alias("overviewController.deployTaskIsFinished"),
   deployTaskIsStopped: Ember.computed.alias("overviewController.deployTaskIsStopped"),
 
-  deployButtonTitle: function() {
+  deployButtonTitle: Ember.computed('deployTaskIsStopped', function() {
     if (this.get('deployTaskIsStopped')) {
         return 'Deployment Stopped';
     } else {
         return 'Deploying ...';
     }
-  }.property('deployTaskIsStopped')
+  })
 
 });

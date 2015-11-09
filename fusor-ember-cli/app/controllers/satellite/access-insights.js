@@ -5,9 +5,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   step2RouteName: Ember.computed.alias("deploymentController.step2RouteName"),
 
-  analyticsColor: function() {
+  analyticsColor: Ember.computed('isStarted', function() {
     if (this.get('isStarted')) { return 'disabled'; } else { return ''; }
-  }.property('isStarted')
+  })
 
 
 });

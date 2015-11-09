@@ -27,97 +27,133 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
 
   isDisabledRhev: Ember.computed.alias("satelliteInvalid"),
 
-  isDisabledOpenstack: function() {
+  isDisabledOpenstack: Ember.computed("satelliteInvalid", 'isRhev', 'validRhev', function() {
     return (this.get('satelliteInvalid') ||
             (this.get('isRhev') && !(this.get('validRhev')))
            );
-  }.property("satelliteInvalid", 'isRhev', 'validRhev'),
+  }),
 
-  isDisabledCloudForms: function() {
-    return (this.get('satelliteInvalid') ||
-            (this.get('isRhev') && !(this.get('validRhev'))) ||
-            (this.get('isOpenStack') && !(this.get('validOpenStack')))
-            );
-  }.property("satelliteInvalid", 'isRhev', 'isOpenStack', 'validRhev', 'validOpenStack'),
+  isDisabledCloudForms: Ember.computed(
+    "satelliteInvalid",
+    'isRhev',
+    'isOpenStack',
+    'validRhev',
+    'validOpenStack',
+    function() {
+      return (this.get('satelliteInvalid') ||
+              (this.get('isRhev') && !(this.get('validRhev'))) ||
+              (this.get('isOpenStack') && !(this.get('validOpenStack')))
+              );
+    }
+  ),
 
-  isDisabledSubscriptions: function() {
-    return (this.get('satelliteInvalid') ||
-            (this.get('isRhev') && !(this.get('validRhev'))) ||
-            (this.get('isOpenStack') && !(this.get('validOpenStack'))) ||
-            (this.get('isCloudForms') && !(this.get('validCloudforms')))
-           );
-  }.property("satelliteInvalid", 'isRhev', 'isOpenStack', 'validRhev', 'validOpenStack', 'isCloudForms', 'validCloudforms'),
+  isDisabledSubscriptions: Ember.computed(
+    "satelliteInvalid",
+    'isRhev',
+    'isOpenStack',
+    'validRhev',
+    'validOpenStack',
+    'isCloudForms',
+    'validCloudforms',
+    function() {
+      return (this.get('satelliteInvalid') ||
+              (this.get('isRhev') && !(this.get('validRhev'))) ||
+              (this.get('isOpenStack') && !(this.get('validOpenStack'))) ||
+              (this.get('isCloudForms') && !(this.get('validCloudforms')))
+             );
+    }
+  ),
 
 
-  hasSubscriptionUUID: function() {
-    return (Ember.isPresent(this.get('organizationUpstreamConsumerUUID')) ||
-            Ember.isPresent(this.get('model.upstream_consumer_uuid'))
-           );
-  }.property('organizationUpstreamConsumerUUID', 'model.upstream_consumer_uuid'),
+  hasSubscriptionUUID: Ember.computed(
+    'organizationUpstreamConsumerUUID',
+    'model.upstream_consumer_uuid',
+    function() {
+      return (Ember.isPresent(this.get('organizationUpstreamConsumerUUID')) ||
+              Ember.isPresent(this.get('model.upstream_consumer_uuid'))
+             );
+    }
+  ),
 
-  isDisabledReview: function() {
-    return (!this.get('isDisconnected') && (this.get('isDisabledSubscriptions') || !this.get("hasSubscriptionUUID") || this.get('disableNextOnSelectSubscriptions')));
-  }.property('isDisconnected', 'isDisabledSubscriptions', 'hasSubscriptionUUID', 'disableNextOnSelectSubscriptions'),
+  isDisabledReview: Ember.computed(
+    'isDisconnected',
+    'isDisabledSubscriptions',
+    'hasSubscriptionUUID',
+    'disableNextOnSelectSubscriptions',
+    function() {
+      return (!this.get('isDisconnected') && (this.get('isDisabledSubscriptions') || !this.get("hasSubscriptionUUID") || this.get('disableNextOnSelectSubscriptions')));
+    }
+  ),
 
-  hasLifecycleEnvironment: function() {
+  hasLifecycleEnvironment: Ember.computed('model.lifecycle_environment', 'useDefaultOrgViewForEnv', function() {
     return (!!(this.get('model.lifecycle_environment.id')) || this.get('useDefaultOrgViewForEnv'));
-  }.property('model.lifecycle_environment', 'useDefaultOrgViewForEnv'),
+  }),
   hasNoLifecycleEnvironment: Ember.computed.not('hasLifecycleEnvironment'),
 
   satelliteInvalid: Ember.computed.or('hasNoName', 'hasNoOrganization', 'hasNoLifecycleEnvironment'),
 
   skipContent: false,
 
-  numSubscriptionsRequired: function() {
-    var num = 0;
-    if (this.get('isRhev')) {
-      num = num + 1 + this.get('model.discovered_hosts.length'); // 1 is for engine
+  numSubscriptionsRequired: Ember.computed(
+    'isRhev',
+    'isOpenStack',
+    'isCloudForms',
+    'model.discovered_hosts.[]',
+    function() {
+      var num = 0;
+      if (this.get('isRhev')) {
+        num = num + 1 + this.get('model.discovered_hosts.length'); // 1 is for engine
+      }
+      if (this.get('isCloudForms')) {
+        num = num + 1;
+      }
+      return num;
     }
-    if (this.get('isCloudForms')) {
-      num = num + 1;
-    }
-    return num;
-  }.property('isRhev', 'isOpenStack', 'isCloudForms', 'model.discovered_hosts.[]'),
+  ),
 
-  managementApplicationName: function() {
-    if (Ember.isPresent(this.get('model.upstream_consumer_name'))) {
-      return this.get('model.upstream_consumer_name');
-    } else {
-      return this.get('credentialsController.organizationUpstreamConsumerName');
+  managementApplicationName: Ember.computed(
+    'model.upstream_consumer_name',
+    'credentialsController.organizationUpstreamConsumerName',
+    function() {
+      if (Ember.isPresent(this.get('model.upstream_consumer_name'))) {
+        return this.get('model.upstream_consumer_name');
+      } else {
+        return this.get('credentialsController.organizationUpstreamConsumerName');
+      }
     }
-  }.property('model.upstream_consumer_name', 'credentialsController.organizationUpstreamConsumerName'),
+  ),
 
-  hasEngine: function() {
+  hasEngine: Ember.computed('model.discovered_host.id', function() {
     return Ember.isPresent(this.get("model.discovered_host.id"));
-  }.property('model.discovered_host.id'),
+  }),
   hasNoEngine: Ember.computed.not('hasEngine'),
 
-  cntHypervisors: function() {
+  cntHypervisors: Ember.computed('model.discovered_hosts.[]', function() {
     return this.get('model.discovered_hosts.length');
-  }.property('model.discovered_hosts.[]'),
+  }),
 
-  hasHypervisors: function() {
+  hasHypervisors: Ember.computed('cntHypervisors', function() {
     return (this.get('cntHypervisors') > 0);
-  }.property('cntHypervisors'),
+  }),
   hasNoHypervisors: Ember.computed.not('hasHypervisors'),
 
-  isStarted: function() {
+  isStarted: Ember.computed('model.foreman_task_uuid', function() {
     return !!(this.get('model.foreman_task_uuid'));
-  }.property('model.foreman_task_uuid'),
+  }),
   isNotStarted: Ember.computed.not('isStarted'),
 
-  isFinished: function() {
+  isFinished: Ember.computed('model.progress', function() {
     return (this.get('model.progress') === '1');
-  }.property('model.progress'),
+  }),
   isNotFinished: Ember.computed.not('isFinished'),
 
-  cntSubscriptions: function() {
+  cntSubscriptions: Ember.computed('model.subscriptions.[]', function() {
     return this.get('model.subscriptions.length');
-  }.property('model.subscriptions.[]'),
+  }),
 
-  hasSubscriptions: function() {
+  hasSubscriptions: Ember.computed('cntSubscriptions', function() {
     return (this.get('cntSubscriptions') > 0);
-  }.property('cntSubscriptions'),
+  }),
   hasNoSubscriptions: Ember.computed.not('hasSubscriptions')
 
 });

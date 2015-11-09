@@ -9,20 +9,20 @@ export default Ember.Component.extend({
 
   dataToggle: "tooltip",
   dataPlacement: "top",
-  title: function() {
+  title: Ember.computed('fullname', function() {
     return this.get('fullname');
-  }.property('fullname'),
+  }),
 
-  active: function () {
+  active: Ember.computed('childViews.@each.active', function () {
     return this.get('childViews').isAny('active');
-  }.property('childViews.@each.active'),
+  }),
 
-  completed: function() {
+  completed: Ember.computed('isDisabled', 'active', function() {
     return (!this.get('isDisabled') && !this.get('active'));
-  }.property('isDisabled', 'active'),
+  }),
 
-  future: function() {
+  future: Ember.computed('isDisabled', function() {
     return this.get('isDisabled');
-  }.property('isDisabled')
+  })
 
 });

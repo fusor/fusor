@@ -17,12 +17,12 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   resultDeployment: Ember.computed.alias("deployTask.result"),
   stateDeployment: Ember.computed.alias("deployTask.state"),
 
-  deployTaskIsStopped: function() {
+  deployTaskIsStopped: Ember.computed('stateDeployment', function() {
     return ((this.get('stateDeployment') === 'stopped') || (this.get('stateDeployment') === 'paused'));
-  }.property('stateDeployment'),
+  }),
 
-  deployTaskIsFinished: function() {
+  deployTaskIsFinished: Ember.computed('progressDeployment', 'resultDeployment', function() {
     return ((this.get('progressDeployment') === '1') && (this.get('resultDeployment') === 'success'));
-  }.property('progressDeployment', 'resultDeployment'),
+  }),
 
 });

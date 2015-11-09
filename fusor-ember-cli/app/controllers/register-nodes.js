@@ -12,7 +12,7 @@ export default Ember.Controller.extend(ProgressBarMixin, {
   init: function() {
     this._super();
     this.Node = Ember.Object.extend({
-      name: function () {
+      name: Ember.computed('ipAddress', function () {
         var ipAddress = this.get('ipAddress');
         if (!Ember.isEmpty(ipAddress))
         {
@@ -22,7 +22,7 @@ export default Ember.Controller.extend(ProgressBarMixin, {
         {
           return 'Undefined node';
         }
-      }.property('ipAddress'),
+      }),
       driver: null,
       ipAddress: null,
       ipmiUsername: '',
@@ -30,7 +30,7 @@ export default Ember.Controller.extend(ProgressBarMixin, {
       nicMacAddress: '',
 
       isSelected: false,
-      isActiveClass: function() {
+      isActiveClass: Ember.computed('isSelected', function() {
         if (this.get('isSelected') === true)
         {
           return 'active';
@@ -39,7 +39,7 @@ export default Ember.Controller.extend(ProgressBarMixin, {
         {
           return 'inactive';
         }
-      }.property('isSelected'),
+      }),
       isError: false,
       errorMessage: ''
     });
@@ -60,11 +60,11 @@ export default Ember.Controller.extend(ProgressBarMixin, {
   registerNodesModalClosed: true,
   modalOpen: false,
 
-  registrationError: function() {
+  registrationError: Ember.computed('errorNodes.[]', function() {
     return this.get('errorNodes.length') > 0;
-  }.property('errorNodes.[]'),
+  }),
 
-  registrationErrorMessage: function() {
+  registrationErrorMessage: Ember.computed('errorNodes.[]', function() {
     var count = this.get('errorNodes.length');
     if (count === 1) {
       return '1 node not registered';
@@ -75,9 +75,9 @@ export default Ember.Controller.extend(ProgressBarMixin, {
     else {
       return '';
     }
-  }.property('errorNodes.[]'),
+  }),
 
-  registrationErrorTip: function() {
+  registrationErrorTip: Ember.computed('errorNodes.[]', function() {
     var tip = '';
     var errorNodes = this.get('errorNodes');
 
@@ -88,21 +88,21 @@ export default Ember.Controller.extend(ProgressBarMixin, {
       tip += item.errorMessage;
     });
     return tip;
-  }.property('errorNodes.[]'),
+  }),
 
-  noRegisteredNodes: function() {
+  noRegisteredNodes: Ember.computed('model.nodes.[]', function() {
       return (this.get('model.nodes.length') < 1);
-  }.property('model.nodes.[]'),
+  }),
 
-  noProfiles: function() {
+  noProfiles: Ember.computed('model.profiles.[]', function() {
       return (this.get('model.profiles.length') < 1);
-  }.property('model.profiles.[]'),
+  }),
 
-  hasSelectedNode: function() {
+  hasSelectedNode: Ember.computed('selectedNode', function() {
     return this.get('selectedNode') != null;
-  }.property('selectedNode'),
+  }),
 
-  nodeFormStyle:function() {
+  nodeFormStyle:Ember.computed('edittedNodes.[]', 'hasSelectedNode', function() {
     if (this.get('edittedNodes.length') > 0 && this.get('hasSelectedNode'))
     {
       return 'visibility:visible;';
@@ -110,7 +110,7 @@ export default Ember.Controller.extend(ProgressBarMixin, {
     else {
       return 'visibility:hidden;';
     }
-  }.property('edittedNodes.[]', 'hasSelectedNode'),
+  }),
 
   updateNodeSelection: function(node) {
     var oldSelection = this.get('selectedNode');
@@ -145,17 +145,17 @@ export default Ember.Controller.extend(ProgressBarMixin, {
     return $('#regNodesUploadFileInput')[0];
   },
 
-  introspectionTasks: function() {
+  introspectionTasks: Ember.computed("deployment.introspection_tasks.[]", function() {
     return this.get('deployment.introspection_tasks');
-  }.property("deployment.introspection_tasks.[]"),
+  }),
 
-  hasIntrospectionTasks: function() {
+  hasIntrospectionTasks: Ember.computed("deployment.introspection_tasks.[]", function() {
     return (this.get('introspectionTasks.length') > 0);
-  }.property("deployment.introspection_tasks.[]"),
+  }),
 
-  intervalPolling: function() {
+  intervalPolling: Ember.computed(function() {
     return 10000; // overwrite mixin (5000) between refreshing (in ms)
-  }.property().readOnly(),
+  }).readOnly(),
 
   actions: {
     refreshNodesAndFlavors: function() {
@@ -303,10 +303,10 @@ export default Ember.Controller.extend(ProgressBarMixin, {
     }
   },
 
-  disableRegisterNodesNext: function() {
+  disableRegisterNodesNext: Ember.computed('model.nodes.[]', function() {
     var nodeCount = this.get('model.nodes.length');
     return (nodeCount < 2);
-  }.property('model.nodes.[]'),
+  }),
 
   updateAfterRegistration: function(resolve) {
     var self = this;

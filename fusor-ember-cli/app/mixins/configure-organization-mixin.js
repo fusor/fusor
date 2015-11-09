@@ -10,15 +10,15 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
   showAlertMessage: false,
 
   // default Organization name for New Organizations
-  defaultOrgName: function () {
+  defaultOrgName: Ember.computed(function () {
     return this.getWithDefault('defaultOrg', this.get('deploymentName'));
-  }.property(),
+  }),
 
-  orgLabelName: function() {
+  orgLabelName: Ember.computed('defaultOrgName', function() {
     if(this.get('fields_org.name')) {
       return this.get('defaultOrgName').underscore();
     }
-  }.property('defaultOrgName'),
+  }),
 
   actions: {
     createOrganization: function() {

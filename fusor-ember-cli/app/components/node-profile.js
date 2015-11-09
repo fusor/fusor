@@ -18,7 +18,7 @@ export default Ember.Component.extend({
     return paramValue;
   },
 
-  assignedRoles: function() {
+  assignedRoles: Ember.computed('profile', 'plan', 'plan.roles', 'plan.parameters', function() {
     var assignedRoles = Ember.A();
     var profile = this.get('profile');
     var params = this.get('plan.parameters');
@@ -30,9 +30,9 @@ export default Ember.Component.extend({
       }
     });
     return assignedRoles;
-  }.property('profile', 'plan', 'plan.roles', 'plan.parameters'),
+  }),
 
-  unassignedRoles: function() {
+  unassignedRoles: Ember.computed('assignedRoles', 'plan', 'plan.roles', function() {
     var unassignedRoles = Ember.A();
     var assignedRoles = this.get('assignedRoles');
     var roles = this.get('plan.roles') || Ember.A();
@@ -49,11 +49,11 @@ export default Ember.Component.extend({
       }
     });
     return unassignedRoles;
-  }.property('assignedRoles', 'plan', 'plan.roles'),
+  }),
 
-  allRolesAssigned: function() {
+  allRolesAssigned: Ember.computed('unassignedRoles.[]', function() {
     return (this.get('unassignedRoles.length') === 0);
-  }.property('unassignedRoles.[]'),
+  }),
 
   /* jshint ignore:start */
   nodeMatchesProfile: function(node, profile) {
@@ -72,7 +72,7 @@ export default Ember.Component.extend({
   },
   /* jshint ignore:end */
 
-  matchingNodeCount: function() {
+  matchingNodeCount: Ember.computed('profile', 'nodes.[]', function() {
     var nodeCount = 0;
     var profile = this.get('profile');
     var self = this;
@@ -82,20 +82,20 @@ export default Ember.Component.extend({
       }
     });
     return nodeCount;
-  }.property('profile', 'nodes.[]'),
+  }),
 
   hideAssignMenu: function() {
     this.set('assignMenuOpenClass', '');
   },
 
-  assignClass: function() {
+  assignClass: Ember.computed('doAssign', function() {
     if (this.doAssign) {
       return "";
     }
     else {
       return "nodes-coalescing";
     }
-  }.property('doAssign'),
+  }),
 
   actions: {
     showAssignMenu: function() {

@@ -10,20 +10,20 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   selectedRhevEngineHost: Ember.computed.alias("model"),
   rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
 
-  hypervisorModelIds: function() {
+  hypervisorModelIds: Ember.computed('deploymentController.model.discovered_hosts.[]', function() {
     return this.get('deploymentController.model.discovered_hosts').getEach('id');
-  }.property('deploymentController.model.discovered_hosts.[]'),
+  }),
 
-  engineNextRouteName: function() {
+  engineNextRouteName: Ember.computed('rhevIsSelfHosted', function() {
     if (this.get('rhevIsSelfHosted')) {
       return 'rhev-options';
     } else {
       return 'hypervisor.discovered-host';
     }
-  }.property('rhevIsSelfHosted'),
+  }),
 
   // Filter out hosts selected as Hypervisor
-  availableHosts: function() {
+  availableHosts: Ember.computed('allDiscoveredHosts.[]', 'hypervisorModelIds.[]', function() {
     // TODO: Ember.computed.filter() caused problems. error item.get is not a function
     var self = this;
      var allDiscoveredHosts = this.get('allDiscoveredHosts');
@@ -36,10 +36,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
           }
         });
       }
-  }.property('allDiscoveredHosts.[]', 'hypervisorModelIds.[]'),
+  }),
 
   // same as Engine. TODO. put it mixin
-  filteredHosts: function(){
+  filteredHosts: Ember.computed('availableHosts.[]', 'searchString', 'isStarted', function(){
     var searchString = this.get('searchString');
     var rx = new RegExp(searchString, 'gi');
     var availableHosts = this.get('availableHosts');
@@ -56,11 +56,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     } else {
       return availableHosts;
     }
-  }.property('availableHosts.[]', 'searchString', 'isStarted'),
+  }),
 
-  numSelected: function() {
+  numSelected: Ember.computed('model.id', function() {
     return (this.get('model.id')) ? 1 : 0;
-  }.property('model.id'),
+  }),
 
   actions: {
     setEngine: function(host) {

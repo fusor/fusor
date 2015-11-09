@@ -3,15 +3,15 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   selectedFile: null,
 
-  formId: function() {
+  formId: Ember.computed(function() {
     return this.getWithDefault('fileChooserFormId', 'fileChooserForm');
-  }.property(),
-  inputId: function() {
+  }),
+  inputId: Ember.computed(function() {
     return this.getWithDefault('fileChooserFormId', 'fileChooserInput');
-  }.property(),
-  acceptValue: function() {
+  }),
+  acceptValue: Ember.computed(function() {
     return this.getWithDefault('accept', '*');
-  }.property(),
+  }),
   getFileInput: function() {
     var idValue = this.get('inputId');
     return this.$('#' + idValue)[0];

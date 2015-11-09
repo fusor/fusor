@@ -7,15 +7,15 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
 
   step1DRouteName: 'satellite.access-insights',
 
-  useDefaultOrgViewForEnv: function() {
+  useDefaultOrgViewForEnv: Ember.computed('model', function() {
     return Ember.isBlank(this.get('model'));
-  }.property('model'),
+  }),
 
   nonLibraryEnvironments: Ember.computed.filterBy('lifecycleEnvironments', 'library', false),
   libraryEnvironments: Ember.computed.filterBy('lifecycleEnvironments', 'library', true),
-  libraryEnv: function() {
+  libraryEnv: Ember.computed('libraryEnvironments', function() {
     return this.get('libraryEnvironments').get('firstObject');
-  }.property('libraryEnvironments'),
+  }),
 
   priorLibraryEnvironments: Ember.computed.filter('lifecycleEnvironments', function(item) {
     return (item.get('prior_id') === 1);
@@ -25,20 +25,20 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
 
   showAlertMessage: false,
 
-  envLabelName: function() {
+  envLabelName: Ember.computed('name', function() {
     if (this.get('name')) {
       var label = this.get('name').underscore();
       return label.replace(/[^A-Z0-9]/ig, "_");
     }
-  }.property('name'),
+  }),
   label: Ember.computed.alias("envLabelName"),
 
-  hasNoEnvironments: function() {
+  hasNoEnvironments: Ember.computed('lifecycleEnvironments.@each.[]', function() {
     return Ember.isEmpty(this.get('lifecycleEnvironments'));
-  }.property('lifecycleEnvironments.@each.[]'),
+  }),
 
-  hasOnlyLibraryEnvironment: function() {
+  hasOnlyLibraryEnvironment: Ember.computed('lifecycleEnvironments.@each.[]', function() {
     return (this.get('lifecycleEnvironments.length') === 1);
-  }.property('lifecycleEnvironments.@each.[]')
+  })
 
 });

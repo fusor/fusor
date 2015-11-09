@@ -21,11 +21,11 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     return paramValue;
   },
 
-  images: function() {
+  images: Ember.computed('model.images.[]', function() {
     return this.get('model.images');
-  }.property('model.images.[]'),
+  }),
 
-  unassignedRoles: function() {
+  unassignedRoles: Ember.computed('model.plan.roles.[]', 'model.plan.parameters.[]', function() {
     var unassignedRoles = Ember.A();
     var params = this.get('model.plan.parameters');
     var self = this;
@@ -37,33 +37,33 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       }
     });
     return unassignedRoles;
-  }.property('model.plan.roles.[]', 'model.plan.parameters.[]'),
+  }),
 
-  allRolesAssigned: function() {
+  allRolesAssigned: Ember.computed('unassignedRoles.[]', function() {
     return (this.get('unassignedRoles.length') === 0);
-  }.property('unassignedRoles.[]'),
+  }),
 
-  noRolesAssigned: function() {
+  noRolesAssigned: Ember.computed('unassignedRoles.[]', 'model.plan.roles.[]', function() {
     return (this.get('unassignedRoles.length') === this.get('model.plan.roles.length'));
-  }.property('unassignedRoles.[]', 'model.plan.roles.[]'),
+  }),
 
-  profiles: function() {
+  profiles: Ember.computed('model.profiles.[]', function() {
     return this.get('model.profiles');
-  }.property('model.profiles.[]'),
+  }),
 
-  numProfiles: function() {
+  numProfiles: Ember.computed('model.profiles.[]', function() {
     return this.get('model.profiles.length');
-  }.property('model.profiles.[]'),
+  }),
 
-  nodes: function() {
+  nodes: Ember.computed('model.nodes.[]', function() {
     return this.get('model.nodes');
-  }.property('model.nodes.[]'),
+  }),
 
-  nodeCount: function() {
+  nodeCount: Ember.computed('model.nodes.[]', function() {
     return this.get('model.nodes.length');
-  }.property('model.nodes.[]'),
+  }),
 
-  assignedNodeCount: function() {
+  assignedNodeCount: Ember.computed('model.plan.roles.[]', 'model.plan.parameters.[]', function() {
     var count = 0;
     var params = this.get('model.plan.parameters');
     var self = this;
@@ -71,26 +71,30 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       count += parseInt(self.getParamValue(role.get('countParameterName'), params), 10);
     });
     return count;
-  }.property('model.plan.roles.[]', 'model.plan.parameters.[]'),
+  }),
 
-  isDraggingRole: function() {
-    var isDragging = false;
-    this.get('model.plan.roles').forEach(function (role) {
-          if (role.get('isDraggingObject') === true) {
-            isDragging = true;
-          }
-    });
-    return isDragging;
-  }.property('model.plan.roles.[]', 'model.plan.roles.@each.isDraggingObject'),
+  isDraggingRole: Ember.computed(
+    'model.plan.roles.[]',
+    'model.plan.roles.@each.isDraggingObject',
+    function() {
+      var isDragging = false;
+      this.get('model.plan.roles').forEach(function (role) {
+            if (role.get('isDraggingObject') === true) {
+              isDragging = true;
+            }
+      });
+      return isDragging;
+    }
+  ),
 
-  droppableClass: function() {
+  droppableClass: Ember.computed('isDraggingRole', function() {
     if (this.get('isDraggingRole')) {
       return 'deployment-roles-active';
     }
     else {
       return '';
     }
-  }.property('isDraggingRole'),
+  }),
 
   showLoadingSpinner: false,
   loadingSpinnerText: "Loading...",
@@ -168,23 +172,23 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     this.set('editGlobalServiceConfigModalClosed', true);
   },
 
-  settingsTabActiveClass: function() {
+  settingsTabActiveClass: Ember.computed('showSettings', function() {
     if (this.get('showSettings')) {
       return "active";
     }
     else {
       return "inactive";
     }
-  }.property('showSettings'),
+  }),
 
-  configTabActiveClass: function() {
+  configTabActiveClass: Ember.computed('showSettings', function() {
     if (this.get('showSettings')) {
       return "inactive";
     }
     else {
       return "active";
     }
-  }.property('showSettings'),
+  }),
 
   handleOutsideClick: function(e) {
     // do nothing, this overrides the closing of the dialog when clicked outside of it
@@ -422,15 +426,15 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     }
   },
 
-  disableAssignNodesNext: function() {
+  disableAssignNodesNext: Ember.computed('unassignedRoles.[]', function() {
     return (this.get('unassignedRoles.length') > 0);
-  }.property('unassignedRoles.[]'),
+  }),
 
-  nextStepRouteNameAssignNodes: function() {
+  nextStepRouteNameAssignNodes: Ember.computed('isCloudForms', function() {
     if (this.get('isCloudForms')) {
       return 'cloudforms';
     } else {
       return 'subscriptions';
     }
-  }.property('isCloudForms')
+  })
 });

@@ -10,13 +10,13 @@ export default Ember.Component.extend({
     }
   },
 
-  showMsgToSelect: function() {
+  showMsgToSelect: Ember.computed('isHover', 'isChecked', function() {
     return ( (this.get('isHover')) && (!(this.get('isChecked'))) );
-  }.property('isHover', 'isChecked'),
+  }),
 
-  showMsgToDeselect: function() {
+  showMsgToDeselect: Ember.computed('isHover', 'isChecked', function() {
     return ( (this.get('isHover')) && (this.get('isChecked')) );
-  }.property('isHover', 'isChecked'),
+  }),
 
   mouseEnter: function(){
     this.set('isHover', true);

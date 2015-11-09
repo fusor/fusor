@@ -6,15 +6,15 @@ export default Ember.Component.extend({
 
   classNameBindings: ['bgColor'],
 
-  isChecked: function () {
+  isChecked: Ember.computed('consumerUUID', 'managementApp.id', function () {
     return (this.get('consumerUUID') === this.get('managementApp.id'));
-  }.property('consumerUUID', 'managementApp.id'),
+  }),
 
-  bgColor: function () {
+  bgColor: Ember.computed('isChecked', function () {
     if (this.get('isChecked')) {
       return 'white-on-blue';
     }
-  }.property('isChecked'),
+  }),
 
   actions: {
     changeManagementApp: function() {

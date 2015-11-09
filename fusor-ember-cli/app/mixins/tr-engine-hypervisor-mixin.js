@@ -6,25 +6,25 @@ export default Ember.Mixin.create({
 
   classNameBindings: ['bgColor'],
 
-  bgColor: function () {
+  bgColor: Ember.computed('isChecked', function () {
     if (this.get('isChecked')) {
       return 'white-on-blue';
     }
-  }.property('isChecked'),
+  }),
 
-  cssHostHostId: function () {
+  cssHostHostId: Ember.computed('host.id', function () {
     return ('host_' + this.get('host.id'));
-  }.property('host.id'),
+  }),
 
-  cssIdHostId: function () {
+  cssIdHostId: Ember.computed('host.id', function () {
     return ('id_' + this.get('host.id'));
-  }.property('host.id'),
+  }),
 
-  selectedIds: function () {
+  selectedIds: Ember.computed('model.[]', function () {
     if (this.get('model')) {
       return this.get('model').getEach("id");
     }
-  }.property('model.[]'),
+  }),
 
   actions: {
     saveHostname: function() {

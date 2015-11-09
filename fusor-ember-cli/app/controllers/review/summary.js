@@ -14,21 +14,21 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   undercloudUsername: 'admin',
   undercloudPassword: Ember.computed.alias("model.openstack_undercloud_password"),
 
-  undercloudUrl: function() {
+  undercloudUrl: Ember.computed('model.openstack_undercloud_ip_addr', function() {
     return ('http://' + this.get('model.openstack_undercloud_ip_addr'));
-  }.property('model.openstack_undercloud_ip_addr'),
+  }),
 
   overcloudUsername: 'admin',
   overcloudPassword: Ember.computed.alias("model.openstack_overcloud_password"),
 
-  overcloudUrl: function() {
+  overcloudUrl: Ember.computed('model.openstack_overcloud_address', function() {
     return ('http://' + this.get('model.openstack_overcloud_address') + '/dashboard/admin');
-  }.property('model.openstack_overcloud_address'),
+  }),
 
   selectedRhevEngine: Ember.computed.alias("deploymentController.model.discovered_host"),
 
   // TODO - make mixin, same method as installation
-  engineNamePlusDomain: function() {
+  engineNamePlusDomain: Ember.computed('selectedRhevEngine', function() {
     if (this.get("selectedRhevEngine.is_discovered")) {
       // need to add domain for discovered host to make fqdn
       // TODO - dynamically get domain name of hostgroup Fusor Base if is not example.com
@@ -37,14 +37,14 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       // name is fqdn for managed host
       return (this.get("selectedRhevEngine.name"));
     }
-  }.property('selectedRhevEngine'),
+  }),
 
-  rhevEngineUrl: function() {
+  rhevEngineUrl: Ember.computed('selectedRhevEngine', function() {
     return ('https://' + this.get('selectedRhevEngine.ip') + '/ovirt-engine/');
-  }.property('selectedRhevEngine'),
+  }),
 
-  cfmeUrl: function() {
+  cfmeUrl: Ember.computed('model.cfme_address', function() {
     return ('https://' + this.get('model.cfme_address'));
-  }.property('model.cfme_address')
+  })
 
 });
