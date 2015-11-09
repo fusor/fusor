@@ -19,5 +19,5 @@ export default DS.Model.extend({
   sort_network_id: DS.attr('number'),
   boot_mode: DS.attr('string'),
   ipam: DS.attr('string'),
-  organization: DS.belongsTo('organization')
+  organization: DS.belongsTo('organization', {async: false})
 });
