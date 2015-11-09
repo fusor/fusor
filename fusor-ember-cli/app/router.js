@@ -10,19 +10,10 @@ var Router = Ember.Router.extend({
 });
 
 export default Router.map(function() {
-  this.route('login');
-  this.route('loggedin');
 
-  this.resource('rhci', { path: '/old-deployments/new-old' }, function() {
-    this.route('satellite', function() {
-      this.route('configure-organization');
-      this.route('configure-environment');
-    });
-  });
+  this.route('deployments', {resetNamespace: true});
 
-  this.resource('deployments');
-
-  this.resource("deployment-new", { path: '/deployments/new' }, function() {
+  this.route("deployment-new", {path: '/deployments/new', resetNamespace: true}, function() {
     this.route("start");
     this.route('satellite', function() {
       this.route('configure-environment');
@@ -30,38 +21,37 @@ export default Router.map(function() {
     });
   });
 
-  this.resource('deployment', { path: '/deployments/:deployment_id' }, function() {
-
+  this.route('deployment', {path: '/deployments/:deployment_id', resetNamespace: true}, function() {
     this.route("start");
 
-    this.resource('satellite', function() {
-      this.resource('configure-organization');
-      this.resource('configure-environment');
+    this.route('satellite', {resetNamespace: true}, function() {
+      this.route('configure-organization', {resetNamespace: true});
+      this.route('configure-environment', {resetNamespace: true});
       this.route('access-insights');
     });
 
-    this.resource('rhev', function() {
-      this.resource('rhev-setup', { path: 'setup' });
-      this.resource('engine', function() {
+    this.route('rhev', {resetNamespace: true}, function() {
+      this.route('rhev-setup', {path: 'setup', resetNamespace: true});
+      this.route('engine', {resetNamespace: true}, function() {
         this.route('discovered-host');
       });
-      this.resource('hypervisor', function() {
+      this.route('hypervisor', {resetNamespace: true}, function() {
         this.route('discovered-host');
       });
-      this.resource('rhev-options', { path: 'configuration' });
-      this.resource('storage');
+      this.route('rhev-options', {path: 'configuration', resetNamespace: true});
+      this.route('storage', {resetNamespace: true});
     });
 
-    this.resource('openstack', function() {
-      this.resource('undercloud-deploy');
-      this.resource('register-nodes');
-      this.resource('assign-nodes');
+    this.route('openstack', {resetNamespace: true}, function() {
+      this.route('undercloud-deploy', {resetNamespace: true});
+      this.route('register-nodes', {resetNamespace: true});
+      this.route('assign-nodes', {resetNamespace: true});
     });
-    this.resource('cloudforms', function() {
-      this.resource('where-install');
+    this.route('cloudforms', {resetNamespace: true}, function() {
+      this.route('where-install', {resetNamespace: true});
       this.route('cfme-configuration', { path: 'configuration' });
     });
-    this.resource('subscriptions', function() {
+    this.route('subscriptions', {resetNamespace: true}, function() {
       this.route('credentials');
       this.route('management-application', function() {
         this.route('consumer', { path: '/:management_application_uuid' });
@@ -69,7 +59,7 @@ export default Router.map(function() {
       this.route('select-subscriptions', {path: 'select'});
       this.route('review-subscriptions', {path: 'review'});
     });
-    this.resource('review', function() {
+    this.route('review', {resetNamespace: true}, function() {
       this.route('installation');
       this.route('progress', function() {
         this.route('overview');
