@@ -3,11 +3,11 @@
 # See following link for more info:
 # http://manageiq.org/documentation/development/rest_api/models/providers/
 
-export CFME_IP="192.168.252.16"
-export RHEV_IP="192.168.252.13"
-export RHEV_ADMIN_NAME="admin@internal"
-export RHEV_ADMIN_PASS="dog8code"
-export DATE=`date +"%s"`
+CFME_IP="192.168.252.16"
+RHEV_IP="192.168.252.13"
+RHEV_ADMIN_NAME="admin@internal"
+RHEV_ADMIN_PASS="password"
+DATE=`date +"%s"`
 
 
 
