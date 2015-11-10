@@ -10,11 +10,23 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isSubscriptions: Ember.computed.alias("deploymentController.isSubscriptions"),
   notValidCloudforms: Ember.computed.alias("cloudformsController.notValidCloudforms"),
 
-  nextRouteNameAfterCFME: Ember.computed('isSubscriptions', function() {
+  nextRouteNameAfterCFME: Ember.computed('isSubscriptions', function () {
     if (this.get('isSubscriptions')) {
       return 'subscriptions';
     } else {
       return 'review';
     }
-  })
+  }),
+
+  disableNextCfmeConfiguration: Ember.computed(
+    'notValidCloudforms',
+    'cfmeRootPassword',
+    'confirmCfmeRootPassword',
+    'cfmeAdminPassword',
+    'confirmCfmeAdminPassword',
+    function () {
+      return this.get('notValidCloudforms') ||
+        this.get('cfmeRootPassword') !== this.get('confirmCfmeRootPassword') ||
+        this.get('cfmeAdminPassword') !== this.get('confirmCfmeAdminPassword');
+    })
 });

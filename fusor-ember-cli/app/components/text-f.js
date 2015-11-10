@@ -14,10 +14,12 @@ export default Ember.Component.extend({
     return (this.get('type') === 'password');
   }),
 
-  passwordTooShort: Ember.computed('value', 'isPassword', 'minChars', function() {
-    if (this.get('minChars')) {
-      return (this.get('isPassword') && (this.get('value.length') < this.get('minChars')));
-    }
+  doesntMatchPassword: Ember.computed('value', 'mustMatch', function() {
+    return this.get('mustMatch') && this.get('mustMatch') !== this.get('value');
+  }),
+
+  passwordTooShort: Ember.computed('value', 'isPassword', 'minChars', function () {
+    return this.get('isPassword') && this.get('minChars') && this.get('value.length') < this.get('minChars');
   }),
 
   invalidIsAlphaNumeric: Ember.computed('value', 'isAlphaNumeric', function() {
@@ -41,6 +43,7 @@ export default Ember.Component.extend({
   hasError: Ember.computed(
     'showValidationError',
     'errors.name',
+    'doesntMatchPassword',
     'passwordTooShort',
     'validIsRequiredAndBlank',
     'validIsUnique',
@@ -49,6 +52,7 @@ export default Ember.Component.extend({
     function() {
       return (this.get('showValidationError') &&
               (Ember.isPresent(this.get('errors.name')) ||
+               this.get('doesntMatchPassword') ||
                this.get('passwordTooShort') ||
                this.get('validIsRequiredAndBlank') ||
                this.get('validIsUnique') ||
