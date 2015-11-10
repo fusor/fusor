@@ -43,6 +43,8 @@ export default Ember.Route.extend({
     if (deployment.get('isStarted')) {
       sessionPortal.set('consumerUUID', upstream_consumer_uuid);
       controller.set('sessionPortal', sessionPortal);
+    } else if (Ember.isPresent(sessionPortal.get('consumerUUID'))) {
+      // do nothing - use consumerUUID in local storage adapter
     } else {
       // check if org has upstream UUID using Katello V2 API
       var orgID = this.modelFor('deployment').get('organization.id');
