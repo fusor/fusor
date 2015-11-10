@@ -9,13 +9,14 @@ module.exports = function(app) {
           label: "Actions::Fusor::Deploy",
           started_at: "2015-04-07 18:16:55",
           ended_at: null,
-          state: "paused",
-          result: "error",
+          state: "running",
+          result: "success",
+          progress: 1,
           external_id: "4f7ca3e7-8828-46df-a6f1-e6b07964efb1",
           parent_task_id: null
        },
        {
-          id: "db25a76f-e344-48ba-ac77-f29303586dbe",
+          id: "aaaaa76f-e344-48ba-ac77-f29303586dbe",
           type: "ForemanTasks::Task::DynflowTask",
           label: "Actions::Fusor::Deploy",
           started_at: "2015-04-14 12:31:46",
@@ -45,5 +46,5 @@ module.exports = function(app) {
     });
   });
 
-  app.use('/api/v21aa/foreman_tasks', foremanTasksRouter);
+  app.use('/api/v21aaa/foreman_tasks', foremanTasksRouter);
 };
