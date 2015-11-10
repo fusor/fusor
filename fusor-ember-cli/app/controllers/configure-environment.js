@@ -55,7 +55,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymen
       var environment = this.store.createRecord('lifecycle-environment', this.get('fields_env'));
       environment.save().then(function(result) {
         //success
-        self.get('lifecycleEnvironments').addObject(result);
+        self.get('lifecycleEnvironments').addObject(result._internalModel);
         self.set('selectedEnvironment', environment);
         self.get('deploymentController.model').set('lifecycle_environment', environment);
         return self.set('showAlertMessage', true);
