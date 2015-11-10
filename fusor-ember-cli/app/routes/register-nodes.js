@@ -46,6 +46,7 @@ export default Ember.Route.extend({
   actions: {
     refreshModelOnOverviewRoute: function(){
         console.log('refreshing introspection progress bar tasks');
+        var self = this;
         var controller = this.get('controller');
 
         var introspection_tasks = this.modelFor('deployment').get('introspection_tasks');
