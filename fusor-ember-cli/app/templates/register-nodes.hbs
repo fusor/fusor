@@ -28,25 +28,9 @@
         </div>
     </div>
 
-    {{#if taskRegisterNode_1}}
-      {{progress-bar model=taskRegisterNode_1 isNodeProgressBar=true}}
-    {{/if}}
-
-    {{#if taskRegisterNode_2}}
-      {{progress-bar model=taskRegisterNode_2 isNodeProgressBar=true}}
-    {{/if}}
-
-    {{#if taskRegisterNode_3}}
-      {{progress-bar model=taskRegisterNode_3 isNodeProgressBar=true}}
-    {{/if}}
-
-    {{#if taskRegisterNode_4}}
-      {{progress-bar model=taskRegisterNode_4 isNodeProgressBar=true}}
-    {{/if}}
-
-    {{#if taskRegisterNode_5}}
-      {{progress-bar model=taskRegisterNode_5 isNodeProgressBar=true}}
-    {{/if}}
+    {{#each arrayTasks as |introspectionTask| }}
+      {{progress-bar model=introspectionTask isNodeProgressBar=true}}
+    {{/each}}
 
 {{else}}
   <div class="row">
