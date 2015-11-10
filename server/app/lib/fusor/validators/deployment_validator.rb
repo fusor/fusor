@@ -1,7 +1,6 @@
 module Fusor
   module Validators
     class DeploymentValidator < ActiveModel::Validator
-      # rubocop:disable Metrics/MethodLength
       def validate(deployment)
         if !(deployment.deploy_rhev or deployment.deploy_cfme or deployment.deploy_openstack)
           deployment.errors[:base] << _('You must deploy something...')
@@ -38,6 +37,11 @@ module Fusor
               # NFS paths cannot end in slash or contain non-ascii chars
               if deployment.rhev_share_path.end_with?("/") && deployment.rhev_share_path.length > 1
                 deployment.errors[:rhev_share_path] << _('NFS path specified ends in a "/", which is invalid')
+              end
+
+              # NFS paths must start with a slash
+              if !deployment.rhev_share_path.start_with?("/")
+                deployment.errors[:rhev_share_path] << _('NFS path specified does not start with a "/", which is invalid')
               end
 
               if !deployment.rhev_share_path.ascii_only?
