@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
+import request from 'ic-ajax';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
@@ -42,7 +43,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       var url = ('/customer_portal/consumers?=' + ownerKey);
 
       return new Ember.RSVP.Promise(function (resolve, reject) {
-        Ember.$.ajax({
+        request({
             url: url,
             type: "POST",
             data: JSON.stringify({name: newSatelliteName,
@@ -51,21 +52,21 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                "X-CSRF-Token": token,
-            },
-            success(response) {
-              self.get('model').addObject(response);
-              self.get('sessionPortal').set('consumerUUID', response.uuid);
-              self.get('sessionPortal').save();
-              self.set('showAlertMessage', true);
-              console.log(response);
-              resolve(response);
-            },
-            error() {
-              console.log('error on createSatellite');
-              return self.send('error');
+                "X-CSRF-Token": token
             }
-        });
+          }).then(function(response) {
+                var newMgmtApp = self.store.createRecord('management-application', {name: response.name, entitlementCount: 0, id: response.uuid});
+                self.get('model').addObject(newMgmtApp._internalModel);
+                self.get('sessionPortal').set('consumerUUID', response.uuid);
+                self.get('sessionPortal').save();
+                self.set('showAlertMessage', true);
+                console.log(response);
+                resolve(response);
+          }, function(error) {
+                console.log('error on createSatellite');
+                return self.send('error');
+          }
+        );
       });
     }
 
