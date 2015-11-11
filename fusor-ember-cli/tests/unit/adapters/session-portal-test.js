@@ -5,8 +5,3 @@ moduleFor('adapter:session-portal', 'Unit | Adapter | session portal', {
   // needs: ['serializer:foo']
 });
 
-// Replace this with your real tests.
-test('it exists', function(assert) {
-  var adapter = this.subject();
-  assert.ok(adapter);
-});

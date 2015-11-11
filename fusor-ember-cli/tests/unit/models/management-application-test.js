@@ -5,8 +5,3 @@ moduleForModel('management-application', 'Unit | Model | management application'
   needs: []
 });
 
-test('it exists', function(assert) {
-  var model = this.subject();
-  // var store = this.store();
-  assert.ok(!!model);
-});

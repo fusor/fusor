@@ -5,8 +5,3 @@ moduleForModel('session-portal', 'Unit | Model | session portal', {
   needs: []
 });
 
-test('it exists', function(assert) {
-  var model = this.subject();
-  // var store = this.store();
-  assert.ok(!!model);
-});
