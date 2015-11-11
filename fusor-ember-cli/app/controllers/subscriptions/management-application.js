@@ -1,23 +1,29 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
+import request from 'ic-ajax';
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['subscriptions', 'deployment'],
+  subscriptionsController: Ember.inject.controller('subscriptions'),
 
   showManagementApplications: true,
 
-  sessionPortal: Ember.computed.alias('controllers.subscriptions.model'),
-  upstreamConsumerUuid: Ember.computed.alias("controllers.deployment.model.upstream_consumer_uuid"),
-  upstreamConsumerName: Ember.computed.alias("controllers.deployment.model.upstream_consumer_name"),
+  sessionPortal: Ember.computed.alias('subscriptionsController.model'),
+  upstreamConsumerUuid: Ember.computed.alias("deploymentController.model.upstream_consumer_uuid"),
+  upstreamConsumerName: Ember.computed.alias("deploymentController.model.upstream_consumer_name"),
 
   showAlertMessage: false,
 
-  disableNextOnManagementApp: function() {
+  disableNextOnManagementApp: Ember.computed('upstreamConsumerUuid', function() {
     return (Ember.isBlank(this.get('upstreamConsumerUuid')));
-  }.property('upstreamConsumerUuid'),
+  }),
 
   actions: {
-    selectManagementApp: function(managementApp) {
+    registerNewSatellite() {
+      this.set('openRegisterNewSatelliteModal', true);
+    },
+
+    selectManagementApp(managementApp) {
       this.set('showAlertMessage', false);
       this.get('sessionPortal').set('consumerUUID', managementApp.get('id'));
       this.get('sessionPortal').save();
@@ -27,7 +33,7 @@ export default Ember.Controller.extend({
       return this.transitionTo('subscriptions.management-application.consumer', managementApp.get('id'));
     },
 
-    createSatellite: function() {
+    createSatellite() {
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
       var newSatelliteName = this.get('newSatelliteName');
       var ownerKey = this.get('sessionPortal').get('ownerKey');
@@ -37,7 +43,7 @@ export default Ember.Controller.extend({
       var url = ('/customer_portal/consumers?=' + ownerKey);
 
       return new Ember.RSVP.Promise(function (resolve, reject) {
-        Ember.$.ajax({
+        request({
             url: url,
             type: "POST",
             data: JSON.stringify({name: newSatelliteName,
@@ -46,21 +52,21 @@ export default Ember.Controller.extend({
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                "X-CSRF-Token": token,
-            },
-            success: function(response) {
-              self.get('model').pushObject(response);
-              self.get('sessionPortal').set('consumerUUID', response.uuid);
-              self.get('sessionPortal').save();
-              self.set('showAlertMessage', true);
-              console.log(response);
-              resolve(response);
-            },
-            error: function(){
-              console.log('error on createSatellite');
-              return self.send('error');
+                "X-CSRF-Token": token
             }
-        });
+          }).then(function(response) {
+                var newMgmtApp = self.store.createRecord('management-application', {name: response.name, entitlementCount: 0, id: response.uuid});
+                self.get('model').addObject(newMgmtApp._internalModel);
+                self.get('sessionPortal').set('consumerUUID', response.uuid);
+                self.get('sessionPortal').save();
+                self.set('showAlertMessage', true);
+                console.log(response);
+                resolve(response);
+          }, function(error) {
+                console.log('error on createSatellite');
+                return self.send('error');
+          }
+        );
       });
     }
 

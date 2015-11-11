@@ -1,48 +1,47 @@
 import Ember from 'ember';
 import ConfigureEnvironmentMixin from "../mixins/configure-environment-mixin";
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
+export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymentMixin, {
 
-  needs: ['deployment', 'application'],
+  satelliteTabRouteName: Ember.computed.alias("deploymentController.model.satelliteTabRouteName"),
+  organizationTabRouteName: Ember.computed.alias("deploymentController.model.organizationTabRouteName"),
+  isStarted: Ember.computed.alias("deploymentController.isStarted"),
 
-  satelliteTabRouteName: Ember.computed.alias("controllers.deployment.model.satelliteTabRouteName"),
-  organizationTabRouteName: Ember.computed.alias("controllers.deployment.model.organizationTabRouteName"),
-  isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
+  selectedOrganization: Ember.computed.alias("deploymentController.model.organization"),
 
-  selectedOrganization: Ember.computed.alias("controllers.deployment.model.organization"),
+  step2RouteName: Ember.computed.alias("deploymentController.step2RouteName"),
 
-  step2RouteName: Ember.computed.alias("controllers.deployment.step2RouteName"),
-
-  nullifyLifecycleEnvIfSelected: function(){
+  nullifyLifecycleEnvIfSelected: Ember.observer('useDefaultOrgViewForEnv', function(){
     this.set('showAlertMessage', false);
     if (this.get('useDefaultOrgViewForEnv')) {
       this.set('selectedEnvironment', null);
-      return this.get('controllers.deployment.model').set('lifecycle_environment', null);
+      return this.get('deploymentController.model').set('lifecycle_environment', null);
     }
-  }.observes('useDefaultOrgViewForEnv'),
+  }),
 
-  hasLifecycleEnvironment: Ember.computed.alias("controllers.deployment.hasLifecycleEnvironment"),
-  hasNoLifecycleEnvironment: Ember.computed.alias("controllers.deployment.hasNoLifecycleEnvironment"),
-  disableNextOnLifecycleEnvironment: Ember.computed.alias("controllers.deployment.disableNextOnLifecycleEnvironment"),
+  hasLifecycleEnvironment: Ember.computed.alias("deploymentController.hasLifecycleEnvironment"),
+  hasNoLifecycleEnvironment: Ember.computed.alias("deploymentController.hasNoLifecycleEnvironment"),
+  disableNextOnLifecycleEnvironment: Ember.computed.alias("deploymentController.disableNextOnLifecycleEnvironment"),
   openNewEnvironmentModal: false,
 
-  deployment: Ember.computed.alias("controllers.deployment.model"),
+  deployment: Ember.computed.alias("deploymentController.model"),
 
   actions: {
-    selectEnvironment: function(environment) {
+    selectEnvironment(environment) {
       this.set('showAlertMessage', false);
       this.set('selectedEnvironment', environment);
-      return this.get('controllers.deployment.model').set('lifecycle_environment', environment);
+      return this.get('deploymentController.model').set('lifecycle_environment', environment);
     },
 
-    newEnvironment: function() {
+    newEnvironment() {
       this.set('name', '');
       this.set('label', '');
       this.set('description', '');
       this.set('openNewEnvironmentModal', true);
     },
 
-    createEnvironment: function() {
+    createEnvironment() {
       var self = this;
       var selectedOrganization = this.get('selectedOrganization');
       this.set('fields_env.name', this.get('name'));
@@ -56,12 +55,12 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
       var environment = this.store.createRecord('lifecycle-environment', this.get('fields_env'));
       environment.save().then(function(result) {
         //success
-        self.get('lifecycleEnvironments').addObject(result);
+        self.get('lifecycleEnvironments').addObject(result._internalModel);
         self.set('selectedEnvironment', environment);
-        self.get('controllers.deployment.model').set('lifecycle_environment', environment);
+        self.get('deploymentController.model').set('lifecycle_environment', environment);
         return self.set('showAlertMessage', true);
       }, function(error) {
-        self.get('controllers.deployment').set('errorMsg', 'error saving environment' + error);
+        self.get('deploymentController').set('errorMsg', 'error saving environment' + error);
       });
 
     }

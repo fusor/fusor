@@ -1,6 +1,6 @@
 {{#if readOnly}}
   {{profile.name}}:
-  {{#each role in assignedRoles}}
+  {{#each assignedRoles as |role|}}
     {{deployment-role role=role profile=profile plan=plan readOnly=true}}
   {{/each}}
 {{else}}
@@ -40,7 +40,7 @@
                   <div class="col-sm-7 col-md-8">
                       <h4 class="h5">Assigned Nodes</h4>
                       <ul class="deployment-roles deployment-roles-assigned">
-                        {{#each role in assignedRoles}}
+                        {{#each assignedRoles as |role|}}
                           {{#draggable-object content=role}}
                             {{deployment-role role=role profile=profile nodeCount=matchingNodeCount plan=plan edit="editRole" setRoleCount="setRoleCount" remove="removeRole" readOnly=false}}
                           {{/draggable-object}}
@@ -52,7 +52,7 @@
                                       <i class="fa fa-plus"></i> Assign Role
                                   </a>
                                   <ul class="dropdown-menu" role="menu" aria-labelledby="role-target-dropdown-1" style="left: -2px;">
-                                    {{#each role in unassignedRoles}}
+                                    {{#each unassignedRoles as |role|}}
                                         <a class="roles-menu-item role-{{role.roleType}}" {{action "assignRole" role}}>{{role.name}}</a>
                                     {{/each}}
                                   </ul>

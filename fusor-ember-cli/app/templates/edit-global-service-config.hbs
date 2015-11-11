@@ -15,7 +15,7 @@
               <div class="form-horizontal">
                   <fieldset>
                       <div class="required">
-                        {{#each planParameter in edittedPlanParameters}}
+                        {{#each edittedPlanParameters as |planParameter|}}
                           {{#if planParameter.isBoolean}}
                             {{check-f label=planParameter.displayId checked=planParameter.value labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=planParameter.description}}
                           {{else}}
@@ -34,7 +34,7 @@
     {{/em-modal-body}}
 
     {{#em-modal-footer class="modal-button-bar"}}
-        <button type="cancel" class="btn btn-default" disabled={{async}} {{action "cancelGlobalServiceConfig"}}>Cancel</button>
-        <button type="submit" class="btn btn-primary" disabled={{async}} {{action "saveGlobalServiceConfig"}}>Save</button>
+        <button type="cancel" class="btn btn-default" disabled="{{async}}" {{action "cancelGlobalServiceConfig"}}>Cancel</button>
+        <button type="submit" class="btn btn-primary" disabled="{{async}}" {{action "saveGlobalServiceConfig"}}>Save</button>
     {{/em-modal-footer}}
 {{/em-modal}}

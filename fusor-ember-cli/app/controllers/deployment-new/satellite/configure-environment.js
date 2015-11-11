@@ -3,44 +3,44 @@ import ConfigureEnvironmentMixin from "../../../mixins/configure-environment-mix
 
 export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
 
-  needs: ['deployment-new', 'deployment', 'application'],
+  deploymentNewController: Ember.inject.controller('deployment-new'),
 
-  organizationTabRouteName: Ember.computed.alias("controllers.deployment-new.organizationTabRouteName"),
+  organizationTabRouteName: Ember.computed.alias("deploymentNewController.organizationTabRouteName"),
 
-  selectedOrganization: Ember.computed.alias("controllers.deployment-new.model.organization"),
+  selectedOrganization: Ember.computed.alias("deploymentNewController.model.organization"),
 
-  step2RouteName: Ember.computed.alias("controllers.deployment-new.step2RouteName"),
+  step2RouteName: Ember.computed.alias("deploymentNewController.step2RouteName"),
 
-  nullifyLifecycleEnvIfSelected: function(){
+  nullifyLifecycleEnvIfSelected: Ember.observer('useDefaultOrgViewForEnv', function(){
     this.set('showAlertMessage', false);
     if (this.get('useDefaultOrgViewForEnv')) {
       this.set('selectedEnvironment', null);
-      return this.get('controllers.deployment-new.model').set('lifecycle_environment', null);
+      return this.get('deploymentNewController.model').set('lifecycle_environment', null);
     }
-  }.observes('useDefaultOrgViewForEnv'),
+  }),
 
-  hasLifecycleEnvironment: Ember.computed.alias("controllers.deployment-new.hasLifecycleEnvironment"),
-  hasNoLifecycleEnvironment: Ember.computed.alias("controllers.deployment-new.hasNoLifecycleEnvironment"),
-  disableNextOnLifecycleEnvironment: Ember.computed.alias("controllers.deployment-new.disableNextOnLifecycleEnvironment"),
+  hasLifecycleEnvironment: Ember.computed.alias("deploymentNewController.hasLifecycleEnvironment"),
+  hasNoLifecycleEnvironment: Ember.computed.alias("deploymentNewController.hasNoLifecycleEnvironment"),
+  disableNextOnLifecycleEnvironment: Ember.computed.alias("deploymentNewController.disableNextOnLifecycleEnvironment"),
   openNewEnvironmentModal: false,
 
-  deployment: Ember.computed.alias("controllers.deployment-new"),
+  deployment: Ember.computed.alias("deploymentNewController"),
 
   actions: {
-    selectEnvironment: function(environment) {
+    selectEnvironment(environment) {
       this.set('showAlertMessage', false);
       this.set('selectedEnvironment', environment);
-      return this.get('controllers.deployment-new.model').set('lifecycle_environment', environment);
+      return this.get('deploymentNewController.model').set('lifecycle_environment', environment);
     },
 
-    newEnvironment: function() {
+    newEnvironment() {
       this.set('name', '');
       this.set('label', '');
       this.set('description', '');
       this.set('openNewEnvironmentModal', true);
     },
 
-    createEnvironment: function() {
+    createEnvironment() {
       var self = this;
       var selectedOrganization = this.get('selectedOrganization');
       this.set('fields_env.name', this.get('name'));
@@ -54,12 +54,12 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
       var environment = this.store.createRecord('lifecycle-environment', this.get('fields_env'));
       environment.save().then(function(result) {
         //success
-        self.get('lifecycleEnvironments').addObject(result);
+        self.get('lifecycleEnvironments').addObject(result._internalModel);
         self.set('selectedEnvironment', environment);
-        self.get('controllers.deployment-new.model').set('lifecycle_environment', environment);
+        self.get('deploymentNewController.model').set('lifecycle_environment', environment);
         return self.set('showAlertMessage', true);
       }, function(error) {
-        self.get('controllers.deployment').set('errorMsg', 'error saving environment' + error);
+        self.get('deploymentController').set('errorMsg', 'error saving environment' + error);
       });
 
     }

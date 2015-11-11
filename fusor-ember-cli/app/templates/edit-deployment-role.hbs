@@ -47,7 +47,7 @@
                             <div class="form-horizontal">
                                 <fieldset>
                                     <div class="required">
-                                        {{#each roleParameter in edittedRoleParameters}}
+                                        {{#each edittedRoleParameters as |roleParameter|}}
                                             {{#if roleParameter.isBoolean}}
                                               {{check-f label=roleParameter.displayId checked=roleParameter.value labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
                                             {{else}}
@@ -69,7 +69,7 @@
     {{/em-modal-body}}
 
     {{#em-modal-footer}}
-        <button type="cancel" class="btn btn-default" disabled={{async}} {{action "cancelEditRole"}}>Cancel</button>
-        <button type="submit" class="btn btn-primary" disabled={{async}} {{action "saveRole"}}>Save</button>
+        <button type="cancel" class="btn btn-default" disabled="{{async}}" {{action "cancelEditRole"}}>Cancel</button>
+        <button type="submit" class="btn btn-primary" disabled="{{async}}" {{action "saveRole"}}>Save</button>
     {{/em-modal-footer}}
 {{/em-modal}}

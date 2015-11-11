@@ -1,23 +1,22 @@
 import Ember from 'ember';
 import ConfigureOrganizationMixin from "../mixins/configure-organization-mixin";
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend(ConfigureOrganizationMixin, {
+export default Ember.Controller.extend(ConfigureOrganizationMixin, NeedsDeploymentMixin, {
 
-  needs: ['deployment', 'application'],
+  organization: Ember.computed.alias("deploymentController.organization"),
 
-  organization: Ember.computed.alias("controllers.deployment.organization"),
-
-  disableNextOnConfigureOrganization: Ember.computed.alias("controllers.deployment.disableNextOnConfigureOrganization"),
-  satelliteTabRouteName: Ember.computed.alias("controllers.deployment.satelliteTabRouteName"),
-  lifecycleEnvironmentTabRouteName: Ember.computed.alias("controllers.deployment.lifecycleEnvironmentTabRouteName"),
-  deploymentName: Ember.computed.alias("controllers.deployment.name"),
-  isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
+  disableNextOnConfigureOrganization: Ember.computed.alias("deploymentController.disableNextOnConfigureOrganization"),
+  satelliteTabRouteName: Ember.computed.alias("deploymentController.satelliteTabRouteName"),
+  lifecycleEnvironmentTabRouteName: Ember.computed.alias("deploymentController.lifecycleEnvironmentTabRouteName"),
+  deploymentName: Ember.computed.alias("deploymentController.name"),
+  isStarted: Ember.computed.alias("deploymentController.isStarted"),
 
   actions: {
-    selectOrganization: function(organization) {
+    selectOrganization(organization) {
       this.set('showAlertMessage', false);
       this.set('selectedOrganization', organization);
-      return this.get('controllers.deployment').set('organization', organization);
+      return this.get('deploymentController').set('organization', organization);
     }
   }
 

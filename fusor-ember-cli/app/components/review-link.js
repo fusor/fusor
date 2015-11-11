@@ -13,28 +13,28 @@ export default Ember.Component.extend({
   eyeIcon: 'fa-eye',
   isEyeOpen: true,
 
-  showValidationMessage: function() {
+  showValidationMessage: Ember.computed('isRequired', 'value', function() {
     return (this.get('isRequired') && Ember.isBlank(this.get('value')));
-  }.property('isRequired', 'value'),
+  }),
 
-  showDefaultMessage: function() {
+  showDefaultMessage: Ember.computed('isDefault', 'value', function() {
     return (this.get('isDefault') && Ember.isBlank(this.get('value')));
-  }.property('isDefault', 'value'),
+  }),
 
-  valueFormatted: function() {
+  valueFormatted: Ember.computed('isPassword', 'isEyeOpen', 'value', function() {
     if (this.get('isPassword') && this.get('isEyeOpen') && Ember.isPresent(this.get('value'))) {
       return '********';
     } else {
       return this.get('value');
     }
-  }.property('isPassword', 'isEyeOpen', 'value'),
+  }),
 
-  isNotALink: function() {
+  isNotALink: Ember.computed('isExternalURL', 'routeName', function() {
     return (Ember.isBlank(this.get('routeName')) && !(this.get('isExternalURL')));
-  }.property('isExternalURL', 'routeName'),
+  }),
 
   actions: {
-    showPassword: function() {
+    showPassword() {
       this.set('isEyeOpen', this.toggleProperty('isEyeOpen'));
       if (this.get('isEyeOpen')) {
           return this.set('eyeIcon', "fa-eye");

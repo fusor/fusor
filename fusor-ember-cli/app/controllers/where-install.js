@@ -1,20 +1,21 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['deployment', 'cloudforms'],
+  cloudformsController: Ember.inject.controller('cloudforms'),
 
-  cfmeInstallLoc: Ember.computed.alias("controllers.deployment.model.cfme_install_loc"),
-  isRhev: Ember.computed.alias("controllers.deployment.isRhev"),
+  cfmeInstallLoc: Ember.computed.alias("deploymentController.model.cfme_install_loc"),
+  isRhev: Ember.computed.alias("deploymentController.isRhev"),
   isNotRhev: Ember.computed.not("isRhev"),
-  isOpenStack: Ember.computed.alias("controllers.deployment.isOpenStack"),
+  isOpenStack: Ember.computed.alias("deploymentController.isOpenStack"),
   isNotOpenStack: Ember.computed.not("isOpenStack"),
-  satelliteTabRouteName: Ember.computed.alias("controllers.deployment.satelliteTabRouteName"),
-  organizationTabRouteName: Ember.computed.alias("controllers.deployment.organizationTabRouteName"),
-  lifecycleEnvironmentTabRouteName: Ember.computed.alias("controllers.deployment.lifecycleEnvironmentTabRouteName"),
-  isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
+  satelliteTabRouteName: Ember.computed.alias("deploymentController.satelliteTabRouteName"),
+  organizationTabRouteName: Ember.computed.alias("deploymentController.organizationTabRouteName"),
+  lifecycleEnvironmentTabRouteName: Ember.computed.alias("deploymentController.lifecycleEnvironmentTabRouteName"),
+  hasNoInstallLocation: Ember.computed.alias("cloudformsController.hasNoInstallLocation"),
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
 
     var isRhev = this.controllerFor('deployment').get('isRhev');
@@ -33,23 +34,23 @@ export default Ember.Controller.extend({
     }
   },
 
-  disableRHEV: function() {
+  disableRHEV: Ember.computed('isStarted', 'isNotRhev', function() {
     return (this.get('isStarted') || this.get('isNotRhev'));
-  }.property('isStarted', 'isNotRhev'),
+  }),
 
-  disableOpenStack: function() {
+  disableOpenStack: Ember.computed('isStarted', 'isNotOpenStack', function() {
     return (this.get('isStarted') || this.get('isNotOpenStack'));
-  }.property('isStarted', 'isNotOpenStack'),
+  }),
 
-  disableRHEVradio: function () {
-    return (this.get('disableRHEV') || this.get('controllers.deployment.isStarted'));
-  }.property('disableRHEV', 'controllers.deployment.isStarted'),
+  disableRHEVradio: Ember.computed('disableRHEV', 'isStarted', function () {
+    return (this.get('disableRHEV') || this.get('isStarted'));
+  }),
 
-  disableOpenstackradio: function () {
-    return (this.get('disableOpenStack') || this.get('controllers.deployment.isStarted'));
-  }.property('disableOpenStack', 'controllers.deployment.isStarted'),
+  disableOpenstackradio: Ember.computed('disableOpenStack', 'isStarted', function () {
+    return (this.get('disableOpenStack') || this.get('isStarted'));
+  }),
 
-  backRouteName: function() {
+  backRouteName: Ember.computed('isOpenStack', 'isRhev', function() {
     if (this.get('isOpenStack')) {
       return 'assign-nodes';
     } else if (this.get('isRhev')) {
@@ -57,10 +58,10 @@ export default Ember.Controller.extend({
     } else {
       return 'satellite.access-insights';
     }
-  }.property('isOpenStack', 'isRhev'),
+  }),
 
   actions: {
-    cfmeLocationChanged: function() {
+    cfmeLocationChanged() {
     }
   }
 

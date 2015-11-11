@@ -1,8 +1,7 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "./needs-deployment-mixin";
 
-export default Ember.Mixin.create({
-
-  needs: ['application', 'deployment'],
+export default Ember.Mixin.create(NeedsDeploymentMixin, {
 
   selectedOrganization: Ember.computed.alias("model"),
 
@@ -11,18 +10,18 @@ export default Ember.Mixin.create({
   showAlertMessage: false,
 
   // default Organization name for New Organizations
-  defaultOrgName: function () {
+  defaultOrgName: Ember.computed(function () {
     return this.getWithDefault('defaultOrg', this.get('deploymentName'));
-  }.property(),
+  }),
 
-  orgLabelName: function() {
+  orgLabelName: Ember.computed('defaultOrgName', function() {
     if(this.get('fields_org.name')) {
       return this.get('defaultOrgName').underscore();
     }
-  }.property('defaultOrgName'),
+  }),
 
   actions: {
-    createOrganization: function() {
+    createOrganization() {
         var self = this;
         this.set('fields_org.name', this.get('defaultOrgName'));
         var organization = this.store.createRecord('organization', this.get('fields_org'));
@@ -34,7 +33,7 @@ export default Ember.Mixin.create({
           self.set('organization', org);
           return self.set('showAlertMessage', true);
         }, function(error) {
-          self.get('controllers.deployment').set('errorMsg', 'error saving organization' + error);
+          self.get('deploymentController').set('errorMsg', 'error saving organization' + error);
         });
     }
   }

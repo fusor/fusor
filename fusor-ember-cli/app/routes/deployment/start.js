@@ -2,16 +2,16 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
     controller.set('satelliteTabRouteName', 'satellite.index');
   },
 
-  activate: function() {
+  activate() {
     this.controllerFor('deployment').set('isHideWizard', true);
   },
 
-  deactivate: function() {
+  deactivate() {
     this.controllerFor('deployment').set('isHideWizard', false);
     return this.send('saveDeployment', null);
   }

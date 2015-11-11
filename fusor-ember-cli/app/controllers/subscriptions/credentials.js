@@ -1,43 +1,42 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
+import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['deployment'],
+  deploymentId: Ember.computed.alias("deploymentController.model.id"),
+  upstreamConsumerUuid: Ember.computed.alias("deploymentController.model.upstream_consumer_uuid"),
+  upstreamConsumerName: Ember.computed.alias("deploymentController.model.upstream_consumer_name"),
+  cdnUrl: Ember.computed.alias("deploymentController.model.cdn_url"),
+  manifestFile: Ember.computed.alias("deploymentController.model.manifest_file"),
 
-  deploymentId: Ember.computed.alias("controllers.deployment.model.id"),
-  upstreamConsumerUuid: Ember.computed.alias("controllers.deployment.model.upstream_consumer_uuid"),
-  upstreamConsumerName: Ember.computed.alias("controllers.deployment.model.upstream_consumer_name"),
-  cdnUrl: Ember.computed.alias("controllers.deployment.model.cdn_url"),
-  manifestFile: Ember.computed.alias("controllers.deployment.model.manifest_file"),
-
-  isRhev: Ember.computed.alias("controllers.deployment.model.deploy_rhev"),
-  isOpenStack: Ember.computed.alias("controllers.deployment.model.deploy_openstack"),
-  isCloudForms: Ember.computed.alias("controllers.deployment.model.deploy_cfme"),
+  isRhev: Ember.computed.alias("deploymentController.model.deploy_rhev"),
+  isOpenStack: Ember.computed.alias("deploymentController.model.deploy_openstack"),
+  isCloudForms: Ember.computed.alias("deploymentController.model.deploy_cfme"),
 
   //overwritten by setupController
   organizationUpstreamConsumerUUID: null,
   organizationUpstreamConsumerName: null,
 
-  validCredentials: function() {
+  validCredentials: Ember.computed('model.identification', 'password', function() {
     // password is not saved in the model
     return (Ember.isPresent(this.get('model.identification')) && Ember.isPresent(this.get('password')));
-  }.property('model.identification', 'password'),
+  }),
 
-  enableCredentialsNext: function() {
+  enableCredentialsNext: Ember.computed('validCredentials', 'model.isAuthenticated', function() {
     return this.get('validCredentials') || this.get('model.isAuthenticated');
-  }.property('validCredentials', 'model.isAuthenticated'),
+  }),
   disableCredentialsNext: Ember.computed.not('enableCredentialsNext'),
 
-  hasUpstreamConsumerUuid: function() {
+  hasUpstreamConsumerUuid: Ember.computed('upstreamConsumerUuid', function() {
     return Ember.isPresent(this.get('upstreamConsumerUuid'));
-  }.property('upstreamConsumerUuid'),
+  }),
 
-  hasOrganizationUpstreamConsumerUUID: function() {
+  hasOrganizationUpstreamConsumerUUID: Ember.computed('organizationUpstreamConsumerUUID', function() {
     return Ember.isPresent(this.get('organizationUpstreamConsumerUUID'));
-  }.property('organizationUpstreamConsumerUUID'),
+  }),
 
-  backRouteNameonCredentials: function() {
+  backRouteNameonCredentials: Ember.computed('isRhev', 'isOpenStack', 'isCloudForms', function() {
     if (this.get('isCloudForms')) {
       return 'cloudforms.cfme-configuration';
     } else if (this.get('isOpenStack')) {
@@ -47,40 +46,40 @@ export default Ember.Controller.extend({
     } else {
       return 'configure-environment';
     }
-  }.property('isRhev', 'isOpenStack', 'isCloudForms'),
+  }),
 
   nextButtonTitle: 'Next',
 
-  actionCredentialsNext: function() {
+  actionCredentialsNext: Ember.computed('model.isAuthenticated', function() {
     if (this.get('model.isAuthenticated')) {
       return 'redirectToManagementApplication';
     } else {
       return 'loginPortal';
     }
-  }.property('model.isAuthenticated'),
+  }),
 
-  isDisconnected: Ember.computed.alias('controllers.deployment.model.is_disconnected'),
+  isDisconnected: Ember.computed.alias('deploymentController.model.is_disconnected'),
   hasManifestFile: Ember.computed.notEmpty('manifestFile'),
   noManifestFile: Ember.computed.empty('manifestFile'),
 
-  contentProviderType: function() {
+  contentProviderType: Ember.computed('isDisconnected', function() {
     return (this.get('isDisconnected') ? "disconnected" : "redhat_cdn");
-  }.property('isDisconnected'),
+  }),
 
-  contentProviderTitle: function() {
+  contentProviderTitle: Ember.computed('isDisconnected', function() {
     return (this.get('isDisconnected') ? "Disconnected" : "Red Hat CDN");
-  }.property('isDisconnected'),
+  }),
 
-  isDisconnectedSelected: function() {
+  isDisconnectedSelected: Ember.computed('contentProviderType', function() {
     return (this.get('contentProviderType') === 'disconnected');
-  }.property('contentProviderType'),
+  }),
 
   actions: {
-    providerTypeChanged: function() {
+    providerTypeChanged() {
       return this.set('isDisconnected', this.get('isDisconnectedSelected'));
     },
 
-    uploadManifest: function() {
+    uploadManifest() {
       var self = this;
       var manifestFile = document.getElementById('manifest-file-field').files[0];
       var formData = new FormData();
@@ -99,8 +98,8 @@ export default Ember.Controller.extend({
         headers: {'X-CSRF-Token': token},
         contentType: false
       }).then( function(result) {
-            self.get('controllers.deployment.model').set('manifest_file', result.manifest_file);
-            self.get('controllers.deployment.model').save().then(function () {
+            self.get('deploymentController.model').set('manifest_file', result.manifest_file);
+            self.get('deploymentController.model').save().then(function () {
               return console.log('Manifest successfully uploaded');
             });
         }, function(error) {
@@ -111,7 +110,7 @@ export default Ember.Controller.extend({
 
     },
 
-    uploadDifferentManifest: function() {
+    uploadDifferentManifest() {
       return this.set("manifestFile", null);
     }
   }

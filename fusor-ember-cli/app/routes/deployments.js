@@ -1,20 +1,20 @@
 import Ember from 'ember';
 
 export default Ember.Route.extend({
-  model: function() {
-    return this.store.find('deployment');
+  model() {
+    return this.store.findAll('deployment');
   },
 
   actions: {
-    deleteDeployment: function (item) {
+    deleteDeployment(item) {
       this.controllerFor('deployments').set('isCloseModal', true);
-      return this.store.find('deployment', item.get('id')).then(function(deployment) {
+      return this.store.findRecord('deployment', item.get('id')).then(function(deployment) {
         deployment.deleteRecord();
         return deployment.save();
       });
     },
 
-    willTransition: function () {
+    willTransition() {
       return this.controllerFor('deployment').set('isBackToDeployments', true);
     }
   }

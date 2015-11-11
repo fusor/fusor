@@ -3,14 +3,14 @@ import DS from 'ember-data';
 export default DS.RESTSerializer.extend({
 
     // add root node 'entitlements' that customer protal JSON response doesn't return
-    extractArray: function(store, type, payload) {
+    extractArray(store, type, payload) {
       payload = { entitlements: payload };
       return this._super(store, type, payload);
     },
 
     // remove attribute keys in the json response that aren't in the model management application
     normalizeHash: {
-      entitlements: function(hash) {
+      entitlements(hash) {
         delete hash.consumer;
         delete hash.certificates;
         // move attributes within the 'pool' node to main level

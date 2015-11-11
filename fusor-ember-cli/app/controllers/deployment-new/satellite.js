@@ -2,15 +2,15 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
-  needs: ['deployment-new'],
+  deploymentNewController: Ember.inject.controller('deployment-new'),
 
-  satelliteTabRouteName: Ember.computed.alias("controllers.deployment-new.satelliteTabRouteName"),
-  organizationTabRouteName: Ember.computed.alias("controllers.deployment-new.organizationTabRouteName"),
-  lifecycleEnvironmentTabRouteName: Ember.computed.alias("controllers.deployment-new.lifecycleEnvironmentTabRouteName"),
+  satelliteTabRouteName: Ember.computed.alias("deploymentNewController.satelliteTabRouteName"),
+  organizationTabRouteName: Ember.computed.alias("deploymentNewController.organizationTabRouteName"),
+  lifecycleEnvironmentTabRouteName: Ember.computed.alias("deploymentNewController.lifecycleEnvironmentTabRouteName"),
 
-  disableTabDeploymentName: Ember.computed.alias("controllers.deployment-new.disableTabDeploymentName"),
-  disableTabConfigureOrganization: Ember.computed.alias("controllers.deployment-new.disableTabConfigureOrganization"),
-  disableTabLifecycleEnvironment: Ember.computed.alias("controllers.deployment-new.disableTabLifecycleEnvironment"),
+  disableTabDeploymentName: Ember.computed.alias("deploymentNewController.disableTabDeploymentName"),
+  disableTabConfigureOrganization: Ember.computed.alias("deploymentNewController.disableTabConfigureOrganization"),
+  disableTabLifecycleEnvironment: Ember.computed.alias("deploymentNewController.disableTabLifecycleEnvironment"),
   disableTabAccessInsights: true,
 
   backRouteNameOnSatIndex: 'deployment-new.start'

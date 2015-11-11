@@ -1,31 +1,37 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
-  needs: ['deployment'],
-  stepNumberCloudForms: Ember.computed.alias("controllers.deployment.stepNumberCloudForms"),
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  hasInstallLocation: function() {
-    return Ember.isPresent(this.get('controllers.deployment.model.cfme_install_loc'));
-  }.property('controllers.deployment.model.cfme_install_loc'),
+  stepNumberCloudForms: Ember.computed.alias("deploymentController.stepNumberCloudForms"),
+
+  hasInstallLocation: Ember.computed('deploymentController.model.cfme_install_loc', function() {
+    return Ember.isPresent(this.get('deploymentController.model.cfme_install_loc'));
+  }),
   hasNoInstallLocation: Ember.computed.not("hasInstallLocation"),
 
-  hasCFRootPassword: function() {
-    return (Ember.isPresent(this.get('controllers.deployment.model.cfme_root_password')) &&
-            (this.get('controllers.deployment.model.cfme_root_password.length') > 7)
+  hasCFRootPassword: Ember.computed('deploymentController.model.cfme_root_password', function() {
+    return (Ember.isPresent(this.get('deploymentController.model.cfme_root_password')) &&
+            (this.get('deploymentController.model.cfme_root_password.length') > 7)
            );
-  }.property('controllers.deployment.model.cfme_root_password'),
+  }),
   hasNoCFRootPassword: Ember.computed.not("hasCFRootPassword"),
 
-  hasCFAdminPassword: function() {
-    return (Ember.isPresent(this.get('controllers.deployment.model.cfme_admin_password')) &&
-            (this.get('controllers.deployment.model.cfme_admin_password.length') > 7)
+  hasCFAdminPassword: Ember.computed('deploymentController.model.cfme_admin_password', function() {
+    return (Ember.isPresent(this.get('deploymentController.model.cfme_admin_password')) &&
+            (this.get('deploymentController.model.cfme_admin_password.length') > 7)
            );
-  }.property('controllers.deployment.model.cfme_admin_password'),
+  }),
   hasNoCFAdminPassword: Ember.computed.not("hasCFAdminPassword"),
 
-  validCloudforms: function() {
-    return this.get('hasInstallLocation') && this.get('hasCFRootPassword') && this.get('hasCFAdminPassword');
-  }.property('hasInstallLocation', 'hasCFRootPassword', 'hasCFAdminPassword'),
+  validCloudforms: Ember.computed(
+    'hasInstallLocation',
+    'hasCFRootPassword',
+    'hasCFAdminPassword',
+    function() {
+      return this.get('hasInstallLocation') && this.get('hasCFRootPassword') && this.get('hasCFAdminPassword');
+    }
+  ),
   notValidCloudforms: Ember.computed.not("validCloudforms")
 
 });

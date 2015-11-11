@@ -1,15 +1,14 @@
 import Ember from 'ember';
 
-export default Ember.ArrayController.extend({
+export default Ember.Controller.extend({
 
-  sortProperties: ['name'],
-  sortAscending: true,
-
-  sortedDeployments: Ember.computed.sort('model', 'sortProperties'),
+  sortedDeployments: Ember.computed('model.[]', 'model.@each.name', function() {
+    return this.get('model').sortBy('name');
+  }),
 
   searchDeploymentString: '',
 
-  filteredDeployments: function(){
+  filteredDeployments: Ember.computed('sortedDeployments', 'searchDeploymentString', 'model.[]', function(){
     var searchDeploymentString = this.get('searchDeploymentString');
     var rx = new RegExp(searchDeploymentString, 'gi');
     var sortedDeployments = this.get('sortedDeployments');
@@ -23,14 +22,14 @@ export default Ember.ArrayController.extend({
     } else {
       return sortedDeployments;
     }
-  }.property('sortedDeployments', 'searchDeploymentString', 'model.[]'),
+  }),
 
   // related to deleted-deployment-modal
   isOpenModal: false,
   deploymentInModal: null,
 
   actions: {
-    openDeploymentModal: function (item) {
+    openDeploymentModal(item) {
       this.set('deploymentInModal', item);
       return this.set('isOpenModal', true);
     }

@@ -1,28 +1,29 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['deployment', 'hypervisor/discovered-host', 'rhev'],
+  //todo - delete hypervisorDiscoveredHostController, not used?
+  //hypervisorDiscoveredHostController: Ember.inject.controller('hypervisor/discovered-host'),
+  rhevController: Ember.inject.controller('rhev'),
 
   selectedRhevEngineHost: Ember.computed.alias("model"),
-  rhevIsSelfHosted: Ember.computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
-  isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
-  isNotStarted: Ember.computed.alias("controllers.deployment.isNotStarted"),
+  rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
 
-  hypervisorModelIds: function() {
-    return this.get('controllers.deployment.model.discovered_hosts').getEach('id');
-  }.property('controllers.deployment.model.discovered_hosts.[]'),
+  hypervisorModelIds: Ember.computed('deploymentController.model.discovered_hosts.[]', function() {
+    return this.get('deploymentController.model.discovered_hosts').getEach('id');
+  }),
 
-  engineNextRouteName: function() {
+  engineNextRouteName: Ember.computed('rhevIsSelfHosted', function() {
     if (this.get('rhevIsSelfHosted')) {
       return 'rhev-options';
     } else {
       return 'hypervisor.discovered-host';
     }
-  }.property('rhevIsSelfHosted'),
+  }),
 
   // Filter out hosts selected as Hypervisor
-  availableHosts: function() {
+  availableHosts: Ember.computed('allDiscoveredHosts.[]', 'hypervisorModelIds.[]', function() {
     // TODO: Ember.computed.filter() caused problems. error item.get is not a function
     var self = this;
      var allDiscoveredHosts = this.get('allDiscoveredHosts');
@@ -35,10 +36,10 @@ export default Ember.Controller.extend({
           }
         });
       }
-  }.property('allDiscoveredHosts.[]', 'hypervisorModelIds.[]'),
+  }),
 
   // same as Engine. TODO. put it mixin
-  filteredHosts: function(){
+  filteredHosts: Ember.computed('availableHosts.[]', 'searchString', 'isStarted', function(){
     var searchString = this.get('searchString');
     var rx = new RegExp(searchString, 'gi');
     var availableHosts = this.get('availableHosts');
@@ -55,15 +56,15 @@ export default Ember.Controller.extend({
     } else {
       return availableHosts;
     }
-  }.property('availableHosts.[]', 'searchString', 'isStarted'),
+  }),
 
-  numSelected: function() {
+  numSelected: Ember.computed('model.id', function() {
     return (this.get('model.id')) ? 1 : 0;
-  }.property('model.id'),
+  }),
 
   actions: {
-    setEngine: function(host) {
-      var deployment = this.get('controllers.deployment');
+    setEngine(host) {
+      var deployment = this.get('deploymentController');
       deployment.set('model.discovered_host', host);
     }
   }

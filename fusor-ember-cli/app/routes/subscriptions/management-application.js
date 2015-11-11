@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
 
-  model: function() {
+  model() {
     var self = this;
     var deployment = this.modelFor('deployment');
     var sessionPortal = this.modelFor('subscriptions');
@@ -14,7 +14,7 @@ export default Ember.Route.extend({
                                                  name: deployment.get('upstream_consumer_name')});
         return Ember.A([managementApp]);
     } else {
-        return this.store.find('management-application', {owner_key: ownerKey}).then(function(results) {
+        return this.store.query('management-application', {owner_key: ownerKey}).then(function(results) {
             sessionPortal.set('isAuthenticated', true); // in case go to this route from URL
             sessionPortal.save();
             return results;
@@ -32,7 +32,7 @@ export default Ember.Route.extend({
     }
   },
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
     controller.set('showManagementApplications', true);
 
@@ -43,6 +43,8 @@ export default Ember.Route.extend({
     if (deployment.get('isStarted')) {
       sessionPortal.set('consumerUUID', upstream_consumer_uuid);
       controller.set('sessionPortal', sessionPortal);
+    } else if (Ember.isPresent(sessionPortal.get('consumerUUID'))) {
+      // do nothing - use consumerUUID in local storage adapter
     } else {
       // check if org has upstream UUID using Katello V2 API
       var orgID = this.modelFor('deployment').get('organization.id');
@@ -65,12 +67,12 @@ export default Ember.Route.extend({
     }
   },
 
-  deactivate: function() {
+  deactivate() {
     return this.send('saveDeployment', null);
   },
 
   actions: {
-      error: function(reason, transition) {
+      error(reason, transition) {
         // bubble up this error event:
         return true;
       }

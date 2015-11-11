@@ -1,21 +1,25 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
-export default Ember.ArrayController.extend({
-  needs: ['deployment', 'hypervisor', 'rhev'],
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  selectedRhevEngine: Ember.computed.alias("controllers.deployment.model.discovered_host"),
-  rhevIsSelfHosted: Ember.computed.alias("controllers.deployment.model.rhev_is_self_hosted"),
-  isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
-  isNotStarted: Ember.computed.alias("controllers.deployment.isNotStarted"),
+  hypervisorController: Ember.inject.controller('hypervisor'),
+  // todo - delete rhevcontroller - not used?
+  // rhevController: Ember.inject.controller('rhev'),
 
-  isCustomScheme: Ember.computed.alias("controllers.hypervisor.isCustomScheme"),
-  isHypervisorN: Ember.computed.alias("controllers.hypervisor.isHypervisorN"),
-  customPreprendName: Ember.computed.alias("controllers.hypervisor.model.custom_preprend_name"),
-  isFreeform: Ember.computed.alias("controllers.hypervisor.isFreeform"),
-  isMac: Ember.computed.alias("controllers.hypervisor.isMac"),
+  selectedRhevEngine: Ember.computed.alias("deploymentController.model.discovered_host"),
+  rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
+  isStarted: Ember.computed.alias("deploymentController.isStarted"),
+  isNotStarted: Ember.computed.alias("deploymentController.isNotStarted"),
+
+  isCustomScheme: Ember.computed.alias("hypervisorController.isCustomScheme"),
+  isHypervisorN: Ember.computed.alias("hypervisorController.isHypervisorN"),
+  customPreprendName: Ember.computed.alias("hypervisorController.model.custom_preprend_name"),
+  isFreeform: Ember.computed.alias("hypervisorController.isFreeform"),
+  isMac: Ember.computed.alias("hypervisorController.isMac"),
 
   // Filter out hosts selected as Engine
-  availableHosts: function() {
+  availableHosts: Ember.computed('allDiscoveredHosts.[]', 'hypervisorModelIds.[]', function() {
     // TODO: Ember.computed.filter() caused problems. error item.get is not a function
     var self = this;
      var allDiscoveredHosts = this.get('allDiscoveredHosts');
@@ -28,10 +32,10 @@ export default Ember.ArrayController.extend({
           }
         });
       }
-  }.property('allDiscoveredHosts.[]', 'hypervisorModelIds.[]'),
+  }),
 
   // same as Engine. TODO. put it mixin
-  filteredHosts: function(){
+  filteredHosts: Ember.computed('availableHosts.[]', 'searchString', 'isStarted', function(){
     var searchString = this.get('searchString');
     var rx = new RegExp(searchString, 'gi');
     var availableHosts = this.get('availableHosts');
@@ -48,52 +52,52 @@ export default Ember.ArrayController.extend({
     } else {
       return availableHosts;
     }
-  }.property('availableHosts.[]', 'searchString', 'isStarted'),
+  }),
 
-  hypervisorModelIds: function() {
+  hypervisorModelIds: Ember.computed('model.[]', 'selectedRhevEngine', function() {
     if (this.get('model')) {
       var allIds = this.get('model').getEach('id');
       return allIds.removeObject(this.get('selectedRhevEngine').get('id'));
     } else {
       return [];
     }
-  }.property('model.[]', 'selectedRhevEngine'),
+  }),
 
   cntSelectedHypervisorHosts: Ember.computed.alias('hypervisorModelIds.length'),
 
-  hostInflection: function() {
+  hostInflection: Ember.computed('cntSelectedHypervisorHosts', function() {
       return this.get('cntSelectedHypervisorHosts') === 1 ? 'host' : 'hosts';
-  }.property('cntSelectedHypervisorHosts'),
+  }),
 
-  isAllChecked: function() {
+  isAllChecked: Ember.computed('availableHosts.@each', 'cntSelectedHypervisorHosts', function() {
     return (this.get('cntSelectedHypervisorHosts') === this.get('availableHosts.length'));
-  }.property('availableHosts.@each', 'cntSelectedHypervisorHosts'),
+  }),
 
-  observeAllChecked: function(row) {
+  observeAllChecked: Ember.observer('allChecked', function(row) {
     // TODO
     if (this.get('allChecked')) {
       return this.send('setCheckAll');
     } else {
       return this.send('setUncheckAll');
     }
-  }.observes('allChecked'),
+  }),
 
-  hypervisorBackRouteName: function() {
+  hypervisorBackRouteName: Ember.computed('rhevIsSelfHosted', function() {
     if (this.get('rhevIsSelfHosted')) {
       return 'rhev-setup';
     } else {
       return 'engine.discovered-host';
     }
-  }.property('rhevIsSelfHosted'),
+  }),
 
   actions: {
 
-    setCheckAll: function() {
+    setCheckAll() {
       this.get('model').setObjects([]);
       return this.get('model').addObjects(this.get('availableHosts'));
     },
 
-    setUncheckAll: function() {
+    setUncheckAll() {
       this.get('model').setObjects([]);
     }
 

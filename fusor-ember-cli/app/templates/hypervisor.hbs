@@ -10,12 +10,12 @@
         Host naming scheme &nbsp; {{view "select" content=namingOptions
                                                   value=hostNamingScheme
                                                   class='form-control'
-                                                  disabled=controllers.deployment.isStarted}}
+                                                  disabled=isStarted}}
 
         {{#if isCustomScheme}}
           <span class='prepend-host-names'>
             Prepend host names with {{input type='text' value=customPreprendName
-                                                        disabled=controllers.deployment.isStarted}}
+                                                        disabled=isStarted}}
           </span>
         {{/if}}
       </div>

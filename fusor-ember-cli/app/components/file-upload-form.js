@@ -3,30 +3,30 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   selectedFile: null,
 
-  formId: function() {
+  formId: Ember.computed(function() {
     return this.getWithDefault('fileChooserFormId', 'fileChooserForm');
-  }.property(),
-  inputId: function() {
+  }),
+  inputId: Ember.computed(function() {
     return this.getWithDefault('fileChooserFormId', 'fileChooserInput');
-  }.property(),
-  acceptValue: function() {
+  }),
+  acceptValue: Ember.computed(function() {
     return this.getWithDefault('accept', '*');
-  }.property(),
-  getFileInput: function() {
+  }),
+  getFileInput() {
     var idValue = this.get('inputId');
     return this.$('#' + idValue)[0];
   },
   actions: {
-    fileChosen: function() {
+    fileChosen() {
       var fileInput = this.getFileInput();
       this.set('selectedFile', fileInput.files[0]);
     },
-    doUpload: function() {
+    doUpload() {
       var fileInput = this.getFileInput();
       this.sendAction('doUpload', this.get('selectedFile'), fileInput);
 
     },
-    doCancel: function() {
+    doCancel() {
       var fileInput = this.getFileInput();
       this.sendAction('doCancel', fileInput);
 

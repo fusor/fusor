@@ -2,31 +2,31 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
-  didInsertElement: function(){
+  didInsertElement() {
     return Ember.$('[data-toggle="popover"]').popover();
   },
 
-  willDestroyElement: function(){
+  willDestroyElement() {
     return Ember.$('[data-toggle="popover"]').popover('destroy');
   },
 
-  labelClassSize: function () {
+  labelClassSize: Ember.computed(function () {
     return this.getWithDefault('labelSize', 'col-lg-2 col-md-3 col-sm-5');
-  }.property(),
+  }),
 
-  inputClassSize: function () {
+  inputClassSize: Ember.computed(function () {
     return this.getWithDefault('inputSize', 'col-lg-4 col-md-6 col-sm-7');
-  }.property(),
+  }),
 
-  showUnits: function() {
+  showUnits: Ember.computed('unitsLabel', function() {
     return !Ember.isBlank(this.get('unitsLabel'));
-  }.property('unitsLabel'),
+  }),
 
-  showHelpPopover: function() {
+  showHelpPopover: Ember.computed('showHelpIndicator', function() {
     return !Ember.isBlank(this.get('helpText'));
-  }.property('showHelpIndicator'),
+  }),
 
-  unitsClassSize: function () {
+  unitsClassSize: Ember.computed(function () {
     return this.getWithDefault('unitsSize', 'col-md-2');
-  }.property()
+  })
 });

@@ -1,22 +1,22 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
-  needs: ['deployment', 'subscriptions/credentials', 'subscriptions/management-application'],
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  stepNumberSubscriptions: Ember.computed.alias("controllers.deployment.stepNumberSubscriptions"),
-  isStarted: Ember.computed.alias("controllers.deployment.isStarted"),
-  isDisconnected: Ember.computed.alias("controllers.deployment.model.is_disconnected"),
+  stepNumberSubscriptions: Ember.computed.alias("deploymentController.stepNumberSubscriptions"),
+  isStarted: Ember.computed.alias("deploymentController.isStarted"),
+  isDisconnected: Ember.computed.alias("deploymentController.model.is_disconnected"),
 
-  disableTabManagementApplication: function() {
+  disableTabManagementApplication: Ember.computed('model.isAuthenticated', 'isStarted', function() {
      return (!this.get('isStarted') && !this.get('model.isAuthenticated'));
-  }.property('model.isAuthenticated', 'isStarted'),
+  }),
 
-  disableTabReviewSubsciptions: Ember.computed.empty("controllers.deployment.model.manifest_file"),
+  disableTabReviewSubsciptions: Ember.computed.empty("deploymentController.model.manifest_file"),
 
-  upstreamConsumerUuid: Ember.computed.alias("controllers.deployment.model.upstream_consumer_uuid"),
+  upstreamConsumerUuid: Ember.computed.alias("deploymentController.model.upstream_consumer_uuid"),
 
-  disableTabSelectSubsciptions: function() {
+  disableTabSelectSubsciptions: Ember.computed('model.isAuthenticated', 'upstreamConsumerUuid', function() {
     return (Ember.isBlank(this.get('upstreamConsumerUuid')) || !this.get('model.isAuthenticated'));
-  }.property('model.isAuthenticated', 'upstreamConsumerUuid')
+  })
 
 });

@@ -50,7 +50,7 @@
           <tr>
             <th class='rhev-checkbox'> {{!input type="checkbox" checked=allChecked}}</th>
             <th class='rhev-hostname'> Host Name </th>
-            <th> MAC Address </th>
+            <th class='rhev-mac-address'> MAC Address </th>
             <th class='rhev-host-type text-center'> Host Type </th>
             <th class='rhev-cpu text-center'> CPU </th>
             <th class='rhev-memory text-center'> Memory </th>
@@ -61,10 +61,10 @@
         </thead>
 
         <tbody>
-        {{#each host in filteredHosts}}
+        {{#each filteredHosts as |host|}}
            {{tr-hypervisor host=host
                            model=model
-                           parentController=controller
+
                            isCustomScheme=isCustomScheme
                            isMac=isMac
                            isHypervisorN=isHypervisorN
@@ -84,7 +84,6 @@
 
 {{#cancel-back-next backRouteName=hypervisorBackRouteName
                     disableBack=false
-                    parentController=controller
-                    disableCancel=controllers.deployment.isStarted}}
-  <button {{action 'saveHyperVisors' 'rhev-options'}} class='btn btn-primary' disabled={{controllers.rhev.hasNoHypervisor}}>Next</button>
+                    disableCancel=isStarted}}
+  <button {{action 'saveHyperVisors' 'rhev-options'}} class='btn btn-primary' disabled={{rhevController.hasNoHypervisor}}>Next</button>
 {{/cancel-back-next}}

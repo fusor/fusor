@@ -1,9 +1,9 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
+import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
-
-  needs: ['deployment'],
+export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
 
   deploymentId: Ember.computed.alias("model.id"),
   undercloudPassword: Ember.computed.alias("model.openstack_undercloud_password"),
@@ -14,55 +14,66 @@ export default Ember.Controller.extend({
   sshUser: null,
   sshPassword: null,
 
-  isRhev: Ember.computed.alias("controllers.deployment.isRhev"),
+  isRhev: Ember.computed.alias("deploymentController.isRhev"),
 
   undercloudIPHelp: "The IP address that the already-installed Red Hat Enterprise Linux OpenStack Platform undercloud is running on.",
 
   isDeployed: Ember.computed.notEmpty("model.openstack_undercloud_password"),
 
-  deployDisabled: function() {
-    return ((this.get('isDeployed') && !this.get('isDirty')) ||
-            Ember.isBlank(this.get('undercloudIP')) ||
-            Ember.isBlank(this.get('sshUser')) ||
-            Ember.isBlank(this.get('sshPassword'))
-           );
-  }.property('isDeployed', 'isDirty', 'undercloudIP', 'sshUser', 'sshPassword'),
+  deployDisabled: Ember.computed(
+    'isDeployed',
+    'isDirty',
+    'undercloudIP',
+    'sshUser',
+    'sshPassword',
+    function() {
+      return ((this.get('isDeployed') && !this.get('isDirty')) ||
+              Ember.isBlank(this.get('undercloudIP')) ||
+              Ember.isBlank(this.get('sshUser')) ||
+              Ember.isBlank(this.get('sshPassword'))
+             );
+    }
+  ),
 
-  disableDeployUndercloudNext: function() {
+  disableDeployUndercloudNext: Ember.computed('isDeployed', function() {
     return !this.get('isDeployed');
-  }.property('isDeployed'),
+  }),
 
-  disableTabRegisterNodes: function() {
+  disableTabRegisterNodes: Ember.computed('isDeployed', function() {
     return !this.get('isDeployed');
-  }.property('isDeployed'),
+  }),
 
-  disableTabAssignNodes: function() {
+  disableTabAssignNodes: Ember.computed('isDeployed', function() {
     return !this.get('isDeployed');
-  }.property('isDeployed'),
+  }),
 
   isDirty: false,
 
-  watchModel: function() {
-    this.set('isDirty', true);
-  }.observes('model.openstack_undercloud_ip_addr', 'model.openstack_undercloud_user',
-             'model.openstack_undercloud_user_password'),
+  watchModel: Ember.observer(
+    'model.openstack_undercloud_ip_addr',
+    'model.openstack_undercloud_user',
+    'model.openstack_undercloud_user_password',
+    function() {
+      this.set('isDirty', true);
+    }
+  ),
 
-  backRouteNameUndercloud: function() {
+  backRouteNameUndercloud: Ember.computed('isRhev', function() {
     if (this.get('isRhev')) {
       return 'storage';
     } else {
       return 'satellite.access-insights';
     }
-  }.property('isRhev'),
+  }),
 
   actions: {
-    resetCredentials: function() {
+    resetCredentials() {
       this.set('isDeployed', false);
       this.set('model.openstack_undercloud_password', null);
       return this.get('model').save();
     },
 
-    deployUndercloud: function () {
+    deployUndercloud() {
       var self = this;
       var model = this.get('model');
       console.log('detectUndercloud');

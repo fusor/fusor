@@ -240,11 +240,15 @@ table.fusor-table {
 }
 
 .rhev-checkbox {
-  width: 34px;
+  width:34px;
 }
 
 .rhev-hostname {
   width: 20%;
+}
+
+.rhev-mac-address {
+  width: 18%;
 }
 
 .rhev-host-type {
@@ -335,4 +339,22 @@ table.fusor-table {
   top: -20px;
   float: right;
   padding-right: 10px;
+}
+
+.rhci-popover-button {
+  outline: none;
+  color:#0099d3;
+  background:none!important;
+  border:none;
+  padding:0!important;
+  cursor: pointer;
+}
+
+.new-deployment-button {
+  float:right;
+  margin-top: -33px;
+}
+
+.filter-deployments {
+  margin-left: -18px;
 }

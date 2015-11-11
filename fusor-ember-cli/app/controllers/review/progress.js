@@ -1,8 +1,9 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['deployment', 'review/progress/overview'],
+  overviewController: Ember.inject.controller('review/progress/overview'),
 
   isRhevOpen: true,
   isOpenStackOpen: false,
@@ -13,15 +14,15 @@ export default Ember.Controller.extend({
   showErrorMessage: false,
   errorMsg: null, // this should be overwritten by API response
 
-  deployTaskIsFinished: Ember.computed.alias("controllers.review/progress/overview.deployTaskIsFinished"),
-  deployTaskIsStopped: Ember.computed.alias("controllers.review/progress/overview.deployTaskIsStopped"),
+  deployTaskIsFinished: Ember.computed.alias("overviewController.deployTaskIsFinished"),
+  deployTaskIsStopped: Ember.computed.alias("overviewController.deployTaskIsStopped"),
 
-  deployButtonTitle: function() {
+  deployButtonTitle: Ember.computed('deployTaskIsStopped', function() {
     if (this.get('deployTaskIsStopped')) {
         return 'Deployment Stopped';
     } else {
         return 'Deploying ...';
     }
-  }.property('deployTaskIsStopped')
+  })
 
 });

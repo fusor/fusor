@@ -1,15 +1,13 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  needs: ['deployment'],
+  step2RouteName: Ember.computed.alias("deploymentController.step2RouteName"),
 
-  step2RouteName: Ember.computed.alias("controllers.deployment.step2RouteName"),
-  isStarted: Ember.computed.alias("model.isStarted"),
-
-  analyticsColor: function() {
+  analyticsColor: Ember.computed('isStarted', function() {
     if (this.get('isStarted')) { return 'disabled'; } else { return ''; }
-  }.property('isStarted')
+  })
 
 
 });

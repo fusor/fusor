@@ -1,14 +1,14 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
+import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
 
-  needs: ['deployment', 'register-nodes'],
+  deploymentId: Ember.computed.alias("deploymentController.model.id"),
+  isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
 
-  deploymentId: Ember.computed.alias("controllers.deployment.model.id"),
-  isCloudForms: Ember.computed.alias("controllers.deployment.isCloudForms"),
-
-  getParamValue: function(paramName, params) {
+  getParamValue(paramName, params) {
     var paramValue = null;
     var numParams = params.get('length');
     for (var i=0; i<numParams; i++) {
@@ -21,11 +21,11 @@ export default Ember.Controller.extend({
     return paramValue;
   },
 
-  images: function() {
+  images: Ember.computed('model.images.[]', function() {
     return this.get('model.images');
-  }.property('model.images.[]'),
+  }),
 
-  unassignedRoles: function() {
+  unassignedRoles: Ember.computed('model.plan.roles.[]', 'model.plan.parameters.[]', function() {
     var unassignedRoles = Ember.A();
     var params = this.get('model.plan.parameters');
     var self = this;
@@ -33,37 +33,37 @@ export default Ember.Controller.extend({
     this.get('model.plan.roles').forEach(function(role) {
       value = self.getParamValue(role.get('flavorParameterName'), params);
       if (value === 'baremetal' || Ember.isNone(value)) {
-        unassignedRoles.pushObject(role);
+        unassignedRoles.addObject(role);
       }
     });
     return unassignedRoles;
-  }.property('model.plan.roles.[]', 'model.plan.parameters.[]'),
+  }),
 
-  allRolesAssigned: function() {
+  allRolesAssigned: Ember.computed('unassignedRoles.[]', function() {
     return (this.get('unassignedRoles.length') === 0);
-  }.property('unassignedRoles.[]'),
+  }),
 
-  noRolesAssigned: function() {
+  noRolesAssigned: Ember.computed('unassignedRoles.[]', 'model.plan.roles.[]', function() {
     return (this.get('unassignedRoles.length') === this.get('model.plan.roles.length'));
-  }.property('unassignedRoles.[]', 'model.plan.roles.[]'),
+  }),
 
-  profiles: function() {
+  profiles: Ember.computed('model.profiles.[]', function() {
     return this.get('model.profiles');
-  }.property('model.profiles.[]'),
+  }),
 
-  numProfiles: function() {
+  numProfiles: Ember.computed('model.profiles.[]', function() {
     return this.get('model.profiles.length');
-  }.property('model.profiles.[]'),
+  }),
 
-  nodes: function() {
+  nodes: Ember.computed('model.nodes.[]', function() {
     return this.get('model.nodes');
-  }.property('model.nodes.[]'),
+  }),
 
-  nodeCount: function() {
+  nodeCount: Ember.computed('model.nodes.[]', function() {
     return this.get('model.nodes.length');
-  }.property('model.nodes.[]'),
+  }),
 
-  assignedNodeCount: function() {
+  assignedNodeCount: Ember.computed('model.plan.roles.[]', 'model.plan.parameters.[]', function() {
     var count = 0;
     var params = this.get('model.plan.parameters');
     var self = this;
@@ -71,31 +71,35 @@ export default Ember.Controller.extend({
       count += parseInt(self.getParamValue(role.get('countParameterName'), params), 10);
     });
     return count;
-  }.property('model.plan.roles.[]', 'model.plan.parameters.[]'),
+  }),
 
-  isDraggingRole: function() {
-    var isDragging = false;
-    this.get('model.plan.roles').forEach(function (role) {
-          if (role.get('isDraggingObject') === true) {
-            isDragging = true;
-          }
-    });
-    return isDragging;
-  }.property('model.plan.roles.[]', 'model.plan.roles.@each.isDraggingObject'),
+  isDraggingRole: Ember.computed(
+    'model.plan.roles.[]',
+    'model.plan.roles.@each.isDraggingObject',
+    function() {
+      var isDragging = false;
+      this.get('model.plan.roles').forEach(function (role) {
+            if (role.get('isDraggingObject') === true) {
+              isDragging = true;
+            }
+      });
+      return isDragging;
+    }
+  ),
 
-  droppableClass: function() {
+  droppableClass: Ember.computed('isDraggingRole', function() {
     if (this.get('isDraggingRole')) {
       return 'deployment-roles-active';
     }
     else {
       return '';
     }
-  }.property('isDraggingRole'),
+  }),
 
   showLoadingSpinner: false,
   loadingSpinnerText: "Loading...",
 
-  doAssignRole: function(plan, role, profile) {
+  doAssignRole(plan, role, profile) {
     var data;
     var self = this;
 
@@ -148,50 +152,50 @@ export default Ember.Controller.extend({
   edittedRoleParameters: null,
   showSettings: true,
 
-  openEditDialog: function() {
+  openEditDialog() {
     this.set('editRoleModalOpened', true);
     this.set('editRoleModalClosed', false);
   },
 
-  closeEditDialog: function() {
+  closeEditDialog() {
     this.set('editRoleModalOpened', false);
     this.set('editRoleModalClosed', true);
   },
 
-  openGlobalServiceConfigDialog: function() {
+  openGlobalServiceConfigDialog() {
     this.set('editGlobalServiceConfigModalOpened', true);
     this.set('editGlobalServiceConfigModalClosed', false);
   },
 
-  closeGlobalServiceConfigDialog: function() {
+  closeGlobalServiceConfigDialog() {
     this.set('editGlobalServiceConfigModalOpened', false);
     this.set('editGlobalServiceConfigModalClosed', true);
   },
 
-  settingsTabActiveClass: function() {
+  settingsTabActiveClass: Ember.computed('showSettings', function() {
     if (this.get('showSettings')) {
       return "active";
     }
     else {
       return "inactive";
     }
-  }.property('showSettings'),
+  }),
 
-  configTabActiveClass: function() {
+  configTabActiveClass: Ember.computed('showSettings', function() {
     if (this.get('showSettings')) {
       return "inactive";
     }
     else {
       return "active";
     }
-  }.property('showSettings'),
+  }),
 
-  handleOutsideClick: function(e) {
+  handleOutsideClick(e) {
     // do nothing, this overrides the closing of the dialog when clicked outside of it
   },
 
   actions: {
-    editRole: function(role) {
+    editRole(role) {
       this.set('showRoleSettings', 'active');
       this.set('showRoleConfig',   'inactive');
       var roleParams = Ember.A();
@@ -217,10 +221,10 @@ export default Ember.Controller.extend({
           if ((paramId === role.get('imageParameterName')) ||
               (paramId === role.get('countParameterName')) ||
               (paramId === role.get('flavorParameterName'))) {
-            roleParams.pushObject(param);
+            roleParams.addObject(param);
           }
           else if (param.get('parameter_type') !== 'json') {
-            advancedParams.pushObject(param);
+            advancedParams.addObject(param);
           }
         }
       });
@@ -234,7 +238,7 @@ export default Ember.Controller.extend({
       this.openEditDialog();
     },
 
-    saveRole: function() {
+    saveRole() {
       var self = this;
       var plan = this.get('model.plan');
       var role = this.get('edittedRole');
@@ -266,7 +270,7 @@ export default Ember.Controller.extend({
         data: JSON.stringify({ 'parameters': params })
       }).then( function() {
           console.log('SUCCESS');
-          self.store.find('deployment-plan', deploymentId).then(function (result) {
+          self.store.findRecord('deployment-plan', deploymentId).then(function (result) {
             self.set('model.plan', result);
             self.set('showLoadingSpinner', false);
           });
@@ -280,7 +284,7 @@ export default Ember.Controller.extend({
       this.closeEditDialog();
     },
 
-    setRoleCount: function(role, count) {
+    setRoleCount(role, count) {
       var self = this;
       var plan = this.get('model.plan');
       var data = { 'role_name': role.get('name'), 'count': count };
@@ -302,7 +306,7 @@ export default Ember.Controller.extend({
           }
         }).then(function(result) {
           console.log('SUCCESS');
-          self.store.find('deployment-plan', deploymentId).then(function (result) {
+          self.store.findRecord('deployment-plan', deploymentId).then(function (result) {
             self.set('model.plan', result);
             self.set('showLoadingSpinner', false);
           });
@@ -315,25 +319,25 @@ export default Ember.Controller.extend({
         );
     },
 
-    cancelEditRole: function() {
+    cancelEditRole() {
       this.closeEditDialog();
     },
 
-    assignRoleType: function(profile, roleType) {
+    assignRoleType(profile, roleType) {
       var role = this.getRoleByType(roleType);
       this.doAssignRole(profile, role);
     },
 
-    assignRole: function(plan, role, profile) {
+    assignRole(plan, role, profile) {
       this.doAssignRole(plan, role, profile);
     },
 
-    removeRole: function(profile, role) {
+    removeRole(profile, role) {
       var plan = this.get('model.plan');
       this.doAssignRole(plan, role, null);
     },
 
-    unassignRole: function(role) {
+    unassignRole(role) {
       var plan = this.get('model.plan');
       this.doAssignRole(plan, role, null);
     },
@@ -341,17 +345,17 @@ export default Ember.Controller.extend({
     showRoleSettings: 'active',
     showRoleConfig:   'inactive',
 
-    doShowSettings: function() {
+    doShowSettings() {
       this.set('showRoleSettings', 'active');
       this.set('showRoleConfig',   'inactive');
     },
 
-    doShowConfig: function() {
+    doShowConfig() {
       this.set('showRoleSettings', 'inactive');
       this.set('showRoleConfig',   'active');
     },
 
-    editGlobalServiceConfig: function() {
+    editGlobalServiceConfig() {
       var planParams = Ember.A();
       this.get('model.plan.parameters').forEach(function(param) {
         if (param.get('id').indexOf('::') === -1) {
@@ -368,7 +372,7 @@ export default Ember.Controller.extend({
             param.set('inputType', param.get('parameter_type'));
           }
           if (param.get('parameter_type') !== 'json') {
-            planParams.pushObject(param);
+            planParams.addObject(param);
           }
         }
       });
@@ -377,7 +381,7 @@ export default Ember.Controller.extend({
       this.openGlobalServiceConfigDialog();
     },
 
-    saveGlobalServiceConfig: function() {
+    saveGlobalServiceConfig() {
       var self = this;
       var plan = this.get('model.plan');
 
@@ -417,20 +421,20 @@ export default Ember.Controller.extend({
 
     },
 
-    cancelGlobalServiceConfig: function() {
+    cancelGlobalServiceConfig() {
       this.closeGlobalServiceConfigDialog();
     }
   },
 
-  disableAssignNodesNext: function() {
+  disableAssignNodesNext: Ember.computed('unassignedRoles.[]', function() {
     return (this.get('unassignedRoles.length') > 0);
-  }.property('unassignedRoles.[]'),
+  }),
 
-  nextStepRouteNameAssignNodes: function() {
+  nextStepRouteNameAssignNodes: Ember.computed('isCloudForms', function() {
     if (this.get('isCloudForms')) {
       return 'cloudforms';
     } else {
       return 'subscriptions';
     }
-  }.property('isCloudForms')
+  })
 });

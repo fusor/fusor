@@ -13,46 +13,46 @@ export default Ember.Mixin.create({
   satelliteTabRouteName: null,
 
   // disable Next button if none selected
-  disableNextOnStart: function () {
+  disableNextOnStart: Ember.computed('isRhev', 'isOpenStack', 'isCloudForms', function () {
     return (!(this.get('isRhev') || this.get('isOpenStack') || this.get('isCloudForms')));
-  }.property('isRhev', 'isOpenStack', 'isCloudForms'),
+  }),
 
   // names
-  nameRHCI: function() {
+  nameRHCI: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "Fusor"; } else { return "RHCI"; }
-  }.property('isUpstream'),
+  }),
 
-  nameRedHat: function() {
+  nameRedHat: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return ""; } else { return "Red Hat"; }
-  }.property('isUpstream'),
+  }),
 
-  nameSatellite: function() {
+  nameSatellite: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "Foreman"; } else { return "Satellite"; }
-  }.property('isUpstream'),
+  }),
 
-  nameRhev: function() {
+  nameRhev: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "oVirt"; } else { return "RHEV"; }
-  }.property('isUpstream'),
+  }),
 
-  nameOpenStack: function() {
+  nameOpenStack: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "RDO"; } else { return "RHELOSP"; }
-  }.property('isUpstream'),
+  }),
 
-  nameCloudForms: function() {
+  nameCloudForms: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "ManageIQ"; } else { return "CloudForms"; }
-  }.property('isUpstream'),
+  }),
 
   // images
-  imgRhev: function() {
+  imgRhev: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "/assets/r/ovirt-640-210.png"; } else { return "/assets/r/rhci-rhev-640-210.png"; }
-  }.property('isUpstream'),
+  }),
 
-  imgOpenStack: function() {
+  imgOpenStack: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "/assets/r/rdo-640-210.png"; } else { return "/assets/r/rhci-openstack-640-210.png"; }
-  }.property('isUpstream'),
+  }),
 
-  imgCloudForms: function() {
+  imgCloudForms: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "/assets/r/manageiq-640-210.png"; } else { return "/assets/r/rhci-cloudforms-640-210.png"; }
-  }.property('isUpstream')
+  })
 
 });

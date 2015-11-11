@@ -14,7 +14,7 @@
                           value=subscription.qtyToAttach
                           size=5
                           maxlength=5
-                          classBinding=":center isQtyInValid:invalid-input"
+                          class="center {{if isQtyInValid 'invalid-input'}}"
                           disabled=disableQty
                           focus-out="setValidQty"
                           }}

@@ -39,7 +39,7 @@
           <tr>
             <th class='rhev-checkbox'> {{!input type="checkbox" checked=allChecked}}</th>
             <th class='rhev-hostname'> Host Name </th>
-            <th> MAC Address </th>
+            <th class='rhev-mac-address'> MAC Address </th>
             <th class='rhev-host-type text-center'> Host Type </th>
             <th class='rhev-cpu text-center'> CPU </th>
             <th class='rhev-memory text-center'> Memory </th>
@@ -49,7 +49,7 @@
           </tr>
         </thead>
         <tbody>
-          {{#each host in filteredHosts}}
+          {{#each filteredHosts as |host|}}
              {{tr-engine host=host
                          selectedRhevEngineHost=selectedRhevEngineHost
                          disabled=isStarted
@@ -66,6 +66,5 @@
 {{cancel-back-next backRouteName='rhev-setup'
                    disableBack=false
                    nextRouteName=engineNextRouteName
-                   disableNext=controllers.deployment.hasNoEngine
-                   parentController=controller
+                   disableNext=deploymentController.hasNoEngine
                    disableCancel=isStarted}}

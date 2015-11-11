@@ -5,7 +5,7 @@ export default Ember.Component.extend({
 
   nodes: [],
 
-  getParamValue: function(paramName, params) {
+  getParamValue(paramName, params) {
     var paramValue = null;
     var numParams = params.get('length');
     for (var i=0; i<numParams; i++) {
@@ -18,7 +18,7 @@ export default Ember.Component.extend({
     return paramValue;
   },
 
-  assignedRoles: function() {
+  assignedRoles: Ember.computed('profile', 'plan', 'plan.roles', 'plan.parameters', function() {
     var assignedRoles = Ember.A();
     var profile = this.get('profile');
     var params = this.get('plan.parameters');
@@ -26,13 +26,13 @@ export default Ember.Component.extend({
     var roles = this.get('plan.roles') || Ember.A();
     roles.forEach(function(role) {
       if ( self.getParamValue(role.get('flavorParameterName'), params) === profile.get('name') ) {
-        assignedRoles.pushObject(role);
+        assignedRoles.addObject(role);
       }
     });
     return assignedRoles;
-  }.property('profile', 'plan', 'plan.roles', 'plan.parameters'),
+  }),
 
-  unassignedRoles: function() {
+  unassignedRoles: Ember.computed('assignedRoles', 'plan', 'plan.roles', function() {
     var unassignedRoles = Ember.A();
     var assignedRoles = this.get('assignedRoles');
     var roles = this.get('plan.roles') || Ember.A();
@@ -45,18 +45,18 @@ export default Ember.Component.extend({
         }
       }
       if ( unassignedRole ) {
-        unassignedRoles.pushObject(role);
+        unassignedRoles.addObject(role);
       }
     });
     return unassignedRoles;
-  }.property('assignedRoles', 'plan', 'plan.roles'),
+  }),
 
-  allRolesAssigned: function() {
+  allRolesAssigned: Ember.computed('unassignedRoles.[]', function() {
     return (this.get('unassignedRoles.length') === 0);
-  }.property('unassignedRoles.[]'),
+  }),
 
   /* jshint ignore:start */
-  nodeMatchesProfile: function(node, profile) {
+  nodeMatchesProfile(node, profile) {
     var nodeMemory = node.get('properties.memory_mb');
     var nodeCPUs = node.get('properties.cpus');
     var nodeDisk = node.get('properties.local_gb');
@@ -72,7 +72,7 @@ export default Ember.Component.extend({
   },
   /* jshint ignore:end */
 
-  matchingNodeCount: function() {
+  matchingNodeCount: Ember.computed('profile', 'nodes.[]', function() {
     var nodeCount = 0;
     var profile = this.get('profile');
     var self = this;
@@ -82,35 +82,35 @@ export default Ember.Component.extend({
       }
     });
     return nodeCount;
-  }.property('profile', 'nodes.[]'),
+  }),
 
-  hideAssignMenu: function() {
+  hideAssignMenu() {
     this.set('assignMenuOpenClass', '');
   },
 
-  assignClass: function() {
+  assignClass: Ember.computed('doAssign', function() {
     if (this.doAssign) {
       return "";
     }
     else {
       return "nodes-coalescing";
     }
-  }.property('doAssign'),
+  }),
 
   actions: {
-    showAssignMenu: function() {
+    showAssignMenu() {
       if (this.get('unassignedRoles.length') > 0) {
         this.set('assignMenuOpenClass', 'open');
       }
     },
 
-    assignRole: function(role) {
+    assignRole(role) {
       var profile = this.get('profile');
       var plan = this.get('plan');
       this.sendAction('assignRole', plan, role, profile);
     },
 
-    assignDroppedRole: function(role) {
+    assignDroppedRole(role) {
       role.set('isDraggingObject', false);
       var profile = this.get('profile');
       var plan = this.get('plan');
@@ -119,20 +119,20 @@ export default Ember.Component.extend({
         this.sendAction('assignRole', plan, role, profile);
       }
     },
-    editRole: function(role) {
+    editRole(role) {
       this.sendAction('editRole', role);
     },
 
-    setRoleCount: function(role, count) {
+    setRoleCount(role, count) {
       this.sendAction('setRoleCount', role, count);
     },
 
-    removeRole: function(role) {
+    removeRole(role) {
       var profile = this.get('profile');
       this.sendAction('removeRole', profile, role);
     }
   },
-  didInsertElement: function() {
+  didInsertElement() {
     var self = this;
     Ember.$('body').on('click', function() {
       try {

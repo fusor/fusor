@@ -12,7 +12,7 @@
     </div>
     {{#if roleAssigned}}
          <select class="selectpicker"  {{action "updateNodeCount" this on="change"}}>
-             {{#each option in availableOptions}}
+             {{#each availableOptions as |option|}}
                  {{#if option.selected}}
                      <option selected>{{option.label}}</option>
                  {{else}}

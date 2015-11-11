@@ -3,17 +3,17 @@ import DeploymentRouteMixin from "../mixins/deployment-route-mixin";
 
 export default Ember.Route.extend(DeploymentRouteMixin, {
 
-  model: function () {
+  model() {
       var deploymentId = this.modelFor('deployment').get('id');
       return Ember.RSVP.hash({
-          plan: this.store.find('deployment-plan', deploymentId),
-          images: this.store.find('image', {deployment_id: deploymentId}),
-          nodes: this.store.find('node', {deployment_id: deploymentId}),
-          profiles: this.store.find('flavor', {deployment_id: deploymentId}),
+          plan: this.store.findRecord('deployment-plan', deploymentId),
+          images: this.store.query('image', {deployment_id: deploymentId}),
+          nodes: this.store.query('node', {deployment_id: deploymentId}),
+          profiles: this.store.query('flavor', {deployment_id: deploymentId}),
       });
   },
 
-  setupController: function(controller, model) {
+  setupController(controller, model) {
     controller.set('model', model);
   }
 });

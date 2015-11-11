@@ -6,7 +6,7 @@ export default Ember.Component.extend({
   plan: null,
   nodeCount: 0,
 
-  getParamValue: function(paramName, params) {
+  getParamValue(paramName, params) {
     var paramValue = null;
     var numParams = params.get('length');
     for (var i=0; i<numParams; i++) {
@@ -19,39 +19,39 @@ export default Ember.Component.extend({
     return paramValue;
   },
 
-  roleAssigned: function() {
+  roleAssigned: Ember.computed('profile', function() {
     return this.get('profile') !== null;
-  }.property('profile'),
+  }),
 
-  assignedClass: function() {
+  assignedClass: Ember.computed('role-assigned', function() {
     if (this.get('roleAssigned')) {
       return ('role-assigned');
     }
     else {
       return 'role-unassigned';
     }
-  }.property('role-assigned'),
+  }),
 
-  roleNodeCount: function() {
+  roleNodeCount: Ember.computed('role', 'plan.parameters', function() {
     var role = this.get('role');
     var params = this.get('plan.parameters');
     return this.getParamValue(role.get('countParameterName'), params);
-  }.property('role', 'plan.parameters'),
+  }),
 
-  hasAssignedNodes: function() {
+  hasAssignedNodes: Ember.computed('roleNodeCount', function() {
     return this.get('roleNodeCount') >= 1;
-  }.property('roleNodeCount'),
+  }),
 
-  multipleAssignedNodes: function() {
+  multipleAssignedNodes: Ember.computed('roleNodeCount', function() {
     return this.get('roleNodeCount') >= 2;
-  }.property('roleNodeCount'),
+  }),
 
-  profileNodes: function() {
+  profileNodes: Ember.computed('totalNodes', function() {
     var totalNodes = 10;
     return totalNodes;
-  }.property('totalNodes'),
+  }),
 
-  availableOptions: function() {
+  availableOptions: Ember.computed('roleNodeCount', function() {
     var avail = Ember.A();
     var increment = 1;
     var maxNodes = Math.max(this.get('nodeCount'), this.get('roleNodeCount'));
@@ -64,23 +64,23 @@ export default Ember.Component.extend({
         selected: (i == this.get('roleNodeCount'))
         /* jshint ignore:end */
       });
-      avail.pushObject(nextOption);
+      avail.addObject(nextOption);
     }
 
     return avail;
-  }.property('roleNodeCount'),
+  }),
 
   actions: {
-    updateNodeCount: function() {
+    updateNodeCount() {
       var nodeCount = parseInt(this.$('select').val());
       this.sendAction('setRoleCount', this.get('role'), nodeCount);
     },
 
-    editRole: function() {
+    editRole() {
       this.sendAction('edit', this.get('role'));
     },
 
-    removeRole: function() {
+    removeRole() {
       this.sendAction('remove', this.get('role'));
     }
   }
