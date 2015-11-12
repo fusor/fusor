@@ -18,7 +18,7 @@ export default Ember.Route.extend({
     var arrayTasks = Ember.A();
 
     introspection_tasks.forEach(function(node, i) {
-      if (node.get('task_id')) {
+      if (node.get('task_id') && node.get('poll')) {
           self.store.findRecord('foreman-task', node.get('task_id'), {reload: true}).then(function(result) {
               arrayTasks.addObject(result);
           });
@@ -44,6 +44,19 @@ export default Ember.Route.extend({
   },
 
   actions: {
+    refreshNodesAndFlavors() {
+      // manually set manual rather than using this.get('model').reload() which looks at data store changes
+      // since the nodes changes or db changes happened outside of ember-data.
+      console.log('refreshing model.nodes and model.profiles');
+      var deploymentId = this.modelFor('deployment').get('id');
+      var self = this;
+      Ember.RSVP.hash({nodes: this.store.find('node', {deployment_id: deploymentId}),
+                       profiles: this.store.find('flavor', {deployment_id: deploymentId})
+                     }).then(function(result) {
+                         return self.get('controller').set('model', result);
+                     });
+    },
+
     refreshModelOnOverviewRoute() {
         console.log('refreshing introspection progress bar tasks');
         var self = this;
@@ -52,15 +65,25 @@ export default Ember.Route.extend({
         var introspection_tasks = this.modelFor('deployment').get('introspection_tasks');
         var arrayTasks = Ember.A();
 
+        var continuePolling = false;
         introspection_tasks.forEach(function(node, i) {
-          if (node.get('task_id')) {
+          if (node.get('task_id') && node.get('poll')) {
               self.store.findRecord('foreman-task', node.get('task_id'), {reload: true}).then(function(result) {
                   arrayTasks.addObject(result);
+                  if (!result.get('pending')) {
+                      node.set('poll', false);
+                      self.send('refreshNodesAndFlavors');
+                  }
               });
+              // There is at least one task that still needs refreshing
+              continuePolling = true;
           }
         });
 
         controller.set('arrayTasks', arrayTasks);
+        if (!continuePolling) {
+            self.deactivate();
+        }
 
     }
   }

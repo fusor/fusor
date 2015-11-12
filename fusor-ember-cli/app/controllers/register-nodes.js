@@ -158,19 +158,6 @@ export default Ember.Controller.extend(ProgressBarMixin, {
   }).readOnly(),
 
   actions: {
-    refreshNodesAndFlavors() {
-      // manually set manual rather than using this.get('model').reload() which looks at data store changes
-      // since the nodes changes or db changes happened outside of ember-data.
-      console.log('refreshing model.nodes and model.profiles');
-      var deploymentId = this.get('deploymentId');
-      var self = this;
-      Ember.RSVP.hash({nodes: this.store.query('node', {deployment_id: deploymentId}),
-                       profiles: this.store.query('flavor', {deployment_id: deploymentId})
-                     }).then(function(result) {
-                         return self.set('model', result);
-                     });
-    },
-
     showNodeRegistrationModal() {
       // stop polling when opening the modal
       this.stopPolling();
@@ -376,6 +363,7 @@ export default Ember.Controller.extend(ProgressBarMixin, {
               deployment_id: self.get('deploymentId')
         });
         self.get('deployment.introspection_tasks').addObject(newTask);
+        self.startPolling();
       }, function(reason) {
             reason = reason.jqXHR;
             self.set('initRegInProcess', false);
