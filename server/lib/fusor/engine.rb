@@ -13,7 +13,7 @@ module Fusor
       #  we want the polling of ForemanTasksController#show silenced to reduce noise in logs
       silenced_paths = ["api/v21/foreman_tasks"]
 
-      if Katello.config.respond_to? 'logging' and Katello.config.logging.respond_to? 'ignored_paths'
+      if Katello.respond_to? 'config' and Katello.config.respond_to? 'logging' and Katello.config.logging.respond_to? 'ignored_paths'
         for sil_path in silenced_paths
           Katello.config.logging.ignored_paths.push(sil_path)
         end
