@@ -5,6 +5,7 @@ Fusor::Engine.routes.draw do
         resources :deployments do
           resources :deployment_plans, :only => [:show, :update] do
             member do
+              post 'deploy', to: 'deployment_plans#deploy'
               put 'update_parameters', to: 'deployment_plans#update_parameters'
               put 'update_role_count', to: 'deployment_plans#update_role_count'
               put 'update_role_flavor', to: 'deployment_plans#update_role_flavor'
