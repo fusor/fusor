@@ -129,9 +129,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
         },
         data: JSON.stringify(data)
       }).then(function(result) {
+        self.update_param(data['role_name'] + "-1::Flavor", data['flavor_name']);
         self.set('showLoadingSpinner', false);
         console.log('SUCCESS');
-        self.store.push('deployment_plan', self.store.normalize('deployment_plan', result.deployment_plan));
       }, function(error) {
         error = error.jqXHR;
         console.log('ERROR');
@@ -192,6 +192,20 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
 
   handleOutsideClick(e) {
     // do nothing, this overrides the closing of the dialog when clicked outside of it
+  },
+
+  update_param(option, value) {
+    //all does not make a request, we're just updating the ember data object to match backend
+    //we don't want to just reload it cause it's too slow.
+    for (var plan in this.store.all('deployment-plan')) {
+      if (plan.id == 'overcloud') { // hardcoded, there's only ever one plan.
+        for (var param in plan.parameters) {
+          if (param.id == option) {
+            param.value = value;
+          }
+        }
+      }
+    }
   },
 
   actions: {
@@ -270,10 +284,10 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
         data: JSON.stringify({ 'parameters': params })
       }).then( function() {
           console.log('SUCCESS');
-          self.store.findRecord('deployment-plan', deploymentId).then(function (result) {
-            self.set('model.plan', result);
-            self.set('showLoadingSpinner', false);
-          });
+          for (var param in params) {
+            self.update_param(param['name'], param['value']);
+          }
+          self.set('showLoadingSpinner', false);
         }, function(error) {
           error = error.jqXHR;
           console.log('ERROR');
@@ -306,10 +320,8 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
           }
         }).then(function(result) {
           console.log('SUCCESS');
-          self.store.findRecord('deployment-plan', deploymentId).then(function (result) {
-            self.set('model.plan', result);
-            self.set('showLoadingSpinner', false);
-          });
+          self.update_param(role + "-1::count", count);
+          self.set('showLoadingSpinner', false);
         }, function(error) {
              error = error.jqXHR;
              console.log('ERROR');
@@ -407,6 +419,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
         data: JSON.stringify({ 'parameters': params })
       }).then( function() {
           console.log('SUCCESS');
+          for (var param in params) {
+            self.update_param(param['name'], param['value']);
+          }
           self.set('showLoadingSpinner', false);
         },
           function(error) {

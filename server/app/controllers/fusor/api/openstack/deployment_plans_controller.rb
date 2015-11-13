@@ -17,28 +17,23 @@ module Fusor
     module Openstack
       class DeploymentPlansController < Api::Openstack::BaseController
 
-        def deploy
-          @plan = undercloud_handle.deploy_plan(params[:id])
-          render :json => {:deployment_plan => undercloud_handle.get_plan(params[:id])}
-        end
-
         def show
           render :json => {:deployment_plan => undercloud_handle.get_plan(params[:id])}
         end
 
         def update_role_count
           @plan = undercloud_handle.edit_plan_deployment_role_count(params[:id], params[:role_name], params[:count])
-          render :json => {:deployment_plan => undercloud_handle.get_plan(params[:id])}
+          render :json => {:status => :ok}
         end
 
         def update_role_flavor
           @plan = undercloud_handle.edit_plan_deployment_role_flavor(params[:id], params[:role_name], params[:flavor_name])
-          render :json => {:deployment_plan => undercloud_handle.get_plan(params[:id])}
+          render :json => {:status => :ok}
         end
 
         def update_parameters
           @plan = undercloud_handle.edit_plan_parameters(params[:id], params[:parameters])
-          render :json => {:deployment_plan => undercloud_handle.get_plan(params[:id])}
+          render :json => {:status => :ok}
         end
 
       end
