@@ -5,8 +5,3 @@ moduleForModel('discovered-host', 'Unit | Model | discovered host', {
   needs: ['model:deployment', 'model:organization', 'model:lifecycle-environment', 'model:subscription']
 });
 
-test('it exists', function(assert) {
-  var model = this.subject();
-  // var store = this.store();
-  assert.ok(!!model);
-});

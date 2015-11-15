@@ -5,8 +5,3 @@ moduleForModel('foreman-task', 'Unit | Model | foreman task', {
   needs: []
 });
 
-test('it exists', function(assert) {
-  var model = this.subject();
-  // var store = this.store();
-  assert.ok(!!model);
-});

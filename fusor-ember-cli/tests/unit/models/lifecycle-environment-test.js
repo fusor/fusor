@@ -5,8 +5,3 @@ moduleForModel('lifecycle-environment', 'Unit | Model | lifecycle environment', 
   needs: ['model:organization']
 });
 
-test('it exists', function(assert) {
-  var model = this.subject();
-  // var store = this.store();
-  assert.ok(!!model);
-});

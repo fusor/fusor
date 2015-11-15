@@ -46,5 +46,22 @@ module.exports = function(app) {
     });
   });
 
+  foremanTasksRouter.get('/:id', function(req, res) {
+    res.send({
+      'foreman_task': {
+          id: req.params.id,
+          type: "ForemanTasks::Task::DynflowTask",
+          label: "Actions::Fusor::Deploy",
+          started_at: "2015-04-07 18:16:55",
+          ended_at: null,
+          state: "running",
+          result: "success",
+          progress: 1,
+          external_id: "4f7ca3e7-8828-46df-a6f1-e6b07964efb1",
+          parent_task_id: null
+      }
+    });
+  });
+
   app.use('/api/v21aaa/foreman_tasks', foremanTasksRouter);
 };

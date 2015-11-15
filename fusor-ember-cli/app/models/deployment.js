@@ -85,7 +85,7 @@ export default DS.Model.extend({
   // controller.deployment.isStarted returns false if refreshing child route,
   // so best to have it on model as well
   isStarted: Ember.computed('foreman_task_uuid', function() {
-    return !!(this.get('foreman_task_uuid'));
+    return Ember.isPresent(this.get('foreman_task_uuid'));
   }),
   isNotStarted: Ember.computed.not('isStarted'),
 
@@ -93,6 +93,8 @@ export default DS.Model.extend({
   progress: null,
   state: null,
 
+  // TODO-REFACTOR return foreman_task in API response and create belongsTo assocation
+  // foreman_task: DS.belongsTo('foreman-task')
   foremanTask: Ember.computed('foreman_task_uuid', 'isStarted', function() {
     if (this.get('isStarted')) {
         return this.store.findRecord('foreman-task', this.get('foreman_task_uuid'));
