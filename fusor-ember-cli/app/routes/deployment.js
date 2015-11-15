@@ -12,6 +12,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     controller.set('satelliteTabRouteName', 'satellite.index');
     controller.set('organizationTabRouteName', 'configure-organization');
     controller.set('lifecycleEnvironmentTabRouteName', 'configure-environment');
+    controller.set('model.host_naming_scheme', 'Freeform');
 
     // copied from setupController in app/routes/subscriptions/credentials.js
     // to fix bug of Review Tab being disabled on refresh and needing to click
