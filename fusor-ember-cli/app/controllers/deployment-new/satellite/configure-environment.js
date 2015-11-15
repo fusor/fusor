@@ -1,9 +1,8 @@
 import Ember from 'ember';
 import ConfigureEnvironmentMixin from "../../../mixins/configure-environment-mixin";
+import NeedsDeploymentNewMixin from "../../../mixins/needs-deployment-new-mixin";
 
-export default Ember.Controller.extend(ConfigureEnvironmentMixin, {
-
-  deploymentNewController: Ember.inject.controller('deployment-new'),
+export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymentNewMixin, {
 
   organizationTabRouteName: Ember.computed.alias("deploymentNewController.organizationTabRouteName"),
 

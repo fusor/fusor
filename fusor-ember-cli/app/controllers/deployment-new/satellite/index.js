@@ -1,7 +1,7 @@
 import Ember from 'ember';
-import NeedsDeploymentMixin from "../../../mixins/needs-deployment-mixin";
+import NeedsDeploymentNewMixin from "../../../mixins/needs-deployment-new-mixin";
 
-export default Ember.Controller.extend(NeedsDeploymentMixin, {
+export default Ember.Controller.extend(NeedsDeploymentNewMixin, {
 
   deploymentNewSatelliteController: Ember.inject.controller('deployment-new/satellite'),
   deploymentNewController: Ember.inject.controller('deployment-new'),
