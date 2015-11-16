@@ -36,6 +36,11 @@
               </span>
             {{/if}}
 
+            <button class='btn btn-default btn-sm' {{action 'openNamingSchemeModal'}}
+                    disabled={{isStarted}}>
+                Edit Naming Scheme
+            </button>
+
             <button class='btn btn-default btn-sm' {{action 'refreshDiscoveredHosts'}}
                     disabled={{isStarted}}>
                 Refresh Data
@@ -64,7 +69,6 @@
         {{#each filteredHosts as |host|}}
            {{tr-hypervisor host=host
                            model=model
-
                            isCustomScheme=isCustomScheme
                            isMac=isMac
                            isHypervisorN=isHypervisorN
@@ -87,3 +91,5 @@
                     disableCancel=isStarted}}
   <button {{action 'saveHyperVisors' 'rhev-options'}} class='btn btn-primary' disabled={{rhevController.hasNoHypervisor}}>Next</button>
 {{/cancel-back-next}}
+
+{{partial 'naming-scheme-modal'}}

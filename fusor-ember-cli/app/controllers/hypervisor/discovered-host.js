@@ -3,20 +3,29 @@ import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  hypervisorController: Ember.inject.controller('hypervisor'),
-  // todo - delete rhevcontroller - not used?
-  // rhevController: Ember.inject.controller('rhev'),
-
   selectedRhevEngine: Ember.computed.alias("deploymentController.model.discovered_host"),
   rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
-  isStarted: Ember.computed.alias("deploymentController.isStarted"),
-  isNotStarted: Ember.computed.alias("deploymentController.isNotStarted"),
 
-  isCustomScheme: Ember.computed.alias("hypervisorController.isCustomScheme"),
-  isHypervisorN: Ember.computed.alias("hypervisorController.isHypervisorN"),
-  customPreprendName: Ember.computed.alias("hypervisorController.model.custom_preprend_name"),
-  isFreeform: Ember.computed.alias("hypervisorController.isFreeform"),
-  isMac: Ember.computed.alias("hypervisorController.isMac"),
+  hostNamingScheme: Ember.computed.alias("deploymentController.model.host_naming_scheme"),
+  customPreprendName: Ember.computed.alias("deploymentController.model.custom_preprend_name"),
+
+  namingOptions: ['Freeform', 'MAC address', 'hypervisorN', 'Custom scheme'],
+
+  isFreeform: Ember.computed('hostNamingScheme', function() {
+    return (this.get('hostNamingScheme') === 'Freeform');
+  }),
+
+  isMac: Ember.computed('hostNamingScheme', function() {
+    return (this.get('hostNamingScheme') === 'MAC address');
+  }),
+
+  isCustomScheme: Ember.computed('hostNamingScheme', function() {
+    return (this.get('hostNamingScheme') === 'Custom scheme');
+  }),
+
+  isHypervisorN: Ember.computed('hostNamingScheme', function() {
+    return (this.get('hostNamingScheme') === 'hypervisorN');
+  }),
 
   // Filter out hosts selected as Engine
   availableHosts: Ember.computed('allDiscoveredHosts.[]', 'hypervisorModelIds.[]', function() {
@@ -99,6 +108,20 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
     setUncheckAll() {
       this.get('model').setObjects([]);
+    },
+
+    openNamingSchemeModal() {
+      this.set('isOpenNamingSchemeModal', true);
+    },
+
+    cancelNamingScheme() {
+      this.set('isCloseNamingSchemeModal', true);
+      this.get('deploymentController.model').rollback()
+    },
+
+    saveNamingScheme() {
+      this.set('isCloseNamingSchemeModal', true);
+      this.get('deploymentController.model').save()
     }
 
   }

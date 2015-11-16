@@ -5,22 +5,6 @@
       Select one or more target machines to be hypervisors.
     </p>
 
-    <form class="form-inline">
-      <div class="form-group">
-        Host naming scheme &nbsp; {{view "select" content=namingOptions
-                                                  value=hostNamingScheme
-                                                  class='form-control'
-                                                  disabled=isStarted}}
-
-        {{#if isCustomScheme}}
-          <span class='prepend-host-names'>
-            Prepend host names with {{input type='text' value=customPreprendName
-                                                        disabled=isStarted}}
-          </span>
-        {{/if}}
-      </div>
-    </form>
-
     <br />
 
     {{outlet}}
