@@ -37,6 +37,10 @@ module Actions::Fusor::Deployment::OpenStack
       end
 
       sequence do
+        # work around BZ 1281908
+        overcloud_admin_password = undercloud_handle(deployment).get_plan_parameter_value('overcloud', 'Controller-1::AdminPassword')
+        plan_action(SshCommand, deployment, 'sudo sed -i "s/OVERCLOUD_ADMIN_PASSWORD.*/OVERCLOUD_ADMIN_PASSWORD=' + overcloud_admin_password + '/g" /home/stack/tripleo-overcloud-passwords')
+
         plan_self(deployment_id: deployment.id)
         plan_action(SshCommand, deployment, "/opt/rh/ruby193/root/bin/initialize_overcloud.sh")
         plan_action(OvercloudCredentials, deployment)
