@@ -76,6 +76,7 @@ export default Ember.Route.extend({
                         var sub = self.store.createRecord('subscription', {'contract_number': pool.get('contractNumber'),
                                                                            'product_name': pool.get('productName'),
                                                                            'quantity_attached': pool.get('qtyToAttach'),
+                                                                           'source': 'added',
                                                                            'deployment': deployment
                                                                           });
                         sub.save();

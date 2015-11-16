@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+imported:
+  deployment_id: 2
+  contract_number: 10670000
+  product_name: rhci_smart
+  quantity_attached: 22
+  start_date: 11/24/2013
+  end_date: 11/24/2020
+  total_quantity: 90
+  source: imported
+
+added:
+  deployment_id: 2
+  contract_number: 10670000
+  product_name: rhci_smart
+  quantity_attached: 2
+  start_date: 11/24/2013
+  end_date: 11/24/2020
+  total_quantity: 90
+  source: added
