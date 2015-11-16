@@ -116,12 +116,12 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
     cancelNamingScheme() {
       this.set('isCloseNamingSchemeModal', true);
-      this.get('deploymentController.model').rollback()
+      this.get('deploymentController.model').rollback();
     },
 
     saveNamingScheme() {
       this.set('isCloseNamingSchemeModal', true);
-      this.get('deploymentController.model').save()
+      this.get('deploymentController.model').save();
     }
 
   }
