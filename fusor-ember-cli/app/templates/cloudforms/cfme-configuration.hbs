@@ -1,28 +1,42 @@
-<div class='row'>
-  <div class='col-md-12'>
+<div class="row">
+  <div class="col-md-12">
     <form class="form form-horizontal">
-      {{text-f label="CFME Root password" type='password' value=cfmeRootPassword
-               cssId='cfme_root_password'
+      {{text-f label="Root Password" type="password" value=cfmeRootPassword
+               cssId="cfme_root_password"
                isRequired=true
                disabled=isStarted
                minChars=8
-               help-inline='must be 8 or more characters'
-               placeholder='must be 8 or more characters'}}
+               help-inline="Applies to root user account for this CloudForms instance"
+               placeholder="Must be 8 or more characters"}}
 
-      {{text-f label="CFME Admin password" type='password' value=cfmeAdminPassword
-               cssId='cfme_admin_password'
+      {{text-f label="Confirm Root Password" type="password" value=confirmCfmeRootPassword
+               cssId="confirm_cfme_root_password"
+               isRequired=true
+               mustMatch=cfmeRootPassword
+               disabled=isStarted
+               placeholder="Must match root password"}}
+
+      {{text-f label="Admin Password" type="password" value=cfmeAdminPassword
+               cssId="cfme_admin_password"
                isRequired=true
                disabled=isStarted
                minChars=8
-               help-inline='must be 8 or more characters'
-               placeholder='must be 8 or more characters'}}
+               help-inline="Applies to admin user account for CloudForms web UI"
+               placeholder="Must be 8 or more characters"}}
+
+      {{text-f label="Confirm Admin Password" type="password" value=confirmCfmeAdminPassword
+               cssId="confirm_cfme_admin_password"
+               isRequired=true
+               mustMatch=cfmeAdminPassword
+               disabled=isStarted
+               placeholder="Must match admin password"}}
 
     </form>
   </div>
 </div>
 
-{{cancel-back-next backRouteName='where-install'
-                   disableBack=false
-                   nextRouteName=nextRouteNameAfterCFME
-                   disableNext=notValidCloudforms
-                   disableCancel=isStarted}}
+{{cancel-back-next backRouteName="where-install"
+disableBack=false
+nextRouteName=nextRouteNameAfterCFME
+disableNext=disableNextCfmeConfiguration
+disableCancel=isStarted}}

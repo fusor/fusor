@@ -3,7 +3,7 @@
   {{input class="form-control" value=value placeholder=placeholder type=typeInput focus-out="showValidationErrors" id=cssId disabled=disabled autocomplete='off'
   maxlength="250"}}
 
-  {{#if isPassword}}
+  {{#if canShowPassword}}
           <i {{action 'showPassword'}} class="fa {{eyeIcon}} eye-icon"></i>
   {{/if}}
 
@@ -11,6 +11,12 @@
     {{#if validIsRequiredAndBlank}}
         <span class="error errorForValidation">
             cannot be blank
+        </span>
+    {{/if}}
+
+    {{#if doesntMatchPassword}}
+      <span class="error errorForValidation">
+            passwords don't match
         </span>
     {{/if}}
 

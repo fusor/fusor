@@ -1,26 +1,32 @@
-<h4> Engine Configuration </h4>
-
-<div class='row'>
-  <div class='col-md-12'>
+<div class="row">
+  <div class="col-md-12">
     <br />
     <form class="form form-horizontal">
-      {{text-f label="Root password for Engine & Hypervisor" type='password' value=rhev_root_password cssId='rhev_root_password' isRequired=true disabled=isStarted
-      minChars=8
-      help-inline='must be 8 or more characters'
-      placeholder='must be 8 or more characters'}}
+      {{text-f label="Root Password" type="password" value=rhevRootPassword cssId="rhev-root-password"
+      isRequired=true disabled=isStarted minChars=8
+      help-inline="Applies to root user accounts for deployed RHEV hosts"
+      placeholder="Must be 8 or more characters"}}
 
-      {{text-f label="Engine admin password" type='password' value=rhev_engine_admin_password cssId='rhev_engine_admin_password' isRequired=true disabled=isStarted
-      minChars=8
-      help-inline='must be 8 or more characters'
-      placeholder='must be 8 or more characters'}}
+      {{text-f label="Confirm Root Password" type="password" value=confirmRhevRootPassword cssId="confirm-rhev-root-password"
+      isRequired=true disabled=isStarted mustMatch=rhevRootPassword
+      placeholder="Must match root password"}}
 
-      {{text-f label="Datacenter Name" value=rhev_database_name placeholder='Leave blank for default' cssId='rhev_database_name' disabled=isStarted isAlphaNumeric=true}}
-      {{text-f label="Cluster Name" value=rhev_cluster_name placeholder='Leave blank for default' cssId='rhev_cluster_name' disabled=isStarted isAlphaNumeric=true}}
+      {{text-f label="Engine Admin Password" type="password" value=rhevEngineAdminPassword cssId="rhev-engine-admin-password"
+      isRequired=true disabled=isStarted minChars=8
+      help-inline="Applies to admin user account for RHEV web UI"
+      placeholder="Must be 8 or more characters"}}
+
+      {{text-f label="Confirm Engine Admin Password" type="password" value=confirmRhevEngineAdminPassword cssId="confirm-rhev-engine-pdmin-password"
+      isRequired=true disabled=isStarted mustMatch=rhevEngineAdminPassword
+      placeholder="Must match engine admin password"}}
+
+      {{text-f label="Data Center Name" value=rhevDatabaseName placeholder="Leave blank for default" cssId="rhev-database-name" disabled=isStarted isAlphaNumeric=true}}
+      {{text-f label="Cluster Name" value=rhevClusterName placeholder="Leave blank for default" cssId="rhev-cluster-name" disabled=isStarted isAlphaNumeric=true}}
       {{select-simple-f label="CPU Type"
                         content=cpuTypes
-                        value=rhev_cpu_type
-                        prompt='Leave blank for default'
-                        cssId='rhev_cpu_type'
+                        value=rhevCpuType
+                        prompt="Autodetect CPU family"
+                        cssId="rhev-cpu-type"
                         disabled=isStarted}}
     </form>
   </div>
@@ -28,7 +34,7 @@
 
 {{cancel-back-next backRouteName=optionsBackRouteName
                    disableBack=false
-                   nextRouteName='storage'
+                   nextRouteName="storage"
                    disableNext=disableNextRhevOptions
                    disableCancel=isStarted}}
 
