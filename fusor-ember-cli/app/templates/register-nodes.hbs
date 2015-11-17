@@ -1,4 +1,3 @@
-<br />
 {{#if showAlertMessage}}
     <div class="row">
         <div class='col-md-9'>
@@ -11,15 +10,16 @@
     </div>
 {{/if}}
 
+{{#if registrationError}}
 <div class="progress-description">
-  {{#if registrationError}}
       <span class="pficon-layered" data-toggle="tooltip" data-placement="top" title={{registrationErrorTip}}>
           <span class="pficon pficon-error-octagon"></span>
           <span class="pficon pficon-error-exclamation"></span>
             <strong>Error:</strong>  {{registrationErrorMessage}}
         </span>
-  {{/if}}
 </div>
+{{/if}}
+
 {{#if hasIntrospectionTasks}}
 
     <div class="row">
@@ -91,8 +91,6 @@
                    disableBack=false
                    nextRouteName='assign-nodes'
                    disableNext=disableRegisterNodesNext
-
                    disableCancel=deploymentController.isStarted}}
 
 {{partial 'new-node-registration'}}
-

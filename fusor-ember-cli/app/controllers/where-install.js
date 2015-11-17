@@ -52,7 +52,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   backRouteName: Ember.computed('isOpenStack', 'isRhev', function() {
     if (this.get('isOpenStack')) {
-      return 'assign-nodes';
+      return 'openstack.overcloud';
     } else if (this.get('isRhev')) {
       return 'storage';
     } else {

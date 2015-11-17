@@ -40,6 +40,12 @@ export default Ember.Component.extend({
     }
   }),
 
+  invalidNetworkRange: Ember.computed('value', 'isNetworkRange', function() {
+      // TODO
+      return false;
+  }),
+
+
   hasError: Ember.computed(
     'showValidationError',
     'errors.name',
@@ -49,6 +55,7 @@ export default Ember.Component.extend({
     'validIsUnique',
     'invalidIsAlphaNumeric',
     'invalidIsHostname',
+    'invalidNetworkRange',
     function() {
       return (this.get('showValidationError') &&
               (Ember.isPresent(this.get('errors.name')) ||
@@ -57,7 +64,8 @@ export default Ember.Component.extend({
                this.get('validIsRequiredAndBlank') ||
                this.get('validIsUnique') ||
                this.get('invalidIsAlphaNumeric') ||
-               this.get('invalidIsHostname')
+               this.get('invalidIsHostname') ||
+               this.get('invalidNetworkRange')
               )
              );
     }

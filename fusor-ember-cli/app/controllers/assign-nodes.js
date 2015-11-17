@@ -30,12 +30,14 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     var params = this.get('model.plan.parameters');
     var self = this;
     var value = null;
-    this.get('model.plan.roles').forEach(function(role) {
-      value = self.getParamValue(role.get('flavorParameterName'), params);
-      if (value === 'baremetal' || Ember.isNone(value)) {
-        unassignedRoles.addObject(role);
-      }
-    });
+    if (Ember.isPresent(this.get('model.plan.roles'))) {
+        this.get('model.plan.roles').forEach(function(role) {
+          value = self.getParamValue(role.get('flavorParameterName'), params);
+          if (value === 'baremetal' || Ember.isNone(value)) {
+            unassignedRoles.addObject(role);
+          }
+        });
+    }
     return unassignedRoles;
   }),
 
@@ -427,14 +429,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   },
 
   disableAssignNodesNext: Ember.computed('unassignedRoles.[]', function() {
-    return (this.get('unassignedRoles.length') > 0);
-  }),
-
-  nextStepRouteNameAssignNodes: Ember.computed('isCloudForms', function() {
-    if (this.get('isCloudForms')) {
-      return 'cloudforms';
-    } else {
-      return 'subscriptions';
+    if (this.get('unassignedRoles')) {
+        return (this.get('unassignedRoles.length') > 0);
     }
   })
+
 });

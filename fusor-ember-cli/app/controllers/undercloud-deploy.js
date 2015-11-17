@@ -86,12 +86,12 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
 
       var promiseFunction = function (resolve) {
         self.set('deploymentError', null);
-      var token = Ember.$('meta[name="csrf-token"]').attr('content');
+        var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
-      //ic-ajax request
-      console.log('action: deployUndercloud');
-      console.log('POST /fusor/api/openstack/deployments/' + self.get('deploymentId') + '/underclouds');
-      request({
+        //ic-ajax request
+        console.log('action: deployUndercloud');
+        console.log('POST /fusor/api/openstack/deployments/' + self.get('deploymentId') + '/underclouds');
+        request({
           url: '/fusor/api/openstack/deployments/' + self.get('deploymentId') + '/underclouds',
           type: 'POST',
           data: JSON.stringify(data),
@@ -104,6 +104,11 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
                 promise.then(fulfill);
                 console.log('create success');
                 console.log(response);
+                if (self.get('applicationController.isEmberCliMode')) {
+                  // only used for develoment to enabled OSP tabs (disableOspTab: false)
+                  model.set('openstack_undercloud_password', 'this-passwd-is-populated by fusor/server')
+                  model.save();
+                }
                 Ember.run.later(checkForDone, 3000);
               },  function(error) {
                 error = error.jqXHR;

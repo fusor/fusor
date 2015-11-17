@@ -44,10 +44,12 @@
         </span>
     {{/if}}
 
-  {{/if}}
+    {{#if invalidNetworkRange}}
+        <span class="error errorForValidation">
+            invalid network range
+        </span>
+    {{/if}}
 
-  <!-- don't need to wait for focus-out -->
-  {{#if showValidationError}}
       <span class="error errorForValidation">
           {{errors.name}}
       </span>

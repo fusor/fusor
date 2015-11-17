@@ -40,7 +40,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     if (this.get('isCloudForms')) {
       return 'cloudforms.cfme-configuration';
     } else if (this.get('isOpenStack')) {
-      return 'assign-nodes';
+      return 'openstack.overcloud';
     } else if (this.get('isRhev')) {
       return 'storage';
     } else {
