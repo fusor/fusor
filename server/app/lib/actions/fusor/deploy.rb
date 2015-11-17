@@ -28,14 +28,16 @@ module Actions
                         deployment)
           end
 
-          if deployment.deploy_rhev
-            plan_action(::Actions::Fusor::Deployment::Rhev::DeployAsSubPlan,
-                        deployment)
-          end
+          concurrence do
+            if deployment.deploy_rhev
+              plan_action(::Actions::Fusor::Deployment::Rhev::DeployAsSubPlan,
+                          deployment)
+            end
 
-          if deployment.deploy_openstack
-            plan_action(::Actions::Fusor::Deployment::OpenStack::DeployAsSubPlan,
-                        deployment)
+            if deployment.deploy_openstack
+              plan_action(::Actions::Fusor::Deployment::OpenStack::DeployAsSubPlan,
+                          deployment)
+            end
           end
 
           if deployment.deploy_cfme
