@@ -30,7 +30,7 @@ module Actions
 
         def run(event = nil)
           host = ::Host::Base.find(input[:host_id])
-          if host.error?
+          if host.is_a?(::Host::Managed) && host.error?
             fail _("Failed to provision host '%s'.") % host.name
           end
 
