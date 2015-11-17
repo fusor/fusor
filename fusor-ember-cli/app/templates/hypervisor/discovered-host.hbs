@@ -89,7 +89,7 @@
 {{#cancel-back-next backRouteName=hypervisorBackRouteName
                     disableBack=false
                     disableCancel=isStarted}}
-  <button {{action 'saveHyperVisors' 'rhev-options'}} class='btn btn-primary' disabled={{rhevController.hasNoHypervisor}}>Next</button>
+  <button {{action 'saveHyperVisors' 'rhev-options'}} class='btn btn-primary' disabled={{rhevController.hasNoHypervisor}}>Next <i class="fa fa-angle-right"></i></button>
 {{/cancel-back-next}}
 
 {{partial 'naming-scheme-modal'}}
