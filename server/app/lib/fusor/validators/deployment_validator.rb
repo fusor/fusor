@@ -1,7 +1,6 @@
 module Fusor
   module Validators
     class DeploymentValidator < ActiveModel::Validator
-      # rubocop:disable Metrics/MethodLength
       def validate(deployment)
         if !(deployment.deploy_rhev or deployment.deploy_cfme or deployment.deploy_openstack)
           deployment.errors[:base] << _('You must deploy something...')

@@ -48,7 +48,6 @@ module Actions
       private
 
       # TODO: break up this method
-      # rubocop:disable Metrics/MethodLength
       def find_or_ensure_hostgroup(deployment, product_type, organization_id, lifecycle_environment_id,
                                    hostgroup_settings)
 
