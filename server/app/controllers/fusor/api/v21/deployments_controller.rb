@@ -39,7 +39,9 @@ module Fusor
       # OpenStack Undercloud attributes should only be set by the undercloud
       # controller (after it has validated them), never by directly updating
       # the deployment object.
-      params[:deployment].delete :openstack_undercloud_password
+
+      # commented out :openstack_undercloud_password since mock UI application needs to set this value
+      # params[:deployment].delete :openstack_undercloud_password
       params[:deployment].delete :openstack_undercloud_ip_addr
       params[:deployment].delete :openstack_undercloud_user
       params[:deployment].delete :openstack_undercloud_user_password
