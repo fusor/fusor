@@ -24,7 +24,11 @@ export default DS.Model.extend({
   }),
 
   qtyAvailableOfTotal: Ember.computed('qtyAvailable', 'quantity', function() {
-    return this.get('qtyAvailable') + ' of ' + this.get('quantity');
+    if (this.get('qtyAvailable') === -1) {
+      return "Unlimited";
+    } else {
+      return this.get('qtyAvailable') + ' of ' + this.get('quantity');
+    }
   })
 
 });
