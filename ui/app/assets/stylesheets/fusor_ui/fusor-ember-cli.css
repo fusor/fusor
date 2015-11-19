@@ -360,10 +360,13 @@ table.fusor-table {
   table-layout: fixed; }
 
 .rhev-checkbox {
-  width: 3%; }
+  width: 34px; }
 
 .rhev-hostname {
   width: 20%; }
+
+.rhev-mac-address {
+  width: 18%; }
 
 .rhev-host-type {
   width: 9%; }
@@ -386,11 +389,8 @@ table.fusor-table {
 .rhev-select-all {
   padding: 0px 20px; }
 
-.prepend-host-names {
-  padding: 0 2px 0 35px; }
-
 .org-radio-btn {
-  width: 3%; }
+  width: 34px; }
 
 .accordion-item {
   padding-bottom: 10px; }
@@ -435,6 +435,24 @@ table.fusor-table {
   top: -20px;
   float: right;
   padding-right: 10px; }
+
+.rhci-popover-button {
+  outline: none;
+  color: #0099d3;
+  background: none !important;
+  border: none;
+  padding: 0 !important;
+  cursor: pointer; }
+
+.new-deployment-button {
+  float: right;
+  margin-top: -33px; }
+
+.filter-deployments {
+  margin-left: -18px; }
+
+.help-block {
+  font-style: italic; }
 
 /* wizard.scss */
 .page-header-rhci {
@@ -634,7 +652,8 @@ table.fusor-table {
     margin-right: 20px; }
   .sidebar-header-bleed-right + .list-group {
     margin-right: -20px; }
-  .sidebar-pf .panel-group .panel-default, .sidebar-pf .treeview {
+  .sidebar-pf .panel-group .panel-default,
+  .sidebar-pf .treeview {
     border-left: 0;
     border-right: 0;
     margin-left: -20px;
@@ -659,7 +678,8 @@ table.fusor-table {
     border-right: 1px solid #d0d0d0; }
   .sidebar-pf.sidebar-pf-right {
     border-left: 1px solid #d0d0d0; }
-  .sidebar-pf > .nav-category, .sidebar-pf > .nav-stacked {
+  .sidebar-pf > .nav-category,
+  .sidebar-pf > .nav-stacked {
     margin-top: 5px; } }
 
 .rhci-steps > li > a.active {
@@ -997,7 +1017,8 @@ table.fusor-table {
   top: 0;
   width: 0; }
 
-.nav-registered-nodes > li.active .fa-trash-o, .nav-registered-nodes > li.active:hover {
+.nav-registered-nodes > li.active .fa-trash-o,
+.nav-registered-nodes > li.active:hover {
   color: #fff; }
 
 .nav-registered-nodes > li > a {
@@ -1028,11 +1049,15 @@ table.fusor-table {
 .node-specs {
   width: auto; }
 
-.node-specs tbody > tr > td, .node-specs thead > tr > td, .node-specs tbody > tr > th, .node-specs thead > tr > th {
+.node-specs tbody > tr > td,
+.node-specs thead > tr > td,
+.node-specs tbody > tr > th,
+.node-specs thead > tr > th {
   border-top: 0;
   padding: 0 10px 0 0; }
 
-.node-specs tbody > tr > th, .node-specs thead > tr > th {
+.node-specs tbody > tr > th,
+.node-specs thead > tr > th {
   padding-top: 1px; }
 
 .nodes-registered-count {
@@ -1128,3 +1153,5 @@ table.fusor-table {
   clear: right;
   margin: 0 0 15px;
   padding: 15px 0 0; }
+
+/*# sourceMappingURL=fusor-ember-cli.css.map */
