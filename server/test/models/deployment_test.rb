@@ -107,6 +107,15 @@ class DeploymentTest < ActiveSupport::TestCase
     assert_not rhev.save, "Saved rhev deployment who's nfs path contained non-ascii characters"
   end
 
+  test "should invalidate rhev deployment if NFS path does not have a leading slash" do
+    rhev = fusor_deployments(:rhev)
+    rhev.rhev_storage_type = 'NFS'
+    rhev.rhev_share_path = 'test/this/out'
+    assert rhev.invalid?
+    assert_equal 'NFS path specified does not start with a "/", which is invalid',
+      rhev.errors[:rhev_share_path].first
+  end
+
   test "should not save rhev deployment if storage type is local and missing local path" do
     rhev = fusor_deployments(:rhev)
     rhev.rhev_storage_type = 'Local'

@@ -39,6 +39,11 @@ module Fusor
                 deployment.errors[:rhev_share_path] << _('NFS path specified ends in a "/", which is invalid')
               end
 
+              # NFS paths must start with a slash
+              if !deployment.rhev_share_path.start_with?("/")
+                deployment.errors[:rhev_share_path] << _('NFS path specified does not start with a "/", which is invalid')
+              end
+
               if !deployment.rhev_share_path.ascii_only?
                 deployment.errors[:rhev_share_path] << _('NFS path specified contains non-ascii characters, which is invalid')
               end

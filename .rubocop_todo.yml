@@ -38,11 +38,11 @@ Lint/UnusedBlockArgument:
 
 # Offense count: 46
 Metrics/AbcSize:
-  Max: 127
+  Enabled: false
 
 # Offense count: 2
 Metrics/BlockNesting:
-  Max: 4
+  Enabled: false
 
 # Offense count: 2
 # Configuration parameters: CountComments.
@@ -51,7 +51,7 @@ Metrics/ClassLength:
 
 # Offense count: 9
 Metrics/CyclomaticComplexity:
-  Max: 29
+  Enabled: false
 
 # Offense count: 559
 # Configuration parameters: AllowURI, URISchemes.
