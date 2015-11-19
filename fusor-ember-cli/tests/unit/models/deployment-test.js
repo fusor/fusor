@@ -15,7 +15,6 @@ moduleForModel('deployment', 'Unit | Model | deployment', {
 
 test('it exists', function(assert) {
   var model = this.subject();
-  // var store = this.store();
   assert.ok(!!model);
 });
 
