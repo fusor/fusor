@@ -673,5 +673,5 @@ module.exports = function(app) {
     res.send(poolsCollection);
   });
 
-  app.use('/customer_portal222/pools', poolRouter);
+  app.use('/customer_portal/pools', poolRouter);
 };

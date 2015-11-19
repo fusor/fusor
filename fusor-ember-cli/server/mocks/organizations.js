@@ -41,5 +41,5 @@ module.exports = function(app) {
     res.status(204).end();
   });
 
-  app.use('/api/v21aaa/organizations', organizationsRouter);
+  app.use('/api/v21/organizations', organizationsRouter);
 };

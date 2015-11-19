@@ -102,5 +102,5 @@ module.exports = function(app) {
     res.status(204).end();
   });
 
-  app.use('/katello/api/v2aaa/environments', lifecycleEnvironmentsRouter);
+  app.use('/katello/api/v2/environments', lifecycleEnvironmentsRouter);
 };
