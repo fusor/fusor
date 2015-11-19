@@ -13,6 +13,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   upstreamConsumerName: Ember.computed.alias("deploymentController.model.upstream_consumer_name"),
 
   showAlertMessage: false,
+  showWaitingMessage: false,
+
+  msgWaiting: Ember.computed('newSatelliteName', function() {
+    return ('Adding ' + this.get('newSatelliteName') + ' ....');
+  }),
 
   disableNextOnManagementApp: Ember.computed('upstreamConsumerUuid', function() {
     return (Ember.isBlank(this.get('upstreamConsumerUuid')));
@@ -25,6 +30,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
     selectManagementApp(managementApp) {
       this.set('showAlertMessage', false);
+      this.set('showWaitingMessage', false);
       this.get('sessionPortal').set('consumerUUID', managementApp.get('id'));
       this.get('sessionPortal').save();
       this.set('upstreamConsumerUuid', managementApp.get('id'));
@@ -34,6 +40,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     },
 
     createSatellite() {
+      this.set('showWaitingMessage', true);
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
       var newSatelliteName = this.get('newSatelliteName');
       var ownerKey = this.get('sessionPortal').get('ownerKey');
@@ -60,6 +67,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
                 self.get('sessionPortal').set('consumerUUID', response.uuid);
                 self.get('sessionPortal').save();
                 self.set('showAlertMessage', true);
+                self.set('showWaitingMessage', false);
                 console.log(response);
                 resolve(response);
           }, function(error) {
