@@ -51,17 +51,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   ),
 
-  disableTabRhevStorage: Ember.computed(
-    'deploymentController.model.rhev_root_password',
-    'deploymentController.model.rhev_engine_admin_password',
-    function () {
-      return (Ember.isBlank(this.get('deploymentController.model.rhev_root_password')) ||
-              Ember.isBlank(this.get('deploymentController.model.rhev_engine_admin_password')) ||
-              (this.get('deploymentController.model.rhev_root_password.length') < 8) ||
-              (this.get('deploymentController.model.rhev_engine_admin_password.length') < 8)
-             );
-    }
-  ),
+  disableTabRhevStorage: Ember.computed.alias('rhevOptionsController.disableNextRhevOptions'),
 
   validRhevSetup: true,
   validRhevEngine: Ember.computed.alias("hasEngine"),
