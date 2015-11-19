@@ -10,29 +10,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isNotRhev: Ember.computed.not("isRhev"),
   isOpenStack: Ember.computed.alias("deploymentController.isOpenStack"),
   isNotOpenStack: Ember.computed.not("isOpenStack"),
-  satelliteTabRouteName: Ember.computed.alias("deploymentController.satelliteTabRouteName"),
-  organizationTabRouteName: Ember.computed.alias("deploymentController.organizationTabRouteName"),
-  lifecycleEnvironmentTabRouteName: Ember.computed.alias("deploymentController.lifecycleEnvironmentTabRouteName"),
-  hasNoInstallLocation: Ember.computed.alias("cloudformsController.hasNoInstallLocation"),
-
-  setupController(controller, model) {
-    controller.set('model', model);
-
-    var isRhev = this.controllerFor('deployment').get('isRhev');
-    var isOpenStack = this.controllerFor('deployment').get('isOpenStack');
-    if (isRhev && !(isOpenStack)) {
-      this.controllerFor('where-install').set('disableRHEV', false);
-      this.controllerFor('where-install').set('disableOpenStack', true);
-      return this.controllerFor('deployment').set('model.cfme_install_loc', 'RHEV');
-    } else if (!(isRhev) && isOpenStack) {
-      this.controllerFor('where-install').set('disableRHEV', true);
-      this.controllerFor('where-install').set('disableOpenStack', false);
-      return this.controllerFor('deployment').set('model.cfme_install_loc', 'OpenStack');
-    } else {
-      this.controllerFor('where-install').set('disableRHEV', false);
-      this.controllerFor('where-install').set('disableOpenStack', false);
-    }
-  },
+  isInvalidCfmeInstallLocation: Ember.computed.alias("cloudformsController.isInvalidCfmeInstallLocation"),
 
   disableRHEV: Ember.computed('isStarted', 'isNotRhev', function() {
     return (this.get('isStarted') || this.get('isNotRhev'));

@@ -3,12 +3,12 @@ import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  cloudformsController: Ember.inject.controller('cloudforms'),
-
   cfmeRootPassword: Ember.computed.alias("deploymentController.model.cfme_root_password"),
   cfmeAdminPassword: Ember.computed.alias("deploymentController.model.cfme_admin_password"),
+  confirmCfmeRootPassword: Ember.computed.alias("deploymentController.confirmCfmeRootPassword"),
+  confirmCfmeAdminPassword: Ember.computed.alias("deploymentController.confirmCfmeAdminPassword"),
+
   isSubscriptions: Ember.computed.alias("deploymentController.isSubscriptions"),
-  notValidCloudforms: Ember.computed.alias("cloudformsController.notValidCloudforms"),
 
   nextRouteNameAfterCFME: Ember.computed('isSubscriptions', function () {
     if (this.get('isSubscriptions')) {
@@ -18,15 +18,33 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   }),
 
-  disableNextCfmeConfiguration: Ember.computed(
-    'notValidCloudforms',
+  hasCFRootPassword: Ember.computed('cfmeRootPassword', function() {
+    return (Ember.isPresent(this.get('cfmeRootPassword')) &&
+            (this.get('cfmeRootPassword.length') > 7)
+           );
+  }),
+  hasNoCFRootPassword: Ember.computed.not("hasCFRootPassword"),
+
+  hasCFAdminPassword: Ember.computed('cfmeAdminPassword', function() {
+    return (Ember.isPresent(this.get('cfmeAdminPassword')) &&
+            (this.get('cfmeAdminPassword.length') > 7)
+           );
+  }),
+  hasNoCFAdminPassword: Ember.computed.not("hasCFAdminPassword"),
+
+  isValidCfmeConfiguration: Ember.computed(
     'cfmeRootPassword',
     'confirmCfmeRootPassword',
     'cfmeAdminPassword',
     'confirmCfmeAdminPassword',
     function () {
-      return this.get('notValidCloudforms') ||
-        this.get('cfmeRootPassword') !== this.get('confirmCfmeRootPassword') ||
-        this.get('cfmeAdminPassword') !== this.get('confirmCfmeAdminPassword');
-    })
+      return this.get('hasCFRootPassword') &&
+             this.get('hasCFAdminPassword') &&
+             this.get('cfmeRootPassword') === this.get('confirmCfmeRootPassword') &&
+             this.get('cfmeAdminPassword') === this.get('confirmCfmeAdminPassword');
+    }
+  ),
+
+  disableNextCfmeConfiguration: Ember.computed.not("isValidCfmeConfiguration")
+
 });
