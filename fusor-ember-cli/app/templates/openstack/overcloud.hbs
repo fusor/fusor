@@ -1,0 +1,54 @@
+<div class="row">
+  <div class="col-md-12">
+    <br />
+    <form class="form form-horizontal">
+
+      <p>
+      Enter an interface to provide external network access for the overcloud.
+      </p>
+
+      {{text-f label="External Network Interface"
+               value=model.openstack_overcloud_interface
+               cssId="external-osp-interface"
+               isRequired=true
+               disabled=isStarted
+               placeholder="Enter External Network Interface"
+               }}
+
+
+      <br />
+      <p>
+      Enter network blocks to assign to the overcloud for private networking and floating IP addresses.
+      </p>
+
+
+      {{text-f label="Private Network"
+               value=model.openstack_overcloud_private_net
+               cssId="osp-private-network"
+               isRequired=true
+               disabled=isStarted
+               placeholder="192.0.3.0/24"
+               help-inline="CIDR notation, 192.0.3.0/24"
+               isNetworkRange=true
+               }}
+
+      {{text-f label="Floating IP Addresses"
+               value=model.openstack_overcloud_float_net
+               cssId="osp-floating-network"
+               isRequired=true
+               disabled=isStarted
+               placeholder="192.168.253.0/24"
+               help-inline="CIDR notation, 192.168.253.0/24"
+               isNetworkRange=true
+               }}
+    </form>
+  </div>
+</div>
+
+<br />
+
+{{cancel-back-next backRouteName="assign-nodes"
+                   disableBack=false
+                   nextRouteName=nextStepRouteNameOvercloud
+                   disableNext=disableNextOvercloud
+                   disableCancel=isStarted}}

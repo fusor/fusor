@@ -5,6 +5,7 @@ import ProgressBarMixin from "../mixins/progress-bar-mixin";
 export default Ember.Controller.extend(ProgressBarMixin, {
 
   deploymentController: Ember.inject.controller('deployment'),
+  assignNodesController: Ember.inject.controller('assign-nodes'),
 
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
   deployment: Ember.computed.alias("deploymentController.model"),

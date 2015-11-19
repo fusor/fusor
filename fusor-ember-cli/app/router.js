@@ -46,6 +46,7 @@ export default Router.map(function() {
       this.route('undercloud-deploy', {resetNamespace: true});
       this.route('register-nodes', {resetNamespace: true});
       this.route('assign-nodes', {resetNamespace: true});
+      this.route('overcloud');
     });
     this.route('cloudforms', {resetNamespace: true}, function() {
       this.route('where-install', {resetNamespace: true});

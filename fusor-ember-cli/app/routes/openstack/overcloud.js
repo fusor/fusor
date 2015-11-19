@@ -8,8 +8,9 @@ export default Ember.Route.extend({
 
   setupController(controller, model) {
     controller.set('model', model);
-    var stepNumberOpenstack = this.controllerFor('deployment').get('stepNumberOpenstack');
-    return this.controllerFor('deployment').set('currentStepNumber', stepNumberOpenstack);
+    if (Ember.isBlank(controller.get('model.openstack_overcloud_interface'))) {
+      controller.set('model.openstack_overcloud_interface', 'eth1');
+    }
   }
 
 });
