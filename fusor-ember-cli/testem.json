@@ -16,5 +16,6 @@
     "/fusor/api": {
       "target": "http://localhost:4200"
     }
-  }
+  },
+  "test_page": "tests/index.html?coverage"
 }
