@@ -13,6 +13,8 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     controller.set('organizationTabRouteName', 'configure-organization');
     controller.set('lifecycleEnvironmentTabRouteName', 'configure-environment');
     controller.set('model.host_naming_scheme', 'Freeform');
+    controller.set('confirmRhevRootPassword', model.get('rhev_root_password'));
+    controller.set('confirmRhevEngineAdminPassword', model.get('rhev_engine_admin_password'));
 
     // copied from setupController in app/routes/subscriptions/credentials.js
     // to fix bug of Review Tab being disabled on refresh and needing to click

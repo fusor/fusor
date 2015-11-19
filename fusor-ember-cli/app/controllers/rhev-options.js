@@ -9,6 +9,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   rhevClusterName: Ember.computed.alias("deploymentController.model.rhev_cluster_name"),
   rhevCpuType: Ember.computed.alias("deploymentController.model.rhev_cpu_type"),
   rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
+  confirmRhevRootPassword: Ember.computed.alias("deploymentController.confirmRhevRootPassword"),
+  confirmRhevEngineAdminPassword: Ember.computed.alias("deploymentController.confirmRhevEngineAdminPassword"),
 
   cpuTypes: ['Intel Conroe Family', 'Intel Penryn Family', 'Intel Nehalem Family',
              'Intel Westmere Family', 'Intel SandyBridge Family', 'Intel Haswell',
