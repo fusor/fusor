@@ -14,25 +14,25 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     }
   }),
 
-  isValidPrivateNetworkRange: Ember.computed('model.openstack_overcloud_private_net', function() {
+  isValidPrivateNetworkRange: Ember.computed('model.deployment.openstack_overcloud_private_net', function() {
       // TODO
       return true;
   }),
 
-  isValidPrivateFloatRange: Ember.computed('model.openstack_overcloud_float_net', function() {
+  isValidPrivateFloatRange: Ember.computed('model.deployment.openstack_overcloud_float_net', function() {
       // TODO
       return true;
   }),
 
-  validOvercloudNetworks: Ember.computed('model.openstack_overcloud_interface',
-                                         'model.openstack_overcloud_private_net',
-                                         'model.openstack_overcloud_float_net',
+  validOvercloudNetworks: Ember.computed('neutronPublicInterface',
+                                         'model.deployment.openstack_overcloud_private_net',
+                                         'model.deployment.openstack_overcloud_float_net',
                                          'isValidPrivateNetworkRange',
                                          'isValidPrivateFloatRange',
                                           function() {
-    return (Ember.isPresent(this.get('model.openstack_overcloud_interface')) &&
-            Ember.isPresent(this.get('model.openstack_overcloud_private_net')) &&
-            Ember.isPresent(this.get('model.openstack_overcloud_float_net')) &&
+    return (Ember.isPresent(this.get('neutronPublicInterface')) &&
+            Ember.isPresent(this.get('model.deployment.openstack_overcloud_private_net')) &&
+            Ember.isPresent(this.get('model.deployment.openstack_overcloud_float_net')) &&
             this.get('isValidPrivateNetworkRange') &&
             this.get('isValidPrivateFloatRange')
            );

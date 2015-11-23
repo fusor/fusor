@@ -54,7 +54,6 @@ export default DS.Model.extend({
   openstack_undercloud_user_password: DS.attr('string'),
   openstack_overcloud_address: DS.attr('string'),
   openstack_overcloud_password: DS.attr('string'),
-  openstack_overcloud_interface: DS.attr('string'),
   openstack_overcloud_private_net: DS.attr('string'),
   openstack_overcloud_float_net: DS.attr('string'),
 
