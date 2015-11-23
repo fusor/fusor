@@ -429,9 +429,8 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   },
 
   disableAssignNodesNext: Ember.computed('unassignedRoles.[]', function() {
-    if (this.get('unassignedRoles')) {
-        return (this.get('unassignedRoles.length') > 0);
-    }
+    var unassignedRoleTypes = this.get('unassignedRoles').getEach('roleType');
+    return (unassignedRoleTypes.contains('controller') || unassignedRoleTypes.contains('compute'));
   })
 
 });
