@@ -80,10 +80,10 @@
         :releasever: "6Server"
 
     :cloudforms:
-      - :product_name: "Red Hat CloudForms"
-        :product_id: "167"
-        :repository_set_id: "3237"
-        :repository_set_name: "Red Hat CloudForms Management Engine 5.3 (Files)"
+      - :product_name: "Red Hat CloudForms Beta"
+        :product_id: "303"
+        :repository_set_id: "4635"
+        :repository_set_name: "Red Hat CloudForms Beta (Files)"
         :basearch: "x86_64"
         #:image_file_name: "cfme-rhevm-5.3-54.x86_64.rhevm.ova" # Default behavior uses the 'latest' image file.
 
