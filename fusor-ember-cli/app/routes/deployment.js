@@ -49,6 +49,10 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
 
       var controller = this.controllerFor('review/installation');
 
+      if(controller.get('modalOpen')) {
+          controller.closeContinueDeployModal();
+      }
+
       controller.set('spinnerTextMessage', 'Building task list');
       controller.set('showSpinner', true);
 

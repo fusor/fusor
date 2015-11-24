@@ -5,6 +5,7 @@ Fusor::Engine.routes.draw do
         resources :deployments do
           member do
             put :deploy
+            get :validate
           end
         end
         resources :subscriptions do
