@@ -31,7 +31,7 @@
                isNetworkRange=true
                }}
 
-      {{text-f label="Floating IP Addresses"
+      {{text-f label="Floating IP Network"
                value=model.deployment.openstack_overcloud_float_net
                cssId="osp-floating-network"
                isRequired=true
@@ -40,6 +40,45 @@
                help-inline="CIDR notation, 192.168.253.0/24"
                isNetworkRange=true
                }}
+
+      <br />
+      <p>
+      Create an administrative password for the overcloud.
+      </p>
+
+      <div class='ident-radio'>
+        {{#radio-button value="autogenerate" groupValue=pwdType changed="pwdTypeChanged" id='selfhost' disabled=deploymentController.isStarted}}
+          <span class="{{if deploymentController.isStarted 'disabled'}}">
+            Auto-generate password during deployment
+          </span>
+          <div class='osp-autogeneric-label help-block'>
+            After deployment, generated passwords can be seen on Installation Progress screen or in /root/keystonerc_admin
+          </div>
+        {{/radio-button}}
+      </div>
+
+      <div class='ident-radio'>
+        {{#radio-button value="specify" groupValue=pwdType changed="pwdTypeChanged" id='selfhost' disabled=deploymentController.isStarted}}
+          <span class="{{if deploymentController.isStarted 'disabled'}}">
+            Specify password
+          </span>
+        {{/radio-button}}
+      </div>
+
+      {{#unless isAutoPwd}}
+          {{text-f label="Admin Password" type="password" value=overcloudPassword
+                   cssId="osp_overcloud_password"
+                   isRequired=true
+                   disabled=isStarted
+                   }}
+
+          {{text-f label="Confirm Password" type="password" value=confirmOvercloudPassword
+                   cssId="confirm_osp_overcloud_password"
+                   isRequired=true
+                   mustMatch=overcloudPassword
+                   disabled=isStarted
+                   placeholder="Must match admin password"}}
+      {{/unless}}
     </form>
   </div>
 </div>
