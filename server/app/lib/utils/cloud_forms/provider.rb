@@ -34,7 +34,7 @@ module Utils
                 :password => provider_params[:password]
               }
             }
-          ],
+          ]
         }
 
         request_url = "https://admin:#{deployment.cfme_admin_password}@#{cfme_ip}/api/providers"

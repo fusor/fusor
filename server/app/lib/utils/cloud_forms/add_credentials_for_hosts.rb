@@ -25,7 +25,7 @@ module Utils
           scp_from_path = "/usr/share/fusor_ovirt/bin"
           scp_to_path   = "/root"
 
-          # upload the script 
+          # upload the script
           Net::SCP.start(cfme_ip, ssh_username, :password => ssh_password, :paranoid => false) do |scp|
             scp.upload!("#{scp_from_path}/#{script_name}", "#{scp_to_path}/#{script_name}")
           end
