@@ -26,7 +26,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
 
   isValidOvercloudPassword: Ember.computed('isAutoPwd', 'overcloudPassword','confirmOvercloudPassword', function () {
       if (this.get('isAutoPwd')) {
-          return true
+          return true;
       } else {
           return Ember.isPresent(this.get('overcloudPassword')) &&
                  this.get('overcloudPassword') === this.get('confirmOvercloudPassword');
