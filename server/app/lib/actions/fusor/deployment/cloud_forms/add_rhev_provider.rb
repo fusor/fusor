@@ -37,8 +37,9 @@ module Actions
                          :password => deployment.rhev_engine_admin_password,
                          :hypervisors => deployment.discovered_hosts
             }
-
             Utils::CloudForms::Provider.add(input[:vm_ip], provider, deployment)
+            Utils::CloudForms::AddCredentialsForHosts.add(input[:vm_ip], deployment)
+
             Rails.logger.info "================ Leaving AddRhevProvider run method ===================="
           end
         end
