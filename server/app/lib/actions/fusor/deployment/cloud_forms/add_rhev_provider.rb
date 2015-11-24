@@ -38,6 +38,7 @@ module Actions
                          :hypervisors => deployment.discovered_hosts
             }
             Utils::CloudForms::Provider.add(input[:vm_ip], provider, deployment)
+            sleep(3.minutes)
             Utils::CloudForms::AddCredentialsForHosts.add(input[:vm_ip], deployment)
 
             Rails.logger.info "================ Leaving AddRhevProvider run method ===================="
