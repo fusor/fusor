@@ -8,13 +8,12 @@
       </p>
 
       {{text-f label="External Network Interface"
-               value=model.openstack_overcloud_interface
+               value=neutronPublicInterface
                cssId="external-osp-interface"
                isRequired=true
                disabled=isStarted
                placeholder="Enter External Network Interface"
                }}
-
 
       <br />
       <p>
@@ -23,7 +22,7 @@
 
 
       {{text-f label="Private Network"
-               value=model.openstack_overcloud_private_net
+               value=model.deployment.openstack_overcloud_private_net
                cssId="osp-private-network"
                isRequired=true
                disabled=isStarted
@@ -33,7 +32,7 @@
                }}
 
       {{text-f label="Floating IP Addresses"
-               value=model.openstack_overcloud_float_net
+               value=model.deployment.openstack_overcloud_float_net
                cssId="osp-floating-network"
                isRequired=true
                disabled=isStarted
