@@ -25,6 +25,7 @@ module Fusor
                :openstack_overcloud_password,
                :openstack_overcloud_private_net,
                :openstack_overcloud_float_net,
+               :openstack_overcloud_float_gateway,
                :is_disconnected,
                :cdn_url, :manifest_file,
                :created_at, :updated_at
