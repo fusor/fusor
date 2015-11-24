@@ -72094,7 +72094,7 @@ if (
                         /* eslint-enable no-loop-func */
                     }
                     if (match.length > 1 && match.index < string.length) {
-                        push(output, array_slice.call(match, 1));
+                        array_push.apply(output, array_slice.call(match, 1));
                     }
                     lastLength = match[0].length;
                     lastLastIndex = lastIndex;
@@ -72231,7 +72231,9 @@ defineProperties(StringPrototype, {
 }, StringPrototype.lastIndexOf.length !== 1);
 
 // ES-5 15.1.2.2
+/* eslint-disable radix */
 if (parseInt(ws + '08') !== 8 || parseInt(ws + '0x16') !== 22) {
+/* eslint-enable radix */
     /* global parseInt: true */
     parseInt = (function (origParseInt) {
         var hexRegex = /^[\-+]?0[xX]/;
@@ -94833,24 +94835,20 @@ window.matchMedia || (window.matchMedia = function() {
     };
 }());
 
-;define('ember-cli-app-version/components/app-version', ['exports', 'ember', 'ember-cli-app-version/templates/app-version'], function (exports, Ember, layout) {
-
+;define('ember-cli-app-version/components/app-version', ['exports', 'ember', 'ember-cli-app-version/templates/app-version'], function (exports, _ember, _emberCliAppVersionTemplatesAppVersion) {
   'use strict';
 
-  exports['default'] = Ember['default'].Component.extend({
+  exports['default'] = _ember['default'].Component.extend({
     tagName: 'span',
-    layout: layout['default']
+    layout: _emberCliAppVersionTemplatesAppVersion['default']
   });
-
 });
-define('ember-cli-app-version/initializer-factory', ['exports', 'ember'], function (exports, Ember) {
-
+define('ember-cli-app-version/initializer-factory', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
-
-
 
   exports['default'] = initializerFactory;
-  var classify = Ember['default'].String.classify;
+
+  var classify = _ember['default'].String.classify;
 
   function initializerFactory(name, version) {
     var registered = false;
@@ -94858,18 +94856,16 @@ define('ember-cli-app-version/initializer-factory', ['exports', 'ember'], functi
     return function () {
       if (!registered && name && version) {
         var appName = classify(name);
-        Ember['default'].libraries.register(appName, version);
+        _ember['default'].libraries.register(appName, version);
         registered = true;
       }
     };
   }
-
 });
-define('ember-cli-app-version/templates/app-version', ['exports'], function (exports) {
+define("ember-cli-app-version/templates/app-version", ["exports"], function (exports) {
+  "use strict";
 
-  'use strict';
-
-  exports['default'] = Ember.HTMLBars.template((function() {
+  exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
         "revision": "Ember@1.13.10",
@@ -94899,18 +94895,15 @@ define('ember-cli-app-version/templates/app-version', ['exports'], function (exp
       },
       buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
         var morphs = new Array(1);
-        morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);
+        morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
         dom.insertBoundary(fragment, 0);
         return morphs;
       },
-      statements: [
-        ["content","version",["loc",[null,[1,0],[1,11]]]]
-      ],
+      statements: [["content", "version", ["loc", [null, [1, 0], [1, 11]]]]],
       locals: [],
       templates: []
     };
-  }()));
-
+  })());
 });
 define('ember-cli-app-version', ['ember-cli-app-version/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
   'use strict';
@@ -94936,22 +94929,20 @@ define('ember-cli-content-security-policy', ['ember-cli-content-security-policy/
   }));
 });
 
-define('ember-cli-showdown/components/markdown-to-html', ['exports', 'ember'], function (exports, Ember) {
-
+define('ember-cli-showdown/components/markdown-to-html', ['exports', 'ember'], function (exports, _ember) {
+  /* global Showdown */
   'use strict';
 
-  /* global Showdown */
-  exports['default'] = Ember['default'].Component.extend({
-    afterInit: function() {
+  exports['default'] = _ember['default'].Component.extend({
+    afterInit: (function () {
       this.converter = new Showdown.converter();
-    }.on('init'),
+    }).on('init'),
 
-    html: function() {
+    html: (function () {
       var source = this.get('markdown') || '';
-      return new Ember['default'].Handlebars.SafeString(this.converter.makeHtml(source));
-    }.property('markdown')
+      return new _ember['default'].Handlebars.SafeString(this.converter.makeHtml(source));
+    }).property('markdown')
   });
-
 });
 define('ember-cli-showdown', ['ember-cli-showdown/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
   'use strict';
@@ -94965,62 +94956,58 @@ define('ember-cli-showdown', ['ember-cli-showdown/index', 'ember', 'exports'], f
   }));
 });
 
-define('ember-drag-drop/components/draggable-object-target', ['exports', 'ember', 'ember-drag-drop/mixins/droppable'], function (exports, Ember, Droppable) {
-
+define('ember-drag-drop/components/draggable-object-target', ['exports', 'ember', 'ember-drag-drop/mixins/droppable'], function (exports, _ember, _emberDragDropMixinsDroppable) {
   'use strict';
 
-  exports['default'] = Ember['default'].Component.extend(Droppable['default'], {
+  exports['default'] = _ember['default'].Component.extend(_emberDragDropMixinsDroppable['default'], {
     classNames: ["draggable-object-target"],
 
-    handlePayload: function(payload) {
-      var obj = this.get('coordinator').getObject(payload,{target: this});
-      this.sendAction('action',obj,{target: this});
+    handlePayload: function handlePayload(payload) {
+      var obj = this.get('coordinator').getObject(payload, { target: this });
+      this.sendAction('action', obj, { target: this });
     },
 
-    handleDrop: function(event) {
+    handleDrop: function handleDrop(event) {
       var dataTransfer = event.dataTransfer;
       var payload = dataTransfer.getData("Text");
       this.handlePayload(payload);
     },
 
-    acceptDrop: function(event) {
+    acceptDrop: function acceptDrop(event) {
       this.handleDrop(event);
       //Firefox is navigating to a url on drop sometimes, this prevents that from happening
       event.preventDefault();
     },
 
     actions: {
-      acceptForDrop: function() {
+      acceptForDrop: function acceptForDrop() {
         var hashId = this.get('coordinator.clickedId');
         this.handlePayload(hashId);
       }
     }
   });
-
 });
-define('ember-drag-drop/components/draggable-object', ['exports', 'ember'], function (exports, Ember) {
+define("ember-drag-drop/components/draggable-object", ["exports", "ember"], function (exports, _ember) {
+  "use strict";
 
-  'use strict';
-
-  exports['default'] = Ember['default'].Component.extend({
+  exports["default"] = _ember["default"].Component.extend({
     tagName: "div",
     classNames: ["draggable-object"],
     classNameBindings: ["isDraggingObject:is-dragging-object:"],
     attributeBindings: ['draggable'],
     isDraggable: true,
 
-    draggable: function() {
+    draggable: (function () {
       var isDraggable = this.get('isDraggable');
 
       if (isDraggable) {
         return true;
-      }
-      else {
+      } else {
         return null;
       }
-    }.property('isDraggable'),
+    }).property('isDraggable'),
 
-    handleDragStart: function(event) {
+    handleDragStart: (function (event) {
 
       var dataTransfer = event.dataTransfer;
 
@@ -95030,107 +95017,104 @@ define('ember-drag-drop/components/draggable-object', ['exports', 'ember'], func
       dataTransfer.setData('Text', id);
 
       if (obj) {
-        Ember['default'].set(obj, 'isDraggingObject', true);
+        _ember["default"].set(obj, 'isDraggingObject', true);
       }
       this.set('isDraggingObject', true);
-    }.on("dragStart"),
+    }).on("dragStart"),
 
-    handleDragEnd: function() {
+    handleDragEnd: (function () {
       var obj = this.get('content');
 
       if (obj) {
-        Ember['default'].set(obj, 'isDraggingObject', false);
+        _ember["default"].set(obj, 'isDraggingObject', false);
       }
       this.set('isDraggingObject', false);
-    }.on("dragEnd"),
+    }).on("dragEnd"),
 
     actions: {
-      selectForDrag: function() {
+      selectForDrag: function selectForDrag() {
         var obj = this.get('content');
         var hashId = this.get('coordinator').setObject(obj, { source: this });
         this.get('coordinator').set("clickedId", hashId);
       }
     }
   });
-
 });
-define('ember-drag-drop/components/object-bin', ['exports', 'ember'], function (exports, Ember) {
-
+define('ember-drag-drop/components/object-bin', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
-  var YieldLocalMixin = Ember['default'].Mixin.create({
-    _yield: function(context, options) {
+  var YieldLocalMixin = _ember['default'].Mixin.create({
+    _yield: function _yield(context, options) {
       var view = options.data.view;
       var parentView = this._parentView;
-      var template = Ember['default'].get(this, 'template');
+      var template = _ember['default'].get(this, 'template');
 
       if (template) {
-        Ember['default'].assert("A Component must have a parent view in order to yield.", parentView);
+        _ember['default'].assert("A Component must have a parent view in order to yield.", parentView);
 
-        view.appendChild(Ember['default'].View, {
+        view.appendChild(_ember['default'].View, {
           isVirtual: true,
           tagName: '',
           _contextView: parentView,
           template: template,
-          context: Ember['default'].get(view, 'context'),
-          controller: Ember['default'].get(view, 'controller'),
+          context: _ember['default'].get(view, 'context'),
+          controller: _ember['default'].get(view, 'controller'),
           templateData: { keywords: {} }
         });
       }
     }
   });
 
-  var removeOne = function(arr,obj) {
+  var removeOne = function removeOne(arr, obj) {
     var l = arr.get('length');
     arr.removeObject(obj);
     var l2 = arr.get('length');
 
-    if (l-1 !== l2) {
+    if (l - 1 !== l2) {
       throw "bad length " + l + " " + l2;
     }
   };
 
-  exports['default'] = Ember['default'].Component.extend(YieldLocalMixin, {
+  exports['default'] = _ember['default'].Component.extend(YieldLocalMixin, {
     model: [],
     classNames: ['draggable-object-bin'],
 
     manageList: true,
 
-    handleObjectMoved: function() {
-    }.on("objectMoved"),
+    handleObjectMoved: (function () {}).on("objectMoved"),
 
     actions: {
-      handleObjectDropped: function(obj) {
+      handleObjectDropped: function handleObjectDropped(obj) {
         if (this.get('manageList')) {
           this.get("model").pushObject(obj);
         }
 
-        this.trigger("objectDroppedInternal",obj);
-        this.sendAction("objectDropped",{obj: obj, bin: this});
+        this.trigger("objectDroppedInternal", obj);
+        this.sendAction("objectDropped", { obj: obj, bin: this });
       },
 
-      handleObjectDragged: function(obj) {
+      handleObjectDragged: function handleObjectDragged(obj) {
         if (this.get('manageList')) {
-          removeOne(this.get('model'),obj);
+          removeOne(this.get('model'), obj);
         }
-        this.trigger("objectDraggedInternal",obj);
+        this.trigger("objectDraggedInternal", obj);
         this.sendAction("objectDragged");
-
       }
     }
   });
-
 });
-define('ember-drag-drop/mixins/droppable', ['exports', 'ember'], function (exports, Ember) {
-
+define('ember-drag-drop/mixins/droppable', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
-  var Droppable = Ember['default'].Mixin.create({
+  /**
+   * Wraps the native drop events to make your components droppable.
+   *
+   * @mixin Droppable
+   */
 
-    classNameBindings: [
-      'accepts-drag',
-      'self-drop'
-    ],
+  var Droppable = _ember['default'].Mixin.create({
+
+    classNameBindings: ['accepts-drag', 'self-drop'],
 
     /**
      * Read-only className property that is set to true when the component is
@@ -95153,23 +95137,23 @@ define('ember-drag-drop/mixins/droppable', ['exports', 'ember'], function (expor
 
     'self-drop': false,
 
-   /**
-     * Validates drag events. Override this to restrict which data types your
-     * component accepts.
-     *
-     * Example:
-     *
-     * ```js
-     * validateDragEvent: function(event) {
-     *   return event.dataTransfer.types.contains('text/x-foo');
-     * }
-     * ```
-     *
-     * @method validateDragEvent
-     * @public
-     */
+    /**
+      * Validates drag events. Override this to restrict which data types your
+      * component accepts.
+      *
+      * Example:
+      *
+      * ```js
+      * validateDragEvent: function(event) {
+      *   return event.dataTransfer.types.contains('text/x-foo');
+      * }
+      * ```
+      *
+      * @method validateDragEvent
+      * @public
+      */
 
-    validateDragEvent: function() {
+    validateDragEvent: function validateDragEvent() {
       return true;
     },
 
@@ -95188,14 +95172,14 @@ define('ember-drag-drop/mixins/droppable', ['exports', 'ember'], function (expor
      * @public
      */
 
-    acceptDrop: Ember['default'].K,
+    acceptDrop: _ember['default'].K,
 
     /**
      * @method _handleDragOver
      * @private
      */
 
-    _handleDragOver: function(event) {
+    _handleDragOver: (function (event) {
       if (this._droppableIsDraggable(event)) {
         this.set('self-drop', true);
       }
@@ -95208,14 +95192,14 @@ define('ember-drag-drop/mixins/droppable', ['exports', 'ember'], function (expor
       } else {
         this._resetDroppability();
       }
-    }.on('dragOver'),
+    }).on('dragOver'),
 
     /**
      * @method _handleDrop
      * @private
      */
 
-    _handleDrop: function(event) {
+    _handleDrop: (function (event) {
       // have to validate on drop because you may have nested sortables the
       // parent allows the drop but the child receives it, revalidating allows
       // the event to bubble up to the parent to handle it
@@ -95227,7 +95211,7 @@ define('ember-drag-drop/mixins/droppable', ['exports', 'ember'], function (expor
       // TODO: might not need this? I can't remember why its here
       event.stopPropagation();
       return false;
-    }.on('drop'),
+    }).on('drop'),
 
     /**
      * Tells the browser we have an acceptable drag event.
@@ -95236,7 +95220,7 @@ define('ember-drag-drop/mixins/droppable', ['exports', 'ember'], function (expor
      * @private
      */
 
-    _allowDrop: function(event) {
+    _allowDrop: function _allowDrop(event) {
       event.stopPropagation();
       event.preventDefault();
       return false;
@@ -95250,11 +95234,8 @@ define('ember-drag-drop/mixins/droppable', ['exports', 'ember'], function (expor
      * @private
      */
 
-    _droppableIsDraggable: function(event) {
-      return Droppable._currentDrag && (
-        Droppable._currentDrag === event.target ||
-        Droppable._currentDrag.contains(event.target)
-      );
+    _droppableIsDraggable: function _droppableIsDraggable(event) {
+      return Droppable._currentDrag && (Droppable._currentDrag === event.target || Droppable._currentDrag.contains(event.target));
     },
 
     /**
@@ -95262,22 +95243,21 @@ define('ember-drag-drop/mixins/droppable', ['exports', 'ember'], function (expor
      * @private
      */
 
-    _resetDroppability: function() {
+    _resetDroppability: (function () {
       this.set('accepts-drag', false);
       this.set('self-drop', false);
-    }.on('dragLeave')
+    }).on('dragLeave')
 
   });
 
   // Need to track this so we can determine `self-drop`.
   // It's on `Droppable` so we can test :\
   Droppable._currentDrag = null;
-  window.addEventListener('dragstart', function(event) {
+  window.addEventListener('dragstart', function (event) {
     Droppable._currentDrag = event.target;
   }, true);
 
   exports['default'] = Droppable;
-
 });
 define('ember-drag-drop', ['ember-drag-drop/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
   'use strict';
@@ -95291,11 +95271,18 @@ define('ember-drag-drop', ['ember-drag-drop/index', 'ember', 'exports'], functio
   }));
 });
 
-define('ember-idx-button/button', ['exports', 'ember', 'ember-idx-utils/mixin/with-config'], function (exports, Em, WithConfigMixin) {
-
+define('ember-idx-button/button', ['exports', 'ember', 'ember-idx-utils/mixin/with-config'], function (exports, _ember, _emberIdxUtilsMixinWithConfig) {
   'use strict';
 
-  exports['default'] = Em['default'].Component.extend(WithConfigMixin['default'], {
+  /**
+   * Button component
+   * 
+   * Styled button with async support.
+   *
+   * @class Button
+   */
+
+  exports['default'] = _ember['default'].Component.extend(_emberIdxUtilsMixinWithConfig['default'], {
 
     /**
      * The tag name the component is rendered as.
@@ -95322,7 +95309,7 @@ define('ember-idx-button/button', ['exports', 'ember', 'ember-idx-utils/mixin/wi
      * @property disabled
      * @public
      */
-    disabled: Em['default'].computed.equal('state', 'executing'),
+    disabled: _ember['default'].computed.equal('state', 'executing'),
 
     /**
      * The state of the button, can be one of the following:
@@ -95355,7 +95342,7 @@ define('ember-idx-button/button', ['exports', 'ember', 'ember-idx-utils/mixin/wi
      * @property icon-classes
      * @public
      */
-    'icon-classes': (function() {
+    'icon-classes': (function () {
       var propName;
       propName = "icon-" + this.state;
       return this.getWithDefault(propName, this.get('icon-default'));
@@ -95367,7 +95354,7 @@ define('ember-idx-button/button', ['exports', 'ember', 'ember-idx-utils/mixin/wi
      * @property label
      * @private
      */
-    label: (function() {
+    label: (function () {
       return this.getWithDefault(this.state, this.get('default'));
     }).property('state', 'default', 'executing', 'resolved', 'rejected'),
 
@@ -95387,9 +95374,9 @@ define('ember-idx-button/button', ['exports', 'ember', 'ember-idx-utils/mixin/wi
      * @method onClick
      * @private
      */
-    onClick: (function() {
-      this.sendAction('on-click', (function(_this) {
-        return function(promise) {
+    onClick: (function () {
+      this.sendAction('on-click', (function (_this) {
+        return function (promise) {
           _this.set('promise', promise);
           return _this.set('state', 'executing');
         };
@@ -95402,20 +95389,19 @@ define('ember-idx-button/button', ['exports', 'ember', 'ember-idx-utils/mixin/wi
      * @property changeStateByPromise
      * @private
      */
-    changeStateByPromise: (function() {
-      return this.get('promise').then((function(_this) {
-        return function() {
+    changeStateByPromise: (function () {
+      return this.get('promise').then((function (_this) {
+        return function () {
           return _this.set('state', 'resolved');
         };
-      })(this), (function(_this) {
-        return function(err) {
+      })(this), (function (_this) {
+        return function (err) {
           _this.set('state', 'rejected');
           return _this.set('error', err);
         };
       })(this));
     }).observes('promise')
   });
-
 });
 define('ember-idx-button', ['ember-idx-button/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
   'use strict';
@@ -95429,98 +95415,128 @@ define('ember-idx-button', ['ember-idx-button/index', 'ember', 'exports'], funct
   }));
 });
 
-define('ember-idx-forms/checkbox', ['exports', 'ember', 'ember-idx-forms/group', 'ember-idx-forms/checkbox', 'ember-idx-forms/mixins/control'], function (exports, Em, FormGroupComponent, FormCheckboxComponent, ControlMixin) {
-
+define('ember-idx-forms/checkbox', ['exports', 'ember', 'ember-idx-forms/group', 'ember-idx-forms/checkbox', 'ember-idx-forms/mixins/control'], function (exports, _ember, _emberIdxFormsGroup, _emberIdxFormsCheckbox, _emberIdxFormsMixinsControl) {
   'use strict';
 
-  exports['default'] = FormGroupComponent['default'].extend({
+  /*
+  Form Input
+  
+  Syntax:
+  {{em-checkbox property="property name"}}
+   */
+  exports['default'] = _emberIdxFormsGroup['default'].extend({
     v_icons: false,
     validations: false,
     yieldInLabel: true,
-    controlView: Em['default'].Checkbox.extend(ControlMixin['default'], {
+    controlView: _ember['default'].Checkbox.extend(_emberIdxFormsMixinsControl['default'], {
       "class": false,
-      model: Em['default'].computed.alias('parentView.parentView.model'),
-      propertyName: Em['default'].computed.alias('parentView.parentView.propertyName'),
-      init: function() {
+      model: _ember['default'].computed.alias('parentView.parentView.model'),
+      propertyName: _ember['default'].computed.alias('parentView.parentView.propertyName'),
+      init: function init() {
         this._super();
-        return Em['default'].Binding.from("model." + (this.get('propertyName'))).to('checked').connect(this);
+        return _ember['default'].Binding.from("model." + this.get('propertyName')).to('checked').connect(this);
       }
     }),
-    wrapperClass: (function() {
+    wrapperClass: (function () {
       if (this.get('form.form_layout') === 'horizontal') {
         return 'col-sm-offset-2 col-sm-10';
       }
     }).property('form.form_layout'),
-    labelWrapperClass: (function() {
+    labelWrapperClass: (function () {
       if (this.get('form.form_layout') === 'horizontal') {
         return 'checkbox';
       }
       return null;
     }).property('form.form_layout'),
-    "class": (function() {
+    "class": (function () {
       if (this.get('form.form_layout') !== 'horizontal') {
         return 'checkbox';
       }
       return 'form-group';
     }).property('form.form_layout')
   });
-
 });
-define('ember-idx-forms/control_help', ['exports', 'ember', 'ember-idx-forms/mixins/in_form'], function (exports, Em, InFormMixin) {
-
+define('ember-idx-forms/control_help', ['exports', 'ember', 'ember-idx-forms/mixins/in_form'], function (exports, _ember, _emberIdxFormsMixinsIn_form) {
   'use strict';
 
-  exports['default'] = Em['default'].Component.extend(InFormMixin['default'], {
+  /*
+  Form Control Help
+  
+  Renders a textual help of the control.
+  
+  Note: currently must be a direct descendant of a form-group or 'property' must be explicitly defined
+  
+  Syntax:
+  {{em-form-control-help}}
+   */
+  exports['default'] = _ember['default'].Component.extend(_emberIdxFormsMixinsIn_form['default'], {
     tagName: 'span',
     classNames: ['help-block'],
     classNameBindings: ['extraClass', 'horiClassCalc'],
     text: void 0,
     extraClass: void 0,
     horiClass: 'col-sm-offset-2 col-sm-10',
-    horiClassCalc: (function() {
+    horiClassCalc: (function () {
       if (this.get('form.isHorizontal') && this.get('horiClass')) {
         return this.get('horiClass');
       }
     }).property('form.isHorizontal'),
-    init: function() {
+    init: function init() {
       this._super();
-      return Em['default'].Binding.from('model.errors.' + this.get('parentView.propertyName')).to('errors').connect(this);
+      return _ember['default'].Binding.from('model.errors.' + this.get('parentView.propertyName')).to('errors').connect(this);
     },
-    helpText: (function() {
+    helpText: (function () {
       return this.get('errors.firstObject') || this.get('text');
     }).property('text', 'errors.firstObject'),
-    hasHelp: (function() {
+    hasHelp: (function () {
       var _ref;
       return ((_ref = this.get('helpText')) != null ? _ref.length : void 0) > 0;
     }).property('helpText'),
-    hasError: (function() {
+    hasError: (function () {
       var _ref;
       return (_ref = this.get('errors')) != null ? _ref.length : void 0;
     }).property('errors.length')
   });
-
 });
-define('ember-idx-forms/form', ['exports', 'ember', 'ember-idx-forms/utils/utils'], function (exports, Em, Utils) {
-
+define('ember-idx-forms/form', ['exports', 'ember', 'ember-idx-forms/utils/utils'], function (exports, _ember, _emberIdxFormsUtilsUtils) {
   'use strict';
 
-  exports['default'] = Em['default'].Component.extend({
+  /*
+  Form View
+  
+  A component for rendering a form element.
+  
+  Syntax:
+  {{em-form
+      //The layout of the form
+      form_layout="form|inline|horizontal"
+      //The model bound to the form if any
+      model="some_model_instance"
+      //The action to be invoked on the controller when a form is submitted.
+      action="some_action"
+      //if true a submit button will be rendered
+      submit_button=true|false
+      //if true validation icons will be rendered
+      v_icons=true|false
+  }}
+  */
+  exports['default'] = _ember['default'].Component.extend({
     tagName: 'form',
     classNameBindings: ['form_layout_class'],
     attributeBindings: ['role'],
     role: 'form',
-    form_layout_class: (function() {
+    form_layout_class: (function () {
       switch (this.get('form_layout')) {
         case 'horizontal':
         case 'inline':
-          return "form-" + (this.get('form_layout'));
+          return "form-" + this.get('form_layout');
         default:
           return 'form';
       }
     }).property('form_layout'),
-    isDefaultLayout: Utils['default'].createBoundSwitchAccessor('form', 'form_layout', 'form'),
-    isInline: Utils['default'].createBoundSwitchAccessor('inline', 'form_layout', 'form'),
-    isHorizontal: Utils['default'].createBoundSwitchAccessor('horizontal', 'form_layout', 'form'),
+    isDefaultLayout: _emberIdxFormsUtilsUtils['default'].createBoundSwitchAccessor('form', 'form_layout', 'form'),
+    isInline: _emberIdxFormsUtilsUtils['default'].createBoundSwitchAccessor('inline', 'form_layout', 'form'),
+    isHorizontal: _emberIdxFormsUtilsUtils['default'].createBoundSwitchAccessor('horizontal', 'form_layout', 'form'),
     action: 'submit',
     model: void 0,
     form_layout: 'form',
@@ -95532,17 +95548,17 @@ define('ember-idx-forms/form', ['exports', 'ember', 'ember-idx-forms/utils/utils
     
     Optionally execute model validations and perform a form submission.
      */
-    submit: function(e) {
+    submit: function submit(e) {
       var promise;
       if (e) {
         e.preventDefault();
       }
-      if (Em['default'].isNone(this.get('model.validate'))) {
+      if (_ember['default'].isNone(this.get('model.validate'))) {
         return this.get('targetObject').send(this.get('action'));
       } else {
         promise = this.get('model').validate();
-        return promise.then((function(_this) {
-          return function() {
+        return promise.then((function (_this) {
+          return function () {
             if (_this.get('model.isValid')) {
               return _this.get('targetObject').send(_this.get('action'));
             }
@@ -95551,44 +95567,64 @@ define('ember-idx-forms/form', ['exports', 'ember', 'ember-idx-forms/utils/utils
       }
     }
   });
-
 });
-define('ember-idx-forms/group', ['exports', 'ember', 'ember-idx-forms/mixins/in_form', 'ember-idx-forms/mixins/has_property', 'ember-idx-forms/mixins/has_property_validation'], function (exports, Em, InFormMixin, HasPropertyMixin, HasPropertyValidationMixin) {
-
+define('ember-idx-forms/group', ['exports', 'ember', 'ember-idx-forms/mixins/in_form', 'ember-idx-forms/mixins/has_property', 'ember-idx-forms/mixins/has_property_validation'], function (exports, _ember, _emberIdxFormsMixinsIn_form, _emberIdxFormsMixinsHas_property, _emberIdxFormsMixinsHas_property_validation) {
   'use strict';
 
-  exports['default'] = Em['default'].Component.extend(InFormMixin['default'], HasPropertyMixin['default'], HasPropertyValidationMixin['default'], {
+  /*
+  Form Group
+  
+  Wraps labels, controls and help message for optimum spacing and validation styles.
+  A wrapper for a single input with its assistances views such as label, help message.
+  
+  A form group can yield the control's view after or within a label, this is dependent on the control
+      required layout and is defined byt he yieldInLabel property
+  
+  
+  Syntax:
+  {{em-form-group
+      //The state of the form group
+      status="none|error|warning|success"
+      //If true the control view is yieled within the label
+      yieldInLabel=true|false
+      //If true validation icons will be rendered, by default inherited from the form
+      v_icons: true
+      //Label of the form group, default is a human friendly form of the property name
+      label="Some label"
+  }}
+   */
+  exports['default'] = _ember['default'].Component.extend(_emberIdxFormsMixinsIn_form['default'], _emberIdxFormsMixinsHas_property['default'], _emberIdxFormsMixinsHas_property_validation['default'], {
     tagName: 'div',
     "class": 'form-group',
     layoutName: 'components/em-form-group',
     classNameBindings: ['class', 'hasSuccess', 'hasWarning', 'hasError', 'v_icons:has-feedback'],
     attributeBindings: ['disabled'],
     canShowErrors: false,
-    hasSuccess: (function() {
+    hasSuccess: (function () {
       var success;
       success = this.get('validations') && this.get('status') === 'success' && this.get('canShowErrors');
       this.set('success', success);
       return success;
     }).property('status', 'canShowErrors'),
-    hasWarning: (function() {
+    hasWarning: (function () {
       var warning;
       warning = this.get('validations') && this.get('status') === 'warning' && this.get('canShowErrors');
       this.set('warning', warning);
       return warning;
     }).property('status', 'canShowErrors'),
-    hasError: (function() {
+    hasError: (function () {
       var error;
       error = this.get('validations') && this.get('status') === 'error' && this.get('canShowErrors');
       this.set('error', error);
       return error;
     }).property('status', 'canShowErrors'),
-    v_icons: Em['default'].computed.alias('form.v_icons'),
+    v_icons: _ember['default'].computed.alias('form.v_icons'),
     v_success_icon: 'fa fa-check',
     v_warn_icon: 'fa fa-exclamation-triangle',
     v_error_icon: 'fa fa-times',
     validations: true,
     yieldInLabel: false,
-    v_icon: (function() {
+    v_icon: (function () {
       if (!this.get('canShowErrors')) {
         return;
       }
@@ -95604,7 +95640,7 @@ define('ember-idx-forms/group', ['exports', 'ember', 'ember-idx-forms/mixins/in_
           return null;
       }
     }).property('status', 'canShowErrors'),
-    init: function() {
+    init: function init() {
       return this._super();
     },
 
@@ -95615,26 +95651,30 @@ define('ember-idx-forms/group', ['exports', 'ember', 'ember-idx-forms/mixins/in_
     /*
     Listen to the focus out of the form group and display the errors
      */
-    focusOut: function() {
+    focusOut: function focusOut() {
       return this.set('canShowErrors', true);
     }
   });
-
 });
-define('ember-idx-forms/input', ['exports', 'ember', 'ember-idx-forms/group', 'ember-idx-forms/mixins/control'], function (exports, Em, FormGroupComponent, ControlMixin) {
-
+define('ember-idx-forms/input', ['exports', 'ember', 'ember-idx-forms/group', 'ember-idx-forms/mixins/control'], function (exports, _ember, _emberIdxFormsGroup, _emberIdxFormsMixinsControl) {
   'use strict';
 
-  exports['default'] = FormGroupComponent['default'].extend({
-    controlView: Em['default'].TextField.extend(ControlMixin['default'], {
+  /*
+  Form Input
+  
+  Syntax:
+  {{em-input property="property name"}}
+   */
+  exports['default'] = _emberIdxFormsGroup['default'].extend({
+    controlView: _ember['default'].TextField.extend(_emberIdxFormsMixinsControl['default'], {
       attributeBindings: ['placeholder', 'required', 'autofocus', 'disabled'],
-      placeholder: Em['default'].computed.alias('parentView.placeholder'),
-      required: Em['default'].computed.alias('parentView.required'),
-      autofocus: Em['default'].computed.alias('parentView.autofocus'),
-      disabled: Em['default'].computed.alias('parentView.disabled'),
-      type: Em['default'].computed.alias('parentView.type'),
-      model: Em['default'].computed.alias('parentView.model'),
-      propertyName: Em['default'].computed.alias('parentView.propertyName')
+      placeholder: _ember['default'].computed.alias('parentView.placeholder'),
+      required: _ember['default'].computed.alias('parentView.required'),
+      autofocus: _ember['default'].computed.alias('parentView.autofocus'),
+      disabled: _ember['default'].computed.alias('parentView.disabled'),
+      type: _ember['default'].computed.alias('parentView.type'),
+      model: _ember['default'].computed.alias('parentView.model'),
+      propertyName: _ember['default'].computed.alias('parentView.propertyName')
     }),
     property: void 0,
     label: void 0,
@@ -95642,89 +95682,117 @@ define('ember-idx-forms/input', ['exports', 'ember', 'ember-idx-forms/group', 'e
     required: void 0,
     autofocus: void 0,
     disabled: void 0,
-    controlWrapper: (function() {
+    controlWrapper: (function () {
       if (this.get('form.form_layout') === 'horizontal') {
         return 'col-sm-10';
       }
       return null;
     }).property('form.form_layout')
   });
-
 });
-define('ember-idx-forms/label', ['exports', 'ember', 'ember-idx-forms/mixins/in_form'], function (exports, Em, InFormMixin) {
-
+define('ember-idx-forms/label', ['exports', 'ember', 'ember-idx-forms/mixins/in_form'], function (exports, _ember, _emberIdxFormsMixinsIn_form) {
   'use strict';
 
-  exports['default'] = Em['default'].Component.extend(InFormMixin['default'], {
+  /*
+  Form Label
+  
+  When styled with bootstrap, when form is rendered horizontally, the label require the 'extraClass' property to
+      be set to a value such 'col-sm-2' to be aligned properly.
+  
+  Syntax:
+  {{em-form-label
+      text="Some label"
+      extraClass="col-sm-2"
+  }}
+  
+  Or can serve as a block helper for elements that needs to be wrapped within label element.
+  {{#em-form-label text="Active?"}}
+      {{em-checkbox}}
+  {{/em-form-label}}
+   */
+  exports['default'] = _ember['default'].Component.extend(_emberIdxFormsMixinsIn_form['default'], {
     tagName: 'label',
     classNames: ['control-label'],
     classNameBindings: ['extraClass', 'inlineClassCalc', 'horiClassCalc'],
     attributeBindings: ['for'],
     horiClass: 'col-sm-2',
-    horiClassCalc: (function() {
+    horiClassCalc: (function () {
       if (this.get('form.isHorizontal') && this.get('horiClass')) {
         return this.get('horiClass');
       }
     }).property('form.isHorizontal'),
     inlineClass: 'sr-only',
-    inlineClassCalc: (function() {
+    inlineClassCalc: (function () {
       if (this.get('form.isInline') && this.get('inlineClass')) {
         return this.get('inlineClass');
       }
     }).property('form.form_layout')
   });
-
 });
-define('ember-idx-forms/mixins/control', ['exports', 'ember'], function (exports, Em) {
-
+define('ember-idx-forms/mixins/control', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
-  exports['default'] = Em['default'].Mixin.create({
+  /***
+  Mixin that should be applied for all controls
+   */
+  exports['default'] = _ember['default'].Mixin.create({
     classNameBindings: ['class'],
     "class": 'form-control',
-    init: function() {
+    init: function init() {
       this._super();
-      return Em['default'].Binding.from("model." + (this.get('propertyName'))).to('value').connect(this);
+      return _ember['default'].Binding.from("model." + this.get('propertyName')).to('value').connect(this);
     },
-    hasValue: (function() {
+    hasValue: (function () {
       return this.get('value') !== null;
     }).property('value').readOnly()
   });
-
 });
-define('ember-idx-forms/mixins/has_property', ['exports', 'ember'], function (exports, Em) {
-
+define('ember-idx-forms/mixins/has_property', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
-  exports['default'] = Em['default'].Mixin.create({
+  /*
+  A mixin that enriches a view that is attached to a model property.
+  
+  The property name by default is taken from the parentView unless explictly
+      defined in the `property` variable.
+  
+  This mixin also binds a property named `errors` to the model's `model.errors.@propertyName` array
+   */
+
+  exports['default'] = _ember['default'].Mixin.create({
     property: void 0,
-    propertyName: (function() {
+    propertyName: (function () {
       if (this.get('property')) {
         return this.get('property');
       } else if (this.get('parentView.property')) {
         return this.get('parentView.property');
       } else {
-        return Em['default'].assert(false, 'Property could not be found.');
+        return _ember['default'].assert(false, 'Property could not be found.');
       }
     }).property('parentView.property'),
-    init: function() {
+    init: function init() {
       this._super();
-      return Em['default'].Binding.from('model.errors.' + this.get('propertyName')).to('errors').connect(this);
+      return _ember['default'].Binding.from('model.errors.' + this.get('propertyName')).to('errors').connect(this);
     }
   });
-
 });
-define('ember-idx-forms/mixins/has_property_validation', ['exports', 'ember'], function (exports, Em) {
-
+define('ember-idx-forms/mixins/has_property_validation', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
-  exports['default'] = Em['default'].Mixin.create({
-    init: function() {
+  /*
+  A mixin that enriches a view that is attached to a model property that has validation
+      support.
+  
+  This mixin binds a property named `errors` to the model's `model.errors.@propertyName` array
+   */
+
+  exports['default'] = _ember['default'].Mixin.create({
+    init: function init() {
       this._super();
-      Em['default'].assert(!Em['default'].isNone(this.get('propertyName')), 'propertyName is required.');
-      return Em['default'].Binding.from('model.errors.' + this.get('propertyName')).to('errors').connect(this);
+      _ember['default'].assert(!_ember['default'].isNone(this.get('propertyName')), 'propertyName is required.');
+      return _ember['default'].Binding.from('model.errors.' + this.get('propertyName')).to('errors').connect(this);
     },
-    status: (function() {
+    status: (function () {
       if (this.get('errors.length')) {
         return 'error';
       } else {
@@ -95732,14 +95800,15 @@ define('ember-idx-forms/mixins/has_property_validation', ['exports', 'ember'], f
       }
     }).property('errors.length')
   });
-
 });
-define('ember-idx-forms/mixins/in_form', ['exports', 'ember'], function (exports, Em) {
-
+define('ember-idx-forms/mixins/in_form', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
-  exports['default'] = Em['default'].Mixin.create({
-    form: (function() {
+  /*
+  Find the form of the view that merges this mixin
+   */
+  exports['default'] = _ember['default'].Mixin.create({
+    form: (function () {
       var parentView;
       parentView = this.get('parentView');
       while (parentView) {
@@ -95748,110 +95817,123 @@ define('ember-idx-forms/mixins/in_form', ['exports', 'ember'], function (exports
         }
         parentView = parentView.get('parentView');
       }
-      return Em['default'].assert(false, 'Cannot find form');
+      return _ember['default'].assert(false, 'Cannot find form');
     }).property('parentView'),
-    model: (function() {
+    model: (function () {
       return this.get('form.model');
     }).property('form')
   });
-
 });
-define('ember-idx-forms/select', ['exports', 'ember', 'ember-idx-forms/group', 'ember-idx-forms/mixins/control'], function (exports, Em, FormGroupComponent, ControlMixin) {
-
+define('ember-idx-forms/select', ['exports', 'ember', 'ember-idx-forms/group', 'ember-idx-forms/mixins/control'], function (exports, _ember, _emberIdxFormsGroup, _emberIdxFormsMixinsControl) {
   'use strict';
 
-  exports['default'] = FormGroupComponent['default'].extend({
+  /*
+  Form Select
+  
+  Syntax:
+  {{em-select property="property name"
+      content=array_of_options
+      optionValuePath=keyForValue
+      optionLabelPath=keyForLabel
+      prompt="Optional default prompt"}}
+   */
+  exports['default'] = _emberIdxFormsGroup['default'].extend({
     v_icons: false,
-    controlView: Em['default'].Select.extend(ControlMixin['default'], {
-      model: Em['default'].computed.alias('parentView.model'),
-      propertyName: Em['default'].computed.alias('parentView.propertyName'),
-      content: Em['default'].computed.alias('parentView.content'),
-      optionValuePath: Em['default'].computed.alias('parentView.optionValuePath'),
-      optionLabelPath: Em['default'].computed.alias('parentView.optionLabelPath'),
-      prompt: Em['default'].computed.alias('parentView.prompt')
+    controlView: _ember['default'].Select.extend(_emberIdxFormsMixinsControl['default'], {
+      model: _ember['default'].computed.alias('parentView.model'),
+      propertyName: _ember['default'].computed.alias('parentView.propertyName'),
+      content: _ember['default'].computed.alias('parentView.content'),
+      optionValuePath: _ember['default'].computed.alias('parentView.optionValuePath'),
+      optionLabelPath: _ember['default'].computed.alias('parentView.optionLabelPath'),
+      prompt: _ember['default'].computed.alias('parentView.prompt')
     }),
     property: void 0,
     content: void 0,
     optionValuePath: void 0,
     optionLabelPath: void 0,
     prompt: void 0,
-    controlWrapper: (function() {
+    controlWrapper: (function () {
       if (this.get('form.form_layout') === 'horizontal') {
         return 'col-sm-10';
       }
       return null;
     }).property('form.form_layout')
   });
-
 });
-define('ember-idx-forms/submit_button', ['exports', 'ember', 'ember-idx-forms/mixins/in_form'], function (exports, Em, InFormMixin) {
-
+define('ember-idx-forms/submit_button', ['exports', 'ember', 'ember-idx-forms/mixins/in_form'], function (exports, _ember, _emberIdxFormsMixinsIn_form) {
   'use strict';
 
-  exports['default'] = Em['default'].Component.extend(InFormMixin['default'], {
+  /*
+  Form Submit Button
+  
+  Syntax:
+  {{em-form-submit text="Submit"}}
+   */
+  exports['default'] = _ember['default'].Component.extend(_emberIdxFormsMixinsIn_form['default'], {
     classes: 'btn btn-default',
     classNames: ['form-group'],
     text: 'Submit',
     type: 'submit',
     attributeBindings: ['disabled'],
     horiClass: 'col-sm-offset-2 col-sm-10',
-    disabled: (function() {
-      if (!Em['default'].isNone(this.get('model.isValid'))) {
+    disabled: (function () {
+      if (!_ember['default'].isNone(this.get('model.isValid'))) {
         return !this.get('model.isValid');
       } else {
         return false;
       }
     }).property('model.isValid')
   });
-
 });
-define('ember-idx-forms/text', ['exports', 'ember', 'ember-idx-forms/group', 'ember-idx-forms/mixins/control'], function (exports, Em, FormGroupComponent, ControlMixin) {
-
+define('ember-idx-forms/text', ['exports', 'ember', 'ember-idx-forms/group', 'ember-idx-forms/mixins/control'], function (exports, _ember, _emberIdxFormsGroup, _emberIdxFormsMixinsControl) {
   'use strict';
 
-  exports['default'] = FormGroupComponent['default'].extend({
-    controlView: Em['default'].TextArea.extend(ControlMixin['default'], {
+  /*
+  Form Input
+  
+  Syntax:
+  {{em-text property="property name" rows=4}}
+   */
+  exports['default'] = _emberIdxFormsGroup['default'].extend({
+    controlView: _ember['default'].TextArea.extend(_emberIdxFormsMixinsControl['default'], {
       attributeBindings: ['placeholder'],
-      placeholder: Em['default'].computed.alias('parentView.placeholder'),
-      model: Em['default'].computed.alias('parentView.model'),
-      propertyName: Em['default'].computed.alias('parentView.propertyName'),
-      rows: Em['default'].computed.alias('parentView.rows')
+      placeholder: _ember['default'].computed.alias('parentView.placeholder'),
+      model: _ember['default'].computed.alias('parentView.model'),
+      propertyName: _ember['default'].computed.alias('parentView.propertyName'),
+      rows: _ember['default'].computed.alias('parentView.rows')
     }),
     property: void 0,
     label: void 0,
     placeholder: void 0,
     rows: 4,
-    controlWrapper: (function() {
+    controlWrapper: (function () {
       if (this.get('form.form_layout') === 'horizontal') {
         return 'col-sm-10';
       }
       return null;
     }).property('form.form_layout')
   });
-
 });
 define('ember-idx-forms/utils/utils', ['exports'], function (exports) {
-
   'use strict';
 
   var Utils;
   exports['default'] = Utils = {
-    createBoundSwitchAccessor: function(switchValue, myProperty, myDefault) {
+    createBoundSwitchAccessor: function createBoundSwitchAccessor(switchValue, myProperty, myDefault) {
       if (myDefault == null) {
         myDefault = 'default';
       }
-      return (function(key, value) {
+      return (function (key, value) {
         if (arguments.length === 2) {
-          this.set(myProperty, (value ? switchValue : myDefault));
+          this.set(myProperty, value ? switchValue : myDefault);
         }
         return this.get(myProperty) === switchValue;
       }).property(myProperty);
     },
-    namelize: function(string) {
+    namelize: function namelize(string) {
       return string.underscore().split('_').join(' ').capitalize();
     }
   };
-
 });
 define('ember-idx-forms', ['ember-idx-forms/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
   'use strict';
@@ -95865,12 +95947,19 @@ define('ember-idx-forms', ['ember-idx-forms/index', 'ember', 'exports'], functio
   }));
 });
 
-define('ember-idx-modal/modal-body', ['exports', 'ember', 'ember-idx-utils/mixin/with-config', 'ember-idx-utils/mixin/style-bindings'], function (exports, Em, WithConfigMixin, StyleBindingsMixin) {
-
+define('ember-idx-modal/modal-body', ['exports', 'ember', 'ember-idx-utils/mixin/with-config', 'ember-idx-utils/mixin/style-bindings'], function (exports, _ember, _emberIdxUtilsMixinWithConfig, _emberIdxUtilsMixinStyleBindings) {
+  //(c) 2014 Indexia, Inc.
   'use strict';
 
-  //(c) 2014 Indexia, Inc.
-  exports['default'] = Em['default'].Component.extend(WithConfigMixin['default'], StyleBindingsMixin['default'], {
+  /**
+   * `{{em-modal-body}}` component.
+   *
+   * The body of the modal
+   *
+   * @class ModalBody
+   * @public
+   */
+  exports['default'] = _ember['default'].Component.extend(_emberIdxUtilsMixinWithConfig['default'], _emberIdxUtilsMixinStyleBindings['default'], {
     classNameBindings: ['styleClasses'],
 
     /**
@@ -95881,19 +95970,21 @@ define('ember-idx-modal/modal-body', ['exports', 'ember', 'ember-idx-utils/mixin
      * @private
      * @type String
      */
-    styleClasses: (function() {
+    styleClasses: (function () {
       var _ref;
       return (_ref = this.get('config.modal.bodyClasses')) != null ? _ref.join(" ") : undefined;
     }).property()
   });
-
 });
-define('ember-idx-modal/modal-confirm-with-reason', ['exports', 'ember-idx-modal/modal-confirm'], function (exports, ModalConfirm) {
-
+define('ember-idx-modal/modal-confirm-with-reason', ['exports', 'ember-idx-modal/modal-confirm'], function (exports, _emberIdxModalModalConfirm) {
+  //(c) 2014 Indexia, Inc.
   'use strict';
 
-  //(c) 2014 Indexia, Inc.
-  exports['default'] = ModalConfirm['default'].extend({
+  /*
+   * A confirmation modal with a reason
+   * @class ModalConfirmWithReason
+   */
+  exports['default'] = _emberIdxModalModalConfirm['default'].extend({
     reasonModal: true,
 
     /*
@@ -95922,14 +96013,20 @@ define('ember-idx-modal/modal-confirm-with-reason', ['exports', 'ember-idx-modal
      */
     reason: void 0
   });
-
 });
-define('ember-idx-modal/modal-confirm', ['exports', 'ember'], function (exports, Em) {
-
+define('ember-idx-modal/modal-confirm', ['exports', 'ember'], function (exports, _ember) {
+  //(c) 2014 Indexia, Inc.
   'use strict';
 
-  //(c) 2014 Indexia, Inc.
-  exports['default'] = Em['default'].Component.extend({
+  /**
+   * A confirmation modal with 'Yes' & 'No' buttons
+   * When 'no' is pressed the modal is just closed.
+   * When 'yes' is pressed an action bound to the action on the controller set in the `confirm` property is invoked, 
+   * giving the controller a chance to decide whether to close the modal or not.
+   *
+   * @class ModalConfirm
+   */
+  exports['default'] = _ember['default'].Component.extend({
     /**
      * Bound to the action on the controller to be invoked when the 'yes' button is pressed.
      * @property confirm
@@ -95969,33 +96066,37 @@ define('ember-idx-modal/modal-confirm', ['exports', 'ember'], function (exports,
        * @method confirmPressed
        * @private
        */
-      confirmPressed: function(setPromise) {
+      confirmPressed: function confirmPressed(setPromise) {
         return this.sendAction('confirm', setPromise);
       }
     }
   });
-
 });
-define('ember-idx-modal/modal-emform', ['exports', 'ember', 'ember-idx-modal/modal-form'], function (exports, Em, FormModal) {
-
+define('ember-idx-modal/modal-emform', ['exports', 'ember', 'ember-idx-modal/modal-form'], function (exports, _ember, _emberIdxModalModalForm) {
+  //(c) 2014 Indexia, Inc.
   'use strict';
 
-  //(c) 2014 Indexia, Inc.
-  exports['default'] = FormModal['default'].extend({
+  exports['default'] = _emberIdxModalModalForm['default'].extend({
     classNameBindings: ['form'],
     attributeBindings: ['role'],
     role: 'form',
     model: void 0,
     submit_button: false
   });
-
 });
-define('ember-idx-modal/modal-footer', ['exports', 'ember', 'ember-idx-utils/mixin/with-config', 'ember-idx-utils/mixin/style-bindings'], function (exports, Em, WithConfigMixin, StyleBindingsMixin) {
-
+define('ember-idx-modal/modal-footer', ['exports', 'ember', 'ember-idx-utils/mixin/with-config', 'ember-idx-utils/mixin/style-bindings'], function (exports, _ember, _emberIdxUtilsMixinWithConfig, _emberIdxUtilsMixinStyleBindings) {
+  //(c) 2014 Indexia, Inc.
   'use strict';
 
-  //(c) 2014 Indexia, Inc.
-  exports['default'] = Em['default'].Component.extend(WithConfigMixin['default'], StyleBindingsMixin['default'], {
+  /**
+   * `{{em-modal-footer}}` component.
+   *
+   * The footer of the modal
+   *
+   * @class ModalFooter
+   * @public
+   */
+  exports['default'] = _ember['default'].Component.extend(_emberIdxUtilsMixinWithConfig['default'], _emberIdxUtilsMixinStyleBindings['default'], {
     classNameBindings: ['styleClasses'],
 
     /**
@@ -96006,19 +96107,21 @@ define('ember-idx-modal/modal-footer', ['exports', 'ember', 'ember-idx-utils/mix
      * @private
      * @type String
      */
-    styleClasses: (function() {
+    styleClasses: (function () {
       var _ref;
       return (_ref = this.get('config.modal.footerClasses')) != null ? _ref.join(" ") : void 0;
     }).property()
   });
-
 });
-define('ember-idx-modal/modal-form', ['exports', 'ember', 'ember-idx-modal/modal'], function (exports, Em, Modal) {
-
+define('ember-idx-modal/modal-form', ['exports', 'ember', 'ember-idx-modal/modal'], function (exports, _ember, _emberIdxModalModal) {
+  //(c) 2014 Indexia, Inc.
   'use strict';
 
-  //(c) 2014 Indexia, Inc.
-  exports['default'] = Modal['default'].extend({
+  /**
+   * A flavour of a {{#crossLink "Modal}}Modal{{/crossLink}} that handles form submission right.
+   * @class ModalForm
+   */
+  exports['default'] = _emberIdxModalModal['default'].extend({
     tagName: 'form',
     attributeBindings: ['in-async'],
     'in-async': null,
@@ -96036,19 +96139,19 @@ define('ember-idx-modal/modal-form', ['exports', 'ember', 'ember-idx-modal/modal
      * @method submitForm
      * @private
      */
-    submitForm: (function(e) {
+    submitForm: (function (e) {
       e.preventDefault();
       this.sendAction('on-submit', this, e);
       this.set('submitted', true);
       if (e.promise && "function" === typeof e.promise.then) {
         this.set('in-async', 'true');
-        return e.promise.then((function(_this) {
-          return function(r) {
+        return e.promise.then((function (_this) {
+          return function (r) {
             _this.set('in-async', null);
             return _this.close();
           };
-        })(this), (function(_this) {
-          return function(err) {
+        })(this), (function (_this) {
+          return function (err) {
             _this.set('in-async', null);
             _this.set('error', err);
             if (_this.get('close-if-error')) {
@@ -96060,7 +96163,7 @@ define('ember-idx-modal/modal-form', ['exports', 'ember', 'ember-idx-modal/modal
         return this.close();
       }
     }).on('submit'),
-    close: function() {
+    close: function close() {
       this.set('error', null);
       if (!this.get('submitted')) {
         this.sendAction('on-cancel', this);
@@ -96068,14 +96171,21 @@ define('ember-idx-modal/modal-form', ['exports', 'ember', 'ember-idx-modal/modal
       return this._super.apply(this, arguments);
     }
   });
-
 });
-define('ember-idx-modal/modal-title', ['exports', 'ember', 'ember-idx-utils/mixin/with-config', 'ember-idx-utils/mixin/style-bindings'], function (exports, Em, WithConfigMixin, StyleBindingsMixin) {
-
+define('ember-idx-modal/modal-title', ['exports', 'ember', 'ember-idx-utils/mixin/with-config', 'ember-idx-utils/mixin/style-bindings'], function (exports, _ember, _emberIdxUtilsMixinWithConfig, _emberIdxUtilsMixinStyleBindings) {
+  //(c) 2014 Indexia, Inc.
   'use strict';
 
-  //(c) 2014 Indexia, Inc.
-  exports['default'] = Em['default'].Component.extend(WithConfigMixin['default'], StyleBindingsMixin['default'], {
+  /**
+   * `{{em-modal-title}}` component.
+   *
+   * The title of the modal
+   *
+   * @class ModalTitle
+   * @public
+   */
+
+  exports['default'] = _ember['default'].Component.extend(_emberIdxUtilsMixinWithConfig['default'], _emberIdxUtilsMixinStyleBindings['default'], {
     classNameBindings: ['styleClasses', 'classes'],
 
     /**
@@ -96086,7 +96196,7 @@ define('ember-idx-modal/modal-title', ['exports', 'ember', 'ember-idx-utils/mixi
      * @private
      * @type String
      */
-    styleClasses: (function() {
+    styleClasses: (function () {
       var _ref;
       return (_ref = this.get('config.modal.titleClasses')) != null ? _ref.join(" ") : void 0;
     }).property(),
@@ -96098,18 +96208,27 @@ define('ember-idx-modal/modal-title', ['exports', 'ember', 'ember-idx-utils/mixi
      * @method registerInModal
      * @private
      */
-    registerInModal: function() {
-      return (this.get('parentView').setTitle(this)).on('init');
+    registerInModal: function registerInModal() {
+      return this.get('parentView').setTitle(this).on('init');
     }
   });
-
 });
-define('ember-idx-modal/modal-toggler', ['exports', 'ember', 'ember-idx-modal/modal', 'ember-idx-utils/mixin/with-config', 'ember-idx-utils/mixin/style-bindings'], function (exports, Em, Modal, WithConfigMixin, StyleBindingsMixin) {
-
+define('ember-idx-modal/modal-toggler', ['exports', 'ember', 'ember-idx-modal/modal', 'ember-idx-utils/mixin/with-config', 'ember-idx-utils/mixin/style-bindings'], function (exports, _ember, _emberIdxModalModal, _emberIdxUtilsMixinWithConfig, _emberIdxUtilsMixinStyleBindings) {
+  //(c) 2014 Indexia, Inc.
   'use strict';
 
-  //(c) 2014 Indexia, Inc.
-  exports['default'] = Em['default'].Component.extend(WithConfigMixin['default'], StyleBindingsMixin['default'], {
+  /**
+   * `{{em-modal-toggler}}` component.
+   *
+   * A component to toggle the visibility of a modal
+   *
+   * @class ModalToggler
+   * @event on-toggle triggered when the toggler is clicked before changing the visibility of the modal
+   *   @param toggler Toggler - This instance of the toggler
+   * @public
+   */
+
+  exports['default'] = _ember['default'].Component.extend(_emberIdxUtilsMixinWithConfig['default'], _emberIdxUtilsMixinStyleBindings['default'], {
     attributeBindings: ['disabled', 'type'],
     tagName: 'button',
     classNameBindings: ['styleClasses'],
@@ -96123,7 +96242,7 @@ define('ember-idx-modal/modal-toggler', ['exports', 'ember', 'ember-idx-modal/mo
      * @private
      * @type String
      */
-    styleClasses: (function() {
+    styleClasses: (function () {
       var _ref;
       return (_ref = this.get('config.modal.togglerClasses')) != null ? _ref.join(" ") : void 0;
     }).property(),
@@ -96134,7 +96253,7 @@ define('ember-idx-modal/modal-toggler', ['exports', 'ember', 'ember-idx-modal/mo
      * @method toggleVisibility
      * @private
      */
-    toggleVisibility: (function() {
+    toggleVisibility: (function () {
       this.sendAction('on-toggle', this);
       return this.get('modal').toggleVisibility();
     }).on('click'),
@@ -96145,26 +96264,53 @@ define('ember-idx-modal/modal-toggler', ['exports', 'ember', 'ember-idx-modal/mo
      * TODO: Assert modal existance
      * @method modalAsProperty
      */
-    modalAsProperty: (function() {
+    modalAsProperty: (function () {
       var modalAsAncestor;
-      modalAsAncestor = this.nearestOfType(Modal['default']);
+      modalAsAncestor = this.nearestOfType(_emberIdxModalModal['default']);
       if (modalAsAncestor) {
         return this.set('modal', modalAsAncestor);
       } else {
-        return Em['default'].run.schedule('afterRender', this, function() {
-          return this.set('modal', Em['default'].View.views[this.get('modal-id')]);
+        return _ember['default'].run.schedule('afterRender', this, function () {
+          return this.set('modal', _ember['default'].View.views[this.get('modal-id')]);
         });
       }
     }).on('willInsertElement')
   });
-
 });
-define('ember-idx-modal/modal', ['exports', 'ember', 'ember-idx-utils/mixin/with-config', 'ember-idx-utils/mixin/style-bindings'], function (exports, Em, WithConfigMixin, StyleBindingsMixin) {
-
+define('ember-idx-modal/modal', ['exports', 'ember', 'ember-idx-utils/mixin/with-config', 'ember-idx-utils/mixin/style-bindings'], function (exports, _ember, _emberIdxUtilsMixinWithConfig, _emberIdxUtilsMixinStyleBindings) {
+  //(c) 2014 Indexia, Inc.
   'use strict';
 
-  //(c) 2014 Indexia, Inc.
-  exports['default'] = Em['default'].Component.extend(WithConfigMixin['default'], StyleBindingsMixin['default'], {
+  /**
+   * `{{em-modal}}` component.
+   *
+   * Define a modal component that can be opened and closed, the modal visibility is controlled by the 
+   * {{#crossLink "ModalToggler"}}ModalToggler{{/crossLink}} component.
+   *
+   * ```handlebars
+   * {{#em-modal id="modal1"}}
+   *   {{#em-modal-title}}
+   *     {{#em-modal-toggler}}<span>&times;</span>{{/em-modal-toggler}}
+   *        <h4 class="modal-title">I'm a modal title</h4>
+   *    {{/em-modal-title}}
+   *    {{#em-modal-body}}
+   *        One fine body…
+   *    {{/em-modal-body}}
+   *    {{#em-modal-footer}}
+   *    {{#em-modal-toggler}}Close{{/em-modal-toggler}}
+   *    {{/em-modal-footer}}
+   * {{/em-modal}}
+   * {{#em-modal-toggler modal-id="modal1"}}Click me!{{/em-modal-toggler}}
+   * ```
+   *
+   * @class Modal
+   * @event will-open
+   * @event did-open
+   * @event will-close
+   * @public
+   */
+
+  exports['default'] = _ember['default'].Component.extend(_emberIdxUtilsMixinWithConfig['default'], _emberIdxUtilsMixinStyleBindings['default'], {
     /**
      * Properties bound as attributes the DOM element.
      * see documentation per property.
@@ -96190,7 +96336,7 @@ define('ember-idx-modal/modal', ['exports', 'ember', 'ember-idx-utils/mixin/with
      * @private
      * @type String
      */
-    styleClasses: (function() {
+    styleClasses: (function () {
       var _ref;
       return (_ref = this.get('config.modal.classes')) != null ? _ref.join(" ") : void 0;
     }).property('config.modal.classes'),
@@ -96200,7 +96346,7 @@ define('ember-idx-modal/modal', ['exports', 'ember', 'ember-idx-utils/mixin/with
      * @property styleOpenningClasses
      * @public
      */
-    styleOpenningClasses: (function() {
+    styleOpenningClasses: (function () {
       if (this.get('did-open')) {
         return "in";
       } else {
@@ -96213,7 +96359,7 @@ define('ember-idx-modal/modal', ['exports', 'ember', 'ember-idx-utils/mixin/with
      * @property display
      * @public
      */
-    display: (function() {
+    display: (function () {
       if (this.get('did-open')) {
         return 'block';
       } else {
@@ -96262,14 +96408,14 @@ define('ember-idx-modal/modal', ['exports', 'ember', 'ember-idx-utils/mixin/with
      * @method open
      * @public
      */
-    open: function() {
+    open: function open() {
       this.trigger('show');
       this.sendAction('on-show', this);
       this.set('is-open', 'true');
-      return Em['default'].run.schedule('afterRender', this, function() {
+      return _ember['default'].run.schedule('afterRender', this, function () {
         this.set('did-open', 'true');
         this.trigger('shown');
-        return Em['default'].run.schedule('afterRender', this, function() {
+        return _ember['default'].run.schedule('afterRender', this, function () {
           return this.$().focus();
         });
       });
@@ -96280,7 +96426,7 @@ define('ember-idx-modal/modal', ['exports', 'ember', 'ember-idx-utils/mixin/with
      * @method close
      * @public
      */
-    close: function() {
+    close: function close() {
       this.trigger('hide');
       this.sendAction('on-hide', this);
       this.set('is-open', void 0);
@@ -96292,7 +96438,7 @@ define('ember-idx-modal/modal', ['exports', 'ember', 'ember-idx-utils/mixin/with
      * @method toggleVisibility
      * @public
      */
-    toggleVisibility: function() {
+    toggleVisibility: function toggleVisibility() {
       if (this.get('is-open')) {
         return this.close();
       } else {
@@ -96306,7 +96452,7 @@ define('ember-idx-modal/modal', ['exports', 'ember', 'ember-idx-utils/mixin/with
      * @private
      * @type ModalTitle
      */
-    setTitle: function(title) {
+    setTitle: function setTitle(title) {
       return this.set('title', title);
     },
 
@@ -96316,7 +96462,7 @@ define('ember-idx-modal/modal', ['exports', 'ember', 'ember-idx-utils/mixin/with
      * @private
      * @type ModalToggler
      */
-    setToggler: function(toggler) {
+    setToggler: function setToggler(toggler) {
       return this.set('toggler', toggler);
     },
 
@@ -96325,7 +96471,7 @@ define('ember-idx-modal/modal', ['exports', 'ember', 'ember-idx-utils/mixin/with
      * @method closeIfClickedOutside
      * @private
      */
-    closeIfClickedOutside: (function(e) {
+    closeIfClickedOutside: (function (e) {
       if (e.target !== this.get('element')) {
         return;
       }
@@ -96337,7 +96483,7 @@ define('ember-idx-modal/modal', ['exports', 'ember', 'ember-idx-utils/mixin/with
      * @method handleKeyboard
      * @private
      */
-    handleKeyboard: (function(e) {
+    handleKeyboard: (function (e) {
       switch (e.keyCode) {
         case 27:
           return this.close();
@@ -96358,7 +96504,7 @@ define('ember-idx-modal/modal', ['exports', 'ember', 'ember-idx-utils/mixin/with
      * @method openIf
      * @private
      */
-    openIf: (function() {
+    openIf: (function () {
       if (!this.get('open-if')) {
         return;
       }
@@ -96380,7 +96526,7 @@ define('ember-idx-modal/modal', ['exports', 'ember', 'ember-idx-utils/mixin/with
      * @method closeIf
      * @private
      */
-    closeIf: (function() {
+    closeIf: (function () {
       if (!this.get('close-if')) {
         return;
       }
@@ -96388,7 +96534,6 @@ define('ember-idx-modal/modal', ['exports', 'ember', 'ember-idx-utils/mixin/with
       return this.set('close-if', false);
     }).observes('close-if')
   });
-
 });
 define('ember-idx-modal', ['ember-idx-modal/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
   'use strict';
@@ -96402,32 +96547,52 @@ define('ember-idx-modal', ['ember-idx-modal/index', 'ember', 'exports'], functio
   }));
 });
 
-define('ember-idx-utils/config', ['exports', 'ember'], function (exports, Em) {
-
+define('ember-idx-utils/config', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
-  exports['default'] = Em['default'].Namespace.extend({
-    _configs: Em['default'].Object.create(),
-    getConfig: function(name) {
+  /*
+  Maintain a list of configuration within an Ember Namespace,
+  */
+  exports['default'] = _ember['default'].Namespace.extend({
+    _configs: _ember['default'].Object.create(),
+    getConfig: function getConfig(name) {
       var config;
       config = this._configs.get(name);
       return config;
     },
-    addConfig: function(name, config) {
+    addConfig: function addConfig(name, config) {
       var defaultConfig, newConfig;
       defaultConfig = this._configs.get('default');
-      newConfig = Em['default'].Object.create(config);
-      newConfig = Em['default'].$.extend(true, newConfig, defaultConfig);
+      newConfig = _ember['default'].Object.create(config);
+      newConfig = _ember['default'].$.extend(true, newConfig, defaultConfig);
       return this._configs.set(name, newConfig);
     }
   });
-
 });
-define('ember-idx-utils/mixin/hotkeys-bindings', ['exports', 'ember'], function (exports, Em) {
-
+define('ember-idx-utils/mixin/hotkeys-bindings', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
-  exports['default'] = Em['default'].Mixin.create({
+  /**
+   * A mixin to enhance an `Ember.View` with hotkey support.
+   * 
+   * To use, inherit this mixin in your view:
+   *
+   * ```javascript
+   * MyView = Em.View.extend(HotkeysMixin, {
+   *   hotkeysBindings: ['ctrl-a']
+   *
+   *   actions: {
+   *       'ctrl-a': function() {
+   *           console.log("Ctrl-a was pressed!");
+   *       }
+   *   }
+   * });
+   * ```
+   *
+   * @class HotkeysMixin
+   * @public
+   */
+  exports['default'] = _ember['default'].Mixin.create({
     /**
      * Add `hotkeysBindings` property as a `concatenatedProperties`.
      * @property concatenatedProperties
@@ -96455,7 +96620,7 @@ define('ember-idx-utils/mixin/hotkeys-bindings', ['exports', 'ember'], function 
       122: "f11",
       123: "f12"
     },
-    keyPressHandler: function(e) {
+    keyPressHandler: function keyPressHandler(e) {
       var command;
       command = "";
       if (e.ctrlKey) {
@@ -96475,26 +96640,31 @@ define('ember-idx-utils/mixin/hotkeys-bindings', ['exports', 'ember'], function 
       } else {
         command += String.fromCharCode(e.which).toLowerCase();
       }
-      Em['default'].debug("hotkey command: " + command);
+      _ember['default'].debug("hotkey command: " + command);
       return this.send(command);
     },
-    keyDown: function(e) {
+    keyDown: function keyDown(e) {
       return this.keyPressHandler(e);
     },
-    keyUp: function(e) {
+    keyUp: function keyUp(e) {
       return this.keyPressHandler(e);
     },
-    keyPress: function(e) {
+    keyPress: function keyPress(e) {
       return this.keyPressHandler(e);
     }
   });
-
 });
-define('ember-idx-utils/mixin/style-bindings', ['exports', 'ember'], function (exports, Em) {
-
+define('ember-idx-utils/mixin/style-bindings', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
-  exports['default'] = Em['default'].Mixin.create({
+  /**
+   * Provides styleBindings property to bind style 
+   * properties based on object properties.
+   *
+   * @class StyleBindingsMixin
+   * @public
+   */
+  exports['default'] = _ember['default'].Mixin.create({
 
     /**
      * Add `styleBindings` property as a `concatenatedProperties`.
@@ -96525,13 +96695,13 @@ define('ember-idx-utils/mixin/style-bindings', ['exports', 'ember'], function (e
      * value of the style property.
      * @private
      */
-    buildStyleString: function(styleName, property) {
+    buildStyleString: function buildStyleString(styleName, property) {
       var value;
       value = this.get(property);
       if (value === void 0) {
         return;
       }
-      if (Em['default'].typeOf(value) === "number") {
+      if (_ember['default'].typeOf(value) === "number") {
         value = value + this.get("unit");
       }
       return styleName + ":" + value + ";";
@@ -96546,27 +96716,27 @@ define('ember-idx-utils/mixin/style-bindings', ['exports', 'ember'], function (e
      * @method applyBindings
      * @private
      */
-    applyBindings: Em['default'].on('init', function() {
+    applyBindings: _ember['default'].on('init', function () {
       var lookup, properties, styleBindingsstyleBindings, styleComputed, styles;
       if (!(styleBindingsstyleBindings = this.styleBindings)) {
         return;
       }
       lookup = {};
-      this.styleBindings.forEach(function(binding) {
+      this.styleBindings.forEach(function (binding) {
         var propArr, property, style;
         propArr = binding.split(":");
         property = propArr[0];
         style = propArr[1];
         return lookup[style || property] = property;
       });
-      styles = Em['default'].keys(lookup);
-      properties = styles.map(function(style) {
+      styles = _ember['default'].keys(lookup);
+      properties = styles.map(function (style) {
         return lookup[style];
       });
-      styleComputed = Em['default'].computed(function() {
+      styleComputed = _ember['default'].computed(function () {
         var styleString, styleTokens;
-        styleTokens = styles.map((function(_this) {
-          return function(style) {
+        styleTokens = styles.map((function (_this) {
+          return function (style) {
             return _this.buildStyleString(style, lookup[style]);
           };
         })(this));
@@ -96576,17 +96746,15 @@ define('ember-idx-utils/mixin/style-bindings', ['exports', 'ember'], function (e
         }
       });
       styleComputed.property.apply(styleComputed, properties);
-      return Em['default'].defineProperty(this, "style", styleComputed);
+      return _ember['default'].defineProperty(this, "style", styleComputed);
     })
   });
-
 });
-define('ember-idx-utils/mixin/with-config', ['exports', 'ember'], function (exports, Em) {
-
+define('ember-idx-utils/mixin/with-config', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
-  exports['default'] = Em['default'].Mixin.create({
-    configName: Em['default'].computed(function() {
+  exports['default'] = _ember['default'].Mixin.create({
+    configName: _ember['default'].computed(function () {
       var config;
       config = this.nearestWithProperty('configName');
       if (config) {
@@ -96595,25 +96763,22 @@ define('ember-idx-utils/mixin/with-config', ['exports', 'ember'], function (expo
         return 'default';
       }
     }),
-    config: Em['default'].computed('configName', function() {
-      return Em['default'].IdxConfig.getConfig(this.get('configName'));
+    config: _ember['default'].computed('configName', function () {
+      return _ember['default'].IdxConfig.getConfig(this.get('configName'));
     })
   });
-
 });
-define('ember-idx-utils/utils/delay', ['exports', 'ember'], function (exports, Em) {
-
+define('ember-idx-utils/utils/delay', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
-  var delay = function(ms) {
+  var delay = function delay(ms) {
     ms = ms || 1500;
-    return new Em['default'].RSVP.Promise(function(resolve) {
-      Em['default'].run.later(this, resolve, ms);
+    return new _ember['default'].RSVP.Promise(function (resolve) {
+      _ember['default'].run.later(this, resolve, ms);
     });
   };
 
   exports['default'] = delay;
-
 });
 define('ember-idx-utils', ['ember-idx-utils/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
   'use strict';
@@ -96627,33 +96792,30 @@ define('ember-idx-utils', ['ember-idx-utils/index', 'ember', 'exports'], functio
   }));
 });
 
-define('ember-moment/computed', ['exports', 'ember-moment/computeds/moment', 'ember-moment/computeds/ago', 'ember-moment/computeds/duration'], function (exports, moment, ago, duration) {
-
+define('ember-moment/computed', ['exports', 'ember-moment/computeds/moment', 'ember-moment/computeds/ago', 'ember-moment/computeds/duration'], function (exports, _emberMomentComputedsMoment, _emberMomentComputedsAgo, _emberMomentComputedsDuration) {
   'use strict';
 
-
-
-  exports.moment = moment['default'];
-  exports.ago = ago['default'];
-  exports.duration = duration['default'];
-
+  exports.moment = _emberMomentComputedsMoment['default'];
+  exports.ago = _emberMomentComputedsAgo['default'];
+  exports.duration = _emberMomentComputedsDuration['default'];
 });
-define('ember-moment/computeds/ago', ['exports', 'ember', 'moment', 'ember-moment/computeds/moment'], function (exports, Ember, moment, ___moment) {
-
+define('ember-moment/computeds/ago', ['exports', 'ember', 'moment', 'ember-moment/computeds/moment'], function (exports, _ember, _moment, _emberMomentComputedsMoment) {
   'use strict';
 
-  var get = Ember['default'].get;
-  var emberComputed = Ember['default'].computed;
+  exports['default'] = computedAgo;
+
+  var get = _ember['default'].get;
+  var emberComputed = _ember['default'].computed;
 
   function computedAgo(date, maybeInputFormat) {
     var args = [date];
-    
+
     var computed = emberComputed(date, function () {
       var momentArgs, desc, input;
       momentArgs = [get(this, date)];
 
       if (arguments.length > 1) {
-        desc = ___moment.descriptorFor.call(this, maybeInputFormat);
+        desc = _emberMomentComputedsMoment.descriptorFor.call(this, maybeInputFormat);
         input = desc ? get(this, maybeInputFormat) : maybeInputFormat;
 
         if (desc && computed._dependentKeys.indexOf(maybeInputFormat) === -1) {
@@ -96663,20 +96825,19 @@ define('ember-moment/computeds/ago', ['exports', 'ember', 'moment', 'ember-momen
         momentArgs.push(input);
       }
 
-      return moment['default'].apply(this, momentArgs).fromNow();
+      return _moment['default'].apply(this, momentArgs).fromNow();
     });
 
     return computed.property.apply(computed, args).readOnly();
   }
-  exports['default'] = computedAgo;
-
 });
-define('ember-moment/computeds/duration', ['exports', 'ember', 'moment', 'ember-moment/computeds/moment'], function (exports, Ember, moment, ___moment) {
-
+define('ember-moment/computeds/duration', ['exports', 'ember', 'moment', 'ember-moment/computeds/moment'], function (exports, _ember, _moment, _emberMomentComputedsMoment) {
   'use strict';
 
-  var get = Ember['default'].get;
-  var emberComputed = Ember['default'].computed;
+  exports['default'] = computedDuration;
+
+  var get = _ember['default'].get;
+  var emberComputed = _ember['default'].computed;
 
   function computedDuration(val, maybeUnits) {
     var numArgs = arguments.length;
@@ -96684,11 +96845,11 @@ define('ember-moment/computeds/duration', ['exports', 'ember', 'moment', 'ember-
 
     var computed = emberComputed(val, function () {
       var momentArgs, desc, input;
-      
+
       momentArgs = [get(this, val)];
 
       if (numArgs > 1) {
-        desc = ___moment.descriptorFor.call(this, maybeUnits);
+        desc = _emberMomentComputedsMoment.descriptorFor.call(this, maybeUnits);
         input = desc ? get(this, maybeUnits) : maybeUnits;
 
         if (desc && computed._dependentKeys.indexOf(maybeUnits) === -1) {
@@ -96698,27 +96859,25 @@ define('ember-moment/computeds/duration', ['exports', 'ember', 'moment', 'ember-
         momentArgs.push(input);
       }
 
-      return moment['default'].duration.apply(this, momentArgs).humanize();
+      return _moment['default'].duration.apply(this, momentArgs).humanize();
     });
 
     return computed.property.apply(computed, args).readOnly();
   }
-  exports['default'] = computedDuration;
-
 });
-define('ember-moment/computeds/moment', ['exports', 'ember', 'moment'], function (exports, Ember, moment) {
-
+define('ember-moment/computeds/moment', ['exports', 'ember', 'moment'], function (exports, _ember, _moment) {
   'use strict';
 
   exports.descriptorFor = descriptorFor;
+  exports['default'] = computedMoment;
 
-  var get = Ember['default'].get;
-  var emberComputed = Ember['default'].computed;
-  var EnumerableUtils = Ember['default'].EnumerableUtils;
+  var get = _ember['default'].get;
+  var emberComputed = _ember['default'].computed;
+  var EnumerableUtils = _ember['default'].EnumerableUtils;
   var a_slice = Array.prototype.slice;
 
   function descriptorFor(propertyName) {
-    var meta = Ember['default'].meta(this);
+    var meta = _ember['default'].meta(this);
 
     if (meta && meta.descs) {
       return meta.descs[propertyName];
@@ -96726,7 +96885,7 @@ define('ember-moment/computeds/moment', ['exports', 'ember', 'moment'], function
   }
 
   function computedMoment(date, outputFormat, maybeInputFormat) {
-    Ember['default'].assert('More than one argument passed into moment computed', arguments.length > 1);
+    _ember['default'].assert('More than one argument passed into moment computed', arguments.length > 1);
 
     var args = a_slice.call(arguments);
     var computed;
@@ -96755,25 +96914,22 @@ define('ember-moment/computeds/moment', ['exports', 'ember', 'moment'], function
         momentArgs.push(maybeInputFormat);
       }
 
-      return moment['default'].apply(this, momentArgs).format(outputFormat);
+      return _moment['default'].apply(this, momentArgs).format(outputFormat);
     }).readOnly();
   }
-  exports['default'] = computedMoment;
-
 });
-define('ember-moment/helpers/ago', ['exports', 'ember', 'moment'], function (exports, Ember, moment) {
-
+define('ember-moment/helpers/ago', ['exports', 'ember', 'moment'], function (exports, _ember, _moment) {
   'use strict';
 
   var ago;
 
-  if (Ember['default'].HTMLBars) {
+  if (_ember['default'].HTMLBars) {
     ago = function ago(params) {
       if (params.length === 0) {
         throw new TypeError('Invalid Number of arguments, expected at least 1');
       }
 
-      return moment['default'].apply(this, params).fromNow();
+      return _moment['default'].apply(this, params).fromNow();
     };
   } else {
     ago = function ago(value, maybeInput) {
@@ -96786,20 +96942,18 @@ define('ember-moment/helpers/ago', ['exports', 'ember', 'moment'], function (exp
         args.push(maybeInput);
       }
 
-      return moment['default'].apply(this, args).fromNow();
+      return _moment['default'].apply(this, args).fromNow();
     };
   }
 
   exports['default'] = ago;
-
 });
-define('ember-moment/helpers/duration', ['exports', 'ember', 'moment'], function (exports, Ember, moment) {
-
+define('ember-moment/helpers/duration', ['exports', 'ember', 'moment'], function (exports, _ember, _moment) {
   'use strict';
 
   var duration;
 
-  if (Ember['default'].HTMLBars) {
+  if (_ember['default'].HTMLBars) {
     duration = function duration(params) {
       var length = params.length;
 
@@ -96807,7 +96961,7 @@ define('ember-moment/helpers/duration', ['exports', 'ember', 'moment'], function
         throw new TypeError('Invalid Number of arguments, expected 1 or 2');
       }
 
-      return moment['default'].duration.apply(this, params).humanize();
+      return _moment['default'].duration.apply(this, params).humanize();
     };
   } else {
     duration = function duration(arg1, arg2) {
@@ -96825,20 +96979,18 @@ define('ember-moment/helpers/duration', ['exports', 'ember', 'moment'], function
         args.push(arg2);
       }
 
-      return moment['default'].duration.apply(this, args).humanize();
+      return _moment['default'].duration.apply(this, args).humanize();
     };
   }
 
   exports['default'] = duration;
-
 });
-define('ember-moment/helpers/moment', ['exports', 'ember', 'moment'], function (exports, Ember, momentjs) {
-
+define('ember-moment/helpers/moment', ['exports', 'ember', 'moment'], function (exports, _ember, _moment) {
   'use strict';
 
   var moment;
 
-  if (Ember['default'].HTMLBars) {
+  if (_ember['default'].HTMLBars) {
     moment = function moment(params) {
       var length = params.length;
       var args = [];
@@ -96859,7 +97011,7 @@ define('ember-moment/helpers/moment', ['exports', 'ember', 'moment'], function (
         output = params[1];
       }
 
-      return momentjs['default'].apply(this, args).format(output);
+      return _moment['default'].apply(this, args).format(output);
     };
   } else {
     moment = function moment(value, maybeOutput, maybeInput) {
@@ -96877,20 +97029,18 @@ define('ember-moment/helpers/moment', ['exports', 'ember', 'moment'], function (
 
       if (length === 2) {
         output = 'LLLL';
-      }
-      else if (length === 3) {
+      } else if (length === 3) {
         output = maybeOutput;
       } else if (length > 3) {
         args.push(maybeInput);
         output = maybeOutput;
       }
 
-      return momentjs['default'].apply(this, args).format(output);
+      return _moment['default'].apply(this, args).format(output);
     };
   }
 
   exports['default'] = moment;
-
 });
 define('ember-moment', ['ember-moment/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
   'use strict';
@@ -96904,13 +97054,12 @@ define('ember-moment', ['ember-moment/index', 'ember', 'exports'], function(__in
   }));
 });
 
-define('ember-radio-button/components/labeled-radio-button', ['exports', 'ember'], function (exports, Ember) {
-
+define('ember-radio-button/components/labeled-radio-button', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
-  var computed = Ember['default'].computed;
+  var computed = _ember['default'].computed;
 
-  exports['default'] = Ember['default'].Component.extend({
+  exports['default'] = _ember['default'].Component.extend({
     tagName: 'label',
     attributeBindings: ['for'],
     classNameBindings: ['checked'],
@@ -96929,15 +97078,13 @@ define('ember-radio-button/components/labeled-radio-button', ['exports', 'ember'
       }
     }
   });
-
 });
-define('ember-radio-button/components/radio-button-input', ['exports', 'ember'], function (exports, Ember) {
-
+define('ember-radio-button/components/radio-button-input', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
-  var computed = Ember['default'].computed;
+  var computed = _ember['default'].computed;
 
-  exports['default'] = Ember['default'].Component.extend({
+  exports['default'] = _ember['default'].Component.extend({
     tagName: 'input',
     type: 'radio',
 
@@ -96968,19 +97115,17 @@ define('ember-radio-button/components/radio-button-input', ['exports', 'ember'],
 
       if (groupValue !== value) {
         this.set('groupValue', value); // violates DDAU
-        Ember['default'].run.once(this, 'sendChangedAction');
+        _ember['default'].run.once(this, 'sendChangedAction');
       }
     }
   });
-
 });
-define('ember-radio-button/components/radio-button', ['exports', 'ember'], function (exports, Ember) {
-
+define('ember-radio-button/components/radio-button', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
-  var computed = Ember['default'].computed;
+  var computed = _ember['default'].computed;
 
-  exports['default'] = Ember['default'].Component.extend({
+  exports['default'] = _ember['default'].Component.extend({
     tagName: '',
     // value - passed in, required, the value for this radio button
     // groupValue - passed in, required, the currently selected value
@@ -97016,7 +97161,6 @@ define('ember-radio-button/components/radio-button', ['exports', 'ember'], funct
       }
     }
   });
-
 });
 define('ember-radio-button', ['ember-radio-button/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
   'use strict';
@@ -97030,42 +97174,36 @@ define('ember-radio-button', ['ember-radio-button/index', 'ember', 'exports'], f
   }));
 });
 
-define('ember-validations/errors', ['exports', 'ember'], function (exports, Ember) {
-
+define('ember-validations/errors', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
-  var get = Ember['default'].get;
-  var set = Ember['default'].set;
+  var get = _ember['default'].get;
+  var set = _ember['default'].set;
 
-  exports['default'] = Ember['default'].Object.extend({
+  exports['default'] = _ember['default'].Object.extend({
     unknownProperty: function unknownProperty(property) {
-      set(this, property, Ember['default'].A());
+      set(this, property, _ember['default'].A());
       return get(this, property);
     }
   });
-
 });
-define('ember-validations/index', ['exports', 'ember-validations/mixin'], function (exports, Mixin) {
-
+define('ember-validations/index', ['exports', 'ember-validations/mixin'], function (exports, _emberValidationsMixin) {
   'use strict';
 
   exports.validator = validator;
-
-  exports['default'] = Mixin['default'];
+  exports['default'] = _emberValidationsMixin['default'];
 
   function validator(callback) {
     return { callback: callback };
   }
-
 });
-define('ember-validations/messages', ['exports', 'ember'], function (exports, Ember) {
-
+define('ember-validations/messages', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
   exports['default'] = {
     render: function render(attribute, context) {
-      if (Ember['default'].I18n) {
-        return Ember['default'].I18n.t('errors.' + attribute, context);
+      if (_ember['default'].I18n) {
+        return _ember['default'].I18n.t('errors.' + attribute, context);
       } else {
         var regex = new RegExp("{{(.*?)}}"),
             attributeName = "";
@@ -97100,17 +97238,15 @@ define('ember-validations/messages', ['exports', 'ember'], function (exports, Em
       url: "is not a valid URL"
     }
   };
-
 });
-define('ember-validations/mixin', ['exports', 'ember', 'ember-validations/errors', 'ember-validations/validators/base'], function (exports, Ember, Errors, Base) {
-
+define('ember-validations/mixin', ['exports', 'ember', 'ember-validations/errors', 'ember-validations/validators/base'], function (exports, _ember, _emberValidationsErrors, _emberValidationsValidatorsBase) {
   'use strict';
 
-  var get = Ember['default'].get;
-  var set = Ember['default'].set;
+  var get = _ember['default'].get;
+  var set = _ember['default'].set;
 
-  var setValidityMixin = Ember['default'].Mixin.create({
-    isValid: Ember['default'].computed('validators.@each.isValid', function () {
+  var setValidityMixin = _ember['default'].Mixin.create({
+    isValid: _ember['default'].computed('validators.@each.isValid', function () {
       var compactValidators = get(this, 'validators').compact();
       var filteredValidators = compactValidators.filter(function (validator) {
         return !get(validator, 'isValid');
@@ -97118,14 +97254,14 @@ define('ember-validations/mixin', ['exports', 'ember', 'ember-validations/errors
 
       return get(filteredValidators, 'length') === 0;
     }),
-    isInvalid: Ember['default'].computed.not('isValid')
+    isInvalid: _ember['default'].computed.not('isValid')
   });
 
   var pushValidatableObject = function pushValidatableObject(model, property) {
     var content = get(model, property);
 
     model.removeObserver(property, pushValidatableObject);
-    if (Ember['default'].isArray(content)) {
+    if (_ember['default'].isArray(content)) {
       model.validators.pushObject(ArrayValidatorProxy.create({ model: model, property: property, contentBinding: 'model.' + property }));
     } else {
       model.validators.pushObject(content);
@@ -97170,37 +97306,37 @@ define('ember-validations/mixin', ['exports', 'ember', 'ember-validations/errors
       cache[validatorName] = validators;
     }
 
-    if (Ember['default'].isEmpty(validators)) {
-      Ember['default'].warn('Could not find the "' + validatorName + '" validator.');
+    if (_ember['default'].isEmpty(validators)) {
+      _ember['default'].warn('Could not find the "' + validatorName + '" validator.');
     }
 
     return validators;
   };
 
-  var ArrayValidatorProxy = Ember['default'].ArrayProxy.extend(setValidityMixin, {
+  var ArrayValidatorProxy = _ember['default'].ArrayProxy.extend(setValidityMixin, {
     validate: function validate() {
       return this._validate();
     },
-    _validate: Ember['default'].on('init', function () {
+    _validate: _ember['default'].on('init', function () {
       var promises = get(this, 'content').invoke('_validate').without(undefined);
-      return Ember['default'].RSVP.all(promises);
+      return _ember['default'].RSVP.all(promises);
     }),
-    validators: Ember['default'].computed.alias('content')
+    validators: _ember['default'].computed.alias('content')
   });
 
-  exports['default'] = Ember['default'].Mixin.create(setValidityMixin, {
+  exports['default'] = _ember['default'].Mixin.create(setValidityMixin, {
     init: function init() {
       this._super();
-      this.errors = Errors['default'].create();
+      this.errors = _emberValidationsErrors['default'].create();
       this.dependentValidationKeys = {};
-      this.validators = Ember['default'].A();
+      this.validators = _ember['default'].A();
       if (get(this, 'validations') === undefined) {
         this.validations = {};
       }
       this.buildValidators();
       this.validators.forEach(function (validator) {
         validator.addObserver('errors.[]', this, function (sender) {
-          var errors = Ember['default'].A();
+          var errors = _ember['default'].A();
           this.validators.forEach(function (validator) {
             if (validator.property === sender.property) {
               errors.addObjects(validator.errors);
@@ -97233,7 +97369,7 @@ define('ember-validations/mixin', ['exports', 'ember', 'ember-validations/errors
       }
 
       var createInlineClass = function createInlineClass(callback) {
-        return Base['default'].extend({
+        return _emberValidationsValidatorsBase['default'].extend({
           call: function call() {
             var errorMessage = this.callback.call(this);
 
@@ -97254,7 +97390,7 @@ define('ember-validations/mixin', ['exports', 'ember', 'ember-validations/errors
       }
     },
     buildObjectValidator: function buildObjectValidator(property) {
-      if (Ember['default'].isNone(get(this, property))) {
+      if (_ember['default'].isNone(get(this, property))) {
         this.addObserver(property, this, pushValidatableObject);
       } else {
         pushValidatableObject(this, property);
@@ -97265,54 +97401,50 @@ define('ember-validations/mixin', ['exports', 'ember', 'ember-validations/errors
       return this._validate().then(function (vals) {
         var errors = get(self, 'errors');
         if (vals.indexOf(false) > -1) {
-          return Ember['default'].RSVP.reject(errors);
+          return _ember['default'].RSVP.reject(errors);
         }
         return errors;
       });
     },
-    _validate: Ember['default'].on('init', function () {
+    _validate: _ember['default'].on('init', function () {
       var promises = this.validators.invoke('_validate').without(undefined);
-      return Ember['default'].RSVP.all(promises);
+      return _ember['default'].RSVP.all(promises);
     })
   });
-
 });
-define('ember-validations/patterns', ['exports', 'ember'], function (exports, Ember) {
-
+define('ember-validations/patterns', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
-  exports['default'] = Ember['default'].Namespace.create({
+  exports['default'] = _ember['default'].Namespace.create({
     numericality: /^(-|\+)?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d*)?$/,
     blank: /^\s*$/
   });
-
 });
-define('ember-validations/validators/base', ['exports', 'ember'], function (exports, Ember) {
-
+define('ember-validations/validators/base', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
-  var get = Ember['default'].get;
-  var set = Ember['default'].set;
+  var get = _ember['default'].get;
+  var set = _ember['default'].set;
 
-  exports['default'] = Ember['default'].Object.extend({
+  exports['default'] = _ember['default'].Object.extend({
     init: function init() {
-      set(this, 'errors', Ember['default'].A());
-      this.dependentValidationKeys = Ember['default'].A();
+      set(this, 'errors', _ember['default'].A());
+      this.dependentValidationKeys = _ember['default'].A();
       this.conditionals = {
         'if': get(this, 'options.if'),
         unless: get(this, 'options.unless')
       };
       this.model.addObserver(this.property, this, this._validate);
     },
-    addObserversForDependentValidationKeys: Ember['default'].on('init', function () {
+    addObserversForDependentValidationKeys: _ember['default'].on('init', function () {
       this.dependentValidationKeys.forEach(function (key) {
         this.model.addObserver(key, this, this._validate);
       }, this);
     }),
-    pushDependentValidationKeyToModel: Ember['default'].on('init', function () {
+    pushDependentValidationKeyToModel: _ember['default'].on('init', function () {
       var model = get(this, 'model');
       if (model.dependentValidationKeys[this.property] === undefined) {
-        model.dependentValidationKeys[this.property] = Ember['default'].A();
+        model.dependentValidationKeys[this.property] = _ember['default'].A();
       }
       model.dependentValidationKeys[this.property].addObjects(this.dependentValidationKeys);
     }),
@@ -97325,8 +97457,8 @@ define('ember-validations/validators/base', ['exports', 'ember'], function (expo
         return get(model, key);
       }
     },
-    isValid: Ember['default'].computed.empty('errors.[]'),
-    isInvalid: Ember['default'].computed.not('isValid'),
+    isValid: _ember['default'].computed.empty('errors.[]'),
+    isInvalid: _ember['default'].computed.not('isValid'),
     validate: function validate() {
       var self = this;
       return this._validate().then(function (success) {
@@ -97335,19 +97467,19 @@ define('ember-validations/validators/base', ['exports', 'ember'], function (expo
         if (success) {
           return errors;
         } else {
-          return Ember['default'].RSVP.reject(errors);
+          return _ember['default'].RSVP.reject(errors);
         }
       });
     },
-    _validate: Ember['default'].on('init', function () {
+    _validate: _ember['default'].on('init', function () {
       this.errors.clear();
       if (this.canValidate()) {
         this.call();
       }
       if (get(this, 'isValid')) {
-        return Ember['default'].RSVP.resolve(true);
+        return _ember['default'].RSVP.resolve(true);
       } else {
-        return Ember['default'].RSVP.resolve(false);
+        return _ember['default'].RSVP.resolve(false);
       }
     }),
     canValidate: function canValidate() {
@@ -97398,16 +97530,14 @@ define('ember-validations/validators/base', ['exports', 'ember'], function (expo
       }
     }
   });
-
 });
-define('ember-validations/validators/local/absence', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages'], function (exports, Ember, Base, Messages) {
-
+define('ember-validations/validators/local/absence', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages'], function (exports, _ember, _emberValidationsValidatorsBase, _emberValidationsMessages) {
   'use strict';
 
-  var get = Ember['default'].get;
-  var set = Ember['default'].set;
+  var get = _ember['default'].get;
+  var set = _ember['default'].set;
 
-  exports['default'] = Base['default'].extend({
+  exports['default'] = _emberValidationsValidatorsBase['default'].extend({
     init: function init() {
       this._super();
       /*jshint expr:true*/
@@ -97416,25 +97546,23 @@ define('ember-validations/validators/local/absence', ['exports', 'ember', 'ember
       }
 
       if (this.options.message === undefined) {
-        set(this, 'options.message', Messages['default'].render('present', this.options));
+        set(this, 'options.message', _emberValidationsMessages['default'].render('present', this.options));
       }
     },
     call: function call() {
-      if (!Ember['default'].isEmpty(get(this.model, this.property))) {
+      if (!_ember['default'].isEmpty(get(this.model, this.property))) {
         this.errors.pushObject(this.options.message);
       }
     }
   });
-
 });
-define('ember-validations/validators/local/acceptance', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages'], function (exports, Ember, Base, Messages) {
-
+define('ember-validations/validators/local/acceptance', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages'], function (exports, _ember, _emberValidationsValidatorsBase, _emberValidationsMessages) {
   'use strict';
 
-  var get = Ember['default'].get;
-  var set = Ember['default'].set;
+  var get = _ember['default'].get;
+  var set = _ember['default'].set;
 
-  exports['default'] = Base['default'].extend({
+  exports['default'] = _emberValidationsValidatorsBase['default'].extend({
     init: function init() {
       this._super();
       /*jshint expr:true*/
@@ -97443,7 +97571,7 @@ define('ember-validations/validators/local/acceptance', ['exports', 'ember', 'em
       }
 
       if (this.options.message === undefined) {
-        set(this, 'options.message', Messages['default'].render('accepted', this.options));
+        set(this, 'options.message', _emberValidationsMessages['default'].render('accepted', this.options));
       }
     },
     call: function call() {
@@ -97456,16 +97584,14 @@ define('ember-validations/validators/local/acceptance', ['exports', 'ember', 'em
       }
     }
   });
-
 });
-define('ember-validations/validators/local/confirmation', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages'], function (exports, Ember, Base, Messages) {
-
+define('ember-validations/validators/local/confirmation', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages'], function (exports, _ember, _emberValidationsValidatorsBase, _emberValidationsMessages) {
   'use strict';
 
-  var get = Ember['default'].get;
-  var set = Ember['default'].set;
+  var get = _ember['default'].get;
+  var set = _ember['default'].set;
 
-  exports['default'] = Base['default'].extend({
+  exports['default'] = _emberValidationsValidatorsBase['default'].extend({
     init: function init() {
       this.originalProperty = this.property;
       this.property = this.property + 'Confirmation';
@@ -97474,30 +97600,28 @@ define('ember-validations/validators/local/confirmation', ['exports', 'ember', '
       /*jshint expr:true*/
       if (this.options === true) {
         set(this, 'options', { attribute: this.originalProperty });
-        set(this, 'options', { message: Messages['default'].render('confirmation', this.options) });
+        set(this, 'options', { message: _emberValidationsMessages['default'].render('confirmation', this.options) });
       }
     },
     call: function call() {
       var original = get(this.model, this.originalProperty);
       var confirmation = get(this.model, this.property);
 
-      if (!Ember['default'].isEmpty(original) || !Ember['default'].isEmpty(confirmation)) {
+      if (!_ember['default'].isEmpty(original) || !_ember['default'].isEmpty(confirmation)) {
         if (original !== confirmation) {
           this.errors.pushObject(this.options.message);
         }
       }
     }
   });
-
 });
-define('ember-validations/validators/local/exclusion', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages'], function (exports, Ember, Base, Messages) {
-
+define('ember-validations/validators/local/exclusion', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages'], function (exports, _ember, _emberValidationsValidatorsBase, _emberValidationsMessages) {
   'use strict';
 
-  var get = Ember['default'].get;
-  var set = Ember['default'].set;
+  var get = _ember['default'].get;
+  var set = _ember['default'].set;
 
-  exports['default'] = Base['default'].extend({
+  exports['default'] = _emberValidationsValidatorsBase['default'].extend({
     init: function init() {
       this._super();
       if (this.options.constructor === Array) {
@@ -97505,19 +97629,19 @@ define('ember-validations/validators/local/exclusion', ['exports', 'ember', 'emb
       }
 
       if (this.options.message === undefined) {
-        set(this, 'options.message', Messages['default'].render('exclusion', this.options));
+        set(this, 'options.message', _emberValidationsMessages['default'].render('exclusion', this.options));
       }
     },
     call: function call() {
       /*jshint expr:true*/
       var lower, upper;
 
-      if (Ember['default'].isEmpty(get(this.model, this.property))) {
+      if (_ember['default'].isEmpty(get(this.model, this.property))) {
         if (this.options.allowBlank === undefined) {
           this.errors.pushObject(this.options.message);
         }
       } else if (this.options['in']) {
-        if (Ember['default'].$.inArray(get(this.model, this.property), this.options['in']) !== -1) {
+        if (_ember['default'].$.inArray(get(this.model, this.property), this.options['in']) !== -1) {
           this.errors.pushObject(this.options.message);
         }
       } else if (this.options.range) {
@@ -97530,16 +97654,14 @@ define('ember-validations/validators/local/exclusion', ['exports', 'ember', 'emb
       }
     }
   });
-
 });
-define('ember-validations/validators/local/format', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages'], function (exports, Ember, Base, Messages) {
-
+define('ember-validations/validators/local/format', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages'], function (exports, _ember, _emberValidationsValidatorsBase, _emberValidationsMessages) {
   'use strict';
 
-  var get = Ember['default'].get;
-  var set = Ember['default'].set;
+  var get = _ember['default'].get;
+  var set = _ember['default'].set;
 
-  exports['default'] = Base['default'].extend({
+  exports['default'] = _emberValidationsValidatorsBase['default'].extend({
     init: function init() {
       this._super();
       if (this.options.constructor === RegExp) {
@@ -97547,11 +97669,11 @@ define('ember-validations/validators/local/format', ['exports', 'ember', 'ember-
       }
 
       if (this.options.message === undefined) {
-        set(this, 'options.message', Messages['default'].render('invalid', this.options));
+        set(this, 'options.message', _emberValidationsMessages['default'].render('invalid', this.options));
       }
     },
     call: function call() {
-      if (Ember['default'].isEmpty(get(this.model, this.property))) {
+      if (_ember['default'].isEmpty(get(this.model, this.property))) {
         if (this.options.allowBlank === undefined) {
           this.errors.pushObject(this.options.message);
         }
@@ -97562,16 +97684,14 @@ define('ember-validations/validators/local/format', ['exports', 'ember', 'ember-
       }
     }
   });
-
 });
-define('ember-validations/validators/local/inclusion', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages'], function (exports, Ember, Base, Messages) {
-
+define('ember-validations/validators/local/inclusion', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages'], function (exports, _ember, _emberValidationsValidatorsBase, _emberValidationsMessages) {
   'use strict';
 
-  var get = Ember['default'].get;
-  var set = Ember['default'].set;
+  var get = _ember['default'].get;
+  var set = _ember['default'].set;
 
-  exports['default'] = Base['default'].extend({
+  exports['default'] = _emberValidationsValidatorsBase['default'].extend({
     init: function init() {
       this._super();
       if (this.options.constructor === Array) {
@@ -97579,17 +97699,17 @@ define('ember-validations/validators/local/inclusion', ['exports', 'ember', 'emb
       }
 
       if (this.options.message === undefined) {
-        set(this, 'options.message', Messages['default'].render('inclusion', this.options));
+        set(this, 'options.message', _emberValidationsMessages['default'].render('inclusion', this.options));
       }
     },
     call: function call() {
       var lower, upper;
-      if (Ember['default'].isEmpty(get(this.model, this.property))) {
+      if (_ember['default'].isEmpty(get(this.model, this.property))) {
         if (this.options.allowBlank === undefined) {
           this.errors.pushObject(this.options.message);
         }
       } else if (this.options['in']) {
-        if (Ember['default'].$.inArray(get(this.model, this.property), this.options['in']) === -1) {
+        if (_ember['default'].$.inArray(get(this.model, this.property), this.options['in']) === -1) {
           this.errors.pushObject(this.options.message);
         }
       } else if (this.options.range) {
@@ -97602,16 +97722,14 @@ define('ember-validations/validators/local/inclusion', ['exports', 'ember', 'emb
       }
     }
   });
-
 });
-define('ember-validations/validators/local/length', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages'], function (exports, Ember, Base, Messages) {
-
+define('ember-validations/validators/local/length', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages'], function (exports, _ember, _emberValidationsValidatorsBase, _emberValidationsMessages) {
   'use strict';
 
-  var get = Ember['default'].get;
-  var set = Ember['default'].set;
+  var get = _ember['default'].get;
+  var set = _ember['default'].set;
 
-  exports['default'] = Base['default'].extend({
+  exports['default'] = _emberValidationsValidatorsBase['default'].extend({
     init: function init() {
       var index, key;
       this._super();
@@ -97671,7 +97789,7 @@ define('ember-validations/validators/local/length', ['exports', 'ember', 'ember-
         options[_key] = this.options[_key];
       }
 
-      return this.options.messages[this.MESSAGES[key]] || Messages['default'].render(this.MESSAGES[key], options);
+      return this.options.messages[this.MESSAGES[key]] || _emberValidationsMessages['default'].render(this.MESSAGES[key], options);
     },
     renderBlankMessage: function renderBlankMessage() {
       if (this.options.is) {
@@ -97683,7 +97801,7 @@ define('ember-validations/validators/local/length', ['exports', 'ember', 'ember-
     call: function call() {
       var key, comparisonResult;
 
-      if (Ember['default'].isEmpty(get(this.model, this.property))) {
+      if (_ember['default'].isEmpty(get(this.model, this.property))) {
         if (this.options.allowBlank === undefined && (this.options.is || this.options.minimum)) {
           this.errors.pushObject(this.renderBlankMessage());
         }
@@ -97701,15 +97819,13 @@ define('ember-validations/validators/local/length', ['exports', 'ember', 'ember-
       }
     }
   });
-
 });
-define('ember-validations/validators/local/numericality', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages', 'ember-validations/patterns'], function (exports, Ember, Base, Messages, Patterns) {
-
+define('ember-validations/validators/local/numericality', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages', 'ember-validations/patterns'], function (exports, _ember, _emberValidationsValidatorsBase, _emberValidationsMessages, _emberValidationsPatterns) {
   'use strict';
 
-  var get = Ember['default'].get;
+  var get = _ember['default'].get;
 
-  exports['default'] = Base['default'].extend({
+  exports['default'] = _emberValidationsValidatorsBase['default'].extend({
     init: function init() {
       /*jshint expr:true*/
       var index, keys, key;
@@ -97725,11 +97841,11 @@ define('ember-validations/validators/local/numericality', ['exports', 'ember', '
 
       if (this.options.messages === undefined || this.options.messages.numericality === undefined) {
         this.options.messages = this.options.messages || {};
-        this.options.messages.numericality = Messages['default'].render('notANumber', this.options);
+        this.options.messages.numericality = _emberValidationsMessages['default'].render('notANumber', this.options);
       }
 
       if (this.options.onlyInteger !== undefined && this.options.messages.onlyInteger === undefined) {
-        this.options.messages.onlyInteger = Messages['default'].render('notAnInteger', this.options);
+        this.options.messages.onlyInteger = _emberValidationsMessages['default'].render('notAnInteger', this.options);
       }
 
       keys = Object.keys(this.CHECKS).concat(['odd', 'even']);
@@ -97744,10 +97860,10 @@ define('ember-validations/validators/local/numericality', ['exports', 'ember', '
         }
 
         if (prop !== undefined && this.options.messages[key] === undefined) {
-          if (Ember['default'].$.inArray(key, Ember['default'].keys(this.CHECKS)) !== -1) {
+          if (_ember['default'].$.inArray(key, _ember['default'].keys(this.CHECKS)) !== -1) {
             this.options.count = prop;
           }
-          this.options.messages[key] = Messages['default'].render(key, this.options);
+          this.options.messages[key] = _emberValidationsMessages['default'].render(key, this.options);
           if (this.options.count !== undefined) {
             delete this.options.count;
           }
@@ -97764,11 +97880,11 @@ define('ember-validations/validators/local/numericality', ['exports', 'ember', '
     call: function call() {
       var check, checkValue, comparisonResult;
 
-      if (Ember['default'].isEmpty(get(this.model, this.property))) {
+      if (_ember['default'].isEmpty(get(this.model, this.property))) {
         if (this.options.allowBlank === undefined) {
           this.errors.pushObject(this.options.messages.numericality);
         }
-      } else if (!Patterns['default'].numericality.test(get(this.model, this.property))) {
+      } else if (!_emberValidationsPatterns['default'].numericality.test(get(this.model, this.property))) {
         this.errors.pushObject(this.options.messages.numericality);
       } else if (this.options.onlyInteger === true && !/^[+\-]?\d+$/.test(get(this.model, this.property))) {
         this.errors.pushObject(this.options.messages.onlyInteger);
@@ -97797,15 +97913,13 @@ define('ember-validations/validators/local/numericality', ['exports', 'ember', '
       }
     }
   });
-
 });
-define('ember-validations/validators/local/presence', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages'], function (exports, Ember, Base, Messages) {
-
+define('ember-validations/validators/local/presence', ['exports', 'ember', 'ember-validations/validators/base', 'ember-validations/messages'], function (exports, _ember, _emberValidationsValidatorsBase, _emberValidationsMessages) {
   'use strict';
 
-  var get = Ember['default'].get;
+  var get = _ember['default'].get;
 
-  exports['default'] = Base['default'].extend({
+  exports['default'] = _emberValidationsValidatorsBase['default'].extend({
     init: function init() {
       this._super();
       /*jshint expr:true*/
@@ -97814,16 +97928,15 @@ define('ember-validations/validators/local/presence', ['exports', 'ember', 'embe
       }
 
       if (this.options.message === undefined) {
-        this.options.message = Messages['default'].render('blank', this.options);
+        this.options.message = _emberValidationsMessages['default'].render('blank', this.options);
       }
     },
     call: function call() {
-      if (Ember['default'].isBlank(get(this.model, this.property))) {
+      if (_ember['default'].isBlank(get(this.model, this.property))) {
         this.errors.pushObject(this.options.message);
       }
     }
   });
-
 });
 define('ember-validations', ['ember-validations/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
   'use strict';
