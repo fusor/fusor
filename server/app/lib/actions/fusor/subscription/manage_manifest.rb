@@ -55,8 +55,7 @@ module Actions
             # consumer from the organization; otherwise, either refresh it or delete it and import another
 
             if deployment.upstream_consumer_uuid.nil?
-              deployment.upstream_consumer_uuid = upstream_consumer['uuid']
-              deployment.save!
+              deployment.update_attribute(:upstream_consumer_uuid, upstream_consumer['uui'])
 
             elsif upstream_consumer['uuid'] == deployment.upstream_consumer_uuid
               plan_action(::Actions::Katello::Provider::ManifestRefresh,
