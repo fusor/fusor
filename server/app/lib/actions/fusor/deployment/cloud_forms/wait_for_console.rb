@@ -17,16 +17,12 @@ module Actions
         class WaitForConsole < Actions::Base
           include Actions::Base::Polling
 
-          input_format do
-            param :ip
-          end
-
           def humanized_name
             _("Wait for CloudForms Management Console")
           end
 
-          def plan(ip)
-            plan_self(ip: ip)
+          def plan(deployment)
+            plan_self(deployment_id: deployment.id)
           end
 
           def done?
@@ -35,12 +31,12 @@ module Actions
 
           def invoke_external_task
             Rails.logger.info "================ CloudForms::WaitForConsole invoke_external_task method ===================="
-            is_up? input[:ip]
+            is_up? ::Fusor::Deployment.find(input[:deployment_id]).cfme_address
           end
 
           def poll_external_task
             Rails.logger.info "================ CloudForms::WaitForConsole poll_external_task method ===================="
-            is_up? input[:ip]
+            is_up? ::Fusor::Deployment.find(input[:deployment_id]).cfme_address
           end
 
           private

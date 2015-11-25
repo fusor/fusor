@@ -19,9 +19,8 @@ module Actions
             _("Run CloudForms Appliance Console")
           end
 
-          def plan(deployment, vm_ip)
-            plan_self(deployment_id: deployment.id,
-                      vm_ip: vm_ip)
+          def plan(deployment)
+            plan_self(deployment_id: deployment.id)
           end
 
           def run
@@ -32,7 +31,7 @@ module Actions
             ssh_user = "root"
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
-
+            cfme_address = deployment.cfme_address
             #
             # JWM 6/9/2015, We are not yet setting the CloudForms VM root password
             # We need to use the default password of 'smartvm' until we add support.
@@ -42,7 +41,7 @@ module Actions
             ssh_password = deployment.cfme_root_password
 
             cmd = "#{script_dir}miq_run_appliance_console.py "\
-                "--miq_ip #{input[:vm_ip]} "\
+                "--miq_ip #{cfme_address} "\
                 "--ssh_user #{ssh_user} "\
                 "--ssh_pass #{ssh_password} "\
                 "--db_password #{db_password}"
@@ -52,7 +51,7 @@ module Actions
 
             # TODO: observing issues with running the appliance console using SSHConnection; therefore, temporarily
             # commenting out and using the approach above which will run it from a python script
-            #client = Utils::Fusor::SSHConnection.new(input[:vm_ip], ssh_user, ssh_password)
+            #client = Utils::Fusor::SSHConnection.new(cfme_address, ssh_user, ssh_password)
             #client.on_complete(lambda { run_appliance_console_completed })
             #client.on_failure(lambda { run_appliance_console_failed })
             #cmd = "appliance_console_cli --region 1 --internal --force-key -p #{db_password} --verbose"

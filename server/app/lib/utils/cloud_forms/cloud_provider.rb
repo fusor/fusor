@@ -10,24 +10,23 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
-require 'openssl'
 require 'json'
 require 'rest_client'
 
 module Utils
   module CloudForms
-    class Provider
+    class CloudProvider
       def self.add(cfme_ip, provider_params, deployment)
-        Rails.logger.debug "Adding the RHEV provider at #{provider_params[:ip]} to the CloudForms VM at #{cfme_ip}"
+        Rails.logger.debug "Adding the RHOS provider at #{provider_params[:ip]} to the CloudForms VM at #{cfme_ip}"
 
         data = {
           :action => "create",
           :resources => [
             {
               :name => provider_params[:name],
-              :type => "ManageIQ::Providers::Redhat::InfraManager",
-              :hostname => provider_params[:hostname],
-              :port => "443",
+              :type => "ManageIQ::Providers::Openstack::CloudManager",
+              :hostname => provider_params[:ip],
+              :port => "5000",
               :zone_id => "1000000000001",
               :credentials => {
                 :userid => provider_params[:username],

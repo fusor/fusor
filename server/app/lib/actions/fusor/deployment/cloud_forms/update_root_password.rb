@@ -20,9 +20,8 @@ module Actions
             _("Update Root Password on CloudForms Appliance")
           end
 
-          def plan(deployment, vm_ip)
-            plan_self(deployment_id: deployment.id,
-                      vm_ip: vm_ip)
+          def plan(deployment)
+            plan_self(deployment_id: deployment.id)
           end
 
           def run
@@ -33,11 +32,11 @@ module Actions
               ssh_password = "smartvm"
 
               deployment = ::Fusor::Deployment.find(input[:deployment_id])
-
+              cfme_address = deployment.cfme_address
               @success = false
               @retry = false
               @io = StringIO.new
-              client = Utils::Fusor::SSHConnection.new(input[:vm_ip], ssh_user, ssh_password)
+              client = Utils::Fusor::SSHConnection.new(cfme_address, ssh_user, ssh_password)
               client.on_complete(lambda { update_root_password_completed })
               client.on_failure(lambda { update_root_password_failed })
               cmd = "echo \"#{deployment.cfme_root_password}\" | passwd --stdin #{ssh_user}"
@@ -47,7 +46,7 @@ module Actions
               @io.close unless @io.closed?
 
               # retry if necessary
-              sleep_seconds = 20
+              sleep_seconds = 60
               if !@success && @retry
                 Rails.logger.info "UpdateRootPassword will retry again once in #{sleep_seconds}."
 

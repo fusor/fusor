@@ -27,9 +27,11 @@ module Actions
               unless SETTINGS[:fusor] && SETTINGS[:fusor][:content] && SETTINGS[:fusor][:content][:cloudforms]
                 fail _("Unable to locate CloudForms content settings in config/settings.plugins.d/fusor.yaml")
               end
-              fail _("Unable to locate a RHEV export domain") unless deployment.rhev_export_domain_name
-              fail _("Unable to locate a suitable host for CloudForms deployment") unless deployment.rhev_engine_host
-              fail _("RHEV engine admin password not configured properly") unless deployment.rhev_engine_admin_password
+              if deployment.cfme_install_loc == 'RHEV'
+                fail _("Unable to locate a RHEV export domain") unless deployment.rhev_export_domain_name
+                fail _("Unable to locate a suitable host for CloudForms deployment") unless deployment.rhev_engine_host
+                fail _("RHEV engine admin password not configured properly") unless deployment.rhev_engine_admin_password
+              end
             else
               Rails.logger.warn "Deploy CloudForms action scheduled but deploy_cfme was NOT selected. Please file a bug."
               return
@@ -39,56 +41,46 @@ module Actions
               repositories = retrieve_deployment_repositories(deployment.organization,
                                                               SETTINGS[:fusor][:content][:cloudforms])
 
-              transfer_action = plan_action(::Actions::Fusor::Deployment::Rhev::TransferImage,
-                                            deployment,
-                                            file_repositories(repositories).first,
-                                            image_file_name(SETTINGS[:fusor][:content][:cloudforms]))
+              if deployment.cfme_install_loc == 'RHEV'
+                transfer_action = plan_action(::Actions::Fusor::Deployment::Rhev::TransferImage,
+                                              deployment, file_repositories(repositories).first,
+                                              image_file_name(SETTINGS[:fusor][:content][:cloudforms]))
 
-              upload_action = plan_action(::Actions::Fusor::Deployment::Rhev::UploadImage,
-                                          deployment,
-                                          transfer_action.output[:image_file_name])
+                upload_action = plan_action(::Actions::Fusor::Deployment::Rhev::UploadImage,
+                                            deployment, transfer_action.output[:image_file_name])
 
-              plan_action(::Actions::Fusor::Deployment::Rhev::ImportTemplate,
-                          deployment,
-                          upload_action.output[:template_name])
+                plan_action(::Actions::Fusor::Deployment::Rhev::ImportTemplate,
+                            deployment, upload_action.output[:template_name])
 
-              create_vm_action = plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::Create,
-                                             deployment,
-                                             upload_action.output[:template_name])
-
-              plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::AddDisk,
-                          deployment,
-                          create_vm_action.output[:vm_id])
-
-              plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::Start,
-                          deployment,
-                          create_vm_action.output[:vm_id])
-
-              get_ip_action = plan_action(::Actions::Fusor::Deployment::Rhev::VirtualMachine::GetIp,
-                                          deployment,
-                                          create_vm_action.output[:vm_id])
+                plan_action(::Actions::Fusor::Deployment::Rhev::CfmeLaunch, deployment)
+              elsif deployment.cfme_install_loc == 'OpenStack'
+                plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeUpload, deployment,
+                            file_repositories(repositories).first,
+                            image_file_name(SETTINGS[:fusor][:content][:cloudforms]))
+                plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeSecgroup, deployment)
+                plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeLaunch, deployment)
+              end
 
               plan_action(::Actions::Fusor::Deployment::CloudForms::UpdateRootPassword,
-                          deployment,
-                          get_ip_action.output[:ip])
+                          deployment)
 
               plan_action(::Actions::Fusor::Deployment::CloudForms::RunApplianceConsole,
-                          deployment,
-                          get_ip_action.output[:ip])
+                          deployment)
 
               plan_action(::Actions::Fusor::Deployment::CloudForms::WaitForConsole,
-                          get_ip_action.output[:ip])
+                          deployment)
 
               plan_action(::Actions::Fusor::Deployment::CloudForms::UpdateAdminPassword,
-                          deployment,
-                          get_ip_action.output[:ip])
+                          deployment)
+
+              plan_action(::Actions::Fusor::Deployment::CloudForms::UpdateHosts,
+                          deployment)
 
               plan_action(::Actions::Fusor::Deployment::CloudForms::AddRhevProvider,
-                          deployment,
-                          get_ip_action.output[:ip])
+                          deployment) if deployment.deploy_rhev
 
-              plan_action(::Actions::Fusor::Deployment::Update, deployment,
-                          { cfme_address: get_ip_action.output[:ip] })
+              plan_action(::Actions::Fusor::Deployment::CloudForms::AddOspProvider,
+                          deployment) if deployment.deploy_openstack
             end
           end
 
