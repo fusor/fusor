@@ -41,6 +41,13 @@
                isNetworkRange=true
                }}
 
+      {{text-f label="Floating IP Network Gateway"
+               value=model.deployment.openstack_overcloud_float_gateway
+               cssId="osp-float-gatewway"
+               isRequired=true
+               disabled=isStarted
+               }}
+
       <br />
       <p>
       Create an administrative password for the overcloud.
