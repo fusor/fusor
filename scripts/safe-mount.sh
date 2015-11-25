@@ -32,6 +32,7 @@ mount -r -t nfs --target "$mount" --source "$2:$3"
 
 if [[ $? -ne 0 ]]; then
   echo "Failed to mount NFS share"
+  exit 1
 else
   echo $mount
 fi
