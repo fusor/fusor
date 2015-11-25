@@ -19,26 +19,8 @@ module.exports = function(app) {
     });
   });
 
-  organizationsRouter.post('/', function(req, res) {
-    res.status(201).end();
-  });
-
-  organizationsRouter.get('/:id', function(req, res) {
-    res.send({
-        id: req.params.id
-    });
-  });
-
-  organizationsRouter.put('/:id', function(req, res) {
-    res.send({
-      'organization': {
-        id: req.params.id
-      }
-    });
-  });
-
-  organizationsRouter.delete('/:id', function(req, res) {
-    res.status(204).end();
+  organizationsRouter.get('/1', function(req, res) {
+    res.send(organizations[0]);
   });
 
   app.use('/api/v21/organizations', organizationsRouter);
