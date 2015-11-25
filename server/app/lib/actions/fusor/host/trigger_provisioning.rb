@@ -85,14 +85,7 @@ module Actions
             Rails.logger.debug "XXX saving host of type: #{host.type}"
             Rails.logger.debug "XXX calling save"
 
-            begin
-              host.save!
-            rescue ActiveRecord::RecordInvalid
-              if @host.errors.any? && @host.errors.are_all_conflicts?
-                host.overwrite = true
-                host.save!
-              end
-            end
+            host.save
 
             return host
           end
