@@ -273,6 +273,9 @@ label.env_path_disabled:after {
 .errorForValidation a {
   color: #a94442; }
 
+.warningForValidation, .warningForValidation a {
+  color: #ec7a08; }
+
 .defaultValue {
   color: #999; }
 
@@ -453,6 +456,11 @@ table.fusor-table {
 
 .help-block {
   font-style: italic; }
+
+.osp-autogeneric-label {
+  font-weight: normal !important;
+  padding-left: 15px;
+  margin-top: -4px; }
 
 /* wizard.scss */
 .page-header-rhci {
