@@ -32,7 +32,7 @@ module Actions
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             deployment.openstack_overcloud_password = get_passwd(deployment)
             deployment.openstack_overcloud_address = get_address(deployment)
-            deployment.save!
+            deployment.save!(:validate => false)
             Rails.logger.debug '=== Leaving OvercloudCredentials run method ==='
           end
 
