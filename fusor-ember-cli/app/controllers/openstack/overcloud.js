@@ -37,6 +37,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   validOvercloudNetworks: Ember.computed('neutronPublicInterface',
                                          'model.deployment.openstack_overcloud_private_net',
                                          'model.deployment.openstack_overcloud_float_net',
+                                         'model.deployment.openstack_overcloud_float_gateway',
                                          'isValidPrivateNetworkRange',
                                          'isValidPrivateFloatRange',
                                          'isValidOvercloudPassword',
@@ -44,6 +45,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     return (Ember.isPresent(this.get('neutronPublicInterface')) &&
             Ember.isPresent(this.get('model.deployment.openstack_overcloud_private_net')) &&
             Ember.isPresent(this.get('model.deployment.openstack_overcloud_float_net')) &&
+            Ember.isPresent(this.get('model.deployment.openstack_overcloud_float_gateway')) &&
             this.get('isValidPrivateNetworkRange') &&
             this.get('isValidPrivateFloatRange') &&
             this.get('isValidOvercloudPassword')

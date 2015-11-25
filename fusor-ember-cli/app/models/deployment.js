@@ -57,6 +57,7 @@ export default DS.Model.extend({
   openstack_overcloud_password: DS.attr('string'),
   openstack_overcloud_private_net: DS.attr('string'),
   openstack_overcloud_float_net: DS.attr('string'),
+  openstack_overcloud_float_gateway: DS.attr('string'),
 
   cdn_url: DS.attr('string'),
   manifest_file: DS.attr('string'),
