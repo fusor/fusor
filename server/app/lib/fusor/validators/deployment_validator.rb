@@ -105,43 +105,35 @@ module Fusor
         address = Shellwords.shellescape(deployment.rhev_storage_address)
         path = Shellwords.shellescape(deployment.rhev_share_path)
 
-        # validate that the NFS share exists
+        # validate that the NFS server exists
         # don't proceed if it doesn't
-        return unless validate_nfs_share_exists(deployment, address, path)
+        return unless validate_nfs_server(deployment, address)
 
-        # validate that the NFS share is clean
-        validate_nfs_share_clean(deployment, address, path)
+        # validate that the NFS share exists and is clean
+        validate_nfs_mount(deployment, address, path)
       end
 
-      def validate_nfs_share_exists(deployment, address, path)
-        cmd = "showmount -d #{address}"
+      def validate_nfs_server(deployment, address)
+        cmd = "showmount #{address}"
         status, output = Utils::Fusor::CommandUtils.run_command(cmd)
 
         if status != 0
-          message = _("Could not execute showmount command to check NFS share '%s'. " \
-                      "Make sure the NFS share exists.") % "#{address}:#{path}"
+          message = _("Could not connect to address '%s'. " \
+                      "Make sure the NFS server exists and is up.") % "#{address}"
           add_warning(deployment, message, output)
-          return false
-        end
-
-        directories = output[1..-1].map(&:strip)
-        if !directories.include?(path)
-          message = _("Could not locate NFS share '%{path}' on %{address}.") %
-            {:path => path, :address => address}
-          add_warning(deployment, message)
           return false
         end
 
         return true
       end
 
-      def validate_nfs_share_clean(deployment, address, path)
+      def validate_nfs_mount(deployment, address, path)
         cmd = "sudo safe-mount.sh '#{deployment.id}' '#{address}' '#{path}'"
         status, output = Utils::Fusor::CommandUtils.run_command(cmd)
 
         if status != 0
-          add_warning(deployment, _("Could not mount the NFS share '%s' in order to inspect it.") %
-                      "#{address}:#{path}",
+          add_warning(deployment, _("Could not mount the NFS share '%s' in order to inspect it. " \
+                                    "Please check that the NFS share exists.") % "#{address}:#{path}",
                       output)
           return
         end
