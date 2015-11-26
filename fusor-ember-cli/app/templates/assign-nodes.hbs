@@ -25,9 +25,26 @@
             <div class="row">
                 <div class='col-md-7'>
                   {{#if nodes}}
-                    {{node-profile profile=profile nodes=nodes plan=model.plan doAssign=true assignRole="assignRole" unassignRole="unassignRole" editRole="editRole" setRoleCount="setRoleCount"  removeRole="removeRole"}}
+                    {{node-profile profile=profile
+                                   nodes=nodes
+                                   plan=model.plan
+                                   doAssign=true
+                                   assignRole="assignRole"
+                                   unassignRole="unassignRole"
+                                   editRole="editRole"
+                                   setRoleCount="setRoleCount"
+                                   removeRole="removeRole"
+                                   setRoleCountOnController="setRoleCountOnController"}}
                  {{else}}
-                    {{node-profile profile=profile plan=model.plan doAssign=true assignRole="assignRole" unassignRole="unassignRole" editRole="editRole" setRoleCount="setRoleCount"  removeRole="removeRole"}}
+                    {{node-profile profile=profile
+                                   plan=model.plan
+                                   doAssign=true
+                                   assignRole="assignRole"
+                                   unassignRole="unassignRole"
+                                   editRole="editRole"
+                                   setRoleCount="setRoleCount"
+                                   removeRole="removeRole"
+                                   setRoleCountOnController="setRoleCountOnController"}}
                  {{/if}}
                 </div>
             </div>

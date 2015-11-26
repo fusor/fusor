@@ -307,7 +307,8 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
             "X-CSRF-Token": token,
           }
         }).then(function(result) {
-          console.log('SUCCESS');
+          console.log('SUCCESS -' + role.get('roleType') + 'RoleCount: ' + count);
+          self.get('deploymentController').set((role.get('roleType') + 'RoleCount'), count);
           self.store.findRecord('deployment-plan', deploymentId).then(function (result) {
             self.set('model.plan', result);
             self.set('showLoadingSpinner', false);
@@ -425,12 +426,23 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
 
     cancelGlobalServiceConfig() {
       this.closeGlobalServiceConfigDialog();
+    },
+
+    setRoleCountOnController(roleType, count) {
+      this.get('deploymentController').set((roleType + 'RoleCount'), count);
     }
+
   },
 
-  disableAssignNodesNext: Ember.computed('unassignedRoles.[]', function() {
+  disableAssignNodesNext: Ember.computed('unassignedRoles.[]',
+                                         'deploymentController.computeRoleCount',
+                                         'deploymentController.controllerRoleCount' , function() {
     var unassignedRoleTypes = this.get('unassignedRoles').getEach('roleType');
-    return (unassignedRoleTypes.contains('controller') || unassignedRoleTypes.contains('compute'));
+    return (unassignedRoleTypes.contains('controller') ||
+            unassignedRoleTypes.contains('compute') ||
+            (this.get('deploymentController.computeRoleCount') === 0) ||
+            (this.get('deploymentController.controllerRoleCount') === 0)
+           );
   })
 
 });
