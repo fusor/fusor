@@ -18,41 +18,12 @@ export default Ember.Component.extend({
     return paramValue;
   },
 
-  assignedRoles: Ember.computed('profile', 'plan', 'plan.roles', 'plan.parameters', function() {
-    var assignedRoles = Ember.A();
-    var profile = this.get('profile');
-    var params = this.get('plan.parameters');
-    var self = this;
-    var roles = this.get('plan.roles') || Ember.A();
-    roles.forEach(function(role) {
-      if ( self.getParamValue(role.get('flavorParameterName'), params) === profile.get('name') ) {
-        assignedRoles.addObject(role);
-      }
+  assignedRoles: Ember.computed('roles.[]', 'flavorParams.[]', function() {
+    var self = this, roles = this.get('roles'), params = this.get('flavorParams');
+    return roles.filter(function(role) {
+      var param = params.findBy('id', role.get('flavorParameterName'));
+      return param && param.get('value') === self.get('profile.name');
     });
-    return assignedRoles;
-  }),
-
-  unassignedRoles: Ember.computed('assignedRoles', 'plan', 'plan.roles', function() {
-    var unassignedRoles = Ember.A();
-    var assignedRoles = this.get('assignedRoles');
-    var roles = this.get('plan.roles') || Ember.A();
-    roles.forEach(function(role) {
-      var unassignedRole = true;
-      for (var i=0; i<assignedRoles.length; i++) {
-        if ( role.get('name') === assignedRoles[i].get('name') ) {
-          unassignedRole = false;
-          break;
-        }
-      }
-      if ( unassignedRole ) {
-        unassignedRoles.addObject(role);
-      }
-    });
-    return unassignedRoles;
-  }),
-
-  allRolesAssigned: Ember.computed('unassignedRoles.[]', function() {
-    return (this.get('unassignedRoles.length') === 0);
   }),
 
   /* jshint ignore:start */

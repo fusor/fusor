@@ -20,17 +20,15 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
   },
 
   fixBadDefaults() {
-    var id, value,
-      existingParams = this.get('controller').get('model.plan.parameters'),
-      newParams = [];
+    var newParams = [], existingParams = this.get('controller').get('model.plan.parameters');
 
     if (!existingParams) {
       return;
     }
 
-    existingParams.forEach(function(param) {
-      id = param.get('id');
-      value = param.get('value');
+    existingParams.forEach(function (param) {
+      var id = param.get('id'), value = param.get('value');
+
       if (id === 'Controller-1::NeutronPublicInterface' &&
         (!value || value === 'nic1')) {
         param.set('value', 'eth1');

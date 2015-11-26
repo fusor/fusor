@@ -28,6 +28,9 @@
                     {{node-profile profile=profile
                                    nodes=nodes
                                    plan=model.plan
+                                   roles=assignedRoles
+                                   flavorParams=flavorParams
+                                   showAssign=notAllRolesAssigned
                                    doAssign=true
                                    assignRole="assignRole"
                                    unassignRole="unassignRole"
@@ -38,6 +41,9 @@
                  {{else}}
                     {{node-profile profile=profile
                                    plan=model.plan
+                                   roles=assignedRoles
+                                   flavorParams=flavorParams
+                                   showAssign=notAllRolesAssigned
                                    doAssign=true
                                    assignRole="assignRole"
                                    unassignRole="unassignRole"

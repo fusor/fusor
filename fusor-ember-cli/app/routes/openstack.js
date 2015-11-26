@@ -27,8 +27,7 @@ export default Ember.Route.extend({
           "X-CSRF-Token": token
         },
         data: JSON.stringify({ 'parameters': params })
-      }).then(
-        function() {},
+      }).catch(
         function(error) {
           error = error.jqXHR;
           console.log('ERROR updating parameters');
