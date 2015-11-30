@@ -16,8 +16,8 @@ module Fusor
 
     def index
       if params[:deployment_id] && params[:source]
-          Rails.logger.warn "XXX filtering by deployment_id AND by source: #{params[:source]}"
-          @subscriptions = Fusor::Subscription.where(:deployment_id => params[:deployment_id],
+        Rails.logger.warn "XXX filtering by deployment_id AND by source: #{params[:source]}"
+        @subscriptions = Fusor::Subscription.where(:deployment_id => params[:deployment_id],
                                                      :source => params[:source])
       elsif params[:deployment_id]
         Rails.logger.warn "XXX filtering by deployment_id"
