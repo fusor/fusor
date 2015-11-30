@@ -44,5 +44,5 @@ module.exports = function(app) {
     res.status(204).end();
   });
 
-  app.use('/api/v21aaa/users', usersRouter);
+  app.use('/api/v21/users', usersRouter);
 };

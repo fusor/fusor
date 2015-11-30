@@ -63,5 +63,5 @@ module.exports = function(app) {
     });
   });
 
-  app.use('/api/v21aaa/foreman_tasks', foremanTasksRouter);
+  app.use('/api/v21/foreman_tasks', foremanTasksRouter);
 };

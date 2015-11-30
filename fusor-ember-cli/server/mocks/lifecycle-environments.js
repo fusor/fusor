@@ -2,82 +2,24 @@ module.exports = function(app) {
   var express = require('express');
   var lifecycleEnvironmentsRouter = express.Router();
 
-  var lifecycleEnvironments = [
-        {
-            "id": 3,
-            "name": "Development",
-            "label": "Development",
-            "description": null,
-            "organization": {
-                "name": "Default_Organization",
-                "label": "Default_Organization"
-            },
-            "created_at": "2014-08-03T10:25:18Z",
-            "updated_at": "2014-08-03T10:25:18Z",
-            "library": false,
-            "prior": {
-                "name": "Library",
-                "id": 2
-            },
-            "permissions": {
-                "view_lifecycle_environments": true,
-                "edit_lifecycle_environments": true,
-                "destroy_lifecycle_environments": true,
-                "promote_or_remove_content_views_to_environments": true
-            }
-        },
-        {
-            "id": 4,
-            "name": "Test",
-            "label": "Test",
-            "description": null,
-            "organization": {
-                "name": "Default_Organization",
-                "label": "Default_Organization"
-            },
-            "created_at": "2014-08-03T10:25:18Z",
-            "updated_at": "2014-08-03T10:25:18Z",
-            "library": false,
-            "prior": {
-                "name": "Development",
-                "id": 3
-            },
-            "permissions": {
-                "view_lifecycle_environments": true,
-                "edit_lifecycle_environments": true,
-                "destroy_lifecycle_environments": true,
-                "promote_or_remove_content_views_to_environments": true
-            }
-        },
-        {
-            "id": 5,
-            "name": "Production",
-            "label": "Production",
-            "description": null,
-            "organization": {
-                "name": "Default_Organization",
-                "label": "Default_Organization"
-            },
-            "created_at": "2014-08-03T10:25:18Z",
-            "updated_at": "2014-08-03T10:25:18Z",
-            "library": false,
-            "prior": {
-                "name": "Test",
-                "id": 4
-            },
-            "permissions": {
-                "view_lifecycle_environments": true,
-                "edit_lifecycle_environments": true,
-                "destroy_lifecycle_environments": true,
-                "promote_or_remove_content_views_to_environments": true
-            }
-        }
-    ];
+  var lifecycleEnvironments = {
+  "lifecycle_environments": [
+    {
+      "id": 1,
+      "name": "Library",
+      "label": "Library",
+      "description": null,
+      "library": true,
+      "prior_id": null,
+      "prior": null,
+      "created_at": "2015-11-05T08:40:34Z",
+      "updated_at": "2015-11-05T08:40:34Z"
+    }
+  ]
+};
 
   lifecycleEnvironmentsRouter.get('/', function(req, res) {
-    res.send({
-      'lifecycle_environments': lifecycleEnvironments
-    });
+    res.send(lifecycleEnvironments);
   });
 
   lifecycleEnvironmentsRouter.post('/', function(req, res) {
@@ -102,5 +44,5 @@ module.exports = function(app) {
     res.status(204).end();
   });
 
-  app.use('/katello/api/v2aaa/environments', lifecycleEnvironmentsRouter);
+  app.use('/api/v21/lifecycle_environments', lifecycleEnvironmentsRouter);
 };
