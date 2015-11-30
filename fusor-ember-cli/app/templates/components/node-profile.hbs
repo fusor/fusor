@@ -42,7 +42,15 @@
                       <ul class="deployment-roles deployment-roles-assigned">
                         {{#each assignedRoles as |role|}}
                           {{#draggable-object content=role}}
-                            {{deployment-role role=role profile=profile nodeCount=matchingNodeCount plan=plan edit="editRole" setRoleCount="setRoleCount" remove="removeRole" readOnly=false}}
+                            {{deployment-role role=role
+                                              profile=profile
+                                              nodeCount=matchingNodeCount
+                                              plan=plan
+                                              edit="editRole"
+                                              setRoleCount="setRoleCount"
+                                              setRoleCountOnController="setRoleCountOnController"
+                                              remove="removeRole"
+                                              readOnly=false}}
                           {{/draggable-object}}
                         {{/each}}
                         {{#unless allRolesAssigned}}

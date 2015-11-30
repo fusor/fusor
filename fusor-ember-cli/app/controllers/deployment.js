@@ -154,6 +154,14 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   hasSubscriptions: Ember.computed('cntSubscriptions', function() {
     return (this.get('cntSubscriptions') > 0);
   }),
-  hasNoSubscriptions: Ember.computed.not('hasSubscriptions')
+  hasNoSubscriptions: Ember.computed.not('hasSubscriptions'),
+
+  // these OSP role counts are overwritten by .on('didInsertElement') on deployment-role component
+  // or by action setRoleCount() on assign-nodes controller after quantity is changed
+  controllerRoleCount: 0,
+  computeRoleCount: 0,
+  cinderRoleCount: 0,
+  swiftRoleCount: 0,
+  cephRoleCount: 0
 
 });
