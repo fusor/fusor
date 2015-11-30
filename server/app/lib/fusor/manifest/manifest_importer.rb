@@ -49,17 +49,17 @@ module Fusor
         entry.extract(File.join(tmp_dir, "consumer.zip"))
         zip_file.close
 
-        subscription = nil
+        subscriptions = []
         consumer_zip = Zip::File.open(File.join(tmp_dir, "consumer.zip"))
         consumer_zip.glob("export/entitlements/*.json") do |entitlement|
           Rails.logger.debug entitlement.name
-          subscription = parse_entitlement_json(entitlement.get_input_stream.read(entitlement.size))
+          subscriptions.push(parse_entitlement_json(entitlement.get_input_stream.read(entitlement.size)))
         end
 
         consumer_zip.close
 
         Rails.logger.debug "XXX ------------- Leaving prepare_manifest -------------"
-        return subscription
+        return subscriptions
       end
     end
   end
