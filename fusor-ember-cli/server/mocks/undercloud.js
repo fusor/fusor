@@ -17,5 +17,5 @@ module.exports = function(app) {
     });
   });
 
-  app.use('/fusor/api222/openstack/deployments', undercloudRouter);
+  app.use('/fusor/api/openstack/deployments', undercloudRouter);
 };

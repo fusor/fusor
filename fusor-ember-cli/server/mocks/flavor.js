@@ -36,5 +36,5 @@ module.exports = function(app) {
   });
 
 
-  app.use('/fusor/api222/openstack/deployments', flavorRouter);
+  app.use('/fusor/api/openstack/deployments', flavorRouter);
 };

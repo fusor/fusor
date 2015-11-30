@@ -195,5 +195,5 @@ module.exports = function(app) {
     });
   });
 
-  app.use('/fusor/api222/openstack/deployments', nodeRouter);
+  app.use('/fusor/api/openstack/deployments', nodeRouter);
 };

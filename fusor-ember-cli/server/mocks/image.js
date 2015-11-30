@@ -164,5 +164,5 @@ module.exports = function(app) {
     });
   });
 
-  app.use('/fusor/api222/openstack/deployments', imageRouter);
+  app.use('/fusor/api/openstack/deployments', imageRouter);
 };
