@@ -5,6 +5,7 @@ class DeploymentTest < ActiveSupport::TestCase
 
   describe "deployment" do
     before do
+      # skip nfs mount validation as it calls commands from the command line
       Fusor::Validators::DeploymentValidator.any_instance.stubs(:validate_nfs_share)
     end
 
@@ -173,11 +174,11 @@ class DeploymentTest < ActiveSupport::TestCase
 
   describe "deployment with nfs share" do
     test "should set warning if nfs share not found" do
-      result = [0, ['/nfs/test', '/not/the/droids/youre/looking/for']]
+      result = [1, []]
       Utils::Fusor::CommandUtils.stubs(:run_command).returns(result)
       rhev = fusor_deployments(:rhev)
       assert rhev.valid? # warnings don't invalidate the deployment
-      assert_match /Could not locate NFS share/, rhev.warnings.first
+      assert_match /Could not connect to address/, rhev.warnings.first
     end
   end
 
