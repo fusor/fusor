@@ -80,6 +80,7 @@ Requires: %{?scl_prefix}rubygem-mechanize
 Requires: %{?scl_prefix}rubygem-net-ssh => 2.9.2
 Requires: %{?scl_prefix}rubygem-rubyzip
 Requires: fusor_ovirt
+Requires: fusor-utils
 
 %description
 Fusor Plugin
