@@ -47,6 +47,8 @@ module Actions
 
               plan_action(::Actions::Fusor::Deployment::Rhev::WaitForDataCenter,
                           deployment)
+
+              plan_action(::Actions::Fusor::Deployment::Rhev::CreateCr, deployment)
             end
           end
 

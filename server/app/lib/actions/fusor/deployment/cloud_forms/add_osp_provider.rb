@@ -14,9 +14,9 @@ module Actions
   module Fusor
     module Deployment
       module CloudForms
-        class AddRhevProvider < Actions::Base
+        class AddOspProvider < Actions::Base
           def humanized_name
-            _("Add RHEV Provider")
+            _("Add OSP Provider")
           end
 
           def plan(deployment)
@@ -24,23 +24,18 @@ module Actions
           end
 
           def run
-            Rails.logger.info "================ AddRhevProvider run method ===================="
+            Rails.logger.info "================ AddOspProvider run method ===================="
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             cfme_address = deployment.cfme_address
-            provider = { :name => "#{deployment.name}-RHEV",
-                         :type => "rhevm",
-                         :hostname => deployment.rhev_engine_host.name,
-                         :ip => deployment.rhev_engine_host.ip,
-                         :username => "admin@internal", # TODO: perhaps make configurable, in future
-                         :password => deployment.rhev_engine_admin_password,
-                         :hypervisors => deployment.discovered_hosts
+            provider = { :name => "#{deployment.name}-RHOS",
+                         :ip => deployment.openstack_overcloud_address,
+                         :username => "admin",
+                         :password => deployment.openstack_overcloud_password
             }
-            Utils::CloudForms::InfraProvider.add(cfme_address, provider, deployment)
-            sleep(3.minutes)
-            Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)
 
-            Rails.logger.info "================ Leaving AddRhevProvider run method ===================="
+            Utils::CloudForms::CloudProvider.add(cfme_address, provider, deployment)
+            Rails.logger.info "================ Leaving AddOspProvider run method ===================="
           end
         end
       end

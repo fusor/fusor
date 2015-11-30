@@ -44,6 +44,9 @@ module Actions::Fusor::Deployment::OpenStack
         plan_self(deployment_id: deployment.id)
         plan_action(SshCommand, deployment, "/opt/rh/ruby193/root/bin/initialize_overcloud.sh")
         plan_action(OvercloudCredentials, deployment)
+        plan_action(ControllerCleanup, deployment)
+        plan_action(OvercloudConfiguration, deployment)
+        plan_action(CreateCr, deployment)
       end
     end
 

@@ -20,7 +20,7 @@ module Actions
         # Add URL and Password to deployment model
         class OvercloudCredentials < Actions::Base
           def humanized_name
-            _('SSH and run an arbitrary command on the Undercloud')
+            _('Add URL and Password to deployment model')
           end
 
           def plan(deployment)
@@ -44,12 +44,14 @@ module Actions
             fail _('Failed to Retreive Overcloud Credentials')
           end
 
+          private
+
           def get_passwd(deployment)
             undercloud = Overcloud::UndercloudHandle.new('admin',
                                                          deployment.openstack_undercloud_password,
                                                          deployment.openstack_undercloud_ip_addr,
                                                          5000)
-            undercloud.get_plan_parameter_value('overcloud', 'Compute-1::AdminPassword')
+            undercloud.get_plan_parameter_value('overcloud', 'Controller-1::AdminPassword')
           end
 
           def get_address(deployment)

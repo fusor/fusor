@@ -15,9 +15,9 @@ module Actions
   module Fusor
     module Deployment
       module CloudForms
-        class UpdateAdminPassword < Actions::Base
+        class UpdateHosts < Actions::Base
           def humanized_name
-            _("Update Admin Password on CloudForms Appliance")
+            _("Update /etc/hosts on CloudForms Appliance")
           end
 
           def plan(deployment)
@@ -25,18 +25,17 @@ module Actions
           end
 
           def run
-            Rails.logger.info "================ UpdateAdminPassword run method ===================="
+            Rails.logger.info "================ UpdateHosts run method ===================="
             begin
 
               ssh_user = "root"
               deployment = ::Fusor::Deployment.find(input[:deployment_id])
               cfme_address = deployment.cfme_address
               ssh_password = deployment.cfme_root_password
-              upload_script(deployment)
 
               @io = StringIO.new
               client = Utils::Fusor::SSHConnection.new(cfme_address, ssh_user, ssh_password)
-              cmd = "ruby /root/update_cfme_admin_passwd.rb #{deployment.cfme_admin_password}"
+              cmd = 'echo "127.0.0.1 $(uname -n)" >> /etc/hosts'
               client.execute(cmd, @io)
 
               # close the stringio at the end
@@ -44,16 +43,11 @@ module Actions
 
             rescue Exception => e
               @io.close if @io && !@io.closed?
-              fail _("Failed to update admin password on appliance. Error message: #{e.message}")
+              fail _("Failed to update /etc/hosts on appliance. Error message: #{e.message}")
             end
-            Rails.logger.info "================ Leaving UpdateAdminPassword run method ===================="
+            Rails.logger.info "================ Leaving UpdateHosts run method ===================="
           end
 
-          def upload_script(deployment)
-            Net::SCP.start(deployment.cfme_address, "root", :password => deployment.cfme_root_password, :paranoid => false) do |scp|
-              scp.upload!("/usr/share/fusor_ovirt/bin/update_cfme_admin_passwd.rb", "/root")
-            end
-          end
         end
       end
     end

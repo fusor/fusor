@@ -87,6 +87,14 @@
         :basearch: "x86_64"
         #:image_file_name: "cfme-rhevm-5.3-54.x86_64.rhevm.ova" # Default behavior uses the 'latest' image file.
 
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :product_id: "69"
+        :repository_set_id: "2455"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
+        :basearch: "x86_64"
+        :releasever: "7.1"
+        #Need Red Hat 7.1 Operating Sysetem setup including Media, architecture, and other associations.
+
     :openstack:
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
