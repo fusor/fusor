@@ -14,7 +14,7 @@ module Fusor
   class Api::V21::DeploymentsController < Api::V2::DeploymentsController
 
     before_filter :find_deployment, :only => [:destroy, :show, :update,
-                                              :deploy, :validate]
+                                              :deploy, :validate, :log]
 
     rescue_from Encoding::UndefinedConversionError, :with => :ignore_it
 
@@ -71,6 +71,18 @@ module Fusor
         :errors => @deployment.errors.full_messages,
         :warnings => @deployment.warnings
       }
+    end
+
+    def log
+      reader = Fusor::Logging::LogReader.new
+      log_path = '/var/log/foreman/production.log'
+      # TODO when fusor log is available
+      # log_path = "#{Rails.root}/log/#{@deployment.name}-#{@deployment.id}/deployment.log"
+      if params[:date_time_gte]
+        render :json => {log: reader.tail_log_since(log_path, DateTime.iso8601(params[:date_time_gte]))}
+      else
+        render :json => {log: reader.read_full_log(log_path)}
+      end
     end
 
     def resource_name

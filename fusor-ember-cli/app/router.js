@@ -65,6 +65,7 @@ export default Router.map(function() {
       this.route('progress', function() {
         this.route('overview');
         this.route('details');
+        this.route('log');
       });
       this.route('summary');
     });

@@ -1,0 +1,65 @@
+<div class="row">
+  <div class="col-sm-8 col-md-7 col-lg-5">
+    <p>Viewing {{model.log.path}}</p>
+  </div>
+  <div class="col-sm-4 col-md-5 col-lg-4">
+    <form class="pull-right log-scroll-output-form">
+      <div class="checkbox">
+        <label>
+          {{input type="checkbox" name="scrollToEnd" checked=scrollToEndChecked}} Auto-scroll to follow new log data
+        </label>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- TODO Uncomment and implement search/autoscroll -->
+
+<!--<div class="row">-->
+  <!--<div class="col-sm-12 col-lg-9">-->
+    <!--<p>Viewing { {model.log.path} }</p>-->
+  <!--</div>-->
+<!--</div>-->
+
+<!--<div class="row">-->
+  <!--<div class="col-sm-8 col-md-7 col-lg-5">-->
+    <!--<div class="row">-->
+      <!--<div class="col-sm-6">-->
+        <!--<form role="form-inline" class="search-pf has-button log-search">-->
+          <!--<div class="form-group has-clear">-->
+            <!--<div class="search-pf-input-group">-->
+              <!--<label for="search1" class="sr-only">Search</label>-->
+              <!--<input id="search1" type="search" class="form-control" placeholder="Search">-->
+              <!--<button type="button" class="clear" aria-hidden="true"><span class="pficon pficon-close"></span></button>-->
+            <!--</div>-->
+          <!--</div>-->
+          <!--<div class="form-group">-->
+            <!--<button class="btn btn-default" type="button"><span class="fa fa-search"></span></button>-->
+          <!--</div>-->
+        <!--</form>-->
+      <!--</div>-->
+
+      <!--<div class="col-sm-6">-->
+        <!--Result 2 of 3-->
+        <!--<button class="btn btn-default btn-nav-search-result" type="button"><span class="fa fa-caret-up"></span></button>-->
+        <!--<button class="btn btn-default btn-nav-search-result" type="button"><span class="fa fa-caret-down"></span></button>-->
+
+      <!--</div>-->
+    <!--</div>-->
+  <!--</div>-->
+  <!--<div class="col-sm-4 col-md-5 col-lg-4">-->
+    <!--<form class="pull-right log-scroll-output-form">-->
+      <!--<div class="checkbox">-->
+        <!--<label>-->
+          <!--{ {input type="checkbox" name="scrollToEnd" checked=scrollToEndChecked} } Auto-scroll to follow new log data-->
+        <!--</label>-->
+      <!--</div>-->
+    <!--</form>-->
+  <!--</div>-->
+<!--</div>-->
+
+<div class="row">
+  <div class="col-sm-12 col-lg-9">
+    {{textarea class="form-control log-output" value=formattedLog rows="25" disabled=true}}
+  </div>
+</div>

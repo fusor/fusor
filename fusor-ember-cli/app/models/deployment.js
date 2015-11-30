@@ -97,6 +97,14 @@ export default DS.Model.extend({
   progress: null,
   state: null,
 
+  isComplete: Ember.computed('progress', function() {
+    return this.get('progress') === '1';
+  }),
+
+  isInProgress: Ember.computed('isStarted', 'isComplete', function() {
+    return this.get('isStarted') && !this.get('isComplete');
+  }),
+
   // TODO-REFACTOR return foreman_task in API response and create belongsTo assocation
   // foreman_task: DS.belongsTo('foreman-task')
   foremanTask: Ember.computed('foreman_task_uuid', 'isStarted', function() {
