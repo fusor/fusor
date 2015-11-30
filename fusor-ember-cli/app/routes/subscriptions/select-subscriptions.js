@@ -3,7 +3,9 @@ import Ember from 'ember';
 export default Ember.Route.extend({
 
   model() {
-    return this.modelFor('deployment').get('subscriptions');
+    // GET /fusor/subscriptions?source=added&deployment_id=ID_OF_DEPLOYMENT
+    var deploymentId = this.modelFor('deployment').get('id');
+    return this.store.query('subscription', {deployment_id: deploymentId, source: 'added'});
   },
 
   setupController(controller, model) {
