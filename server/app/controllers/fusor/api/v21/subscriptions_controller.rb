@@ -15,10 +15,14 @@ module Fusor
     skip_before_filter :check_content_type, :only => [:upload]
 
     def index
-      if params[:deployment_id]
+      if params[:deployment_id] && params[:source]
+          Rails.logger.warn "XXX filtering by deployment_id AND by source: #{params[:source]}"
+          @subscriptions = Fusor::Subscription.where(:deployment_id => params[:deployment_id],
+                                                     :source => params[:source])
+      elsif params[:deployment_id]
         Rails.logger.warn "XXX filtering by deployment_id"
         @subscriptions = Fusor::Subscription.where(:deployment_id => params[:deployment_id])
-      elsif ["imported", "added"].include? params[:source]
+      elsif params[:source]
         Rails.logger.warn "XXX filtering by source: #{params[:source]}"
         @subscriptions = Fusor::Subscription.where(:source => params[:source])
       else
