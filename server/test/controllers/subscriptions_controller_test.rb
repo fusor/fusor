@@ -2,6 +2,7 @@ require 'test_plugin_helper'
 
 module Fusor
   class Api::V21::SubscriptionsControllerTest < ActionController::TestCase
+    include ActionDispatch::TestProcess
 
     def setup
       @subscription = fusor_subscriptions(:imported)
@@ -44,6 +45,24 @@ module Fusor
       assert_response :success
       assert_equal new_source, response['subscription']['source'], "Response was not correct, did not return subscription"
       assert_not_nil Subscription.find_by_source new_source, "The subscription was not really created in the database"
+    end
+
+    test "upload" do
+
+      manifest_file = {}
+      # put the manifest into the same deployment mapped to the other
+      manifest_file[:deployment_id] = @subscription.deployment.id
+      manifest_file[:name] = 'fake_manifest.zip'
+      manifest_file[:file] = fixture_file_upload('fake_manifest.zip', 'application/zip', :binary)
+      # pretty hackish but it mimics what the emberjs ui sends us
+      params = {}
+      params[:manifest_file] = manifest_file
+
+      response = JSON.parse(put(:upload, params).body)
+
+      assert_response :success
+      deployment = fusor_deployments(:rhev_and_cfme)
+      assert_equal deployment.manifest_file, response['manifest_file']
     end
 
   end
