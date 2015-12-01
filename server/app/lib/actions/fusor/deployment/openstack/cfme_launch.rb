@@ -97,7 +97,6 @@ module Actions
                     "provision_method" => "image",
                     "build" => 1,
                     "is_owned_by" => "3-Users",
-                    "enabled" => 1,
                     "compute_profile_id" => ComputeProfile.find_by_name("#{deployment.name}-cfme").id}
             ::Host.create(cfme)
           end
