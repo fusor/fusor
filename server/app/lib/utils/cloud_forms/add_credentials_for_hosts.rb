@@ -24,6 +24,23 @@ module Utils
           script_name   = "add_host_credentials.rb"
           scp_from_path = "/usr/share/fusor_ovirt/bin"
           scp_to_path   = "/root"
+          csv_file_name = "hosts_#{deployment.name}.csv"
+          csv_file_path = "/tmp"
+
+          # create the hosts csv file
+          csv_file = open("#{csv_file_path}/#{csv_file_name}", 'a')
+          csv_file.sync = true
+          csv_file.puts "ip, hostname"
+          hypervisor_hosts=deployment.rhev_hypervisor_hosts
+          hypervisor_hosts.each do |hhosts|
+            csv_file.puts "#{hhosts.ip}, #{hhosts.name}"
+          end
+          csv_file.close
+
+          # upload hosts csv file
+          Net::SCP.start(cfme_ip, ssh_username, :password => ssh_password, :paranoid => false) do |scp|
+            scp.upload!("#{csv_file_path}/#{csv_file_name}", "#{scp_to_path}/#{csv_file_name}")
+          end
 
           # upload the script
           Net::SCP.start(cfme_ip, ssh_username, :password => ssh_password, :paranoid => false) do |scp|
@@ -34,7 +51,7 @@ module Utils
           client = Utils::Fusor::SSHConnection.new(cfme_ip, ssh_username, ssh_password)
 
           # run the script
-          cmd = "ruby #{scp_to_path}/#{script_name} #{deployment.name}-RHEV #{host_username} #{host_password}"
+          cmd = "ruby #{scp_to_path}/#{script_name} #{deployment.name}-RHEV #{host_username} #{host_password} #{csv_file_name}"
           client.execute(cmd, @io)
 
           # close the stringio at the end
