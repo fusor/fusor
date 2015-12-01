@@ -71,4 +71,5 @@ export default Router.map(function() {
     });
   });
 
+  this.route('readme'); // for demo only, not used in app
 });
