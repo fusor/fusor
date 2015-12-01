@@ -80,18 +80,21 @@ module Fusor
       Rails.logger.debug "XXX Import the manifest into the DB"
 
       mi = Fusor::Manifest::ManifestImporter.new
-      entitlement = mi.prepare_manifest(temp_file.path, deployment.id)
-      @subscription = Fusor::Subscription.where(:deployment_id => deployment.id).first_or_initialize
-      @subscription.deployment_id = deployment.id
-      @subscription.contract_number = entitlement['pool']['contractNumber']
-      @subscription.product_name = entitlement['pool']['productName']
-      #@subscription.product_name = entitlement['pool']['branding'].first['name']
-      @subscription.start_date = entitlement['startDate']
-      @subscription.end_date = entitlement['endDate']
-      @subscription.quantity_attached = entitlement['quantity']
-      @subscription.total_quantity = entitlement['pool']['quantity']
-      @subscription.source = "imported"
-      @subscription.save!
+      entitlements = mi.prepare_manifest(temp_file.path, deployment.id)
+
+      entitlements.each do |entitlement|
+        @subscription = Fusor::Subscription.where(:deployment_id => deployment.id, :contract_number => entitlement['pool']['contractNumber']).first_or_initialize
+        @subscription.deployment_id = deployment.id
+        @subscription.contract_number = entitlement['pool']['contractNumber']
+        @subscription.product_name = entitlement['pool']['productName']
+        #@subscription.product_name = entitlement['pool']['branding'].first['name']
+        @subscription.start_date = entitlement['startDate']
+        @subscription.end_date = entitlement['endDate']
+        @subscription.quantity_attached = entitlement['quantity']
+        @subscription.total_quantity = entitlement['pool']['quantity']
+        @subscription.source = "imported"
+        @subscription.save!
+      end
 
       render json: {manifest_file: temp_file.path}, status: 200
     end
