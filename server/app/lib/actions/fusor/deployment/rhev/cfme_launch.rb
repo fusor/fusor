@@ -95,7 +95,7 @@ module Actions
 
           def create_host(deployment, compute_attrs)
             hg_id = Hostgroup.where(name: deployment.name).first.id
-            cfme = {"name" => "#{deployment.name}-cfme",
+            cfme = {"name" => "#{deployment.name.tr('_', '-')}-cfme",
                     "location_id" => Location.find_by_name('Default Location').id,
                     "environment_id" => Environment.where(:katello_id => "Default_Organization/Library/Fusor_Puppet_Content").first.id,
                     "organization_id" => deployment["organization_id"],
