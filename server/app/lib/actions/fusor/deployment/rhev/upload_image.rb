@@ -20,6 +20,7 @@ module Actions
           end
 
           def plan(deployment, image_file_name)
+            super(deployment)
             plan_self(deployment_id: deployment.id,
                       image_file_name: image_file_name)
           end

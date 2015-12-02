@@ -19,7 +19,7 @@ module Actions
         end
 
         def plan(deployment, repositories)
-
+          super(deployment)
           unless composite_content_view_name(deployment) &&
                  rpm_content_view_name &&
                  puppet_content_view_name

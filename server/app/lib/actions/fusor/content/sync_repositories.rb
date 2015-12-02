@@ -19,6 +19,7 @@ module Actions
         end
 
         def plan(repositories)
+          super()
           concurrence do
             repositories.each do |repository|
               plan_action(::Actions::Fusor::Content::SyncRepositoryAsSubPlan, repository)

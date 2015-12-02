@@ -19,6 +19,7 @@ module Actions
         end
 
         def plan(deployment, customer_portal_credentials, download_file_path)
+          super(deployment)
           unless customer_portal_credentials[:username] && customer_portal_credentials[:password]
             fail _("Customer portal credentials are not available.")
           end

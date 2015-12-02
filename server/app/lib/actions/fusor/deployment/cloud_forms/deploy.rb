@@ -20,6 +20,7 @@ module Actions
           end
 
           def plan(deployment)
+            super(deployment)
             ::Fusor.log.info "================ Planning CFME Deployment ===================="
 
             # VERIFY PARAMS HERE

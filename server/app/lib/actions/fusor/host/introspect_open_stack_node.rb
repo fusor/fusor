@@ -21,6 +21,7 @@ module Actions::Fusor::Host
     end
 
     def plan(deployment, node_id)
+      super(deployment)
       plan_self node_id: node_id, deployment_id: deployment.id
     end
 

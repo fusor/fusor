@@ -25,6 +25,7 @@ module Actions
         middleware.use Actions::Fusor::Middleware::Timeout
 
         def plan(host)
+          super()
           plan_self host_id: host.id
         end
 

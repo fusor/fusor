@@ -20,6 +20,7 @@ module Actions
           end
 
           def plan(deployment)
+            super(deployment)
             fail _("Unable to locate a RHEV Engine Host") unless deployment.rhev_engine_host
 
             sequence do

@@ -19,6 +19,7 @@ module Actions
         end
 
         def plan(deployment, hostgroup_name, host)
+          super(deployment)
           plan_self(deployment_id: deployment.id, hostgroup_name: hostgroup_name, host_id: host.id)
         end
 

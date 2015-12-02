@@ -19,6 +19,7 @@ module Actions
         end
 
         def plan(deployment, hostgroup, repositories)
+          super(deployment)
           unless activation_key_name(deployment, hostgroup)
             fail _("Unable to locate activation key settings in config/settings.plugins.d/fusor.yaml")
           end

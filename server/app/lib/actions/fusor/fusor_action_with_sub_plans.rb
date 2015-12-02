@@ -13,7 +13,11 @@
 module Actions
   module Fusor
     class FusorActionWithSubPlans < Actions::ActionWithSubPlans
-      include ::Actions::Deployment::DeploymentLogger
+      #include ::Actions::Deployment::DeploymentLogger
+      def plan(deployment=nil)
+        #Create deployment specific log file.
+        ::Fusor.log_change_deployment(deployment)
+      end
     end
   end
 end

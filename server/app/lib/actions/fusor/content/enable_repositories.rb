@@ -19,6 +19,7 @@ module Actions
         end
 
         def plan(organization, product_content_settings)
+          super()
           sequence do
             fail _("fusor.yaml is missing definition for fusor content.") unless product_content_settings
             product_content_settings.each { |details| enable_repo(organization, details) }

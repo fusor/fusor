@@ -23,6 +23,7 @@ module Actions
         end
 
         def plan(repository)
+          super()
           plan_self(:id => repository.id)
         end
 

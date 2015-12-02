@@ -24,6 +24,7 @@ module Actions
           end
 
           def plan(deployment)
+            super(deployment)
             plan_self(deployment_id: deployment.id)
           end
 

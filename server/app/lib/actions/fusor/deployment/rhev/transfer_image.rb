@@ -21,6 +21,7 @@ module Actions
           end
 
           def plan(deployment, repository, image_file_name = nil)
+            super(deployment)
             plan_self(deployment_id: deployment.id,
                       repository_id: repository.id,
                       image_file_name: image_file_name,

@@ -20,6 +20,7 @@ module Actions
         end
 
         def plan(deployment, customer_portal_credentials)
+          super(deployment)
           upstream_consumer = deployment.organization.owner_details['upstreamConsumer']
           ::Fusor.log.debug "XXX provider url #{deployment.organization.redhat_provider.repository_url}"
           if upstream_consumer.blank?

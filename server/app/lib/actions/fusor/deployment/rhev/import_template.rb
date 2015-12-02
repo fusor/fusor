@@ -20,6 +20,7 @@ module Actions
           end
 
           def plan(deployment, template_name)
+            super(deployment)
             plan_self(deployment_id: deployment.id,
                       template_name: template_name)
           end

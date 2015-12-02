@@ -19,6 +19,7 @@ module Actions
         end
 
         def plan(activation_key_id, subscription_descriptions, repositories)
+          super()
           key = ::Katello::ActivationKey.find_by_id(activation_key_id)
 
           fail _("Unable to add subscriptions without an activation key") unless key
