@@ -9,6 +9,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   selectSubscriptionsController: Ember.inject.controller('subscriptions/select-subscriptions'),
 
   isSelfHost: Ember.computed.alias("rhevController.isSelfHost"),
+  isDisconnected: Ember.computed.alias("deploymentController.isDisconnected"),
+  cdnUrl: Ember.computed.alias("model.cdn_url"),
 
   rhevValidated: Ember.computed(
     'model.rhev_engine_admin_password',
