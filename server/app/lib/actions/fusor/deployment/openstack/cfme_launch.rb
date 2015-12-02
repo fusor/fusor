@@ -33,6 +33,7 @@ module Actions
             create_compute_profile(deployment)
             host = create_host(deployment)
             deployment.cfme_address = host.ip
+            deployment.cfme_hostname = host.name
             deployment.save!
             Rails.logger.debug '====== Leaving Launc Upload run method ======'
           end

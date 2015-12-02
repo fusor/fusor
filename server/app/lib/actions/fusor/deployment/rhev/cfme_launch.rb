@@ -32,6 +32,7 @@ module Actions
             compute_attrs = create_compute_profile(deployment).vm_attrs
             host = create_host(deployment, compute_attrs)
             deployment.cfme_address = host.ip
+            deployment.cfme_hostname = host.name
             deployment.save!
             Rails.logger.debug '====== Leaving CFME Launch run method ======'
           end
