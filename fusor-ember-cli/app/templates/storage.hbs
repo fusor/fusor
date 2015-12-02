@@ -13,14 +13,14 @@
       </span>
     {{/radio-button}}
     &nbsp;&nbsp;&nbsp;&nbsp;
-    {{#radio-button value="Local" groupValue=rhev_storage_type id='local' disabled=deploymentController.isStarted}}
-      <span class="{{if deploymentController.isStarted 'disabled'}}">
+    {{#radio-button value="Local" groupValue=rhev_storage_type id='local' disabled=true}}
+      <span class="disabled">
         Local
       </span>
     {{/radio-button}}
     &nbsp;&nbsp;&nbsp;&nbsp;
-    {{#radio-button value="Gluster" groupValue=rhev_storage_type id='gluster' disabled=deploymentController.isStarted}}
-      <span class="{{if deploymentController.isStarted 'disabled'}}">
+    {{#radio-button value="Gluster" groupValue=rhev_storage_type id='gluster' disabled=true}}
+      <span class="disabled">
         Gluster
       </span>
     {{/radio-button}}
@@ -39,7 +39,7 @@
       {{/if}}
 
   {{else if isLocal}}
-      {{text-f label="Storage Path" value=rhev_local_storage_path placeholder='Ex. /rhev/data_storage' isRequired=true cssId='rhev_local_storage_path' help-inline='This path will be created and given appropriate permissions - chown 36:36;chmod 0755, etc' disabled=isStarted}}
+      {{text-f label="Storage Path" value=rhev_local_storage_path placeholder='Ex. /rhev/data_storage' isRequired=true cssId='rhev_local_storage_path' help-inline='This path will be created and given appropriate permissions - chown 36:36; chmod 0755, etc' disabled=isStarted}}
 
   {{else if isGluster}}
       {{text-f label="Node Name" value=rhev_gluster_node_name placeholder='Ex. node.example.com' isRequired=true cssId='rhev_gluster_node_name' isRequired=true disabled=isStarted}}
