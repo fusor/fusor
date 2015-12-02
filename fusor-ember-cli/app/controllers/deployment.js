@@ -151,6 +151,14 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
     return this.get('model.subscriptions.length');
   }),
 
+  enableAccessInsights: Ember.computed('model.enable_access_insights', function() {
+    if (this.get('model.enable_access_insights')) {
+      return 'Enabled';
+    } else {
+      return 'Disabled';
+    }
+  }),
+
   hasSubscriptions: Ember.computed('cntSubscriptions', function() {
     return (this.get('cntSubscriptions') > 0);
   }),

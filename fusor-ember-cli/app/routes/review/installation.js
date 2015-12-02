@@ -27,6 +27,11 @@ export default Ember.Route.extend({
             controller.set('openstackProfiles', flavors);
         });
     }
+
+    if (model.get('is_disconnected')) {
+        controller.set('reviewSubscriptions', this.modelFor('subscriptions/review-subscriptions'));
+    }
+
     if (!model.get('isStarted')) {
         var self = this;
         var deployment = self.modelFor('deployment');

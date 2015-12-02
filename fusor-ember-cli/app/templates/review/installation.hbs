@@ -36,6 +36,11 @@
 
         {{review-link label='Environment' routeName='configure-environment'
                           value=lifecycleEnvironmentName}}
+
+        {{review-link label='Red Hat Access Insights'
+                      routeName='satellite.access-insights'
+                      value=deploymentController.enableAccessInsights }}
+
       {{/accordion-item}}
 
     {{#if isRhev}}
@@ -152,32 +157,59 @@
     {{/if}}
 
     {{#if isSubscriptions}}
-      {{#accordion-item name='Subscriptions' isOpen=isSubscriptionsOpen}}
-          {{review-link label='Subscription Management Application'
-                        routeName='subscriptions.management-application' isRequired=true
-                        value=deploymentController.managementApplicationName }}
-          {{review-link label='Red Hat Access Insights'
-                        routeName='subscriptions.select-subscriptions'
-                        value=selectSubscriptionsController.enableAnalytics }}
+        {{#if isDisconnected}}
+            {{#accordion-item name='Subscriptions' isOpen=isSubscriptionsOpen}}
+                {{review-link label='Content Mirror URL'
+                              routeName='subscriptions.credentials'
+                              isRequired=true
+                              value=cdnUrl }}
+                {{review-link label='Manifest File'
+                              routeName='subscriptions.credentials'
+                              isRequired=true
+                              value=model.manifest_file }}
 
+                {{#each reviewSubscriptions as |sub|}}
+                    {{review-link label='Subscription Name'
+                                  routeName='subscriptions.select-subscriptions'
+                                  value=sub.product_name }}
+                    {{review-link label='Contract Number'
+                                  routeName='subscriptions.select-subscriptions'
+                                  value=sub.contract_number }}
+                    {{review-link label='Quantity'
+                                  routeName='subscriptions.select-subscriptions'
+                                  value=sub.quantity_attached }}
+                {{else}}
+                      {{review-link label='Quantity'
+                                    routeName='subscriptions.select-subscriptions'
+                                    value="0 - no subscriptions in manifest" }}
+                {{/each}}
 
-          {{#each subscriptions as |sub|}}
-              {{review-link label='Subscription Name'
-                            routeName='subscriptions.select-subscriptions'
-                            value=sub.product_name }}
-              {{review-link label='Contract Number'
-                            routeName='subscriptions.select-subscriptions'
-                            value=sub.contract_number }}
-              {{review-link label='Quantity'
-                            routeName='subscriptions.select-subscriptions'
-                            value=sub.quantity_attached }}
-          {{else}}
-                {{review-link label='Quantity'
-                              routeName='subscriptions.select-subscriptions'
-                              value="0 - no new subscriptions to attach" }}
-          {{/each}}
+            {{/accordion-item}}
 
-      {{/accordion-item}}
+        {{else}}
+            {{#accordion-item name='Subscriptions' isOpen=isSubscriptionsOpen}}
+                {{review-link label='Subscription Management Application'
+                              routeName='subscriptions.management-application' isRequired=true
+                              value=deploymentController.managementApplicationName }}
+
+                {{#each subscriptions as |sub|}}
+                    {{review-link label='Subscription Name'
+                                  routeName='subscriptions.select-subscriptions'
+                                  value=sub.product_name }}
+                    {{review-link label='Contract Number'
+                                  routeName='subscriptions.select-subscriptions'
+                                  value=sub.contract_number }}
+                    {{review-link label='Quantity'
+                                  routeName='subscriptions.select-subscriptions'
+                                  value=sub.quantity_attached }}
+                {{else}}
+                      {{review-link label='Quantity'
+                                    routeName='subscriptions.select-subscriptions'
+                                    value="0 - no new subscriptions to attach" }}
+                {{/each}}
+
+            {{/accordion-item}}
+        {{/if}}
     {{/if}}
 
     </div>
