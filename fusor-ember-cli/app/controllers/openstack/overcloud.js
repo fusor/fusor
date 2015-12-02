@@ -24,15 +24,10 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       return true;
   }),
 
-  isValidOvercloudPassword: Ember.computed('isAutoPwd', 'overcloudPassword','confirmOvercloudPassword', function () {
-      if (this.get('isAutoPwd')) {
-          return true;
-      } else {
-          return Ember.isPresent(this.get('overcloudPassword')) &&
-                 this.get('overcloudPassword') === this.get('confirmOvercloudPassword');
-      }
-    }
-  ),
+  isValidOvercloudPassword: Ember.computed('overcloudPassword', 'confirmOvercloudPassword', function () {
+    return Ember.isPresent(this.get('overcloudPassword')) &&
+      this.get('overcloudPassword') === this.get('confirmOvercloudPassword');
+  }),
 
   validOvercloudNetworks: Ember.computed('neutronPublicInterface',
                                          'model.deployment.openstack_overcloud_private_net',
@@ -55,23 +50,5 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   disableNextOvercloud: Ember.computed.not('validOvercloudNetworks'),
 
   overcloudPassword: Ember.computed.alias("deploymentController.model.openstack_overcloud_password"),
-  confirmOvercloudPassword: Ember.computed.alias("deploymentController.confirmOvercloudPassword"),
-
-  isAutoPwd: Ember.computed.alias("deploymentController.model.openstack_overcloud_autogenerate_password"),
-
-  pwdType: Ember.computed('isAutoPwd', function() {
-    return (this.get('isAutoPwd') ? "autogenerate" : "specify");
-  }),
-
-  isAutoSelected: Ember.computed('pwdType', function() {
-    return (this.get('pwdType') === 'autogenerate');
-  }),
-  isPwdSpecified: Ember.computed.not('isAutoSelected'),
-
-  actions: {
-    pwdTypeChanged() {
-      return this.get('deploymentController').set('model.openstack_overcloud_autogenerate_password', this.get('isAutoSelected'));
-    }
-  }
-
+  confirmOvercloudPassword: Ember.computed.alias("deploymentController.confirmOvercloudPassword")
 });

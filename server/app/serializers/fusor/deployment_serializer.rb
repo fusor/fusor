@@ -21,7 +21,6 @@ module Fusor
                :openstack_undercloud_ip_addr,
                :openstack_undercloud_user,
                :openstack_undercloud_user_password,
-               :openstack_overcloud_autogenerate_password,
                :openstack_overcloud_address,
                :openstack_overcloud_password,
                :openstack_overcloud_private_net,

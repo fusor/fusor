@@ -28,25 +28,30 @@ export default Ember.Route.extend({
   },
 
   deactivate() {
-    this.updateNeutronPublicInterface();
-    this.send('updatePlanParameters', [{
-      name: 'Controller-1::NeutronPublicInterface',
-      value: this.get('controller').get('neutronPublicInterface')
-    }]);
+    var controller = this.get('controller'),
+      changedParams = [
+        {
+          name: 'Controller-1::NeutronPublicInterface',
+          value: this.get('controller').get('neutronPublicInterface')
+        },
+        {
+          name: 'Controller-1::AdminPassword',
+          value: this.get('controller').get('overcloudPassword')
+        }
+      ];
+
+    this.updateLocalPlanParameters(changedParams);
+    this.send('updatePlanParameters', changedParams);
     return this.send('saveDeployment', null);
   },
 
-  updateNeutronPublicInterface() {
-    var controller = this.get('controller'),
-      existingParams = controller.get('model.plan.parameters');
+  updateLocalPlanParameters(changedParams) {
+    var controller = this.get('controller'), existingParams = controller.get('model.plan.parameters');
 
-    if (!existingParams) {
-      return;
-    }
-
-    existingParams.forEach(function (param) {
-      if (param.get('id') === 'Controller-1::NeutronPublicInterface') {
-        param.set('value', controller.get('neutronPublicInterface'));
+    existingParams.forEach(function (existingParam) {
+      var changedParam = changedParams.findBy('name', existingParam.get('id'));
+      if (changedParam) {
+        existingParam.set('value', changedParam.value);
       }
     });
   }
