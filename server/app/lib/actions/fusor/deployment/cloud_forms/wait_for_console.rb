@@ -30,25 +30,25 @@ module Actions
           end
 
           def invoke_external_task
-            Rails.logger.info "================ CloudForms::WaitForConsole invoke_external_task method ===================="
+            ::Fusor.log.info "================ CloudForms::WaitForConsole invoke_external_task method ===================="
             is_up? ::Fusor::Deployment.find(input[:deployment_id]).cfme_address
           end
 
           def poll_external_task
-            Rails.logger.info "================ CloudForms::WaitForConsole poll_external_task method ===================="
+            ::Fusor.log.info "================ CloudForms::WaitForConsole poll_external_task method ===================="
             is_up? ::Fusor::Deployment.find(input[:deployment_id]).cfme_address
           end
 
           private
 
           def is_up?(ip)
-            Rails.logger.info "================ CloudForms::WaitForConsole is_up method ===================="
+            ::Fusor.log.info "================ CloudForms::WaitForConsole is_up method ===================="
             # possibly make a GET call to the webui
             begin
               output = open(smart_add_url_protocol(ip), { ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE })
               return true if output.status.first == "200"
             rescue Exception => e
-              Rails.logger.warn e
+              ::Fusor.log.warn e
             end
             return false
           end

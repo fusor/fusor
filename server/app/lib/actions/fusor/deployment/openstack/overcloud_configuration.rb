@@ -28,7 +28,7 @@ module Actions
           end
 
           def run
-            Rails.logger.debug '====== OvercloudConfiguration run method ======'
+            ::Fusor.log.debug '====== OvercloudConfiguration run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             overcloud = { :openstack_auth_url  => "http://#{deployment.openstack_overcloud_address}:5000/v2.0/tokens",
                           :openstack_username  => 'admin', :openstack_tenant => 'admin',
@@ -37,11 +37,11 @@ module Actions
             configure_keystone(deployment, overcloud)
             #####FIX##### Once we ask for networks pass them along and stop using hardcoded values
             configure_networks(deployment, overcloud)
-            Rails.logger.debug '=== Leaving OvercloudConfiguration run method ==='
+            ::Fusor.log.debug '=== Leaving OvercloudConfiguration run method ==='
           end
 
           def overcloud_configuration_completed
-            Rails.logger.info 'Overcloud Configuration Completed'
+            ::Fusor.log.info 'Overcloud Configuration Completed'
           end
 
           def overcloud_configuration_failed

@@ -24,7 +24,7 @@ module Actions
           end
 
           def run
-            Rails.logger.info "================ RunApplianceConsole run method ===================="
+            ::Fusor.log.info "================ RunApplianceConsole run method ===================="
 
             script_dir = "/usr/share/fusor_ovirt/bin/"
             db_password = "changeme" # TODO: we may want to make this configurable in the future
@@ -37,7 +37,7 @@ module Actions
             # We need to use the default password of 'smartvm' until we add support.
             #
             #ssh_password = "smartvm" # TODO: need to update to use deployment.cfme_root_password; however, that means it must also be set on VM during/after creation
-            Rails.logger.warn "XXX using cfme_root_password"
+            ::Fusor.log.warn "XXX using cfme_root_password"
             ssh_password = deployment.cfme_root_password
 
             cmd = "#{script_dir}miq_run_appliance_console.py "\
@@ -57,12 +57,12 @@ module Actions
             #cmd = "appliance_console_cli --region 1 --internal --force-key -p #{db_password} --verbose"
             #client.execute(cmd)
 
-            Rails.logger.info "================ Leaving RunApplianceConsole run method ===================="
+            ::Fusor.log.info "================ Leaving RunApplianceConsole run method ===================="
           end
 
           # TODO: temporarily commenting out the SSHConnection callbacks.  See above.
           #def run_appliance_console_completed
-          #  Rails.logger.warn "XXX the appliance console successfully ran on the node"
+          #  ::Fusor.log.warn "XXX the appliance console successfully ran on the node"
           #  puts "XXX the appliance console successfully ran on the node"
           #  sleep 300 # TODO: pause while the appliance web ui comes up...
           #end
@@ -74,9 +74,9 @@ module Actions
           private
 
           def run_command(cmd)
-            Rails.logger.info "Running: #{cmd}"
+            ::Fusor.log.info "Running: #{cmd}"
             status, output = Utils::Fusor::CommandUtils.run_command(cmd)
-            Rails.logger.debug "Status: #{status}, output: #{output}"
+            ::Fusor.log.debug "Status: #{status}, output: #{output}"
             return status, output
           end
         end

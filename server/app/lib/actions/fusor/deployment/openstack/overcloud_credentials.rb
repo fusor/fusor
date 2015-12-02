@@ -28,16 +28,16 @@ module Actions
           end
 
           def run
-            Rails.logger.debug '====== OvercloudCredentials run method ======'
+            ::Fusor.log.debug '====== OvercloudCredentials run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             deployment.openstack_overcloud_password = get_passwd(deployment)
             deployment.openstack_overcloud_address = get_address(deployment)
             deployment.save!(:validate => false)
-            Rails.logger.debug '=== Leaving OvercloudCredentials run method ==='
+            ::Fusor.log.debug '=== Leaving OvercloudCredentials run method ==='
           end
 
           def overcloud_credentials_completed
-            Rails.logger.info 'Overcloud Credentials saved'
+            ::Fusor.log.info 'Overcloud Credentials saved'
           end
 
           def overcloud_credentials_failed

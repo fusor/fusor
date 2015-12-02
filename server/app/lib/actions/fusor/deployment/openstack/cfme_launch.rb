@@ -27,18 +27,18 @@ module Actions
           end
 
           def run
-            Rails.logger.debug '====== CFME Launch run method ======'
+            ::Fusor.log.debug '====== CFME Launch run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             create_image(deployment)
             create_compute_profile(deployment)
             host = create_host(deployment)
             deployment.cfme_address = host.ip
             deployment.save!
-            Rails.logger.debug '====== Leaving Launc Upload run method ======'
+            ::Fusor.log.debug '====== Leaving Launc Upload run method ======'
           end
 
           def cfme_launch_completed
-            Rails.logger.info 'CFME Launch Completed'
+            ::Fusor.log.info 'CFME Launch Completed'
           end
 
           def cfme_launch_failed

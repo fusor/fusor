@@ -24,7 +24,7 @@ module Actions
           end
 
           def run
-            Rails.logger.info "================ AddOspProvider run method ===================="
+            ::Fusor.log.info "================ AddOspProvider run method ===================="
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             cfme_address = deployment.cfme_address
@@ -35,7 +35,7 @@ module Actions
             }
 
             Utils::CloudForms::CloudProvider.add(cfme_address, provider, deployment)
-            Rails.logger.info "================ Leaving AddOspProvider run method ===================="
+            ::Fusor.log.info "================ Leaving AddOspProvider run method ===================="
           end
         end
       end

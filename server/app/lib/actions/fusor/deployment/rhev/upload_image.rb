@@ -25,7 +25,7 @@ module Actions
           end
 
           def run
-            Rails.logger.info "================ UploadImage run method ===================="
+            ::Fusor.log.info "================ UploadImage run method ===================="
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
 
@@ -62,11 +62,11 @@ module Actions
             client.execute(cmd)
 
             output[:template_name] = imported_template_name
-            Rails.logger.info "================ Leaving UploadImage run method ===================="
+            ::Fusor.log.info "================ Leaving UploadImage run method ===================="
           end
 
           def upload_image_completed
-            Rails.logger.info "image uploaded"
+            ::Fusor.log.info "image uploaded"
           end
 
           def upload_image_failed

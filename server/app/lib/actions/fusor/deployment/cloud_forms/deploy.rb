@@ -20,7 +20,7 @@ module Actions
           end
 
           def plan(deployment)
-            Rails.logger.info "================ Planning CFME Deployment ===================="
+            ::Fusor.log.info "================ Planning CFME Deployment ===================="
 
             # VERIFY PARAMS HERE
             if deployment.deploy_cfme
@@ -33,7 +33,7 @@ module Actions
                 fail _("RHEV engine admin password not configured properly") unless deployment.rhev_engine_admin_password
               end
             else
-              Rails.logger.warn "Deploy CloudForms action scheduled but deploy_cfme was NOT selected. Please file a bug."
+              ::Fusor.log.warn "Deploy CloudForms action scheduled but deploy_cfme was NOT selected. Please file a bug."
               return
             end
 

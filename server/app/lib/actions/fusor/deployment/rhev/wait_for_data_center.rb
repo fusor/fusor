@@ -44,7 +44,7 @@ module Actions
           private
 
           def get_status(deployment_id)
-            Rails.logger.info "================ Rhev::WaitForDataCenter get_status method ===================="
+            ::Fusor.log.info "================ Rhev::WaitForDataCenter get_status method ===================="
 
             # If the api_host ip is available, use it to check the status of the data center.
             # If it isn't available, it is likely that the puppet facts have not been uploaded,

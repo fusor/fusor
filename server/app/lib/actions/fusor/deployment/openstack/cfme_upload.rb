@@ -30,7 +30,7 @@ module Actions
           end
 
           def run
-            Rails.logger.debug '====== CFME Upload run method ======'
+            ::Fusor.log.debug '====== CFME Upload run method ======'
             ::User.current = ::User.find(input[:user_id])
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
@@ -40,7 +40,7 @@ module Actions
                           :openstack_username  => 'admin', :openstack_tenant => 'admin',
                           :openstack_api_key   => deployment.openstack_overcloud_password }
             upload_cfme_image(overcloud, "#{deployment.name}-cfme", image_full_path)
-            Rails.logger.debug '====== Leaving CFME Upload run method ======'
+            ::Fusor.log.debug '====== Leaving CFME Upload run method ======'
           ensure
             ::User.current = nil
           end

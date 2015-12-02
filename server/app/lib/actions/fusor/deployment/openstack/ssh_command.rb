@@ -22,7 +22,7 @@ module Actions::Fusor::Deployment::OpenStack
     end
 
     def run
-      Rails.logger.debug "================ SshCommand run method ===================="
+      ::Fusor.log.debug "================ SshCommand run method ===================="
 
       deployment = ::Fusor::Deployment.find(input[:deployment_id])
 
@@ -35,11 +35,11 @@ module Actions::Fusor::Deployment::OpenStack
       client.on_failure(lambda { ssh_command_failed })
       client.execute(input[:cmd])
 
-      Rails.logger.debug "================ Leaving SshCommand run method ===================="
+      ::Fusor.log.debug "================ Leaving SshCommand run method ===================="
     end
 
     def ssh_command_completed
-      Rails.logger.info "Command succeeded: " + input[:cmd]
+      ::Fusor.log.info "Command succeeded: " + input[:cmd]
     end
 
     def ssh_command_failed

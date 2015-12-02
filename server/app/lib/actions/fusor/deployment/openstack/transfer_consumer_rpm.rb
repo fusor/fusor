@@ -22,14 +22,14 @@ module Actions::Fusor::Deployment::OpenStack
     end
 
     def run
-      Rails.logger.debug "================ TransferConsumerRpm run method ===================="
+      ::Fusor.log.debug "================ TransferConsumerRpm run method ===================="
 
       deployment = ::Fusor::Deployment.find(input[:deployment_id])
 
       latest_consumer_rpm = '/var/www/html/pub/katello-ca-consumer-latest.noarch.rpm'
       scp_file(deployment, latest_consumer_rpm)
 
-      Rails.logger.debug "================ Leaving TransferConsumerRpm run method ===================="
+      ::Fusor.log.debug "================ Leaving TransferConsumerRpm run method ===================="
     end
 
     private

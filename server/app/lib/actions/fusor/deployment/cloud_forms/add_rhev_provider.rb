@@ -24,7 +24,7 @@ module Actions
           end
 
           def run
-            Rails.logger.info "================ AddRhevProvider run method ===================="
+            ::Fusor.log.info "================ AddRhevProvider run method ===================="
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             cfme_address = deployment.cfme_address
@@ -40,7 +40,7 @@ module Actions
             sleep(3.minutes)
             Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)
 
-            Rails.logger.info "================ Leaving AddRhevProvider run method ===================="
+            ::Fusor.log.info "================ Leaving AddRhevProvider run method ===================="
           end
         end
       end

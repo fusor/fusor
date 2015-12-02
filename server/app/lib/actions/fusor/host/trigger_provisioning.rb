@@ -23,16 +23,16 @@ module Actions
         end
 
         def run
-          Rails.logger.debug "========================= TriggerProvisioning.run ENTER ========================="
+          ::Fusor.log.debug "========================= TriggerProvisioning.run ENTER ========================="
           deployment = ::Fusor::Deployment.find(input[:deployment_id])
           hostgroup = find_hostgroup(deployment, input[:hostgroup_name])
           host = ::Host::Base.find(input[:host_id])
 
           host = assign_host_to_hostgroup(host, hostgroup)
 
-          Rails.logger.debug "XXX assign_host_to_hostgroup returned id: #{host.id} type: #{host.type}"
+          ::Fusor.log.debug "XXX assign_host_to_hostgroup returned id: #{host.id} type: #{host.type}"
 
-          Rails.logger.debug "========================= TriggerProvisioning.run EXIT ========================="
+          ::Fusor.log.debug "========================= TriggerProvisioning.run EXIT ========================="
         end
 
         #
@@ -44,13 +44,13 @@ module Actions
 
           converting_discovered = assignee_host.is_a? ::Host::Discovered
           if converting_discovered
-            Rails.logger.debug "================ Validate discovered host facts ===================="
+            ::Fusor.log.debug "================ Validate discovered host facts ===================="
 
             hosts_facts = FactValue.joins(:fact_name).where(host_id: assignee_host.id)
             discovery_bootif = hosts_facts.where(fact_names: { name: 'discovery_bootif' }).first or
                 raise 'unknown discovery_bootif fact'
 
-            Rails.logger.debug "XXX the discovery bootif is #{discovery_bootif.value}"
+            ::Fusor.log.debug "XXX the discovery bootif is #{discovery_bootif.value}"
 
             interface = hosts_facts.
                 includes(:fact_name).
@@ -58,18 +58,18 @@ module Actions
                 find { |v| v.fact_name.name =~ /^macaddress_.*$/ }.
                 fact_name.name.split('_').last
 
-            Rails.logger.debug "XXX the interface is #{interface}"
+            ::Fusor.log.debug "XXX the interface is #{interface}"
 
             network = hosts_facts.where(fact_names: { name: "network_#{interface}" }).first
 
-            Rails.logger.debug "XXX the network is #{network.value}"
+            ::Fusor.log.debug "XXX the network is #{network.value}"
 
             if hostgroup.subnet
               hostgroup.subnet.network == network.value or
                   raise "networks do not match: #{hostgroup.subnet.network} #{network.value}"
             end
 
-            Rails.logger.debug "================ Finished validating discovered host facts ===================="
+            ::Fusor.log.debug "================ Finished validating discovered host facts ===================="
           end
 
           ::Host.transaction do
@@ -81,9 +81,9 @@ module Actions
             # root_pass is not copied for some reason
             host.root_pass = hostgroup.root_pass
 
-            Rails.logger.debug "XXX assignee host type is now: #{assignee_host.type}"
-            Rails.logger.debug "XXX saving host of type: #{host.type}"
-            Rails.logger.debug "XXX calling save"
+            ::Fusor.log.debug "XXX assignee host type is now: #{assignee_host.type}"
+            ::Fusor.log.debug "XXX saving host of type: #{host.type}"
+            ::Fusor.log.debug "XXX calling save"
 
             host.save
 

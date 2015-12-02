@@ -28,15 +28,15 @@ module Actions
           end
 
           def run
-            Rails.logger.debug '====== ControllerCleanup run method ======'
+            ::Fusor.log.debug '====== ControllerCleanup run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             fetch_overcloud_ssh_key(deployment)
             fix_controller_services(deployment)
-            Rails.logger.debug '=== Leaving ControllerCleanup run method ==='
+            ::Fusor.log.debug '=== Leaving ControllerCleanup run method ==='
           end
 
           def controller_cleanup_completed
-            Rails.logger.info 'Controller Cleanup Completed'
+            ::Fusor.log.info 'Controller Cleanup Completed'
           end
 
           def controller_cleanup_failed
