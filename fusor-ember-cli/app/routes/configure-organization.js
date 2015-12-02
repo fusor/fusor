@@ -9,8 +9,8 @@ export default Ember.Route.extend({
   setupController(controller, model) {
     controller.set('model', model);
     controller.set('showAlertMessage', false);
-    var organizations = this.store.findAll('organization');
-    controller.set('organizations', organizations);
+    controller.set('defaultOrg', model);
+    controller.set('selectedOrganization', model);
   },
 
   deactivate() {
