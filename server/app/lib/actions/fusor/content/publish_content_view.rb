@@ -13,7 +13,7 @@
 module Actions
   module Fusor
     module Content
-      class PublishContentView < Actions::Base
+      class PublishContentView < Actions::Fusor::FusorBaseAction
         def humanized_name
           _("Publish Content View")
         end

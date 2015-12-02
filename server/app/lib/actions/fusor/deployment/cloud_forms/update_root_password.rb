@@ -15,7 +15,7 @@ module Actions
   module Fusor
     module Deployment
       module CloudForms
-        class UpdateRootPassword < Actions::Base
+        class UpdateRootPassword < Actions::Fusor::FusorBaseAction
           def humanized_name
             _("Update Root Password on CloudForms Appliance")
           end

@@ -13,7 +13,7 @@
 module Actions
   module Fusor
     module Content
-      class EnableRepositories < Actions::Base
+      class EnableRepositories < Actions::Fusor::FusorBaseAction
         def humanized_name
           _("Enable Repositories")
         end

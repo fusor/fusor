@@ -17,7 +17,7 @@ module Actions
     module Deployment
       module OpenStack
         #Upload CFME to the overcloud
-        class CfmeUpload < Actions::Base
+        class CfmeUpload < Actions::Fusor::FusorBaseAction
           def humanized_name
             _('Upload CFME to the overcloud')
           end

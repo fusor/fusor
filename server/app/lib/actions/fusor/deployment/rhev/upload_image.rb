@@ -14,7 +14,7 @@ module Actions
   module Fusor
     module Deployment
       module Rhev
-        class UploadImage < Actions::Base
+        class UploadImage < Actions::Fusor::FusorBaseAction
           def humanized_name
             _("Upload Image to Virtualization Environment")
           end

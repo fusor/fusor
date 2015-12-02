@@ -14,7 +14,7 @@ module Actions
   module Fusor
     module Deployment
       module CloudForms
-        class AddRhevProvider < Actions::Base
+        class AddRhevProvider < Actions::Fusor::FusorBaseAction
           def humanized_name
             _("Add RHEV Provider")
           end

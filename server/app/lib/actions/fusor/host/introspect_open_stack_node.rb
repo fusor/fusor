@@ -12,7 +12,7 @@
 require 'egon'
 
 module Actions::Fusor::Host
-  class IntrospectOpenStackNode < Actions::Base
+  class IntrospectOpenStackNode < Actions::Fusor::FusorBaseAction
     include Actions::Base::Polling
 
     input_format do

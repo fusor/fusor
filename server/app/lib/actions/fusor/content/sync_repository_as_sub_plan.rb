@@ -13,7 +13,7 @@
 module Actions
   module Fusor
     module Content
-      class SyncRepositoryAsSubPlan < Actions::ActionWithSubPlans
+      class SyncRepositoryAsSubPlan < Actions::Fusor::FusorActionWithSubPlans
         def humanized_name
           _("Synchronize Repository as Sub Plan")
         end

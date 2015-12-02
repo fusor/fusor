@@ -18,7 +18,7 @@ module Actions
     module Deployment
       module Rhev
         # Create the RHEV Compute Resource in Foreman
-        class CreateCr < Actions::Base
+        class CreateCr < Actions::Fusor::FusorBaseAction
           def humanized_name
             _('Create the RHEV Compute Resource in Foreman')
           end

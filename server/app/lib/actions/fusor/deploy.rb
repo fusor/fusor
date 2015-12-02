@@ -12,7 +12,7 @@
 
 module Actions
   module Fusor
-    class Deploy < Actions::EntryAction
+    class Deploy < Actions::Fusor::FusorEntryAction
       def humanized_name
         _("Deploy")
       end

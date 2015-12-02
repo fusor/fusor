@@ -18,7 +18,7 @@ module Actions
     module Deployment
       module OpenStack
         #Configure a new tenant and new networks on the overcloud
-        class OvercloudConfiguration < Actions::Base
+        class OvercloudConfiguration < Actions::Fusor::FusorBaseAction
           def humanized_name
             _('')
           end

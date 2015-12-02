@@ -14,7 +14,7 @@ module Actions
   module Fusor
     module Deployment
       module CloudForms
-        class Deploy < Actions::Base
+        class Deploy < Actions::Fusor::FusorBaseAction
           def humanized_name
             _("Deploy CloudForms Management Engine")
           end

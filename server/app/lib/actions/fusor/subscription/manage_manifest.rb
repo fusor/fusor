@@ -14,7 +14,7 @@
 module Actions
   module Fusor
     module Subscription
-      class ManageManifest < Actions::Base
+      class ManageManifest < Actions::Fusor::FusorBaseAction
         def humanized_name
           _("Manage Subscription Manifest")
         end

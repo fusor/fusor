@@ -15,7 +15,7 @@ module Actions
   module Fusor
     module Deployment
       module Rhev
-        class TransferImage < Actions::Base
+        class TransferImage < Actions::Fusor::FusorBaseAction
           def humanized_name
             _("Transfer Image to Virtualization Environment")
           end

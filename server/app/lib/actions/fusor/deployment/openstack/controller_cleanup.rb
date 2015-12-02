@@ -18,7 +18,7 @@ module Actions
     module Deployment
       module OpenStack
         # Ensure needed services are running on the Overcloud Controller
-        class ControllerCleanup < Actions::Base
+        class ControllerCleanup < Actions::Fusor::FusorBaseAction
           def humanized_name
             _('Ensure needed services are running on the Overcloud Controller')
           end

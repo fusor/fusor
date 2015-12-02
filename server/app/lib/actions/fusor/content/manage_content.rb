@@ -13,7 +13,7 @@
 module Actions
   module Fusor
     module Content
-      class ManageContent < Actions::Base
+      class ManageContent < Actions::Fusor::FusorBaseAction
 
         def humanized_name
           _("Manage Content")

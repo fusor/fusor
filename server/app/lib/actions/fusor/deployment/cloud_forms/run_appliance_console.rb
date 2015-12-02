@@ -14,7 +14,7 @@ module Actions
   module Fusor
     module Deployment
       module CloudForms
-        class RunApplianceConsole < Actions::Base
+        class RunApplianceConsole < Actions::Fusor::FusorBaseAction
           def humanized_name
             _("Run CloudForms Appliance Console")
           end

@@ -15,7 +15,7 @@ module Actions
   module Fusor
     module Deployment
       module CloudForms
-        class UpdateAdminPassword < Actions::Base
+        class UpdateAdminPassword < Actions::Fusor::FusorBaseAction
           def humanized_name
             _("Update Admin Password on CloudForms Appliance")
           end

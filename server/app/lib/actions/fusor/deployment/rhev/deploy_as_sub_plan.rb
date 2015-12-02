@@ -14,7 +14,7 @@ module Actions
   module Fusor
     module Deployment
       module Rhev
-        class DeployAsSubPlan < Actions::ActionWithSubPlans
+        class DeployAsSubPlan < Actions::Fusor::FusorActionWithSubPlans
           def humanized_name
             _("Deploy Red Hat Enterprise Virtualization as Sub Plan")
           end

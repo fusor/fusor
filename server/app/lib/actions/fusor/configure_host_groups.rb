@@ -12,7 +12,7 @@
 
 module Actions
   module Fusor
-    class ConfigureHostGroups < Actions::Base
+    class ConfigureHostGroups < Actions::Fusor::FusorBaseAction
       def humanized_name
         _("Configure Host Groups")
       end

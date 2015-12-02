@@ -13,7 +13,7 @@
 module Actions
   module Fusor
     module Content
-      class ManageContentAsSubPlan < Actions::ActionWithSubPlans
+      class ManageContentAsSubPlan < Actions::Fusor::FusorActionWithSubPlans
         def humanized_name
           _("Manage Content as Sub Plan")
         end

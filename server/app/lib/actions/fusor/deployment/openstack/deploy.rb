@@ -12,7 +12,7 @@
 require 'egon'
 
 module Actions::Fusor::Deployment::OpenStack
-  class Deploy < Actions::Base
+  class Deploy < Actions::Fusor::FusorBaseAction
     include Actions::Base::Polling
 
     input_format do

@@ -12,7 +12,7 @@
 require 'net/scp'
 
 module Actions::Fusor::Deployment::OpenStack
-  class TransferConsumerRpm < Actions::Base
+  class TransferConsumerRpm < Actions::Fusor::FusorBaseAction
     def humanized_name
       _("Transfer Satellite's consumer rpm to Undercloud machine")
     end

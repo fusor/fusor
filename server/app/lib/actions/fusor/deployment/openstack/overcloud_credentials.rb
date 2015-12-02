@@ -18,7 +18,7 @@ module Actions
     module Deployment
       module OpenStack
         # Add URL and Password to deployment model
-        class OvercloudCredentials < Actions::Base
+        class OvercloudCredentials < Actions::Fusor::FusorBaseAction
           def humanized_name
             _('Add URL and Password to deployment model')
           end

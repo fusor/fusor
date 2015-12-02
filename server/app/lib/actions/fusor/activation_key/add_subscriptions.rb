@@ -13,7 +13,7 @@
 module Actions
   module Fusor
     module ActivationKey
-      class AddSubscriptions < Actions::Base
+      class AddSubscriptions < Actions::Fusor::FusorBaseAction
         def humanized_name
           _("Activation Key - Add Subscriptions")
         end

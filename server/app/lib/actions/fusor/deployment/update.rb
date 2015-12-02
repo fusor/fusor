@@ -13,7 +13,7 @@
 module Actions
   module Fusor
     module Deployment
-      class Update < Actions::Base
+      class Update < Actions::FusorBaseAction
         def humanized_name
           _("Update Deployment")
         end

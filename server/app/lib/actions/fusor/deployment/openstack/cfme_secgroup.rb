@@ -17,7 +17,7 @@ module Actions
     module Deployment
       module OpenStack
         #Configure CFME Security Group
-        class CfmeSecgroup < Actions::Base
+        class CfmeSecgroup < Actions::Fusor::FusorBaseAction
           def humanized_name
             _('Configure CFME Security Group')
           end

@@ -13,7 +13,7 @@
 module Actions
   module Fusor
     module Subscription
-      class DownloadManifest < Actions::Base
+      class DownloadManifest < Actions::Fusor::FusorBaseAction
         def humanized_name
           _("Download Subscription Manifest from Customer Portal")
         end

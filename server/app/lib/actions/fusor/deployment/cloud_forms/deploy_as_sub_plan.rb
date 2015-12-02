@@ -14,7 +14,7 @@ module Actions
   module Fusor
     module Deployment
       module CloudForms
-        class DeployAsSubPlan < Actions::ActionWithSubPlans
+        class DeployAsSubPlan < Actions::Fusor::FusorActionWithSubPlans
           def humanized_name
             _("Deploy CloudForms Management Engine as Sub Plan")
           end

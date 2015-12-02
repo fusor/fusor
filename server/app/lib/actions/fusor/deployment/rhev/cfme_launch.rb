@@ -17,7 +17,7 @@ module Actions
     module Deployment
       module Rhev
         #Setup and Launch CFME VM
-        class CfmeLaunch < Actions::Base
+        class CfmeLaunch < Actions::Fusor::FusorBaseAction
           def humanized_name
             _('Setup and Launch CFME VM')
           end

@@ -11,7 +11,7 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 module Actions::Fusor::Deployment::OpenStack
-  class SshCommand < Actions::Base
+  class SshCommand < Actions::Fusor::FusorBaseAction
     def humanized_name
       _("SSH and run an arbitrary command on the Undercloud")
     end

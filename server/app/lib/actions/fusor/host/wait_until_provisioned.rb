@@ -14,7 +14,7 @@ module Actions
   module Fusor
     module Host
 
-      class WaitUntilProvisioned < Actions::Base
+      class WaitUntilProvisioned < Actions::Fusor::FusorBaseAction
 
         TIMEOUT = 7200
 

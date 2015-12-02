@@ -11,21 +11,17 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 module Actions
-  module Fusor
-    module Content
-      class SyncRepositories < Actions::Fusor::FusorBaseAction
-        def humanized_name
-          _("Synchronize Repositories")
+  module MiddleWare
+    class DeploymentLogger < Dynflow::Middleware
+      def plan_phase(*args)
+        #Create deployment specific log file.
+        if action.input.keys.include?("deployment")
+          ::Fusor.log_change_deployment(action.input['deployment'])
+        else
+          ::Fusor.log_change_deployment()
         end
-
-        def plan(repositories)
-          concurrence do
-            repositories.each do |repository|
-              plan_action(::Actions::Fusor::Content::SyncRepositoryAsSubPlan, repository)
-            end
-          end
-        end
+        pass(*args)
       end
     end
   end
-end
+end 

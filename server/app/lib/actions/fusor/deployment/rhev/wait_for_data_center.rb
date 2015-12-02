@@ -14,7 +14,7 @@ module Actions
   module Fusor
     module Deployment
       module Rhev
-        class WaitForDataCenter < Actions::Base
+        class WaitForDataCenter < Actions::Fusor::FusorBaseAction
           include Actions::Base::Polling
 
           input_format do

@@ -15,7 +15,7 @@ module Actions
   module Fusor
     module Deployment
       module CloudForms
-        class UpdateHosts < Actions::Base
+        class UpdateHosts < Actions::Fusor::FusorBaseAction
           def humanized_name
             _("Update /etc/hosts on CloudForms Appliance")
           end

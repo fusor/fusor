@@ -13,7 +13,7 @@
 module Actions
   module Fusor
     module Host
-      class TriggerProvisioning < Actions::Base
+      class TriggerProvisioning < Actions::Fusor::FusorBaseAction
         def humanized_name
           _("Trigger Provisoning of Host")
         end

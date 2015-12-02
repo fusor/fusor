@@ -14,7 +14,7 @@ module Actions
   module Fusor
     module Deployment
       module Rhev
-        class ImportTemplate < Actions::Base
+        class ImportTemplate < Actions::Fusor::FusorBaseAction
           def humanized_name
             _("Import Template in to Virtualization Environment")
           end

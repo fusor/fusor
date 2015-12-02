@@ -14,7 +14,7 @@ module Actions
   module Fusor
     module Deployment
       module CloudForms
-        class WaitForConsole < Actions::Base
+        class WaitForConsole < Actions::Fusor::FusorBaseAction
           include Actions::Base::Polling
 
           def humanized_name

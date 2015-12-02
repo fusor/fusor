@@ -14,7 +14,7 @@ module Actions
   module Fusor
     module Deployment
       module Rhev
-        class Deploy < Actions::Base
+        class Deploy < Actions::Fusor::FusorBaseAction
           def humanized_name
             _("Deploy Red Hat Enterprise Virtualization")
           end

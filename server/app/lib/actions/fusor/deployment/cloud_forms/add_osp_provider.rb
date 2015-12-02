@@ -14,7 +14,7 @@ module Actions
   module Fusor
     module Deployment
       module CloudForms
-        class AddOspProvider < Actions::Base
+        class AddOspProvider < Actions::Fusor::FusorBaseAction
           def humanized_name
             _("Add OSP Provider")
           end
