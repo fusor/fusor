@@ -1,11 +1,7 @@
 require "fusor/multilog"
 
 module Fusor
-  if Rails.env.production?
-    @@default_log_file = "/var/log/foreman/fusor.log"
-  else
-    @@default_log_file = "/var/log/fusor.log"
-  end
+  @@default_log_file = "/var/log/foreman/fusor.log"
 
   def self.log
     @@log ||= MultiLogger.new(Rails.logger)
@@ -16,15 +12,12 @@ module Fusor
 
     @@log.detach_all
 
-    if deployment.nil?
-      @@log.attach(@@default_log_file)
-    else
-      if Rails.env.production?
+    if Rails.env.production?
+      if deployment.nil?
+        @@log.attach(@@default_log_file)
+      else
         Dir.mkdir("/var/log/foreman/#{deployment.name}-#{deployment.id}") unless File.exist?("/var/log/foreman/#{deployment.name}-#{deployment.id}")
         @@log.attach("/var/log/foreman/#{deployment.name}-#{deployment.id}/deployment.log")
-      else
-        Dir.mkdir("/var/log/#{deployment.name}-#{deployment.id}") unless File.exist?("/var/log/#{deployment.name}-#{deployment.id}")
-        @@log.attach("/var/log/#{deployment.name}-#{deployment.id}/deployment.log")
       end
     end
   end
