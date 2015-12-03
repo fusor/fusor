@@ -7,6 +7,11 @@
           {{host.name}}
       {{else}}
           {{input type="text" value=host.name class='form-control' focus-out='saveHostname' id=cssHostHostId}}
+          {{#if isInvalidHostname}}
+              <span class="error errorForValidation">
+                  invalid hostname
+              </span>
+          {{/if}}
       {{/if}}
     {{else}}
       Not Selected

@@ -62,10 +62,21 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return (this.get('model.id')) ? 1 : 0;
   }),
 
+  isHostnameInvalid: false, //can overwritten by action setToInvalidHostname() triggered from tr-engine-hypervisor-mixin.js
+  disableNextOnEngine: Ember.computed('isHostnameInvalid', 'deploymentController.hasNoEngine', function() {
+    return (this.get('isHostnameInvalid') || this.get('deploymentController.hasNoEngine'));
+  }),
+
   actions: {
-    setEngine(host) {
+    setEngine(host, isInvalidHostname) {
       var deployment = this.get('deploymentController');
-      deployment.set('model.discovered_host', host);
+      if (!isInvalidHostname) {
+        deployment.set('model.discovered_host', host);
+      }
+    },
+
+    setIfHostnameValid(bool) {
+      this.set('isHostnameInvalid', bool);
     }
   }
 
