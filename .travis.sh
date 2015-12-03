@@ -47,8 +47,6 @@ if [ $1 == "install" ]; then
   ln -s ../../../fusor/server/test/fixtures/* .
   ln -s ln -s ../../../katello/test/fixtures/models/* .
 
-  mkdir /var/log/foreman
-  chmod 664 /var/log/foreman
 else
   cd ../foreman
   rake db:create
