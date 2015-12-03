@@ -31,12 +31,10 @@
         <th>Description</th>
       </thead>
       <tbody>
-        {{#each organizations as |org|}}
-          {{tr-organization org=org
+          {{tr-organization org=defaultOrg
                             selectedOrganization=selectedOrganization
                             action="selectOrganization"
                             disabled=isStarted}}
-        {{/each}}
       </tbody>
     </table>
   </div>

@@ -11,14 +11,11 @@ export default Ember.Route.extend(DeploymentNewSatelliteRouteMixin, {
     var self = this;
     controller.set('model', model);
     controller.set('showAlertMessage', false);
-    this.store.findAll('organization').then(function(results) {
-      controller.set('organizations', results);
-      if (results.get('length') === 1) {
-        var defaultOrg = results.get('firstObject');
-        controller.set('model', defaultOrg);
-        controller.set('selectedOrganization', defaultOrg);
-        self.modelFor('deployment-new').set('organization', defaultOrg);
-      }
+    this.store.findRecord('organization', 1).then(function(result) {
+        controller.set('defaultOrg', result);
+        controller.set('model', result);
+        controller.set('selectedOrganization', result);
+        self.modelFor('deployment-new').set('organization', result);
     });
   }
 
