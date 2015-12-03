@@ -82,7 +82,7 @@ module Actions
           end
 
           def create_host(deployment)
-            cfme = {"name" => "#{deployment.name}-cfme",
+            cfme = {"name" => "#{deployment.name.tr('_', '-')}-cfme",
                     "location_id" => Location.find_by_name('Default Location').id,
                     "environment_id" => Environment.where(:katello_id => "Default_Organization/Library/Fusor_Puppet_Content").first.id,
                     "organization_id" => deployment["organization_id"],
