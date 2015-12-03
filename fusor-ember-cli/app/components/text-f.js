@@ -26,7 +26,7 @@ export default Ember.Component.extend({
     if (this.get('isAlphaNumeric')) {
         var validAlphaNumbericRegex = new RegExp(/^[A-Za-z0-9_-]+$/);
         if (Ember.isPresent(this.get('value'))) {
-            return !(this.get('value').match(validAlphaNumbericRegex));
+            return !(this.get('value').trim().match(validAlphaNumbericRegex));
         }
     }
   }),
@@ -35,7 +35,7 @@ export default Ember.Component.extend({
     if (this.get('isHostname')) {
        var validHostnameRegex = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$";
        if (Ember.isPresent(this.get('value'))) {
-            return !(this.get('value').match(validHostnameRegex));
+            return !(this.get('value').trim().match(validHostnameRegex));
         }
     }
   }),
