@@ -53,7 +53,7 @@
                                               readOnly=false}}
                           {{/draggable-object}}
                         {{/each}}
-                        {{#unless allRolesAssigned}}
+                        {{#if showAssign}}
                           {{#draggable-object-target action='assignDroppedRole'}}
                               <li class="role-target {{assignMenuOpenClass}}  dropdown">
                                   <a id="role-target-dropdown-1" {{action "showAssignMenu" profile bubbles=false}} data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -66,7 +66,7 @@
                                   </ul>
                               </li>
                           {{/draggable-object-target}}
-                        {{/unless}}
+                        {{/if}}
                       </ul>
                   </div>
               {{else}}

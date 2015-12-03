@@ -8,46 +8,64 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
 
-  getParamValue(paramName, params) {
-    var paramValue = null;
-    var numParams = params.get('length');
-    for (var i=0; i<numParams; i++) {
-      var param = params.objectAt(i);
-      if (param.get('id') === paramName) {
-        paramValue = param.get('value');
-        break;
-      }
+  getParam(paramName, paramsOverride) {
+    var params = paramsOverride || this.get('model.plan.parameters');
+    return params ? params.findBy('id', paramName) : null;
+  },
+
+  getParamValue(paramName, paramsOverride) {
+    var param = this.getParam(paramName, paramsOverride);
+    return param ? param.get('value') : null;
+  },
+
+  updateParam(name, value) {
+    var param = this.getParam(name);
+
+    if (param) {
+      param.set('value', value);
     }
-    return paramValue;
   },
 
   images: Ember.computed('model.images.[]', function() {
     return this.get('model.images');
   }),
 
-  unassignedRoles: Ember.computed('model.plan.roles.[]', 'model.plan.parameters.[]', function() {
-    var unassignedRoles = Ember.A();
-    var params = this.get('model.plan.parameters');
-    var self = this;
-    var value = null;
-    if (Ember.isPresent(this.get('model.plan.roles'))) {
-        this.get('model.plan.roles').forEach(function(role) {
-          value = self.getParamValue(role.get('flavorParameterName'), params);
-          if (value === 'baremetal' || Ember.isNone(value)) {
-            unassignedRoles.addObject(role);
-          }
-        });
-    }
-    return unassignedRoles;
+  flavorParams: Ember.computed('model.plan.parameters.[]', function () {
+    return this.get('model.plan.parameters').filter(function (param) {
+      return !!param.get('id').match(/.*::Flavor/);
+    });
   }),
+
+  unassignedRoles: Ember.computed('model.plan.roles.[]', 'flavorParams.@each.value', function () {
+    var self = this, roles = this.get('model.plan.roles');
+
+    if (!roles) {
+      return [];
+    }
+
+    return roles.filter(function(role) { return !self.roleIsAssigned(role); });
+  }),
+
+  assignedRoles: Ember.computed('unassignedRoles.[]', function () {
+    var self = this, roles = this.get('model.plan.roles');
+
+    if (!roles) {
+      return [];
+    }
+
+    return roles.filter(function(role) { return self.roleIsAssigned(role); });
+  }),
+
+  roleIsAssigned(role) {
+    var value = this.getParamValue(role.get('flavorParameterName'), this.get('flavorParams'));
+    return value && value !== 'bareMetal';
+  },
 
   allRolesAssigned: Ember.computed('unassignedRoles.[]', function() {
     return (this.get('unassignedRoles.length') === 0);
   }),
 
-  noRolesAssigned: Ember.computed('unassignedRoles.[]', 'model.plan.roles.[]', function() {
-    return (this.get('unassignedRoles.length') === this.get('model.plan.roles.length'));
-  }),
+  notAllRolesAssigned: Ember.computed.not('allRolesAssigned'),
 
   profiles: Ember.computed('model.profiles.[]', function() {
     return this.get('model.profiles');
@@ -102,11 +120,11 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   loadingSpinnerText: "Loading...",
 
   doAssignRole(plan, role, profile) {
-    var data;
-    var self = this;
+    var data, self = this, unassignedRoles,
+      token = Ember.$('meta[name="csrf-token"]').attr('content');
 
-    if (profile == null ) {
-      var unassignedRoles = this.get('unassignedRoles');
+    if (profile == null) {
+      unassignedRoles = this.get('unassignedRoles');
       if (unassignedRoles.contains(role)) {
         // Role is already unassigned, do nothing
         return;
@@ -116,31 +134,23 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       data = { 'role_name': role.get('name'), 'flavor_name': profile.get('name') };
     }
 
-    self.set('loadingSpinnerText', "Loading...");
-    self.set('showLoadingSpinner', true);
-    var token = Ember.$('meta[name="csrf-token"]').attr('content');
-    //ic-ajax request
-    console.log('PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_role_flavor');
+    self.updateParam(data.role_name + "-1::Flavor", data.flavor_name);
     request({
-        url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_role_flavor',
-        type: 'PUT',
-        headers: {
+      url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_role_flavor',
+      type: 'PUT',
+      headers: {
           "Accept": "application/json",
           "Content-Type": "application/json",
-          "X-CSRF-Token": token,
-        },
-        data: JSON.stringify(data)
-      }).then(function(result) {
-        self.set('showLoadingSpinner', false);
-        console.log('SUCCESS');
-        self.store.push('deployment_plan', self.store.normalize('deployment_plan', result.deployment_plan));
-      }, function(error) {
-        error = error.jqXHR;
+          "X-CSRF-Token": token
+      },
+      data: JSON.stringify(data)
+    }).catch(function (error) {
         console.log('ERROR');
-        console.log(error);
+        console.log(error.jqXHR);
         // TODO: Remove the reload call once we determine how to get around the failure
         //       that appears to be due to port forwarding. But make sure to leave the show spinner setting.
-        self.get('model').plan.reload().then(function() {
+        self.set('showLoadingSpinner', true);
+        self.get('model').plan.reload().then(function () {
           self.set('showLoadingSpinner', false);
         });
       }
@@ -241,7 +251,6 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     },
 
     saveRole() {
-      var self = this;
       var plan = this.get('model.plan');
       var role = this.get('edittedRole');
       var deploymentId = this.get('deploymentId');
@@ -257,32 +266,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       });
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
-      self.set('loadingSpinnerText', "Saving...");
-      self.set('showLoadingSpinner', true);
-      console.log('action: saveRole, PUT /fusor/api/openstack/deployments/' + deploymentId + '/deployment_plans/overcloud/update_parameters');
-      //ic-ajax request
-      request({
-        url: '/fusor/api/openstack/deployments/' + deploymentId + '/deployment_plans/overcloud/update_parameters',
-        type: 'PUT',
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-          "X-CSRF-Token": token,
-        },
-        data: JSON.stringify({ 'parameters': params })
-      }).then( function() {
-          console.log('SUCCESS');
-          self.store.findRecord('deployment-plan', deploymentId).then(function (result) {
-            self.set('model.plan', result);
-            self.set('showLoadingSpinner', false);
-          });
-        }, function(error) {
-          error = error.jqXHR;
-          console.log('ERROR');
-          console.log(error);
-          self.set('showLoadingSpinner', false);
-        }
-      );
+      this.send('updatePlanParameters', params);
       this.closeEditDialog();
     },
 
@@ -292,34 +276,23 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       var data = { 'role_name': role.get('name'), 'count': count };
       var deploymentId = this.get('deploymentId');
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
+      self.get('deploymentController').set((role.get('roleType') + 'RoleCount'), count);
 
-      self.set('loadingSpinnerText', "Saving...");
-      self.set('showLoadingSpinner', true);
-      //ic-ajax request
-      console.log('PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_role_count');
       request({
-          url: '/fusor/api/openstack/deployments/' + deploymentId + '/deployment_plans/overcloud/update_role_count',
-          type: 'PUT',
-          data: JSON.stringify(data),
-          headers: {
+        url: '/fusor/api/openstack/deployments/' + deploymentId + '/deployment_plans/overcloud/update_role_count',
+        type: 'PUT',
+        data: JSON.stringify(data),
+        headers: {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "X-CSRF-Token": token,
-          }
-        }).then(function(result) {
-          console.log('SUCCESS -' + role.get('roleType') + 'RoleCount: ' + count);
-          self.get('deploymentController').set((role.get('roleType') + 'RoleCount'), count);
-          self.store.findRecord('deployment-plan', deploymentId).then(function (result) {
-            self.set('model.plan', result);
-            self.set('showLoadingSpinner', false);
-          });
-        }, function(error) {
-             error = error.jqXHR;
-             console.log('ERROR');
-             console.log(error);
-             self.set('showLoadingSpinner', false);
-           }
-        );
+            "X-CSRF-Token": token
+        }
+      }).catch(function (error) {
+        error = error.jqXHR;
+        console.log('ERROR');
+        console.log(error);
+        self.set('showLoadingSpinner', false);
+      });
     },
 
     cancelEditRole() {
@@ -385,43 +358,14 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     },
 
     saveGlobalServiceConfig() {
-      var self = this;
-      var plan = this.get('model.plan');
-
       var params = Ember.A();
       this.get('edittedPlanParameters').forEach(function(param) {
         params.push({'name': param.get('id'), 'value': param.get('value')});
       });
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
-      self.set('loadingSpinnerText', "Saving...");
-      self.set('showLoadingSpinner', true);
-
-      //ic-ajax request
-      console.log('action: saveGlobalServiceConfig, PUT /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_parameters');
-      request({
-        url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_parameters',
-        type: 'PUT',
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-          "X-CSRF-Token": token,
-        },
-        data: JSON.stringify({ 'parameters': params })
-      }).then( function() {
-          console.log('SUCCESS');
-          self.set('showLoadingSpinner', false);
-        },
-          function(error) {
-            error = error.jqXHR;
-            console.log('ERROR');
-            console.log(error);
-            self.set('showLoadingSpinner', false);
-        }
-      );
-
+      this.send('updatePlanParameters', params);
       this.closeGlobalServiceConfigDialog();
-
     },
 
     cancelGlobalServiceConfig() {
