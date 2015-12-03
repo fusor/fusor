@@ -51,7 +51,7 @@ module Fusor
             if !routable
               render(json: {errors: "Error: The Undercloud is not accessible. Please check that the address specified"\
                      " is your Undercloud's provisioning interface, you have logged in and run fusor-undercloud-installer"\
-                     " on the Underlcoud, and that it can be reached by your RHCI server."}, status: 422)
+                     " on the Undercloud, and that it can be reached by your RHCI server."}, status: 422)
               #system('sudo route add ' + ip_addr + ' via ' + underhost)
             else
               @deployment.openstack_undercloud_password = admin
