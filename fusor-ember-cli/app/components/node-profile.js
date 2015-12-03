@@ -19,18 +19,33 @@ export default Ember.Component.extend({
   },
 
   flavorParams: Ember.computed('plan.parameters.[]', function () {
-    return this.get('plan.parameters').filter(function (param) {
+    var params = this.get('plan.parameters');
+
+    if (!params) {
+      return [];
+    }
+
+    return params.filter(function (param) {
       return !!param.get('id').match(/.*::Flavor/);
     });
   }),
 
   unassignedRoles: Ember.computed('plan.roles.[]', 'flavorParams.@each.value', function () {
     var self = this, roles = this.get('plan.roles');
+
+    if (!roles) {
+      return [];
+    }
+
     return roles.filter(function(role) { return !self.roleIsAssigned(role); });
   }),
 
   assignedRoles: Ember.computed('plan.roles.[]', 'flavorParams.@each.value', function() {
     var self = this, roles = this.get('plan.roles'), params = this.get('flavorParams');
+
+    if (!roles) {
+      return [];
+    }
 
     return roles.filter(function(role) {
       var param = params.findBy('id', role.get('flavorParameterName'));
