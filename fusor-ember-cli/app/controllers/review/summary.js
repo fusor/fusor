@@ -14,15 +14,15 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   undercloudUsername: 'admin',
   undercloudPassword: Ember.computed.alias("model.openstack_undercloud_password"),
 
-  undercloudUrl: Ember.computed('model.openstack_undercloud_ip_addr', function() {
-    return ('http://' + this.get('model.openstack_undercloud_ip_addr'));
+  undercloudUrl: Ember.computed('model.openstack_undercloud_hostname', function() {
+    return ('http://' + this.get('model.openstack_undercloud_hostname'));
   }),
 
   overcloudUsername: 'admin',
   overcloudPassword: Ember.computed.alias("model.openstack_overcloud_password"),
 
-  overcloudUrl: Ember.computed('model.openstack_overcloud_address', function() {
-    return ('http://' + this.get('model.openstack_overcloud_address') + '/dashboard/admin');
+  overcloudUrl: Ember.computed('model.openstack_overcloud_hostname', function() {
+    return ('http://' + this.get('model.openstack_overcloud_hostname') + '/dashboard/admin');
   }),
 
   selectedRhevEngine: Ember.computed.alias("deploymentController.model.discovered_host"),
@@ -40,11 +40,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   }),
 
   rhevEngineUrl: Ember.computed('selectedRhevEngine', function() {
-    return ('https://' + this.get('selectedRhevEngine.ip') + '/ovirt-engine/');
+    return ('https://' + this.get('selectedRhevEngine.name') + '/ovirt-engine/');
   }),
 
-  cfmeUrl: Ember.computed('model.cfme_address', function() {
-    return ('https://' + this.get('model.cfme_address'));
+  cfmeUrl: Ember.computed('model.cfme_hostname', function() {
+    return ('https://' + this.get('model.cfme_hostname'));
   })
 
 });
