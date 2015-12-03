@@ -53,7 +53,8 @@
              {{tr-engine host=host
                          selectedRhevEngineHost=selectedRhevEngineHost
                          disabled=isStarted
-                         action="setEngine"}}
+                         action="setEngine"
+                         setIfHostnameValid='setIfHostnameValid'}}
           {{/each}}
         </tbody>
       </table>
@@ -66,5 +67,5 @@
 {{cancel-back-next backRouteName='rhev-setup'
                    disableBack=false
                    nextRouteName=engineNextRouteName
-                   disableNext=deploymentController.hasNoEngine
+                   disableNext=disableNextOnEngine
                    disableCancel=isStarted}}
