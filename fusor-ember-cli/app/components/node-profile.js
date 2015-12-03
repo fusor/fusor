@@ -18,12 +18,33 @@ export default Ember.Component.extend({
     return paramValue;
   },
 
-  assignedRoles: Ember.computed('roles.[]', 'flavorParams.[]', function() {
-    var self = this, roles = this.get('roles'), params = this.get('flavorParams');
+  flavorParams: Ember.computed('plan.parameters.[]', function () {
+    return this.get('plan.parameters').filter(function (param) {
+      return !!param.get('id').match(/.*::Flavor/);
+    });
+  }),
+
+  unassignedRoles: Ember.computed('plan.roles.[]', 'flavorParams.@each.value', function () {
+    var self = this, roles = this.get('plan.roles');
+    return roles.filter(function(role) { return !self.roleIsAssigned(role); });
+  }),
+
+  assignedRoles: Ember.computed('plan.roles.[]', 'flavorParams.@each.value', function() {
+    var self = this, roles = this.get('plan.roles'), params = this.get('flavorParams');
+
     return roles.filter(function(role) {
       var param = params.findBy('id', role.get('flavorParameterName'));
       return param && param.get('value') === self.get('profile.name');
     });
+  }),
+
+  roleIsAssigned(role) {
+    var value = this.getParamValue(role.get('flavorParameterName'), this.get('flavorParams'));
+    return value && value !== 'baremetal';
+  },
+
+  allRolesAssigned: Ember.computed('unassignedRoles.[]', function() {
+    return (this.get('unassignedRoles.length') === 0);
   }),
 
   /* jshint ignore:start */
@@ -70,7 +91,7 @@ export default Ember.Component.extend({
 
   actions: {
     showAssignMenu() {
-      if (this.get('unassignedRoles.length') > 0) {
+      if (!this.get('allRolesAssigned')) {
         this.set('assignMenuOpenClass', 'open');
       }
     },
