@@ -58,7 +58,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
 
   roleIsAssigned(role) {
     var value = this.getParamValue(role.get('flavorParameterName'), this.get('flavorParams'));
-    return value && value !== 'bareMetal';
+    return value && value !== 'baremetal';
   },
 
   allRolesAssigned: Ember.computed('unassignedRoles.[]', function() {
