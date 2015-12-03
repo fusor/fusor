@@ -4,7 +4,7 @@ module Fusor
   if Rails.env.production?
     @@default_log_file = "/var/log/foreman/fusor.log"
   else
-    @@default_log_file = "#{Rails.root}/log/fusor.log"
+    @@default_log_file = "/var/log/fusor.log"
   end
 
   def self.log
@@ -23,8 +23,8 @@ module Fusor
         Dir.mkdir("/var/log/foreman/#{deployment.name}-#{deployment.id}") unless File.exist?("/var/log/foreman/#{deployment.name}-#{deployment.id}")
         @@log.attach("/var/log/foreman/#{deployment.name}-#{deployment.id}/deployment.log")
       else
-        Dir.mkdir("#{Rails.root}/log/#{deployment.name}-#{deployment.id}") unless File.exist?("#{Rails.root}/log/#{deployment.name}-#{deployment.id}")
-        @@log.attach("#{Rails.root}/log/#{deployment.name}-#{deployment.id}/deployment.log")
+        Dir.mkdir("/var/log/#{deployment.name}-#{deployment.id}") unless File.exist?("/var/log/#{deployment.name}-#{deployment.id}")
+        @@log.attach("/var/log/#{deployment.name}-#{deployment.id}/deployment.log")
       end
     end
   end
