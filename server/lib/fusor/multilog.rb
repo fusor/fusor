@@ -16,7 +16,7 @@ class MultiLogger
   # Closes a secondary log file.
   def detach(name)
     @logdev ||= {}
-    if @logdev.has_key? name
+    if @logdev.key? name
       @logdev[name].close
       @logdev.delete(name)
     end
