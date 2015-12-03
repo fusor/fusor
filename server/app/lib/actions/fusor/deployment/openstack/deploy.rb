@@ -47,6 +47,7 @@ module Actions::Fusor::Deployment::OpenStack
         plan_action(ControllerCleanup, deployment)
         plan_action(OvercloudConfiguration, deployment)
         plan_action(CreateCr, deployment)
+        plan_action(AddOspHostnames, deployment)
       end
     end
 
