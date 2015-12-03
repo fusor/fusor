@@ -37,7 +37,6 @@ module Actions
                          :hypervisors => deployment.discovered_hosts
             }
             Utils::CloudForms::InfraProvider.add(cfme_address, provider, deployment)
-            sleep(3.minutes)
             Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)
 
             Rails.logger.info "================ Leaving AddRhevProvider run method ===================="
