@@ -7,36 +7,12 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   rhevSetupController: Ember.inject.controller('rhev-setup'),
   rhevOptionsController: Ember.inject.controller('rhev-options'),
   selectSubscriptionsController: Ember.inject.controller('subscriptions/select-subscriptions'),
+  overcloudController: Ember.inject.controller('openstack/overcloud'),
 
   isSelfHost: Ember.computed.alias("rhevController.isSelfHost"),
   isDisconnected: Ember.computed.alias("deploymentController.isDisconnected"),
   cdnUrl: Ember.computed.alias("model.cdn_url"),
-
-  rhevValidated: Ember.computed(
-    'model.rhev_engine_admin_password',
-    'model.rhev_storage_type',
-    'selectedRhevEngine',
-    'selectedHypervisorHosts',
-    'isSelfHost',
-    function() {
-      if (this.get('isRhev')) {
-        return Ember.isPresent(this.get('model.rhev_engine_admin_password')) &&
-               Ember.isPresent(this.get('selectedRhevEngine')) &&
-               (this.get('isSelfHost') || Ember.isPresent(this.get('selectedHypervisorHosts'))) &&
-               Ember.isPresent(this.get('model.rhev_storage_type'));
-      } else {
-        return true;
-      }
-    }
-  ),
-
-  cfmeValidated: Ember.computed('model.cfme_install_loc', function() {
-    if (this.get('isCloudForms')) {
-      return Ember.isPresent(this.get('model.cfme_install_loc'));
-    } else {
-      return true;
-    }
-  }),
+  neutronPublicInterface: Ember.computed.alias("overcloudController.neutronPublicInterface"),
 
   buttonDeployTitle: Ember.computed('isStarted', function() {
     if (this.get('isStarted')) {
@@ -46,9 +22,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   }),
 
-  buttonDeployDisabled: Ember.computed('rhevValidated', 'cfmeValidated', function() {
-    return (!(this.get('rhevValidated')) || !(this.get('cfmeValidated')));
-  }),
+  buttonDeployDisabled: Ember.computed.alias('deploymentController.isDisabledReview'),
 
   showErrorMessage: false,
   errorMsg: null,

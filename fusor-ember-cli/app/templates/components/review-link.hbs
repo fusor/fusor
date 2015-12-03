@@ -5,20 +5,27 @@
 
   <div class='col-sm-6 col-md-8 col-lg-9'>
     {{#if isExternalURL}}
-      <a href={{value}} target="_blank">{{value}}</a>
+        <a href={{value}} target="_blank">{{value}}</a>
     {{else if isNotALink}}
-      {{value}}
+        {{#if useYieldInstead}}
+          {{yield}}
+        {{else}}
+          {{valueFormatted}}
+        {{/if}}
+        {{#if isPassword}}
+            <i {{action 'showPassword'}} class="fa {{eyeIcon}}"></i>
+        {{/if}}
     {{else}}
-      {{#link-to routeName}}
-          {{#if useYieldInstead}}
-            {{yield}}
-          {{else}}
-            {{valueFormatted}}
-          {{/if}}
-      {{/link-to}}
-      {{#if isPassword}}
+        {{#link-to routeName}}
+            {{#if useYieldInstead}}
+              {{yield}}
+            {{else}}
+              {{valueFormatted}}
+            {{/if}}
+        {{/link-to}}
+        {{#if isPassword}}
               <i {{action 'showPassword'}} class="fa {{eyeIcon}}"></i>
-      {{/if}}
+        {{/if}}
     {{/if}}
 
     {{#if showValidationMessage}}
