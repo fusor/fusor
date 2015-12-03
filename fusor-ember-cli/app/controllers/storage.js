@@ -108,28 +108,28 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   invalidStorageName: Ember.computed('rhev_storage_name', function() {
       var validAlphaNumbericRegex = new RegExp(/^[A-Za-z0-9_-]+$/);
       if (Ember.isPresent(this.get('rhev_storage_name'))) {
-          return !(this.get('rhev_storage_name').match(validAlphaNumbericRegex));
+          return !(this.get('rhev_storage_name').trim().match(validAlphaNumbericRegex));
       }
   }),
 
   invalidStorageAddress: Ember.computed('rhev_storage_address', function() {
       var validHostnameRegex = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$";
       if (Ember.isPresent(this.get('rhev_storage_address'))) {
-          return !(this.get('rhev_storage_address').match(validHostnameRegex));
+          return !(this.get('rhev_storage_address').trim().match(validHostnameRegex));
       }
   }),
 
   invalidExportDomainName: Ember.computed('rhev_export_domain_name', function() {
       var validAlphaNumbericRegex = new RegExp(/^[A-Za-z0-9_-]+$/);
       if (Ember.isPresent(this.get('rhev_export_domain_name'))) {
-          return !(this.get('rhev_export_domain_name').match(validAlphaNumbericRegex));
+          return !(this.get('rhev_export_domain_name').trim().match(validAlphaNumbericRegex));
       }
   }),
 
   invalidExportAddress: Ember.computed('rhev_export_domain_address', function() {
       var validHostnameRegex = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$";
       if (Ember.isPresent(this.get('rhev_export_domain_address'))) {
-          return !(this.get('rhev_export_domain_address').match(validHostnameRegex));
+          return !(this.get('rhev_export_domain_address').trim().match(validHostnameRegex));
       }
   }),
 
