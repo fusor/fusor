@@ -6,10 +6,12 @@ module Fusor
   else
     @@default_log_file = "#{Rails.root}/log/fusor.log"
   end
+
   def self.log
     @@log ||= MultiLogger.new(Rails.logger)
   end
-  def self.log_change_deployment(deployment=nil)
+
+  def self.log_change_deployment(deployment = nil)
     self.log
 
     @@log.detach_all
