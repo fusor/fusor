@@ -132,18 +132,11 @@
                           value=model.openstack_overcloud_float_gateway
                           isRequired=true
                           routeName='openstack.overcloud'}}
-            {{#if model.openstack_overcloud_autogenerate_password}}
-                {{review-link label='Overcloud Admin Password'
-                              value='auto-generated during deployment'
-                              isRequired=true
-                              routeName='openstack.overcloud'}}
-            {{else}}
-                {{review-link label='Overcloud Admin Password'
-                              value=model.openstack_overcloud_password
-                              isPassword=true
-                              isRequired=true
-                              routeName='openstack.overcloud'}}
-            {{/if}}
+            {{review-link label='Overcloud Admin Password'
+                          value=model.openstack_overcloud_password
+                          isPassword=true
+                          isRequired=true
+                          routeName='openstack.overcloud'}}
       {{/accordion-item}}
     {{/if}}
 
