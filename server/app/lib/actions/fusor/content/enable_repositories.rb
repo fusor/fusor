@@ -13,12 +13,13 @@
 module Actions
   module Fusor
     module Content
-      class EnableRepositories < Actions::Base
+      class EnableRepositories < Actions::Fusor::FusorBaseAction
         def humanized_name
           _("Enable Repositories")
         end
 
         def plan(organization, product_content_settings)
+          super()
           sequence do
             fail _("fusor.yaml is missing definition for fusor content.") unless product_content_settings
             product_content_settings.each { |details| enable_repo(organization, details) }
@@ -48,7 +49,7 @@ module Actions
           substitutions = { basearch: repo_details[:basearch] }
           substitutions[:releasever] = repo_details[:releasever] if repo_details[:releasever]
           if repo_mapper(product, product_content.content, substitutions).find_repository
-            Rails.logger.info("Repository already enabled for: Product: #{product.name},"\
+            ::Fusor.log.info("Repository already enabled for: Product: #{product.name},"\
                               " Repository Set: #{product_content.content.name}")
           else
             plan_action(::Actions::Katello::RepositorySet::EnableRepository, product,

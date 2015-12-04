@@ -13,12 +13,13 @@
 module Actions
   module Fusor
     module Subscription
-      class DownloadManifest < Actions::Base
+      class DownloadManifest < Actions::Fusor::FusorBaseAction
         def humanized_name
           _("Download Subscription Manifest from Customer Portal")
         end
 
         def plan(deployment, customer_portal_credentials, download_file_path)
+          super(deployment)
           unless customer_portal_credentials[:username] && customer_portal_credentials[:password]
             fail _("Customer portal credentials are not available.")
           end

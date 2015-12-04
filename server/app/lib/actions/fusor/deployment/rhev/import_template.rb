@@ -14,18 +14,19 @@ module Actions
   module Fusor
     module Deployment
       module Rhev
-        class ImportTemplate < Actions::Base
+        class ImportTemplate < Actions::Fusor::FusorBaseAction
           def humanized_name
             _("Import Template in to Virtualization Environment")
           end
 
           def plan(deployment, template_name)
+            super(deployment)
             plan_self(deployment_id: deployment.id,
                       template_name: template_name)
           end
 
           def run
-            Rails.logger.info "================ ImportTemplate run method ===================="
+            ::Fusor.log.info "================ ImportTemplate run method ===================="
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             script_dir = "/usr/share/fusor_ovirt/bin/"
@@ -53,15 +54,15 @@ module Actions
               fail _("Unable to import template: Status: %{status}. Output: %{output}") % { :status => status,
                                                                                             :output => output }
             end
-            Rails.logger.info "================ Leaving ImportTemplate run method ===================="
+            ::Fusor.log.info "================ Leaving ImportTemplate run method ===================="
           end
 
           private
 
           def run_command(cmd)
-            Rails.logger.info "Running: #{cmd}"
+            ::Fusor.log.info "Running: #{cmd}"
             status, output = Utils::Fusor::CommandUtils.run_command(cmd)
-            Rails.logger.debug "Status: #{status}, output: #{output}"
+            ::Fusor.log.debug "Status: #{status}, output: #{output}"
             return status, output
           end
         end

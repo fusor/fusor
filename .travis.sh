@@ -46,6 +46,7 @@ if [ $1 == "install" ]; then
   cd test/fixtures
   ln -s ../../../fusor/server/test/fixtures/* .
   ln -s ln -s ../../../katello/test/fixtures/models/* .
+
 else
   cd ../foreman
   rake db:create

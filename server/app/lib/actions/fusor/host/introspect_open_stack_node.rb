@@ -12,7 +12,7 @@
 require 'egon'
 
 module Actions::Fusor::Host
-  class IntrospectOpenStackNode < Actions::Base
+  class IntrospectOpenStackNode < Actions::Fusor::FusorBaseAction
     include Actions::Base::Polling
 
     input_format do
@@ -21,6 +21,7 @@ module Actions::Fusor::Host
     end
 
     def plan(deployment, node_id)
+      super(deployment)
       plan_self node_id: node_id, deployment_id: deployment.id
     end
 

@@ -11,18 +11,19 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 module Actions::Fusor::Deployment::OpenStack
-  class SshCommand < Actions::Base
+  class SshCommand < Actions::Fusor::FusorBaseAction
     def humanized_name
       _("SSH and run an arbitrary command on the Undercloud")
     end
 
     def plan(deployment, cmd)
+      super(deployment)
       plan_self(deployment_id: deployment.id,
                 cmd: cmd)
     end
 
     def run
-      Rails.logger.debug "================ SshCommand run method ===================="
+      ::Fusor.log.debug "================ SshCommand run method ===================="
 
       deployment = ::Fusor::Deployment.find(input[:deployment_id])
 
@@ -35,11 +36,11 @@ module Actions::Fusor::Deployment::OpenStack
       client.on_failure(lambda { ssh_command_failed })
       client.execute(input[:cmd])
 
-      Rails.logger.debug "================ Leaving SshCommand run method ===================="
+      ::Fusor.log.debug "================ Leaving SshCommand run method ===================="
     end
 
     def ssh_command_completed
-      Rails.logger.info "Command succeeded: " + input[:cmd]
+      ::Fusor.log.info "Command succeeded: " + input[:cmd]
     end
 
     def ssh_command_failed

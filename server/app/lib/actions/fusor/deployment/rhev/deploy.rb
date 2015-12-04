@@ -14,12 +14,13 @@ module Actions
   module Fusor
     module Deployment
       module Rhev
-        class Deploy < Actions::Base
+        class Deploy < Actions::Fusor::FusorBaseAction
           def humanized_name
             _("Deploy Red Hat Enterprise Virtualization")
           end
 
           def plan(deployment)
+            super(deployment)
             fail _("Unable to locate a RHEV Engine Host") unless deployment.rhev_engine_host
 
             sequence do

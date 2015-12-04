@@ -12,24 +12,11 @@
 
 module Actions
   module Fusor
-    module Content
-      class ManageContentAsSubPlan < Actions::Fusor::FusorActionWithSubPlans
-        def humanized_name
-          _("Manage Content as Sub Plan")
-        end
-
-        input_format do
-          param :deployment_id, Integer
-        end
-
-        def plan(deployment)
-          super(deployment)
-          plan_self(:deployment_id => deployment.id)
-        end
-
-        def create_sub_plans
-          trigger(::Actions::Fusor::Content::ManageContent, ::Fusor::Deployment.find(input[:deployment_id]))
-        end
+    class FusorBaseAction < Actions::Base
+      #include ::Actions::Deployment::DeploymentLogger
+      def plan(deployment = nil)
+        #Create deployment specific log file.
+        ::Fusor.log_change_deployment(deployment)
       end
     end
   end

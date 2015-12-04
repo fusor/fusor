@@ -11,7 +11,7 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 module Actions::Fusor::Deployment::OpenStack
-  class DeployAsSubPlan < Actions::ActionWithSubPlans
+  class DeployAsSubPlan < Actions::Fusor::FusorActionWithSubPlans
     def humanized_name
       _("Deploy Red Hat OpenStack Platform overcloud as Sub Plan")
     end
@@ -21,6 +21,7 @@ module Actions::Fusor::Deployment::OpenStack
     end
 
     def plan(deployment)
+      super(deployment)
       plan_self(:deployment_id => deployment.id)
     end
 

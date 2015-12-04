@@ -12,12 +12,13 @@
 
 module Actions
   module Fusor
-    class Deploy < Actions::EntryAction
+    class Deploy < Actions::Fusor::FusorEntryAction
       def humanized_name
         _("Deploy")
       end
 
       def plan(deployment, skip_content = false)
+        super(deployment)
         fail _("Unable to locate fusor.yaml settings in config/settings.plugins.d") unless SETTINGS[:fusor]
         fail _("Unable to locate content settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:content]
         fail _("Unable to locate host group settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:host_groups]

@@ -13,12 +13,13 @@
 module Actions
   module Fusor
     module Content
-      class SyncRepositories < Actions::Base
+      class SyncRepositories < Actions::Fusor::FusorBaseAction
         def humanized_name
           _("Synchronize Repositories")
         end
 
         def plan(repositories)
+          super()
           concurrence do
             repositories.each do |repository|
               plan_action(::Actions::Fusor::Content::SyncRepositoryAsSubPlan, repository)

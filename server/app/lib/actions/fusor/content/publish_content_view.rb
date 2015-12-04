@@ -13,13 +13,13 @@
 module Actions
   module Fusor
     module Content
-      class PublishContentView < Actions::Base
+      class PublishContentView < Actions::Fusor::FusorBaseAction
         def humanized_name
           _("Publish Content View")
         end
 
         def plan(deployment, repositories)
-
+          super(deployment)
           unless composite_content_view_name(deployment) &&
                  rpm_content_view_name &&
                  puppet_content_view_name

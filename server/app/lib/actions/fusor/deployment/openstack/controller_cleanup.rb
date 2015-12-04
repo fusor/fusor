@@ -18,25 +18,26 @@ module Actions
     module Deployment
       module OpenStack
         # Ensure needed services are running on the Overcloud Controller
-        class ControllerCleanup < Actions::Base
+        class ControllerCleanup < Actions::Fusor::FusorBaseAction
           def humanized_name
             _('Ensure needed services are running on the Overcloud Controller')
           end
 
           def plan(deployment)
+            super(deployment)
             plan_self(deployment_id: deployment.id)
           end
 
           def run
-            Rails.logger.debug '====== ControllerCleanup run method ======'
+            ::Fusor.log.debug '====== ControllerCleanup run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             fetch_overcloud_ssh_key(deployment)
             fix_controller_services(deployment)
-            Rails.logger.debug '=== Leaving ControllerCleanup run method ==='
+            ::Fusor.log.debug '=== Leaving ControllerCleanup run method ==='
           end
 
           def controller_cleanup_completed
-            Rails.logger.info 'Controller Cleanup Completed'
+            ::Fusor.log.info 'Controller Cleanup Completed'
           end
 
           def controller_cleanup_failed

@@ -12,24 +12,25 @@
 require 'net/scp'
 
 module Actions::Fusor::Deployment::OpenStack
-  class TransferConsumerRpm < Actions::Base
+  class TransferConsumerRpm < Actions::Fusor::FusorBaseAction
     def humanized_name
       _("Transfer Satellite's consumer rpm to Undercloud machine")
     end
 
     def plan(deployment)
+      super(deployment)
       plan_self(deployment_id: deployment.id)
     end
 
     def run
-      Rails.logger.debug "================ TransferConsumerRpm run method ===================="
+      ::Fusor.log.debug "================ TransferConsumerRpm run method ===================="
 
       deployment = ::Fusor::Deployment.find(input[:deployment_id])
 
       latest_consumer_rpm = '/var/www/html/pub/katello-ca-consumer-latest.noarch.rpm'
       scp_file(deployment, latest_consumer_rpm)
 
-      Rails.logger.debug "================ Leaving TransferConsumerRpm run method ===================="
+      ::Fusor.log.debug "================ Leaving TransferConsumerRpm run method ===================="
     end
 
     private

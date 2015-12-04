@@ -17,17 +17,18 @@ module Actions
     module Deployment
       module OpenStack
         #Setup and Launch CFME VM
-        class CfmeLaunch < Actions::Base
+        class CfmeLaunch < Actions::Fusor::FusorBaseAction
           def humanized_name
             _('Setup and Launch CFME VM')
           end
 
           def plan(deployment)
+            super(deployment)
             plan_self(deployment_id: deployment.id)
           end
 
           def run
-            Rails.logger.debug '====== CFME Launch run method ======'
+            ::Fusor.log.debug '====== CFME Launch run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             create_image(deployment)
             create_compute_profile(deployment)
@@ -35,11 +36,11 @@ module Actions
             deployment.cfme_address = host.ip
             deployment.cfme_hostname = host.name
             deployment.save!
-            Rails.logger.debug '====== Leaving Launc Upload run method ======'
+            ::Fusor.log.debug '====== Leaving Launc Upload run method ======'
           end
 
           def cfme_launch_completed
-            Rails.logger.info 'CFME Launch Completed'
+            ::Fusor.log.info 'CFME Launch Completed'
           end
 
           def cfme_launch_failed

@@ -13,12 +13,13 @@
 module Actions
   module Fusor
     module ActivationKey
-      class ConfigureActivationKey < Actions::Base
+      class ConfigureActivationKey < Actions::Fusor::FusorBaseAction
         def humanized_name
           _("Configure Activation Key")
         end
 
         def plan(deployment, hostgroup, repositories)
+          super(deployment)
           unless activation_key_name(deployment, hostgroup)
             fail _("Unable to locate activation key settings in config/settings.plugins.d/fusor.yaml")
           end

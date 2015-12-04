@@ -14,17 +14,18 @@ module Actions
   module Fusor
     module Deployment
       module CloudForms
-        class AddRhevProvider < Actions::Base
+        class AddRhevProvider < Actions::Fusor::FusorBaseAction
           def humanized_name
             _("Add RHEV Provider")
           end
 
           def plan(deployment)
+            super(deployment)
             plan_self(deployment_id: deployment.id)
           end
 
           def run
-            Rails.logger.info "================ AddRhevProvider run method ===================="
+            ::Fusor.log.info "================ AddRhevProvider run method ===================="
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             cfme_address = deployment.cfme_address
@@ -39,7 +40,7 @@ module Actions
             Utils::CloudForms::InfraProvider.add(cfme_address, provider, deployment)
             Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)
 
-            Rails.logger.info "================ Leaving AddRhevProvider run method ===================="
+            ::Fusor.log.info "================ Leaving AddRhevProvider run method ===================="
           end
         end
       end

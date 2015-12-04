@@ -13,12 +13,13 @@
 module Actions
   module Fusor
     module Deployment
-      class Update < Actions::Base
+      class Update < Actions::Fusor::FusorBaseAction
         def humanized_name
           _("Update Deployment")
         end
 
         def plan(deployment, deployment_params)
+          super(deployment)
           plan_self(:deployment_id => deployment.id,
                     :deployment_params => deployment_params)
         end

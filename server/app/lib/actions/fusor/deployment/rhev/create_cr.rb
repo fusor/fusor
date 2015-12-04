@@ -18,17 +18,18 @@ module Actions
     module Deployment
       module Rhev
         # Create the RHEV Compute Resource in Foreman
-        class CreateCr < Actions::Base
+        class CreateCr < Actions::Fusor::FusorBaseAction
           def humanized_name
             _('Create the RHEV Compute Resource in Foreman')
           end
 
           def plan(deployment)
+            super(deployment)
             plan_self(deployment_id: deployment.id)
           end
 
           def run
-            Rails.logger.debug '====== RHEV Compute Resource run method ======'
+            ::Fusor.log.debug '====== RHEV Compute Resource run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             cr = { "name" => "#{deployment['name']}-RHEV",
                    "location_ids" => ["", Location.where(:name => "Default Location").first.id],
@@ -37,11 +38,11 @@ module Actions
                    "password" => deployment.rhev_root_password,
                    "organization_ids" => [deployment["organization_id"]] }
             ::Foreman::Model::Ovirt.create(cr)
-            Rails.logger.debug '=== Leaving RHEV Compute Resource run method ==='
+            ::Fusor.log.debug '=== Leaving RHEV Compute Resource run method ==='
           end
 
           def create_cr_completed
-            Rails.logger.info 'Compute Resource Created'
+            ::Fusor.log.info 'Compute Resource Created'
           end
 
           def create_cr_failed

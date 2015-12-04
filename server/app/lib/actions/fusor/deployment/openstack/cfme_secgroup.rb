@@ -17,17 +17,18 @@ module Actions
     module Deployment
       module OpenStack
         #Configure CFME Security Group
-        class CfmeSecgroup < Actions::Base
+        class CfmeSecgroup < Actions::Fusor::FusorBaseAction
           def humanized_name
             _('Configure CFME Security Group')
           end
 
           def plan(deployment)
+            super(deployment)
             plan_self(deployment_id: deployment.id)
           end
 
           def run
-            Rails.logger.debug '====== CFME Security Group run method ======'
+            ::Fusor.log.debug '====== CFME Security Group run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             overcloud = { :openstack_auth_url  => "http://#{deployment.openstack_overcloud_address}:5000/v2.0/tokens",
                           :openstack_username  => 'admin', :openstack_tenant => 'admin',
@@ -43,11 +44,11 @@ module Actions
             end
 
             create_icmp_rule(neutron, sec_group)
-            Rails.logger.debug '====== Leaving CFME Security Group run method ======'
+            ::Fusor.log.debug '====== Leaving CFME Security Group run method ======'
           end
 
           def cfme_secgroup_completed
-            Rails.logger.info 'CFME Security Group Creation Completed'
+            ::Fusor.log.info 'CFME Security Group Creation Completed'
           end
 
           def cfme_secgroup_failed

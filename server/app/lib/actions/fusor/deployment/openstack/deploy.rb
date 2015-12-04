@@ -12,7 +12,7 @@
 require 'egon'
 
 module Actions::Fusor::Deployment::OpenStack
-  class Deploy < Actions::Base
+  class Deploy < Actions::Fusor::FusorBaseAction
     include Actions::Base::Polling
 
     input_format do
@@ -24,6 +24,7 @@ module Actions::Fusor::Deployment::OpenStack
     end
 
     def plan(deployment)
+      super(deployment)
       fail _("Unable to locate a RHEL OSP undercloud") unless deployment.openstack_undercloud_password
       sequence do
         plan_action(TransferConsumerRpm, deployment)

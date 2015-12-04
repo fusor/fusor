@@ -12,12 +12,15 @@
 
 module Actions
   module Fusor
-    class ConfigureHostGroups < Actions::Base
+    # TODO Cleanup class to make it shorter
+    # rubocop:disable ClassLength
+    class ConfigureHostGroups < Actions::Fusor::FusorBaseAction
       def humanized_name
         _("Configure Host Groups")
       end
 
       def plan(deployment, product_type, hostgroup_settings)
+        super(deployment)
         unless hostgroup_settings && hostgroup_settings[:host_groups]
           fail _("Unable to locate host group settings in config/settings.plugins.d/fusor.yaml")
         end

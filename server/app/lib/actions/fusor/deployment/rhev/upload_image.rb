@@ -14,18 +14,19 @@ module Actions
   module Fusor
     module Deployment
       module Rhev
-        class UploadImage < Actions::Base
+        class UploadImage < Actions::Fusor::FusorBaseAction
           def humanized_name
             _("Upload Image to Virtualization Environment")
           end
 
           def plan(deployment, image_file_name)
+            super(deployment)
             plan_self(deployment_id: deployment.id,
                       image_file_name: image_file_name)
           end
 
           def run
-            Rails.logger.info "================ UploadImage run method ===================="
+            ::Fusor.log.info "================ UploadImage run method ===================="
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
 
@@ -62,11 +63,11 @@ module Actions
             client.execute(cmd)
 
             output[:template_name] = imported_template_name
-            Rails.logger.info "================ Leaving UploadImage run method ===================="
+            ::Fusor.log.info "================ Leaving UploadImage run method ===================="
           end
 
           def upload_image_completed
-            Rails.logger.info "image uploaded"
+            ::Fusor.log.info "image uploaded"
           end
 
           def upload_image_failed
