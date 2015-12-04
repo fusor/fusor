@@ -23,19 +23,11 @@ export default Ember.Route.extend({
     self.refreshFormattedLog();
     this.set('pollingActive', true);
 
-    return this.getJsonLog().then(
-      function (response) {
-        controller.set('model', response);
-        self.refreshFormattedLog();
-        controller.send('scrollToEnd');
-        if (self.get('pollingActive') && deployment.get('isStarted') && !deployment.get('isComplete')) {
-          self.startPolling();
-        }
-      },
-      function (error) {
-        console.log('ERROR retrieving log');
-        console.log(error.jqXHR);
-      });
+    return this.getFullLog().finally(function () {
+      if (self.get('pollingActive') && deployment.get('isStarted') && !deployment.get('isComplete')) {
+        self.startPolling();
+      }
+    });
   },
 
   deactivate() {
@@ -50,6 +42,10 @@ export default Ember.Route.extend({
         params = {},
         entries = controller.get('model.log.entries');
 
+      if (!entries || entries.length === 0) {
+        return self.getFullLog();
+      }
+
       // get timestamp of last entry with a date
       for (i = entries.length - 1; i > 0; i--) {
         tmpDateStr = entries[i].date_time;
@@ -59,7 +55,7 @@ export default Ember.Route.extend({
         }
       }
 
-      return this.getJsonLog(params).then(
+      return self.getJsonLog(params).then(
         function (response) {
           self.mergeNewEntries(controller, response);
           self.refreshFormattedLog();
@@ -95,6 +91,21 @@ export default Ember.Route.extend({
 
   pollingAction() {
     return this.send('updateLog');
+  },
+
+  getFullLog() {
+    var self = this, controller = this.get('controller');
+
+    return this.getJsonLog().then(
+      function (response) {
+        controller.set('model', response);
+        self.refreshFormattedLog();
+        controller.send('scrollToEnd');
+      },
+      function (error) {
+        console.log('ERROR retrieving log');
+        console.log(error.jqXHR);
+      });
   },
 
   getJsonLog(params) {
