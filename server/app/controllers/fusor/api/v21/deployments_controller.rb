@@ -75,10 +75,11 @@ module Fusor
 
     def log
       reader = Fusor::Logging::LogReader.new
-      log_path = '/var/log/foreman/production.log'
-      # TODO when fusor log is available
-      # log_path = "#{Rails.root}/log/#{@deployment.name}-#{@deployment.id}/deployment.log"
-      if params[:date_time_gte]
+      log_path = ::Fusor.log_file_path(@deployment)
+
+      if !File.exist? log_path
+        render :json => {log: nil}
+      elsif params[:date_time_gte]
         render :json => {log: reader.tail_log_since(log_path, DateTime.iso8601(params[:date_time_gte]))}
       else
         render :json => {log: reader.read_full_log(log_path)}
