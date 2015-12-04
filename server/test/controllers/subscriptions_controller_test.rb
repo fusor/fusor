@@ -65,5 +65,12 @@ module Fusor
       assert_equal deployment.manifest_file, response['manifest_file']
     end
 
+    test "destroy request should remove a subscription" do
+      assert_difference('Subscription.count', -1, 'The number of subscriptions should decrease by one if we delete one') do
+        delete(:destroy, :id => @subscription.id)
+      end
+      assert_response :success
+    end
+
   end
 end
