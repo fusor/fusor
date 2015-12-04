@@ -291,6 +291,18 @@ label.env_path_disabled:after {
 .progress-bar-label {
   font-weight: bold; }
 
+.log-scroll-output-form {
+  margin-top: -9px; }
+
+.form-control.log-output {
+  color: #333333;
+  background-color: white;
+  cursor: text; }
+
+.btn-nav-search-result {
+  background: transparent;
+  color: blue; }
+
 .no-bold {
   font-weight: normal !important; }
 
