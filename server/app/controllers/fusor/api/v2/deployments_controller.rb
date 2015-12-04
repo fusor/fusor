@@ -52,7 +52,7 @@ module Fusor
         raise ::ActiveRecord::RecordInvalid.new @deployment
       end
 
-      ::Fusor.log_change_deployment(deployment)
+      ::Fusor.log_change_deployment(@deployment)
 
       # update the provider with the url
       ::Fusor.log.debug "XXX setting provider url to #{@deployment.cdn_url}"

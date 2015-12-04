@@ -10,7 +10,7 @@ class MultiLogger
   # Creates and write to additional log file(s).
   def attach(name)
     @logdev ||= {}
-    if !@logdev.key? name
+    if !name.nil? and !@logdev.key? name 
       @logdev[name] = Logger.new(name)
     end
   end
@@ -18,7 +18,7 @@ class MultiLogger
   # Closes a secondary log file.
   def detach(name)
     @logdev ||= {}
-    if @logdev.key? name
+    if !name.nil? and @logdev.key? name
       @logdev[name].close
       @logdev.delete(name)
     end
