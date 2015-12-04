@@ -12,6 +12,8 @@
 
 module Actions
   module Fusor
+    # TODO Cleanup class to make it shorter
+    # rubocop:disable ClassLength
     class ConfigureHostGroups < Actions::Fusor::FusorBaseAction
       def humanized_name
         _("Configure Host Groups")
