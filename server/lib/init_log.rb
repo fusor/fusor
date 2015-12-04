@@ -19,8 +19,9 @@ module Fusor
       if deployment.nil?
         @log.attach(@default_log_file)
       else
-        Dir.mkdir("#{Rails.root}/log/#{deployment.name}-#{deployment.id}") unless File.exist?("#{Rails.root}/log/#{deployment.name}-#{deployment.id}")
-        @log.attach("#{Rails.root}/log/#{deployment.name}-#{deployment.id}/deployment.log")
+        name = "#{deployment.name}".gsub!(/[^0-9A-Za-z.\-]/, '_')
+        Dir.mkdir("#{Rails.root}/log/#{name}-#{deployment.id}") unless File.exist?("#{Rails.root}/log/#{name}-#{deployment.id}")
+        @log.attach("#{Rails.root}/log/#{name}-#{deployment.id}/deployment.log")
       end
     end
   end
