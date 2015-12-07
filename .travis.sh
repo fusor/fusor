@@ -45,7 +45,7 @@ if [ $1 == "install" ]; then
   # katello / fusor fixtures in to forman so they all will be loaded
   cd test/fixtures
   ln -s ../../../fusor/server/test/fixtures/* .
-  ln -s ln -s ../../../katello/test/fixtures/models/* .
+  ln -s ../../../katello/test/fixtures/models/* .
 
 else
   cd ../foreman
