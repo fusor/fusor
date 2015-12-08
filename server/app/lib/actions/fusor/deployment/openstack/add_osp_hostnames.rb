@@ -14,7 +14,7 @@ module Actions
   module Fusor
     module Deployment
       module OpenStack
-        class AddOspHostnames < Actions::Base
+        class AddOspHostnames < Actions::Fusor::FusorBaseAction
           def humanized_name
             _('')
           end
