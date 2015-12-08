@@ -17,6 +17,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     controller.set('model.rhev_storage_name', 'my_storage');
     controller.set('model.rhev_export_domain_name', 'my_export');
     controller.set('model.rhev_database_name', 'Default');
+    controller.set('model.rhev_storage_type', 'NFS');
     this.controllerFor('application').set('isNewDeployment', true);
   },
 
