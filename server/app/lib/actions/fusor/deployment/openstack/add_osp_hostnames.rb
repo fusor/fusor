@@ -14,12 +14,13 @@ module Actions
   module Fusor
     module Deployment
       module OpenStack
-        class AddOspHostnames < Actions::Base
+        class AddOspHostnames < Actions::Fusor::FusorBaseAction
           def humanized_name
             _('')
           end
 
           def plan(deployment)
+            super(deployment)
             plan_self(deployment_id: deployment.id)
           end
 
