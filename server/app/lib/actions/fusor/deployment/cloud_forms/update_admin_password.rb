@@ -27,32 +27,61 @@ module Actions
 
           def run
             ::Fusor.log.info "================ UpdateAdminPassword run method ===================="
+
+            deployment   = ::Fusor::Deployment.find(input[:deployment_id])
+            cfme_address = deployment.cfme_address
+            admin_user   = "admin"
+            old_password = "smartvm"
+            new_password = deployment.cfme_admin_password
+
+            data = {
+              :action => "edit",
+              :password => new_password
+            }
+
             begin
+              request_url = "https://#{admin_user}:#{old_password}@#{cfme_address}/api/users"
+              client = RestClient::Resource.new(request_url, :verify_ssl => OpenSSL::SSL::VERIFY_NONE)
+              response = JSON.parse(client.get)
 
-              ssh_user = "root"
-              deployment = ::Fusor::Deployment.find(input[:deployment_id])
-              cfme_address = deployment.cfme_address
-              ssh_password = deployment.cfme_root_password
-              upload_script(deployment)
+              # get the admin user id
+              admin_id = get_user_id(response, admin_user, old_password)
+              if admin_id.eql?("") || admin_id.nil?
+                fail _("ERROR: admin user ID not found! Failed to update admin password on appliance.")
+              end
 
-              @io = StringIO.new
-              client = Utils::Fusor::SSHConnection.new(cfme_address, ssh_user, ssh_password)
-              cmd = "ruby /root/update_cfme_admin_passwd.rb #{deployment.cfme_admin_password}"
-              client.execute(cmd, @io)
+              # update the admin password
+              request_url = "https://#{admin_user}:#{old_password}@#{cfme_address}/api/users/#{admin_id}"
+              client = RestClient::Resource.new(request_url, :verify_ssl => OpenSSL::SSL::VERIFY_NONE)
 
-              # close the stringio at the end
-              @io.close unless @io.closed?
-
+              response = client.post data.to_json
+              ::Fusor.log.info response
+              ::Fusor.log.info "Updated #{admin_user} user password: Status Code is #{response.code}"
             rescue Exception => e
-              @io.close if @io && !@io.closed?
               fail _("Failed to update admin password on appliance. Error message: #{e.message}")
             end
             ::Fusor.log.info "================ Leaving UpdateAdminPassword run method ===================="
           end
 
-          def upload_script(deployment)
-            Net::SCP.start(deployment.cfme_address, "root", :password => deployment.cfme_root_password, :paranoid => false) do |scp|
-              scp.upload!("/usr/share/fusor_ovirt/bin/update_cfme_admin_passwd.rb", "/root")
+          def get_user_id(response, username, password)
+            begin
+              response["resources"].each do |users|
+                # prepend admin credentials to each user URI
+                uri = URI.parse(users["href"])
+                uri.user = username
+                uri.password = password
+
+                # get and check the response to see if it is the admin user
+                client = RestClient::Resource.new(uri.to_s, :verify_ssl => OpenSSL::SSL::VERIFY_NONE)
+                user = JSON.parse(client.get)
+
+                if user["userid"].eql?(username)
+                  return user["id"]
+                end
+              end
+              return ""
+            rescue Exception => e
+              fail _("Failed to get the admin user ID #{e.message}")
             end
           end
         end
