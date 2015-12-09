@@ -39,6 +39,21 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
 
   hasOnlyLibraryEnvironment: Ember.computed('lifecycleEnvironments.@each.[]', function() {
     return (this.get('lifecycleEnvironments.length') === 1);
-  })
+  }),
+
+  envSetup: Ember.computed('useDefaultOrgViewForEnv', function() {
+    return (this.get('useDefaultOrgViewForEnv') ? "immediately" : "after_publishing");
+  }),
+
+  isImmediate: Ember.computed('envSetup', function() {
+    return (this.get('envSetup') === 'immediately');
+  }),
+
+  actions: {
+    envSetupChanged() {
+      return this.set('useDefaultOrgViewForEnv', this.get('isImmediate'));
+    }
+  }
+
 
 });
