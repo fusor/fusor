@@ -58,6 +58,33 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       }
   }),
 
+  isDirtyRhevDatabaseName: Ember.computed('rhevDatabaseName', function() {
+      var changedAttrs = this.get('deploymentController.model').changedAttributes();
+      return Ember.isPresent(changedAttrs['rhev_database_name']);
+  }),
+
+  isDirtyRhevClusterName: Ember.computed('rhevClusterName', function() {
+      var changedAttrs = this.get('deploymentController.model').changedAttributes();
+      return Ember.isPresent(changedAttrs['rhev_cluster_name']);
+  }),
+  isNotDirtyRhevClusterName: Ember.computed.not('isDirtyRhevClusterName'),
+
+  isClusterNeedRenaming: false,
+
+  showMsgToChangeCluster: Ember.observer('rhevClusterName', 'rhevDatabaseName', function() {
+    if (this.get('isDirtyRhevDatabaseName') &&
+        this.get('rhevClusterName') &&
+        this.get('isNotDirtyRhevClusterName')) {
+            return this.set('isClusterNeedRenaming', true);
+    }
+  }),
+
+  removeMsgToChangeCluster: Ember.observer('rhevClusterName', function() {
+    if (this.get('rhevClusterName.length') > 0 && this.get('isDirtyRhevClusterName')) {
+        return this.set('isClusterNeedRenaming', false);
+    }
+  }),
+
   disableNextRhevOptions: Ember.computed(
     'rhevRootPassword',
     'confirmRhevRootPassword',
@@ -65,6 +92,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     'confirmRhevEngineAdminPassword',
     'invalidIsAlphaNumericRhevDatabase',
     'invalidIsAlphaNumericRhevCluster',
+    'isClusterNeedRenaming',
     function() {
       return (Ember.isBlank(this.get('rhevRootPassword')) ||
               this.get('rhevRootPassword') !== this.get('confirmRhevRootPassword') ||
@@ -73,7 +101,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
               this.get('rhevRootPassword.length') < 8 ||
               this.get('rhevEngineAdminPassword.length') < 8 ||
               this.get('invalidIsAlphaNumericRhevDatabase') ||
-              this.get('invalidIsAlphaNumericRhevCluster')
+              this.get('invalidIsAlphaNumericRhevCluster') ||
+              this.get('isClusterNeedRenaming')
              );
     }
   ),
