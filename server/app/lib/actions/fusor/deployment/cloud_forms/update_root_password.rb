@@ -36,6 +36,7 @@ module Actions
               cfme_address = deployment.cfme_address
               @success = false
               @retry = false
+              @retries = 30
               @io = StringIO.new
               client = Utils::Fusor::SSHConnection.new(cfme_address, ssh_user, ssh_password)
               client.on_complete(lambda { update_root_password_completed })
@@ -47,8 +48,8 @@ module Actions
               @io.close unless @io.closed?
 
               # retry if necessary
-              sleep_seconds = 60
-              if !@success && @retry
+              sleep_seconds = 30
+              while !@success && @retry
                 ::Fusor.log.info "UpdateRootPassword will retry again once in #{sleep_seconds}."
 
                 # pause for station identification, actually pausing to give
@@ -59,10 +60,8 @@ module Actions
                 @io = StringIO.new
                 client.execute(cmd, @io)
                 if !@success
-                  # if retry didn't work, we're done
-                  fail _("Failed to update root password on appliance, after a retry. Error message: #{@io.string}")
+                  @io.close unless @io.closed?
                 end
-                @io.close unless @io.closed?
               end
             rescue Exception => e
               @io.close if @io && !@io.closed?
@@ -86,10 +85,11 @@ module Actions
 
           def update_root_password_failed
             ::Fusor.log.debug "=========== failed entered ============="
-            if !@success
-              if @io.string.include? "execution expired"
-                @retry = true
-              end
+            @retries -= 1
+            if !@success && @retries >= 0 && @io.string.include?("execution expired")
+              @retry = true
+            else
+              @retry = false
               # SSH connection assumes if something is written to stderr it's a
               # problem. We only care about that if we actually failed.
               ::Fusor.log.error "Probable error. Will we retry? #{@retry}. Error message: #{@io.string}"
