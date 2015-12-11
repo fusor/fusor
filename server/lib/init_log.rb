@@ -14,14 +14,11 @@ module Fusor
   def self.log_change_deployment(deployment = nil)
     self.log
 
-
-    if Rails.env.production?
-      if deployment.nil?
-        @log.attach(@default_log_file)
-      else
-        Dir.mkdir(self.log_file_dir(deployment)) unless File.exist?(self.log_file_dir(deployment))
-        @log.attach(self.log_file_path(deployment))
-      end
+    if deployment.nil?
+      @log.attach(@default_log_file)
+    else
+      Dir.mkdir(self.log_file_dir(deployment)) unless File.exist?(self.log_file_dir(deployment))
+      @log.attach(self.log_file_path(deployment))
     end
   end
 

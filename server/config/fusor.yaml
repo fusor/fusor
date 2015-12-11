@@ -227,4 +227,6 @@
            :content: :openstack
            :subscription_descriptions:
              - "Red Hat Cloud Infrastructure"
-
+  :system:
+    :logging:
+      :level: ":debug" 
