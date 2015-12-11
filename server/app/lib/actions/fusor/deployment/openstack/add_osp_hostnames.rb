@@ -25,7 +25,7 @@ module Actions
           end
 
           def run
-            Rails.logger.infi '====== AddOspHostnames run method ======'
+            Rails.logger.info '====== AddOspHostnames run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             domain = Domain.find(Hostgroup.find_by_name('Fusor Base').domain_id)
             deployment.openstack_overcloud_hostname = "#{deployment.name.tr('_', '-')}-overcloud.#{domain}"
