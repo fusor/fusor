@@ -14,7 +14,7 @@ module Actions
   module Fusor
     class Deploy < Actions::Fusor::FusorEntryAction
       def humanized_name
-        _("Deploy")
+        _("Deploy %s" % input[:deployment_name])
       end
 
       def plan(deployment, skip_content = false)
@@ -46,6 +46,7 @@ module Actions
                         deployment)
           end
         end
+        plan_self(:deployment_name => deployment.name)
       end
     end
   end
