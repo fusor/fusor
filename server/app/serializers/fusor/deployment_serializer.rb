@@ -26,6 +26,9 @@ module Fusor
                :openstack_overcloud_private_net,
                :openstack_overcloud_float_net,
                :openstack_overcloud_float_gateway,
+               :openstack_undercloud_hostname,
+               :openstack_overcloud_hostname,
+               :cfme_hostname,
                :is_disconnected,
                :cdn_url, :manifest_file,
                :created_at, :updated_at
