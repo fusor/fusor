@@ -11,7 +11,9 @@ export default Ember.Route.extend({
     controller.set('showErrorMessage', false);
     if (model.get('deploy_rhev')) {
         this.store.findAll('hostgroup').then(function(results) {
-            var fusorBaseDomain = results.filterBy('name', 'Fusor Base').get('firstObject').get('domain.name');
+            console.log(results);
+            var fusorBaseHostgroup = results.filterBy('name', 'Fusor Base').get('firstObject');
+            var fusorBaseDomain = fusorBaseHostgroup.get('domain.name');
             controller.set('engineDomain', fusorBaseDomain);
             controller.set('hypervisorDomain', fusorBaseDomain);
         });

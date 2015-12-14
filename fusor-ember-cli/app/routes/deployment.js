@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import DeploymentRouteMixin from "../mixins/deployment-route-mixin";
+import request from 'ic-ajax';
 
 export default Ember.Route.extend(DeploymentRouteMixin, {
 
@@ -57,38 +58,32 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       controller.set('spinnerTextMessage', 'Building task list');
       controller.set('showSpinner', true);
 
-      return new Ember.RSVP.Promise(function (resolve, reject) {
-        Ember.$.ajax({
-            url: '/fusor/api/v21/deployments/' + deployment.get('id') + '/deploy' ,
-            type: "PUT",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "X-CSRF-Token": token,
-                "Authorization": "Basic " + self.get('session.basicAuthToken')
-            },
-            success(response) {
-              resolve(response);
-              var uuid = response.id;
-              deployment.set('foreman_task_uuid', uuid);
-              deployment.save().then(function () {
-                return self.transitionTo('review.progress.overview');
-              }, function () {
-                controller.set('errorMsg', 'Error in saving UUID of deployment task.');
-                controller.set('showErrorMessage', true);
-              });
-            },
-
-            error(response) {
-              controller.set('showSpinner', false);
-              console.log(response);
-              var errorMsg = response.responseText;
-              controller.set('errorMsg', errorMsg);
+      request({
+          url: '/fusor/api/v21/deployments/' + deployment.get('id') + '/deploy' ,
+          type: "PUT",
+          headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "X-CSRF-Token": token,
+              "Authorization": "Basic " + self.get('session.basicAuthToken')
+          }
+          }).then(function(response) {
+            var uuid = response.id;
+            deployment.set('foreman_task_uuid', uuid);
+            deployment.save().then(function () {
+              return self.transitionTo('review.progress.overview');
+            }, function () {
+              controller.set('errorMsg', 'Error in saving UUID of deployment task.');
               controller.set('showErrorMessage', true);
-              reject(response);
+            });
+          }, function(error) {
+            controller.set('showSpinner', false);
+            console.log(error);
+            var errorMsg = error.responseText;
+            controller.set('errorMsg', errorMsg);
+            controller.set('showErrorMessage', true);
             }
-        });
-      });
+          );
     },
 
     attachSubscriptions() {
@@ -118,27 +113,22 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
           // POST /customer_portal/consumers/#{CONSUMER['uuid']}/entitlements?pool=#{POOL['id']}&quantity=#{QUANTITY}
           var url = '/customer_portal/consumers/' + consumerUUID + "/entitlements?pool=" + item.get('id') + "&quantity=" + item.get('qtyToAttach');
 
-          return new Ember.RSVP.Promise(function (resolve, reject) {
-            Ember.$.ajax({
-                url: url,
-                type: "POST",
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                    "X-CSRF-Token": token,
-                },
-
-                success() {
+          request({
+              url: url,
+              type: "POST",
+              headers: {
+                  "Accept": "application/json",
+                  "Content-Type": "application/json",
+                  "X-CSRF-Token": token
+              }
+              }).then(function(response) {
                   console.log('successfully attached ' + item.qtyToAttach + ' subscription for pool ' + item.id);
                   self.send('installDeployment');
-                },
-
-                error() {
+              }, function(error) {
                   console.log('error on attachSubscriptions');
                   return self.send('error');
-                }
-            });
-          });
+              }
+          );
 
         }
       });
