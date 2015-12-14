@@ -13,6 +13,8 @@
 module Fusor
   class Subscription < ActiveRecord::Base
 
+    validates :source, presence: true, inclusion: %w(imported added)
+
     belongs_to :deployment, :class_name => "Fusor::Deployment", :foreign_key => :deployment_id
 
   end
