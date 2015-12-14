@@ -474,6 +474,11 @@ table.fusor-table {
   padding-left: 15px;
   margin-top: -4px; }
 
+.lifecycle-option-help {
+  color: #737373;
+  margin-left: 16px;
+  margin-top: -9px; }
+
 /* wizard.scss */
 .page-header-rhci {
   background: #fafafa;
