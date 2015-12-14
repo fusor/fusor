@@ -17,6 +17,26 @@ module Fusor
       assert sources.include?(@subscription.source), "Response was not correct, did not include the imported subscription"
     end
 
+    test "index request should filter by deployment and source" do
+      deployment = fusor_deployments(:rhev_and_cfme)
+      response = JSON.parse(get(:index, :deployment_id => deployment.id, :source => "imported").body)
+      assert_response :success
+      assert response['subscriptions'].all? { |sub| sub['source'] == 'imported' && sub['deployment_id'] == deployment.id }, "Response contains non-imported items"
+    end
+
+    test "index request should filter by deployment" do
+      deployment = fusor_deployments(:rhev_and_cfme)
+      response = JSON.parse(get(:index, :deployment_id => deployment.id).body)
+      assert_response :success
+      assert response['subscriptions'].all? { |sub| sub['deployment_id'] == deployment.id }, "Response contains items from a different deployment"
+    end
+
+    test "index request should filter by source" do
+      response = JSON.parse(get(:index, :source => "added").body)
+      assert_response :success
+      assert response['subscriptions'].all? { |sub| sub['source'] == "added" }, "Response contains non-added items"
+    end
+
     test "show request should return the subscription" do
       response = JSON.parse(get(:show, :id => @subscription.id).body)
       assert_response :success
@@ -29,6 +49,13 @@ module Fusor
       assert_response :success
       assert_equal new_source, response['subscription']['source'], "Response was not correct, source was not updated"
       assert_not_nil Subscription.find_by_source new_source, "The subscription was not really updated in the database"
+    end
+
+    test "update should return error message if save fails" do
+      new_source = "invalid"
+      response = JSON.parse(put(:update, :id => @subscription.id, subscription: {source: new_source}).body)
+      assert_response(422)
+      assert_equal "is not included in the list", response['errors']['source'][0], "Response message was incorrect"
     end
 
     test "create request should successfully create subscription" do
@@ -45,6 +72,18 @@ module Fusor
       assert_response :success
       assert_equal new_source, response['subscription']['source'], "Response was not correct, did not return subscription"
       assert_not_nil Subscription.find_by_source new_source, "The subscription was not really created in the database"
+    end
+
+    test "create should return error message if save fails" do
+      response = JSON.parse(post(:create, {subscription: {
+                                            deployment_id: 3,
+                                            contract_number: '16700200',
+                                            product_name: 'Awesome OS',
+                                            quantity_attached: 2,
+                                            source: "invalid"}}).body)
+      assert_response(422)
+      assert_equal "is not included in the list", response['errors']['source'][0], "Response message was incorrect"
+
     end
 
     test "upload" do
