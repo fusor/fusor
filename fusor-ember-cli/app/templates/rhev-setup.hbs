@@ -5,8 +5,8 @@
     </p>
 
     <div class='ident-radio'>
-      {{#radio-button value="selfhost" groupValue=rhevSetup changed="rhevSetupChanged" id='selfhost' disabled=deploymentController.isStarted}}
-        <span class="{{if deploymentController.isStarted 'disabled'}}">
+      {{#radio-button value="selfhost" groupValue=rhevSetup changed="rhevSetupChanged" id='selfhost' disabled=true}}
+        <span class="disabled">
           Self-hosted
         </span>
       {{/radio-button}}
