@@ -1,7 +1,13 @@
 <div class="col-md-9 rhci-steps-buttons">
-  <button class="btn btn-default" {{action 'openCancelDeploymentModal'}} disabled={{disableCancel}}>
-      Cancel
-  </button>
+  {{#if isNew}}
+      <button class="btn btn-default" {{action 'cancelAndRollbackNewDeployment'}}>
+        Cancel
+      </button>
+   {{else}}
+      <button class="btn btn-default" {{action 'openCancelDeploymentModal'}} disabled={{disableCancel}}>
+        Cancel
+      </button>
+  {{/if}}
   {{#link-to backRouteName disabled=disableBack role="button" class='btn btn-default'}}
       <i class="fa fa-angle-left"></i> Back
   {{/link-to}}

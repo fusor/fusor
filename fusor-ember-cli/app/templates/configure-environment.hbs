@@ -105,7 +105,8 @@
 
 {{#cancel-back-next backRouteName=organizationTabRouteName
                     disableBack=false
-                    disableCancel=isStarted}}
+                    disableCancel=isStarted
+                    isNew=isNew}}
     {{#if deployment.isNew}}
       <button {{action 'saveDeployment' step1DRouteName}}
               disabled={{disableNextOnLifecycleEnvironment}}
@@ -122,6 +123,5 @@
               class='btn btn-primary'>
           Next <i class="fa fa-angle-right"></i>
       </button>
-
-      {{/if}}
+    {{/if}}
 {{/cancel-back-next}}

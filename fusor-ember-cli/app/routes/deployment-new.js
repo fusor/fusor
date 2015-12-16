@@ -28,6 +28,13 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     if (deployment.get('isNew')) {
       return deployment.rollback();
     }
+  },
+
+  actions: {
+    cancelAndRollbackNewDeployment() {
+      this.get('controller.model').rollback();
+      return this.transitionTo('deployments');
+    }
   }
 
 });
