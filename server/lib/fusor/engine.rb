@@ -93,6 +93,12 @@ module Fusor
       end
     end
 
+    # show fusor packages in the installed packages box on /about
+    initializer 'fusor.about.pkgs' do
+      puts "did this get called"
+      Katello::Ping::PACKAGES.push("fusor")
+    end
+
     rake_tasks do
       Rake::Task['db:seed'].enhance do
         Fusor::Engine.load_seed
