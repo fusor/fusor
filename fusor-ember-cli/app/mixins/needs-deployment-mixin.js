@@ -6,6 +6,7 @@ export default Ember.Mixin.create({
   applicationController: Ember.inject.controller('application'),
 
   isStarted: Ember.computed.alias("deploymentController.isStarted"),
-  isNotStarted: Ember.computed.alias("deploymentController.isNotStarted")
+  isNotStarted: Ember.computed.alias("deploymentController.isNotStarted"),
 
+  isNew: false
 });
