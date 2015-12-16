@@ -22,7 +22,7 @@ module Actions
         def plan(deployment, customer_portal_credentials)
           super(deployment)
           upstream_consumer = deployment.organization.owner_details['upstreamConsumer']
-          ::Fusor.log.debug "XXX provider url #{deployment.organization.redhat_provider.repository_url}"
+          ::Fusor.log.debug "provider url #{deployment.organization.redhat_provider.repository_url}"
           if upstream_consumer.blank?
             # If there isn't an upstream consumer, a manifest has not yet been imported
 
@@ -31,7 +31,7 @@ module Actions
               download_file_path = deployment.manifest_file
             end
 
-            ::Fusor.log.debug("XXX with no upstream_consumer: #{download_file_path}")
+            ::Fusor.log.debug("with no upstream_consumer: #{download_file_path}")
 
             sequence do
               # consider creating an UploadManifest which will get the file from
@@ -69,7 +69,7 @@ module Actions
                 download_file_path = deployment.manifest_file
               end
 
-              ::Fusor.log.debug("XXX existing upstream_consumer: #{download_file_path}")
+              ::Fusor.log.debug("existing upstream_consumer: #{download_file_path}")
 
               sequence do
                 if deployment.cdn_url.blank?

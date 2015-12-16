@@ -39,7 +39,7 @@ module Fusor
       end
 
       def prepare_manifest(manifest, deployment_id)
-        Rails.logger.debug "XXX ------------- Entered prepare_manifest -------------"
+        Rails.logger.debug "------------- Entered prepare_manifest -------------"
         tmp_dir = "#{Rails.root}/tmp/deployment-#{deployment_id}"
         FileUtils.rmtree(tmp_dir) if File.exist?(tmp_dir)
         FileUtils.mkdir_p tmp_dir
@@ -58,7 +58,7 @@ module Fusor
 
         consumer_zip.close
 
-        Rails.logger.debug "XXX ------------- Leaving prepare_manifest -------------"
+        Rails.logger.debug "------------- Leaving prepare_manifest -------------"
         return subscriptions
       end
     end

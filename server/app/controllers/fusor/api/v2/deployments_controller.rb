@@ -55,7 +55,7 @@ module Fusor
       ::Fusor.log_change_deployment(@deployment)
 
       # update the provider with the url
-      ::Fusor.log.debug "XXX setting provider url to #{@deployment.cdn_url}"
+      ::Fusor.log.debug "setting provider url to [#{@deployment.cdn_url}]"
       provider = @deployment.organization.redhat_provider
       # just in case save it on the @deployment.org as well
       @deployment.organization.redhat_provider.repository_url = @deployment.cdn_url

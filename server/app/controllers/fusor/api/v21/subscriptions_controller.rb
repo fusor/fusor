@@ -16,17 +16,17 @@ module Fusor
 
     def index
       if params[:deployment_id] && params[:source]
-        Rails.logger.warn "XXX filtering by deployment_id AND by source: #{params[:source]}"
+        ::Fusor.log.debug "filtering by deployment_id AND by source: #{params[:source]}"
         @subscriptions = Fusor::Subscription.where(:deployment_id => params[:deployment_id],
                                                      :source => params[:source])
       elsif params[:deployment_id]
-        Rails.logger.warn "XXX filtering by deployment_id"
+        ::Fusor.log.debug "filtering by deployment_id"
         @subscriptions = Fusor::Subscription.where(:deployment_id => params[:deployment_id])
       elsif params[:source]
-        Rails.logger.warn "XXX filtering by source: #{params[:source]}"
+        ::Fusor.log.debug "filtering by source: #{params[:source]}"
         @subscriptions = Fusor::Subscription.where(:source => params[:source])
       else
-        Rails.logger.warn "XXX finding all"
+        ::Fusor.log.debug "finding all"
         @subscriptions = Subscription.all
       end
       render :json => @subscriptions, :each_serializer => Fusor::SubscriptionSerializer
@@ -62,7 +62,7 @@ module Fusor
     end
 
     def upload
-      Rails.logger.debug "XXX upload params #{params}"
+      ::Fusor.log.debug "upload params #{params}"
       fail ::Katello::HttpErrors::BadRequest, _("No manifest file uploaded") if params[:manifest_file][:file].blank?
       fail ::Katello::HttpErrors::BadRequest, _("No deployment specified") if params[:manifest_file][:deployment_id].blank?
 
@@ -77,7 +77,7 @@ module Fusor
         temp_file.close
       end
 
-      Rails.logger.debug "XXX Import the manifest into the DB"
+      ::Fusor.log.debug "Import the manifest into the DB"
 
       mi = Fusor::Manifest::ManifestImporter.new
       entitlements = mi.prepare_manifest(temp_file.path, deployment.id)
