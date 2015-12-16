@@ -14,8 +14,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   undercloudUsername: 'admin',
   undercloudPassword: Ember.computed.alias("model.openstack_undercloud_password"),
 
-  undercloudUrl: Ember.computed('model.openstack_undercloud_hostname', function() {
-    return ('http://' + this.get('model.openstack_undercloud_hostname'));
+  undercloudUrl: Ember.computed('model.openstack_undercloud_ip_addr', function() {
+    return ('http://' + this.get('model.openstack_undercloud_ip_addr'));
   }),
 
   overcloudUsername: 'admin',
