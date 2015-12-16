@@ -31,7 +31,7 @@ module Actions
 
           host = assign_host_to_hostgroup(host, hostgroup)
 
-          ::Fusor.log.debug "XXX assign_host_to_hostgroup returned id: #{host.id} type: #{host.type}"
+          ::Fusor.log.debug "assign_host_to_hostgroup returned id: #{host.id} type: #{host.type}"
 
           ::Fusor.log.debug "========================= TriggerProvisioning.run EXIT ========================="
         end
@@ -51,7 +51,7 @@ module Actions
             discovery_bootif = hosts_facts.where(fact_names: { name: 'discovery_bootif' }).first or
                 raise 'unknown discovery_bootif fact'
 
-            ::Fusor.log.debug "XXX the discovery bootif is #{discovery_bootif.value}"
+            ::Fusor.log.debug "the discovery bootif is #{discovery_bootif.value}"
 
             interface = hosts_facts.
                 includes(:fact_name).
@@ -59,11 +59,11 @@ module Actions
                 find { |v| v.fact_name.name =~ /^macaddress_.*$/ }.
                 fact_name.name.split('_').last
 
-            ::Fusor.log.debug "XXX the interface is #{interface}"
+            ::Fusor.log.debug "the interface is #{interface}"
 
             network = hosts_facts.where(fact_names: { name: "network_#{interface}" }).first
 
-            ::Fusor.log.debug "XXX the network is #{network.value}"
+            ::Fusor.log.debug "the network is #{network.value}"
 
             if hostgroup.subnet
               hostgroup.subnet.network == network.value or
@@ -82,9 +82,9 @@ module Actions
             # root_pass is not copied for some reason
             host.root_pass = hostgroup.root_pass
 
-            ::Fusor.log.debug "XXX assignee host type is now: #{assignee_host.type}"
-            ::Fusor.log.debug "XXX saving host of type: #{host.type}"
-            ::Fusor.log.debug "XXX calling save"
+            ::Fusor.log.debug "assignee host type is now: #{assignee_host.type}"
+            ::Fusor.log.debug "saving host of type: #{host.type}"
+            ::Fusor.log.debug "calling save"
 
             host.save
 
