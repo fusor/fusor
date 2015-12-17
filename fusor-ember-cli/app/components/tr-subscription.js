@@ -26,7 +26,7 @@ export default Ember.Component.extend({
   }),
 
   isQtyValid: Ember.computed('subscription.qtyAvailable', 'subscription.qtyToAttach', function() {
-    if ((this.get('subscription.qtyToAttach') > 0) && (this.get('subscription.qtyAvailable') > 0)) {
+    if ((this.get('subscription.qtyToAttach') >= 0) && (this.get('subscription.qtyAvailable') > 0)) {
       return (this.get('subscription.qtyToAttach') <= this.get('subscription.qtyAvailable'));
     }
   }),
@@ -36,25 +36,36 @@ export default Ember.Component.extend({
     return (this.get('subscription.qtyAvailable') === 0);
   }),
 
-  setDefaultQtyToAttach: Ember.on('didInsertElement', function() {
-    var contractNumber = this.get("subscription.contractNumber");
-    var matchingSubscription   = this.get('model').filterBy('contract_number', contractNumber).get('firstObject');
-    if (Ember.isPresent(matchingSubscription) && matchingSubscription.get('quantity_attached') > 0) {
-        this.get('subscription').set('qtyToAttach', matchingSubscription.get('quantity_attached'));
-    } else {
-      this.get('subscription').set('qtyToAttach', this.get("numSubscriptionsRequired"));
-      if (this.get('isQtyInValid')) {
-        this.get('subscription').set('qtyToAttach', this.get("subscription.qtyAvailable"));
-      }
-    }
+  setIsSelectedSubscription: Ember.on('didInsertElement', function() {
+    // model is subscriptions added
+    // this.get('subscription') is actually a pool
+    var self = this;
+    this.get('model').forEach(function(sub) {
+      // update for matching subscription only
+      if (sub.get('contract_number') == self.get('subscription.contractNumber')) {
+          var hasQtyToAdd = sub.get('quantity_to_add') > 0;
+          self.get('subscription').set('isSelectedSubscription', hasQtyToAdd);
+          self.get('subscription').set('qtyToAttach', sub.get('quantity_to_add'));
+        }
+    });
   }),
 
-  setIsSelectedSubscription: Ember.on('didInsertElement', function() {
-    var contractsNumbers = (this.get('model').getEach('contract_number'));
-    console.log('contractsNumbers are:');
-    console.log(contractsNumbers);
-    var yesno = contractsNumbers.contains(this.get('subscription.contractNumber'));
-    this.get('subscription').set('isSelectedSubscription', yesno);
+  saveSubAfterCheck: Ember.observer('subscription.isSelectedSubscription', function() {
+      if (this.get('subscription.isSelectedSubscription')) {
+          if (this.get('subscription.qtyToAttach') > 0) {
+            // nothing - don't want to change subscription.qtyToAttach
+          } else {
+            this.set('subscription.qtyToAttach', 0);
+          }
+      } else {
+          // Zero out and save if unchecked
+          var hasPostiveQty = this.get('subscription.qtyToAttach') > 0;
+          if (hasPostiveQty) {
+            this.set('subscription.qtyToAttach', 0);
+            var pool = this.get('subscription');
+            return this.sendAction('saveSubscription', pool, this.get('subscription.qtyToAttach'));
+          }
+      }
   }),
 
   isChecked: Ember.computed.alias('subscription.isSelectedSubscription'),
@@ -64,7 +75,20 @@ export default Ember.Component.extend({
       if (this.get('isQtyInValid')) {
           return this.set('subscription.qtyToAttach', this.get('subscription.qtyAvailable') );
       }
+      // TODO - call saveSubscription action from within this action
+      var pool = this.get('subscription');
+      return this.sendAction('saveSubscription', pool, this.get('subscription.qtyToAttach'));
+    },
+
+    saveSubscription() {
+      // this.get('subscription') is actally of model type "pool"
+      // TODO - qtyToAttach was not passed with pool = this.get('subscription'), so including it
+      // as 2nd parameter
+      var pool = this.get('subscription');
+      alert(this.get('subscription.qtyToAttach'));
+      return this.sendAction('saveSubscription', pool, this.get('subscription.qtyToAttach'));
     }
+
   }
 
 });

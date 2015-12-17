@@ -99,7 +99,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
         if (this.get('model.is_disconnected')) {
           return 'subscriptions.review-subscriptions';
         } else if (Ember.isPresent(this.get('model.upstream_consumer_uuid'))) {
-          return 'subscriptions.select-subscriptions';
+          return 'subscriptions.review-subscriptions';
         } else {
           return 'subscriptions.credentials';
         }
@@ -121,6 +121,14 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       return name;
     } else {
       return "Default Organization View";
+    }
+  }),
+
+  qtyLabel: Ember.computed('isDisconnected', function() {
+    if (this.get('isDisconnected')) {
+      return 'Quantity';
+    } else {
+      return 'Quantity Added';
     }
   }),
 

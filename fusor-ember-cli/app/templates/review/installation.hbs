@@ -185,16 +185,16 @@
                               routeName='subscriptions.management-application' isRequired=true
                               value=deploymentController.managementApplicationName }}
 
-                {{#each subscriptions as |sub|}}
+                {{#each reviewSubscriptions as |sub|}}
                     {{review-link label='Subscription Name'
                                   routeName='subscriptions.select-subscriptions'
                                   value=sub.product_name }}
                     {{review-link label='Contract Number'
                                   routeName='subscriptions.select-subscriptions'
                                   value=sub.contract_number }}
-                    {{review-link label='Quantity'
+                    {{review-link label=qtyLabel
                                   routeName='subscriptions.select-subscriptions'
-                                  value=sub.quantity_attached }}
+                                  value=sub.quantity_to_add }}
                 {{else}}
                       {{review-link label='Quantity'
                                     routeName='subscriptions.select-subscriptions'

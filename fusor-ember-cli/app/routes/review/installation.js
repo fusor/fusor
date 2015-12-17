@@ -32,6 +32,11 @@ export default Ember.Route.extend({
 
     if (model.get('is_disconnected')) {
         controller.set('reviewSubscriptions', this.modelFor('subscriptions/review-subscriptions'));
+    } else {
+        var reviewSubscriptions = model.get('subscriptions').filter(function(sub) {
+            return (sub.get('quantity_to_add') && sub.get('source') == 'added');
+        });
+        controller.set('reviewSubscriptions', reviewSubscriptions);
     }
 
     if (!model.get('isStarted')) {

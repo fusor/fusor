@@ -14,13 +14,13 @@
         </thead>
 
       <tbody>
-      {{#each model as |subscription|}}
-          {{tr-subscription-manifest subscription=subscription}}
+      {{#each sortedModel as |subscription|}}
+          {{tr-subscription-manifest subscription=subscription isDisconnected=isDisconnected}}
       {{else}}
         <tr>
           <td colspan="8">
             <p class='no_subscriptions'>
-              <h3> No subscriptions found in uploaded manifest</h3>
+              <h3> No subscriptions found </h3>
             </p>
           </td>
         </tr>
@@ -32,7 +32,7 @@
   </div>
 </div>
 
-{{cancel-back-next backRouteName='subscriptions.credentials'
+{{cancel-back-next backRouteName=backRouteNameReviewSubs
                    disableBack=false
                    nextRouteName='review'
                    disableNext=false
