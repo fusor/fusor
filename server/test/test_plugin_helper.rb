@@ -89,6 +89,10 @@ module FixtureTestCase
     self.set_fixture_class :katello_repository_rpms => "Katello::RepositoryRpm"
     self.set_fixture_class :katello_rpms => "Katello::Rpm"
     self.set_fixture_class :katello_subscriptions => "Katello::Subscription"
+    self.set_fixture_class :katello_distributors => "Katello::Distributor"
+    self.set_fixture_class :katello_help_tips => "Katello::HelpTip"
+    self.set_fixture_class :katello_notices => "Katello::Notice"
+    self.set_fixture_class :katello_user_notices => "Katello::UserNotice"
 
     # fusor fixtures
     self.set_fixture_class :fusor_deployments => "Fusor::Deployment"
