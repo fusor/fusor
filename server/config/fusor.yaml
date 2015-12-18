@@ -230,3 +230,8 @@
   :system:
     :logging:
       :level: ":debug" 
+      :watch:
+        - :file: "/var/log/foreman/production.log"
+        - :file: "/var/log/foreman-proxy/proxy.log"
+        - :file: "/var/log/candlepin/candlepin.log"
+        - :file: "/var/log/messages"
