@@ -38,6 +38,7 @@ if [ $1 == "install" ]; then
   echo "gem 'logger'" >> bundler.d/local.rb
   echo "gem 'egon'" >> bundler.d/local.rb
   echo "gem 'coveralls', require: false" >> bundler.d/local.rb
+  echo "gem 'foreman_docker', '< 2.0.0'" >> bundler.d/local.rb
   bundle install --retry 3
 
   # hacky, find a better way to do this...
