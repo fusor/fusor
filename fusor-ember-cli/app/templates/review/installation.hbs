@@ -108,9 +108,9 @@
 
     {{#if isOpenStack}}
       {{#accordion-item name=deploymentController.nameOpenStack isOpen=isOpenStackOpen}}
-            {{review-link label='Director URL' value=undercloudUrl isRequired=true isExternalURL=true}}
-            {{review-link label='Director username' value=undercloudUsername isRequired=true}}
-            {{review-link label='Director password' value=undercloudPassword isPassword=true isRequired=true}}
+          {{review-link label='Undercloud URL' value=undercloudUrl isRequired=true isExternalURL=true}}
+            {{review-link label='Undercloud username' value=undercloudUsername isRequired=true}}
+            {{review-link label='Undercloud password' value=undercloudPassword isPassword=true isRequired=true}}
             {{#review-link label='Assigned Nodes' routeName='assign-nodes' isRequired=true value=openstackProfiles useYieldInstead=true}}
                 {{#each openstackProfiles as |profile|}}
                     {{node-profile profile=profile nodes=openstackNodes plan=openstackPlan doAssign=true readOnly=true}}
