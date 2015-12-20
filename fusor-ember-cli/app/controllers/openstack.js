@@ -1,6 +1,7 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   registerNodesController: Ember.inject.controller('register-nodes'),
   assignNodesController: Ember.inject.controller('assign-nodes'),
