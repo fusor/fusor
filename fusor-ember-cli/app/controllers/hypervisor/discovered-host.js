@@ -108,10 +108,14 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
     setCheckAll() {
       this.get('model').setObjects([]);
+      this.set('checkAll', true);
+      this.set('uncheckAll', false);
       return this.get('model').addObjects(this.get('availableHosts'));
     },
 
     setUncheckAll() {
+      this.set('uncheckAll', true);
+      this.set('checkAll', false);
       this.get('model').setObjects([]);
     },
 
