@@ -42,8 +42,8 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymen
     createEnvironment() {
       var self = this;
       var selectedOrganization = this.get('selectedOrganization');
-      this.set('fields_env.name', this.get('name'));
-      this.set('fields_env.label', this.get('label'));
+      this.set('fields_env.name', this.get('newEnvName'));
+      this.set('fields_env.label', this.get('envLabelName'));
       this.set('fields_env.description', this.get('description'));
       this.set('fields_env.organization', selectedOrganization);
 

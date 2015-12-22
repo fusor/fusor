@@ -25,13 +25,12 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
 
   showAlertMessage: false,
 
-  envLabelName: Ember.computed('name', function() {
-    if (this.get('name')) {
-      var label = this.get('name').underscore();
+  envLabelName: Ember.computed('newEnvName', function() {
+    if (this.get('newEnvName')) {
+      var label = this.get('newEnvName').underscore();
       return label.replace(/[^A-Z0-9]/ig, "_");
     }
   }),
-  label: Ember.computed.alias("envLabelName"),
 
   hasNoEnvironments: Ember.computed('lifecycleEnvironments.@each.[]', function() {
     return Ember.isEmpty(this.get('lifecycleEnvironments'));
