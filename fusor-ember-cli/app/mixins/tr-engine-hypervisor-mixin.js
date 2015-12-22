@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import request from 'ic-ajax';
 
 export default Ember.Mixin.create({
 
@@ -40,8 +41,7 @@ export default Ember.Mixin.create({
       var self = this;
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
       if (this.get('isValidHostname')) {
-          return new Ember.RSVP.Promise(function (resolve, reject) {
-            Ember.$.ajax({
+          request({
                 url: '/api/v21/discovered_hosts/' + host.get('id') + '/rename',
                 type: "PUT",
                 data: JSON.stringify({'discovered_host': { 'name': host.get('name') } }),
@@ -50,17 +50,13 @@ export default Ember.Mixin.create({
                     "Content-Type": "application/json",
                     "X-CSRF-Token": token,
                     "Authorization": "Basic " + self.get('session.basicAuthToken')
-                },
-                success(response) {
-                  self.sendAction('setIfHostnameValid', false);
-                  resolve(response);
-                },
-
-                error(response) {
-                  reject(response);
                 }
-            });
-          });
+              }).then(function(response) {
+                  self.sendAction('setIfHostnameValid', false);
+                }, function(error) {
+                  console.log(error);
+                }
+              );
       } else {
         this.sendAction('setIfHostnameValid', true);
       }

@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import DiscoveredHostRouteMixin from "../../mixins/discovered-host-route-mixin";
+import request from 'ic-ajax';
 
 export default Ember.Route.extend(DiscoveredHostRouteMixin, {
   model() {
@@ -17,8 +18,7 @@ export default Ember.Route.extend(DiscoveredHostRouteMixin, {
       var hypervisorModelIds = this.controllerFor('hypervisor/discovered-host').get('hypervisorModelIds');
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
-      return new Ember.RSVP.Promise(function (resolve, reject) {
-        Ember.$.ajax({
+      request({
             url: '/fusor/api/v21/deployments/' + deployment.get('id'),
             type: "PUT",
             data: JSON.stringify({'deployment': { 'discovered_host_ids': hypervisorModelIds } }),
@@ -27,19 +27,16 @@ export default Ember.Route.extend(DiscoveredHostRouteMixin, {
                 "Content-Type": "application/json",
                 "X-CSRF-Token": token,
                 "Authorization": "Basic " + self.get('session.basicAuthToken')
-            },
-            success(response) {
-              resolve(response);
+            }
+          }).then(function(response) {
               if (redirectPath) {
                 self.transitionTo('rhev-options');
               }
             },
-
-            error(response) {
-              reject(response);
+              function(error) {
+              console.log(error);
             }
-        });
-      });
+      );
     }
   }
 
