@@ -75,7 +75,7 @@ module Fusor
 
     def log
       reader = Fusor::Logging::LogReader.new
-      log_path = ::Fusor.log_file_path(@deployment)
+      log_path = ::Fusor.log_file_path(@deployment.name, @deployment.id)
 
       if !File.exist? log_path
         render :json => {log: nil}
