@@ -92,7 +92,8 @@
 
 {{#cancel-back-next backRouteName=hypervisorBackRouteName
                     disableBack=false
-                    disableCancel=isStarted}}
+                    disableCancel=isStarted
+                    deploymentName=deploymentName}}
   <button {{action 'saveHyperVisors' 'rhev-options'}} class='btn btn-primary' disabled={{disableNextOnHypervisor}}>Next <i class="fa fa-angle-right"></i></button>
 {{/cancel-back-next}}
 

@@ -1,10 +1,10 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
 import ProgressBarMixin from "../mixins/progress-bar-mixin";
+import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend(ProgressBarMixin, {
+export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
-  deploymentController: Ember.inject.controller('deployment'),
   assignNodesController: Ember.inject.controller('assign-nodes'),
 
   deploymentId: Ember.computed.alias("deploymentController.model.id"),

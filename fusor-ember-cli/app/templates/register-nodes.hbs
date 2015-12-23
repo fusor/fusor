@@ -86,11 +86,11 @@
 {{/unless}}
 
 <br />
-
 {{cancel-back-next backRouteName='undercloud-deploy'
                    disableBack=false
                    nextRouteName='assign-nodes'
                    disableNext=disableRegisterNodesNext
-                   disableCancel=deploymentController.isStarted}}
+                   disableCancel=isStarted
+                   deploymentName=deploymentName}}
 
 {{partial 'new-node-registration'}}
