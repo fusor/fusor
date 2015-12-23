@@ -13,6 +13,15 @@ export default function() {
 
   this.get('/api/v21/lifecycle_environments');
   this.get('/api/v21/lifecycle_environments/:id');
+  this.post('/api/v21/lifecycle_environments', function(db, request) {
+      var attrs = JSON.parse(request.requestBody).lifecycle_environment;
+      attrs['prior_id'] = 1;
+      var record = db.lifecycle_environments.insert(attrs);
+      console.log(record);
+      return {
+        lifecycle_environment: record
+      };
+  });
 
   this.get('/api/v21/discovered_hosts');
   this.get('/api/v21/discovered_hosts/:id');
@@ -73,6 +82,17 @@ export default function() {
     return db.foreman_tasks.find(id);
   });
 
+  this.post('/fusor/api/openstack/deployments/:id/underclouds', function(db, request) {
+    return {'undercloud': 2};
+  });
+
+  this.get('/fusor/api/openstack/deployments/:id/underclouds/:id', function(db, request) {
+    return {
+      'deployed': true,
+      'failed': false
+    };
+  });
+
   this.get('/fusor/api/openstack/deployments/:id/nodes', function(db, request) {
     return db.nodes;
   });
@@ -89,6 +109,12 @@ export default function() {
   this.get('/fusor/api/openstack/deployments/:id/images', function(db, request) {
     return db.images;
   });
+
+  this.get('/fusor/api/v21/subscriptions');
+  this.post('/fusor/api/v21/subscriptions');
+
+
+  this.post('/customer_portal/consumers/:uuid/entitlements');
 
   /*
     Route shorthand cheatsheet
