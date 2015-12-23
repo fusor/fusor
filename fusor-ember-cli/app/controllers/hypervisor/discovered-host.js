@@ -78,7 +78,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       return this.get('cntSelectedHypervisorHosts') === 1 ? 'host' : 'hosts';
   }),
 
-  isAllChecked: Ember.computed('availableHosts.@each', 'cntSelectedHypervisorHosts', function() {
+  isAllChecked: Ember.computed('availableHosts.[]', 'cntSelectedHypervisorHosts', function() {
     return (this.get('cntSelectedHypervisorHosts') === this.get('availableHosts.length'));
   }),
 
