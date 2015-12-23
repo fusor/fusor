@@ -60,7 +60,8 @@
                    disableBack=false
                    nextRouteName='openstack.overcloud'
                    disableNext=disableAssignNodesNext
-                   disableCancel=deploymentController.isStarted}}
+                   disableCancel=isStarted
+                   deploymentName=deploymentName}}
 
 {{partial 'edit-deployment-role'}}
 {{partial 'edit-global-service-config'}}

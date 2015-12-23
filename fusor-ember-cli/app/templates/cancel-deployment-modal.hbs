@@ -3,7 +3,7 @@
         {{#em-modal-toggler class="close"}}
             <span aria-hidden="true">×</span><span class="sr-only">Close</span>
         {{/em-modal-toggler}}
-        <h4 class="modal-title">Cancel RHCI Deployment - {{parentController.name}} </h4>
+        <h4 class="modal-title">Cancel RHCI Deployment - {{deploymentName}} </h4>
     {{/em-modal-title}}
 
     {{#em-modal-body}}
@@ -21,5 +21,4 @@
           Continue Working
         {{/em-modal-toggler}}
     {{/em-modal-footer}}
-    {{isNew}}
 {{/em-modal}}

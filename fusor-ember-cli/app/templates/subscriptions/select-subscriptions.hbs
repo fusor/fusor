@@ -135,7 +135,8 @@
 
 {{#cancel-back-next backRouteName='subscriptions.management-application'
                    disableBack=false
-                   disableCancel=isStarted}}
+                   disableCancel=isStarted
+                   deploymentName=deploymentName}}
   <button {{action 'saveSubscriptions' 'review'}} class='btn btn-primary'>Next <i class="fa fa-angle-right"></i></button>
 {{/cancel-back-next}}
 

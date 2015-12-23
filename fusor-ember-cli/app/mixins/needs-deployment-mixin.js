@@ -8,5 +8,7 @@ export default Ember.Mixin.create({
   isStarted: Ember.computed.alias("deploymentController.isStarted"),
   isNotStarted: Ember.computed.alias("deploymentController.isNotStarted"),
 
-  isNew: false
+  isNew: false,
+
+  deploymentName: Ember.computed.alias("deploymentController.model.name")
 });
