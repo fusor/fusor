@@ -1,5 +1,6 @@
 import DS from 'ember-data';
 import Ember from 'ember';
+import App from '../app'
 
 var token = Ember.$('meta[name="csrf-token"]').attr('content');
 export default DS.ActiveModelAdapter.extend({
@@ -12,14 +13,11 @@ export default DS.ActiveModelAdapter.extend({
     },
     handleResponse(status /*, headers, payload */) {
         if(status === 401) {
-            $(document).trigger({
-                type: 'displayErrorModal',
+            App.EventBus.trigger('displayErrorModal', {
                 errorMessage: 'It looks like your session has timed out.' +
                     ' Try logging back in again to continue.',
                 okayCallback: () => {
-                    // TODO: Drop modal and transition to login?
-                    // invlaidate session and login routes appear to be invalid...
-                    console.log('error-modal::okayCallback');
+                    document.location.pathname = '/'; // Redirect to root
                 }
             });
         }

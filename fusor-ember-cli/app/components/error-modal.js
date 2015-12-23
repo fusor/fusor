@@ -1,6 +1,8 @@
 import Ember from 'ember';
+import App from '../app';
 
 export default Ember.Component.extend({
+  openModal: false,
   errorMessage: '',
   okayCallback: null,
   didInsertElement() {
@@ -8,25 +10,22 @@ export default Ember.Component.extend({
   },
   actions: {
     okay() {
+      this.set('openModal', false);
       var okcb = this.get('okayCallback');
       if(okcb) { okcb(); }
     },
     startListening() {
-      $(document).on('displayErrorModal', (e) => {
+      App.EventBus.on('displayErrorModal', (e) => {
+        // Reset stale okayCallback
+        if(this.get('okayCallback')) { this.set('okayCallback', null); }
+
         this.set('errorMessage', e.errorMessage);
         if(e.okayCallback) { this.set('okayCallback', e.okayCallback); }
-
-        // backdrop: 'static and keyboard: false will prevent user from
-        // clicking out of the modal or using <Esc> to drop it.
-        $('.error-modal').modal({
-          show: 'true',
-          backdrop: 'static',
-          keyboard: false
-        });
+        this.set('openModal', true);
       });
     },
     stopListening() {
-      $(document).off('displayErrorModal');
+      App.EventBus.off('displayErrorModal');
     }
   }
 });

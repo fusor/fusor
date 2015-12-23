@@ -1,15 +1,13 @@
-<div class="modal fade error-modal" tabindex="-1" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">Error Occurred</h4>
-      </div>
-      <div class="modal-body">
-        <p>{{errorMessage}}</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" {{action 'okay'}}>Okay</button>
-      </div>
-    </div>
-  </div>
-</div>
+{{#em-modal configName="bs" id="globalErrorModal" open-if=openModal}}
+  {{#em-modal-title}}
+    <h4 class="modal-title">Error Occurred</h4>
+  {{/em-modal-title}}
+
+  {{#em-modal-body}}
+    {{errorMessage}}
+  {{/em-modal-body}}
+
+  {{#em-modal-footer}}
+    <button class="btn btn-primary" {{action 'okay'}}>Okay</button>
+  {{/em-modal-footer}}
+{{/em-modal}}

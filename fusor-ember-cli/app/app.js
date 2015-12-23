@@ -15,4 +15,7 @@ App = Ember.Application.extend({
 
 loadInitializers(App, config.modulePrefix);
 
+// Instantiate and expose global event bus
+App.EventBus = Ember.Object.extend(Ember.Evented).create();
+
 export default App;
