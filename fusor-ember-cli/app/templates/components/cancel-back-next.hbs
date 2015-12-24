@@ -20,4 +20,6 @@
   {{/if}}
 </div>
 
-{{partial 'cancel-deployment-modal'}}
+{{cancel-deployment-modal openModal=openModal
+                          cancelAndRollbackNewDeployment='cancelAndRollbackNewDeployment'
+                          openCancelDeploymentModal='openCancelDeploymentModal'}}
