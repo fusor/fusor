@@ -101,7 +101,9 @@
 <br />
 <br />
 
-{{partial 'new-environment'}}
+
+{{new-environment-modal openModal=openModal
+                        createEnvironment='createEnvironment'}}
 
 {{#cancel-back-next backRouteName=satelliteTabRouteName
                     disableBack=false
