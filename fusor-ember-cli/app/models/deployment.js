@@ -78,6 +78,9 @@ export default DS.Model.extend({
   subscriptions: DS.hasMany('subscription', {inverse: 'deployment', async: true}),
   introspection_tasks: DS.hasMany('introspection-task', {async: true}),
 
+  // has one foreman_task
+  foreman_task: DS.belongsTo('foreman-task',  {async: true}),
+
   // Ember Data doesn't have DS.attr('array') so I did this
   rhev_hypervisor_host_ids: Ember.computed('discovered_hosts', function() {
     var discovered_hosts = this.get('discovered_hosts');
@@ -107,17 +110,9 @@ export default DS.Model.extend({
     return this.get('isStarted') && !this.get('isComplete');
   }),
 
-  // TODO-REFACTOR return foreman_task in API response and create belongsTo assocation
-  // foreman_task: DS.belongsTo('foreman-task')
-  foremanTask: Ember.computed('foreman_task_uuid', 'isStarted', function() {
-    if (this.get('isStarted')) {
-        return this.store.findRecord('foreman-task', this.get('foreman_task_uuid'));
-    }
-  }),
-
-  setProgress: Ember.observer('foremanTask', 'foreman_task_uuid', function() {
-    if (this.get('foremanTask')) {
-      this.get('foremanTask').then(function(result) {
+  setProgress: Ember.observer('foreman_task', 'foreman_task_uuid', function() {
+    if (this.get('foreman_task')) {
+      this.get('foreman_task').then(function(result) {
           this.set('progress', result.get('progress'));
           this.set('state', result.get('state'));
       }.bind(this));
