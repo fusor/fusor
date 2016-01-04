@@ -45,6 +45,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   cfmeUrl: Ember.computed('model.cfme_hostname', function() {
     return ('https://' + this.get('model.cfme_hostname'));
-  })
+  }),
 
+  cfmeUrlSelfService: Ember.computed('cfmeUrl', function() {
+    return (this.get('cfmeUrl') + '/self_service');
+  }),
 });
