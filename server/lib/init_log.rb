@@ -12,14 +12,21 @@ module Fusor
   end
 
   def self.log_change_deployment(deployment = nil)
-    self.log
-
     if deployment.nil?
-      @log.attach(@default_log_file)
+      log.attach(@default_log_file)
     else
       FileUtils.mkdir_p(self.log_file_dir(deployment)) unless File.exist?(self.log_file_dir(deployment))
-      @log.attach(self.log_file_path(deployment))
+      log.attach(self.log_file_path(deployment))
     end
+  end
+
+  def self.start_collect_satellite_logs(deployment)
+    FileUtils.mkdir_p(self.log_file_dir(deployment)) unless File.exist?(self.log_file_dir(deployment))
+    log.collect(self.log_file_dir(deployment))
+  end
+
+  def self.stop_collect_satellite_logs
+    log.stop_collect
   end
 
   def self.log_file_dir(deployment)
