@@ -31,7 +31,11 @@ export default Ember.Mixin.create({
         // HOST_REGEXP taken from Foreman code HOST_REGEXP in file /lib/net/validations.rb
         // But replaced /A with ^ and /z with $
         var hostnameRegex = new RegExp(/^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])$/);
-        return Ember.isEmpty(this.get('host.name').match(hostnameRegex));
+        var invalidHostname = Ember.isEmpty(this.get('host.name').match(hostnameRegex));
+
+        this.sendAction('setIfHostnameInvalid', invalidHostname);
+
+        return invalidHostname;
   }),
   isValidHostname: Ember.computed.not('isInvalidHostname'),
 
@@ -52,13 +56,13 @@ export default Ember.Mixin.create({
                     "Authorization": "Basic " + self.get('session.basicAuthToken')
                 }
               }).then(function(response) {
-                  self.sendAction('setIfHostnameValid', false);
+                  self.sendAction('setIfHostnameInvalid', false);
                 }, function(error) {
                   console.log(error);
                 }
               );
       } else {
-        this.sendAction('setIfHostnameValid', true);
+        this.sendAction('setIfHostnameInvalid', true);
       }
     }
   }
