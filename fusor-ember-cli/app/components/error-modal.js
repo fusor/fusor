@@ -1,5 +1,4 @@
 import Ember from 'ember';
-import App from '../app';
 
 export default Ember.Component.extend({
   openModal: false,
@@ -15,7 +14,7 @@ export default Ember.Component.extend({
       if(okcb) { okcb(); }
     },
     startListening() {
-      App.EventBus.on('displayErrorModal', (e) => {
+      this.eventBus.on('displayErrorModal', (e) => {
         // Reset stale okayCallback
         if(this.get('okayCallback')) { this.set('okayCallback', null); }
 
@@ -25,7 +24,7 @@ export default Ember.Component.extend({
       });
     },
     stopListening() {
-      App.EventBus.off('displayErrorModal');
+      this.eventBus.off('displayErrorModal');
     }
   }
 });
