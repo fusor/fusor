@@ -56,9 +56,23 @@ class MultiLogger
     end
   end
 
-  def stop_collect
-    @watchlist.each do |p|
-      Process.kill("HUP", p[:pid])
+  def stop_collect(base_path)
+    if check_nested_key(SETTINGS, [:fusor, :system, :logging, :watch])
+      SETTINGS[:fusor][:system][:logging][:watch].each do |entry|
+        file = File.join(base_path, entry[:file])
+
+        procs = `ps -elf | grep "#{file}" | grep -v "grep"`
+        procs.split("\n").each do |p|
+          pid = p.split(" ")[3].to_i
+          Process.kill(9, pid)
+        end
+
+        procs = `ps -elf | grep "#{entry[:file]}" | grep -v "grep"`
+        procs.split("\n").each do |p|
+          pid = p.split(" ")[3].to_i
+          Process.kill(9, pid)
+        end
+      end
     end
   end
 
