@@ -1,6 +1,5 @@
 import DS from 'ember-data';
 import Ember from 'ember';
-import App from '../app'
 
 var token = Ember.$('meta[name="csrf-token"]').attr('content');
 export default DS.ActiveModelAdapter.extend({
@@ -13,7 +12,7 @@ export default DS.ActiveModelAdapter.extend({
     },
     handleResponse(status /*, headers, payload */) {
         if(status === 401) {
-            App.EventBus.trigger('displayErrorModal', {
+            this.eventBus.trigger('displayErrorModal', {
                 errorMessage: 'It looks like your session has timed out.' +
                     ' Try logging back in again to continue.',
                 okayCallback: () => {
