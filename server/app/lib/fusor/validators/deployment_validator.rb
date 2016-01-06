@@ -1,6 +1,7 @@
 module Fusor
   module Validators
     class DeploymentValidator < ActiveModel::Validator
+      # rubocop:disable Metrics/AbcSize
       def validate(deployment)
         if !(deployment.deploy_rhev or deployment.deploy_cfme or deployment.deploy_openstack)
           deployment.errors[:base] << _('You must deploy something...')
@@ -13,6 +14,7 @@ module Fusor
           # 3) must have valid storage options to match that type
           # 4) must have engine
           # 5) must have at least one hypervisor
+          # 6) must have valid mac address naming scheme
           if deployment.rhev_root_password.empty?
             deployment.errors[:rhev_root_password] << _('RHEV deployments must specify a root password for the RHEV machines')
           end
@@ -79,6 +81,8 @@ module Fusor
           if !deployment.rhev_is_self_hosted && deployment.rhev_hypervisor_hosts.count < 1
             deployment.errors[:rhev_hypervisor_hosts] << _('RHEV deployments must have at least one Hypervisor')
           end
+
+          validate_hostname(deployment)
         end
 
         if deployment.deploy_cfme
@@ -145,6 +149,22 @@ module Fusor
           add_warning(deployment, _("NFS file share '%s' is not empty. This could cause deployment problems.") %
                       "#{address}:#{path}"
                      )
+        end
+      end
+
+      def validate_hostname(deployment)
+        regex = /^[A-z0-9\.\_\-]+$/
+
+        unless deployment.rhev_engine_host.nil?
+          unless deployment.rhev_engine_host.name =~ regex
+            deployment.errors[:base] << _("RHEV engine host '%s' does not have proper mac naming scheme." % "#{deployment.rhev_engine_host.name}")
+          end
+        end
+
+        deployment.rhev_hypervisor_hosts.each do |host|
+          unless host.name =~ regex
+            deployment.errors[:base] << _("RHEV hypervisor hosts '%s' does not have proper mac naming scheme." % "#{host.name}")
+          end
         end
       end
 
