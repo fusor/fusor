@@ -255,4 +255,7 @@
 
 {{/unless}}
 
-{{partial 'continue-deployment-modal'}}
+{{continue-deployment-modal openModal=openModal
+                            deployment=deploymentController.model
+                            installDeployment='installDeployment'
+                            }}
