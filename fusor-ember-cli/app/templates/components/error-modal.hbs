@@ -1,13 +1,17 @@
-{{#em-modal configName="bs" id="globalErrorModal" open-if=openModal}}
-  {{#em-modal-title}}
-    <h4 class="modal-title">Error Occurred</h4>
-  {{/em-modal-title}}
+{{#pf-modal-base idModal='globalErrorModal'
+                 openModal=openModal
+                 title="Error Occurred"}}
 
-  {{#em-modal-body}}
-    {{errorMessage}}
-  {{/em-modal-body}}
+      {{#pf-modal-body}}
 
-  {{#em-modal-footer}}
-    <button class="btn btn-primary" {{action 'okay'}}>Okay</button>
-  {{/em-modal-footer}}
-{{/em-modal}}
+          {{errorMessage}}
+
+      {{/pf-modal-body}}
+
+      {{#pf-modal-footer}}
+          <button {{action 'okay'}} class="btn btn-primary">
+              Okay
+          </button>
+      {{/pf-modal-footer}}
+
+{{/pf-modal-base}}
