@@ -19,6 +19,9 @@
             <a>{{stepNumberSubscriptions}}C. Add Subscriptions</a>
           {{/link-to}}
 
+          {{#link-to 'subscriptions.review-subscriptions' tagName='li' disabled=disableTabSelectSubsciptions}}
+            <a>{{stepNumberSubscriptions}}D. Review Subscriptions</a>
+          {{/link-to}}
       {{/if}}
 
 {{/wizard-step}}
