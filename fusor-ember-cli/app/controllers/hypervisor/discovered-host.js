@@ -100,8 +100,14 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   }),
 
   isHostnameInvalid: false, //can overwritten by action setToInvalidHostname() triggered from tr-engine-hypervisor-mixin.js
-  disableNextOnHypervisor: Ember.computed('isHostnameInvalid', 'rhevController.hasNoHypervisor', function() {
-    return (this.get('isHostnameInvalid') || this.get('rhevController.hasNoHypervisor'));
+  disableNextOnHypervisor: Ember.computed(
+    'isHostnameInvalid',
+    'rhevController.hasNoHypervisor',
+    'cntSelectedHypervisorHosts',
+    function() {
+      return (this.get('isHostnameInvalid') ||
+              this.get('rhevController.hasNoHypervisor') ||
+              this.get('cntSelectedHypervisorHosts') === 0);
   }),
 
   actions: {
