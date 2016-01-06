@@ -43,5 +43,7 @@ module Fusor
     has_many :subscriptions, serializer: Fusor::SubscriptionSerializer
     has_many :introspection_tasks, serializer: Fusor::IntrospectionTaskSerializer
 
+    has_one :foreman_task, key: :foreman_task_uuid, serializer: ::ForemanTaskSerializer
+
   end
 end
