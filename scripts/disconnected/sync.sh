@@ -7,7 +7,7 @@ katello-disconnected disable --all
 # katello-disconnected enable -r rhel-6-server-sam-rpms-6_4-x86_64
 
 # cloudforms
-katello-disconnected enable -r cf-me-5_5-for-rhel-6-files--x86_64
+katello-disconnected enable -r cf-me-5_4-for-rhel-6-files--x86_64
 #katello-disconnected enable -r rhel-7-server-kickstart-7_1-x86_64
 
 # rhev-m
