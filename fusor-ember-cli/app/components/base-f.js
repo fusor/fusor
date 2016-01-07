@@ -3,7 +3,12 @@ import Ember from 'ember';
 export default Ember.Component.extend({
 
   didInsertElement() {
-    return Ember.$('[data-toggle="popover"]').popover();
+    return Ember.$('[data-toggle="popover"]').popover({html: false,
+                                                       trigger: 'focus hover',
+                                                       title: this.get('label'),
+                                                       placement: 'right',
+                                                       content: this.get('helpText')
+                                                      });
   },
 
   willDestroyElement() {
@@ -28,5 +33,11 @@ export default Ember.Component.extend({
 
   unitsClassSize: Ember.computed(function () {
     return this.getWithDefault('unitsSize', 'col-md-2');
-  })
+  }),
+
+  actions: {
+    doNothing() {
+      return false;
+    }
+  }
 });
