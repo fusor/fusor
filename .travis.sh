@@ -39,7 +39,12 @@ if [ $1 == "install" ]; then
   echo "gem 'egon'" >> bundler.d/local.rb
   echo "gem 'coveralls', require: false" >> bundler.d/local.rb
   echo "gem 'foreman_docker', '< 2.0.0'" >> bundler.d/local.rb
-  bundle install --retry 3
+
+  # TODO: use the latest version of foreman once this PR is merged
+  # https://github.com/theforeman/foreman/pull/3034
+  sed -i "s/gem 'net-ldap', '>= 0.8.0'/gem 'net-ldap', '>= 0.8.0', '< 0.13.0'/" Gemfile
+
+  bundle install --retry 3 --without development mysql2 libvirt
 
   # hacky, find a better way to do this...
   # rails only supports loading fixtures from one directory, so link the
