@@ -33,6 +33,23 @@ export default Ember.Component.extend({
     return (Ember.isBlank(this.get('routeName')) && !(this.get('isExternalURL')));
   }),
 
+  title: 'Alternative IP Address',
+  helpTextIpAddress: Ember.computed('ipAddress', function() {
+    return '<a href=' + this.get('ipAddress') + ' target="_blank">' + this.get('ipAddress') + '</a>';
+  }),
+
+  didInsertElement() {
+    return Ember.$('[data-toggle="popover"]').popover({html: true,
+                                                       trigger: 'click hover',
+                                                       title: this.get('title'),
+                                                       placement: 'right'
+                                                      });
+  },
+
+  willDestroyElement() {
+    return Ember.$('[data-toggle="popover"]').popover('destroy');
+  },
+
   actions: {
     showPassword() {
       this.set('isEyeOpen', this.toggleProperty('isEyeOpen'));
@@ -41,7 +58,12 @@ export default Ember.Component.extend({
       } else {
           return this.set('eyeIcon', "fa-eye-slash");
       }
+    },
+
+    doNothing() {
+      return false;
     }
+
   }
 
 });
