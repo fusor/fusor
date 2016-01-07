@@ -69,6 +69,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
           }
           }).then(function(response) {
             var uuid = response.id;
+            console.log('task uuid is ' + uuid);
             deployment.set('foreman_task_uuid', uuid);
             deployment.save().then(function () {
               return self.transitionTo('review.progress.overview');
