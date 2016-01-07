@@ -12,7 +12,7 @@ The fuser-ember-cli/dist distory is generated automatically by [ember-cli](http:
 
 ## Development Workflow
 
-1. Ensure that your [Foreman settings.yaml](https://github.com/theforeman/foreman/) has `login: false`. Otherwise, API calls will not authenticate properly.
+1. Ensure that your [Foreman settings.yaml](https://github.com/theforeman/foreman/) has `login: false` and `require_ssl: false`. Otherwise, API calls will not authenticate properly.
 2. Clone [fusor](https://github.com/fusor/fusor/) to your local workstation.
 3. `cd fusor-ember-cli`
 4. In [controllers/application.js](https://github.com/fusor/fusor-ember-cli/blob/master/app/controllers/application.js#L8), change `deployAsPlugin` from `true` to `false`. If `false`, it shows a menu bar for development which is not needed when running inside Foreman/Katello.
