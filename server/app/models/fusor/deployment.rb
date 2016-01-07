@@ -34,7 +34,7 @@ module Fusor
     has_many :deployment_hosts, :class_name => "Fusor::DeploymentHost", :foreign_key => :deployment_id, :inverse_of => :deployment
     has_many :discovered_hosts, :through => :deployment_hosts, :foreign_key => :discovered_host_id, :source => :discovered_host
     alias_attribute :discovered_host_id, :rhev_engine_host_id
-    alias_attribute :foreman_task_id, :foreman_task_uuid
+    attr_accessor :foreman_task_id
 
     has_many :subscriptions, :class_name => "Fusor::Subscription", :foreign_key => :deployment_id
     has_many :introspection_tasks, :class_name => 'Fusor::IntrospectionTask'

@@ -111,10 +111,13 @@ export default DS.Model.extend({
   }),
 
   setProgress: Ember.observer('foreman_task', 'foreman_task_uuid', function() {
+    var self = this;
     if (this.get('foreman_task')) {
       this.get('foreman_task').then(function(result) {
-          this.set('progress', result.get('progress'));
-          this.set('state', result.get('state'));
+        if (result) {
+          self.set('progress', result.get('progress'));
+          self.set('state', result.get('state'));
+        }
       }.bind(this));
     }
   }),
