@@ -5,7 +5,10 @@
     {{#if isRhev}}
       {{#accordion-item name="Red Hat Enterprise Virtualization" isOpen=true}}
 
-        {{review-link label='URL' isExternalURL=true value=rhevEngineUrl}}
+        {{review-link label='URL'
+                      value=rhevEngineUrl
+                      isExternalURL=true
+                      ipAddress=rhevEngineUrlIP}}
 
         {{review-link label='Username' value='admin'}}
 
@@ -16,7 +19,8 @@
         {{#accordion-item name="Red Hat Enterprise Linux - OpenStack Platform" isOpen=isOpenStackOpen}}
             {{review-link label='Undercloud URL'
                           value=undercloudUrl
-                          isExternalURL=true}}
+                          isExternalURL=true
+                          ipAddress=undercloudUrlIP}}
             {{review-link label='Undercloud username'
                           value=undercloudUsername}}
             {{review-link label='Undercloud password'
@@ -24,7 +28,8 @@
 
             {{review-link label='Overcloud URL'
                           value=overcloudUrl
-                          isExternalURL=true}}
+                          isExternalURL=true
+                          ipAddress=overcloudUrlIP}}
             {{review-link label='Overcloud username'
                           value=overcloudUsername}}
             {{review-link label='Overcloud password'
@@ -35,8 +40,15 @@
     {{#if isCloudForms}}
       {{#accordion-item name="Cloud Forms Management Engine" isOpen=true}}
 
-        {{review-link label='Admin Console' isExternalURL=true value=cfmeUrl}}
-        {{review-link label='Self-Service Console' isExternalURL=true value=cfmeUrlSelfService}}
+        {{review-link label='Admin Console'
+                      value=cfmeUrl
+                      isExternalURL=true
+                      ipAddress=cfmeUrlIP}}
+
+        {{review-link label='Self-Service Console'
+                      value=cfmeUrlSelfService
+                      isExternalURL=true
+                      ipAddress=cfmeUrlSelfServiceIP}}
 
         {{review-link label='Username' value='admin'}}
 
