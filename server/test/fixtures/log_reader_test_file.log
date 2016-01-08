@@ -1,9 +1,7 @@
-line 0
-2015-01-02 03:04:01 [E] line 1
+line 1
 line 2
 line 3
 line 4
-2015-01-02 03:04:05 [W] line 5
-2015-01-02 03:04:06 [I] line 6
-2015-01-02 03:04:06 [I] line 7
-line 8 no newline
+line 5
+line 6
+line 7

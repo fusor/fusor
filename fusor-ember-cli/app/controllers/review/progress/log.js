@@ -3,28 +3,57 @@ import NeedsDeploymentMixin from '../../../mixins/needs-deployment-mixin';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  //TODO
-  //deploymentInProgress: Ember.computed.alias('deployment.isInProgress'),
-
   searchLogInputValue: null,
   scrollToEndChecked: true,
   errorChecked: true,
   warnChecked: true,
   infoChecked: true,
   debugChecked: false,
+  logTypes: [
+    {label: 'Deployment', value: 'fusor_log'},
+    {label: 'Foreman', value: 'foreman_log'},
+    //{label: 'Foreman Proxy', value: 'foreman_proxy_log'},
+    {label: 'Candlepin', value: 'candlepin_log'},
+    {label: 'Messages', value: 'messages_log'}
+  ],
 
-  isLogEmpty: Ember.computed('model.log.entries.[]', function() {
-    var entries = this.get('model.log.entries');
-    return !this.get('isLoading') && (!entries || !entries.length);
+  showLogLoading: Ember.computed('errorMessage', 'isLoading', function() {
+    return !this.get('errorMessage') && this.get('isLoading');
   }),
 
-  logOptionsChanged: Ember.observer('errorChecked', 'warnChecked', 'infoChecked', 'debugChecked', function() {
+  showLogUpdating: Ember.computed('errorMessage', 'isLoading', 'deploymentInProgress', function () {
+    return !this.get('errorMessage') && !this.get('isLoading') && this.get('deploymentInProgress');
+  }),
+
+  showLogTruncated: Ember.computed('errorMessage', 'isLoading', 'processedLogEntries.[]', function () {
+    var processedLogEntries = this.get('processedLogEntries');
+    return !this.get('errorMessage') && !this.get('isLoading') &&
+      processedLogEntries && processedLogEntries[0] && processedLogEntries[0].get('line_number') !== 1;
+  }),
+
+  showLogEmpty: Ember.computed('errorMessage', 'isLoading', 'logType',
+    'model.fusor_log.entries.[]',  'model.foreman_log.entries.[]', 'model.foreman_proxy_log.entries.[]',
+    'model.candlepin_log.entries.[]', 'model.messages_log.entries.[]',
+    function () {
+      var logType, entries;
+      logType = this.get('logType') || 'fusor_log';
+      entries = this.get(`model.${logType}.entries`);
+      return !this.get('errorMessage') && !this.get('isLoading') && (!entries || !entries.length);
+    }),
+
+  logOptionsChanged: Ember.observer('errorChecked', 'warnChecked', 'infoChecked', 'debugChecked', function () {
     Ember.run.once(this, 'refreshProcessedLog');
   }),
 
   isSearchActive:Ember.computed('searchLogString', function() {
     return !!this.get('searchLogString');
   }),
+
+  logTypeChanged: function() {
+    var self = this;
+    self.set('processedLogEntries', []);
+    self.send('changeLogType');
+  }.observes('logType'),
 
   actions: {
     scrollToEnd() {
@@ -60,14 +89,14 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   formatLog: function() {
     this.send('formatLog');
     if (this.get('isSearchActive')) {
-      Ember.run.later(() => this.send('navNextSearchResult'));
+      Ember.run.later(this, () => this.send('navNextSearchResult'));
     }
   },
 
   refreshProcessedLog: function() {
     this.send('refreshProcessedLog');
     if (this.get('isSearchActive')) {
-      Ember.run.later(() => this.send('navNextSearchResult'));
+      Ember.run.later(this, () => this.send('navNextSearchResult'));
     }
   },
 

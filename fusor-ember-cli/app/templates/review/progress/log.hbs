@@ -1,16 +1,16 @@
 <div class="row log-selection-row">
   <div class="col-sm-12 col-lg-9">
     <form role="form-inline" class="log-file-form">
-      <select class="selectpicker log-file-select">
-        <option>Deployment Log</option>
-      </select>
-      <span class="log-file-path">Viewing {{model.log.path}}</span>
+      {{view "select" id="log-file-select" class="selectpicker log-file-select"
+                      content=logTypes value=logType selection=logTypeSelection
+                      optionLabelPath="content.label" optionValuePath="content.value"}}
+      <span class="log-file-path">Viewing {{logPath}}</span>
     </form>
   </div>
 </div>
 
 <div class="row">
-  <div class="col-sm-6 col-lg-4">
+  <div class="col-sm-5 col-lg-4">
     <div class="row log-search-row">
       <div class="col-sm-12">
         <form role="form-inline" class="search-pf has-button log-search-form">
@@ -34,20 +34,23 @@
     </div>
   </div>
 
-  <div class="col-sm-6 col-lg-5">
+  <div class="col-sm-7 col-lg-5">
     <form class="pull-right log-level-form form-inline">
-      <div class="checkbox">
-        <label>{{input type="checkbox" name="error" checked=errorChecked}} Error</label>
-      </div>
-      <div class="checkbox">
-        <label>{{input type="checkbox" name="warn" checked=warnChecked}} Warning</label>
-      </div>
-      <div class="checkbox">
-        <label>{{input type="checkbox" name="info" checked=infoChecked}} Informational</label>
-      </div>
-      <div class="checkbox">
-        <label>{{input type="checkbox" name="debug" checked=debugChecked}} Debug</label>
-      </div>
+        <div class="checkbox">
+          <label>Show:</label>
+        </div>
+         <div class="checkbox">
+          <label>{{input type="checkbox" name="error" checked=errorChecked}} Error</label>
+        </div>
+        <div class="checkbox">
+          <label>{{input type="checkbox" name="warn" checked=warnChecked}} Warning</label>
+        </div>
+        <div class="checkbox">
+          <label>{{input type="checkbox" name="info" checked=infoChecked}} Informational</label>
+        </div>
+        <div class="checkbox">
+          <label>{{input type="checkbox" name="debug" checked=debugChecked}} Debug</label>
+        </div>
     </form>
   </div>
 </div>
@@ -55,19 +58,22 @@
 <div class="row">
   <div class="col-sm-12 col-lg-9">
     <div class="log-output">
-      {{#if isLoading}}
+      {{#if showLogLoading}}
         <p class="log-top-message"><span class="spinner spinner-md spinner-inline log-updating-spinner"></span> Loading...</p>
       {{/if}}
-      {{#if isLogEmpty}}
+      {{#if showLogEmpty}}
         <p class="log-top-message">No data in the log file yet, there should be something to see in a few minutes.</p>
       {{/if}}
-      {{#if isLogTooLarge}}
-        <p class="log-top-message"><i class="fa fa-2x fa-exclamation-triangle log-warning-icon"></i> Log too large.  Only last 5000 filtered lines displayed</p>
+      {{#if showLogTruncated}}
+        <p class="log-top-message"><i class="fa fa-2x fa-exclamation-triangle log-warning-icon"></i> Very large log file.  Only the last {{processedLogEntries.length}} lines shown</p>
       {{/if}}
       {{#each processedLogEntries as |entry|}}
-        {{log-entry entry=entry}}
+        {{{entry.formattedText}}}
       {{/each}}
-      {{#if deploymentInProgress}}
+      {{#if errorMessage}}
+        <p class="log-bottom-message"><i class="fa fa-2x fa-exclamation-triangle log-error-icon"></i> {{errorMessage}}</p>
+      {{/if}}
+      {{#if showLogUpdating}}
         <p class="log-bottom-message"><span class="spinner spinner-md spinner-inline log-updating-spinner"></span> Deployment in progress, log file updating.</p>
       {{/if}}
       <div class="log-output-bottom"></div>

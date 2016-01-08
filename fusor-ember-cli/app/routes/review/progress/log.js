@@ -4,28 +4,22 @@ import request from 'ic-ajax';
 export default Ember.Route.extend({
   // TODO
   // break out Polling Mixin into something we can use in any route
+  // pull push all the formatting logic into the log-entry component
+  // convert any big loops to chunked async promise based loops
 
   model() {
     return {
-      log: { path: '' }
+      fusor_log: {path: ''},
+      foreman_log: {path: ''},
+      foreman_proxy_log: {path: ''},
+      candlepin_log: {path: ''},
+      messages_log: {path: ''}
     };
   },
 
   setupController(controller, model) {
-    var self = this, deployment = self.modelFor('deployment');
-
     controller.set('model', model);
-    controller.set('deploymentInProgress', deployment.get('isInProgress'));
-
-    this.set('pollingActive', true);
-    return this.getFullLog().finally(function () {
-      controller.set('deploymentInProgress', deployment.get('isInProgress'));
-      if (self.get('pollingActive') && deployment.get('isInProgress')) {
-        self.startPolling();
-      } else {
-        self.set('pollingActive', false);
-      }
-    });
+    this.initLog();
   },
 
   deactivate() {
@@ -33,66 +27,8 @@ export default Ember.Route.extend({
   },
 
   actions: {
-    updateLog() {
-      var i, tmpDateStr,
-        self = this,
-        controller = this.get('controller'),
-        params = {},
-        entries = controller.get('model.log.entries');
-
-      if (!entries || entries.length === 0) {
-        return self.getFullLog();
-      }
-
-      // get timestamp of last entry with a date
-      for (i = entries.length - 1; i > 0; i--) {
-        tmpDateStr = entries[i].date_time;
-        if (tmpDateStr) {
-          params = {date_time_gte: tmpDateStr};
-          break;
-        }
-      }
-
-      return self.getJsonLog(params).then(
-        function (response) {
-          var numAdded = self.mergeNewEntries(controller, response);
-          if (numAdded > 0) {
-            controller.send('scrollToEnd');
-          }
-        },
-        function (error) {
-          console.log('ERROR retrieving log');
-          console.log(error.jqXHR);
-        });
-    },
-
     refreshProcessedLog() {
-      var self = this,
-        controller = this.get('controller'),
-        entries = controller.get('model.log.entries'),
-        processedLogEntries = [],
-        entry, i;
-
-      // Add the the most recent filtered log entries up to 5000
-      controller.set('isLogTooLarge', false);
-      if (entries) {
-        for (i = entries.length - 1; i >= 0; i--) {
-          entry = entries[i];
-          if (self.isIncluded(entry)) {
-            processedLogEntries.push(Ember.Object.create(entry));
-          }
-
-          if (processedLogEntries.length > 5000) {
-            controller.set('isLogTooLarge', true);
-            break;
-          }
-        }
-      }
-
-      // reverse and run search so results are ordered correctly
-      processedLogEntries = processedLogEntries.reverse();
-      controller.set('processedLogEntries', processedLogEntries);
-      this.send('formatLog');
+      this.refreshProcessedLog();
     },
 
     formatLog() {
@@ -105,24 +41,102 @@ export default Ember.Route.extend({
       for (var i = 0; i < processedLogEntries.length; i++) {
         self.formatEntry(processedLogEntries[i]);
       }
+    },
+
+    changeLogType() {
+      this.stopPolling();
+      Ember.run.later(this, this.refreshProcessedLog);
+      Ember.run.later(this, this.initLog);
     }
   },
 
-  scheduleAction(f) {
-    var deploymentInProgress = this.modelFor('deployment').get('isInProgress');
-    this.get('controller').set('deploymentInProgress', deploymentInProgress);
+  refreshProcessedLog() {
+    var self = this,
+      controller = this.get('controller'),
+      logType = controller.get('logType') || 'fusor_log',
+      processedLogEntries = [],
+      entries, entry, i;
 
+    entries = controller.get(`model.${logType}.entries`);
+
+    controller.set('isLogTooLarge', false);
+    if (entries) {
+      for (i = entries.length - 1; i >= 0; i--) {
+        entry = entries[i];
+        if (self.isIncluded(entry)) {
+          processedLogEntries.push(Ember.Object.create(entry));
+        }
+      }
+    }
+
+    // reverse and run search so results are ordered correctly
+    processedLogEntries = processedLogEntries.reverse();
+    controller.set('logPath', controller.get(`model.${logType}.path`));
+    controller.set('processedLogEntries', processedLogEntries);
+    this.send('formatLog');
+  },
+
+  initLog() {
+    var self = this,
+      deployment = self.modelFor('deployment'),
+      controller = this.get('controller');
+
+    self.set('pollingActive', true);
+    return Ember.RSVP.Promise.all([this.updateForemanTask(), this.updateLog()]).finally(function () {
+      if (self.get('pollingActive') && controller.get('deploymentInProgress')) {
+        self.startPolling();
+      } else {
+        self.set('pollingActive', false);
+      }
+    });
+  },
+
+  updateLog() {
+    var self = this,
+      controller = this.get('controller'),
+      params = {log_type: controller.get('logType') || 'fusor_log'},
+      entries = controller.get(`model.${params.log_type}.entries`);
+
+    if (!entries || entries.length === 0) {
+      return self.getFullLog(params);
+    }
+
+    params.line_number_gt = (entries[entries.length - 1]).line_number;
+    return self.getJsonLog(params).then(
+      function (response) {
+        var numAdded = self.addNewEntries(controller, response);
+        if (numAdded > 0) {
+          controller.send('scrollToEnd');
+        }
+      },
+      function (error) {
+        self.showError(error);
+      });
+  },
+
+  updateForemanTask() {
+    var self = this,
+      deployment = self.modelFor('deployment'),
+      controller = this.get('controller');
+    return this.store.findRecord('foreman-task', deployment.get('foreman_task_uuid')).then(
+      function (result) {
+        deployment.set('foreman_task', result);
+        controller.set('deploymentInProgress', result.get('progress') !== '1');
+      });
+  },
+
+  scheduleAction(f) {
     return Ember.run.later(this, function () {
       f.apply(this);
-      if (deploymentInProgress) {
+      if (this.get('controller').get('deploymentInProgress')) {
         this.set('timer', this.scheduleAction(f));
       }
-    }, 5000);
+    }, 10000);
   },
 
   startPolling() {
     this.set('pollingActive', true);
-    this.set('timer', this.scheduleAction(this.get('pollingAction')));
+    this.set('timer', this.scheduleAction(this.pollingAction));
   },
 
   stopPolling() {
@@ -131,23 +145,23 @@ export default Ember.Route.extend({
   },
 
   pollingAction() {
-    return this.send('updateLog');
+    return Ember.RSVP.Promise.all([this.updateLog(), this.updateForemanTask()]);
   },
 
-  getFullLog() {
+  getFullLog(params) {
     var self = this, controller = this.get('controller');
 
     controller.set('isLoading', true);
-    return this.getJsonLog()
+    return this.getJsonLog(params)
       .then(
         function (response) {
-          controller.set('model', response);
-          self.send('refreshProcessedLog');
+          var model = controller.get('model');
+          controller.set(`model.${params.log_type}`, response[params.log_type]);
+          self.refreshProcessedLog();
           controller.send('scrollToEnd');
         },
         function (error) {
-          console.log('ERROR retrieving log');
-          console.log(error.jqXHR);
+          self.showError(error);
         })
       .finally(function () {
         controller.set('isLoading', false);
@@ -175,54 +189,31 @@ export default Ember.Route.extend({
     });
   },
 
-  mergeNewEntries(controller, response) {
-    var firstDate, dupIndex, i, tmpDateStr, newEntries, numAdded = 0, self = this,
-      existingEntries = this.get('controller').get('model.log.entries'),
+  showError(error) {
+    console.log('ERROR retrieving log');
+    console.log(error);
+    if (error && error.jqXHR && error.jqXHR.responseJSON && error.jqXHR.responseJSON.displayMessage) {
+      this.get('controller').set('errorMessage', error.jqXHR.responseJSON.displayMessage);
+    } else {
+      this.get('controller').set('errorMessage', 'error retrieving log');
+    }
+  },
+
+  addNewEntries(controller, response) {
+    var newEntries, self = this, logType, existingEntries, processedLogEntry, newEntry, i,
       numSearchResults = controller.get('numSearchResults'),
-      processedLogEntries = controller.get('processedLogEntries'),
-      processedLogEntry, newEntry;
+      processedLogEntries = controller.get('processedLogEntries');
 
-    if (!response.log || !response.log.entries || response.log.entries.length === 0) {
-      return;
+    logType = controller.get('logType') || 'fusor_log';
+
+    if (!response[logType] || !response[logType].entries || response[logType].entries.length === 0) {
+      return 0;
     }
 
-    newEntries = response.log.entries;
-    firstDate = (newEntries.find(function(entry) { return !!entry.date_time; })).date_time;
+    newEntries = response[logType].entries;
+    existingEntries = controller.get(`model.${logType}.entries`);
 
-    dupIndex = existingEntries.length;
-    // Find the first dated entry previous to response
-    // and ignore undated entries
-    for (i = existingEntries.length - 1; i > 0; i--) {
-      tmpDateStr = existingEntries[i].date_time;
-      if (tmpDateStr >= firstDate) {
-        dupIndex = i;
-      }
-      if (tmpDateStr && tmpDateStr < firstDate) {
-        break;
-      }
-    }
-    // Replacing existingEntries duplicates with new entries
-    existingEntries.splice(dupIndex, existingEntries.length - dupIndex);
     newEntries.forEach(function(newEntry) { existingEntries.pushObject(newEntry); });
-
-    // Also remove duplicates from processed entries
-    dupIndex = processedLogEntries.length;
-    for (i = processedLogEntries.length - 1; i > 0; i--) {
-      tmpDateStr = processedLogEntries[i].get('date_time');
-      if (tmpDateStr >= firstDate) {
-        dupIndex = i;
-      }
-      if (tmpDateStr && tmpDateStr < firstDate) {
-        break;
-      }
-    }
-
-    for (i = processedLogEntries.length - 1 ; i >= dupIndex; i--) {
-      processedLogEntry = processedLogEntries.popObject();
-      numSearchResults -= processedLogEntry.get('numSearchResults');
-      numAdded--;
-    }
-    controller.set('numSearchResults', numSearchResults);
 
     //Add all the new processed entries
     for (i = 0; i < newEntries.length; i++) {
@@ -231,24 +222,23 @@ export default Ember.Route.extend({
         processedLogEntry = Ember.Object.create(newEntry);
         self.formatEntry(processedLogEntry);
         processedLogEntries.pushObject(processedLogEntry);
-        numAdded++;
       }
     }
 
-    return numAdded;
+    return newEntries.length;
   },
 
   isIncluded(entry) {
     var controller = this.get('controller');
 
     switch (entry.level) {
-      case 'E':
+      case 'error':
         return controller.get('errorChecked');
-      case 'W':
+      case 'warn':
         return controller.get('warnChecked');
-      case 'I':
+      case 'info':
         return controller.get('infoChecked');
-      case 'D':
+      case 'debug':
         return controller.get('debugChecked');
       default:
         return true;
@@ -259,23 +249,22 @@ export default Ember.Route.extend({
     var searchExp, formattedText, searchLogString,
       controller = this.get('controller'),
       numSearchResults = controller.get('numSearchResults'),
-      entryNumSearchResults = 0;
+      entryNumSearchResults = 0, entryClass;
 
     searchLogString = Ember.String.htmlSafe(controller.get('searchLogString'));
     formattedText = Ember.String.htmlSafe(entry.get('text')).toString();
+    entryClass = entry && entry.level ? `log-entry log-entry-level-${entry.level.toLowerCase()}` : 'log-entry';
 
-    if (!searchLogString) {
-      entry.set('formattedText', formattedText);
-      entry.set('numSearchResults', 0);
-      return;
+    if (searchLogString) {
+      searchExp = new RegExp(searchLogString, 'gi');
+      formattedText = formattedText.replace(searchExp, function (match) {
+        numSearchResults++;
+        entryNumSearchResults++;
+        return `<span class="log-entry-search-result log-entry-search-result-${numSearchResults}">${match}</span>`;
+      });
     }
 
-    searchExp = new RegExp(searchLogString, 'gi');
-    formattedText = formattedText.replace(searchExp, function(match) {
-      numSearchResults++;
-      entryNumSearchResults++;
-      return `<span class="log-entry-search-result log-entry-search-result-${numSearchResults}">${match}</span>`;
-    });
+    formattedText = `<p class="${entryClass}">${formattedText}</p>`;
 
     controller.set('numSearchResults', numSearchResults);
     entry.set('formattedText', formattedText);

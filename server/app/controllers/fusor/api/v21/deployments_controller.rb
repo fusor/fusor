@@ -74,15 +74,16 @@ module Fusor
     end
 
     def log
-      reader = Fusor::Logging::LogReader.new
-      log_path = ::Fusor.log_file_path(@deployment.name, @deployment.id)
+      log_type_param = params[:log_type] || 'fusor_log'
+      reader = create_log_reader(log_type_param)
+      log_path = get_log_path(log_type_param)
 
       if !File.exist? log_path
-        render :json => {log: nil}
-      elsif params[:date_time_gte]
-        render :json => {log: reader.tail_log_since(log_path, DateTime.iso8601(params[:date_time_gte]))}
+        render :json => {log_type_param => nil}
+      elsif params[:line_number_gt]
+        render :json => {log_type_param => reader.tail_log_since(log_path, (params[:line_number_gt]).to_i)}
       else
-        render :json => {log: reader.read_full_log(log_path)}
+        render :json => {log_type_param => reader.read_full_log(log_path)}
       end
     end
 
@@ -102,5 +103,33 @@ module Fusor
       true
     end
 
+    def create_log_reader(log_type_param)
+      case log_type_param
+        when 'fusor_log', 'foreman_log'
+          Fusor::Logging::RailsLogReader.new
+        when 'candlepin_log'
+          Fusor::Logging::JavaLogReader.new
+        when 'foreman_proxy_log'
+          Fusor::Logging::ProxyLogReader.new
+        else
+          Fusor::Logging::LogReader.new
+      end
+    end
+
+    def get_log_path(log_type_param)
+      dir = ::Fusor.log_file_dir(@deployment.name, @deployment.id)
+      case log_type_param
+        when 'messages_log'
+          File.join(dir, 'var/log/messages')
+        when 'candlepin_log'
+          File.join(dir, 'var/log/candlepin/candlepin.log')
+        when 'foreman_log'
+          File.join(dir, 'var/log/foreman/production.log')
+        when 'foreman_proxy_log'
+          File.join(dir, 'var/log/foreman-proxy/proxy.log')
+        else
+          ::Fusor.log_file_path(@deployment.name, @deployment.id)
+      end
+    end
   end
 end

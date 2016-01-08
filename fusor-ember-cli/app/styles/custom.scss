@@ -216,19 +216,19 @@ label.env_path_disabled:after {
   margin-bottom: 1px;
 }
 
-.log-entry-level-d {
+.log-entry-level-debug {
   color: $debug-color
 }
 
-.log-entry-level-i {
+.log-entry-level-info {
   color: $info-color
 }
 
-.log-entry-level-w {
+.log-entry-level-warn {
   color: $warning-color;
 }
 
-.log-entry-level-e {
+.log-entry-level-error {
   color: $error-color;
 }
 
@@ -255,6 +255,10 @@ label.env_path_disabled:after {
 
 .log-warning-icon {
   color: $warning-color;
+}
+
+.log-error-icon {
+  color: $error-color;
 }
 
 .log-updating-spinner {
