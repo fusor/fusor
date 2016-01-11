@@ -75,7 +75,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       }
     },
 
-    setIfHostnameValid(bool) {
+    setIfHostnameInvalid(bool) {
       this.set('isHostnameInvalid', bool);
     }
   }

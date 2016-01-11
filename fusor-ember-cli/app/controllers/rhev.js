@@ -6,6 +6,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   storageController: Ember.inject.controller('storage'),
   rhevSetupController: Ember.inject.controller('rhev-setup'),
   rhevOptionsController: Ember.inject.controller('rhev-options'),
+  engineDiscoveredHostController: Ember.inject.controller('engine/discovered-host'),
+  hypervisorDiscoveredHostController: Ember.inject.controller('hypervisor/discovered-host'),
 
   rhevSetup: Ember.computed.alias("rhevSetupController.rhevSetup"),
 
@@ -27,35 +29,66 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   hasEngine: Ember.computed.alias('deploymentController.hasEngine'),
   hasNoEngine: Ember.computed.not('hasEngine'),
 
-  hasHypervisor: Ember.computed('deploymentController.model.discovered_hosts.[]', function() {
-    return (this.get('deploymentController.model.discovered_hosts.length') > 0);
-  }),
+  hasHypervisor: Ember.computed(
+    'deploymentController.model.discovered_hosts.[]',
+    function() {
+      return (this.get('deploymentController.model.discovered_hosts.length') > 0);
+    }
+  ),
   hasNoHypervisor: Ember.computed.not('hasHypervisor'),
 
+  isEngineHostnameValid: Ember.computed.not('engineDiscoveredHostController.isHostnameInvalid'),
+  isHypervisorHostnameValid: Ember.computed.not('hypervisorDiscoveredHostController.isHostnameInvalid'),
+  
+
   disableTabRhevHypervisors: Ember.computed(
-    'deploymentController.model.rhev_is_self_hosted',
-    'hasNoEngine',
+    'isSelfHost',
+    'invalidRhevEngine',
     function() {
-      return (!this.get('deploymentController.model.rhev_is_self_hosted') && this.get('hasNoEngine'));
+      return (this.get('isSelfHost') || this.get('invalidRhevEngine'));
     }
   ),
 
   disableTabRhevConfiguration: Ember.computed(
-    'deploymentController.model.rhev_is_self_hosted',
-    'hasNoEngine',
-    'hasNoHypervisor',
+    'isSelfHost',
+    'validRhevEngine',
+    'invalidRhevHypervisor',
     function() {
-      return ((this.get('deploymentController.model.rhev_is_self_hosted') && this.get('hasNoEngine')) ||
-              (!this.get('deploymentController.model.rhev_is_self_hosted') && this.get('hasNoHypervisor'))
-             );
+      if (this.get('validRhevEngine')) {
+        return (!this.get('isSelfHost') && this.get('invalidRhevHypervisor'));
+      }
+      return true;
     }
   ),
 
-  disableTabRhevStorage: Ember.computed.alias('rhevOptionsController.disableNextRhevOptions'),
+  disableTabRhevStorage: Ember.computed(
+    'rhevOptionsController.disableNextRhevOptions',
+    'disableTabRhevConfiguration',
+    function() {
+      return (this.get('disableTabRhevConfiguration') || this.get('rhevOptionsController.disableNextRhevOptions'));
+    }
+  ),
 
   validRhevSetup: true,
-  validRhevEngine: Ember.computed.alias("hasEngine"),
-  validRhevHypervisor: Ember.computed.not("disableTabRhevConfiguration"),
+
+  validRhevEngine: Ember.computed(
+    'hasEngine',
+    'isEngineHostnameValid',
+    function() {
+      return (this.get('hasEngine') && this.get('isEngineHostnameValid'));
+    }
+  ),
+  invalidRhevEngine: Ember.computed.not('validRhevEngine'),
+
+  validRhevHypervisor: Ember.computed(
+    'hasHypervisor',
+    'isHypervisorHostnameValid',
+    function() {
+      return (this.get('hasHypervisor') && this.get('isHypervisorHostnameValid'));
+    }
+  ),
+  invalidRhevHypervisor: Ember.computed.not('validRhevHypervisor'),
+
   validRhevOptions: Ember.computed.alias("rhevOptionsController.validRhevOptions"),
   validRhevStorage: Ember.computed.alias("storageController.validRhevStorage"),
 
