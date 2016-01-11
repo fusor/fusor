@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import ValidationUtil from '../utils/validation-util';
 
 export default Ember.Component.extend({
 
@@ -41,10 +42,18 @@ export default Ember.Component.extend({
   }),
 
   invalidNetworkRange: Ember.computed('value', 'isNetworkRange', function() {
-      // TODO
-      return false;
+    let val = this.get('value');
+    if(this.get('isNetworkRange') && Ember.isPresent(val)) {
+      return !ValidationUtil.validateIpRange(val);
+    }
   }),
 
+  invalidCIDRNotation: Ember.computed('value', 'requiresCIDRNotation', function() {
+    let val = this.get('value');
+    if(this.get('requiresCIDRNotation') && Ember.isPresent(val)) {
+      return !ValidationUtil.validateCIDRFormat(val);
+    }
+  }),
 
   hasError: Ember.computed(
     'showValidationError',
@@ -56,25 +65,24 @@ export default Ember.Component.extend({
     'invalidIsAlphaNumeric',
     'invalidIsHostname',
     'invalidNetworkRange',
+    'invalidCIDRNotation',
     function() {
       return (this.get('showValidationError') &&
-              (Ember.isPresent(this.get('errors.name')) ||
+               (Ember.isPresent(this.get('errors.name')) ||
                this.get('doesntMatchPassword') ||
                this.get('passwordTooShort') ||
                this.get('validIsRequiredAndBlank') ||
                this.get('validIsUnique') ||
                this.get('invalidIsAlphaNumeric') ||
                this.get('invalidIsHostname') ||
-               this.get('invalidNetworkRange')
-              )
+               this.get('invalidNetworkRange') ||
+               this.get('invalidCIDRNotation'))
              );
     }
   ),
 
   setOrigValue: Ember.on('didInsertElement', function() {
-    console.log('didInsertElement');
     this.set('origValue', this.get('value'));
-    console.log(this.get('origValue'));
   }),
 
   validIsUnique: Ember.computed('uniqueValues', 'value', 'isUnique', function() {
