@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.author     = "Fusor team"
   s.email       = "fusor@example.com"
   s.homepage    = "https://github.com/fusor/fusor"
-  s.summary     = "Fusor installer"
-  s.description = "Fusor installer"
+  s.summary     = "Plugin engine that is the RHCI backend server code"
+  s.description = "Plugin engine that is the RHCI backend server code "
 
   s.files = Dir["{app,config,db,lib}/**/*"] + ["LICENSE", "Rakefile", "README.md"]
   s.files += Dir["config/fusor.yaml"]

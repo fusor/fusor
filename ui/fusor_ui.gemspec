@@ -7,8 +7,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Joseph Magen"]
   s.email       = ["jmagen@redhat.com"]
   s.homepage    = "http://github.com/fusor/fusor"
-  s.summary     = "Plugin to enable User Interface (UI) for Fusor installer"
-  s.description = ""
+  s.summary     = "Plugin engine to enable the User Interface (UI) for RHCI"
+  s.description = "Plugin engine to enable the User Interface (UI) for RHCI"
 
   s.files = Dir["{app,config,db,lib}/**/*"] + ["LICENSE", "Rakefile", "README.md"]
   s.test_files = Dir["test/**/*"]
