@@ -35,6 +35,10 @@ https://access.redhat.com/documentation/en-US/Red_Hat_Satellite/6.0/html/User_Gu
 
    ```sudo export.sh PATH_FOR_EXPORT``` # path will be created for you
 
+7.1) Fix the export to be consumable.
+
+   ```sudo fix-export.sh PATH_FOR_EXPORT``` # path created in step 7
+
 8) Once the content has been exported you can now sync it to the satellite.
    This will put all the content in /var/www/html/pub/sat-import/
 
