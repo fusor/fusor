@@ -29,6 +29,7 @@
                placeholder="192.0.3.0/24"
                help-inline="CIDR notation, 192.0.3.0/24"
                isNetworkRange=true
+               requiresCIDRNotation=true
                }}
 
       {{text-f label="Floating IP Network"
@@ -39,6 +40,7 @@
                placeholder="192.168.253.0/24"
                help-inline="CIDR notation, 192.168.253.0/24"
                isNetworkRange=true
+               requiresCIDRNotation=true
                }}
 
       {{text-f label="Floating IP Network Gateway"
@@ -46,6 +48,7 @@
                cssId="osp-float-gatewway"
                isRequired=true
                disabled=isStarted
+               isNetworkRange=true
                }}
 
       <br />
@@ -77,3 +80,4 @@
                    disableNext=disableNextOvercloud
                    disableCancel=isStarted
                    deploymentName=deploymentName}}
+

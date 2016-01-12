@@ -50,6 +50,12 @@
         </span>
     {{/if}}
 
+    {{#if invalidCIDRNotation}}
+        <span class="error errorForValidation">
+            invalid CIDR notation
+        </span>
+    {{/if}}
+
       <span class="error errorForValidation">
           {{errors.name}}
       </span>
