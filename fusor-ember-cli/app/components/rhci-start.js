@@ -2,6 +2,8 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
+  isDisabledCfme: true,
+
   setIsDisabledCfme: Ember.observer('isRhev', 'isOpenStack', function() {
     if (this.get('isRhev') || this.get('isOpenStack')) {
       return this.set('isDisabledCfme', false);
