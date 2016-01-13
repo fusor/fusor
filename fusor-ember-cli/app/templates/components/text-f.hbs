@@ -8,6 +8,12 @@
   {{/if}}
 
   {{#if showValidationError}}
+    {{#if erroneouslyContainsSpaces }}
+      <span class="error errorForValidation">
+        cannot contain spaces
+      </span>
+    {{/if}}
+
     {{#if validIsRequiredAndBlank}}
         <span class="error errorForValidation">
             cannot be blank
