@@ -34,9 +34,12 @@ export default Ember.Route.extend({
         controller.set('reviewSubscriptions', this.modelFor('subscriptions/review-subscriptions'));
     } else {
         var reviewSubscriptions = model.get('subscriptions').filter(function(sub) {
-            return (sub.get('quantity_to_add') && sub.get('source') == 'added');
+            return ((sub.get('quantity_to_add') > 0) && sub.get('source') == 'added');
         });
         controller.set('reviewSubscriptions', reviewSubscriptions);
+        controller.set('hasSubscriptionsToAttach', reviewSubscriptions.get('length') > 0);
+        controller.set('hasSessionPortal', Ember.isPresent(this.modelFor('subscriptions')));
+        controller.set('hasSubscriptionPools', Ember.isPresent(this.controllerFor('subscriptions/select-subscriptions').get('subscriptionPools')));
     }
 
     if (!model.get('isStarted')) {

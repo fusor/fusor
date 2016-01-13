@@ -11,6 +11,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   isSelfHost: Ember.computed.alias("rhevController.isSelfHost"),
   isDisconnected: Ember.computed.alias("deploymentController.isDisconnected"),
+  isNotDisconnected: Ember.computed.not("isDisconnected"),
   cdnUrl: Ember.computed.alias("model.cdn_url"),
   neutronPublicInterface: Ember.computed.alias("overcloudController.neutronPublicInterface"),
 
@@ -22,7 +23,19 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   }),
 
-  buttonDeployDisabled: Ember.computed.alias('deploymentController.isDisabledReview'),
+  isMissingSubscriptions: Ember.computed('isNotDisconnected',
+                                         'hasSubscriptionsToAttach',
+                                         'hasSessionPortal',
+                                         'hasSubscriptionPools', function() {
+    return (this.get('isNotDisconnected') && this.get('hasSubscriptionsToAttach') &&
+           (!this.get('hasSessionPortal') || !this.get('hasSubscriptionPools')));
+  }),
+
+  buttonDeployDisabled: Ember.computed('deploymentController.isDisabledReview',
+                                       'isMissingSubscriptions', function() {
+    return this.get('deploymentController.isDisabledReview') ||
+           this.get('isMissingSubscriptions');
+  }),
 
   showErrorMessage: false,
   errorMsg: null,
@@ -33,7 +46,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   showSpinner: false,
   spinnerTextMessage: null,
-  hasSubscriptionsToAttach: Ember.computed.alias("selectSubscriptionsController.hasSubscriptionsToAttach"),
 
   isRhevOpen: true,
   isOpenStackOpen: true,
@@ -133,10 +145,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   }),
 
   deploymentButtonAction: Ember.computed('hasSubscriptionsToAttach', function() {
-    if (this.get('hasSubscriptionsToAttach')) {
+    if (this.get('showWarningMessage')) {
+      return "showContinueDeployModal";
+    } else if (this.get('hasSubscriptionsToAttach')) {
       return "attachSubscriptions";
-    } else if (this.get('showWarningMessage')) {
-        return "showContinueDeployModal";
     } else {
       return "installDeployment";
     }
