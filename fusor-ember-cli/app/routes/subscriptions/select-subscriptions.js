@@ -52,6 +52,10 @@ export default Ember.Route.extend({
                                      'deployment': deployment
                                     });
                  sub.save();
+              } else {
+                // update quantity_attached is it may have changed since record was created
+                matchingSubscription.set('quantity_attached', pool.get('qtyAttached'));
+                matchingSubscription.save();
               }
 
           });

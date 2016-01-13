@@ -66,6 +66,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
                 self.get('model').addObject(newMgmtApp._internalModel);
                 self.get('sessionPortal').set('consumerUUID', response.uuid);
                 self.get('sessionPortal').save();
+                self.set('upstreamConsumerUuid', response.uuid);
+                self.set('upstreamConsumerName', response.name);
                 self.set('showAlertMessage', true);
                 self.set('showWaitingMessage', false);
                 console.log(response);

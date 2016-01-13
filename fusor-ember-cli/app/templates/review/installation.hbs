@@ -194,11 +194,15 @@
                                   value=sub.contract_number }}
                     {{review-link label=qtyLabel
                                   routeName='subscriptions.select-subscriptions'
-                                  value=sub.quantity_to_add }}
+                                  value=(if isMissingSubscriptions null sub.quantity_to_add)
+                                  isRequired=true
+                                  validationMessage="Need to re-enter"}}
                 {{else}}
                       {{review-link label='Quantity'
                                     routeName='subscriptions.select-subscriptions'
-                                    value="0 - no new subscriptions to attach" }}
+                                    value=(if isMissingSubscriptions null "0 - no new subscriptions to attach")
+                                    isRequired=true
+                                    validationMessage="Need to re-enter"}}
                 {{/each}}
 
             {{/accordion-item}}

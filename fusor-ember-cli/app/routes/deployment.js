@@ -92,7 +92,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
       var sessionPortal = this.modelFor('subscriptions');
       var consumerUUID = sessionPortal.get('consumerUUID');
-      var subscriptions = this.controllerFor('subscriptions/select-subscriptions').get('subscriptionPools');
+      var subscriptionPools = this.controllerFor('subscriptions/select-subscriptions').get('subscriptionPools');
 
       var controller = this.controllerFor('review/installation');
 
@@ -100,7 +100,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       controller.set('spinnerTextMessage', 'Attaching Subscriptions in Red Hat Customer Portal');
       controller.set('showSpinner', true);
 
-      subscriptions.forEach(function(item){
+      subscriptionPools.forEach(function(item){
         console.log(item);
         console.log('qtyToAttach is');
         console.log(item.get('qtyToAttach'));
@@ -109,10 +109,12 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
         console.log('isSelectedSubscription is');
         console.log(item.get('isSelectedSubscription'));
 
-        if (item.get('isSelectedSubscription')) {
+        if (item.get('qtyToAttach') > 0) {
 
           // POST /customer_portal/consumers/#{CONSUMER['uuid']}/entitlements?pool=#{POOL['id']}&quantity=#{QUANTITY}
           var url = '/customer_portal/consumers/' + consumerUUID + "/entitlements?pool=" + item.get('id') + "&quantity=" + item.get('qtyToAttach');
+          console.log('POST attach subscriptions using following URL');
+          console.log(url);
 
           request({
               url: url,
