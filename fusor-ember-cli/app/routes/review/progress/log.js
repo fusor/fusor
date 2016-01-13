@@ -5,16 +5,15 @@ export default Ember.Route.extend({
   // TODO
   // break out Polling Mixin into something we can use in any route
   // pull push all the formatting logic into the log-entry component
-  // convert any big loops to chunked async promise based loops
 
   model() {
-    return {
+    return Ember.Object.create({
       fusor_log: {path: ''},
       foreman_log: {path: ''},
       foreman_proxy_log: {path: ''},
       candlepin_log: {path: ''},
       messages_log: {path: ''}
-    };
+    });
   },
 
   setupController(controller, model) {
@@ -27,68 +26,127 @@ export default Ember.Route.extend({
   },
 
   actions: {
-    refreshProcessedLog() {
-      this.refreshProcessedLog();
+    updateDisplayedLog() {
+      this.updateDisplayedLog().then(() => {
+        this.get('controller').send('navNextSearchResult');
+      });
     },
 
-    formatLog() {
-      var self = this,
-        controller = this.get('controller'),
-        processedLogEntries = controller.get('processedLogEntries');
+    search() {
+      this.formatLog().then(() => {
+        this.get('controller').send('navNextSearchResult');
+      });
+    },
 
-      controller.set('searchResultIdx', 0);
-      controller.set('numSearchResults', 0);
-      for (var i = 0; i < processedLogEntries.length; i++) {
-        self.formatEntry(processedLogEntries[i]);
-      }
+    clearSearch() {
+      this.formatLog();
     },
 
     changeLogType() {
+      var logType = this.get('controller.logType') || 'fusor_log';
+
       this.stopPolling();
-      Ember.run.later(this, this.refreshProcessedLog);
-      Ember.run.later(this, this.initLog);
+      this.set('controller.displayedLog', this.get(`controller.model.${logType}`));
+
+      return Ember.RSVP.Promise.all([
+        this.updateDisplayedLog(),
+        this.initLog()
+      ]).then(() => {
+          this.get('controller').send('navNextSearchResult');
+        }
+      );
     }
   },
 
-  refreshProcessedLog() {
-    var self = this,
-      controller = this.get('controller'),
-      logType = controller.get('logType') || 'fusor_log',
-      processedLogEntries = [],
-      entries, entry, i;
+  formatLog() {
+    var controller = this.get('controller'),
+      displayedLogEntries = controller.get('displayedLogEntries'),
+      promises = [], idx = 0, chunksize = 200;
 
-    entries = controller.get(`model.${logType}.entries`);
+    controller.set('searchResultIdx', 0);
+    controller.set('numSearchResults', 0);
 
-    controller.set('isLogTooLarge', false);
+    while (idx < displayedLogEntries.length) {
+      promises.push(this.formatLogChunk(displayedLogEntries, idx, chunksize));
+      idx += chunksize;
+    }
+
+    return Ember.RSVP.Promise.all(promises);
+  },
+
+  formatLogChunk(displayedLogEntries, firstIndex, chunkSize) {
+    var max = Math.min(firstIndex + chunkSize, displayedLogEntries.length);
+
+    return new Promise((resolve, reject) => {
+      for (var i = firstIndex; i < max; i++) {
+          this.formatEntry(displayedLogEntries[i]);
+      }
+
+      resolve(true);
+    });
+  },
+
+  updateDisplayedLog() {
+    var logType = this.get('controller.logType') || 'fusor_log',
+      promises = [], displayedLogEntries = [],
+      entries, idx = 0, chunksize = 200;
+
+    this.set('controller.searchResultIdx', 0);
+    this.set('controller.numSearchResults', 0);
+    this.set('controller.logPath', this.get(`controller.model.${logType}.path`));
+    this.set('controller.displayedLogEntries', []);
+
+    entries = this.get(`controller.model.${logType}.entries`);
+
     if (entries) {
-      for (i = entries.length - 1; i >= 0; i--) {
-        entry = entries[i];
-        if (self.isIncluded(entry)) {
-          processedLogEntries.push(Ember.Object.create(entry));
-        }
+      while (idx < entries.length) {
+        promises.push(this.updateDisplayedLogChunk(logType, entries, idx, chunksize));
+        idx += chunksize;
       }
     }
 
-    // reverse and run search so results are ordered correctly
-    processedLogEntries = processedLogEntries.reverse();
-    controller.set('logPath', controller.get(`model.${logType}.path`));
-    controller.set('processedLogEntries', processedLogEntries);
-    this.send('formatLog');
+    return Ember.RSVP.Promise.all(promises);
+  },
+
+  updateDisplayedLogChunk(logType, allLogEntries, firstIndex, chunkSize) {
+    var max = Math.min(firstIndex + chunkSize, allLogEntries.length);
+    var controller = this.get('controller');
+
+    return new Promise((resolve, reject) => {
+      let displayedLogEntries = controller.get(`displayedLogEntries`);
+      let controllerLogType = controller.get('logType') || 'fusor_log';
+
+      if (controllerLogType !== logType) {
+        return reject('log type has changed');
+      }
+
+      for (var i = firstIndex; i < max; i++) {
+        let entry = allLogEntries[i];
+        if (this.isIncluded(entry)) {
+          this.formatEntry(entry);
+          displayedLogEntries.pushObject(entry);
+        }
+      }
+
+      resolve(true);
+    });
   },
 
   initLog() {
     var self = this,
-      deployment = self.modelFor('deployment'),
       controller = this.get('controller');
 
     self.set('pollingActive', true);
-    return Ember.RSVP.Promise.all([this.updateForemanTask(), this.updateLog()]).finally(function () {
-      if (self.get('pollingActive') && controller.get('deploymentInProgress')) {
-        self.startPolling();
-      } else {
-        self.set('pollingActive', false);
-      }
-    });
+    return Ember.RSVP.Promise.all([
+        this.updateForemanTask(),
+        this.updateLog()
+    ]).finally(function () {
+        if (self.get('pollingActive') && controller.get('deploymentInProgress')) {
+          self.startPolling();
+        } else {
+          self.set('pollingActive', false);
+        }
+      });
   },
 
   updateLog() {
@@ -104,10 +162,7 @@ export default Ember.Route.extend({
     params.line_number_gt = (entries[entries.length - 1]).line_number;
     return self.getJsonLog(params).then(
       function (response) {
-        var numAdded = self.addNewEntries(controller, response);
-        if (numAdded > 0) {
-          controller.send('scrollToEnd');
-        }
+        self.addNewEntries(controller, response);
       },
       function (error) {
         self.showError(error);
@@ -119,9 +174,9 @@ export default Ember.Route.extend({
       deployment = self.modelFor('deployment'),
       controller = this.get('controller');
     return this.store.findRecord('foreman-task', deployment.get('foreman_task_uuid')).then(
-      function (result) {
-        deployment.set('foreman_task', result);
-        controller.set('deploymentInProgress', result.get('progress') !== '1');
+      function (foremanTask) {
+        var deploymentInProgress = foremanTask.get('result') === 'pending' && foremanTask.get('progress') !== '1';
+        controller.set('deploymentInProgress',  deploymentInProgress);
       });
   },
 
@@ -155,10 +210,7 @@ export default Ember.Route.extend({
     return this.getJsonLog(params)
       .then(
         function (response) {
-          var model = controller.get('model');
-          controller.set(`model.${params.log_type}`, response[params.log_type]);
-          self.refreshProcessedLog();
-          controller.send('scrollToEnd');
+          self.loadLog(params.log_type, response);
         },
         function (error) {
           self.showError(error);
@@ -166,6 +218,49 @@ export default Ember.Route.extend({
       .finally(function () {
         controller.set('isLoading', false);
       });
+  },
+
+  loadLog(logType, response) {
+    var promises = [], displayedLogEntries = [], idx = 0, chunksize = 200,
+      responseLog = response[logType];
+
+    this.set('controller.searchResultIdx', 0);
+    this.set('controller.numSearchResults', 0);
+    this.set(`controller.model.${logType}.path`, responseLog.path);
+    this.set(`controller.model.${logType}.entries`, []);
+    this.set('controller.logPath', responseLog.path);
+    this.set('controller.displayedLogEntries', []);
+
+    while (idx < responseLog.entries.length) {
+      promises.push(this.loadLogChunk(logType, responseLog.entries, idx, chunksize));
+      idx += chunksize;
+    }
+
+    return Ember.RSVP.Promise.all(promises).then(() => {
+      this.get('controller').send('scrollToEnd');
+    });
+  },
+
+  loadLogChunk(logType, responseEntries, firstIndex, chunkSize) {
+    var max = Math.min(firstIndex + chunkSize, responseEntries.length);
+    var controller = this.get('controller');
+    var entries = this.get(`controller.model.${logType}.entries`);
+    var displayedLogEntries = this.get(`controller.displayedLogEntries`);
+
+    return new Promise((resolve, reject) => {
+      let controllerLogType = controller.get('logType') || 'fusor_log';
+
+      for (var i = firstIndex; i < max; i++) {
+        let entryObject = Ember.Object.create(responseEntries[i]);
+        entries.pushObject(entryObject);
+        if (controllerLogType === logType && this.isIncluded(entryObject)) {
+          this.formatEntry(entryObject);
+          displayedLogEntries.pushObject(entryObject);
+        }
+      }
+
+      resolve(true);
+    });
   },
 
   getJsonLog(params) {
@@ -200,9 +295,7 @@ export default Ember.Route.extend({
   },
 
   addNewEntries(controller, response) {
-    var newEntries, self = this, logType, existingEntries, processedLogEntry, newEntry, i,
-      numSearchResults = controller.get('numSearchResults'),
-      processedLogEntries = controller.get('processedLogEntries');
+    var newEntries, logType, existingEntries, promises = [], idx = 0, chunksize = 200;
 
     logType = controller.get('logType') || 'fusor_log';
 
@@ -213,25 +306,22 @@ export default Ember.Route.extend({
     newEntries = response[logType].entries;
     existingEntries = controller.get(`model.${logType}.entries`);
 
-    newEntries.forEach(function(newEntry) { existingEntries.pushObject(newEntry); });
-
-    //Add all the new processed entries
-    for (i = 0; i < newEntries.length; i++) {
-      newEntry = newEntries[i];
-      if (self.isIncluded(newEntry)) {
-        processedLogEntry = Ember.Object.create(newEntry);
-        self.formatEntry(processedLogEntry);
-        processedLogEntries.pushObject(processedLogEntry);
-      }
+    while (idx < newEntries.length) {
+      promises.push(this.loadLogChunk(logType, newEntries, idx, chunksize));
+      idx += chunksize;
     }
 
-    return newEntries.length;
+    return Ember.RSVP.Promise.all(promises).then(() => {
+      if (newEntries.length > 0) {
+        this.get('controller').send('scrollToEnd');
+      }
+    });
   },
 
   isIncluded(entry) {
     var controller = this.get('controller');
 
-    switch (entry.level) {
+    switch (entry.get('level')) {
       case 'error':
         return controller.get('errorChecked');
       case 'warn':
@@ -251,8 +341,8 @@ export default Ember.Route.extend({
       numSearchResults = controller.get('numSearchResults'),
       entryNumSearchResults = 0, entryClass;
 
-    searchLogString = Ember.String.htmlSafe(controller.get('searchLogString'));
-    formattedText = Ember.String.htmlSafe(entry.get('text')).toString();
+    searchLogString = controller.get('searchLogString');
+    formattedText = entry.get('text');
     entryClass = entry && entry.level ? `log-entry log-entry-level-${entry.level.toLowerCase()}` : 'log-entry';
 
     if (searchLogString) {
@@ -267,7 +357,7 @@ export default Ember.Route.extend({
     formattedText = `<p class="${entryClass}">${formattedText}</p>`;
 
     controller.set('numSearchResults', numSearchResults);
-    entry.set('formattedText', formattedText);
+    entry.set('formattedText', Ember.String.htmlSafe(formattedText));
     entry.set('numSearchResults', entryNumSearchResults);
   }
 });

@@ -25,10 +25,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return !this.get('errorMessage') && !this.get('isLoading') && this.get('deploymentInProgress');
   }),
 
-  showLogTruncated: Ember.computed('errorMessage', 'isLoading', 'processedLogEntries.[]', function () {
-    var processedLogEntries = this.get('processedLogEntries');
+  showLogTruncated: Ember.computed('errorMessage', 'isLoading', 'displayedLogEntries.[]', function () {
+    var displayedLogEntries = this.get('displayedLogEntries');
     return !this.get('errorMessage') && !this.get('isLoading') &&
-      processedLogEntries && processedLogEntries[0] && processedLogEntries[0].get('line_number') !== 1;
+      displayedLogEntries && displayedLogEntries[0] && displayedLogEntries[0].get('line_number') !== 1;
   }),
 
   showLogEmpty: Ember.computed('errorMessage', 'isLoading', 'logType',
@@ -42,7 +42,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }),
 
   logOptionsChanged: Ember.observer('errorChecked', 'warnChecked', 'infoChecked', 'debugChecked', function () {
-    Ember.run.once(this, 'refreshProcessedLog');
+    Ember.run.once(this, () => this.send('updateDisplayedLog'));
   }),
 
   isSearchActive:Ember.computed('searchLogString', function() {
@@ -51,7 +51,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   logTypeChanged: function() {
     var self = this;
-    self.set('processedLogEntries', []);
+    self.set('displayedLogEntries', []);
     self.send('changeLogType');
   }.observes('logType'),
 
@@ -68,13 +68,13 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     search() {
       this.set('scrollToEndChecked', false);
       this.set('searchLogString', this.get('searchLogInputValue'));
-      this.formatLog();
+      return true; //bubble anc execute route action
     },
 
     clearSearch() {
       this.set('searchLogInputValue', null);
       this.set('searchLogString', null);
-      this.formatLog();
+      return true; //bubble anc execute route action
     },
 
     navPreviousSearchResult() {
@@ -93,18 +93,12 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   },
 
-  refreshProcessedLog: function() {
-    this.send('refreshProcessedLog');
-    if (this.get('isSearchActive')) {
-      Ember.run.later(this, () => this.send('navNextSearchResult'));
-    }
-  },
-
   navSearchResult(idxChange) {
     var numSearchResults = this.get('numSearchResults'),
-      searchResultIdx = this.get('searchResultIdx');
+      searchResultIdx = this.get('searchResultIdx'),
+      isSearchActive = this.get('isSearchActive');
 
-    if (numSearchResults === 0) {
+    if (!isSearchActive || numSearchResults === 0) {
       return;
     }
 

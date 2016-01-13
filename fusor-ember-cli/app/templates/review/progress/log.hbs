@@ -65,9 +65,9 @@
         <p class="log-top-message">No data in the log file yet, there should be something to see in a few minutes.</p>
       {{/if}}
       {{#if showLogTruncated}}
-        <p class="log-top-message"><i class="fa fa-2x fa-exclamation-triangle log-warning-icon"></i> Very large log file.  Only the last {{processedLogEntries.length}} lines shown</p>
+        <p class="log-top-message"><i class="fa fa-2x fa-exclamation-triangle log-warning-icon"></i> Very large log file.  Only the last {{displayedLog.entries.length}} lines shown</p>
       {{/if}}
-      {{#each processedLogEntries as |entry|}}
+      {{#each displayedLogEntries as |entry|}}
         {{{entry.formattedText}}}
       {{/each}}
       {{#if errorMessage}}
