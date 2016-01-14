@@ -67,9 +67,12 @@
       {{#if showLogTruncated}}
         <p class="log-top-message"><i class="fa fa-2x fa-exclamation-triangle log-warning-icon"></i> Very large log file.  Only the last {{displayedLog.entries.length}} lines shown</p>
       {{/if}}
-      {{#each displayedLogEntries as |entry|}}
-        {{{entry.formattedText}}}
+
+      {{{displayedLogHtml}}}
+      {{#each newEntries as |newEntry|}}
+        {{{newEntry}}}
       {{/each}}
+
       {{#if errorMessage}}
         <p class="log-bottom-message"><i class="fa fa-2x fa-exclamation-triangle log-error-icon"></i> {{errorMessage}}</p>
       {{/if}}

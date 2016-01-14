@@ -25,12 +25,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return !this.get('errorMessage') && !this.get('isLoading') && this.get('deploymentInProgress');
   }),
 
-  showLogTruncated: Ember.computed('errorMessage', 'isLoading', 'displayedLogEntries.[]', function () {
-    var displayedLogEntries = this.get('displayedLogEntries');
-    return !this.get('errorMessage') && !this.get('isLoading') &&
-      displayedLogEntries && displayedLogEntries[0] && displayedLogEntries[0].get('line_number') !== 1;
-  }),
-
   showLogEmpty: Ember.computed('errorMessage', 'isLoading', 'logType',
     'model.fusor_log.entries.[]',  'model.foreman_log.entries.[]', 'model.foreman_proxy_log.entries.[]',
     'model.candlepin_log.entries.[]', 'model.messages_log.entries.[]',
@@ -50,9 +44,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   }),
 
   logTypeChanged: function() {
-    var self = this;
-    self.set('displayedLogEntries', []);
-    self.send('changeLogType');
+    this.set('displayedLogHtml', '');
+    this.set('newEntries', []);
+    // run later to allow the dropdown to close and log to clear before doing the real work
+    Ember.run.later(this, () => { this.send('changeLogType'); });
   }.observes('logType'),
 
   actions: {
@@ -83,13 +78,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
     navNextSearchResult() {
       this.navSearchResult(1);
-    }
-  },
-
-  formatLog: function() {
-    this.send('formatLog');
-    if (this.get('isSearchActive')) {
-      Ember.run.later(this, () => this.send('navNextSearchResult'));
     }
   },
 

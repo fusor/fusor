@@ -14,7 +14,7 @@ module Fusor
   module Logging
     class LogReader
 
-      MAX_NUM_LINES = 10_000
+      MAX_NUM_LINES = 40_000
 
       def read_full_log(path)
         num_lines = get_num_lines(path)

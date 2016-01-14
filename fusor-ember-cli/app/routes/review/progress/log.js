@@ -2,10 +2,6 @@ import Ember from 'ember';
 import request from 'ic-ajax';
 
 export default Ember.Route.extend({
-  // TODO
-  // break out Polling Mixin into something we can use in any route
-  // pull push all the formatting logic into the log-entry component
-
   model() {
     return Ember.Object.create({
       fusor_log: {path: ''},
@@ -28,18 +24,18 @@ export default Ember.Route.extend({
   actions: {
     updateDisplayedLog() {
       this.updateDisplayedLog().then(() => {
-        this.get('controller').send('navNextSearchResult');
+        this.navNextSearchResult();
       });
     },
 
     search() {
-      this.formatLog().then(() => {
-        this.get('controller').send('navNextSearchResult');
+      this.updateDisplayedLog().then(() => {
+        this.navNextSearchResult();
       });
     },
 
     clearSearch() {
-      this.formatLog();
+      this.updateDisplayedLog();
     },
 
     changeLogType() {
@@ -52,60 +48,37 @@ export default Ember.Route.extend({
         this.updateDisplayedLog(),
         this.initLog()
       ]).then(() => {
-          this.get('controller').send('navNextSearchResult');
+          this.navNextSearchResult();
         }
       );
     }
   },
 
-  formatLog() {
-    var controller = this.get('controller'),
-      displayedLogEntries = controller.get('displayedLogEntries'),
-      promises = [], idx = 0, chunksize = 200;
-
-    controller.set('searchResultIdx', 0);
-    controller.set('numSearchResults', 0);
-
-    while (idx < displayedLogEntries.length) {
-      promises.push(this.formatLogChunk(displayedLogEntries, idx, chunksize));
-      idx += chunksize;
-    }
-
-    return Ember.RSVP.Promise.all(promises);
-  },
-
-  formatLogChunk(displayedLogEntries, firstIndex, chunkSize) {
-    var max = Math.min(firstIndex + chunkSize, displayedLogEntries.length);
-
-    return new Promise((resolve, reject) => {
-      for (var i = firstIndex; i < max; i++) {
-          this.formatEntry(displayedLogEntries[i]);
-      }
-
-      resolve(true);
-    });
-  },
-
   updateDisplayedLog() {
     var logType = this.get('controller.logType') || 'fusor_log',
-      promises = [], displayedLogEntries = [],
-      entries, idx = 0, chunksize = 200;
+      promises = [], entries, idx = 0, chunksize = 200, showLogTruncated;
 
     this.set('controller.searchResultIdx', 0);
     this.set('controller.numSearchResults', 0);
     this.set('controller.logPath', this.get(`controller.model.${logType}.path`));
-    this.set('controller.displayedLogEntries', []);
+    this.set('controller.displayedLogHtml', '');
+    this.set('controller.newEntries', []);
 
     entries = this.get(`controller.model.${logType}.entries`);
 
     if (entries) {
+      showLogTruncated = entries[0] && entries[0].get('line_number') > 1;
+      this.set('controller.showLogTruncated', showLogTruncated);
+
       while (idx < entries.length) {
         promises.push(this.updateDisplayedLogChunk(logType, entries, idx, chunksize));
         idx += chunksize;
       }
     }
 
-    return Ember.RSVP.Promise.all(promises);
+    return Ember.RSVP.Promise.all(promises).then((values) => {
+      this.set('controller.displayedLogHtml', Ember.String.htmlSafe(values.join('')));
+    });
   },
 
   updateDisplayedLogChunk(logType, allLogEntries, firstIndex, chunkSize) {
@@ -113,7 +86,8 @@ export default Ember.Route.extend({
     var controller = this.get('controller');
 
     return new Promise((resolve, reject) => {
-      let displayedLogEntries = controller.get(`displayedLogEntries`);
+      let displayedLogHtml = this.get('controller.displayedLogHtml') || '';
+      let displayedLogEntries = [];
       let controllerLogType = controller.get('logType') || 'fusor_log';
 
       if (controllerLogType !== logType) {
@@ -123,12 +97,11 @@ export default Ember.Route.extend({
       for (var i = firstIndex; i < max; i++) {
         let entry = allLogEntries[i];
         if (this.isIncluded(entry)) {
-          this.formatEntry(entry);
-          displayedLogEntries.pushObject(entry);
+          displayedLogEntries.push(this.getHtml(entry));
         }
       }
 
-      resolve(true);
+      resolve(displayedLogEntries.join(''));
     });
   },
 
@@ -200,7 +173,10 @@ export default Ember.Route.extend({
   },
 
   pollingAction() {
-    return Ember.RSVP.Promise.all([this.updateLog(), this.updateForemanTask()]);
+    return Ember.RSVP.Promise.all([
+      this.updateLog(),
+      this.updateForemanTask()
+    ]);
   },
 
   getFullLog(params) {
@@ -221,7 +197,7 @@ export default Ember.Route.extend({
   },
 
   loadLog(logType, response) {
-    var promises = [], displayedLogEntries = [], idx = 0, chunksize = 200,
+    var promises = [], idx = 0, chunksize = 200, showLogTruncated,
       responseLog = response[logType];
 
     this.set('controller.searchResultIdx', 0);
@@ -229,15 +205,20 @@ export default Ember.Route.extend({
     this.set(`controller.model.${logType}.path`, responseLog.path);
     this.set(`controller.model.${logType}.entries`, []);
     this.set('controller.logPath', responseLog.path);
-    this.set('controller.displayedLogEntries', []);
+    this.set('controller.displayedLogHtml', '');
+    this.set('controller.newEntries', []);
+
+    showLogTruncated = responseLog.entries[0] && responseLog.entries[0].line_number > 1;
+    this.set('controller.showLogTruncated', showLogTruncated);
 
     while (idx < responseLog.entries.length) {
       promises.push(this.loadLogChunk(logType, responseLog.entries, idx, chunksize));
       idx += chunksize;
     }
 
-    return Ember.RSVP.Promise.all(promises).then(() => {
-      this.get('controller').send('scrollToEnd');
+    return Ember.RSVP.Promise.all(promises).then((values) => {
+      this.set('controller.displayedLogHtml', Ember.String.htmlSafe(values.join('')));
+      this.scrollToEnd();
     });
   },
 
@@ -245,7 +226,8 @@ export default Ember.Route.extend({
     var max = Math.min(firstIndex + chunkSize, responseEntries.length);
     var controller = this.get('controller');
     var entries = this.get(`controller.model.${logType}.entries`);
-    var displayedLogEntries = this.get(`controller.displayedLogEntries`);
+    var displayedLogHtml = this.get('controller.displayedLogHtml') || '';
+    var displayedLogEntries = [];
 
     return new Promise((resolve, reject) => {
       let controllerLogType = controller.get('logType') || 'fusor_log';
@@ -254,12 +236,11 @@ export default Ember.Route.extend({
         let entryObject = Ember.Object.create(responseEntries[i]);
         entries.pushObject(entryObject);
         if (controllerLogType === logType && this.isIncluded(entryObject)) {
-          this.formatEntry(entryObject);
-          displayedLogEntries.pushObject(entryObject);
+          displayedLogEntries.push(this.getHtml(entryObject));
         }
       }
 
-      resolve(true);
+      resolve(displayedLogEntries.join(''));
     });
   },
 
@@ -295,7 +276,7 @@ export default Ember.Route.extend({
   },
 
   addNewEntries(controller, response) {
-    var newEntries, logType, existingEntries, promises = [], idx = 0, chunksize = 200;
+    var newEntries, logType, promises = [], idx = 0, chunksize = 200;
 
     logType = controller.get('logType') || 'fusor_log';
 
@@ -304,16 +285,20 @@ export default Ember.Route.extend({
     }
 
     newEntries = response[logType].entries;
-    existingEntries = controller.get(`model.${logType}.entries`);
 
     while (idx < newEntries.length) {
       promises.push(this.loadLogChunk(logType, newEntries, idx, chunksize));
       idx += chunksize;
     }
 
-    return Ember.RSVP.Promise.all(promises).then(() => {
+    return Ember.RSVP.Promise.all(promises).then((values) => {
+      // concatenating the values to a very large displayedLogHtml hung the UI
+      // so we'll add to a list of new entries and display those separately in the
+      // template until the next refresh
+      this.get('controller.newEntries').pushObject(values.join(''));
+
       if (newEntries.length > 0) {
-        this.get('controller').send('scrollToEnd');
+        this.scrollToEnd();
       }
     });
   },
@@ -335,7 +320,7 @@ export default Ember.Route.extend({
     }
   },
 
-  formatEntry(entry) {
+  getHtml(entry) {
     var searchExp, formattedText, searchLogString,
       controller = this.get('controller'),
       numSearchResults = controller.get('numSearchResults'),
@@ -357,7 +342,15 @@ export default Ember.Route.extend({
     formattedText = `<p class="${entryClass}">${formattedText}</p>`;
 
     controller.set('numSearchResults', numSearchResults);
-    entry.set('formattedText', Ember.String.htmlSafe(formattedText));
     entry.set('numSearchResults', entryNumSearchResults);
+    return formattedText;
+  },
+
+  navNextSearchResult() {
+    Ember.run.later(this, () => { this.get('controller').send('navNextSearchResult'); });
+  },
+
+  scrollToEnd() {
+    Ember.run.later(this, () => { this.get('controller').send('scrollToEnd'); });
   }
 });
