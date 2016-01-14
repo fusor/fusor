@@ -19,7 +19,7 @@
               <label for="log-search-input" class="sr-only">Search Log Input</label>
               {{input id="log-search-input" type="text" class="form-control log-search-input" placeholder="Search" value=searchLogInputValue}}
               {{#if isSearchActive}}
-                <span class="log-search-result-counter inside-log-search-input">{{searchResultIdx}} of {{numSearchResults}}</span>
+                <span class="log-search-result-counter inside-log-search-input">{{searchResultIdx}} of {{searchResults.length}}</span>
                 <button type="button" class="clear btn btn-log-result-up" aria-hidden="true" {{action 'navPreviousSearchResult'}}><span class="fa fa-angle-up inside-log-search-input"></span></button>
                 <button type="button" class="clear btn btn-log-result-down" aria-hidden="true" {{action 'navNextSearchResult'}}><span class="fa fa-angle-down inside-log-search-input"></span></button>
                 <button type="button" class="clear btn" aria-hidden="true" {{action 'clearSearch'}}><span class="pficon pficon-close"></span></button>

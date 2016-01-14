@@ -82,21 +82,21 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   },
 
   navSearchResult(idxChange) {
-    var numSearchResults = this.get('numSearchResults'),
+    var searchResults = this.get('searchResults'),
       searchResultIdx = this.get('searchResultIdx'),
       isSearchActive = this.get('isSearchActive');
 
-    if (!isSearchActive || numSearchResults === 0) {
+    if (!isSearchActive || searchResults.length === 0) {
       return;
     }
 
     searchResultIdx += idxChange;
-    if (searchResultIdx > numSearchResults) {
+    if (searchResultIdx > searchResults.length) {
       searchResultIdx = 1;
     }
 
     if (searchResultIdx < 1) {
-      searchResultIdx = numSearchResults;
+      searchResultIdx = searchResults.length;
     }
 
     this.set('searchResultIdx', searchResultIdx);
@@ -104,13 +104,20 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   },
 
   markAndScrollToSearchResult(showAtTop) {
-    var searchResultIdx = this.get('searchResultIdx'),
-     currentlySelected = Ember.$('.log-entry-search-selected'),
-     searchResult = Ember.$(`.log-entry-search-result-${searchResultIdx}`);
+    var searchResults = this.get('searchResults'),
+     searchResultIdx = this.get('searchResultIdx'),
+      currentlySelected, searchResult, searchTag;
+
+     searchTag = searchResults[searchResultIdx - 1];
+     currentlySelected = Ember.$('.log-entry-search-selected');
+     searchResult = Ember.$(`.${searchTag.cssClass}`);
 
     this.set('scrollToEndChecked', false);
     currentlySelected.removeClass('log-entry-search-selected');
-    searchResult.addClass('log-entry-search-selected');
-    searchResult[0].scrollIntoView(showAtTop);
+
+    if (searchResult && searchResult[0]) {
+      searchResult.addClass('log-entry-search-selected');
+      searchResult[0].scrollIntoView(showAtTop);
+    }
   }
 });

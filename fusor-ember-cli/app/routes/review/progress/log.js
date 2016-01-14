@@ -23,15 +23,11 @@ export default Ember.Route.extend({
 
   actions: {
     updateDisplayedLog() {
-      this.updateDisplayedLog().then(() => {
-        this.navNextSearchResult();
-      });
+      this.updateDisplayedLog().then(() => this.navNextSearchResult());
     },
 
     search() {
-      this.updateDisplayedLog().then(() => {
-        this.navNextSearchResult();
-      });
+      this.updateDisplayedLog().then(() => this.navNextSearchResult());
     },
 
     clearSearch() {
@@ -44,13 +40,9 @@ export default Ember.Route.extend({
       this.stopPolling();
       this.set('controller.displayedLog', this.get(`controller.model.${logType}`));
 
-      return Ember.RSVP.Promise.all([
-        this.updateDisplayedLog(),
-        this.initLog()
-      ]).then(() => {
-          this.navNextSearchResult();
-        }
-      );
+      this.updateDisplayedLog()
+        .then(() => this.initLog())
+        .then(() => this.navNextSearchResult());
     }
   },
 
@@ -59,7 +51,7 @@ export default Ember.Route.extend({
       promises = [], entries, idx = 0, chunksize = 200, showLogTruncated;
 
     this.set('controller.searchResultIdx', 0);
-    this.set('controller.numSearchResults', 0);
+    this.set('controller.searchResults', []);
     this.set('controller.logPath', this.get(`controller.model.${logType}.path`));
     this.set('controller.displayedLogHtml', '');
     this.set('controller.newEntries', []);
@@ -77,6 +69,7 @@ export default Ember.Route.extend({
     }
 
     return Ember.RSVP.Promise.all(promises).then((values) => {
+      this.sortSearchResults();
       this.set('controller.displayedLogHtml', Ember.String.htmlSafe(values.join('')));
     });
   },
@@ -106,14 +99,13 @@ export default Ember.Route.extend({
   },
 
   initLog() {
-    var self = this,
-      controller = this.get('controller');
+    var self = this, controller = self.get('controller');
 
     self.set('pollingActive', true);
     return Ember.RSVP.Promise.all([
-        this.updateForemanTask(),
-        this.updateLog()
-    ]).finally(function () {
+      self.updateForemanTask(),
+      self.updateLog()
+    ]).then(function () {
         if (self.get('pollingActive') && controller.get('deploymentInProgress')) {
           self.startPolling();
         } else {
@@ -173,18 +165,14 @@ export default Ember.Route.extend({
   },
 
   pollingAction() {
-    return Ember.RSVP.Promise.all([
-      this.updateLog(),
-      this.updateForemanTask()
-    ]);
+      this.updateLog().then(() => this.updateForemanTask());
   },
 
   getFullLog(params) {
     var self = this, controller = this.get('controller');
 
     controller.set('isLoading', true);
-    return this.getJsonLog(params)
-      .then(
+    return this.getJsonLog(params).then(
         function (response) {
           self.loadLog(params.log_type, response);
         },
@@ -201,7 +189,7 @@ export default Ember.Route.extend({
       responseLog = response[logType];
 
     this.set('controller.searchResultIdx', 0);
-    this.set('controller.numSearchResults', 0);
+    this.set('controller.searchResults', []);
     this.set(`controller.model.${logType}.path`, responseLog.path);
     this.set(`controller.model.${logType}.entries`, []);
     this.set('controller.logPath', responseLog.path);
@@ -217,6 +205,7 @@ export default Ember.Route.extend({
     }
 
     return Ember.RSVP.Promise.all(promises).then((values) => {
+      this.sortSearchResults();
       this.set('controller.displayedLogHtml', Ember.String.htmlSafe(values.join('')));
       this.scrollToEnd();
     });
@@ -296,7 +285,7 @@ export default Ember.Route.extend({
       // so we'll add to a list of new entries and display those separately in the
       // template until the next refresh
       this.get('controller.newEntries').pushObject(values.join(''));
-
+      this.sortSearchResults();
       if (newEntries.length > 0) {
         this.scrollToEnd();
       }
@@ -323,7 +312,7 @@ export default Ember.Route.extend({
   getHtml(entry) {
     var searchExp, formattedText, searchLogString,
       controller = this.get('controller'),
-      numSearchResults = controller.get('numSearchResults'),
+      searchResults = controller.get('searchResults'),
       entryNumSearchResults = 0, entryClass;
 
     searchLogString = controller.get('searchLogString');
@@ -333,17 +322,37 @@ export default Ember.Route.extend({
     if (searchLogString) {
       searchExp = new RegExp(searchLogString, 'gi');
       formattedText = formattedText.replace(searchExp, function (match) {
-        numSearchResults++;
+        let uniqueIdx = {
+          line: entry.line_number,
+          idx: entryNumSearchResults,
+          cssClass: `log-entry-search-result-${entry.line_number}-${entryNumSearchResults}`
+        };
         entryNumSearchResults++;
-        return `<span class="log-entry-search-result log-entry-search-result-${numSearchResults}">${match}</span>`;
+        searchResults.pushObject(uniqueIdx);
+        return `<span class="log-entry-search-result ${uniqueIdx.cssClass}">${match}</span>`;
       });
     }
 
     formattedText = `<p class="${entryClass}">${formattedText}</p>`;
-
-    controller.set('numSearchResults', numSearchResults);
-    entry.set('numSearchResults', entryNumSearchResults);
     return formattedText;
+  },
+
+  sortSearchResults() {
+    var searchResults = this.get('controller.searchResults');
+
+    if (!searchResults) {
+      return;
+    }
+
+    searchResults.sort((resultA, resultB) => {
+      var cmp = resultA.line - resultB.line;
+
+      if (cmp !== 0) {
+        return cmp;
+      }
+
+      return resultA.idx - resultB.idx;
+    });
   },
 
   navNextSearchResult() {
