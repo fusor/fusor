@@ -44,6 +44,18 @@ let invalidFullFormat = [
   '192.168/32.153.0/255',
 ];
 
+let validMgmtAppName = [
+  'GoodName',
+  'Test_Symbols',
+  '_Even.This-Is_Successful-'
+];
+
+let invalidMgmtAppName = [
+  'Invalid*Symbols',
+  'This$Wont()Work',
+  'Garbage()^&'
+];
+
 module('Unit | Utility | validation util');
 
 test('validateIpRange accepts valid ranges', function(assert) {
@@ -75,3 +87,14 @@ test('validateIpRangeAndFormat rejects bad values', function(assert) {
   assert.expect(invalidFullFormat.length);
   invalidFullFormat.map((val) => assert.notOk(vu.validateIpRangeAndFormat(val)));
 });
+
+test('validateMgmtAppName accepts valid names', function(assert) {
+  assert.expect(validMgmtAppName.length);
+  validMgmtAppName.map((val) => assert.ok(vu.validateMgmtAppName(val)));
+});
+
+test('validateMgmtAppName rejects invalid names', function(assert) {
+  assert.expect(invalidMgmtAppName.length);
+  invalidMgmtAppName.map((val) => assert.notOk(vu.validateMgmtAppName(val)));
+});
+
