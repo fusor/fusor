@@ -16,6 +16,19 @@
       {{loading-spinner show=true text=msgWaiting}}
 {{/if}}
 
+{{#if showErrorMessage}}
+  <div class="row">
+    <div class='col-md-9'>
+      <div class='alert alert-danger rhci-alert'>
+          <i class="fa fa-2x fa-exclamation-triangle errorForValidation"></i>
+          &nbsp;
+          {{errorMsg}}
+      </div>
+    </div>
+  </div>
+{{/if}}
+
+
 <div class="row">
   <div class='col-md-9'>
     <div class='pull-right'>

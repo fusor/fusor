@@ -13,6 +13,8 @@ let ipRangeRegex = new RegExp([
 
 let CIDRFormatRegex = /\/(3[0-2]|[1-2]?[0-9])$/;
 
+let mgmtAppNameRegex = new RegExp(/^([a-zA-Z0-9\-\.\_]*)$/);
+
 let ValidationUtil = {
   validateIpRange(testString) {
     return ipRangeRegex.test(testString.trim());
@@ -23,6 +25,9 @@ let ValidationUtil = {
   validateIpRangeAndFormat(testString) {
     return this.validateIpRange(testString) &&
       this.validateCIDRFormat(testString);
+  },
+  validateMgmtAppName(testString) {
+    return mgmtAppNameRegex.test(testString.trim());
   }
 };
 
