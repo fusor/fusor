@@ -63,6 +63,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymen
         self.get('lifecycleEnvironments').addObject(result._internalModel);
         self.set('selectedEnvironment', environment);
         self.get('deploymentNewController.model').set('lifecycle_environment', environment);
+        self.get('deploymentNewController').set('errorMsg', null);
         return self.set('showAlertMessage', true);
       }, function(error) {
         self.get('deploymentNewController').set('errorMsg', 'error saving environment' + error);
