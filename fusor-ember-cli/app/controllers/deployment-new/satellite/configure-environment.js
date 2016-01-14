@@ -33,8 +33,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymen
     },
 
     newEnvironment() {
-      this.set('name', '');
-      this.set('label', '');
+      this.set('newEnvName', '');
       this.set('description', '');
       this.set('openNewEnvironmentModal', true);
     },
