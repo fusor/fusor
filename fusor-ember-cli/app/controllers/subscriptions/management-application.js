@@ -16,6 +16,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   showAlertMessage: false,
   showWaitingMessage: false,
   showErrorMessage: false,
+  errorMsg: null,
 
   msgWaiting: Ember.computed('newSatelliteName', function() {
     return ('Adding ' + this.get('newSatelliteName') + ' ....');
@@ -53,6 +54,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       this.set('showWaitingMessage', true);
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
       var newSatelliteName = this.get('newSatelliteName');
+      var errorMsg = this.get('errorMsg');
       var ownerKey = this.get('sessionPortal').get('ownerKey');
       var self = this;
 
@@ -64,6 +66,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
         if (self.get('isInvalidMgmtAppName')) {
           self.set('showWaitingMessage', false);
           self.set('showErrorMessage', true);
+          self.set('errorMsg', newSatelliteName + ' failed to be added. Invalid application name.');
           reject();
         } else {
           request({
@@ -90,6 +93,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
                 resolve(response);
             }, function(error) {
                 console.log('error on createSatellite');
+                self.set('showErrorMessage', true);
+                self.set('errorMsg', newSatelliteName + ' failed to be added.');
                 return self.send('error');
             }
           );
