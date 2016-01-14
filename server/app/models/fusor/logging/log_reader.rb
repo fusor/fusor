@@ -13,86 +13,51 @@
 module Fusor
   module Logging
     class LogReader
+
+      MAX_NUM_LINES = 40_000
+
       def read_full_log(path)
+        num_lines = get_num_lines(path)
+        return tail_log(path, num_lines - MAX_NUM_LINES, MAX_NUM_LINES) if num_lines > MAX_NUM_LINES
+
         log = Fusor::Logging::Log.new
         log.path = path
-        log.entries = []
-        File.open(log.path).each { |line| log.entries.push(parse_entry(line)) }
+        line_number = 0
+        File.open(log.path).each { |line| log.entries.push(parse_entry(line, line_number += 1)) }
         log
       end
 
-      def parse_entry(raw_text)
+      def parse_entry(raw_text, line_number)
         entry = Fusor::Logging::LogEntry.new
-        entry.date_time = parse_date raw_text
+        entry.line_number = line_number
         entry.level = parse_log_level raw_text
         entry.text = raw_text[-1] == "\n" ? raw_text[0..-2] : raw_text
         entry
       end
 
-      def parse_date(raw_text)
-        date_str = /\d+-\d+-\d+\s\d+:\d+:\d+/.match(raw_text).to_s
-        begin
-          DateTime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
-        rescue ArgumentError
-          return nil
-        end
+      def parse_log_level(_raw_text)
+        nil
       end
 
-      def parse_log_level(raw_text)
-        level_str = /\[[A-Z]\]/.match(raw_text).to_s
-        return nil unless level_str && level_str.size > 2
-        level_str[1..-2]
+      def tail_log_since(path, lower_boundary)
+        tail_log(path, lower_boundary, get_num_lines(path) - lower_boundary)
       end
 
-      def tail_log_since(path, date_time, num_lines = 1000, num_lines_limit = 16_000)
-        # TODO - implement File.reverse_each then we could do something like:
-        # File.open(log.path).reverse_each{|line| entry = parse(line); break if entry.date_time < date_time}
-        # to read the file backwards and parse it line by line
-
+      # on a 4gb file with 4.4mil lines, wc -l and tail ~= 1s, awk ~= 11s, ruby file.readlines ~= 100s
+      def tail_log(path, lower_boundary, num_lines)
         log = Fusor::Logging::Log.new
         log.path = path
-        tail_n = [num_lines, num_lines_limit].min
-        enough_lines = false
+        return log if num_lines <= 0
 
-        # unfortunately, file.readlines[-200..-1] would read the whole file
-        # so instead, grab enough tail of the log to parse
-        until enough_lines
-          entry_text = `tail -n #{tail_n} #{log.path}`
-          lines = entry_text.split("\n")
-
-          # check to see if we grabbed enough of the log
-          first_date = nil
-          lines.each do |line|
-            d = parse_date line
-            unless d.nil?
-              first_date = d
-              break
-            end
-          end
-
-          if first_date < date_time || tail_n >= num_lines_limit
-            enough_lines = true
-          end
-
-          # get 4x more of the log up to the limit on the next iteration
-          tail_n = [tail_n * 4, num_lines_limit].min
-        end
-
-        # Add lines from the bottom of the log until
-        # we reach one from earlier than the requested date_time
-        log.entries = []
-        lines.reverse_each do |text|
-          entry = parse_entry text
-          break if !entry.date_time.nil? && entry.date_time < date_time
-          log.entries.unshift entry
-        end
-
-        # Pop off any lines at the beginning with no date.
-        # They were part of a log line with a date earlier than we want.
-        while log.entries.length > 0 && log.entries[0].date_time.nil?
-          log.entries.shift
-        end
+        line_number = lower_boundary
+        entry_text = `tail -n #{num_lines} #{log.path}`
+        lines = entry_text.split("\n")
+        lines.each { |line| log.entries.push(parse_entry(line, line_number += 1)) }
         log
+      end
+
+      def get_num_lines(path)
+        `wc -l "#{path}"`.strip.split(' ')[0].to_i
       end
     end
   end

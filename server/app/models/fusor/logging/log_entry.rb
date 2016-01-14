@@ -13,7 +13,7 @@
 module Fusor
   module Logging
     class LogEntry
-      attr_accessor :date_time, :level, :text
+      attr_accessor :line_number, :level, :text
     end
   end
 end

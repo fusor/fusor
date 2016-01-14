@@ -18,120 +18,77 @@ class LogReaderTest < ActiveSupport::TestCase
     @log_path = "#{Rails.root}/test/fixtures/log_reader_test_file.log"
   end
 
-  # parse_date
-  test 'parse_date should return a valid date for a valid string' do
-    assert_equal @reader.parse_date('test 2015-11-17 04:00:10 string'), DateTime.new(2015, 11, 17, 4, 0, 10, '+0')
-  end
-
-  test 'parse_date should return nil for empty matches' do
-    assert_nil @reader.parse_date '2015-11- test no matches 04:00:10'
-  end
-
-  test 'parse_date should return nil for an invalid date string' do
-    assert_nil @reader.parse_date 'invalid date 5-111-177 04:00:10'
-  end
-
-  # parse_log_level
-  test 'parse_log_level should return valid warning level for a valid string' do
-    assert_equal @reader.parse_log_level('should match [I] to I'), 'I'
-  end
-
-  test 'parse_log_level should return the first valid warning level for multiple matches' do
-    assert_equal @reader.parse_log_level('[I][W][E] should only return I'), 'I'
-  end
-
-  test 'parse_log_level should return nil for no log level matched' do
-    assert_nil @reader.parse_log_level 'I'
-    assert_nil @reader.parse_log_level '[i]'
-    assert_nil @reader.parse_log_level '[]'
-    assert_nil @reader.parse_log_level '[9]'
-  end
-
   # parse_entry
   test 'parse_entry should return a new entry for a blank log line' do
-    entry = @reader.parse_entry('')
-    assert_nil entry.date_time
-    assert_nil entry.level
-    assert_equal entry.text, ''
+    entry = @reader.parse_entry('', 123)
+    assert_equal 123, entry.line_number
+    assert_equal '', entry.text
   end
 
   test 'parse_entry should return a new entry for a newline entry' do
-    entry = @reader.parse_entry("\n")
-    assert_nil entry.date_time
-    assert_nil entry.level
-    assert_equal entry.text, ''
+    entry = @reader.parse_entry("\n", 123)
+    assert_equal 123, entry.line_number
+    assert_equal '', entry.text
   end
 
   test 'parse_entry should return a new entry for a complete log line' do
-    entry = @reader.parse_entry('2015-01-02 03:04:05 [I] some log stuff')
-    assert_equal entry.date_time, DateTime.new(2015, 1, 2, 3, 4, 5, '+0')
-    assert_equal entry.level, 'I'
-    assert_equal entry.text, '2015-01-02 03:04:05 [I] some log stuff'
+    entry = @reader.parse_entry('2015-01-02 03:04:05 [I] some log stuff', 123)
+    assert_equal 123, entry.line_number
+    assert_equal '2015-01-02 03:04:05 [I] some log stuff', entry.text
   end
 
   test 'parse_entry should return a new entry for a complete log line stripping last newline' do
-    entry = @reader.parse_entry("2015-01-02 03:04:05 [I] some log stuff\n")
-    assert_equal entry.text, '2015-01-02 03:04:05 [I] some log stuff'
+    entry = @reader.parse_entry("2015-01-02 03:04:05 [I] some log stuff\n", 123)
+    assert_equal '2015-01-02 03:04:05 [I] some log stuff', entry.text
   end
 
   # read_full_log
   test 'read_full_log reads all lines' do
     log = @reader.read_full_log @log_path
-    assert_equal log.entries.length, 9
-    assert_equal log.entries[0].text, 'line 0'
+    assert_equal 7, log.entries.length
+
+    assert_equal 1, log.entries[0].line_number
+    assert_equal 'line 1', log.entries[0].text
+
+    assert_equal 7, log.entries[log.entries.length - 1].line_number
+    assert_equal 'line 7', log.entries[log.entries.length - 1].text
   end
 
   # tail_log_since
-  test 'tail_log_since will return the correct log if the first tail amount is enough' do
-    log = @reader.tail_log_since(@log_path, DateTime.new(2015, 1, 2, 3, 4, 6, '+0'), 4, 10)
-    assert_equal log.entries.length, 3
-    assert_equal log.entries[0].text, '2015-01-02 03:04:06 [I] line 6'
+  test 'tail_log_since will return all lines if 0 lower boundary' do
+    log = @reader.tail_log_since(@log_path, 0)
+    assert_equal 7, log.entries.length
+
+    assert_equal 1, log.entries[0].line_number
+    assert_equal 'line 1', log.entries[0].text
+
+    assert_equal 7, log.entries[log.entries.length - 1].line_number
+    assert_equal 'line 7', log.entries[log.entries.length - 1].text
   end
 
-  test 'tail_log_since will return the correct log if the first tail amount is not enough' do
-    log = @reader.tail_log_since(@log_path, DateTime.new(2015, 1, 2, 3, 4, 6, '+0'), 2, 10)
-    assert_equal log.entries.length, 3
-    assert_equal log.entries[0].text, '2015-01-02 03:04:06 [I] line 6'
+  test 'tail_log_since returns all lines since the given lower boundary' do
+    log = @reader.tail_log_since(@log_path, 2)
+    assert_equal 5, log.entries.length
+
+    assert_equal 3, log.entries[0].line_number
+    assert_equal 'line 3', log.entries[0].text
+
+    assert_equal 7, log.entries[log.entries.length - 1].line_number
+    assert_equal 'line 7', log.entries[log.entries.length - 1].text
   end
 
-  test 'tail_log_since will return the limit if the num_lines_limit is not enough' do
-    log = @reader.tail_log_since(@log_path, DateTime.new(2015, 1, 2, 3, 4, 1, '+0'), 3, 4)
-    assert_equal log.entries.length, 4
-    assert_equal log.entries[0].text, '2015-01-02 03:04:05 [W] line 5'
+  test 'tail_log_since includes no lines if the lower boundary is already at the last line' do
+    log = @reader.tail_log_since(@log_path, 7)
+    assert_equal 0, log.entries.length
   end
 
-  test 'tail_log_since will return the all dated portions of the log is shorter than the max' do
-    log = @reader.tail_log_since(@log_path, DateTime.new(2015, 1, 2, 3, 4, 1, '+0'), 2, 100)
-    assert_equal log.entries.length, 8
-    assert_equal log.entries[0].text, '2015-01-02 03:04:01 [E] line 1'
+  test 'tail_log_since includes no lines if the lower boundary is at an ending newline' do
+    log = @reader.tail_log_since(@log_path, 8)
+    assert_equal 0, log.entries.length
   end
 
-  test 'tail_log_since returns all lines since the given date_time' do
-    log = @reader.tail_log_since(@log_path, DateTime.new(2015, 1, 2, 3, 4, 6, '+0'))
-    assert_equal log.entries.length, 3
-    assert_equal log.entries[0].text, '2015-01-02 03:04:06 [I] line 6'
-  end
-
-  test 'tail_log_since omits undated lines before since_date' do
-    log = @reader.tail_log_since(@log_path, DateTime.new(2015, 1, 2, 3, 4, 5, '+0'))
-    assert_equal log.entries.length, 4
-    assert_equal log.entries[0].text, '2015-01-02 03:04:05 [W] line 5'
-  end
-
-  test 'tail_log_since includes undated lines after since_date' do
-    log = @reader.tail_log_since(@log_path, DateTime.new(2015, 1, 2, 3, 4, 1, '+0'))
-    assert_equal log.entries.length, 8
-    assert_equal log.entries[0].text, '2015-01-02 03:04:01 [E] line 1'
-  end
-
-  test 'tail_log_since includes lines from the earliest dated log line if since_date is before log started' do
-    log = @reader.tail_log_since(@log_path, DateTime.new(2015, 1, 1, 1, 1, 1, '+0'))
-    assert_equal log.entries.length, 8
-    assert_equal log.entries[0].text, '2015-01-02 03:04:01 [E] line 1'
-  end
-
-  test 'tail_log_since includes no lines if the since_date is later than the last entry' do
-    log = @reader.tail_log_since(@log_path, DateTime.new(2015, 1, 2, 3, 4, 10, '+0'))
-    assert_equal log.entries.length, 0
+  test 'tail_log_since includes no lines if the lower boundary is past the last line' do
+    log = @reader.tail_log_since(@log_path, 9)
+    assert_equal 0, log.entries.length
   end
 end

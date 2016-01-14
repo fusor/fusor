@@ -3,28 +3,52 @@ import NeedsDeploymentMixin from '../../../mixins/needs-deployment-mixin';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  //TODO
-  //deploymentInProgress: Ember.computed.alias('deployment.isInProgress'),
-
   searchLogInputValue: null,
   scrollToEndChecked: true,
   errorChecked: true,
   warnChecked: true,
   infoChecked: true,
   debugChecked: false,
+  logTypes: [
+    {label: 'Deployment', value: 'fusor_log'},
+    {label: 'Foreman', value: 'foreman_log'},
+    //{label: 'Foreman Proxy', value: 'foreman_proxy_log'},
+    {label: 'Candlepin', value: 'candlepin_log'},
+    {label: 'Messages', value: 'messages_log'}
+  ],
 
-  isLogEmpty: Ember.computed('model.log.entries.[]', function() {
-    var entries = this.get('model.log.entries');
-    return !this.get('isLoading') && (!entries || !entries.length);
+  showLogLoading: Ember.computed('errorMessage', 'isLoading', function() {
+    return !this.get('errorMessage') && this.get('isLoading');
   }),
 
-  logOptionsChanged: Ember.observer('errorChecked', 'warnChecked', 'infoChecked', 'debugChecked', function() {
-    Ember.run.once(this, 'refreshProcessedLog');
+  showLogUpdating: Ember.computed('errorMessage', 'isLoading', 'deploymentInProgress', function () {
+    return !this.get('errorMessage') && !this.get('isLoading') && this.get('deploymentInProgress');
+  }),
+
+  showLogEmpty: Ember.computed('errorMessage', 'isLoading', 'logType',
+    'model.fusor_log.entries.[]',  'model.foreman_log.entries.[]', 'model.foreman_proxy_log.entries.[]',
+    'model.candlepin_log.entries.[]', 'model.messages_log.entries.[]',
+    function () {
+      var logType, entries;
+      logType = this.get('logType') || 'fusor_log';
+      entries = this.get(`model.${logType}.entries`);
+      return !this.get('errorMessage') && !this.get('isLoading') && (!entries || !entries.length);
+    }),
+
+  logOptionsChanged: Ember.observer('errorChecked', 'warnChecked', 'infoChecked', 'debugChecked', function () {
+    Ember.run.once(this, () => this.send('updateDisplayedLog'));
   }),
 
   isSearchActive:Ember.computed('searchLogString', function() {
     return !!this.get('searchLogString');
   }),
+
+  logTypeChanged: function() {
+    this.set('displayedLogHtml', '');
+    this.set('newEntries', []);
+    // run later to allow the dropdown to close and log to clear before doing the real work
+    Ember.run.later(this, () => { this.send('changeLogType'); });
+  }.observes('logType'),
 
   actions: {
     scrollToEnd() {
@@ -39,13 +63,13 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     search() {
       this.set('scrollToEndChecked', false);
       this.set('searchLogString', this.get('searchLogInputValue'));
-      this.formatLog();
+      return true; //bubble anc execute route action
     },
 
     clearSearch() {
       this.set('searchLogInputValue', null);
       this.set('searchLogString', null);
-      this.formatLog();
+      return true; //bubble anc execute route action
     },
 
     navPreviousSearchResult() {
@@ -57,35 +81,22 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   },
 
-  formatLog: function() {
-    this.send('formatLog');
-    if (this.get('isSearchActive')) {
-      Ember.run.later(() => this.send('navNextSearchResult'));
-    }
-  },
-
-  refreshProcessedLog: function() {
-    this.send('refreshProcessedLog');
-    if (this.get('isSearchActive')) {
-      Ember.run.later(() => this.send('navNextSearchResult'));
-    }
-  },
-
   navSearchResult(idxChange) {
-    var numSearchResults = this.get('numSearchResults'),
-      searchResultIdx = this.get('searchResultIdx');
+    var searchResults = this.get('searchResults'),
+      searchResultIdx = this.get('searchResultIdx'),
+      isSearchActive = this.get('isSearchActive');
 
-    if (numSearchResults === 0) {
+    if (!isSearchActive || searchResults.length === 0) {
       return;
     }
 
     searchResultIdx += idxChange;
-    if (searchResultIdx > numSearchResults) {
+    if (searchResultIdx > searchResults.length) {
       searchResultIdx = 1;
     }
 
     if (searchResultIdx < 1) {
-      searchResultIdx = numSearchResults;
+      searchResultIdx = searchResults.length;
     }
 
     this.set('searchResultIdx', searchResultIdx);
@@ -93,13 +104,20 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   },
 
   markAndScrollToSearchResult(showAtTop) {
-    var searchResultIdx = this.get('searchResultIdx'),
-     currentlySelected = Ember.$('.log-entry-search-selected'),
-     searchResult = Ember.$(`.log-entry-search-result-${searchResultIdx}`);
+    var searchResults = this.get('searchResults'),
+     searchResultIdx = this.get('searchResultIdx'),
+      currentlySelected, searchResult, searchTag;
+
+     searchTag = searchResults[searchResultIdx - 1];
+     currentlySelected = Ember.$('.log-entry-search-selected');
+     searchResult = Ember.$(`.${searchTag.cssClass}`);
 
     this.set('scrollToEndChecked', false);
     currentlySelected.removeClass('log-entry-search-selected');
-    searchResult.addClass('log-entry-search-selected');
-    searchResult[0].scrollIntoView(showAtTop);
+
+    if (searchResult && searchResult[0]) {
+      searchResult.addClass('log-entry-search-selected');
+      searchResult[0].scrollIntoView(showAtTop);
+    }
   }
 });
