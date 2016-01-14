@@ -17,6 +17,7 @@ export default Ember.Route.extend({
 
     if (!(this.controllerFor('deployment').get('isStarted'))) {
         controller.set('isLoading', true);
+        controller.set('errorMsg', null);
 
         var consumerUUID = this.modelFor('deployment').get('upstream_consumer_uuid');
 
@@ -62,14 +63,10 @@ export default Ember.Route.extend({
           controller.set('subscriptionEntitlements', Ember.A(results[0]));
           controller.set('subscriptionPools', Ember.A(results[1]));
           return controller.set('isLoading', false);
-        }, function() {
-             self.modelFor('subscriptions').set('isAuthenticated');
+        }, function(error) {
              self.modelFor('subscriptions').save().then(function() {
-               self.controllerFor('subscriptions.credentials').setProperties({
-                                                                   'showErrorMessage': true,
-                                                                   'errorMsg': 'You are not currently logged in. Please log in below.'
-                                                                 });
-               return self.transitionTo('subscriptions.credentials');
+               controller.set('errorMsg', error.message);
+               return controller.set('isLoading', false);
              });
         });
     }
