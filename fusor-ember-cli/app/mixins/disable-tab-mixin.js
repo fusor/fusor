@@ -10,6 +10,9 @@ export default Ember.Mixin.create({
   hasName: Ember.computed('model.name', function() {
     return (this.get('model.name.length') > 0);
   }),
+  containsSpaces: Ember.computed('model.name', function() {
+    return /\s/.test(this.get('model.name'));
+  }),
   hasNoName: Ember.computed.not('hasName'),
 
   hasOrganization: Ember.computed('model.organization.id', function() {
@@ -42,7 +45,8 @@ export default Ember.Mixin.create({
   disableAll: Ember.computed.alias("hasNoName"),
 
   // disable Next on Deployment Name if there is no deployment name
-  disableNextOnDeploymentName: Ember.computed.or("hasNoName", 'isDuplicateName'),
+  disableNextOnDeploymentName: Ember.computed.or(
+    "hasNoName", 'isDuplicateName',"containsSpaces"),
 
   // disable Next on Configure Organization if no organization is selected
   disableNextOnConfigureOrganization: Ember.computed.or('hasNoOrganization', 'disableAll'),
