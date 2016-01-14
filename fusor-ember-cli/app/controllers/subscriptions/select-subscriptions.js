@@ -48,6 +48,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   hasSubscriptionsToAttach: Ember.computed('model.[]', function() {
     return (this.get('model.length') > 0);
-  })
+  }),
+
+  showErrorMessage: Ember.computed.notEmpty('errorMsg')
 
 });
