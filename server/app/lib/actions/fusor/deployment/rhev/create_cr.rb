@@ -31,13 +31,15 @@ module Actions
           def run
             ::Fusor.log.debug '====== RHEV Compute Resource run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
-            cr = { "name" => "#{deployment['name']}-RHEV",
-                   "location_ids" => ["", Location.where(:name => "Default Location").first.id],
-                   "url" => "https://#{::Host.find(deployment['rhev_engine_host_id']).name}/api",
-                   "provider" => "Foreman::Model::Ovirt", "user" => 'admin@internal',
-                   "password" => deployment.rhev_root_password,
-                   "organization_ids" => [deployment["organization_id"]] }
-            ::Foreman::Model::Ovirt.create(cr)
+            rhev = { "name" => "#{deployment['name']}-RHEV",
+                     "location_ids" => ["", Location.where(:name => "Default Location").first.id],
+                     "url" => "https://#{::Host.find(deployment['rhev_engine_host_id']).name}/api",
+                     "provider" => "Foreman::Model::Ovirt", "user" => 'admin@internal',
+                     "password" => deployment.rhev_root_password,
+                     "organization_ids" => [deployment["organization_id"]] }
+            cr = ::Foreman::Model::Ovirt.create(rhev)
+            cr.uuid = cr.datacenters.find { |dc| dc[0] == deployment.rhev_database_name }[1]
+            cr.save
             ::Fusor.log.debug '=== Leaving RHEV Compute Resource run method ==='
           end
 
