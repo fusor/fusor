@@ -142,6 +142,19 @@ module Fusor
           return
         end
 
+        # 36 is the expected UID and GID of the share
+        if File.stat("/tmp/fusor-test-mount-#{deployment.id}").uid != 36
+          add_warning(deployment, _("NFS share has an invalid UID. The expected UID is 36. " \
+                                    "Please check NFS share permissions."))
+          return
+        end
+
+        if File.stat("/tmp/fusor-test-mount-#{deployment.id}").gid != 36
+          add_warning(deployment, _("NFS share has an invalid GID. The expected GID is 36. " \
+                                    "Please check NFS share permissions."))
+          return
+        end
+
         files = Dir["#{output}/*"] # this may return [] if it can't read the share
         Utils::Fusor::CommandUtils.run_command("sudo safe-umount.sh #{deployment.id}")
 
