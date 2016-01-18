@@ -18,17 +18,6 @@ export default Ember.Route.extend({
             controller.set('hypervisorDomain', fusorBaseDomain);
         });
     }
-    if (model.get('deploy_openstack')) {
-        this.store.findRecord('deployment-plan', model.get('id')).then(function (plan) {
-            controller.set('openstackPlan', plan);
-        });
-        this.store.query('node', {deployment_id: model.get('id')}).then(function (nodes) {
-            controller.set('openstackNodes', nodes);
-        });
-        this.store.query('flavor', {deployment_id: model.get('id')}).then(function (flavors) {
-            controller.set('openstackProfiles', flavors);
-        });
-    }
 
     if (model.get('is_disconnected')) {
         controller.set('reviewSubscriptions', this.modelFor('subscriptions/review-subscriptions'));

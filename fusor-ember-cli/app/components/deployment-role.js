@@ -72,11 +72,6 @@ export default Ember.Component.extend({
     return avail;
   }),
 
-  // NOTE .on('didInsertElement')
-  updateRoleCountonDeployment: Ember.on('didInsertElement', function() {
-    return this.send('setRoleCountOnController', this.get('role').get('roleType'), this.get('roleNodeCount'));
-  }),
-
   actions: {
     updateNodeCount() {
       var nodeCount = parseInt(this.$('select').val());
@@ -85,10 +80,6 @@ export default Ember.Component.extend({
 
     editRole() {
       this.sendAction('edit', this.get('role'));
-    },
-
-    setRoleCountOnController(roleType, count) {
-      this.sendAction('setRoleCountOnController', roleType, count);
     },
 
     removeRole() {

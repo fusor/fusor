@@ -11,6 +11,8 @@ let validRanges = [
 ];
 
 let invalidRanges = [
+  null,
+  undefined,
   '192.168.2.2000',
   '192.168.2.257',
   'garbage'
@@ -22,6 +24,8 @@ let validCIDR = [
 ];
 
 let invalidCIDR = [
+  null,
+  undefined,
   '192.168.153.0',
   '192.168/32.153.0',
   '192.168/32.153.0/',
@@ -39,6 +43,8 @@ let validFullFormat = [
 ];
 
 let invalidFullFormat = [
+  null,
+  undefined,
   '192.168.153.0',
   'garbage',
   '192.168/32.153.0/255',
@@ -51,6 +57,8 @@ let validMgmtAppName = [
 ];
 
 let invalidMgmtAppName = [
+  null,
+  undefined,
   'Invalid*Symbols',
   'This$Wont()Work',
   'Garbage()^&'

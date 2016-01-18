@@ -17,17 +17,17 @@ let mgmtAppNameRegex = new RegExp(/^([a-zA-Z0-9\-\.\_]*)$/);
 
 let ValidationUtil = {
   validateIpRange(testString) {
-    return ipRangeRegex.test(testString.trim());
+    return !!testString && ipRangeRegex.test(testString.trim());
   },
   validateCIDRFormat(testString) {
-    return CIDRFormatRegex.test(testString.trim());
+    return !!testString && CIDRFormatRegex.test(testString.trim());
   },
   validateIpRangeAndFormat(testString) {
     return this.validateIpRange(testString) &&
       this.validateCIDRFormat(testString);
   },
   validateMgmtAppName(testString) {
-    return mgmtAppNameRegex.test(testString.trim());
+    return !!testString && mgmtAppNameRegex.test(testString.trim());
   }
 };
 

@@ -12,26 +12,27 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   disableAssignNodesNext: Ember.computed.alias("assignNodesController.disableAssignNodesNext"),
   disableNextOvercloud: Ember.computed.alias("overcloudController.disableNextOvercloud"),
 
-  disableTabRegisterNodes: Ember.computed.empty("model.openstack_undercloud_password"),
+  disableTabRegisterNodes: Ember.computed.empty("deploymentController.model.openstack_undercloud_password"),
 
   disableTabAssignNodes: Ember.computed("disableTabRegisterNodes", "disableRegisterNodesNext", function () {
      return (this.get('disableTabRegisterNodes') || this.get("disableRegisterNodesNext"));
   }),
 
   disableTabOvercloud: Ember.computed("disableTabAssignNodes", "disableAssignNodesNext", function () {
-     return (this.get('disableTabAssignNodes') || this.get("disableAssignNodesNext"));
+     return (this.get('disableTabAssignNodes') || this.get('disableAssignNodesNext'));
   }),
 
   isValidRegisterNodes: Ember.computed.not('disableRegisterNodesNext'),
-  isValidAssignNodes: Ember.computed.not('disableTabAssignNodes'),
+  isValidAssignNodes: Ember.computed.not('disableAssignNodesNext'),
   isValidOvercloud: Ember.computed.not('disableNextOvercloud'),
 
-  validOpenStack: Ember.computed('isValidRegisterNodes',
-                                 'isValidAssignNodes',
-                                 'isValidOvercloud', function() {
+  validOpenStack: Ember.computed(
+    'isValidRegisterNodes',
+    'isValidAssignNodes',
+    'isValidOvercloud',
+    function () {
       return this.get('isValidRegisterNodes') &&
-             this.get('isValidAssignNodes') &&
-             this.get('isValidOvercloud');
-  }),
-
+        this.get('isValidAssignNodes') &&
+        this.get('isValidOvercloud');
+    })
 });
