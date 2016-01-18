@@ -25,6 +25,7 @@ module Actions
 
         def run
           ::Fusor.log.debug "========================= TriggerProvisioning.run ENTER ========================="
+          ::Fusor.log.info "Starting host #{input[:host_id]} deployment..."
           deployment = ::Fusor::Deployment.find(input[:deployment_id])
           hostgroup = find_hostgroup(deployment, input[:hostgroup_name])
           host = ::Host::Base.find(input[:host_id])

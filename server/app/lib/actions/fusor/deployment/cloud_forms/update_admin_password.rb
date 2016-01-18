@@ -26,7 +26,7 @@ module Actions
           end
 
           def run
-            ::Fusor.log.info "================ UpdateAdminPassword run method ===================="
+            ::Fusor.log.debug "================ UpdateAdminPassword run method ===================="
 
             deployment   = ::Fusor::Deployment.find(input[:deployment_id])
             cfme_address = deployment.cfme_address
@@ -55,12 +55,12 @@ module Actions
               client = RestClient::Resource.new(request_url, :verify_ssl => OpenSSL::SSL::VERIFY_NONE)
 
               response = client.post data.to_json
-              ::Fusor.log.info response
+              ::Fusor.log.debug response
               ::Fusor.log.info "Updated #{admin_user} user password: Status Code is #{response.code}"
             rescue Exception => e
               fail _("Failed to update admin password on appliance. Error message: #{e.message}")
             end
-            ::Fusor.log.info "================ Leaving UpdateAdminPassword run method ===================="
+            ::Fusor.log.debug "================ Leaving UpdateAdminPassword run method ===================="
           end
 
           def get_user_id(response, username, password)

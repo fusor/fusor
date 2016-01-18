@@ -29,7 +29,7 @@ module Actions
           end
 
           def run
-            ::Fusor.log.info "================ TransferImage run method ===================="
+            ::Fusor.log.debug "================ TransferImage run method ===================="
             # Note: user_id is being passed in and then used to set User.current to address an error
             # that could occur when we later attempt to access ::Katello.pulp_server indirectly through
             # this action.  In the future, we may want to see if there are alternatives to this approach.
@@ -44,7 +44,7 @@ module Actions
             output[:image_full_path] = image_full_path
             output[:image_file_name] = image_file_name
 
-            ::Fusor.log.info "================ Leaving TransferImage run method ===================="
+            ::Fusor.log.debug "================ Leaving TransferImage run method ===================="
           ensure
             ::User.current = nil
           end
@@ -54,6 +54,7 @@ module Actions
           def scp_image_file(deployment, image_file)
             # scp the cfme file over to the rhev host, assume root user
             host_address = deployment.rhev_engine_host.facts['ipaddress']
+            ::Fusor.log.info "Transfering image to #{host_address}."
             Net::SCP.start(host_address, "root", :password => deployment.rhev_root_password, :paranoid => false) do |scp|
               scp.upload!(image_file, "/root")
             end

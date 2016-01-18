@@ -77,7 +77,7 @@ module Fusor
         temp_file.close
       end
 
-      ::Fusor.log.debug "Import the manifest into the DB"
+      ::Fusor.log.info "Import the manifest into the DB"
 
       mi = Fusor::Manifest::ManifestImporter.new
       entitlements = mi.prepare_manifest(temp_file.path, deployment.id)

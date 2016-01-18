@@ -26,7 +26,7 @@ module Actions
           end
 
           def run
-            ::Fusor.log.info "================ ImportTemplate run method ===================="
+            ::Fusor.log.debug "================ ImportTemplate run method ===================="
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             script_dir = "/usr/share/fusor_ovirt/bin/"
@@ -54,7 +54,7 @@ module Actions
               fail _("Unable to import template: Status: %{status}. Output: %{output}") % { :status => status,
                                                                                             :output => output }
             end
-            ::Fusor.log.info "================ Leaving ImportTemplate run method ===================="
+            ::Fusor.log.debug "================ Leaving ImportTemplate run method ===================="
           end
 
           private

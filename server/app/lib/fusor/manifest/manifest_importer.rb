@@ -23,23 +23,22 @@ module Fusor
         entitlement = JSON.parse(ent_json)
         available = entitlement['pool']['quantity'] - entitlement['quantity']
 
-        Rails.logger.debug "------------------------------------"
-        Rails.logger.debug "Subscription Name: #{entitlement['pool']['productName']}"
-        Rails.logger.debug "Subscription Name2: #{entitlement['pool']['branding'].first['name']}"
-        Rails.logger.debug "Contract Number: #{entitlement['pool']['contractNumber']}"
-        Rails.logger.debug "System Type: N/A"
-        Rails.logger.debug "Start Date: #{entitlement['startDate']}"
-        Rails.logger.debug "End Date: #{entitlement['endDate']}"
-        Rails.logger.debug "Attached: #{entitlement['quantity']}"
-        Rails.logger.debug "Available: #{available}"
-        Rails.logger.debug "Quantity: #{entitlement['pool']['quantity']}"
-        Rails.logger.debug "------------------------------------"
+        ::Fusor.log.debug "------------------------------------"
+        ::Fusor.log.debug "Subscription Name: #{entitlement['pool']['productName']}"
+        ::Fusor.log.debug "Subscription Name2: #{entitlement['pool']['branding'].first['name']}"
+        ::Fusor.log.debug "Contract Number: #{entitlement['pool']['contractNumber']}"
+        ::Fusor.log.debug "System Type: N/A"
+        ::Fusor.log.debug "Start Date: #{entitlement['startDate']}"
+        ::Fusor.log.debug "End Date: #{entitlement['endDate']}"
+        ::Fusor.log.debug "Attached: #{entitlement['quantity']}"
+        ::Fusor.log.debug "Available: #{available}"
+        ::Fusor.log.debug "Quantity: #{entitlement['pool']['quantity']}"
+        ::Fusor.log.debug "------------------------------------"
 
         return entitlement
       end
 
       def prepare_manifest(manifest, deployment_id)
-        Rails.logger.debug "------------- Entered prepare_manifest -------------"
         tmp_dir = "#{Rails.root}/tmp/deployment-#{deployment_id}"
         FileUtils.rmtree(tmp_dir) if File.exist?(tmp_dir)
         FileUtils.mkdir_p tmp_dir
@@ -52,13 +51,11 @@ module Fusor
         subscriptions = []
         consumer_zip = Zip::File.open(File.join(tmp_dir, "consumer.zip"))
         consumer_zip.glob("export/entitlements/*.json") do |entitlement|
-          Rails.logger.debug entitlement.name
           subscriptions.push(parse_entitlement_json(entitlement.get_input_stream.read(entitlement.size)))
         end
 
         consumer_zip.close
 
-        Rails.logger.debug "------------- Leaving prepare_manifest -------------"
         return subscriptions
       end
     end

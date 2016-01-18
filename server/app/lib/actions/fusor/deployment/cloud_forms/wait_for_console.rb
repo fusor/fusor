@@ -31,19 +31,19 @@ module Actions
           end
 
           def invoke_external_task
-            ::Fusor.log.info "================ CloudForms::WaitForConsole invoke_external_task method ===================="
+            ::Fusor.log.debug "================ CloudForms::WaitForConsole invoke_external_task method ===================="
             is_up? ::Fusor::Deployment.find(input[:deployment_id]).cfme_address
           end
 
           def poll_external_task
-            ::Fusor.log.info "================ CloudForms::WaitForConsole poll_external_task method ===================="
+            ::Fusor.log.debug "================ CloudForms::WaitForConsole poll_external_task method ===================="
             is_up? ::Fusor::Deployment.find(input[:deployment_id]).cfme_address
           end
 
           private
 
           def is_up?(ip)
-            ::Fusor.log.info "================ CloudForms::WaitForConsole is_up method ===================="
+            ::Fusor.log.debug "================ CloudForms::WaitForConsole is_up method ===================="
             # possibly make a GET call to the webui
             begin
               output = open(smart_add_url_protocol(ip), { ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE })

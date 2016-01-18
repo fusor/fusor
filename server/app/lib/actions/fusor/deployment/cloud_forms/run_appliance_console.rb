@@ -25,7 +25,7 @@ module Actions
           end
 
           def run
-            ::Fusor.log.info "================ RunApplianceConsole run method ===================="
+            ::Fusor.log.debug "================ RunApplianceConsole run method ===================="
 
             script_dir = "/usr/share/fusor_ovirt/bin/"
             db_password = "changeme" # TODO: we may want to make this configurable in the future
@@ -58,7 +58,7 @@ module Actions
             #cmd = "appliance_console_cli --region 1 --internal --force-key -p #{db_password} --verbose"
             #client.execute(cmd)
 
-            ::Fusor.log.info "================ Leaving RunApplianceConsole run method ===================="
+            ::Fusor.log.debug "================ Leaving RunApplianceConsole run method ===================="
           end
 
           # TODO: temporarily commenting out the SSHConnection callbacks.  See above.
