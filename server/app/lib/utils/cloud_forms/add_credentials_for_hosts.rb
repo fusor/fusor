@@ -24,7 +24,7 @@ module Utils
           script_name   = "add_host_credentials.rb"
           scp_from_path = "/usr/share/fusor_ovirt/bin"
           scp_to_path   = "/root"
-          csv_file_name = "hosts_#{deployment.name}.csv"
+          csv_file_name = "hosts_#{deployment.label}.csv"
           csv_file_path = "/tmp"
 
           # create the hosts csv file
@@ -51,7 +51,7 @@ module Utils
           client = Utils::Fusor::SSHConnection.new(cfme_ip, ssh_username, ssh_password)
 
           # run the script
-          cmd = "ruby #{scp_to_path}/#{script_name} #{deployment.name}-RHEV #{host_username} #{host_password} #{csv_file_name}"
+          cmd = "ruby #{scp_to_path}/#{script_name} #{deployment.label}-RHEV #{host_username} #{host_password} #{csv_file_name}"
           client.execute(cmd, @io)
 
           # close the stringio at the end

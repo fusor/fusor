@@ -12,6 +12,8 @@
 
 module Fusor
   class Deployment < ActiveRecord::Base
+    include ::Katello::Ext::LabelFromName
+
     # on update because we don't want to validate the empty object when
     # it is first created
     validates_with Fusor::Validators::DeploymentValidator, on: :update
@@ -19,6 +21,7 @@ module Fusor
     belongs_to :lifecycle_environment, :class_name => "Katello::KTEnvironment"
 
     validates :name, :presence => true, :uniqueness => {:scope => :organization_id}
+    validates :label, :presence => true, :uniqueness => {:scope => :organization_id}
     validates :organization_id, :presence => true
     validates :rhev_root_password, :allow_blank => true, :length => {:minimum => 8, :message => _('should be 8 characters or more')}
     validates :cfme_root_password, :allow_blank => true, :length => {:minimum => 8, :message => _('should be 8 characters or more')}

@@ -22,6 +22,14 @@ class DeploymentTest < ActiveSupport::TestCase
       assert_not rhev_d2.save, "Saved deployment with a duplicate name"
     end
 
+   test "should have a label" do
+     new_rhev = fusor_deployments(:rhev).clone
+     new_rhev.name = "Name with space"
+     new_rhev.label = ""
+     new_rhev.save!
+     assert_equal "Name_with_space", new_rhev
+   end
+
     test "should not save with no org" do
       rhev_d = fusor_deployments(:rhev)
       rhev_d.organization_id = nil
