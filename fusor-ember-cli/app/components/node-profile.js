@@ -134,10 +134,6 @@ export default Ember.Component.extend({
       this.sendAction('setRoleCount', role, count);
     },
 
-    setRoleCountOnController(roleType, count) {
-      this.sendAction('setRoleCountOnController', roleType, count);
-    },
-
     removeRole(role) {
       var profile = this.get('profile');
       this.sendAction('removeRole', profile, role);

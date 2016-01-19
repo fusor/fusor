@@ -27,24 +27,22 @@
                   {{#if nodes}}
                     {{node-profile profile=profile
                                    nodes=nodes
-                                   plan=model.plan
+                                   plan=openStack.plan
                                    doAssign=true
                                    assignRole="assignRole"
                                    unassignRole="unassignRole"
                                    editRole="editRole"
                                    setRoleCount="setRoleCount"
-                                   removeRole="removeRole"
-                                   setRoleCountOnController="setRoleCountOnController"}}
+                                   removeRole="removeRole"}}
                  {{else}}
                     {{node-profile profile=profile
-                                   plan=model.plan
+                                   plan=openStack.plan
                                    doAssign=true
                                    assignRole="assignRole"
                                    unassignRole="unassignRole"
                                    editRole="editRole"
                                    setRoleCount="setRoleCount"
-                                   removeRole="removeRole"
-                                   setRoleCountOnController="setRoleCountOnController"}}
+                                   removeRole="removeRole"}}
                  {{/if}}
                 </div>
             </div>

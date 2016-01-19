@@ -6,38 +6,25 @@ import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
 
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
+  openStack: Ember.computed.alias("deploymentController.openStack"),
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
 
-  getParam(paramName, paramsOverride) {
-    var params = paramsOverride || this.get('model.plan.parameters');
-    return params ? params.findBy('id', paramName) : null;
-  },
-
-  getParamValue(paramName, paramsOverride) {
-    var param = this.getParam(paramName, paramsOverride);
-    return param ? param.get('value') : null;
-  },
-
-  updateParam(name, value) {
-    var param = this.getParam(name);
-
-    if (param) {
-      param.set('value', value);
-    }
-  },
-
-  images: Ember.computed('model.images.[]', function() {
-    return this.get('model.images');
+  images: Ember.computed('openStack.images.[]', function() {
+    return this.get('openStack.images');
   }),
 
-  flavorParams: Ember.computed('model.plan.parameters.[]', function () {
-    return this.get('model.plan.parameters').filter(function (param) {
+  flavorParams: Ember.computed('openStack.plan.parameters.[]', function () {
+    if (!this.get('openStack.plan.parameters')) {
+      return [];
+    }
+
+    return this.get('openStack.plan.parameters').filter(function (param) {
       return !!param.get('id').match(/.*::Flavor/);
     });
   }),
 
-  unassignedRoles: Ember.computed('model.plan.roles.[]', 'flavorParams.@each.value', function () {
-    var self = this, roles = this.get('model.plan.roles');
+  unassignedRoles: Ember.computed('openStack.plan.roles.[]', 'flavorParams.@each.value', function () {
+    var self = this, roles = this.get('openStack.plan.roles');
 
     if (!roles) {
       return [];
@@ -47,7 +34,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   }),
 
   assignedRoles: Ember.computed('unassignedRoles.[]', function () {
-    var self = this, roles = this.get('model.plan.roles');
+    var self = this, roles = this.get('openStack.plan.roles');
 
     if (!roles) {
       return [];
@@ -57,7 +44,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   }),
 
   roleIsAssigned(role) {
-    var value = this.getParamValue(role.get('flavorParameterName'), this.get('flavorParams'));
+    var value = this.get('openStack.plan').getParamValue(role.get('flavorParameterName'), this.get('flavorParams'));
     return value && value !== 'baremetal';
   },
 
@@ -67,42 +54,51 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
 
   notAllRolesAssigned: Ember.computed.not('allRolesAssigned'),
 
-  profiles: Ember.computed('model.profiles.[]', function() {
-    return this.get('model.profiles');
+  profiles: Ember.computed('openStack.profiles.[]', function() {
+    return this.get('openStack.profiles');
   }),
 
-  numProfiles: Ember.computed('model.profiles.[]', function() {
-    return this.get('model.profiles.length');
+  numProfiles: Ember.computed('openStack.profiles.[]', function() {
+    return this.get('openStack.profiles.length');
   }),
 
-  nodes: Ember.computed('model.nodes.[]', function() {
-    return this.get('model.nodes');
+  nodes: Ember.computed('openStack.nodes.[]', function() {
+    return this.get('openStack.nodes');
   }),
 
-  nodeCount: Ember.computed('model.nodes.[]', function() {
-    return this.get('model.nodes.length');
+  nodeCount: Ember.computed('openStack.nodes.[]', function() {
+    return this.get('openStack.nodes.length');
   }),
 
-  assignedNodeCount: Ember.computed('model.plan.roles.[]', 'model.plan.parameters.[]', function() {
+  assignedNodeCount: Ember.computed('openStack.plan.roles.[]', 'openStack.plan.parameters.[]', function() {
     var count = 0;
-    var params = this.get('model.plan.parameters');
+    var params = this.get('openStack.plan.parameters');
     var self = this;
-    this.get('model.plan.roles').forEach(function(role) {
+    if (!this.get('openStack.plan.roles')) {
+      return 0;
+    }
+    this.get('openStack.plan.roles').forEach(function(role) {
       count += parseInt(self.getParamValue(role.get('countParameterName'), params), 10);
     });
     return count;
   }),
 
   isDraggingRole: Ember.computed(
-    'model.plan.roles.[]',
-    'model.plan.roles.@each.isDraggingObject',
+    'openStack.plan.roles.[]',
+    'openStack.plan.roles.@each.isDraggingObject',
     function() {
       var isDragging = false;
-      this.get('model.plan.roles').forEach(function (role) {
+
+      if (!this.get('openStack.plan.roles')) {
+        return false;
+      }
+
+      this.get('openStack.plan.roles').forEach(function (role) {
             if (role.get('isDraggingObject') === true) {
               isDragging = true;
             }
       });
+
       return isDragging;
     }
   ),
@@ -134,7 +130,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       data = { 'role_name': role.get('name'), 'flavor_name': profile.get('name') };
     }
 
-    self.updateParam(data.role_name + "-1::Flavor", data.flavor_name);
+    plan.updateParam(data.role_name + "-1::Flavor", data.flavor_name);
     request({
       url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_role_flavor',
       type: 'PUT',
@@ -147,12 +143,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     }).catch(function (error) {
         console.log('ERROR');
         console.log(error.jqXHR);
-        // TODO: Remove the reload call once we determine how to get around the failure
-        //       that appears to be due to port forwarding. But make sure to leave the show spinner setting.
-        self.set('showLoadingSpinner', true);
-        self.get('model').plan.reload().then(function () {
-          self.set('showLoadingSpinner', false);
-        });
+        return self.send('error', error);
       }
     );
   },
@@ -212,7 +203,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       this.set('showRoleConfig',   'inactive');
       var roleParams = Ember.A();
       var advancedParams = Ember.A();
-      this.get('model.plan.parameters').forEach(function(param) {
+      this.get('openStack.plan.parameters').forEach(function(param) {
         var paramId = param.get('id');
         if (paramId.indexOf(role.get('parameterPrefix')) === 0) {
           param.displayId = paramId.substring(role.get('parameterPrefix').length);
@@ -251,7 +242,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     },
 
     saveRole() {
-      var plan = this.get('model.plan');
+      var plan = this.get('openStack.plan');
       var role = this.get('edittedRole');
       var deploymentId = this.get('deploymentId');
 
@@ -266,17 +257,17 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       });
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
-      this.send('updatePlanParameters', params);
+      this.send('updateOpenStackPlan', params);
       this.closeEditDialog();
     },
 
     setRoleCount(role, count) {
       var self = this;
-      var plan = this.get('model.plan');
+      var plan = this.get('openStack.plan');
       var data = { 'role_name': role.get('name'), 'count': count };
       var deploymentId = this.get('deploymentId');
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
-      self.get('deploymentController').set((role.get('roleType') + 'RoleCount'), count);
+      plan.updateParam(role.get('countParameterName'), count);
 
       request({
         url: '/fusor/api/openstack/deployments/' + deploymentId + '/deployment_plans/overcloud/update_role_count',
@@ -309,12 +300,12 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     },
 
     removeRole(profile, role) {
-      var plan = this.get('model.plan');
+      var plan = this.get('openStack.plan');
       this.doAssignRole(plan, role, null);
     },
 
     unassignRole(role) {
-      var plan = this.get('model.plan');
+      var plan = this.get('openStack.plan');
       this.doAssignRole(plan, role, null);
     },
 
@@ -333,7 +324,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
 
     editGlobalServiceConfig() {
       var planParams = Ember.A();
-      this.get('model.plan.parameters').forEach(function(param) {
+      this.get('openStack.plan.parameters').forEach(function(param) {
         if (param.get('id').indexOf('::') === -1) {
           param.displayId = param.get('id').replace(/([a-z])([A-Z])/g, '$1 $2');
 /* Using boolean breaks saving...
@@ -364,29 +355,27 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       });
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
-      this.send('updatePlanParameters', params);
+      this.send('updateOpenStackPlan', params);
       this.closeGlobalServiceConfigDialog();
     },
 
     cancelGlobalServiceConfig() {
       this.closeGlobalServiceConfigDialog();
-    },
-
-    setRoleCountOnController(roleType, count) {
-      this.get('deploymentController').set((roleType + 'RoleCount'), count);
     }
-
   },
 
-  disableAssignNodesNext: Ember.computed('unassignedRoles.[]',
-                                         'deploymentController.computeRoleCount',
-                                         'deploymentController.controllerRoleCount' , function() {
-    var unassignedRoleTypes = this.get('unassignedRoles').getEach('roleType');
-    return (unassignedRoleTypes.contains('controller') ||
-            unassignedRoleTypes.contains('compute') ||
-            (this.get('deploymentController.computeRoleCount') === 0) ||
-            (this.get('deploymentController.controllerRoleCount') === 0)
-           );
-  })
+  disableAssignNodesNext: Ember.computed(
+    'unassignedRoles.[]',
+    'openStack.plan.computeRoleCount',
+    'openStack.plan.controllerRoleCount',
+    function () {
+      var unassignedRoleTypes = this.get('unassignedRoles').getEach('roleType'),
+        computeRoleCount = this.get('openStack.plan.computeRoleCount'),
+        controllerRoleCount = this.get('openStack.plan.controllerRoleCount');
 
+      return unassignedRoleTypes.contains('controller') ||
+        unassignedRoleTypes.contains('compute') ||
+        !computeRoleCount || computeRoleCount === '0' ||
+        !controllerRoleCount || controllerRoleCount === '0';
+    })
 });

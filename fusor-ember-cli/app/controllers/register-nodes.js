@@ -8,6 +8,7 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   assignNodesController: Ember.inject.controller('assign-nodes'),
 
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
+  openStack: Ember.computed.alias("deploymentController.openStack"),
   deployment: Ember.computed.alias("deploymentController.model"),
 
   init() {
@@ -91,12 +92,12 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     return tip;
   }),
 
-  noRegisteredNodes: Ember.computed('model.nodes.[]', function() {
-      return (this.get('model.nodes.length') < 1);
+  noRegisteredNodes: Ember.computed('openStack.nodes.[]', function() {
+      return (this.get('openStack.nodes.length') < 1);
   }),
 
-  noProfiles: Ember.computed('model.profiles.[]', function() {
-      return (this.get('model.profiles.length') < 1);
+  noProfiles: Ember.computed('openStack.profiles.[]', function() {
+      return (this.get('openStack.profiles.length') < 1);
   }),
 
   hasSelectedNode: Ember.computed('selectedNode', function() {
@@ -291,9 +292,9 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     }
   },
 
-  disableRegisterNodesNext: Ember.computed('model.nodes.[]', function() {
-    var nodeCount = this.get('model.nodes.length');
-    return (nodeCount < 2);
+  disableRegisterNodesNext: Ember.computed('openStack.nodes.[]', function() {
+    var nodeCount = this.get('openStack.nodes.length');
+    return !nodeCount || nodeCount < 2;
   }),
 
   updateAfterRegistration(resolve) {
@@ -354,8 +355,8 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
       },
       data: JSON.stringify({ 'node': createdNode })
     }).then(function(result) {
-        // node was added on the backend, but model.nodes needs to be freshed
-        self.send('refreshNodesAndFlavors');
+        // node was added on the backend, but openStack.nodes needs to be refreshed
+        self.send('refreshOpenStack');
         self.set('initRegInProcess', false);
         //push task_id into data store
         var newTask = self.store.push('introspection-task', {

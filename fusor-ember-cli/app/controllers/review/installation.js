@@ -13,7 +13,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isDisconnected: Ember.computed.alias("deploymentController.isDisconnected"),
   isNotDisconnected: Ember.computed.not("isDisconnected"),
   cdnUrl: Ember.computed.alias("model.cdn_url"),
-  neutronPublicInterface: Ember.computed.alias("overcloudController.neutronPublicInterface"),
 
   buttonDeployTitle: Ember.computed('isStarted', function() {
     if (this.get('isStarted')) {
@@ -63,6 +62,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   isRhev: Ember.computed.alias("deploymentController.isRhev"),
   isOpenStack: Ember.computed.alias("deploymentController.isOpenStack"),
+  openStack: Ember.computed.alias("deploymentController.openStack"),
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
   isSubscriptions: Ember.computed.alias("deploymentController.isSubscriptions"),
 
@@ -165,6 +165,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       this.set('continueDeploymentModalOpen', true);
       this.set('continueDeploymentModalClosed', false);
       this.set('modalOpen', true);
-    },
+    }
   }
 });

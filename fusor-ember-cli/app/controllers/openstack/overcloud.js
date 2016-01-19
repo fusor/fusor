@@ -7,7 +7,11 @@ let OvercloudController = Ember.Controller.extend(
   DeploymentControllerMixin,
   NeedsDeploymentMixin,
 {
+  openStack: Ember.computed.alias("deploymentController.openStack"),
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
+  openstackOvercloudPrivateNet: Ember.computed.alias('deploymentController.model.openstack_overcloud_private_net'),
+  openstackOvercloudFloatNet: Ember.computed.alias('deploymentController.model.openstack_overcloud_float_net'),
+  openstackOvercloudFloatGateway: Ember.computed.alias('deploymentController.model.openstack_overcloud_float_gateway'),
 
   nextStepRouteNameOvercloud: Ember.computed('isCloudForms', function() {
     if (this.get('isCloudForms')) {
@@ -22,24 +26,25 @@ let OvercloudController = Ember.Controller.extend(
       this.get('overcloudPassword') === this.get('confirmOvercloudPassword');
   }),
 
-  validOvercloudNetworks: Ember.computed('neutronPublicInterface',
-                                         'model.deployment.openstack_overcloud_private_net',
-                                         'model.deployment.openstack_overcloud_float_net',
-                                         'model.deployment.openstack_overcloud_float_gateway',
-                                         'isValidOvercloudPassword',
-                                         'isValidPrivateNetworkRange',
-                                         'isValidFloatingIpNetworkRange',
-                                         'isValidFloatingIpGateway',
-                                          function() {
-    return (Ember.isPresent(this.get('neutronPublicInterface')) &&
-            Ember.isPresent(this.get('model.deployment.openstack_overcloud_private_net')) &&
-            Ember.isPresent(this.get('model.deployment.openstack_overcloud_float_net')) &&
-            Ember.isPresent(this.get('model.deployment.openstack_overcloud_float_gateway')) &&
-            this.get('isValidOvercloudPassword') &&
-            this.get('isValidPrivateNetworkRange') &&
-            this.get('isValidFloatingIpNetworkRange') &&
-            this.get('isValidFloatingIpGateway'));
-  }),
+  validOvercloudNetworks: Ember.computed(
+    'openStack.externalNetworkInterface',
+    'openstackOvercloudPrivateNet',
+    'openstackOvercloudFloatNet',
+    'openstackOvercloudFloatGateway',
+    'isValidOvercloudPassword',
+    'isValidPrivateNetworkRange',
+    'isValidFloatingIpNetworkRange',
+    'isValidFloatingIpGateway',
+    function () {
+      return Ember.isPresent(this.get('openStack.externalNetworkInterface')) &&
+        Ember.isPresent(this.get('openstackOvercloudPrivateNet')) &&
+        Ember.isPresent(this.get('openstackOvercloudFloatNet')) &&
+        Ember.isPresent(this.get('openstackOvercloudFloatGateway')) &&
+        this.get('isValidOvercloudPassword') &&
+        this.get('isValidPrivateNetworkRange') &&
+        this.get('isValidFloatingIpNetworkRange') &&
+        this.get('isValidFloatingIpGateway');
+    }),
 
   disableNextOvercloud: Ember.computed.not('validOvercloudNetworks'),
 
@@ -47,28 +52,28 @@ let OvercloudController = Ember.Controller.extend(
   confirmOvercloudPassword: Ember.computed.alias("deploymentController.confirmOvercloudPassword"),
 
   isValidPrivateNetworkRange: Ember.computed(
-    'model.deployment.openstack_overcloud_private_net',
+    'openstackOvercloudPrivateNet',
     function() {
       return ValidationUtil.validateIpRangeAndFormat(
-        this.get('model.deployment.openstack_overcloud_private_net'));
+        this.get('openstackOvercloudPrivateNet'));
     }
   ),
 
   isValidFloatingIpNetworkRange: Ember.computed(
-    'model.deployment.openstack_overcloud_float_net',
+    'openstackOvercloudFloatNet',
     function() {
       return ValidationUtil.validateIpRangeAndFormat(
-        this.get('model.deployment.openstack_overcloud_float_net'));
+        this.get('openstackOvercloudFloatNet'));
     }
   ),
 
   isValidFloatingIpGateway: Ember.computed(
-    'model.deployment.openstack_overcloud_float_gateway',
+    'openstackOvercloudFloatGateway',
     function() {
       return ValidationUtil.validateIpRange(
-        this.get('model.deployment.openstack_overcloud_float_gateway'));
+        this.get('openstackOvercloudFloatGateway'));
     }
-  ),
+  )
 });
 
 export default OvercloudController;
