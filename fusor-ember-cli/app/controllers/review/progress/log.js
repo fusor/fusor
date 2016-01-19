@@ -10,11 +10,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   infoChecked: true,
   debugChecked: false,
   logTypes: [
-    {label: 'Deployment', value: 'fusor_log'},
-    {label: 'Foreman', value: 'foreman_log'},
-    //{label: 'Foreman Proxy', value: 'foreman_proxy_log'},
-    {label: 'Candlepin', value: 'candlepin_log'},
-    {label: 'Messages', value: 'messages_log'}
+    {label: 'RHCI Deployment (deployment.log)', value: 'fusor_log'},
+    {label: 'Satellite (foreman.log)', value: 'foreman_log'},
+    //{label: 'Satellite Proxy (proxy.log)', value: 'foreman_proxy_log'},
+    {label: 'Subscriptions (candlepin.log)', value: 'candlepin_log'},
+    {label: 'System Messages (messages)', value: 'messages_log'}
   ],
 
   showLogLoading: Ember.computed('errorMessage', 'isLoading', function() {
