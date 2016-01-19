@@ -6,7 +6,7 @@ moduleForComponent('error-modal', 'Integration | Component | error modal', {
 });
 
 test('it renders', function(assert) {
-  expect(1)
+  expect(1);
   //this.render(hbs`{{error-modal}}`);
   assert.ok(true);
 });
