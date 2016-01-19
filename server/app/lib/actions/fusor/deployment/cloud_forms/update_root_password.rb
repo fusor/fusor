@@ -50,7 +50,7 @@ module Actions
               # retry if necessary
               sleep_seconds = 30
               while !@success && @retry
-                ::Fusor.log.info "UpdateRootPassword will retry again once in #{sleep_seconds}."
+                ::Fusor.log.info "UpdateRootPassword will retry again in #{sleep_seconds} seconds."
 
                 # pause for station identification, actually pausing to give
                 # cfme time to start ssh or whatever caused the original timeout
@@ -66,6 +66,14 @@ module Actions
             rescue Exception => e
               @io.close if @io && !@io.closed?
               fail _("Failed to update root password on appliance. Error message: #{e.message}")
+            else
+              if !@success && @retries <= 0
+                fail _("Failed to update root password on appliance. Retries exhausted. Error: #{@io.string}")
+              elsif !@success
+                fail _("Failed to update root password on appliance. Unhandled error: #{@io.string}")
+              end
+            ensure
+              @io.close unless @io.closed?
             end
             ::Fusor.log.info "================ Leaving UpdateRootPassword run method ===================="
           end
@@ -86,7 +94,7 @@ module Actions
           def update_root_password_failed
             ::Fusor.log.debug "=========== failed entered ============="
             @retries -= 1
-            if !@success && @retries >= 0 && @io.string.include?("execution expired")
+            if !@success && @retries >= 0 && recoverable_error?
               @retry = true
             else
               @retry = false
@@ -95,6 +103,11 @@ module Actions
               ::Fusor.log.error "Probable error. Will we retry? #{@retry}. Error message: #{@io.string}"
             end
             ::Fusor.log.debug "=========== failed exited ============="
+          end
+
+          def recoverable_error?
+            recoverable_msgs = ["execution expired", "Connection refused"]
+            recoverable_msgs.any? { |msg| @io.string.include?(msg) }
           end
         end
       end
