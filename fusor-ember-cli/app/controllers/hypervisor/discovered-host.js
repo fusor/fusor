@@ -99,17 +99,27 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   }),
 
-  isHostnameInvalid: false, //can overwritten by action setToInvalidHostname() triggered from tr-engine-hypervisor-mixin.js
-  disableNextOnHypervisor: Ember.computed(
-    'isHostnameInvalid',
-    'rhevController.hasNoHypervisor',
-    'cntSelectedHypervisorHosts',
-    function() {
-      return (this.get('isHostnameInvalid') ||
-              this.get('rhevController.hasNoHypervisor') ||
-              this.get('cntSelectedHypervisorHosts') === 0);
+  hostnameValidity: Ember.Object.create({
+    updated: Date.now(),
+    state: Ember.Object.create()
   }),
+  disableNextOnHypervisor: Ember.computed(
+    'hypervisorModelIds',
+    'hostnameValidity.updated',
+    function() {
+      if(this.get('hypervisorModelIds') == 0) {
+        return true
+      }
 
+      let vState = this.get('hostnameValidity').get('state');
+      let trackedHostIds = Ember.keys(vState);
+      return trackedHostIds.length == 0 ||
+        !trackedHostIds
+          .filter((hostId) => this.get('hypervisorModelIds').contains(hostId))
+          .map((k) => vState.get(k))
+          .reduce((lhs, rhs) => lhs && rhs);
+    }
+  ),
   actions: {
 
     setCheckAll() {
@@ -139,10 +149,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       this.get('deploymentController.model').save();
     },
 
-    setIfHostnameInvalid(bool) {
-      this.set('isHostnameInvalid', bool);
+    setIfHostnameInvalid(isInvalid, hostId) {
+      this.get('hostnameValidity').get('state').set(hostId, !isInvalid);
+      this.get('hostnameValidity').set('updated', Date.now());
     }
-
   }
-
 });
