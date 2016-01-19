@@ -4,52 +4,56 @@
   </div>
 
   <div class='col-sm-6 col-md-8 col-lg-9'>
-    {{#if isExternalURL}}
-        <a href={{value}} target="_blank">{{value}}</a>
-        {{#if ipAddress}}
-          <button {{action 'doNothing' bubbles=false}}
-                  class="pficon fa fa-info-circle rhci-popover-button"
-                  data-toggle="popover"
-                  data-content='{{helpTextIpAddress}}'>
-          </button>
-        {{/if}}
-
-    {{else if isNotALink}}
-        {{#if useYieldInstead}}
-          {{yield}}
-        {{else}}
-          {{valueFormatted}}
-        {{/if}}
-        {{#if isPassword}}
-            <i {{action 'showPassword'}} class="fa {{eyeIcon}}"></i>
-        {{/if}}
+    {{#if isLoading}}
+        <span class="spinner spinner-xs spinner-inline"></span>
     {{else}}
-        {{#link-to routeName}}
+        {{#if isExternalURL}}
+            <a href={{value}} target="_blank">{{value}}</a>
+            {{#if ipAddress}}
+              <button {{action 'doNothing' bubbles=false}}
+                      class="pficon fa fa-info-circle rhci-popover-button"
+                      data-toggle="popover"
+                      data-content='{{helpTextIpAddress}}'>
+              </button>
+            {{/if}}
+
+        {{else if isNotALink}}
             {{#if useYieldInstead}}
               {{yield}}
             {{else}}
               {{valueFormatted}}
             {{/if}}
-        {{/link-to}}
-        {{#if isPassword}}
-              <i {{action 'showPassword'}} class="fa {{eyeIcon}}"></i>
+            {{#if isPassword}}
+                <i {{action 'showPassword'}} class="fa {{eyeIcon}}"></i>
+            {{/if}}
+        {{else}}
+            {{#link-to routeName}}
+                {{#if useYieldInstead}}
+                  {{yield}}
+                {{else}}
+                  {{valueFormatted}}
+                {{/if}}
+            {{/link-to}}
+            {{#if isPassword}}
+                  <i {{action 'showPassword'}} class="fa {{eyeIcon}}"></i>
+            {{/if}}
         {{/if}}
-    {{/if}}
 
-    {{#if showValidationMessage}}
-      <span class='errorForValidation'>
-        {{#link-to routeName}}
-          {{validationMessage}}
-        {{/link-to}}
-      </span>
-    {{/if}}
+        {{#if showValidationMessage}}
+          <span class='errorForValidation'>
+            {{#link-to routeName}}
+              {{validationMessage}}
+            {{/link-to}}
+          </span>
+        {{/if}}
 
-    {{#if showDefaultMessage}}
-      <span class='defaultValue'>
-        {{#link-to routeName}}
-          {{defaultMessage}}
-        {{/link-to}}
-      </span>
+        {{#if showDefaultMessage}}
+          <span class='defaultValue'>
+            {{#link-to routeName}}
+              {{defaultMessage}}
+            {{/link-to}}
+          </span>
+        {{/if}}
     {{/if}}
   </div>
 </div>

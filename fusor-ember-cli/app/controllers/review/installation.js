@@ -11,6 +11,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   isSelfHost: Ember.computed.alias("rhevController.isSelfHost"),
   isDisconnected: Ember.computed.alias("deploymentController.isDisconnected"),
+  isOspLoading: Ember.computed.alias("deploymentController.isOspLoading"),
   isNotDisconnected: Ember.computed.not("isDisconnected"),
   cdnUrl: Ember.computed.alias("model.cdn_url"),
 
