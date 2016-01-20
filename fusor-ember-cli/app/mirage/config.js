@@ -94,7 +94,7 @@ export default function() {
   });
 
   this.get('/fusor/api/openstack/deployments/:id/nodes', function(db, request) {
-    return db.nodes;
+    return {nodes: db.nodes};
   });
 
   this.post('/fusor/api/openstack/deployments/:id/nodes', function(db, request) {
@@ -103,11 +103,21 @@ export default function() {
   });
 
   this.get('/fusor/api/openstack/deployments/:id/flavors', function(db, request) {
-    return db.flavors;
+    // NOTE root node is flavor and not flavors
+    return {flavor: db.flavors};
   });
 
   this.get('/fusor/api/openstack/deployments/:id/images', function(db, request) {
-    return db.images;
+    return {images: db.images};
+  });
+
+  this.get('/fusor/api/openstack/deployments/:id/deployment_plans/overcloud', function(db, request) {
+    return {deployment_plan: db.deployment_plan[0]};
+  });
+
+  this.put('/fusor/api/openstack/deployments/:id/deployment_plans/overcloud/:update_action', function(db, request) {
+    // return deployment plan even though UI should update not based on response
+    return {deployment_plan: db.deployment_plan[0]};
   });
 
   this.get('/fusor/api/v21/subscriptions');
