@@ -47,7 +47,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
   loadOpenStack(controller, model) {
     var self = this;
     if (model.get('deploy_openstack') && !Ember.isBlank(model.get('openstack_undercloud_password'))) {
-      controller.set('ospLoading', true);
+      controller.set('isOspLoading', true);
       Ember.RSVP.hash({
         plan: this.store.findRecord('deployment-plan', model.get('id')),
         images: this.store.query('image', {deployment_id: model.get('id')}),
@@ -62,9 +62,10 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
         // so we're using an alias which updates the plan on route deactivate on the corresponding page anyway
           controller.set('openStack.externalNetworkInterface', openStack.get('plan.externalNetworkInterface'));
           controller.set('openStack.overcloudPassword', openStack.get('plan.overcloudPassword'));
+          controller.set('isOspLoading', false);
         },
         function (error) {
-          controller.set('ospLoading', false);
+          controller.set('isOspLoading', false);
           console.log('Error retrieving OpenStack data', error);
           return self.send('error', error);
         });

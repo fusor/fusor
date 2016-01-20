@@ -111,7 +111,8 @@
           {{review-link label='Undercloud URL' value=undercloudUrl isRequired=true isExternalURL=true}}
             {{review-link label='Undercloud username' value=undercloudUsername isRequired=true}}
             {{review-link label='Undercloud password' value=undercloudPassword isPassword=true isRequired=true}}
-            {{#review-link label='Assigned Nodes' routeName='assign-nodes' isRequired=true value=openStack.profiles useYieldInstead=true}}
+            {{#review-link label='Assigned Nodes' routeName='assign-nodes' isRequired=true
+                           value=openStack.profiles  useYieldInstead=true isLoading=isOspLoading}}
                 {{#each openStack.profiles as |profile|}}
                     {{node-profile profile=profile nodes=openStack.nodes plan=openStack.plan doAssign=true readOnly=true}}
                 {{/each}}
@@ -119,7 +120,8 @@
             {{review-link label='External Network Interface'
                           value=openStack.plan.externalNetworkInterface
                           isRequired=true
-                          routeName='openstack.overcloud'}}
+                          routeName='openstack.overcloud'
+                          isLoading=isOspLoading}}
             {{review-link label='Private Network'
                           value=model.openstack_overcloud_private_net
                           isRequired=true
