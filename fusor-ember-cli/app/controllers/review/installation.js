@@ -145,16 +145,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   }),
 
-  deploymentButtonAction: Ember.computed('hasSubscriptionsToAttach', function() {
-    if (this.get('showWarningMessage')) {
-      return "showContinueDeployModal";
-    } else if (this.get('hasSubscriptionsToAttach')) {
-      return "attachSubscriptions";
-    } else {
-      return "installDeployment";
-    }
-  }),
-
   closeContinueDeployModal() {
     this.set('continueDeploymentModalOpen', false);
     this.set('continueDeploymentModalClosed', true);
@@ -163,9 +153,20 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   actions: {
     showContinueDeployModal() {
+      this.set('deploymentInModal', this.get('model'));
       this.set('continueDeploymentModalOpen', true);
       this.set('continueDeploymentModalClosed', false);
       this.set('modalOpen', true);
+    },
+
+    onDeployButton() {
+      if (this.get('showWarningMessage')) {
+        this.send('showContinueDeployModal');
+      } else if (this.get('hasSubscriptionsToAttach')) {
+        this.send('attachSubscriptions');
+      } else {
+        this.send('installDeployment');
+      }
     }
   }
 });
