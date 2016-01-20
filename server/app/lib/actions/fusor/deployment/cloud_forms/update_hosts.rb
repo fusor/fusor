@@ -26,7 +26,7 @@ module Actions
           end
 
           def run
-            ::Fusor.log.info "================ UpdateHosts run method ===================="
+            ::Fusor.log.debug "================ UpdateHosts run method ===================="
             begin
 
               ssh_user = "root"
@@ -46,7 +46,7 @@ module Actions
               @io.close if @io && !@io.closed?
               fail _("Failed to update /etc/hosts on appliance. Error message: #{e.message}")
             end
-            ::Fusor.log.info "================ Leaving UpdateHosts run method ===================="
+            ::Fusor.log.debug "================ Leaving UpdateHosts run method ===================="
           end
 
         end

@@ -26,8 +26,10 @@ module Actions
           end
 
           def run
-            ::Fusor.log.info "================ UpdateRootPassword run method ===================="
+            ::Fusor.log.debug "================ UpdateRootPassword run method ===================="
             begin
+
+              ::Fusor.log.info("Updating CFME password...")
 
               ssh_user = "root"
               ssh_password = "smartvm"
@@ -75,7 +77,7 @@ module Actions
             ensure
               @io.close unless @io.closed?
             end
-            ::Fusor.log.info "================ Leaving UpdateRootPassword run method ===================="
+            ::Fusor.log.debug "================ Leaving UpdateRootPassword run method ===================="
           end
 
           def update_root_password_completed

@@ -24,6 +24,7 @@ module Actions
 
         def plan(repository)
           super()
+          ::Fusor.log.info "Planning to sync #{repository.label}"
           plan_self(:id => repository.id)
         end
 

@@ -21,7 +21,7 @@ module Actions
 
           def plan(deployment)
             super(deployment)
-            ::Fusor.log.info "================ Planning CFME Deployment ===================="
+            ::Fusor.log.info "Planning CFME Deployment"
 
             # VERIFY PARAMS HERE
             if deployment.deploy_cfme

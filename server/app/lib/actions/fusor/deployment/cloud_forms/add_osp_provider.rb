@@ -25,7 +25,7 @@ module Actions
           end
 
           def run
-            ::Fusor.log.info "================ AddOspProvider run method ===================="
+            ::Fusor.log.debug "================ AddOspProvider run method ===================="
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             cfme_address = deployment.cfme_address
@@ -35,8 +35,10 @@ module Actions
                          :password => deployment.openstack_overcloud_password
             }
 
+            ::Fusor.log.info "Adding OSP provider #{deployment.name}-RHOS to CFME."
+
             Utils::CloudForms::CloudProvider.add(cfme_address, provider, deployment)
-            ::Fusor.log.info "================ Leaving AddOspProvider run method ===================="
+            ::Fusor.log.debug "================ Leaving AddOspProvider run method ===================="
           end
         end
       end
