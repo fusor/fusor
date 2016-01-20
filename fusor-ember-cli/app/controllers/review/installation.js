@@ -153,6 +153,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   actions: {
     showContinueDeployModal() {
+      this.set('deploymentInModal', this.get('model'));
       this.set('continueDeploymentModalOpen', true);
       this.set('continueDeploymentModalClosed', false);
       this.set('modalOpen', true);
