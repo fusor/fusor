@@ -2,6 +2,11 @@ import Mirage from 'ember-cli-mirage';
 
 export default function() {
 
+  // route to prevent js console error by ember-cli-blanket
+  this.post('/write-blanket-coverage', function(db, request) {
+      return {};
+  });
+
   this.get('/fusor/api/v21/deployments');
   this.post('/fusor/api/v21/deployments');
   this.get('/fusor/api/v21/deployments/:id');
