@@ -3,8 +3,6 @@ import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  //todo - delete hypervisorDiscoveredHostController, not used?
-  //hypervisorDiscoveredHostController: Ember.inject.controller('hypervisor/discovered-host'),
   rhevController: Ember.inject.controller('rhev'),
 
   selectedRhevEngineHost: Ember.computed.alias("model"),
@@ -30,15 +28,12 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
      if (this.get('allDiscoveredHosts')) {
         return allDiscoveredHosts.filter(function(item) {
           if (self.get('hypervisorModelIds')) {
-            //console.log(item.get('id'));
-            //console.log(self.get('hypervisorModelIds'));
             return !(self.get('hypervisorModelIds').contains(item.get('id')));
           }
         });
       }
   }),
 
-  // same as Engine. TODO. put it mixin
   filteredHosts: Ember.computed('availableHosts.[]', 'searchString', 'isStarted', function(){
     var searchString = this.get('searchString');
     var rx = new RegExp(searchString, 'gi');
@@ -62,22 +57,25 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return (this.get('model.id')) ? 1 : 0;
   }),
 
-  isHostnameInvalid: false, //can overwritten by action setToInvalidHostname() triggered from tr-engine-hypervisor-mixin.js
-  disableNextOnEngine: Ember.computed('isHostnameInvalid', 'deploymentController.hasNoEngine', function() {
-    return (this.get('isHostnameInvalid') || this.get('deploymentController.hasNoEngine'));
+  isSelectedEngineHostnameInvalid: false,
+
+  disableNextOnEngine: Ember.computed(
+    'isSelectedEngineHostnameInvalid',
+    'deploymentController.hasNoEngine',
+    function()
+  {
+    return this.get('depoymentController.hasNoEngine') ||
+      this.get('isSelectedEngineHostnameInvalid');
   }),
 
   actions: {
-    setEngine(host, isInvalidHostname) {
-      var deployment = this.get('deploymentController');
-      if (!isInvalidHostname) {
-        deployment.set('model.discovered_host', host);
-      }
+    onEngineChanged(newlySelectedHost, isInvalidHostname) {
+      this.set('isSelectedEngineHostnameInvalid', isInvalidHostname);
+      this.set('deploymentController.model.discovered_host', newlySelectedHost);
     },
-
     setIfHostnameInvalid(bool) {
-      this.set('isHostnameInvalid', bool);
+      // Triggered on hostname value changes, *not* when the selected host changes
+      this.set('isSelectedEngineHostnameInvalid', bool);
     }
   }
-
 });
