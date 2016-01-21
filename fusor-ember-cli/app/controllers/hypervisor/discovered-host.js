@@ -107,13 +107,13 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     'hypervisorModelIds',
     'hostnameValidity.updated',
     function() {
-      if(this.get('hypervisorModelIds') == 0) {
-        return true
+      if(this.get('hypervisorModelIds') === 0) {
+        return true;
       }
 
       let vState = this.get('hostnameValidity').get('state');
       let trackedHostIds = Ember.keys(vState);
-      return trackedHostIds.length == 0 ||
+      return trackedHostIds.length === 0 ||
         !trackedHostIds
           .filter((hostId) => this.get('hypervisorModelIds').contains(hostId))
           .map((k) => vState.get(k))
