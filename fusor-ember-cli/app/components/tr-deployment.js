@@ -10,24 +10,22 @@ export default Ember.Component.extend({
     return !!(this.get('deployment.foreman_task_uuid'));
   }),
 
-  isComplete: Ember.computed('deployment.progress', function() {
-   return this.get('deployment.progress') === '1';
+  isComplete: Ember.computed('foremanTask', 'foremanTask.progress', function() {
+    return this.get('foremanTask.progress') === '1';
   }),
 
-  formanTaskResult: Ember.computed('deployment.foreman_task_uuid', function() {
-    var self = this;
-    if (this.get('deployment.foreman_task_uuid')) {
-      var call = this.get('targetObject.store').findRecord('foreman-task', this.get('deployment.foreman_task_uuid'));
-      return call.then(function(result) {
-          return self.set('formanTaskResult', result.get('result'));
-      });
-    } else {
+  foremanTask: Ember.computed('deployment.foreman_task_uuid', function() {
+    let foremanTaskUuid = this.get('deployment.foreman_task_uuid');
+
+    if (!foremanTaskUuid) {
       return null;
     }
+
+    return this.get('targetObject.store').findRecord('foreman-task', foremanTaskUuid);
   }),
 
-  isError: Ember.computed('formanTaskResult', function() {
-    return (this.get('formanTaskResult') === 'error');
+  isError: Ember.computed('foremanTask.result', function() {
+    return (this.get('foremanTask.result') === 'error');
   }),
 
   canDelete: Ember.computed('isStarted', 'isError', function() {
