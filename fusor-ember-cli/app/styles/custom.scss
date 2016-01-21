@@ -133,6 +133,14 @@ label.env_path_disabled:after {
   color: #a94442;
 }
 
+.validation-alert-icon {
+  float: left;
+}
+
+.validation-alert-message {
+  margin-left: 24px;
+}
+
 .warningForValidation, .warningForValidation a {
   color: $warning-color;
 }

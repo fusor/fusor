@@ -4,21 +4,39 @@
     <div class="row">
       <div class='col-md-9'>
         <div class='alert alert-danger rhci-alert'>
-            <i class="fa fa-2x fa-exclamation-triangle errorForValidation"></i>
-            &nbsp;
-            {{errorMsg}}
+          <i class="fa fa-2x fa-exclamation-triangle errorForValidation"></i>
+          &nbsp;
+          {{errorMsg}}
         </div>
       </div>
     </div>
   {{/if}}
 
-  {{#if showWarningMessage}}
+  {{#if showValidationErrors}}
+    <div class="row">
+      <div class='col-md-9'>
+        <div class='alert alert-danger rhci-alert'>
+          <i class="fa fa-2x fa-exclamation-triangle errorForValidation validation-alert-icon"></i>
+          <ul class="validation-alert-message">
+            {{#each validationErrors as |errorMsg|}}
+              <li>{{errorMsg}}</li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+  {{#if showValidationWarnings}}
     <div class="row">
       <div class='col-md-9'>
         <div class='alert alert-warning rhci-alert'>
-            <i class="fa fa-2x fa-exclamation-triangle warningForValidation"></i>
-            &nbsp;
-            {{warningMsg}}
+            <i class="fa fa-2x fa-exclamation-triangle warningForValidation validation-alert-icon"></i>
+            <ul class="validation-alert-message">
+              {{#each validationWarnings as |warningMsg|}}
+                <li>{{warningMsg}}</li>
+              {{/each}}
+            </ul>
         </div>
       </div>
     </div>

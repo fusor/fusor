@@ -65,11 +65,13 @@ module Fusor
     end
 
     def validate
-      status = @deployment.valid? ? 200 : 422
-
-      render status: status, json: {
-        :errors => @deployment.errors.full_messages,
-        :warnings => @deployment.warnings
+      @deployment.valid?
+      render json: {
+          :validation => {
+              :deployment_id => @deployment.id,
+              :errors => @deployment.errors.full_messages,
+              :warnings => @deployment.warnings
+          }
       }
     end
 
