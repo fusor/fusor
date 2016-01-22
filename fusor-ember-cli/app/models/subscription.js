@@ -13,7 +13,8 @@ export default DS.Model.extend({
   deployment: DS.belongsTo('deployment', {inverse: 'subscriptions', async: true}),
 
   qtySumAttached: Ember.computed('quantity_to_add', 'quantity_attached', function() {
-    return (this.get('quantity_to_add') + this.get('quantity_attached'));
+    return (parseInt(this.get('quantity_to_add')) +
+            parseInt(this.get('quantity_attached')));
   })
 
 });
