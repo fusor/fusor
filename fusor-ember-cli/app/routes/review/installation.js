@@ -36,6 +36,11 @@ export default Ember.Route.extend({
         var deployment = self.modelFor('deployment');
         var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
+        var validationErrors = controller.get('validationErrors');
+
+        controller.set('validationErrors', []);
+        controller.set('validationWarnings', []);
+
         controller.set('showSpinner', true);
         controller.set('spinnerTextMessage', "Validating deployment...");
 
@@ -47,19 +52,15 @@ export default Ember.Route.extend({
                 "Content-Type": "application/json",
                 "X-CSRF-Token": token
             }
-        }).then(function(response) {
-            controller.set('showSpinner', false);
-
-            controller.set('showErrorMessage', response.errors.length > 0);
-            controller.set('errorMsg', response.errors.join("\n"));
-
-            controller.set('showWarningMessage', response.warnings.length > 0);
-            controller.set('warningMsg', response.warnings.join("\n"));
-        }, function(response){
-            controller.set('showSpinner', false);
-            console.log(response);
-            var errorMsg = response.responseText;
-            controller.set('errorMsg', errorMsg);
+        }).then(function (response) {
+          controller.set('showSpinner', false);
+          controller.set('validationErrors', response.validation.errors);
+          controller.set('validationWarnings', response.validation.warnings);
+        }, function(error){
+          console.log('error', error);
+          controller.set('showSpinner', false);
+          controller.set('errorMsg', error.jqXHR.responseText);
+          controller.set('showErrorMessage', true);
         });
     }
   }

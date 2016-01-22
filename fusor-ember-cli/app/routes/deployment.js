@@ -116,32 +116,51 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       controller.set('showSpinner', true);
 
       request({
-          url: '/fusor/api/v21/deployments/' + deployment.get('id') + '/deploy' ,
-          type: "PUT",
-          headers: {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-              "X-CSRF-Token": token,
-              "Authorization": "Basic " + self.get('session.basicAuthToken')
-          }
-          }).then(function(response) {
-            var uuid = response.id;
-            console.log('task uuid is ' + uuid);
-            deployment.set('foreman_task_uuid', uuid);
-            deployment.save().then(function () {
+        url: '/fusor/api/v21/deployments/' + deployment.get('id') + '/deploy',
+        type: "PUT",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "X-CSRF-Token": token,
+          "Authorization": "Basic " + self.get('session.basicAuthToken')
+        }
+      }).then(
+        function (response) {
+          var uuid = response.id;
+          console.log('task uuid is ' + uuid);
+          deployment.set('foreman_task_uuid', uuid);
+          deployment.save().then(
+            function () {
+              controller.set('showSpinner', false);
               return self.transitionTo('review.progress.overview');
-            }, function () {
+            },
+            function () {
+              controller.set('showSpinner', false);
               controller.set('errorMsg', 'Error in saving UUID of deployment task.');
               controller.set('showErrorMessage', true);
             });
-          }, function(error) {
-            controller.set('showSpinner', false);
-            console.log(error);
-            var errorMsg = error.responseText;
-            controller.set('errorMsg', errorMsg);
-            controller.set('showErrorMessage', true);
+        },
+        function (response) {
+          controller.set('showSpinner', false);
+
+          if (response.jqXHR.status === 422 && response.jqXHR.responseJSON && response.jqXHR.responseJSON.errors) {
+            // rails is sending back validation errors as a 422 with an errors hash that looks like
+            // errors: {field => [error_messages]}
+            let validationErrors = [];
+            let errors = response.jqXHR.responseJSON.errors;
+            let addValidationError = (error) => validationErrors.push(error);
+
+            for (var prop in errors) {
+              if (errors.hasOwnProperty(prop)) {
+                errors[prop].forEach(addValidationError);
+              }
             }
-          );
+            controller.set('validationErrors', validationErrors);
+          } else {
+            controller.set('errorMsg', response.jqXHR.responseText);
+            controller.set('showErrorMessage', true);
+          }
+        });
     },
 
     attachSubscriptions() {
@@ -209,7 +228,16 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     error(reason) {
       console.log(reason);
       var controller = this.controllerFor('deployment');
-      controller.set('errorMsg', reason.responseJSON.error.message);
+
+      if (typeof reason === 'string') {
+        controller.set('errorMsg', reason);
+      } else if (reason && typeof reason === 'object') {
+        if (reason.responseJSON && reason.responseJSON.error && reason.responseJSON.error.message) {
+          controller.set('errorMsg', reason.responseJSON.error.message);
+        } else if (reason.responseText) {
+          controller.set('errorMsg', reason.responseText);
+        }
+      }
     },
 
     refreshModel() {

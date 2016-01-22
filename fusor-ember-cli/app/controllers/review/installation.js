@@ -33,14 +33,21 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   buttonDeployDisabled: Ember.computed('deploymentController.isDisabledReview',
                                        'isMissingSubscriptions', function() {
-    return this.get('deploymentController.isDisabledReview') ||
-           this.get('isMissingSubscriptions');
+    return this.get('deploymentController.isDisabledReview(') ||
+           this.get('isMissingSubscriptions') ||
+           this.get('validationErrors.length') > 0;
   }),
 
-  showErrorMessage: false,
-  errorMsg: null,
-  showWarningMessage: false,
-  warningMsg: null,
+  validationWarnings: [],
+  showValidationWarnings: Ember.computed('validationWarnings', function () {
+    return this.get('validationWarnings.length') > 0;
+  }),
+
+  validationErrors: [],
+  showValidationErrors: Ember.computed('validationErrors', function () {
+    return this.get('validationErrors.length') > 0;
+  }),
+
   foremanTasksURL: null,
   skipContent: Ember.computed.alias("deploymentController.skipContent"),
 

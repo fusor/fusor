@@ -143,7 +143,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     }).catch(function (error) {
         console.log('ERROR');
         console.log(error.jqXHR);
-        return self.send('error', error);
+        return self.send('error', error.jqXHR);
       }
     );
   },
