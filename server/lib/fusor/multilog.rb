@@ -64,15 +64,24 @@ class MultiLogger
         procs = `ps -elf | grep "#{file}" | grep -v "grep"`
         procs.split("\n").each do |p|
           pid = p.split(" ")[3].to_i
-          Process.kill(9, pid)
+          terminate(pid)
         end
 
         procs = `ps -elf | grep "#{entry[:file]}" | grep -v "grep"`
         procs.split("\n").each do |p|
           pid = p.split(" ")[3].to_i
-          Process.kill(9, pid)
+          terminate(pid)
         end
       end
+    end
+  end
+
+  def terminate(pid)
+    begin
+      Process.kill(9, pid)
+    rescue => exception
+      self.warn("Terminating log tail process #{pid} failed.")
+      self.warn(exception)
     end
   end
 
