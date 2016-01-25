@@ -13,3 +13,7 @@
 {{#if isCloudForms}}
   {{progress-bar model=cfmeTask name=nameCloudForms isSatelliteProgressBar=false}}
 {{/if}}
+
+{{#if showDeployTaskProgressBar}}
+  {{progress-bar model=deployTask name='Total Deployment' isSatelliteProgressBar=false}}
+{{/if}}

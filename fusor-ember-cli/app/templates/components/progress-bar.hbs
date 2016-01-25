@@ -9,6 +9,8 @@
       <i class="fa fa-check-circle-o green-circle"></i>&nbsp;
     {{else if isError}}
       <i class="fa fa-exclamation-triangle errorForValidation"></i>&nbsp;
+    {{else if isStopped}}
+      <i class="fa fa-exclamation-triangle warningForValidation"></i>&nbsp;
     {{else if isSatelliteProgressBar}}
       <div class="spinner spinner-xs spinner-inline"></div>
     {{else if isStarted}}
