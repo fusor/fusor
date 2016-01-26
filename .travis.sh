@@ -32,7 +32,7 @@ if [ $1 == "install" ]; then
   echo "gem 'fusor_server', :path => '../fusor/server'" >> bundler.d/local.rb
   echo "gem 'katello', :path => '../katello'" >> bundler.d/local.rb
   echo "gem 'foretello_api_v21', :path => '../foretello_api_v21'" >> bundler.d/local.rb
-  echo "gem 'foreman_discovery'" >> bundler.d/local.rb
+  echo "gem 'foreman_discovery', '< 4.2.0'" >> bundler.d/local.rb
   echo "gem 'dynflow'" >> bundler.d/local.rb
   echo "gem 'less-rails'" >> bundler.d/local.rb
   echo "gem 'logger'" >> bundler.d/local.rb
