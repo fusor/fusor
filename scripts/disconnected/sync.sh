@@ -11,15 +11,15 @@ katello-disconnected enable -r cf-me-5_5-for-rhel-7-files--x86_64
 #katello-disconnected enable -r rhel-7-server-kickstart-7_1-x86_64
 
 # rhev-m
-katello-disconnected enable -r rhel-6-server-rpms-6_7-x86_64
+katello-disconnected enable -r rhel-6-server-rpms-6Server-x86_64
 katello-disconnected enable -r rhel-6-server-kickstart-6_7-x86_64
 katello-disconnected enable -r rhel-6-server-satellite-tools-6_1-rpms--x86_64
-katello-disconnected enable -r rhel-6-server-supplementary-rpms-6_7-x86_64
-katello-disconnected enable -r rhel-6-server-rhevm-3_5-rpms-6_7-x86_64
-katello-disconnected enable -r jb-eap-6-for-rhel-6-server-rpms-6_7-x86_64
+katello-disconnected enable -r rhel-6-server-supplementary-rpms-6Server-x86_64
+katello-disconnected enable -r rhel-6-server-rhevm-3_5-rpms-6Server-x86_64
+katello-disconnected enable -r jb-eap-6-for-rhel-6-server-rpms-6Server-x86_64
 
 # rhev-h (plus rhev-m)
-katello-disconnected enable -r rhel-6-server-rhev-mgmt-agent-rpms-6_7-x86_64
+katello-disconnected enable -r rhel-6-server-rhev-mgmt-agent-rpms-6Server-x86_64
 
 # openstack
 katello-disconnected enable -r rhel-7-server-rpms-7Server-x86_64
