@@ -39,14 +39,13 @@ EXPORT_DIR="$1"
 
 # fix cf-me image files
 mkdir -p $EXPORT_DIR/content/dist/cf-me/server/5.5/x86_64/files/
+fix_listing_files $EXPORT_DIR/content/dist/cf-me/server/5.5/ false
 
 echo "Moving cf-me-5_5-for-rhel-7-files--x86_64/* to $EXPORT_DIR/content/dist/cf-me/server/5.5/x86_64/files/"
 mv cf-me-5_5-for-rhel-7-files--x86_64/* $EXPORT_DIR/content/dist/cf-me/server/5.5/x86_64/files/
+
 
 # fix openstack directory files
 mkdir -p $EXPORT_DIR/content/dist/rhel/server/7/7Server/x86_64/openstack-director/7.0/files/
 echo "Moving rhel-7-server-openstack-7_0-files-7Server-x86_64/* to $EXPORT_DIR/content/dist/rhel/server/7/7Server/x86_64/openstack-director/7.0/files/"
 mv rhel-7-server-openstack-7_0-files-7Server-x86_64/* $EXPORT_DIR/content/dist/rhel/server/7/7Server/x86_64/openstack-director/7.0/files/
-
-# recursively fix openstack listing files
-fix_listing_files $EXPORT_DIR/content/dist/rhel/server/7/7Server/x86_64/openstack-director/7.0/ true
