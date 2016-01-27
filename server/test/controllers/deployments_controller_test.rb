@@ -66,5 +66,140 @@ module Fusor
       assert_equal "Actions::Fusor::Deploy", response['label'], "The deploy request did not return the expected task"
     end
 
+    context 'log' do
+      setup do
+        @missing_log_path = "#{Rails.root}/test/fixtures/missing_file.log"
+        @test_log_path = "#{Rails.root}/test/fixtures/log_reader_test_file.log"
+      end
+
+      test 'returns nil when no log file exists' do
+        @controller.stubs(:get_log_path).with('fusor_log').returns(@missing_log_path).once
+        response = JSON.parse(get(:log, :id => @deployment.id, :log_type => 'fusor_log').body)
+
+        assert_response :success
+        assert_nil response['fusor_log'], 'Response did not return nil'
+      end
+
+      test 'returns fusor log when no log_type param' do
+        @controller.stubs(:get_log_path).with('fusor_log').returns(@test_log_path).once
+        response = JSON.parse(get(:log, :id => @deployment.id).body)
+
+        assert_response :success
+        assert_not_nil response['fusor_log'], 'Response missing fusor log'
+      end
+
+      test 'get full fusor log returns all entries from the fusor log' do
+        @controller.stubs(:get_log_path).with('fusor_log').returns(@test_log_path).once
+        response = JSON.parse(get(:log, :id => @deployment.id, :log_type => 'fusor_log').body)
+
+        assert_response :success
+        assert_not_nil response['fusor_log'], 'Response missing fusor log'
+        assert_equal @test_log_path, response['fusor_log']['path'], 'Path name incorrect'
+        assert_not_nil response['fusor_log']['entries'], 'Did not retrieve any entries'
+        assert_equal 7, (response['fusor_log']['entries']).length, 'Did not retrieve all entries'
+      end
+
+      test 'get tail of fusor log returns entries since the last line' do
+        @controller.stubs(:get_log_path).with('fusor_log').returns(@test_log_path).once
+        response = JSON.parse(get(:log, :id => @deployment.id, :log_type => 'fusor_log', :line_number_gt => 5).body)
+
+        assert_response :success
+        assert_not_nil response['fusor_log'], 'Response missing fusor log'
+        assert_equal @test_log_path, response['fusor_log']['path'], 'Path name incorrect'
+        assert_not_nil response['fusor_log']['entries'], 'Did not retrieve any entries'
+        assert_equal 2, (response['fusor_log']['entries']).length, 'Did not retrieve all entries'
+      end
+    end
+
+    context 'create_log_reader' do
+      test 'defaults to basic log reader when no type is provided' do
+        reader = @controller.send :create_log_reader, nil
+        assert_equal Fusor::Logging::LogReader, reader.class, 'Incorrect reader created'
+      end
+
+      test 'returns RailsLogReader for fusor_log' do
+        reader = @controller.send :create_log_reader, 'fusor_log'
+        assert_equal Fusor::Logging::RailsLogReader, reader.class, 'Incorrect reader created'
+      end
+
+      test 'returns RailsLogReader for foreman_log' do
+        reader = @controller.send :create_log_reader, 'foreman_log'
+        assert_equal Fusor::Logging::RailsLogReader, reader.class, 'Incorrect reader created'
+      end
+
+      test 'returns JavaLogReader for candlepin_log' do
+        reader = @controller.send :create_log_reader, 'candlepin_log'
+        assert_equal Fusor::Logging::JavaLogReader, reader.class, 'Incorrect reader created'
+      end
+
+      test 'returns ProxyLogReader for foreman_proxy_log' do
+        reader = @controller.send :create_log_reader, 'foreman_proxy_log'
+        assert_equal Fusor::Logging::ProxyLogReader, reader.class, 'Incorrect reader created'
+      end
+    end
+
+    context 'get_log_path' do
+      test 'gets the correct path for fusor log' do
+        ::Fusor.stubs(:log_file_dir).returns('/test_path').once
+        ::Fusor.stubs(:log_file_path).returns('/test_path/deployment.log').once
+
+        @controller.params = {:id => @deployment.id}
+        @controller.send :find_deployment
+
+        path = @controller.send :get_log_path, 'fusor_log'
+        assert_equal '/test_path/deployment.log', path, 'Incorrect path to fusor log'
+      end
+
+      test 'gets the correct path for messages log' do
+        ::Fusor.stubs(:log_file_dir).returns('/test_path').once
+
+        @controller.params = {:id => @deployment.id}
+        @controller.send :find_deployment
+
+        path = @controller.send :get_log_path, 'messages_log'
+        assert_equal '/test_path/var/log/messages', path, 'Incorrect path to messages log'
+      end
+
+      test 'gets the correct path for candlepin log' do
+        ::Fusor.stubs(:log_file_dir).returns('/test_path').once
+
+        @controller.params = {:id => @deployment.id}
+        @controller.send :find_deployment
+
+        path = @controller.send :get_log_path, 'candlepin_log'
+        assert_equal '/test_path/var/log/candlepin/candlepin.log', path, 'Incorrect path to candlepin log'
+      end
+
+      test 'gets the correct path for foreman log' do
+        ::Fusor.stubs(:log_file_dir).returns('/test_path').once
+
+        @controller.params = {:id => @deployment.id}
+        @controller.send :find_deployment
+
+        path = @controller.send :get_log_path, 'foreman_log'
+        assert_equal '/test_path/var/log/foreman/production.log', path, 'Incorrect path to foreman log'
+      end
+
+      test 'gets the correct path for foreman proxy log' do
+        ::Fusor.stubs(:log_file_dir).returns('/test_path').once
+
+        @controller.params = {:id => @deployment.id}
+        @controller.send :find_deployment
+
+        path = @controller.send :get_log_path, 'foreman_proxy_log'
+        assert_equal '/test_path/var/log/foreman-proxy/proxy.log', path, 'Incorrect path to foreman proxy log'
+      end
+
+      test 'defaults to the path for fusor log' do
+        ::Fusor.stubs(:log_file_dir).returns('/test_path').once
+        ::Fusor.stubs(:log_file_path).returns('/test_path/deployment.log').once
+
+        @controller.params = {:id => @deployment.id}
+        @controller.send :find_deployment
+
+        path = @controller.send :get_log_path, ''
+        assert_equal '/test_path/deployment.log', path, 'Incorrect path to fusor log'
+      end
+    end
   end
 end
