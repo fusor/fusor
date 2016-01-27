@@ -64,7 +64,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     'deploymentController.hasNoEngine',
     function()
   {
-    return this.get('depoymentController.hasNoEngine') ||
+    return this.get('deploymentController.hasNoEngine') ||
       this.get('isSelectedEngineHostnameInvalid');
   }),
 
@@ -73,9 +73,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       this.set('isSelectedEngineHostnameInvalid', isInvalidHostname);
       this.set('deploymentController.model.discovered_host', newlySelectedHost);
     },
-    setIfHostnameInvalid(bool) {
-      // Triggered on hostname value changes, *not* when the selected host changes
-      this.set('isSelectedEngineHostnameInvalid', bool);
+    setIfHostnameInvalid(bool, hostId) {
+      let discoveredHost = this.get('deploymentController.model.discovered_host');
+      if(discoveredHost && discoveredHost.get('id') === hostId) {
+        this.set('isSelectedEngineHostnameInvalid', bool);
+      }
     }
   }
 });

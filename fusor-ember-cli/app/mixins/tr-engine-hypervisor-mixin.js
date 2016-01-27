@@ -56,13 +56,13 @@ export default Ember.Mixin.create({
                     "Authorization": "Basic " + self.get('session.basicAuthToken')
                 }
               }).then(function(response) {
-                  self.sendAction('setIfHostnameInvalid', false);
+                  self.sendAction('setIfHostnameInvalid', false, host.get('id'));
                 }, function(error) {
                   console.log(error);
                 }
               );
       } else {
-        this.sendAction('setIfHostnameInvalid', true);
+        this.sendAction('setIfHostnameInvalid', true, host.get('id'));
       }
     }
   }
