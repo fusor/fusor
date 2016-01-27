@@ -37,26 +37,11 @@ EXPORT_DIR="$1"
 
 [ -d "$EXPORT_DIR" ] || die "Directory does not exist"
 
-# mv RHEL 6 content to 6Server
-# DO NOT MOVE kickstart
-for dir in "jbeap" "os" "rhevm" "rhev-mgmt-agent" "supplementary"; do
-    echo "Moving $EXPORT_DIR/content/dist/rhel/server/6/6.7/x86_64/$dir to $EXPORT_DIR/content/dist/rhel/server/6/6Server/x86_64/"
-    mv $EXPORT_DIR/content/dist/rhel/server/6/6.7/x86_64/$dir $EXPORT_DIR/content/dist/rhel/server/6/6Server/x86_64/
-done
-
-# fix cf-me listing files
-fix_listing_files $EXPORT_DIR/content/dist/rhel/server/6/6.7/x86_64/
-fix_listing_files $EXPORT_DIR/content/dist/rhel/server/6/6Server/x86_64/
-
 # fix cf-me image files
 mkdir -p $EXPORT_DIR/content/dist/cf-me/server/5.5/x86_64/files/
-mkdir -p $EXPORT_DIR/content/dist/cf-me/server/5.4/x86_64/files/
 
 echo "Moving cf-me-5_5-for-rhel-7-files--x86_64/* to $EXPORT_DIR/content/dist/cf-me/server/5.5/x86_64/files/"
 mv cf-me-5_5-for-rhel-7-files--x86_64/* $EXPORT_DIR/content/dist/cf-me/server/5.5/x86_64/files/
-
-echo "Moving cf-me-5_4-for-rhel-6-files--x86_64/* to $EXPORT_DIR/content/dist/cf-me/server/5.4/x86_64/files/"
-mv cf-me-5_4-for-rhel-6-files--x86_64/* $EXPORT_DIR/content/dist/cf-me/server/5.4/x86_64/files/
 
 # fix openstack directory files
 mkdir -p $EXPORT_DIR/content/dist/rhel/server/7/7Server/x86_64/openstack-director/7.0/files/
