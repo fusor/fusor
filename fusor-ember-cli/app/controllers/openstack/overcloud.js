@@ -12,6 +12,9 @@ let OvercloudController = Ember.Controller.extend(
   openstackOvercloudPrivateNet: Ember.computed.alias('deploymentController.model.openstack_overcloud_private_net'),
   openstackOvercloudFloatNet: Ember.computed.alias('deploymentController.model.openstack_overcloud_float_net'),
   openstackOvercloudFloatGateway: Ember.computed.alias('deploymentController.model.openstack_overcloud_float_gateway'),
+  externalNetworkInterface: Ember.computed.alias('openStack.externalNetworkInterface'),
+  overcloudPassword: Ember.computed.alias("deploymentController.model.openstack_overcloud_password"),
+  confirmOvercloudPassword: Ember.computed.alias("deploymentController.confirmOvercloudPassword"),
 
   nextStepRouteNameOvercloud: Ember.computed('isCloudForms', function() {
     if (this.get('isCloudForms')) {
@@ -47,9 +50,6 @@ let OvercloudController = Ember.Controller.extend(
     }),
 
   disableNextOvercloud: Ember.computed.not('validOvercloudNetworks'),
-
-  overcloudPassword: Ember.computed.alias("deploymentController.model.openstack_overcloud_password"),
-  confirmOvercloudPassword: Ember.computed.alias("deploymentController.confirmOvercloudPassword"),
 
   isValidPrivateNetworkRange: Ember.computed(
     'openstackOvercloudPrivateNet',
