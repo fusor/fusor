@@ -95,7 +95,6 @@ module Fusor
 
     # show fusor packages in the installed packages box on /about
     initializer 'fusor.about.pkgs' do
-      puts "did this get called"
       Katello::Ping::PACKAGES.push("fusor")
     end
 
