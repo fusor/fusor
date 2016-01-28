@@ -273,6 +273,12 @@ label.env_path_disabled:after {
 .errorForValidation a {
   color: #a94442; }
 
+.validation-alert-icon {
+  float: left; }
+
+.validation-alert-message {
+  margin-left: 24px; }
+
 .warningForValidation, .warningForValidation a {
   color: #ec7a08; }
 
@@ -291,13 +297,91 @@ label.env_path_disabled:after {
 .progress-bar-label {
   font-weight: bold; }
 
-.log-scroll-output-form {
-  margin-top: -9px; }
+.log-selection-row, .log-search-row {
+  margin-bottom: 12px; }
 
-.form-control.log-output {
-  color: #333333;
-  background-color: white;
-  cursor: text; }
+.log-file-select {
+  height: 26px;
+  margin-right: 12px; }
+
+.log-file-path {
+  font-style: italic; }
+
+.log-search-form .log-search-input-group > .btn:hover {
+  color: #00618a; }
+
+.log-search-form .log-search-input-group .inside-log-search-input {
+  background-color: white; }
+
+.log-search-form .log-search-input-group > .log-search-result-counter {
+  position: absolute;
+  right: 68px;
+  top: 3px;
+  color: gray; }
+
+.log-search-form .log-search-input-group > .btn-log-result-up {
+  right: 46px;
+  width: 16px;
+  font-size: 20px;
+  top: 0; }
+
+.log-search-form .log-search-input-group > .btn-log-result-down {
+  right: 28px;
+  width: 18px;
+  font-size: 20px;
+  top: 0; }
+
+.log-output {
+  margin-top: 6px;
+  height: 500px;
+  resize: both;
+  overflow-y: scroll;
+  border: 1px solid #d7d7d7; }
+
+.log-level-form > .checkbox {
+  margin-left: 10px; }
+
+.log-entry {
+  margin-top: 1px;
+  margin-bottom: 1px; }
+
+.log-entry-level-debug {
+  color: gray; }
+
+.log-entry-level-info {
+  color: #333; }
+
+.log-entry-level-warn {
+  color: #ec7a08; }
+
+.log-entry-level-error {
+  color: #cc0000; }
+
+.log-entry-search-result {
+  background-color: #fbeabc;
+  color: #333; }
+
+.log-entry-search-result.log-entry-search-selected {
+  background-color: #f9d67a;
+  color: #333;
+  font-weight: bold; }
+
+.log-top-message {
+  text-align: center;
+  margin-top: 12px; }
+
+.log-bottom-message {
+  text-align: center;
+  margin-top: 36px; }
+
+.log-warning-icon {
+  color: #ec7a08; }
+
+.log-error-icon {
+  color: #cc0000; }
+
+.log-updating-spinner {
+  margin-bottom: -7px; }
 
 .btn-nav-search-result {
   background: transparent;
@@ -478,6 +562,11 @@ table.fusor-table {
   color: #737373;
   margin-left: 16px;
   margin-top: -9px; }
+
+.explanatory-text {
+  color: #6d6e70;
+  font-style: italic;
+  font-weight: lighter; }
 
 /* wizard.scss */
 .page-header-rhci {
