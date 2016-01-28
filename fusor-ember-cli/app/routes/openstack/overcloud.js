@@ -7,11 +7,11 @@ export default Ember.Route.extend({
       changedParams = [
         {
           name: 'Controller-1::NeutronPublicInterface',
-          value: this.get('controller.openStack.externalNetworkInterface')
+          value: this.get('controller.externalNetworkInterface')
         },
         {
           name: 'Controller-1::AdminPassword',
-          value: this.get('controller.openStack.overcloudPassword')
+          value: this.get('controller.overcloudPassword')
         }
       ];
 
