@@ -3136,6 +3136,9 @@ define('fusor-ember-cli/controllers/openstack/overcloud', ['exports', 'ember', '
     openstackOvercloudPrivateNet: Ember['default'].computed.alias('deploymentController.model.openstack_overcloud_private_net'),
     openstackOvercloudFloatNet: Ember['default'].computed.alias('deploymentController.model.openstack_overcloud_float_net'),
     openstackOvercloudFloatGateway: Ember['default'].computed.alias('deploymentController.model.openstack_overcloud_float_gateway'),
+    externalNetworkInterface: Ember['default'].computed.alias('openStack.externalNetworkInterface'),
+    overcloudPassword: Ember['default'].computed.alias("deploymentController.model.openstack_overcloud_password"),
+    confirmOvercloudPassword: Ember['default'].computed.alias("deploymentController.confirmOvercloudPassword"),
 
     nextStepRouteNameOvercloud: Ember['default'].computed('isCloudForms', function () {
       if (this.get('isCloudForms')) {
@@ -3154,9 +3157,6 @@ define('fusor-ember-cli/controllers/openstack/overcloud', ['exports', 'ember', '
     }),
 
     disableNextOvercloud: Ember['default'].computed.not('validOvercloudNetworks'),
-
-    overcloudPassword: Ember['default'].computed.alias("deploymentController.model.openstack_overcloud_password"),
-    confirmOvercloudPassword: Ember['default'].computed.alias("deploymentController.confirmOvercloudPassword"),
 
     isValidPrivateNetworkRange: Ember['default'].computed('openstackOvercloudPrivateNet', function () {
       return ValidationUtil['default'].validateIpRangeAndFormat(this.get('openstackOvercloudPrivateNet'));
@@ -9857,10 +9857,10 @@ define('fusor-ember-cli/routes/openstack/overcloud', ['exports', 'ember'], funct
       var controller = this.get('controller'),
           changedParams = [{
         name: 'Controller-1::NeutronPublicInterface',
-        value: this.get('controller.openStack.externalNetworkInterface')
+        value: this.get('controller.externalNetworkInterface')
       }, {
         name: 'Controller-1::AdminPassword',
-        value: this.get('controller.openStack.overcloudPassword')
+        value: this.get('controller.overcloudPassword')
       }];
 
       this.updateLocalPlanParameters(changedParams);
@@ -37863,7 +37863,7 @@ define('fusor-ember-cli/templates/review/summary', ['exports'], function (export
                 "column": 8
               },
               "end": {
-                "line": 37,
+                "line": 36,
                 "column": 8
               }
             },
@@ -37913,12 +37913,12 @@ define('fusor-ember-cli/templates/review/summary', ['exports'], function (export
             return morphs;
           },
           statements: [
-            ["inline","review-link",[],["label","Undercloud URL","value",["subexpr","@mut",[["get","undercloudUrl",["loc",[null,[21,32],[21,45]]]]],[],[]],"isExternalURL",true,"ipAddress",["subexpr","@mut",[["get","undercloudUrlIP",["loc",[null,[23,36],[23,51]]]]],[],[]]],["loc",[null,[20,12],[23,53]]]],
-            ["inline","review-link",[],["label","Undercloud username","value",["subexpr","@mut",[["get","undercloudUsername",["loc",[null,[25,32],[25,50]]]]],[],[]]],["loc",[null,[24,12],[25,52]]]],
-            ["inline","review-link",[],["label","Undercloud password","value",["subexpr","@mut",[["get","undercloudPassword",["loc",[null,[27,32],[27,50]]]]],[],[]]],["loc",[null,[26,12],[27,52]]]],
-            ["inline","review-link",[],["label","Overcloud URL","value",["subexpr","@mut",[["get","overcloudUrl",["loc",[null,[30,32],[30,44]]]]],[],[]],"isExternalURL",true,"ipAddress",["subexpr","@mut",[["get","overcloudUrlIP",["loc",[null,[32,36],[32,50]]]]],[],[]]],["loc",[null,[29,12],[32,52]]]],
-            ["inline","review-link",[],["label","Overcloud username","value",["subexpr","@mut",[["get","overcloudUsername",["loc",[null,[34,32],[34,49]]]]],[],[]]],["loc",[null,[33,12],[34,51]]]],
-            ["inline","review-link",[],["label","Overcloud password","value",["subexpr","@mut",[["get","overcloudPassword",["loc",[null,[36,32],[36,49]]]]],[],[]]],["loc",[null,[35,12],[36,51]]]]
+            ["inline","review-link",[],["label","Undercloud URL","value",["subexpr","@mut",[["get","undercloudUrlIP",["loc",[null,[21,32],[21,47]]]]],[],[]],"isExternalURL",true],["loc",[null,[20,12],[22,46]]]],
+            ["inline","review-link",[],["label","Undercloud username","value",["subexpr","@mut",[["get","undercloudUsername",["loc",[null,[24,32],[24,50]]]]],[],[]]],["loc",[null,[23,12],[24,52]]]],
+            ["inline","review-link",[],["label","Undercloud password","value",["subexpr","@mut",[["get","undercloudPassword",["loc",[null,[26,32],[26,50]]]]],[],[]]],["loc",[null,[25,12],[26,52]]]],
+            ["inline","review-link",[],["label","Overcloud URL","value",["subexpr","@mut",[["get","overcloudUrl",["loc",[null,[29,32],[29,44]]]]],[],[]],"isExternalURL",true,"ipAddress",["subexpr","@mut",[["get","overcloudUrlIP",["loc",[null,[31,36],[31,50]]]]],[],[]]],["loc",[null,[28,12],[31,52]]]],
+            ["inline","review-link",[],["label","Overcloud username","value",["subexpr","@mut",[["get","overcloudUsername",["loc",[null,[33,32],[33,49]]]]],[],[]]],["loc",[null,[32,12],[33,51]]]],
+            ["inline","review-link",[],["label","Overcloud password","value",["subexpr","@mut",[["get","overcloudPassword",["loc",[null,[35,32],[35,49]]]]],[],[]]],["loc",[null,[34,12],[35,51]]]]
           ],
           locals: [],
           templates: []
@@ -37934,7 +37934,7 @@ define('fusor-ember-cli/templates/review/summary', ['exports'], function (export
               "column": 4
             },
             "end": {
-              "line": 38,
+              "line": 37,
               "column": 4
             }
           },
@@ -37957,7 +37957,7 @@ define('fusor-ember-cli/templates/review/summary', ['exports'], function (export
           return morphs;
         },
         statements: [
-          ["block","accordion-item",[],["name","Red Hat Enterprise Linux - OpenStack Platform","isOpen",["subexpr","@mut",[["get","isOpenStackOpen",["loc",[null,[19,86],[19,101]]]]],[],[]]],0,null,["loc",[null,[19,8],[37,27]]]]
+          ["block","accordion-item",[],["name","Red Hat Enterprise Linux - OpenStack Platform","isOpen",["subexpr","@mut",[["get","isOpenStackOpen",["loc",[null,[19,86],[19,101]]]]],[],[]]],0,null,["loc",[null,[19,8],[36,27]]]]
         ],
         locals: [],
         templates: [child0]
@@ -37971,11 +37971,11 @@ define('fusor-ember-cli/templates/review/summary', ['exports'], function (export
             "loc": {
               "source": null,
               "start": {
-                "line": 41,
+                "line": 40,
                 "column": 6
               },
               "end": {
-                "line": 55,
+                "line": 54,
                 "column": 6
               }
             },
@@ -38010,9 +38010,9 @@ define('fusor-ember-cli/templates/review/summary', ['exports'], function (export
             return morphs;
           },
           statements: [
-            ["inline","review-link",[],["label","Admin Console","value",["subexpr","@mut",[["get","cfmeUrl",["loc",[null,[44,28],[44,35]]]]],[],[]],"isExternalURL",true,"ipAddress",["subexpr","@mut",[["get","cfmeUrlIP",["loc",[null,[46,32],[46,41]]]]],[],[]]],["loc",[null,[43,8],[46,43]]]],
-            ["inline","review-link",[],["label","Self-Service Console","value",["subexpr","@mut",[["get","cfmeUrlSelfService",["loc",[null,[49,28],[49,46]]]]],[],[]],"isExternalURL",true,"ipAddress",["subexpr","@mut",[["get","cfmeUrlSelfServiceIP",["loc",[null,[51,32],[51,52]]]]],[],[]]],["loc",[null,[48,8],[51,54]]]],
-            ["inline","review-link",[],["label","Username","value","admin"],["loc",[null,[53,8],[53,54]]]]
+            ["inline","review-link",[],["label","Admin Console","value",["subexpr","@mut",[["get","cfmeUrl",["loc",[null,[43,28],[43,35]]]]],[],[]],"isExternalURL",true,"ipAddress",["subexpr","@mut",[["get","cfmeUrlIP",["loc",[null,[45,32],[45,41]]]]],[],[]]],["loc",[null,[42,8],[45,43]]]],
+            ["inline","review-link",[],["label","Self-Service Console","value",["subexpr","@mut",[["get","cfmeUrlSelfService",["loc",[null,[48,28],[48,46]]]]],[],[]],"isExternalURL",true,"ipAddress",["subexpr","@mut",[["get","cfmeUrlSelfServiceIP",["loc",[null,[50,32],[50,52]]]]],[],[]]],["loc",[null,[47,8],[50,54]]]],
+            ["inline","review-link",[],["label","Username","value","admin"],["loc",[null,[52,8],[52,54]]]]
           ],
           locals: [],
           templates: []
@@ -38024,11 +38024,11 @@ define('fusor-ember-cli/templates/review/summary', ['exports'], function (export
           "loc": {
             "source": null,
             "start": {
-              "line": 40,
+              "line": 39,
               "column": 4
             },
             "end": {
-              "line": 56,
+              "line": 55,
               "column": 4
             }
           },
@@ -38051,7 +38051,7 @@ define('fusor-ember-cli/templates/review/summary', ['exports'], function (export
           return morphs;
         },
         statements: [
-          ["block","accordion-item",[],["name","Cloud Forms Management Engine","isOpen",true],0,null,["loc",[null,[41,6],[55,25]]]]
+          ["block","accordion-item",[],["name","Cloud Forms Management Engine","isOpen",true],0,null,["loc",[null,[40,6],[54,25]]]]
         ],
         locals: [],
         templates: [child0]
@@ -38065,11 +38065,11 @@ define('fusor-ember-cli/templates/review/summary', ['exports'], function (export
             "loc": {
               "source": null,
               "start": {
-                "line": 65,
+                "line": 64,
                 "column": 4
               },
               "end": {
-                "line": 67,
+                "line": 66,
                 "column": 4
               }
             },
@@ -38098,11 +38098,11 @@ define('fusor-ember-cli/templates/review/summary', ['exports'], function (export
           "loc": {
             "source": null,
             "start": {
-              "line": 61,
+              "line": 60,
               "column": 0
             },
             "end": {
-              "line": 68,
+              "line": 67,
               "column": 0
             }
           },
@@ -38125,7 +38125,7 @@ define('fusor-ember-cli/templates/review/summary', ['exports'], function (export
           return morphs;
         },
         statements: [
-          ["block","link-to",["deployments"],["role","button","class","btn btn-primary"],0,null,["loc",[null,[65,4],[67,16]]]]
+          ["block","link-to",["deployments"],["role","button","class","btn btn-primary"],0,null,["loc",[null,[64,4],[66,16]]]]
         ],
         locals: [],
         templates: [child0]
@@ -38141,7 +38141,7 @@ define('fusor-ember-cli/templates/review/summary', ['exports'], function (export
             "column": 0
           },
           "end": {
-            "line": 70,
+            "line": 69,
             "column": 0
           }
         },
@@ -38197,9 +38197,9 @@ define('fusor-ember-cli/templates/review/summary', ['exports'], function (export
       },
       statements: [
         ["block","if",[["get","isRhev",["loc",[null,[5,10],[5,16]]]]],[],0,null,["loc",[null,[5,4],[16,11]]]],
-        ["block","if",[["get","isOpenStack",["loc",[null,[18,10],[18,21]]]]],[],1,null,["loc",[null,[18,4],[38,11]]]],
-        ["block","if",[["get","isCloudForms",["loc",[null,[40,10],[40,22]]]]],[],2,null,["loc",[null,[40,4],[56,11]]]],
-        ["block","cancel-back-next",[],["backRouteName","review.progress.overview","disableBack",false,"disableCancel",true],3,null,["loc",[null,[61,0],[68,21]]]]
+        ["block","if",[["get","isOpenStack",["loc",[null,[18,10],[18,21]]]]],[],1,null,["loc",[null,[18,4],[37,11]]]],
+        ["block","if",[["get","isCloudForms",["loc",[null,[39,10],[39,22]]]]],[],2,null,["loc",[null,[39,4],[55,11]]]],
+        ["block","cancel-back-next",[],["backRouteName","review.progress.overview","disableBack",false,"disableCancel",true],3,null,["loc",[null,[60,0],[67,21]]]]
       ],
       locals: [],
       templates: [child0, child1, child2, child3]
@@ -50714,13 +50714,13 @@ define('fusor-ember-cli/utils/validation-util', ['exports'], function (exports) 
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+a97b3f9e"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+e74a07ff"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+a97b3f9e"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+e74a07ff"});
 }
 
 /* jshint ignore:end */
