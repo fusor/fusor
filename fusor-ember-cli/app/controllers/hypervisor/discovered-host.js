@@ -107,7 +107,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     'hypervisorModelIds',
     'hostnameValidity.updated',
     function() {
-      if(this.get('hypervisorModelIds') === 0) {
+      if(this.get('hypervisorModelIds').get('length') === 0) {
         return true;
       }
 
