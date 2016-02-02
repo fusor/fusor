@@ -3,8 +3,7 @@
     <form class="form-horizontal" role="form">
 
       {{text-f label="Name" value=model.name inputSize='col-md-5' errors=errors cssId=idSatName
-        isRequired=true disabled=isStarted isUnique=true uniqueValues=deploymentNames
-        shouldNotContainSpaces=true}}
+               isRequired=true disabled=isStarted isUnique=true uniqueValues=deploymentNames}}
 
       {{textarea-f label="Description (Optional)" value=model.description inputSize='col-md-5' cssId=idSatDesc disabled=isStarted }}
 

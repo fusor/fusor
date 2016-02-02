@@ -23,12 +23,6 @@ export default Ember.Component.extend({
     return this.get('isPassword') && this.get('minChars') && this.get('value.length') < this.get('minChars');
   }),
 
-  erroneouslyContainsSpaces: Ember.computed('value', function() {
-    if(this.get('shouldNotContainSpaces')) {
-      return Ember.isPresent(this.get('value')) && /\s/.test(this.get('value'));
-    }
-  }),
-
   invalidIsAlphaNumeric: Ember.computed('value', 'isAlphaNumeric', function() {
     if (this.get('isAlphaNumeric')) {
         var validAlphaNumbericRegex = new RegExp(/^[A-Za-z0-9_-]+$/);
@@ -72,7 +66,6 @@ export default Ember.Component.extend({
     'invalidIsHostname',
     'invalidNetworkRange',
     'invalidCIDRNotation',
-    'erroneouslyContainsSpaces',
     function() {
       return (this.get('showValidationError') &&
                (Ember.isPresent(this.get('errors.name')) ||
@@ -83,8 +76,8 @@ export default Ember.Component.extend({
                this.get('invalidIsAlphaNumeric') ||
                this.get('invalidIsHostname') ||
                this.get('invalidNetworkRange') ||
-               this.get('invalidCIDRNotation')) ||
-               this.get('erroneouslyContainsSpaces'));
+               this.get('invalidCIDRNotation'))
+             );
     }
   ),
 
