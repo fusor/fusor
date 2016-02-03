@@ -37,10 +37,9 @@ module Actions
           def restart_undercloud_services(deployment)
             client = Net::SSH.start(deployment.openstack_undercloud_ip_addr, 'root',
                                     :password => deployment.openstack_undercloud_user_password)
-            ["openstack-ironic-api", "openstack-ironic-conductor", "openstack-ironic-discoverd-dnsmasq",
-             "openstack-ironic-discoverd", "openstack-nova-api", "openstack-nova-compute",
-             "openstack-nova-conductor", "openstack-nova-consoleauth", "openstack-nova-scheduler"].each do |service|
-              client.exec!("systemctl restart #{service}")
+            ["systemctl restart rabbitmq-server", "openstack-service restart ironic",
+             "openstack-service restart nova"].each do |restart_cmd|
+              client.exec!(restart_cmd)
             end
           end
         end
