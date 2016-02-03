@@ -84,8 +84,8 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
 
       if (id === 'Controller-1::NeutronPublicInterface' &&
         (!value || value === 'nic1')) {
-        param.set('value', 'eth1');
-        newParams.push({name: id, value: 'eth1'});
+        param.set('value', 'nic2');
+        newParams.push({name: id, value: 'nic2'});
       }
 
       if (id === 'Compute-1::NovaComputeLibvirtType' &&
