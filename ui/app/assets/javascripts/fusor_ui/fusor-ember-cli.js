@@ -9495,8 +9495,8 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cl
             value = param.get('value');
 
         if (id === 'Controller-1::NeutronPublicInterface' && (!value || value === 'nic1')) {
-          param.set('value', 'eth1');
-          newParams.push({ name: id, value: 'eth1' });
+          param.set('value', 'nic2');
+          newParams.push({ name: id, value: 'nic2' });
         }
 
         if (id === 'Compute-1::NovaComputeLibvirtType' && (!value || value === 'qemu')) {
@@ -17113,6 +17113,90 @@ define('fusor-ember-cli/templates/components/host-type-icon', ['exports'], funct
 
   exports['default'] = Ember.HTMLBars.template((function() {
     var child0 = (function() {
+      var child0 = (function() {
+        return {
+          meta: {
+            "revision": "Ember@1.13.10",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 3,
+                "column": 4
+              },
+              "end": {
+                "line": 8,
+                "column": 4
+              }
+            },
+            "moduleName": "fusor-ember-cli/templates/components/host-type-icon.hbs"
+          },
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("      ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("img");
+            dom.setAttribute(el1,"src","/assets/r/vm-icon-inverted-16.png");
+            dom.setAttribute(el1,"data-toggle","tooltip");
+            dom.setAttribute(el1,"title","Virtual Machine");
+            dom.setAttribute(el1,"class","img-responsive host-type-icon");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes() { return []; },
+          statements: [
+
+          ],
+          locals: [],
+          templates: []
+        };
+      }());
+      var child1 = (function() {
+        return {
+          meta: {
+            "revision": "Ember@1.13.10",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 8,
+                "column": 4
+              },
+              "end": {
+                "line": 13,
+                "column": 4
+              }
+            },
+            "moduleName": "fusor-ember-cli/templates/components/host-type-icon.hbs"
+          },
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("      ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("img");
+            dom.setAttribute(el1,"src","/assets/r/vm-icon-16.png");
+            dom.setAttribute(el1,"data-toggle","tooltip");
+            dom.setAttribute(el1,"title","Virtual Machine");
+            dom.setAttribute(el1,"class","img-responsive host-type-icon");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes() { return []; },
+          statements: [
+
+          ],
+          locals: [],
+          templates: []
+        };
+      }());
       return {
         meta: {
           "revision": "Ember@1.13.10",
@@ -17120,55 +17204,6 @@ define('fusor-ember-cli/templates/components/host-type-icon', ['exports'], funct
             "source": null,
             "start": {
               "line": 1,
-              "column": 0
-            },
-            "end": {
-              "line": 9,
-              "column": 0
-            }
-          },
-          "moduleName": "fusor-ember-cli/templates/components/host-type-icon.hbs"
-        },
-        arity: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        buildFragment: function buildFragment(dom) {
-          var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("  ");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createElement("center");
-          var el2 = dom.createTextNode("\n    ");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createElement("img");
-          dom.setAttribute(el2,"src","/assets/r/vm-icon-16.png");
-          dom.setAttribute(el2,"data-toggle","tooltip");
-          dom.setAttribute(el2,"title","Virtual Machine");
-          dom.setAttribute(el2,"class","img-responsive");
-          dom.setAttribute(el2,"style","margin-top: 3px;");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createTextNode("\n  ");
-          dom.appendChild(el1, el2);
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        buildRenderNodes: function buildRenderNodes() { return []; },
-        statements: [
-
-        ],
-        locals: [],
-        templates: []
-      };
-    }());
-    var child1 = (function() {
-      return {
-        meta: {
-          "revision": "Ember@1.13.10",
-          "loc": {
-            "source": null,
-            "start": {
-              "line": 9,
               "column": 0
             },
             "end": {
@@ -17185,11 +17220,58 @@ define('fusor-ember-cli/templates/components/host-type-icon', ['exports'], funct
           var el0 = dom.createDocumentFragment();
           var el1 = dom.createTextNode("  ");
           dom.appendChild(el0, el1);
+          var el1 = dom.createElement("center");
+          var el2 = dom.createTextNode("\n");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("  ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]),1,1);
+          return morphs;
+        },
+        statements: [
+          ["block","if",[["get","isInverted",["loc",[null,[3,10],[3,20]]]]],[],0,1,["loc",[null,[3,4],[13,11]]]]
+        ],
+        locals: [],
+        templates: [child0, child1]
+      };
+    }());
+    var child1 = (function() {
+      return {
+        meta: {
+          "revision": "Ember@1.13.10",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 15,
+              "column": 0
+            },
+            "end": {
+              "line": 20,
+              "column": 0
+            }
+          },
+          "moduleName": "fusor-ember-cli/templates/components/host-type-icon.hbs"
+        },
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("  ");
+          dom.appendChild(el0, el1);
           var el1 = dom.createElement("span");
           dom.setAttribute(el1,"data-toggle","tooltip");
           dom.setAttribute(el1,"title","Bare Metal");
-          dom.setAttribute(el1,"class","pficon pficon-screen");
-          dom.setAttribute(el1,"style","font-size: 16px; margin-top: 3px");
+          dom.setAttribute(el1,"class","pficon pficon-screen host-type-icon");
           var el2 = dom.createTextNode("\n  ");
           dom.appendChild(el1, el2);
           dom.appendChild(el0, el1);
@@ -17215,7 +17297,7 @@ define('fusor-ember-cli/templates/components/host-type-icon', ['exports'], funct
             "column": 0
           },
           "end": {
-            "line": 15,
+            "line": 20,
             "column": 7
           }
         },
@@ -17238,7 +17320,7 @@ define('fusor-ember-cli/templates/components/host-type-icon', ['exports'], funct
         return morphs;
       },
       statements: [
-        ["block","if",[["get","isVM",["loc",[null,[1,6],[1,10]]]]],[],0,1,["loc",[null,[1,0],[15,7]]]]
+        ["block","if",[["get","isVM",["loc",[null,[1,6],[1,10]]]]],[],0,1,["loc",[null,[1,0],[20,7]]]]
       ],
       locals: [],
       templates: [child0, child1]
@@ -22871,7 +22953,7 @@ define('fusor-ember-cli/templates/components/tr-engine', ['exports'], function (
         ["attribute","class",["concat",[["subexpr","if",[["get","isSelectedAsEngine",["loc",[null,[4,16],[4,34]]]],"white-font","not-selected"],[],["loc",[null,[4,11],[4,64]]]]]]],
         ["block","if",[["get","isSelectedAsEngine",["loc",[null,[5,10],[5,28]]]]],[],0,1,["loc",[null,[5,4],[18,11]]]],
         ["content","host.mac",["loc",[null,[20,5],[20,17]]]],
-        ["inline","host-type-icon",[],["isVM",["subexpr","@mut",[["get","host.is_virtual",["loc",[null,[21,47],[21,62]]]]],[],[]]],["loc",[null,[21,25],[21,64]]]],
+        ["inline","host-type-icon",[],["isVM",["subexpr","@mut",[["get","host.is_virtual",["loc",[null,[21,47],[21,62]]]]],[],[]],"isInverted",["subexpr","@mut",[["get","isSelectedAsEngine",["loc",[null,[21,74],[21,92]]]]],[],[]]],["loc",[null,[21,25],[21,94]]]],
         ["content","host.cpus",["loc",[null,[22,25],[22,38]]]],
         ["content","host.memory_human_size",["loc",[null,[23,25],[23,51]]]],
         ["content","host.disk_count",["loc",[null,[24,25],[24,44]]]],
@@ -23309,7 +23391,7 @@ define('fusor-ember-cli/templates/components/tr-hypervisor', ['exports'], functi
         ["attribute","class",["concat",[["subexpr","if",[["get","isSelectedAsHypervisor",["loc",[null,[5,16],[5,38]]]],"white-font","not-selected"],[],["loc",[null,[5,11],[5,68]]]]]]],
         ["block","if",[["get","isSelectedAsHypervisor",["loc",[null,[6,8],[6,30]]]]],[],0,1,["loc",[null,[6,2],[23,9]]]],
         ["content","host.mac",["loc",[null,[25,5],[25,17]]]],
-        ["inline","host-type-icon",[],["isVM",["subexpr","@mut",[["get","host.is_virtual",["loc",[null,[26,47],[26,62]]]]],[],[]]],["loc",[null,[26,25],[26,64]]]],
+        ["inline","host-type-icon",[],["isVM",["subexpr","@mut",[["get","host.is_virtual",["loc",[null,[26,47],[26,62]]]]],[],[]],"isInverted",["subexpr","@mut",[["get","isSelectedAsHypervisor",["loc",[null,[26,74],[26,96]]]]],[],[]]],["loc",[null,[26,25],[26,98]]]],
         ["content","host.cpus",["loc",[null,[27,25],[27,38]]]],
         ["content","host.memory_human_size",["loc",[null,[28,25],[28,51]]]],
         ["content","host.disk_count",["loc",[null,[29,25],[29,44]]]],
@@ -45731,7 +45813,7 @@ define('fusor-ember-cli/tests/integration/components/host-type-icon-test', ['emb
     integration: true
   });
 
-  ember_qunit.test('it show vm-icon-16 image if isVM is true', function (assert) {
+  ember_qunit.test('it shows vm-icon-16 image and hides pficon-screen if isVM is true', function (assert) {
     this.render(Ember.HTMLBars.template((function () {
       return {
         meta: {
@@ -45770,9 +45852,94 @@ define('fusor-ember-cli/tests/integration/components/host-type-icon-test', ['emb
       };
     })()));
     assert.equal(this.$('img').attr('src'), '/assets/r/vm-icon-16.png');
+    assert.notOk(this.$('span.pficon-screen')[0]);
   });
 
-  ember_qunit.test('it show pficon-screen icon if isVM is false', function (assert) {
+  ember_qunit.test('it shows vm-icon-16 image and hides pficon-screen if isVM is true and isInverted is false', function (assert) {
+    this.render(Ember.HTMLBars.template((function () {
+      return {
+        meta: {
+          'revision': 'Ember@1.13.10',
+          'loc': {
+            'source': null,
+            'start': {
+              'line': 1,
+              'column': 0
+            },
+            'end': {
+              'line': 1,
+              'column': 45
+            }
+          }
+        },
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createComment('');
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+          dom.insertBoundary(fragment, 0);
+          dom.insertBoundary(fragment, null);
+          return morphs;
+        },
+        statements: [['inline', 'host-type-icon', [], ['isVM', true, 'isInverted', false], ['loc', [null, [1, 0], [1, 45]]]]],
+        locals: [],
+        templates: []
+      };
+    })()));
+    assert.equal(this.$('img').attr('src'), '/assets/r/vm-icon-16.png');
+    assert.notOk(this.$('span.pficon-screen')[0]);
+  });
+
+  ember_qunit.test('it shows vm-icon-inverted-16 image and hides pficon-screen if isVM is true and isInverted is true', function (assert) {
+    this.render(Ember.HTMLBars.template((function () {
+      return {
+        meta: {
+          'revision': 'Ember@1.13.10',
+          'loc': {
+            'source': null,
+            'start': {
+              'line': 1,
+              'column': 0
+            },
+            'end': {
+              'line': 1,
+              'column': 44
+            }
+          }
+        },
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createComment('');
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+          dom.insertBoundary(fragment, 0);
+          dom.insertBoundary(fragment, null);
+          return morphs;
+        },
+        statements: [['inline', 'host-type-icon', [], ['isVM', true, 'isInverted', true], ['loc', [null, [1, 0], [1, 44]]]]],
+        locals: [],
+        templates: []
+      };
+    })()));
+    assert.equal(this.$('img').attr('src'), '/assets/r/vm-icon-inverted-16.png');
+    assert.notOk(this.$('span.pficon-screen')[0]);
+  });
+
+  ember_qunit.test('it shows pficon-screen icon and hides images if isVM is false', function (assert) {
     this.render(Ember.HTMLBars.template((function () {
       return {
         meta: {
@@ -45810,7 +45977,8 @@ define('fusor-ember-cli/tests/integration/components/host-type-icon-test', ['emb
         templates: []
       };
     })()));
-    assert.ok(this.$('span.pficon-screen'));
+    assert.ok(this.$('span.pficon-screen')[0]);
+    assert.notOk(this.$('img').attr('src'));
   });
 
 });
@@ -50714,13 +50882,13 @@ define('fusor-ember-cli/utils/validation-util', ['exports'], function (exports) 
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+e74a07ff"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+4ae35bb2"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (runningTests) {
   require("fusor-ember-cli/tests/test-helper");
 } else {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+e74a07ff"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+4ae35bb2"});
 }
 
 /* jshint ignore:end */
