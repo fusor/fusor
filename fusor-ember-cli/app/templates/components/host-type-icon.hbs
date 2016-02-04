@@ -1,15 +1,20 @@
 {{#if isVM}}
   <center>
-    <img src="/assets/r/vm-icon-16.png"
-         data-toggle="tooltip"
-         title="Virtual Machine"
-         class="img-responsive"
-         style="margin-top: 3px;">
+    {{#if isInverted}}
+      <img src="/assets/r/vm-icon-inverted-16.png"
+           data-toggle="tooltip"
+           title="Virtual Machine"
+           class="img-responsive host-type-icon">
+    {{else}}
+      <img src="/assets/r/vm-icon-16.png"
+           data-toggle="tooltip"
+           title="Virtual Machine"
+           class="img-responsive host-type-icon">
+    {{/if}}
   </center>
 {{else}}
   <span data-toggle="tooltip"
         title="Bare Metal"
-        class="pficon pficon-screen"
-        style="font-size: 16px; margin-top: 3px">
+        class="pficon pficon-screen host-type-icon">
   </span>
 {{/if}}

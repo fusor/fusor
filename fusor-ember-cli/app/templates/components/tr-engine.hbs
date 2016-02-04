@@ -18,7 +18,7 @@
     {{/if}}
 </td>
 <td> {{host.mac}} </td>
-<td class='text-center'> {{host-type-icon isVM=host.is_virtual}} </td>
+<td class='text-center'> {{host-type-icon isVM=host.is_virtual isInverted=isSelectedAsEngine}} </td>
 <td class='text-center'> {{host.cpus}} CPU</td>
 <td class='text-center'> {{host.memory_human_size}}</td>
 <td class='text-center'> {{host.disk_count}} </td>
