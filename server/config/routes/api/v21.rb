@@ -14,6 +14,10 @@ Fusor::Engine.routes.draw do
             put :upload
           end
         end
+
+        scope 'unlogged' do
+          get '/deployments/:id/log', to: 'deployments#log'
+        end
       end
     end
   end
