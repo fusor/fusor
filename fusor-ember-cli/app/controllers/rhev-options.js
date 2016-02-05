@@ -72,9 +72,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isClusterNeedRenaming: false,
 
   showMsgToChangeCluster: Ember.observer('rhevClusterName', 'rhevDatabaseName', function() {
-    if (this.get('isDirtyRhevDatabaseName') &&
+    if ((this.get('isDirtyRhevDatabaseName') &&
         this.get('rhevClusterName') &&
-        this.get('isNotDirtyRhevClusterName')) {
+        this.get('isNotDirtyRhevClusterName')) ||
+        (this.get('rhevDatabaseName') !== 'Default') &&
+        this.get('rhevClusterName') === 'Default') {
             return this.set('isClusterNeedRenaming', true);
     }
   }),
