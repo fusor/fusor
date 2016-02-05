@@ -1,4 +1,14 @@
- #!/bin/bash
+#!/bin/bash
+
+COMMIT_ASSETS=0
+
+if [ "$#" -ge "1" ]
+then
+    if [ "$1" == "commit" ] 
+    then
+        COMMIT_ASSETS=1
+    fi
+fi
 
 if [ -f ./dist/assets/fusor-ember-cli.css ]
 then
@@ -44,6 +54,12 @@ cp ./dist/assets/r/blue-i.png               ../ui/app/assets/images/r/;
 
 cp ./dist/fonts/*.*  ../ui/public/fonts/;
 
-cd ..
-git add .;
-git commit -m "copy minified assets from fusor-ember-cli/dist to FusorUI gem at fusor/ui/app/assets";
+if [ "${COMMIT_ASSETS}" -eq "1" ]
+then
+    cd ..
+    git add .;
+    git commit -m "copy minified assets from fusor-ember-cli/dist to FusorUI gem at fusor/ui/app/assets";
+else
+    echo "UI Assets have been copied"
+    echo "If you want to commit, re-run with: $0 commit"
+fi
