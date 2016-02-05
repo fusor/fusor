@@ -15,6 +15,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isNotDisconnected: Ember.computed.not("isDisconnected"),
   cdnUrl: Ember.computed.alias("model.cdn_url"),
 
+  manifestFile: Ember.computed.alias('deploymentController.model.manifest_file'),
+  hasManifestFile: Ember.computed.notEmpty('manifestFile'),
+  hasNoManifestFile: Ember.computed.not('hasManifestFile'),
+
   buttonDeployTitle: Ember.computed('isStarted', function() {
     if (this.get('isStarted')) {
       return 'Next';
@@ -31,10 +35,16 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
            (!this.get('hasSessionPortal') || !this.get('hasSubscriptionPools')));
   }),
 
-  buttonDeployDisabled: Ember.computed('deploymentController.isDisabledReview',
-                                       'isMissingSubscriptions', function() {
-    return this.get('deploymentController.isDisabledReview(') ||
+  buttonDeployDisabled: Ember.computed(
+    'deploymentController.isDisabledReview',
+    'isMissingSubscriptions',
+    'isDisconnected',
+    'hasNoManifestFile',
+    function()
+  {
+    return this.get('deploymentController.isDisabledReview') ||
            this.get('isMissingSubscriptions') ||
+           (this.get('isDisconnected') && this.get('hasNoManifestFile')) ||
            this.get('validationErrors.length') > 0;
   }),
 
