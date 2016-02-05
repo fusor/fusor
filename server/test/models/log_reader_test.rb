@@ -15,7 +15,7 @@ require 'test_helper'
 class LogReaderTest < ActiveSupport::TestCase
   def setup
     @reader = Fusor::Logging::LogReader.new
-    @log_path = "#{Rails.root}/test/fixtures/log_reader_test_file.log"
+    @log_path = "#{Rails.root}/test/fixtures/logs/log_reader_test_file.log"
   end
 
   # parse_entry
