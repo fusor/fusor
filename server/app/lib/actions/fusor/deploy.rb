@@ -48,11 +48,11 @@ module Actions
                         deployment)
           end
         end
-        plan_self(:deployment_name => deployment.name, :deployment_id => deployment.id)
+        plan_self(:deployment_label => deployment.label, :deployment_id => deployment.id)
       end
 
       def finalize
-        ::Fusor.stop_collect_satellite_logs(input[:deployment_name], input[:deployment_id])
+        ::Fusor.stop_collect_satellite_logs(input[:deployment_label], input[:deployment_id])
       end
     end
   end

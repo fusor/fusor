@@ -34,10 +34,10 @@ module Actions
                           :openstack_username  => 'admin', :openstack_tenant => 'admin',
                           :openstack_api_key   => deployment.openstack_overcloud_password }
             keystone = Fog::Identity::OpenStack.new(overcloud)
-            tenant = keystone.get_tenants_by_name(deployment.name).body["tenant"]
+            tenant = keystone.get_tenants_by_name(deployment.label).body["tenant"]
 
             neutron = Fog::Network::OpenStack.new(overcloud)
-            sec_group = neutron.security_groups.create :name => "#{deployment.name}-sec-group", :tenant_id => tenant['id']
+            sec_group = neutron.security_groups.create :name => "#{deployment.label}-sec-group", :tenant_id => tenant['id']
 
             [22, 80, 443].each do |port|
               create_tcp_rule(neutron, sec_group, port)

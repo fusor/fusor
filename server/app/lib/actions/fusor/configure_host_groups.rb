@@ -58,7 +58,7 @@ module Actions
 
           if parent_setting = hostgroup_settings[:parent]
             if parent_setting == "root_deployment"
-              parent_name = deployment.name
+              parent_name = deployment.label
             else
               parent_name = parent_setting
             end
@@ -111,7 +111,7 @@ module Actions
 
             default_capsule_id = ::Katello::CapsuleContent.default_capsule.try(:capsule).try(:id)
 
-            hostgroup_params[:name] = deployment.name
+            hostgroup_params[:name] = deployment.label
             hostgroup_params[:lifecycle_environment_id] = lifecycle_environment.id
             hostgroup_params[:environment_id] = puppet_environment.try(:id)
             hostgroup_params[:content_view_id] = content_view.try(:id)
@@ -285,7 +285,7 @@ module Actions
       def content_view_name(deployment)
         if deployment.lifecycle_environment_id
           name = SETTINGS[:fusor][:content][:content_view][:composite_view_name]
-          [name, deployment.name].join(' - ') if name
+          [name, deployment.label].join(' - ') if name
         else
           deployment.organization.default_content_view.name
         end
@@ -300,7 +300,7 @@ module Actions
 
         name = hostgroup[:activation_key][:name]
         hg_name = hostgroup[:name]
-        return [name, deployment.name, hg_name].map { |str| str.tr('-', "_") }.join('-')
+        return [name, deployment.label, hg_name].map { |str| str.tr('-', "_") }.join('-')
       end
     end
   end

@@ -129,7 +129,7 @@ module Actions::Fusor::Deployment::OpenStack
       hg_name = hostgroup[:name]
       name = hostgroup[:activation_key][:name]
 
-      [name, deployment.name, hg_name].map { |str| str.tr("-", "_") }.join('-')
+      [name, deployment.label, hg_name].map { |str| str.tr("-", "_") }.join('-')
     end
   end
 end

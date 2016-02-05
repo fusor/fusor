@@ -50,33 +50,33 @@ module Actions
           private
 
           def create_image(deployment)
-            cr = ComputeResource.find_by_name("#{deployment.name}-RHOS")
-            Image.create("name" => "#{deployment.name}-cfme",
+            cr = ComputeResource.find_by_name("#{deployment.label}-RHOS")
+            Image.create("name" => "#{deployment.label}-cfme",
               "username" => 'root',
               "user_data" => 1,
-              "uuid" => cr.available_images.find { |hash| "#{deployment.name}-cfme" == hash.name }.id,
+              "uuid" => cr.available_images.find { |hash| "#{deployment.label}-cfme" == hash.name }.id,
               "compute_resource_id" => cr.id,
               "operatingsystem_id" => Operatingsystem.find_by_title('RedHat 7.1')['id'],
               "architecture_id" => Architecture.find_by_name('x86_64')['id'])
           end
 
           def create_compute_profile(deployment)
-            cp = ComputeProfile.create("name" => "#{deployment.name}-cfme")
+            cp = ComputeProfile.create("name" => "#{deployment.label}-cfme")
             overcloud = { :openstack_auth_url  => "http://#{deployment.openstack_overcloud_address}:5000/v2.0/tokens",
                           :openstack_username  => 'admin', :openstack_tenant => 'admin',
                           :openstack_api_key   => deployment.openstack_overcloud_password }
             keystone = Fog::Identity::OpenStack.new(overcloud)
-            tenant = keystone.get_tenants_by_name(deployment.name).body["tenant"]
+            tenant = keystone.get_tenants_by_name(deployment.label).body["tenant"]
             neutron = Fog::Network::OpenStack.new(overcloud)
-            nic = neutron.list_networks.body["networks"].find { |hash| "#{deployment.name}-net" == hash["name"] }['id']
+            nic = neutron.list_networks.body["networks"].find { |hash| "#{deployment.label}-net" == hash["name"] }['id']
 
             ComputeAttribute.create({"compute_profile_id" => cp.id,
-                                     "compute_resource_id" => ComputeResource.find_by_name("#{deployment.name}-RHOS")['id'],
+                                     "compute_resource_id" => ComputeResource.find_by_name("#{deployment.label}-RHOS")['id'],
                                      "vm_attrs" => {
                                        "flavor_ref" => "4",
-                                       "network" => "#{deployment.name}-float-net",
-                                       "image_ref" => Image.find_by_name("#{deployment.name}-cfme").uuid,
-                                       "security_groups" => "#{deployment.name}-sec-group",
+                                       "network" => "#{deployment.label}-float-net",
+                                       "image_ref" => Image.find_by_name("#{deployment.label}-cfme").uuid,
+                                       "security_groups" => "#{deployment.label}-sec-group",
                                        "nics" => ["", nic],
                                        "tenant_id" => tenant['id']
                                      }.with_indifferent_access
@@ -84,11 +84,11 @@ module Actions
           end
 
           def create_host(deployment)
-            cfme = {"name" => "#{deployment.name.tr('_', '-')}-cfme",
+            cfme = {"name" => "#{deployment.label.tr('_', '-')}-cfme",
                     "location_id" => Location.find_by_name('Default Location').id,
                     "environment_id" => Environment.where(:katello_id => "Default_Organization/Library/Fusor_Puppet_Content").first.id,
                     "organization_id" => deployment["organization_id"],
-                    "compute_resource_id" => ComputeResource.find_by_name("#{deployment.name}-RHOS").id,
+                    "compute_resource_id" => ComputeResource.find_by_name("#{deployment.label}-RHOS").id,
                     "enabled" => 1,
                     "managed" => 1,
                     "architecture_id" => Architecture.find_by_name('x86_64')['id'],
@@ -99,7 +99,7 @@ module Actions
                     "provision_method" => "image",
                     "build" => 1,
                     "is_owned_by" => "3-Users",
-                    "compute_profile_id" => ComputeProfile.find_by_name("#{deployment.name}-cfme").id}
+                    "compute_profile_id" => ComputeProfile.find_by_name("#{deployment.label}-cfme").id}
             ::Host.create(cfme)
           end
         end

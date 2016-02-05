@@ -29,7 +29,7 @@ module Actions
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             cfme_address = deployment.cfme_address
-            provider = { :name => "#{deployment.name}-RHEV",
+            provider = { :name => "#{deployment.label}-RHEV",
                          :type => "rhevm",
                          :hostname => deployment.rhev_engine_host.name,
                          :ip => deployment.rhev_engine_host.ip,
@@ -38,7 +38,7 @@ module Actions
                          :hypervisors => deployment.discovered_hosts
             }
 
-            ::Fusor.log.info "Adding RHEV provider #{deployment.name}-RHEV to CFME."
+            ::Fusor.log.info "Adding RHEV provider #{provider[:name]} to CFME."
 
             Utils::CloudForms::InfraProvider.add(cfme_address, provider, deployment)
             Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)

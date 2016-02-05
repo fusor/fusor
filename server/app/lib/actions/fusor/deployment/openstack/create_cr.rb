@@ -31,12 +31,12 @@ module Actions
           def run
             ::Fusor.log.debug '====== Openstack Compute Resource run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
-            cr = { "name" => "#{deployment['name']}-RHOS",
+            cr = { "name" => "#{deployment.label}-RHOS",
                    "location_ids" => ["", Location.where(:name => "Default Location").first.id],
                    "url" => "http://#{deployment.openstack_overcloud_address}:5000/v2.0/tokens",
                    "provider" => "Foreman::Model::Openstack", "user" => 'admin',
                    "password" => deployment.openstack_overcloud_password,
-                   "organization_ids" => [deployment["organization_id"]], "tenant" => deployment.name }
+                   "organization_ids" => [deployment.organization_id], "tenant" => deployment.label }
             ::Foreman::Model::Openstack.create(cr)
             ::Fusor.log.debug '=== Leaving Openstack Compute Resource run method ==='
           end

@@ -49,12 +49,12 @@ module Actions
           private
 
           def create_compute_profile(deployment)
-            cp = ComputeProfile.create("name" => "#{deployment.name}-cfme")
-            cr = ComputeResource.find_by_name("#{deployment.name}-RHEV")
+            cp = ComputeProfile.create("name" => "#{deployment.label}-cfme")
+            cr = ComputeResource.find_by_name("#{deployment.label}-RHEV")
             cl_id = cr.clusters.find { |c| c.name == deployment.rhev_cluster_name }.id
             net_id = cr.available_networks(cl_id).first.id
             storage_id = cr.available_storage_domains(cl_id).first.id
-            template_id = cr.templates.find { |t| t.name == "#{deployment.name}-cfme-template" }.id
+            template_id = cr.templates.find { |t| t.name == "#{deployment.label}-cfme-template" }.id
 
             ComputeAttribute.create({"compute_profile_id" => cp.id,
                                      "compute_resource_id" => cr.id,
@@ -96,12 +96,12 @@ module Actions
           end
 
           def create_host(deployment, compute_attrs)
-            hg_id = Hostgroup.where(name: deployment.name).first.id
-            cfme = {"name" => "#{deployment.name.tr('_', '-')}-cfme",
+            hg_id = Hostgroup.where(name: deployment.label).first.id
+            cfme = {"name" => "#{deployment.label.tr('_', '-')}-cfme",
                     "location_id" => Location.find_by_name('Default Location').id,
                     "environment_id" => Environment.where(:katello_id => "Default_Organization/Library/Fusor_Puppet_Content").first.id,
                     "organization_id" => deployment["organization_id"],
-                    "compute_resource_id" => ComputeResource.find_by_name("#{deployment.name}-RHEV").id,
+                    "compute_resource_id" => ComputeResource.find_by_name("#{deployment.label}-RHEV").id,
                     "enabled" => "1",
                     "managed" => "1",
                     "architecture_id" => Architecture.find_by_name('x86_64')['id'],

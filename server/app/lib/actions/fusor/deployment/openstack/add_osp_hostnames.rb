@@ -28,8 +28,8 @@ module Actions
             Rails.logger.debug '====== AddOspHostnames run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             domain = Domain.find(Hostgroup.find_by_name('Fusor Base').domain_id)
-            deployment.openstack_overcloud_hostname = "#{deployment.name.tr('_', '-')}-overcloud.#{domain}"
-            deployment.openstack_undercloud_hostname = "#{deployment.name.tr('_', '-')}-undercloud.#{domain}"
+            deployment.openstack_overcloud_hostname = "#{deployment.label.tr('_', '-')}-overcloud.#{domain}"
+            deployment.openstack_undercloud_hostname = "#{deployment.label.tr('_', '-')}-undercloud.#{domain}"
             deployment.save!(:validate => false)
             overcloud = Net::DNS::ARecord.new(:ip => deployment.openstack_overcloud_address,
                                               :hostname => deployment.openstack_overcloud_hostname,
