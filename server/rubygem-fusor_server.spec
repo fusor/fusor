@@ -76,7 +76,6 @@ Provides: %{?scl_prefix}rubygem(fusor) = %{version}
 Requires: %{?scl_prefix}rubygem-egon
 Requires: %{?scl_prefix}rubygem-foretello_api_v21
 Requires: %{?scl_prefix}rubygem-active_model_serializers
-Requires: %{?scl_prefix}rubygem-mechanize
 Requires: %{?scl_prefix}rubygem-net-ssh => 2.9.2
 Requires: %{?scl_prefix}rubygem-rubyzip
 Requires: fusor_ovirt
