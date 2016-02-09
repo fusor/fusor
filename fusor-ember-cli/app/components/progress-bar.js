@@ -61,6 +61,7 @@ export default Ember.Component.extend({
     'deploymentStatus',
     'model.result',
     'isFinished',
+    'isStopped',
     'isSatelliteProgressBar',
     function() {
       if ((this.get('deploymentStatus') === 'In Process') && (this.get('model.result') === 'pending')) {
@@ -68,6 +69,8 @@ export default Ember.Component.extend({
           return "Syncing content";
         } else if (this.get('isNodeProgressBar')) {
           return "Registering Node";
+        } else if (this.get('isStopped')) {
+          return "Task is stopped";
         } else {
           return "Installing components";
         }
@@ -101,6 +104,10 @@ export default Ember.Component.extend({
 
   isError: Ember.computed('model.result', function() {
     return(this.get('model.result') === 'error');
+  }),
+
+  isStopped: Ember.computed('model.state', function() {
+    return ((this.get('model.state') === 'stopped') || (this.get('model.state') === 'paused'));
   }),
 
   hasHumanizedErrors: Ember.computed('model.humanized_errors', function() {
