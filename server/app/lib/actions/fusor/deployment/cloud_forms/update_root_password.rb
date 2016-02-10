@@ -96,7 +96,7 @@ module Actions
           def update_root_password_failed
             ::Fusor.log.debug "=========== failed entered ============="
             @retries -= 1
-            if !@success && @retries >= 0 && recoverable_error?
+            if !@success && @retries >= 0
               @retry = true
             else
               @retry = false
@@ -105,11 +105,6 @@ module Actions
               ::Fusor.log.error "Probable error. Will we retry? #{@retry}. Error message: #{@io.string}"
             end
             ::Fusor.log.debug "=========== failed exited ============="
-          end
-
-          def recoverable_error?
-            recoverable_msgs = ["execution expired", "Connection refused"]
-            recoverable_msgs.any? { |msg| @io.string.include?(msg) }
           end
         end
       end
