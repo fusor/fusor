@@ -8,59 +8,12 @@
   {{/if}}
 
   {{#if showValidationError}}
-    {{#if validIsRequiredAndBlank}}
-        <span class="error errorForValidation">
-            cannot be blank
-        </span>
-    {{/if}}
+    {{#each validationMessages as |message|}}
+        <p class="error errorForValidation">{{message}}</p>
+    {{/each}}
 
-    {{#if doesntMatchPassword}}
-      <span class="error errorForValidation">
-            passwords don't match
-        </span>
-    {{/if}}
-
-    {{#if passwordTooShort}}
-        <span class="error errorForValidation">
-            must be {{minChars}} or more characters
-        </span>
-    {{/if}}
-
-    {{#if validIsUnique}}
-        <span class="error errorForValidation">
-            must be unique
-        </span>
-    {{/if}}
-
-    {{#if invalidIsAlphaNumeric}}
-        <span class="error errorForValidation">
-            must contain only 'A-Z', 'a-z', '0-9', '_' or '-' characters
-        </span>
-    {{/if}}
-
-    {{#if invalidIsHostname}}
-        <span class="error errorForValidation">
-            invalid hostname
-        </span>
-    {{/if}}
-
-    {{#if invalidNetworkRange}}
-        <span class="error errorForValidation">
-            invalid network range
-        </span>
-    {{/if}}
-
-    {{#if invalidCIDRNotation}}
-        <span class="error errorForValidation">
-            invalid CIDR notation
-        </span>
-    {{/if}}
-
-      <span class="error errorForValidation">
-          {{errors.name}}
-      </span>
+    <p class="error errorForValidation">{{errors.name}}</p>
   {{/if}}
-
 
   {{yield}}
 

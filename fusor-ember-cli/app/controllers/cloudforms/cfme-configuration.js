@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
+import { EqualityValidator, PasswordValidator } from '../../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
@@ -18,17 +19,23 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   }),
 
+  passwordValidator: PasswordValidator.create({}),
+
+  confirmCfmeRootPasswordValidator: Ember.computed('cfmeRootPassword', function() {
+    return EqualityValidator.create({equals: this.get('cfmeRootPassword')});
+  }),
+
+  confirmCfmeAdminPasswordValidator: Ember.computed('cfmeAdminPassword', function() {
+    return EqualityValidator.create({equals: this.get('cfmeAdminPassword')});
+  }),
+
   hasCFRootPassword: Ember.computed('cfmeRootPassword', function() {
-    return (Ember.isPresent(this.get('cfmeRootPassword')) &&
-            (this.get('cfmeRootPassword.length') > 7)
-           );
+    return this.get('passwordValidator').isValid(this.get('cfmeRootPassword'));
   }),
   hasNoCFRootPassword: Ember.computed.not("hasCFRootPassword"),
 
   hasCFAdminPassword: Ember.computed('cfmeAdminPassword', function() {
-    return (Ember.isPresent(this.get('cfmeAdminPassword')) &&
-            (this.get('cfmeAdminPassword.length') > 7)
-           );
+    return this.get('passwordValidator').isValid(this.get('cfmeAdminPassword'));
   }),
   hasNoCFAdminPassword: Ember.computed.not("hasCFAdminPassword"),
 

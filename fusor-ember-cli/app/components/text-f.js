@@ -1,5 +1,4 @@
 import Ember from 'ember';
-import ValidationUtil from '../utils/validation-util';
 
 export default Ember.Component.extend({
 
@@ -15,81 +14,32 @@ export default Ember.Component.extend({
     return (this.get('type') === 'password');
   }),
 
-  doesntMatchPassword: Ember.computed('value', 'mustMatch', function() {
-    return this.get('mustMatch') && this.get('mustMatch') !== this.get('value');
-  }),
-
-  passwordTooShort: Ember.computed('value', 'isPassword', 'minChars', function () {
-    return this.get('isPassword') && this.get('minChars') && this.get('value.length') < this.get('minChars');
-  }),
-
-  invalidIsAlphaNumeric: Ember.computed('value', 'isAlphaNumeric', function() {
-    if (this.get('isAlphaNumeric')) {
-        var validAlphaNumbericRegex = new RegExp(/^[A-Za-z0-9_-]+$/);
-        if (Ember.isPresent(this.get('value'))) {
-            return !(this.get('value').trim().match(validAlphaNumbericRegex));
-        }
+  isValid: Ember.computed('value', 'validator', 'errors.name', 'validIsRequiredAndBlank', function() {
+    if (Ember.isPresent(this.get('errors.name')) || this.get('validIsRequiredAndBlank')) {
+      return false;
     }
+
+    let validator = this.get('validator');
+    return validator ? validator.isValid(this.get('value')) : true;
   }),
 
-  invalidIsHostname: Ember.computed('value', 'isHostname', function() {
-    if (this.get('isHostname')) {
-       var validHostnameRegex = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$";
-       if (Ember.isPresent(this.get('value'))) {
-            return !(this.get('value').trim().match(validHostnameRegex));
-        }
-    }
+  isInvalid: Ember.computed.not('isValid'),
+
+  hasError: Ember.computed('showValidationError', 'errors.name', 'isInvalid', function () {
+    return this.get('showValidationError') && this.get('isInvalid');
   }),
 
-  invalidNetworkRange: Ember.computed('value', 'isNetworkRange', function() {
-    let val = this.get('value');
-    if(this.get('isNetworkRange') && Ember.isPresent(val)) {
-      return !ValidationUtil.validateIpRange(val);
+  validationMessages: Ember.computed('value', 'validator', 'validIsRequiredAndBlank', function() {
+    if (this.get('validIsRequiredAndBlank')) {
+      return ['cannot be blank'];
     }
-  }),
 
-  invalidCIDRNotation: Ember.computed('value', 'requiresCIDRNotation', function() {
-    let val = this.get('value');
-    if(this.get('requiresCIDRNotation') && Ember.isPresent(val)) {
-      return !ValidationUtil.validateCIDRFormat(val);
-    }
+    let validator = this.get('validator');
+    return validator ? validator.getMessages(this.get('value')) : [];
   }),
-
-  hasError: Ember.computed(
-    'showValidationError',
-    'errors.name',
-    'doesntMatchPassword',
-    'passwordTooShort',
-    'validIsRequiredAndBlank',
-    'validIsUnique',
-    'invalidIsAlphaNumeric',
-    'invalidIsHostname',
-    'invalidNetworkRange',
-    'invalidCIDRNotation',
-    function() {
-      return (this.get('showValidationError') &&
-               (Ember.isPresent(this.get('errors.name')) ||
-               this.get('doesntMatchPassword') ||
-               this.get('passwordTooShort') ||
-               this.get('validIsRequiredAndBlank') ||
-               this.get('validIsUnique') ||
-               this.get('invalidIsAlphaNumeric') ||
-               this.get('invalidIsHostname') ||
-               this.get('invalidNetworkRange') ||
-               this.get('invalidCIDRNotation'))
-             );
-    }
-  ),
 
   setOrigValue: Ember.on('didInsertElement', function() {
     this.set('origValue', this.get('value'));
-  }),
-
-  validIsUnique: Ember.computed('uniqueValues', 'value', 'isUnique', function() {
-    if (this.get('isUnique')) {
-        var uniqueNames = this.get('uniqueValues').removeObject(this.get('origValue'));
-        return uniqueNames.contains(this.get('value'));
-    }
   }),
 
   eyeIcon: 'fa-eye',

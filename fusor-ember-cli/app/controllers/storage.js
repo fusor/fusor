@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
+import { AggregateValidator, PresenceValidator, AlphaNumericDashUnderscoreValidator, HostnameValidator } from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
@@ -64,65 +65,78 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   isInvalidStorageFields: Ember.computed(
     'deploymentController.model.rhev_storage_type',
-    'deploymentController.model.rhev_storage_name',
-    'deploymentController.model.rhev_storage_address',
-    'deploymentController.model.rhev_share_path',
-    'hasEndingSlashInSharePath',
-    'hasNoLeadingSlashInSharePath',
+    'invalidStorageName',
+    'invalidStorageAddress',
+    'invalidSharePath',
     function() {
-      return (Ember.isBlank(this.get('deploymentController.model.rhev_storage_type')) ||
-              Ember.isBlank(this.get('deploymentController.model.rhev_storage_name')) ||
-              Ember.isBlank(this.get('deploymentController.model.rhev_storage_address')) ||
-              Ember.isBlank(this.get('deploymentController.model.rhev_share_path')) ||
-              this.get('hasEndingSlashInSharePath') ||
-              this.get('hasNoLeadingSlashInSharePath')
-             );
+      return  Ember.isBlank(this.get('deploymentController.model.rhev_storage_type')) ||
+              this.get('invalidStorageName') ||
+              this.get('invalidStorageAddress') ||
+              this.get('invalidSharePath');
     }
   ),
 
   isInvalidExportDomainFields: Ember.computed(
-    'deploymentController.model.rhev_export_domain_name',
-    'deploymentController.model.rhev_export_domain_address',
-    'deploymentController.model.rhev_export_domain_path',
-    'hasEndingSlashInExportPath',
-    'hasNoLeadingSlashInExportPath',
+    'invalidExportDomainName',
+    'invalidExportAddress',
+    'invalidExportPath',
     function() {
-      return (Ember.isBlank(this.get('deploymentController.model.rhev_export_domain_name')) ||
-              Ember.isBlank(this.get('deploymentController.model.rhev_export_domain_address')) ||
-              Ember.isBlank(this.get('deploymentController.model.rhev_export_domain_path')) ||
-              this.get('hasEndingSlashInExportPath') ||
-              this.get('hasNoLeadingSlashInExportPath')
-             );
+      return this.get('invalidExportDomainName') ||
+        this.get('invalidExportAddress') ||
+        this.get('invalidExportPath');
     }
   ),
 
+  computerNameValidator: AggregateValidator.create({
+    validators: [
+      PresenceValidator.create({}),
+      AlphaNumericDashUnderscoreValidator.create({})
+    ]
+  }),
+
+  hostnameValidator: AggregateValidator.create({
+    validators: [
+      PresenceValidator.create({}),
+      HostnameValidator.create({})
+    ]
+  }),
+
   invalidStorageName: Ember.computed('deploymentController.model.rhev_storage_name', function() {
-      var validAlphaNumbericRegex = new RegExp(/^[A-Za-z0-9_-]+$/);
-      if (Ember.isPresent(this.get('deploymentController.model.rhev_storage_name'))) {
-          return !(this.get('deploymentController.model.rhev_storage_name').trim().match(validAlphaNumbericRegex));
-      }
+    return !this.get('computerNameValidator').isValid(this.get('deploymentController.model.rhev_storage_name'));
   }),
 
   invalidStorageAddress: Ember.computed('deploymentController.model.rhev_storage_address', function() {
-      var validHostnameRegex = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$";
-      if (Ember.isPresent(this.get('deploymentController.model.rhev_storage_address'))) {
-          return !(this.get('deploymentController.model.rhev_storage_address').trim().match(validHostnameRegex));
-      }
+    return !this.get('hostnameValidator').isValid(this.get('deploymentController.model.rhev_storage_address'));
   }),
 
+  invalidSharePath: Ember.computed(
+    'deploymentController.model.rhev_share_path',
+    'hasEndingSlashInSharePath',
+    'hasNoLeadingSlashInSharePath',
+    function () {
+      return Ember.isBlank(this.get('deploymentController.model.rhev_share_path')) ||
+        this.get('hasEndingSlashInSharePath') ||
+        this.get('hasNoLeadingSlashInSharePath');
+    }),
+
   invalidExportDomainName: Ember.computed('deploymentController.model.rhev_export_domain_name', function() {
-      var validAlphaNumbericRegex = new RegExp(/^[A-Za-z0-9_-]+$/);
-      if (Ember.isPresent(this.get('deploymentController.model.rhev_export_domain_name'))) {
-          return !(this.get('deploymentController.model.rhev_export_domain_name').trim().match(validAlphaNumbericRegex));
-      }
+    return !this.get('computerNameValidator').isValid(this.get('deploymentController.model.rhev_export_domain_name'));
   }),
 
   invalidExportAddress: Ember.computed('deploymentController.model.rhev_export_domain_address', function() {
-      var validHostnameRegex = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$";
-      if (Ember.isPresent(this.get('deploymentController.model.rhev_export_domain_address'))) {
-          return !(this.get('deploymentController.model.rhev_export_domain_address').trim().match(validHostnameRegex));
-      }
+    return !this.get('hostnameValidator').isValid(this.get('deploymentController.model.rhev_export_domain_address'));
   }),
+
+  invalidExportPath: Ember.computed(
+    'deploymentController.model.rhev_export_domain_path',
+    'hasEndingSlashInExportPath',
+    'hasNoLeadingSlashInExportPath',
+    function () {
+      return Ember.isBlank(this.get('deploymentController.model.rhev_export_domain_path')) ||
+        this.get('hasEndingSlashInExportPath') ||
+        this.get('hasNoLeadingSlashInExportPath');
+    }),
+
 
   disableNextStorage: Ember.computed(
     'isInvalidStorageFields',

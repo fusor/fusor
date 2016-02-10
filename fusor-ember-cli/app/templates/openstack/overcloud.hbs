@@ -28,8 +28,7 @@
                disabled=isStarted
                placeholder="192.168.254.0/24"
                help-inline="CIDR notation, 192.168.254.0/24"
-               isNetworkRange=true
-               requiresCIDRNotation=true
+               validator=cidrValidator
                }}
 
       {{text-f label="Floating IP Network"
@@ -39,8 +38,7 @@
                disabled=isStarted
                placeholder="192.168.253.0/24"
                help-inline="CIDR notation, 192.168.253.0/24"
-               isNetworkRange=true
-               requiresCIDRNotation=true
+               validator=cidrValidator
                }}
 
       {{text-f label="Floating IP Network Gateway"
@@ -48,7 +46,7 @@
                cssId="osp-float-gatewway"
                isRequired=true
                disabled=isStarted
-               isNetworkRange=true
+               validator=ipValidator
                }}
 
       <br />
@@ -59,13 +57,12 @@
       {{text-f label="Admin Password" type="password" value=overcloudPassword
                cssId="osp_overcloud_password"
                isRequired=true
-               disabled=isStarted
-               }}
+               disabled=isStarted}}
 
       {{text-f label="Confirm Password" type="password" value=confirmOvercloudPassword
                cssId="confirm_osp_overcloud_password"
                isRequired=true
-               mustMatch=overcloudPassword
+               validator=confirmOvercloudPasswordValidator
                disabled=isStarted
                placeholder="Must match admin password"}}
     </form>

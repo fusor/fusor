@@ -125,6 +125,10 @@ label.env_path_disabled:after {
   color: green;
 }
 
+p.error.errorForValidation {
+  margin-bottom: 0;
+}
+
 .errorForValidation {
   color: #a94442;
 }

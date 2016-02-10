@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import DeploymentControllerMixin from "../../mixins/deployment-controller-mixin";
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
-import ValidationUtil from '../../utils/validation-util';
+import { PresenceValidator, EqualityValidator, IpRangeValidator, CidrValidator} from '../../utils/validators';
 
 let OvercloudController = Ember.Controller.extend(
   DeploymentControllerMixin,
@@ -15,6 +15,12 @@ let OvercloudController = Ember.Controller.extend(
   externalNetworkInterface: Ember.computed.alias('openStack.externalNetworkInterface'),
   overcloudPassword: Ember.computed.alias("deploymentController.model.openstack_overcloud_password"),
   confirmOvercloudPassword: Ember.computed.alias("deploymentController.confirmOvercloudPassword"),
+
+  ipValidator: IpRangeValidator.create({}),
+  cidrValidator: CidrValidator.create({}),
+  confirmOvercloudPasswordValidator: Ember.computed('overcloudPassword', function() {
+    return EqualityValidator.create({equals: this.get('overcloudPassword')});
+  }),
 
   nextStepRouteNameOvercloud: Ember.computed('isCloudForms', function() {
     if (this.get('isCloudForms')) {
@@ -54,24 +60,21 @@ let OvercloudController = Ember.Controller.extend(
   isValidPrivateNetworkRange: Ember.computed(
     'openstackOvercloudPrivateNet',
     function() {
-      return ValidationUtil.validateIpRangeAndFormat(
-        this.get('openstackOvercloudPrivateNet'));
+      return this.get('cidrValidator').isValid(this.get('openstackOvercloudPrivateNet'));
     }
   ),
 
   isValidFloatingIpNetworkRange: Ember.computed(
     'openstackOvercloudFloatNet',
     function() {
-      return ValidationUtil.validateIpRangeAndFormat(
-        this.get('openstackOvercloudFloatNet'));
+      return this.get('cidrValidator').isValid(this.get('openstackOvercloudFloatNet'));
     }
   ),
 
   isValidFloatingIpGateway: Ember.computed(
     'openstackOvercloudFloatGateway',
     function() {
-      return ValidationUtil.validateIpRange(
-        this.get('openstackOvercloudFloatGateway'));
+      return this.get('ipValidator').isValid(this.get('openstackOvercloudFloatGateway'));
     }
   )
 });

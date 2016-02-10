@@ -1,7 +1,8 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
+import ValidatesDeploymentNameMixin from "../../mixins/validates-deployment-name-mixin";
 
-export default Ember.Controller.extend(NeedsDeploymentMixin, {
+export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesDeploymentNameMixin, {
 
   name: Ember.computed.alias("deploymentController.name"),
   description: Ember.computed.alias("deploymentController.description"),
@@ -21,8 +22,5 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     } else {
       return 'deployment.start';
     }
-  }),
-
-  deploymentNames: Ember.computed.alias("applicationController.deploymentNames")
-
+  })
 });

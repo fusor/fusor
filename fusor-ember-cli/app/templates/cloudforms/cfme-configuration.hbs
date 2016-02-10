@@ -5,14 +5,14 @@
                cssId="cfme_root_password"
                isRequired=true
                disabled=isStarted
-               minChars=8
+               validator=passwordValidator
                help-inline="Applies to root user account for this CloudForms instance"
                placeholder="Must be 8 or more characters"}}
 
       {{text-f label="Confirm Root Password" type="password" value=confirmCfmeRootPassword
                cssId="confirm_cfme_root_password"
                isRequired=true
-               mustMatch=cfmeRootPassword
+               validator=confirmCfmeRootPasswordValidator
                disabled=isStarted
                placeholder="Must match root password"}}
 
@@ -20,14 +20,14 @@
                cssId="cfme_admin_password"
                isRequired=true
                disabled=isStarted
-               minChars=8
+               validator=passwordValidator
                help-inline="Applies to admin user account for CloudForms web UI"
                placeholder="Must be 8 or more characters"}}
 
       {{text-f label="Confirm Admin Password" type="password" value=confirmCfmeAdminPassword
                cssId="confirm_cfme_admin_password"
                isRequired=true
-               mustMatch=cfmeAdminPassword
+               validator=confirmCfmeAdminPasswordValidator
                disabled=isStarted
                placeholder="Must match admin password"}}
 

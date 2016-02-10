@@ -1,6 +1,7 @@
 import Ember from 'ember';
+import ValidatesDeploymentNameMixin from "./validates-deployment-name-mixin";
 
-export default Ember.Mixin.create({
+export default Ember.Mixin.create(ValidatesDeploymentNameMixin, {
 
   deploymentController: Ember.inject.controller('deployment'),
   applicationController: Ember.inject.controller('application'),
@@ -17,35 +18,15 @@ export default Ember.Mixin.create({
   }),
   hasNoOrganization: Ember.computed.not('hasOrganization'),
 
-  deploymentNames: Ember.computed.alias("applicationController.deploymentNames"),
-
-  isDuplicateName: Ember.computed('model.name', function() {
-    if (this.get('model').get('isNew')) {
-      return this.get('deploymentNames').contains(this.get('model.name'));
-    } else {
-      var attrs = this.get('model').changedAttributes();
-      if (attrs.name) {
-        var origValue = attrs.name[0];
-        var dirtyValue = attrs.name[1];
-        if (origValue !== dirtyValue) {
-            return this.get('deploymentNames').contains(dirtyValue);
-        } else {
-          return false;
-        }
-      } else {
-        return false;
-      }
-    }
+  isValidDeploymentName: Ember.computed('model.name', 'deploymentNameValidator', function() {
+    return this.get('deploymentNameValidator').isValid(this.get('model.name'));
   }),
 
-  // disable All if there is no deployment name
-  disableAll: Ember.computed.alias("hasNoName"),
-
   // disable Next on Deployment Name if there is no deployment name
-  disableNextOnDeploymentName: Ember.computed.or("hasNoName", 'isDuplicateName'),
+  disableNextOnDeploymentName: Ember.computed.not('isValidDeploymentName'),
 
   // disable Next on Configure Organization if no organization is selected
-  disableNextOnConfigureOrganization: Ember.computed.or('hasNoOrganization', 'disableAll'),
+  disableNextOnConfigureOrganization: Ember.computed.not('isValidDeploymentName'),
 
   // disable Next on Lifecycle Environment if no lifecycle environment is selected
   // note: hasNoLifecycleEnvironment and hasNoLifecycleEnvironment is defined in /app/controllers/deployment.js
