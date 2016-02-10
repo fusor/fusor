@@ -1,5 +1,6 @@
 var fs = require('fs');
 var path = require('path');
+var spawn = require('child_process').spawn;
 
 module.exports = {
   name: 'copy-assets',
@@ -19,12 +20,12 @@ module.exports = {
 
     BUILT_CSS_FILES.forEach(function (src) {
       var dst = path.join(CSS_DESTINATION_DIR, path.basename(src));
-      fs.createReadStream(src).pipe(fs.createWriteStream(dst));
+      spawn('cp', [src, dst]);
     });
 
     BUILT_JS_FILES.forEach(function (src) {
       var dst = path.join(JS_DESTINATION_DIR, path.basename(src));
-      fs.createReadStream(src).pipe(fs.createWriteStream(dst));
+      spawn('cp', [src, dst]);
     });
   }
 };
