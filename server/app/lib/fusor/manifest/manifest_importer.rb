@@ -25,7 +25,6 @@ module Fusor
 
         ::Fusor.log.debug "------------------------------------"
         ::Fusor.log.debug "Subscription Name: #{entitlement['pool']['productName']}"
-        ::Fusor.log.debug "Subscription Name2: #{entitlement['pool']['branding'].first['name']}"
         ::Fusor.log.debug "Contract Number: #{entitlement['pool']['contractNumber']}"
         ::Fusor.log.debug "System Type: N/A"
         ::Fusor.log.debug "Start Date: #{entitlement['startDate']}"
