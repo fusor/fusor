@@ -87,7 +87,6 @@ module Fusor
         @subscription.deployment_id = deployment.id
         @subscription.contract_number = entitlement['pool']['contractNumber']
         @subscription.product_name = entitlement['pool']['productName']
-        #@subscription.product_name = entitlement['pool']['branding'].first['name']
         @subscription.start_date = entitlement['startDate']
         @subscription.end_date = entitlement['endDate']
         @subscription.quantity_attached = entitlement['quantity']
