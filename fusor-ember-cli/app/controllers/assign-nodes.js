@@ -233,9 +233,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       });
 
       this.set('edittedRole', role);
-      this.set('edittedRoleImage', this.getParamValue(role.get('imageParameterName'), roleParams));
-      this.set('edittedRoleNodeCount', this.getParamValue(role.get('countParameterName'), roleParams));
-      this.set('edittedRoleProfile', this.getParamValue(role.get('flavorParameterName'), roleParams));
+      this.set('edittedRoleImage', this.get('openStack.plan').getParamValue(role.get('imageParameterName'), roleParams));
+      this.set('edittedRoleNodeCount', this.get('openStack.plan').getParamValue(role.get('countParameterName'), roleParams));
+      this.set('edittedRoleProfile', this.get('openStack.plan').getParamValue(role.get('flavorParameterName'), roleParams));
       this.set('edittedRoleParameters', advancedParams);
 
       this.openEditDialog();
