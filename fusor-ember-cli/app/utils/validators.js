@@ -43,10 +43,7 @@ const AggregateValidator = Validator.extend({
 });
 
 const PresenceValidator = Validator.extend({
-  init() {
-    this._super();
-    this.set('message', 'cannot be blank');
-  },
+  message: 'cannot be blank',
 
   isValid(value) {
     return Ember.isPresent(value);
@@ -56,10 +53,7 @@ const PresenceValidator = Validator.extend({
 // expects values to be set during construction:
 // equals;
 const EqualityValidator = Validator.extend({
-  init() {
-    this._super();
-    this.set('message', 'does not match');
-  },
+  message: 'does not match',
 
   isValid(value) {
     return value === this.get('equals');
@@ -96,19 +90,13 @@ const LengthValidator = Validator.extend({
 });
 
 const PasswordValidator = LengthValidator.extend({
-  init() {
-    this._super();
-    this.set('min', 8);
-  }
+  min: 8
 });
 
 // expects values to be set during construction:
 // Array[String] values;
 const UniquenessValidator = Validator.extend({
-  init() {
-    this._super();
-    this.set('message', 'must be unique');
-  },
+  message: 'must be unique',
 
   isValid(value) {
     let existingValues = this.get('existingValues');
@@ -131,43 +119,31 @@ const RegExpValidator = Validator.extend({
 
 
 const AlphaNumericDashUnderscoreValidator = RegExpValidator.extend({
-  init() {
-    this._super();
-    this.set('regExp', new RegExp(/^[A-Za-z0-9_-]*$/));
-    this.set('message', "must contain only 'A-Z', 'a-z', '0-9', '_' or '-' characters");
-  }
+  regExp: new RegExp(/^[A-Za-z0-9_-]*$/),
+  message: "must contain only 'A-Z', 'a-z', '0-9', '_' or '-' characters",
 });
 
 const IpRangeValidator = RegExpValidator.extend({
-  init() {
-    this._super();
-    this.set('regExp', new RegExp([
+  regExp: new RegExp([
       '\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
       '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
       '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
       '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b'
-    ].join(''), ''));
-    this.set('message', 'invalid network range');
-  }
+    ].join(''), ''),
+  message: 'invalid network range'
 });
 
 const CidrValidator = AggregateValidator.extend({
-  init() {
-    this._super();
-    this.set('validators', [
+  validators: [
       IpRangeValidator.create({}),
       RegExpValidator.create({regExp: new RegExp(/\/(3[0-2]|[1-2]?[0-9])$/)})
-    ]);
-    this.set('message', 'invalid CIDR notation');
-  }
+    ],
+  message: 'invalid CIDR notation'
 });
 
 const HostnameValidator = RegExpValidator.extend({
-  init() {
-    this._super();
-    this.set('regExp', new RegExp(/^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/));
-    this.set('message', 'invalid hostname');
-  }
+  regExp: new RegExp(/^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/),
+  message: 'invalid hostname'
 });
 
 export {

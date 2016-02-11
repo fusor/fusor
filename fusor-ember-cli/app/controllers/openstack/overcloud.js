@@ -57,26 +57,17 @@ let OvercloudController = Ember.Controller.extend(
 
   disableNextOvercloud: Ember.computed.not('validOvercloudNetworks'),
 
-  isValidPrivateNetworkRange: Ember.computed(
-    'openstackOvercloudPrivateNet',
-    function() {
-      return this.get('cidrValidator').isValid(this.get('openstackOvercloudPrivateNet'));
-    }
-  ),
+  isValidPrivateNetworkRange: Ember.computed('openstackOvercloudPrivateNet', function () {
+    return this.get('cidrValidator').isValid(this.get('openstackOvercloudPrivateNet'));
+  }),
 
-  isValidFloatingIpNetworkRange: Ember.computed(
-    'openstackOvercloudFloatNet',
-    function() {
-      return this.get('cidrValidator').isValid(this.get('openstackOvercloudFloatNet'));
-    }
-  ),
+  isValidFloatingIpNetworkRange: Ember.computed('openstackOvercloudFloatNet', function () {
+    return this.get('cidrValidator').isValid(this.get('openstackOvercloudFloatNet'));
+  }),
 
-  isValidFloatingIpGateway: Ember.computed(
-    'openstackOvercloudFloatGateway',
-    function() {
-      return this.get('ipValidator').isValid(this.get('openstackOvercloudFloatGateway'));
-    }
-  )
+  isValidFloatingIpGateway: Ember.computed('openstackOvercloudFloatGateway', function () {
+    return this.get('ipValidator').isValid(this.get('openstackOvercloudFloatGateway'));
+  })
 });
 
 export default OvercloudController;
