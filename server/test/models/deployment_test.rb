@@ -22,20 +22,25 @@ class DeploymentTest < ActiveSupport::TestCase
       assert_not rhev_d2.save, "Saved deployment with a duplicate name"
     end
 
-    test "should have generate a label on save" do
+    test "should generate a label on create" do
       new_rhev = fusor_deployments(:rhev).dup
       new_rhev.name = "Name with space"
       new_rhev.label = nil
       new_rhev.save!
-      assert_equal "Name_with_space", new_rhev.label
+      assert_equal "Name_with_space", new_rhev.label, "Label was not properly generated on create"
     end
 
-    test "should not alter a label when deployment name is changed" do
+    test "should update a label on save" do
       rhev_d = fusor_deployments(:rhev)
-      old_label = rhev_d.label
-      rhev_d.name = old_label + "-changed"
+      rhev_d.name = "Updated Name"
       rhev_d.save!
-      assert_equal "rhev", old_label
+      assert_equal "Updated_Name", rhev_d.label, "Label was not properly updated on save"
+    end
+
+    test "should not save with duplicate label" do
+      rhev_d2 = fusor_deployments(:another_rhev).dup
+      rhev_d2.name = "another rhev" #space results in same label as "another_rhev"
+      assert_not rhev_d2.save, "Saved deployment with a duplicate label"
     end
 
     test "should not save with no org" do
