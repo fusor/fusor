@@ -6,6 +6,10 @@ const Validator = Ember.Object.extend({
     return false;
   },
 
+  isInvalid(value) {
+    return !this.isValid(value);
+  },
+
   getMessages(value) {
     if (this.isValid(value)) {
       return [];
@@ -141,6 +145,11 @@ const CidrValidator = AggregateValidator.extend({
   message: 'invalid CIDR notation'
 });
 
+const MacAddressValidator = RegExpValidator.extend({
+  regExp: new RegExp(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/),
+  message: 'invalid mac address'
+});
+
 const HostnameValidator = RegExpValidator.extend({
   regExp: new RegExp(/^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/),
   message: 'invalid hostname'
@@ -158,5 +167,6 @@ export {
   AlphaNumericDashUnderscoreValidator,
   IpRangeValidator,
   CidrValidator,
+  MacAddressValidator,
   HostnameValidator
 };
