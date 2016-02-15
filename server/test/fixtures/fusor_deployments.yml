@@ -12,6 +12,7 @@ rhev:
   deploy_cfme: false
   deploy_rhev: true
   name: rhev
+  label: rhev
   organization: empty_organization
   lifecycle_environment: library
   upstream_consumer_uuid: 1
@@ -29,6 +30,7 @@ another_rhev:
   deploy_cfme: false
   deploy_rhev: true
   name: another_rhev
+  label: another_rhev
   organization: empty_organization
   lifecycle_environment: library
   upstream_consumer_uuid: 1
@@ -46,6 +48,7 @@ rhev_and_cfme:
   deploy_cfme: true
   deploy_rhev: true
   name: rhev_and_cfme
+  label: rhev_and_cfme
   organization: empty_organization
   cfme_root_password: redhat1234
   cfme_install_loc: RHEV

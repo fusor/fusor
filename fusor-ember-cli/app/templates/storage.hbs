@@ -26,15 +26,14 @@
     {{/radio-button}}
   {{/base-f}}
   {{#if isNFS}}
-      {{text-f label="Data Domain Name" value=model.rhev_storage_name isRequired=true cssId='rhev_storage_name' disabled=isStarted isAlphaNumeric=true}}
-      {{text-f label="Storage Address" value=model.rhev_storage_address isRequired=true cssId='rhev_storage_address' disabled=isStarted
-      isHostname=true}}
+      {{text-f label="Data Domain Name" value=model.rhev_storage_name isRequired=true cssId='rhev_storage_name' disabled=isStarted validator=computerNameValidator}}
+      {{text-f label="Storage Address" value=model.rhev_storage_address isRequired=true cssId='rhev_storage_address' disabled=isStarted validator=hostnameValidator}}
       {{text-f label="Share Path" value=model.rhev_share_path isRequired=true cssId='rhev_share_path' disabled=isStarted errors=errorsHashSharePath}}
 
       {{#if isCloudForms}}
         <h4> Export Domain </h4>
-          {{text-f label="Export Domain Name" value=model.rhev_export_domain_name cssId='rhev_export_domain_name' isRequired=true disabled=deploymentController.isStarted isAlphaNumeric=true}}
-          {{text-f label="Storage Address" value=model.rhev_export_domain_address cssId='rhev_export_domain_address' isRequired=true disabled=deploymentController.isStarted isHostname=true}}
+          {{text-f label="Export Domain Name" value=model.rhev_export_domain_name cssId='rhev_export_domain_name' isRequired=true disabled=deploymentController.isStarted validator=computerNameValidator}}
+          {{text-f label="Storage Address" value=model.rhev_export_domain_address cssId='rhev_export_domain_address' isRequired=true disabled=deploymentController.isStarted validator=hostnameValidator}}
           {{text-f label="Share Path" value=model.rhev_export_domain_path cssId='rhev_export_domain_path' isRequired=true disabled=deploymentController.isStarted errors=errorsHashExportPath}}
       {{/if}}
 

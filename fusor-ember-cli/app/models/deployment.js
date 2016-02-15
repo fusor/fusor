@@ -3,6 +3,7 @@ import Ember from 'ember';
 
 export default DS.Model.extend({
   name: DS.attr('string'),
+  label: DS.attr('string'),
   description: DS.attr('string'),
   organization: DS.belongsTo('organization', {async: true}),
   lifecycle_environment: DS.belongsTo('lifecycle-environment', {async: true}),

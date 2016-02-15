@@ -99,7 +99,7 @@ module Actions
           # locate the top-level hostgroup for the deployment...
           # currently, we'll create a hostgroup with the same name as the deployment...
           # Note: you need to scope the query to organization
-          parent = ::Hostgroup.where(:name => deployment.name).
+          parent = ::Hostgroup.where(:name => deployment.label).
               joins(:organizations).
               where("taxonomies.id in (?)", [deployment.organization.id]).first
 

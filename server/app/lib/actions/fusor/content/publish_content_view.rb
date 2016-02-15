@@ -94,7 +94,7 @@ module Actions
 
         def composite_content_view_name(deployment)
           name = SETTINGS[:fusor][:content][:content_view][:composite_view_name]
-          return [name, deployment.name].join(' - ') if name
+          return [name, deployment.label].join(' - ') if name
         end
 
         def rpm_content_view_name

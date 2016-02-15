@@ -42,7 +42,7 @@ module Actions
             ssh_username = "root"
 
             username = "admin@internal"
-            imported_template_name = "#{deployment.name}-cfme-template"
+            imported_template_name = "#{deployment.label}-cfme-template"
             export_domain_name = deployment.rhev_export_domain_name
             cfme_image_file = "/root/#{input[:image_file_name]}" # can't use find_image_file without doing filename magic :(
 

@@ -40,7 +40,7 @@ module Actions
             overcloud = { :openstack_auth_url  => "http://#{deployment.openstack_overcloud_address}:5000/v2.0/tokens",
                           :openstack_username  => 'admin', :openstack_tenant => 'admin',
                           :openstack_api_key   => deployment.openstack_overcloud_password }
-            upload_cfme_image(overcloud, "#{deployment.name}-cfme", image_full_path)
+            upload_cfme_image(overcloud, "#{deployment.label}-cfme", image_full_path)
             ::Fusor.log.debug '====== Leaving CFME Upload run method ======'
           ensure
             ::User.current = nil

@@ -12,6 +12,7 @@
 
 module Fusor
   class Deployment < ActiveRecord::Base
+
     # on update because we don't want to validate the empty object when
     # it is first created
     validates_with Fusor::Validators::DeploymentValidator, on: :update
@@ -19,6 +20,7 @@ module Fusor
     belongs_to :lifecycle_environment, :class_name => "Katello::KTEnvironment"
 
     validates :name, :presence => true, :uniqueness => {:scope => :organization_id}
+    validates :label, :presence => true, :uniqueness => {:scope => :organization_id}
     validates :organization_id, :presence => true
     validates :rhev_root_password, :allow_blank => true, :length => {:minimum => 8, :message => _('should be 8 characters or more')}
     validates :cfme_root_password, :allow_blank => true, :length => {:minimum => 8, :message => _('should be 8 characters or more')}
@@ -42,6 +44,7 @@ module Fusor
     belongs_to :foreman_task, :class_name => "::ForemanTasks::Task", :foreign_key => :foreman_task_uuid
 
     after_initialize :setup_warnings
+    before_validation :update_label
 
     scoped_search :on => [:id, :name], :complete_value => true
 
@@ -59,6 +62,12 @@ module Fusor
     def deploy?(deploy_type)
       fail _("Invalid deployment type: %s") % deploy_type unless DEPLOYMENT_TYPES.include?(deploy_type.to_sym)
       send("deploy_#{deploy_type}")
+    end
+
+    protected
+
+    def update_label
+      self.label = name ? name.gsub(/[^a-z0-9_]/i, "_") : nil
     end
   end
 end

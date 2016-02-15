@@ -53,7 +53,7 @@ module Actions
 
           def configure_keystone(deployment, overcloud)
             keystone = Fog::Identity::OpenStack.new(overcloud)
-            tenant = keystone.tenants.create(:name => deployment.name)
+            tenant = keystone.tenants.create(:name => deployment.label)
             #####FIX/TEST, even though we want a new tenant we probably don't need a separate user. Just find admin info
             #####And then make them an admin of the new tenant
             admin_user_id = keystone.list_users.body["users"].find { |u| u["name"] == 'admin' }['id']
@@ -64,21 +64,21 @@ module Actions
           def configure_networks(deployment, overcloud)
             keystone = Fog::Identity::OpenStack.new(overcloud)
             neutron = Fog::Network::OpenStack.new(overcloud)
-            tenant = keystone.get_tenants_by_name(deployment.name).body["tenant"]
+            tenant = keystone.get_tenants_by_name(deployment.label).body["tenant"]
 
-            net = neutron.networks.create :name => "#{deployment.name}-net", :tenant_id => tenant['id']
-            subnet = neutron.subnets.create :name => "#{deployment.name}-subnet", :network_id => net.id,
+            net = neutron.networks.create :name => "#{deployment.label}-net", :tenant_id => tenant['id']
+            subnet = neutron.subnets.create :name => "#{deployment.label}-subnet", :network_id => net.id,
                                             :ip_version => 4, :cidr => deployment.openstack_overcloud_private_net,
                                             :tenant_id => tenant['id'], :enable_dhcp => true,
                                             :dns_nameservers => ["#{::Subnet.first.dns_primary}"]
 
-            public_net = neutron.networks.create :name => "#{deployment.name}-float-net", :provider_network_type => 'flat',
+            public_net = neutron.networks.create :name => "#{deployment.label}-float-net", :provider_network_type => 'flat',
                                                  :router_external => true, :provider_physical_network => 'datacentre'
-            neutron.subnets.create :name => "#{deployment.name}-float-subnet", :network_id => public_net.id, :enable_dhcp => false,
+            neutron.subnets.create :name => "#{deployment.label}-float-subnet", :network_id => public_net.id, :enable_dhcp => false,
                                    :ip_version => 4, :cidr => deployment.openstack_overcloud_float_net,
                                    :gateway_ip => deployment.openstack_overcloud_float_gateway
 
-            router = neutron.routers.create :name => "#{deployment.name}-router", :tenant_id => tenant['id']
+            router = neutron.routers.create :name => "#{deployment.label}-router", :tenant_id => tenant['id']
             neutron.add_router_interface router.id, subnet.id
             neutron.update_router router.id, :external_gateway_info => {:network_id => public_net.id}
           end

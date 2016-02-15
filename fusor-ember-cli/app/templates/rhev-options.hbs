@@ -3,24 +3,24 @@
     <br />
     <form class="form form-horizontal">
       {{text-f label="Root Password" type="password" value=rhevRootPassword cssId="rhev-root-password"
-      isRequired=true disabled=isStarted minChars=8
+      isRequired=true disabled=isStarted validator=passwordValidator
       help-inline="Applies to root user accounts for deployed RHEV hosts"
       placeholder="Must be 8 or more characters"}}
 
       {{text-f label="Confirm Root Password" type="password" value=confirmRhevRootPassword cssId="confirm-rhev-root-password"
-      isRequired=true disabled=isStarted mustMatch=rhevRootPassword
+      isRequired=true disabled=isStarted validator=confirmRhevRootPasswordValidator
       placeholder="Must match root password"}}
 
       {{text-f label="Engine Admin Password" type="password" value=rhevEngineAdminPassword cssId="rhev-engine-admin-password"
-      isRequired=true disabled=isStarted minChars=8
+      isRequired=true disabled=isStarted validator=passwordValidator
       help-inline="Applies to admin user account for RHEV web UI"
       placeholder="Must be 8 or more characters"}}
 
       {{text-f label="Confirm Engine Admin Password" type="password" value=confirmRhevEngineAdminPassword cssId="confirm-rhev-engine-pdmin-password"
-      isRequired=true disabled=isStarted mustMatch=rhevEngineAdminPassword
+      isRequired=true disabled=isStarted validator=confirmRhevEngineAdminPasswordValidator
       placeholder="Must match engine admin password"}}
 
-      {{text-f label="Data Center Name" value=rhevDatabaseName placeholder="Leave blank for default" cssId="rhev-database-name" disabled=isStarted isAlphaNumeric=true}}
+      {{text-f label="Data Center Name" value=rhevDatabaseName placeholder="Leave blank for default" cssId="rhev-database-name" disabled=isStarted validator=computerNameValidator}}
       {{#if isClusterNeedRenaming}}
         {{#base-f}}
         <span class="error errorForValidation">
@@ -29,7 +29,7 @@
         {{/base-f}}
       {{/if}}
 
-      {{text-f label="Cluster Name" value=rhevClusterName placeholder="Leave blank for default" cssId="rhev-cluster-name" disabled=isStarted isAlphaNumeric=true}}
+      {{text-f label="Cluster Name" value=rhevClusterName placeholder="Leave blank for default" cssId="rhev-cluster-name" disabled=isStarted validator=computerNameValidator}}
 
       {{select-simple-f label="CPU Type"
                         content=cpuTypes

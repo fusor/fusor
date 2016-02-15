@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
+import { EqualityValidator, PasswordValidator, AlphaNumericDashUnderscoreValidator } from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
@@ -17,6 +18,16 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
              'AMD Opteron G1', 'AMD Opteron G2', 'AMD Opteron G3', 'AMD Opteron G4',
              'AMD Opteron G5', 'IBM POWER 8'],
 
+  passwordValidator: PasswordValidator.create({}),
+
+  confirmRhevRootPasswordValidator: Ember.computed('rhevRootPassword', function() {
+    return EqualityValidator.create({equals: this.get('rhevRootPassword')});
+  }),
+
+  confirmRhevEngineAdminPasswordValidator: Ember.computed('rhevEngineAdminPassword', function() {
+    return EqualityValidator.create({equals: this.get('rhevEngineAdminPassword')});
+  }),
+
   optionsBackRouteName: Ember.computed('rhevIsSelfHosted', function() {
     if (this.get('rhevIsSelfHosted')) {
       return 'engine.discovered-host';
@@ -32,31 +43,19 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   applicationModes2: [
        {
           id: 1,
-          name: 'Both',
+          name: 'Both'
        },
        {
           id: 2,
-          name: 'Virt',
+          name: 'Virt'
        },
        {
           id: 3,
-          name: 'Gluster',
+          name: 'Gluster'
        }
   ],
 
-  invalidIsAlphaNumericRhevDatabase: Ember.computed('rhevDatabaseName', function() {
-      var rx = new RegExp(/^[A-Za-z0-9_-]+$/);
-      if (Ember.isPresent(this.get('rhevDatabaseName'))) {
-          return !(this.get('rhevDatabaseName').match(rx));
-      }
-  }),
-
-  invalidIsAlphaNumericRhevCluster: Ember.computed('rhevClusterName', function() {
-      var rx = new RegExp(/^[A-Za-z0-9_-]+$/);
-      if (Ember.isPresent(this.get('rhevClusterName'))) {
-          return !(this.get('rhevClusterName').match(rx));
-      }
-  }),
+  computerNameValidator: AlphaNumericDashUnderscoreValidator.create({}),
 
   isDirtyRhevDatabaseName: Ember.computed('rhevDatabaseName', function() {
       var changedAttrs = this.get('deploymentController.model').changedAttributes();
@@ -87,30 +86,27 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   }),
 
-  disableNextRhevOptions: Ember.computed(
+  validRhevOptions: Ember.computed(
     'rhevRootPassword',
     'confirmRhevRootPassword',
+    'confirmRhevRootPasswordValidator',
     'rhevEngineAdminPassword',
     'confirmRhevEngineAdminPassword',
-    'invalidIsAlphaNumericRhevDatabase',
-    'invalidIsAlphaNumericRhevCluster',
+    'confirmRhevEngineAdminPasswordValidator',
+    'rhevDatabaseName',
+    'rhevClusterName',
     'isClusterNeedRenaming',
-    function() {
-      return (Ember.isBlank(this.get('rhevRootPassword')) ||
-              this.get('rhevRootPassword') !== this.get('confirmRhevRootPassword') ||
-              Ember.isBlank(this.get('rhevEngineAdminPassword')) ||
-              this.get('rhevEngineAdminPassword') !== this.get('confirmRhevEngineAdminPassword') ||
-              this.get('rhevRootPassword.length') < 8 ||
-              this.get('rhevEngineAdminPassword.length') < 8 ||
-              this.get('invalidIsAlphaNumericRhevDatabase') ||
-              this.get('invalidIsAlphaNumericRhevCluster') ||
-              this.get('isClusterNeedRenaming')
-             );
-    }
-  ),
+    function () {
+      return this.get('passwordValidator').isValid(this.get('rhevRootPassword')) &&
+        this.get('passwordValidator').isValid(this.get('rhevEngineAdminPassword')) &&
+        this.get('confirmRhevRootPasswordValidator').isValid(this.get('confirmRhevRootPassword')) &&
+        this.get('confirmRhevEngineAdminPasswordValidator').isValid(this.get('confirmRhevEngineAdminPassword')) &&
+        this.get('computerNameValidator').isValid(this.get('rhevDatabaseName')) &&
+        this.get('computerNameValidator').isValid(this.get('rhevClusterName')) &&
+        !this.get('isClusterNeedRenaming');
+    }),
 
-  validRhevOptions: Ember.computed.not('disableNextRhevOptions')
-
+  disableNextRhevOptions: Ember.computed.not('validRhevOptions')
 });
 
 
