@@ -107,7 +107,9 @@ const UniquenessValidator = Validator.extend({
     if (!existingValues) {
       return true;
     }
-    return !(existingValues.contains(value));
+
+    let cleanValue = Ember.typeOf(value) === 'string' ? value.trim() : value;
+    return !(existingValues.contains(cleanValue));
   }
 });
 

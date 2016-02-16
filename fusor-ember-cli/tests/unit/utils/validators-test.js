@@ -178,12 +178,20 @@ test('UniquenessValidator accepts values not in existingValues', function (asser
 });
 
 test('UniquenessValidator rejects values already in existingValues', function (assert) {
-  let uniquenessValidator = UniquenessValidator.create({existingValues: ['reject', 'other2']});
-  const value = 'reject';
-  assert.ok(uniquenessValidator.isInvalid(value), `"${value}" was not rejected`);
-  assert.notOk(uniquenessValidator.isValid(value), `"${value}" was accepted`);
-  assert.equal(uniquenessValidator.getMessages(value).length, 1);
-  assert.equal(uniquenessValidator.getMessages(value)[0], 'must be unique');
+  let uniquenessValidator = UniquenessValidator.create({existingValues: ['reject', 'other2', 2]});
+  let invalidValues = [
+    ' reject',
+    'reject ',
+    'reject',
+    2
+  ];
+
+  invalidValues.forEach((value) => {
+    assert.ok(uniquenessValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+    assert.notOk(uniquenessValidator.isValid(value), `"${value}" was accepted as valid`);
+    assert.equal(uniquenessValidator.getMessages(value).length, 1);
+    assert.equal(uniquenessValidator.getMessages(value)[0], 'must be unique');
+  });
 });
 
 test('RegExpValidator accepts matching values', function (assert) {
