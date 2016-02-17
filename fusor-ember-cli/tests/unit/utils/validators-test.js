@@ -26,7 +26,8 @@ test('PresenceValidator accepts valid values', function (assert) {
     [1, 2, 3]
   ];
   validValues.forEach((value) => {
-    assert.ok(presenceValidator.isValid(value));
+    assert.ok(presenceValidator.isValid(value), `"${value}" was not accepted as valid`);
+    assert.notOk(presenceValidator.isInvalid(value), `"${value}" was rejected as invalid`);
     assert.equal(presenceValidator.getMessages(value).length, 0);
   });
 });
@@ -42,8 +43,8 @@ test('PresenceValidator rejects invalid values', function (assert) {
     '  '
   ];
   invalidValues.forEach((value) => {
-    assert.ok(presenceValidator.isInvalid(value));
-    assert.notOk(presenceValidator.isValid(value));
+    assert.ok(presenceValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+    assert.notOk(presenceValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(presenceValidator.getMessages(value).length, 1);
     assert.equal(presenceValidator.getMessages(value)[0], 'cannot be blank');
   });
@@ -52,16 +53,16 @@ test('PresenceValidator rejects invalid values', function (assert) {
 test('EqualityValidator accepts valid values', function (assert) {
   let equalityValidator = EqualityValidator.create({equals: 'test equals'});
   const value = 'test equals';
-  assert.ok(equalityValidator.isValid(value));
-  assert.notOk(equalityValidator.isInvalid(value));
+  assert.ok(equalityValidator.isValid(value), `"${value}" was not accepted as valid`);
+  assert.notOk(equalityValidator.isInvalid(value), `"${value}" was rejected as invalid`);
   assert.equal(equalityValidator.getMessages(value).length, 0);
 });
 
 test('EqualityValidator rejects invalid values', function (assert) {
   let equalityValidator = EqualityValidator.create({equals: 'test equals'});
   const value = 'should fail';
-  assert.ok(equalityValidator.isInvalid(value));
-  assert.notOk(equalityValidator.isValid(value));
+  assert.ok(equalityValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+  assert.notOk(equalityValidator.isValid(value), `"${value}" was accepted as valid`);
   assert.equal(equalityValidator.getMessages(value).length, 1);
   assert.equal(equalityValidator.getMessages(value)[0], 'does not match');
 });
@@ -75,8 +76,8 @@ test('LengthValidator accepts valid minimum length', function (assert) {
   ];
 
   validValues.forEach((value) => {
-    assert.ok(lengthValidator.isValid(value));
-    assert.notOk(lengthValidator.isInvalid(value));
+    assert.ok(lengthValidator.isValid(value), `"${value}" was not accepted as valid`);
+    assert.notOk(lengthValidator.isInvalid(value), `"${value}" was rejected as invalid`);
     assert.equal(lengthValidator.getMessages(value).length, 0);
   });
 });
@@ -84,8 +85,8 @@ test('LengthValidator accepts valid minimum length', function (assert) {
 test('LengthValidator rejects invalid minimum length', function (assert) {
   let lengthValidator = LengthValidator.create({min: 5});
   const value = 'fail';
-  assert.ok(lengthValidator.isInvalid(value));
-  assert.notOk(lengthValidator.isValid(value));
+  assert.ok(lengthValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+  assert.notOk(lengthValidator.isValid(value), `"${value}" was accepted as valid`);
   assert.equal(lengthValidator.getMessages(value).length, 1);
   assert.equal(lengthValidator.getMessages(value)[0], 'must be 5 or more characters');
 });
@@ -99,8 +100,8 @@ test('LengthValidator rejects blank values', function (assert) {
   ];
 
   invalidValues.forEach((value) => {
-    assert.ok(lengthValidator.isInvalid(value));
-    assert.notOk(lengthValidator.isValid(value));
+    assert.ok(lengthValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+    assert.notOk(lengthValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(lengthValidator.getMessages(value).length, 1);
     assert.equal(lengthValidator.getMessages(value)[0], 'cannot be blank');
   });
@@ -114,8 +115,8 @@ test('LengthValidator accepts valid maximum length', function (assert) {
   ];
 
   validValues.forEach((value) => {
-    assert.ok(lengthValidator.isValid(value));
-    assert.notOk(lengthValidator.isInvalid(value));
+    assert.ok(lengthValidator.isValid(value), `"${value}" was not accepted as valid`);
+    assert.notOk(lengthValidator.isInvalid(value), `"${value}" was rejected as invalid`);
     assert.equal(lengthValidator.getMessages(value).length, 0);
   });
 });
@@ -123,8 +124,8 @@ test('LengthValidator accepts valid maximum length', function (assert) {
 test('LengthValidator rejects invalid maximum length', function (assert) {
   let lengthValidator = LengthValidator.create({max: 5});
   const value = 'failure';
-  assert.ok(lengthValidator.isInvalid(value));
-  assert.notOk(lengthValidator.isValid(value));
+  assert.ok(lengthValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+  assert.notOk(lengthValidator.isValid(value), `"${value}" was accepted as valid`);
   assert.equal(lengthValidator.getMessages(value).length, 1);
   assert.equal(lengthValidator.getMessages(value)[0], 'must be 5 characters or less');
 });
@@ -137,8 +138,8 @@ test('PasswordValidator accepts valid passwords', function (assert) {
   ];
 
   validValues.forEach((value) => {
-    assert.ok(passwordValidator.isValid(value));
-    assert.notOk(passwordValidator.isInvalid(value));
+    assert.ok(passwordValidator.isValid(value), `"${value}" was not accepted as valid`);
+    assert.notOk(passwordValidator.isInvalid(value), `"${value}" was rejected as invalid`);
     assert.equal(passwordValidator.getMessages(value).length, 0);
   });
 });
@@ -146,8 +147,8 @@ test('PasswordValidator accepts valid passwords', function (assert) {
 test('PasswordValidator rejects invalid passwords', function (assert) {
   let passwordValidator = PasswordValidator.create({});
   const value = 'shortpw';
-  assert.ok(passwordValidator.isInvalid(value));
-  assert.notOk(passwordValidator.isValid(value));
+  assert.ok(passwordValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+  assert.notOk(passwordValidator.isValid(value), `"${value}" was accepted as valid`);
   assert.equal(passwordValidator.getMessages(value).length, 1);
   assert.equal(passwordValidator.getMessages(value)[0], 'must be 8 or more characters');
 });
@@ -161,8 +162,8 @@ test('PasswordValidator rejects blank values', function (assert) {
   ];
 
   invalidValues.forEach((value) => {
-    assert.ok(passwordValidator.isInvalid(value));
-    assert.notOk(passwordValidator.isValid(value));
+    assert.ok(passwordValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+    assert.notOk(passwordValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(passwordValidator.getMessages(value).length, 1);
     assert.equal(passwordValidator.getMessages(value)[0], 'cannot be blank');
   });
@@ -171,16 +172,26 @@ test('PasswordValidator rejects blank values', function (assert) {
 test('UniquenessValidator accepts values not in existingValues', function (assert) {
   let uniquenessValidator = UniquenessValidator.create({existingValues: ['other1', 'other2']});
   const value = 'valid';
-  assert.ok(uniquenessValidator.isValid(value));
+  assert.ok(uniquenessValidator.isValid(value), `"${value}" was not accepted as valid`);
+  assert.notOk(uniquenessValidator.isInvalid(value), `"${value}" was rejected as invalid`);
   assert.equal(uniquenessValidator.getMessages(value).length, 0);
 });
 
 test('UniquenessValidator rejects values already in existingValues', function (assert) {
-  let uniquenessValidator = UniquenessValidator.create({existingValues: ['reject', 'other2']});
-  const value = 'reject';
-  assert.notOk(uniquenessValidator.isValid(value));
-  assert.equal(uniquenessValidator.getMessages(value).length, 1);
-  assert.equal(uniquenessValidator.getMessages(value)[0], 'must be unique');
+  let uniquenessValidator = UniquenessValidator.create({existingValues: ['reject', 'other2', 2]});
+  let invalidValues = [
+    ' reject',
+    'reject ',
+    'reject',
+    2
+  ];
+
+  invalidValues.forEach((value) => {
+    assert.ok(uniquenessValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+    assert.notOk(uniquenessValidator.isValid(value), `"${value}" was accepted as valid`);
+    assert.equal(uniquenessValidator.getMessages(value).length, 1);
+    assert.equal(uniquenessValidator.getMessages(value)[0], 'must be unique');
+  });
 });
 
 test('RegExpValidator accepts matching values', function (assert) {
@@ -189,7 +200,8 @@ test('RegExpValidator accepts matching values', function (assert) {
     message: 'invalid chars'
   });
   const value = 'A';
-  assert.ok(regExpValidator.isValid(value));
+  assert.ok(regExpValidator.isValid(value), `"${value}" was not accepted as valid`);
+  assert.notOk(regExpValidator.isInvalid(value), `"${value}" was rejected as invalid`);
   assert.equal(regExpValidator.getMessages(value).length, 0);
 });
 
@@ -199,7 +211,8 @@ test('RegExpValidator rejects non-matching values', function (assert) {
     message: 'invalid chars'
   });
   const value = 'F';
-  assert.notOk(regExpValidator.isValid(value));
+  assert.ok(regExpValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+  assert.notOk(regExpValidator.isValid(value), `"${value}" was accepted as valid`);
   assert.equal(regExpValidator.getMessages(value).length, 1);
   assert.equal(regExpValidator.getMessages(value)[0], 'invalid chars');
 });
@@ -214,8 +227,8 @@ test('AlphaNumericDashUnderscoreValidator accepts valid values', function (asser
     ];
 
   validValues.forEach((value) => {
-    assert.ok(anduValidator.isValid(value));
-    assert.notOk(anduValidator.isInvalid(value));
+    assert.ok(anduValidator.isValid(value), `"${value}" was not accepted as valid`);
+    assert.notOk(anduValidator.isInvalid(value), `"${value}" was rejected as invalid`);
     assert.equal(anduValidator.getMessages(value).length, 0);
   });
 });
@@ -229,8 +242,8 @@ test('AlphaNumericDashUnderscoreValidator rejects invalid values', function (ass
     'Spaces NotAllowed'
   ];
   invalidValues.forEach((value) => {
-    assert.ok(anduValidator.isInvalid(value));
-    assert.notOk(anduValidator.isValid(value));
+    assert.ok(anduValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+    assert.notOk(anduValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(anduValidator.getMessages(value).length, 1);
     assert.equal(anduValidator.getMessages(value)[0], "must contain only 'A-Z', 'a-z', '0-9', '_' or '-' characters");
   });
@@ -248,8 +261,8 @@ test('IpRangeValidator accepts valid values', function (assert) {
   ];
 
   validValues.forEach((value) => {
-    assert.ok(ipRangeValidator.isValid(value));
-    assert.notOk(ipRangeValidator.isInvalid(value));
+    assert.ok(ipRangeValidator.isValid(value), `"${value}" was not accepted as valid`);
+    assert.notOk(ipRangeValidator.isInvalid(value), `"${value}" was rejected as invalid`);
     assert.equal(ipRangeValidator.getMessages(value).length, 0);
   });
 });
@@ -264,8 +277,8 @@ test('IpRangeValidator rejects invalid values', function (assert) {
     'garbage'
   ];
   invalidValues.forEach((value) => {
-    assert.ok(ipRangeValidator.isInvalid(value));
-    assert.notOk(ipRangeValidator.isValid(value));
+    assert.ok(ipRangeValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+    assert.notOk(ipRangeValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(ipRangeValidator.getMessages(value).length, 1);
     assert.equal(ipRangeValidator.getMessages(value)[0], 'invalid network range');
   });
@@ -283,8 +296,8 @@ test('CidrValidator accepts valid values', function (assert) {
   ];
 
   validValues.forEach((value) => {
-    assert.ok(cidrValidator.isValid(value));
-    assert.notOk(cidrValidator.isInvalid(value));
+    assert.ok(cidrValidator.isValid(value), `"${value}" was not accepted as valid`);
+    assert.notOk(cidrValidator.isInvalid(value), `"${value}" was rejected as invalid`);
     assert.equal(cidrValidator.getMessages(value).length, 0);
   });
 });
@@ -302,8 +315,8 @@ test('CidrValidator rejects invalid values', function (assert) {
     '192.168.153.0/255'
   ];
   invalidValues.forEach((value) => {
-    assert.ok(cidrValidator.isInvalid(value));
-    assert.notOk(cidrValidator.isValid(value));
+    assert.ok(cidrValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+    assert.notOk(cidrValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(cidrValidator.getMessages(value).length, 1);
     assert.equal(cidrValidator.getMessages(value)[0], 'invalid CIDR notation');
   });
@@ -318,8 +331,8 @@ test('MacAddressValidator accepts valid values', function (assert) {
   ];
 
   validValues.forEach((value) => {
-    assert.ok(macAddressValidator.isValid(value));
-    assert.notOk(macAddressValidator.isInvalid(value));
+    assert.ok(macAddressValidator.isValid(value), `"${value}" was not accepted as valid`);
+    assert.notOk(macAddressValidator.isInvalid(value), `"${value}" was rejected as invalid`);
     assert.equal(macAddressValidator.getMessages(value).length, 0);
   });
 });
@@ -335,8 +348,8 @@ test('MacAddressValidator rejects invalid values', function (assert) {
     '12_AA_B2_9C_d4_ef'
   ];
   invalidValues.forEach((value) => {
-    assert.ok(macAddressValidator.isInvalid(value));
-    assert.notOk(macAddressValidator.isValid(value));
+    assert.ok(macAddressValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+    assert.notOk(macAddressValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(macAddressValidator.getMessages(value).length, 1);
     assert.equal(macAddressValidator.getMessages(value)[0], 'invalid mac address');
   });
@@ -351,8 +364,8 @@ test('HostnameValidator accepts valid values', function (assert) {
   ];
 
   validValues.forEach((value) => {
-    assert.ok(hostnameValidator.isValid(value));
-    assert.notOk(hostnameValidator.isInvalid(value));
+    assert.ok(hostnameValidator.isValid(value), `"${value}" was not accepted as valid`);
+    assert.notOk(hostnameValidator.isInvalid(value), `"${value}" was rejected as invalid`);
     assert.equal(hostnameValidator.getMessages(value).length, 0);
   });
 });
@@ -366,8 +379,8 @@ test('HostnameValidator rejects invalid values', function (assert) {
     '.startsWithPeriod'
   ];
   invalidValues.forEach((value) => {
-    assert.ok(hostnameValidator.isInvalid(value));
-    assert.notOk(hostnameValidator.isValid(value));
+    assert.ok(hostnameValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+    assert.notOk(hostnameValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(hostnameValidator.getMessages(value).length, 1);
     assert.equal(hostnameValidator.getMessages(value)[0], 'invalid hostname');
   });

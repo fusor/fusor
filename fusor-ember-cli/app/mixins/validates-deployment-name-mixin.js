@@ -23,7 +23,7 @@ export default Ember.Mixin.create({
       },
 
       labelize(value) {
-        return Ember.isPresent(value) ? value.replace(/([^a-z0-9_])/gi, '_') : '';
+        return Ember.isPresent(value) ? value.trim().replace(/([^a-z0-9_])/gi, '_') : '';
       },
 
       getMessages(value) {
