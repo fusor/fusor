@@ -115,6 +115,13 @@ module Actions
                     #using a compute_profile_id the vm does not start, so for now merge with attr.
                     "compute_attributes" => {"start" => "1"}.with_indifferent_access.merge(compute_attrs)}
             ::Host.create(cfme)
+
+            if host.errors.empty?
+              cfme_launch_completed
+              return host
+            else
+              cfme_launch_failed
+            end
           end
         end
       end
