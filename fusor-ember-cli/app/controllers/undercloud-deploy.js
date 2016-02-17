@@ -2,6 +2,7 @@ import Ember from 'ember';
 import request from 'ic-ajax';
 import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
+import { AggregateValidator, PresenceValidator, IpRangeValidator } from '../utils/validators';
 
 export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
 
@@ -18,17 +19,25 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
 
   undercloudIPHelp: "The IP address that the already-installed Red Hat Enterprise Linux OpenStack Platform undercloud is running on.",
 
+  undercloudIpValidator: AggregateValidator.create({
+    validators: [
+      PresenceValidator.create({}),
+      IpRangeValidator.create({})
+    ]
+  }),
+
   isDeployed: Ember.computed.notEmpty("model.openstack_undercloud_password"),
 
   deployDisabled: Ember.computed(
     'isDeployed',
     'isDirty',
     'undercloudIP',
+    'undercloudIpValidator',
     'sshUser',
     'sshPassword',
     function() {
       return ((this.get('isDeployed') && !this.get('isDirty')) ||
-              Ember.isBlank(this.get('undercloudIP')) ||
+              this.get('undercloudIpValidator').isInvalid(this.get('undercloudIP')) ||
               Ember.isBlank(this.get('sshUser')) ||
               Ember.isBlank(this.get('sshPassword'))
              );
