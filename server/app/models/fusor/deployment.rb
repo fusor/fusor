@@ -44,7 +44,8 @@ module Fusor
     belongs_to :foreman_task, :class_name => "::ForemanTasks::Task", :foreign_key => :foreman_task_uuid
 
     after_initialize :setup_warnings
-    before_validation :update_label
+    before_validation :update_label, on: :create  # we validate on create, so we need to do it before those validations
+    before_save :update_label, on: :update        # but we don't validate on update, so we need to call before_save
 
     scoped_search :on => [:id, :name], :complete_value => true
 
