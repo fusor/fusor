@@ -100,7 +100,7 @@ module Actions
                     "build" => 1,
                     "is_owned_by" => "3-Users",
                     "compute_profile_id" => ComputeProfile.find_by_name("#{deployment.label}-cfme").id}
-            ::Host.create(cfme)
+            host = ::Host.create(cfme)
 
             if host.errors.empty?
               cfme_launch_completed
