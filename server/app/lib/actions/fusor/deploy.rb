@@ -44,6 +44,10 @@ module Actions
           end
 
           if deployment.deploy_cfme
+            # temporarily added OSE VM creatin here
+            plan_action(::Actions::Fusor::Deployment::OpenShift::DeployAsSubPlan,
+                        deployment)
+
             plan_action(::Actions::Fusor::Deployment::CloudForms::DeployAsSubPlan,
                         deployment)
           end

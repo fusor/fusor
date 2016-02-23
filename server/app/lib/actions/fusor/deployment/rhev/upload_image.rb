@@ -19,10 +19,11 @@ module Actions
             _("Upload Image to Virtualization Environment")
           end
 
-          def plan(deployment, image_file_name)
+          def plan(deployment, image_file_name, appliance)
             super(deployment)
             plan_self(deployment_id: deployment.id,
-                      image_file_name: image_file_name)
+                      image_file_name: image_file_name,
+                      appliance: appliance)
           end
 
           def run
@@ -30,21 +31,21 @@ module Actions
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
 
-            # ssh to engine node and upload the image in the home directory
-            # engine-image-uploader -N cfme-rhevm-5.3-47 -e export -v -m upload ./cfme-rhevm-5.3-47.x86_64.rhevm.ova
-            #
-            # -N new image name
-            # -e export domain TODO: where do we get the export domain
-            # -v verbose
-            # -m do not remove network interfaces from image
+            # ssh to engine node and upload the specified image path
+            # engine-image-uploader
+            #  -N choose_template_name <e.g. deployment.label-appliance-template>
+            #  -e export_domain <e.g. my_export>
+            #  -v verbose
+            #  -m do not remove network interfaces from image
+            #  upload <image_path>
 
             ssh_host = deployment.rhev_engine_host.facts['ipaddress']
             ssh_username = "root"
 
             username = "admin@internal"
-            imported_template_name = "#{deployment.label}-cfme-template"
+            imported_template_name = "#{deployment.label}-#{input[:appliance]}-template"
             export_domain_name = deployment.rhev_export_domain_name
-            cfme_image_file = "/root/#{input[:image_file_name]}" # can't use find_image_file without doing filename magic :(
+            image_path = "/root/#{input[:image_file_name]}" 
 
             # NOTE: the image file found locally is DIFFERENT than the one on
             # the rhev engine host. Also note this uses /usr/bin/ because it is on
@@ -54,7 +55,7 @@ module Actions
                 "-p \'#{deployment.rhev_engine_admin_password}\' "\
                 "-N #{imported_template_name} "\
                 "-e #{export_domain_name} "\
-                "-v -m upload #{cfme_image_file}"
+                "-v -m upload #{image_path}"
 
             # RHEV-host username password
             client = Utils::Fusor::SSHConnection.new(ssh_host, ssh_username, deployment.rhev_root_password)
