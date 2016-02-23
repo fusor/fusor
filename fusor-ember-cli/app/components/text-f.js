@@ -2,6 +2,20 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
+  didInsertElement: function () {
+    let resetErrorsMessageKey = this.get('resetErrorsMessageKey');
+    if(resetErrorsMessageKey) {
+      this.eventBus.on(resetErrorsMessageKey,
+                       () => this.send('showValidationErrors'));
+    }
+  },
+  willClearRender: function () {
+    let resetErrorsMessageKey = this.get('resetErrorsMessageKey');
+    if(resetErrorsMessageKey) {
+      this.eventBus.off(resetErrorsMessageKey);
+    }
+  },
+
   typeInput: Ember.computed('type', function() {
     return (this.get('type') ? this.get('type') : 'text');
   }),

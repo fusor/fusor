@@ -1,0 +1,23 @@
+{{#base-f label=label labelSize=labelSize inputSize=inputSize unitsSize=unitsSize unitsLabel=unitsLabel isRequired=isRequired helpText=helpText errors=errors hasError=hasError}}
+
+  {{view "select"
+    id=cssId
+    content=_content
+    value=value
+    optionLabelPath=optionLabelPath
+    optionValuePath=optionValuePath
+    selection=selection
+    class="form-control"
+    disabled=disabled}}
+
+  {{#if showValidationError}}
+    {{#if hasError}}
+      {{#each validationMessages as |message|}}
+        <p class="error errorForValidation">{{message}}</p>
+      {{/each}}
+    {{/if}}
+  {{/if}}
+
+  {{yield}}
+
+{{/base-f}}
