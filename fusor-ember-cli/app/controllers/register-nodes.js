@@ -2,6 +2,7 @@ import Ember from 'ember';
 import request from 'ic-ajax';
 import ProgressBarMixin from "../mixins/progress-bar-mixin";
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
+import OspNodeManager from "../models/osp-node-manager";
 
 import {
   AggregateValidator,
@@ -11,459 +12,371 @@ import {
   validateZipper
 } from  "../utils/validators";
 
-const OspNode = Ember.Object.extend({
-  name: Ember.computed('ipAddress', function () {
-    let ip = this.get('ipAddress');
-    return !Ember.isEmpty(ip) ? ip : 'Undefined node';
-  }),
-  driver: null,
-  driverObj: null,
-  ipAddress: null,
-  ipmiUsername: '',
-  ipmiPassword: '',
-  nicMacAddress: '',
-  isSelected: false,
-  isActiveClass: Ember.computed('isSelected', function() {
-    return this.get('isSelected') === true ?
-      'active' : 'inactive';
-  }),
-  isError: false,
-  errorMessage: '',
-  isValid: Ember.computed(
-    'ipAddress',
-    'nicMacAddress',
-    'driver',
-    function() {
-      let retVal = validateZipper([
-        [this.get('controller.ipAddressFullValidator'), this.get('ipAddress')],
-        [this.get('controller.macAddressFullValidator'), this.get('nicMacAddress')],
-      ]);
-
-      return retVal && this.get('isDriverValid');
-  }),
-  isDriverValid: Ember.computed('driverObj', function(){
-    // Data down (select-req-f) -> bound to select to tell it when the selected value is valid
-    // or not. driverObj will be null initially (if nothing has ever been selected).
-    // It's also possible for the prompt to have been selected, but this needs to be
-    // explicitly setup on the component (in this case, it is not, so we don't expect)
-    // to ever return false based on that. Still included for safety.
-    return this.get('driverObj') !== null &&
-      this.get('driverObj.isPrompt') === undefined;
-  })
-});
-
 export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
-  resetErrorsMessageKey: 'deployment.openstack.register-nodes.text-f:resetErrors',
-  assignNodesController: Ember.inject.controller('assign-nodes'),
-
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
   openStack: Ember.computed.alias("deploymentController.openStack"),
   deployment: Ember.computed.alias("deploymentController.model"),
+  intervalPolling: 10000,
 
-  init() {
-    this._super();
+  presenceValidator: PresenceValidator.create({}),
+  macAddressValidator: MacAddressValidator.create({}),
 
-    this.presenceValidator = PresenceValidator.create({});
-    this.macAddressValidator = MacAddressValidator.create({});
-    this.macAddressFullValidator = AggregateValidator.create({
-      validators: [
-        this.get('macAddressValidator'),
-        this.get('presenceValidator')
-      ]
-    });
-    this.ipAddressValidator = IpAddressValidator.create({});
-    this.ipAddressFullValidator = AggregateValidator.create({
-      validators: [
-        this.get('ipAddressValidator'),
-        this.get('presenceValidator')
-      ]
-    });
-  },
+  ipAddressValidator: AggregateValidator.create({
+    validators: [
+      PresenceValidator.create({}),
+      IpAddressValidator.create({})
+    ]
+  }),
 
-  newNodes: Ember.A(),
-  errorNodes: Ember.A(),
-  edittedNodes: Ember.A(),
-  selectedNode: null,
+  savedInfo: [],
 
   drivers: [
-    Ember.Object.create({driver: 'pxe_impitool'}),
-    Ember.Object.create({driver: 'pxe_ssh'})
+    {label: 'IPMI Driver', value: 'pxe_ipmitool'},
+    {label: 'PXE + SSH', value: 'pxe_ssh'}
   ],
 
-  // Data down (select-req-f) -> tells selet component when to light up
-  // showValidationError=showDriverValidationError
-  showDriverValidationError: Ember.computed(
-    'selectedNode.ipAddress',
-    'selectedNode.nicMacAddress',
+  vendors: [
+    {label: 'Dell', value: 'dell'}
+  ],
+
+  isNewNodeMethodAuto: Ember.computed('registerNodesMethod', function() {
+    return this.get('registerNodesMethod') === 'ipmi_auto_detect';
+  }),
+
+  isNewNodeMethodCSV: Ember.computed('registerNodesMethod', function() {
+    return this.get('registerNodesMethod') === 'csv_upload';
+  }),
+
+  isNewNodeMethodManual: Ember.computed('registerNodesMethod', function() {
+    return this.get('registerNodesMethod') === 'manual';
+  }),
+
+  newNodeManualAddressLabel: Ember.computed('nodeInfo.driver', function () {
+    switch (this.get('nodeInfo.driver')) {
+      case 'pxe_ssh':
+        return 'SSH Address';
+      case 'pxe_ipmitool':
+        return 'IPMI Address';
+      default:
+        return 'IP Address';
+    }
+  }),
+
+  newNodeManualUsernameLabel: Ember.computed('nodeInfo.driver', function () {
+    switch (this.get('nodeInfo.driver')) {
+      case 'pxe_ssh':
+        return 'SSH User';
+      case 'pxe_ipmitool':
+        return 'IPMI User';
+      default:
+        return 'Username';
+    }
+  }),
+
+  newNodeManualPasswordLabel: Ember.computed('nodeInfo.driver', function () {
+    switch (this.get('nodeInfo.driver')) {
+      case 'pxe_ssh':
+        return 'SSH Password';
+      case 'pxe_ipmitool':
+        return 'IPMI Password';
+      default:
+        return 'Password';
+    }
+  }),
+
+  nodeCount: Ember.computed('nodes.@each', function() {
+    let nodes = this.get('nodes');
+    return nodes ? nodes.reduce((prev, node) => prev + (node.get('isReady') ? 1 : 0), 0) : 0;
+  }),
+
+  hasNodes: Ember.computed('nodeCount', function() {
+    return this.get('nodeCount') > 0;
+  }),
+
+  newNodeSubmitButtonText: Ember.computed('isNewNodeMethodAuto', function() {
+    return this.get('isNewNodeMethodAuto') ? 'Detect' : 'Register';
+  }),
+
+  isValidNewNodeAuto: Ember.computed(function() {
+    return false;
+  }),
+
+  isValidNewNodeCsv: Ember.computed(function() {
+    return false;
+  }),
+
+  isValidNewNodeManual: Ember.computed(
+    'registerNodesMethod',
+    'nodeInfo.driver',
+    'nodeInfo.address',
+    'nodeInfo.username',
+    'nodeInfo.password',
+    'nodeInfo.macAddresses.@each.value',
     function () {
-      let showDriverValidationError =
-        !!this.get('selectedNode.ipAddress') ||
-        !!this.get('selectedNode.nicMacAddress');
+      let validConnection = this.get('registerNodesMethod') === 'manual' &&
+        Ember.isPresent(this.get('nodeInfo.driver')) &&
+        Ember.isPresent(this.get('nodeInfo.address')) &&
+        Ember.isPresent(this.get('nodeInfo.username')) &&
+        Ember.isPresent(this.get('nodeInfo.password')) &&
+        this.get('ipAddressValidator').isValid(this.get('nodeInfo.address'));
 
-      return showDriverValidationError;
-    }
-  ),
-
-  registrationInProgress: false,
-  initRegInProcess: false,
-  introspectionInProgress: false,
-  registerNodesModalOpened: false,
-  registerNodesModalClosed: true,
-  modalOpen: false,
-
-  registrationError: Ember.computed('errorNodes.[]', function() {
-    return this.get('errorNodes.length') > 0;
-  }),
-
-  registrationErrorMessage: Ember.computed('errorNodes.[]', function() {
-    var count = this.get('errorNodes.length');
-    if (count === 1) {
-      return '1 node not registered';
-    }
-    else if (count > 1) {
-      return count + ' nodes not registered';
-    }
-    else {
-      return '';
-    }
-  }),
-
-  registrationErrorTip: Ember.computed('errorNodes.[]', function() {
-    var tip = '';
-    var errorNodes = this.get('errorNodes');
-
-    errorNodes.forEach(function(item, index) {
-      if (index > 0) {
-        tip += '\n';
+      if (!validConnection) {
+        return false;
       }
-      tip += item.errorMessage;
-    });
-    return tip;
+
+
+      let macAddresses = this.get('nodeInfo.macAddresses');
+      if (!macAddresses) {
+        return false;
+      }
+
+      let numberInvalidMacs = 0,
+        numberValidMacs = 0,
+        macAddressValidator = this.get('macAddressValidator');
+
+      macAddresses.forEach((macAddress) => {
+        if (Ember.isPresent(macAddress.value)) {
+          if (macAddressValidator.isValid(macAddress.value)) {
+            numberValidMacs++;
+          } else {
+            numberInvalidMacs++;
+          }
+        }
+      });
+
+      return numberInvalidMacs === 0 && numberValidMacs > 0;
+    }),
+
+  disableNewNodesSubmit: Ember.computed('isValidNewNodeAuto', 'isValidNewNodeCsv', 'isValidNewNodeManual', function() {
+    return !this.get('isValidNewNodeManual');
   }),
 
-  noRegisteredNodes: Ember.computed('openStack.nodes.[]', function() {
-      return (this.get('openStack.nodes.length') < 1);
+  enableRegisterNodesNext: Ember.computed('nodeCount', function() {
+    return this.get('nodeCount') >= 2;
   }),
 
-  noProfiles: Ember.computed('openStack.profiles.[]', function() {
-      return (this.get('openStack.profiles.length') < 1);
-  }),
+  disableRegisterNodesNext: Ember.computed.not('enableRegisterNodesNext'),
 
-  hasSelectedNode: Ember.computed('selectedNode', function() {
-    return this.get('selectedNode') != null;
-  }),
+  actions: {
+    showNodeRegistrationModal() {
+      this.set('registerNodesMethod', 'manual');
 
-  nodeFormStyle:Ember.computed('edittedNodes.[]', 'hasSelectedNode', function() {
-    if (this.get('edittedNodes.length') > 0 && this.get('hasSelectedNode'))
-    {
-      return 'visibility:visible;';
+      this.set('nodeInfo', Ember.Object.create({
+        vendor: null,
+        driver: null,
+        address: null,
+        username: null,
+        password: null,
+        macAddresses: [Ember.Object.create({value: ''})]
+      }));
+
+      this.openRegDialog();
+    },
+
+    addMacAddress() {
+      this.get('nodeInfo.macAddresses').pushObject(Ember.Object.create({value: ''}));
+    },
+
+    registerNodes() {
+      let nodeInfo = this.get('nodeInfo');
+      nodeInfo.get('macAddresses').forEach((macAddress) => {
+        if (macAddress && Ember.isPresent(macAddress.value)) {
+          this.registerNode(nodeInfo, macAddress.value);
+        }
+      });
+      this.closeRegDialog();
+    },
+
+    addNodesToManager(nodeManager) {
+      this.set('registerNodesMethod', 'manual');
+
+      this.set('nodeInfo', Ember.Object.create({
+        vendor:null,
+        driver: nodeManager.get('driver'),
+        address: nodeManager.get('address'),
+        username: nodeManager.get('username'),
+        password: this.getPassword(nodeManager),
+        macAddresses: [Ember.Object.create({value: ''})]
+      }));
+
+      this.openRegDialog();
+    },
+
+    deleteNode(node, nodeLabel) {
+      this.set('nodeToDelete', node);
+      this.set('nodeToDeleteLabel', nodeLabel);
+      this.set('openDeleteNodeConfirmation', true);
+      this.set('closeDeleteNodeConfirmation', false);
+    },
+
+    cancelDeleteNode() {
+      this.set('openDeleteNodeConfirmation', false);
+      this.set('closeDeleteNodeConfirmation', true);
+    },
+
+    confirmDeleteNode() {
+      this.deleteNodeRequest();
+    },
+
+    cancelRegisterNodes() {
+      this.closeRegDialog();
     }
-    else {
-      return 'visibility:hidden;';
-    }
-  }),
-
-  updateNodeSelection(node) {
-    var oldSelection = this.get('selectedNode');
-    if (oldSelection) {
-      oldSelection.set('isSelected', false);
-    }
-
-    if(node) {
-      node.set('isSelected', true);
-    }
-
-    if(node.get('isValid')) {
-      // Need to reset error state on form left over from other nodes
-      this.eventBus.trigger(this.get('resetErrorsMessageKey'));
-    }
-
-    this.set('selectedNode', node);
   },
 
-  handleOutsideClick() {
-    // do nothing, this overrides the closing of the dialog when clicked outside of it
+  deleteNodeRequest() {
+    console.log('deleteNodeRequest', this.get('nodeToDelete.id'));
+    return request({
+      url: `/fusor/api/openstack/deployments/${this.get('deploymentId')}/nodes/${this.get('nodeToDelete.id')}`,
+      type: 'DELETE',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-CSRF-Token": Ember.$('meta[name="csrf-token"]').attr('content')
+      }
+    }).then((result) => {
+      this.removeNode(this.get('nodeToDelete'));
+    }).finally((result) => {
+      this.set('openDeleteNodeConfirmation', false);
+      this.set('closeDeleteNodeConfirmation', true);
+    });
+  },
+
+  removeNode(node) {
+    let nodes = this.get('nodes');
+    let nodeManagers = this.get('nodeManagers');
+    nodeManagers.forEach((mgr) => {
+      mgr.removeNode(node);
+    });
+
+    this.set('nodeManagers', nodeManagers.filter((mgr) => mgr.get('nodes.length') > 0));
+    this.set('nodes', nodes.without(node));
   },
 
   openRegDialog() {
-    this.set('registerNodesModalOpened', true);
-    this.set('registerNodesModalClosed', false);
-    this.set('modalOpen', true);
+    this.set('openNewNodeRegistrationModal', true);
+    this.set('closeNewNodeRegistrationModal', false);
   },
 
   closeRegDialog() {
-    this.set('registerNodesModalOpened', false);
-    this.set('registerNodesModalClosed', true);
-    this.set('modalOpen', false);
+    this.set('openNewNodeRegistrationModal', false);
+    this.set('closeNewNodeRegistrationModal', true);
+  },
+
+  registerNode(nodeInfo, macAddress) {
+    nodeInfo.set('address', nodeInfo.get('address').trim());
+    nodeInfo.set('username', nodeInfo.get('username').trim());
+
+    let nodeParam = this.createNodeHash(nodeInfo, macAddress);
+    return request({
+      url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/nodes',
+      type: 'POST',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-CSRF-Token": Ember.$('meta[name="csrf-token"]').attr('content')
+      },
+      data: JSON.stringify({ node: nodeParam })
+    }).then((introspectionTask) => {
+        this.get('savedInfo').unshiftObject(nodeInfo);
+        this.send('refreshModelOnOverviewRoute');
+        this.closeRegDialog();
+      }, (error) => {
+        this.closeRegDialog();
+      });
+  },
+
+  createNodeHash(nodeInfo, macAddress) {
+    let driverInfo = {};
+    if (nodeInfo.get('driver') === 'pxe_ssh') {
+      driverInfo = {
+        ssh_address: nodeInfo.get('address'),
+        ssh_username: nodeInfo.get('username'),
+        ssh_password: nodeInfo.get('password'),
+        ssh_virt_type: 'virsh'
+      };
+    } else if (nodeInfo.get('driver') === 'pxe_ipmitool') {
+      driverInfo = {
+        ipmi_address: nodeInfo.get('address'),
+        ipmi_username: nodeInfo.get('username'),
+        ipmi_password: nodeInfo.get('password')
+      };
+    }
+    driverInfo.deploy_kernel = this.get('bmDeployKernelImage.id');
+    driverInfo.deploy_ramdisk = this.get('bmDeployRamdiskImage.id');
+
+    return {
+      driver: nodeInfo.get('driver'),
+      driver_info: driverInfo,
+      properties: {
+        capabilities: 'boot_option:local'
+      },
+      address: macAddress
+    };
+  },
+
+  getPassword(manager) {
+    let foundInfo = this.get('savedInfo').find((savedInfo) => {
+      return savedInfo.get('driver') === manager.get('driver') &&
+       savedInfo.get('address') === manager.get('address') &&
+       savedInfo.get('username') === manager.get('username');
+    });
+
+    return foundInfo ? foundInfo.get('password') : null;
   },
 
   getCSVFileInput() {
     return $('#regNodesUploadFileInput')[0];
   },
 
-  introspectionTasks: Ember.computed("deployment.introspection_tasks.[]", function() {
-    return this.get('deployment.introspection_tasks');
-  }),
-
-  hasIntrospectionTasks: Ember.computed("deployment.introspection_tasks.[]", function() {
-    return (this.get('introspectionTasks.length') > 0);
-  }),
-
-  intervalPolling: Ember.computed(function() {
-    return 10000; // overwrite mixin (5000) between refreshing (in ms)
-  }).readOnly(),
-
-  actions: {
-    showNodeRegistrationModal() {
-      // stop polling when opening the modal
-      this.stopPolling();
-
-      var newNodes = this.get('newNodes');
-      var errorNodes = this.get('errorNodes');
-      var edittedNodes = this.get('edittedNodes');
-
-      edittedNodes.setObjects(newNodes);
-      var savedErrors = Ember.A();
-      errorNodes.forEach(function(item) {
-        if (!item.isIntrospectionError) {
-          edittedNodes.addObject(item);
-        }
-        else {
-          savedErrors.push(item);
-        }
-      });
-      this.set('errorNodes', savedErrors);
-
-      // Always start with at least one profile
-      if (edittedNodes.get('length') === 0) {
-        var newNode = OspNode.create({
-          controller: this
-        });
-        newNode.isDefault = true;
-        edittedNodes.addObject(newNode);
-      }
-
-      this.set('edittedNodes', edittedNodes);
-      this.updateNodeSelection(edittedNodes[0]);
-      this.openRegDialog();
-    },
-
-    registerNodes() {
-      this.closeRegDialog();
-      // restart polling after closing modal
-      this.startPolling();
-      var edittedNodes = this.get('edittedNodes');
-      var errorNodes = this.get('errorNodes');
-      var newNodes = this.get('newNodes');
-      edittedNodes.forEach(function(item) {
-        item.isError = false;
-        item.errorMessage = '';
-        errorNodes.removeObject(item);
-      });
-
-      newNodes.setObjects(edittedNodes);
-      this.set('edittedNodes', Ember.A());
-      this.set('newNodes', newNodes);
-      var my = this;
-      newNodes.forEach(function(node) {
-        my.registerNode(node);
-      });
-    },
-
-    cancelRegisterNodes() {
-      this.closeRegDialog();
-      this.set('edittedNodes', Ember.A());
-    },
-
-    selectNode(node) {
-      this.updateNodeSelection(node);
-    },
-
-    addNode() {
-      var edittedNodes = this.get('edittedNodes');
-      var newNode = OspNode.create({
-        controller: this
-      });
-      edittedNodes.insertAt(0, newNode);
-      this.updateNodeSelection(newNode);
-    },
-
-    removeNode(node) {
-      var nodes = this.get('edittedNodes');
-      nodes.removeObject(node);
-      this.set('edittedNodes', nodes);
-
-      if (this.get('selectedNode') === node) {
-        this.updateNodeSelection(nodes[0]);
-      }
-    },
-
-    updloadCsvFile() {
-      var uploadfile = this.getCSVFileInput();
-      uploadfile.click();
-    },
-
-    csvFileChosen() {
-      var fileInput = this.getCSVFileInput();
-      var file = fileInput.files[0];
-      var self = this;
-      if (file) {
-        var reader = new FileReader();
-        reader.onload = function() {
-          var text = reader.result;
-          var data = $.csv.toArrays(text);
-          var edittedNodes = self.get('edittedNodes');
-          // If the default added node is still listed, remove it
-          if (edittedNodes.get('length') === 1 && edittedNodes[0].isDefault && Ember.isEmpty(edittedNodes[0].get('ipAddress'))) {
-            edittedNodes.removeObject(edittedNodes[0]);
-          }
-
-          for (var row in data) {
-            var node_data = data[row];
-            if (Array.isArray(node_data) && node_data.length >=5) {
-              var driver = node_data[0].trim();
-              var ipmi_address = node_data[1].trim();
-              var ipmi_username = node_data[2].trim();
-              var ipmi_password = node_data[3].trim();
-              var mac_address = node_data[4].trim();
-
-              var newNode = OspNode.create({
-                controller: self,
-                driver: driver,
-                ipAddress: ipmi_address,
-                ipmiUsername: ipmi_username,
-                ipmiPassword: ipmi_password,
-                nicMacAddress: mac_address,
-              });
-              edittedNodes.insertAt(0, newNode);
-              self.updateNodeSelection(newNode);
-            }
-          }
-        };
-        reader.onloadend = function() {
-          if (reader.error) {
-            console.log(reader.error.message);
-          }
-        };
-
-        reader.readAsText(file);
-      }
-    }
+  updloadCsvFile() {
+    var uploadfile = this.getCSVFileInput();
+    uploadfile.click();
   },
 
-  disableRegisterNodesNext: Ember.computed('openStack.nodes.[]', function() {
-    var nodeCount = this.get('openStack.nodes.length');
-    return !nodeCount || nodeCount < 2;
-  }),
-
-  disableModalRegisterNodes: Ember.computed(
-    'edittedNodes.@each.isValid',
-    function() {
-      let edittedNodes = this.get('edittedNodes');
-      return !(edittedNodes && edittedNodes
-        .map((node) => node.get('isValid'))
-        .reduce((lhs, rhs) => lhs && rhs));
-    }
-  ),
-
-  updateAfterRegistration(resolve) {
+  csvFileChosen() {
+    var fileInput = this.getCSVFileInput();
+    var file = fileInput.files[0];
     var self = this;
-    var deploymentId = this.get('deploymentId');
-    this.store.query('node', {deployment_id: deploymentId, reload: true}).then(function() {
-      self.store.query('flavor', {deployment_id: deploymentId, reload: true}).then(function () {
-        if (resolve) {
-          resolve();
+    if (file) {
+      var reader = new FileReader();
+      reader.onload = function() {
+        var text = reader.result;
+        var data = $.csv.toArrays(text);
+        var edittedNodes = self.get('edittedNodes');
+        // If the default added node is still listed, remove it
+        if (edittedNodes.get('length') === 1 && edittedNodes[0].isDefault && Ember.isEmpty(edittedNodes[0].get('ipAddress'))) {
+          edittedNodes.removeObject(edittedNodes[0]);
         }
-      });
-    });
-  },
 
-  registerNode(node) {
-    var self = this;
-    var driverInfo = {};
-    if ( node.get('driver') === 'pxe_ssh' ) {
-      driverInfo = {
-        ssh_address: node.get('ipAddress'),
-        ssh_username: node.get('ipmiUsername'),
-        ssh_password: node.get('ipmiPassword'),
-        ssh_virt_type: 'virsh',
-        deploy_kernel: this.get('bmDeployKernelImage.id'),
-        deploy_ramdisk: this.get('bmDeployRamdiskImage.id')
-      };
-    } else if (node.get('driver') === 'pxe_ipmitool')  {
-      driverInfo = {
-        ipmi_address: node.get('ipAddress'),
-        ipmi_username: node.get('ipmiUsername'),
-        ipmi_password: node.get('ipmiPassword'),
-        deploy_kernel: this.get('bmDeployKernelImage.id'),
-        deploy_ramdisk: this.get('bmDeployRamdiskImage.id')
-      };
-    }
-    var createdNode = {
-      driver: node.get('driver'),
-      driver_info: driverInfo,
-      properties: {
-        capabilities: 'boot_option:local'
-      },
-      address: node.get('nicMacAddress')
-    };
-    var token = Ember.$('meta[name="csrf-token"]').attr('content');
+        for (var row in data) {
+          var node_data = data[row];
+          if (Array.isArray(node_data) && node_data.length >=5) {
+            var driver = node_data[0].trim();
+            var ipmi_address = node_data[1].trim();
+            var ipmi_username = node_data[2].trim();
+            var ipmi_password = node_data[3].trim();
+            var mac_address = node_data[4].trim();
 
-    this.set('initRegInProcess', true);
-
-    //ic-ajax request
-    console.log('action: registerNode');
-    console.log('POST /fusor/api/openstack/deployments/' + this.get('deploymentId') + '/nodes');
-    request({
-      url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/nodes',
-      type: 'POST',
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "X-CSRF-Token": token,
-      },
-      data: JSON.stringify({ 'node': createdNode })
-    }).then(function(result) {
-        // node was added on the backend, but openStack.nodes needs to be refreshed
-        self.send('refreshOpenStack');
-        self.set('initRegInProcess', false);
-        //push task_id into data store
-        var newTask = self.store.push('introspection-task', {
-              id: (Math.floor(Math.random() * 1000000000)),
-              task_id: result.id,
-              deployment_id: self.get('deploymentId')
-        });
-        self.get('deployment.introspection_tasks').addObject(newTask);
-        self.startPolling();
-      }, function(reason) {
-            reason = reason.jqXHR;
-            self.set('initRegInProcess', false);
-            node.errorMessage = node.ipAddress + ": " + self.getErrorMessageFromReason(reason);
-            self.get('errorNodes').addObject(node);
+            var newNode = self.Node.create({
+              driver: driver,
+              ipAddress: ipmi_address,
+              ipmiUsername: ipmi_username,
+              ipmiPassword: ipmi_password,
+              nicMacAddress: mac_address
+            });
+            edittedNodes.insertAt(0, newNode);
+            self.updateNodeSelection(newNode);
+          }
         }
-    );
-  },
+      };
+      reader.onloadend = function() {
+        if (reader.error) {
+          console.log(reader.error.message);
+        }
+      };
 
-  getErrorMessageFromReason(reason) {
-    try {
-      var displayMessage = reason.responseJSON.displayMessage;
-      if (displayMessage.indexOf('{') >= 0 && displayMessage.indexOf('}') >= 1) {
-        displayMessage = displayMessage.substring(displayMessage.indexOf('{'),displayMessage.indexOf('}') + 1) + "}";
-        displayMessage = displayMessage.replace(/\\/g, "");
-        displayMessage = displayMessage.replace(/"\{/g, "{");
-
-        var errorObj = JSON.parse(displayMessage);
-        displayMessage = errorObj.error_message.faultstring;
-      }
-
-      return displayMessage;
+      reader.readAsText(file);
     }
-    catch (e) {
-      return reason.statusText;
-    }
-  },
+  }
 
 });
-
-export { OspNode };
-

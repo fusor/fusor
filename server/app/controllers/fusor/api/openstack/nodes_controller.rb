@@ -49,14 +49,28 @@ module Fusor
           it = Fusor::IntrospectionTask.new
           it.deployment = @deployment
           it.task_id = task.id
+          it.node_uuid = node.uuid
+          it.mac_address = params[:node][:address]
+          it.task_id = task.id
           @deployment.introspection_tasks.push(it)
           @deployment.save(:validate => false)
           respond_for_async :resource => task
+          # render :json => {node: node}
+        end
+
+        def destroy
+          undercloud_handle.delete_node(params[:id])
+          Fusor::IntrospectionTask.where(:node_uuid => params[:id]).destroy_all
+          render json: {}, status: 204
         end
 
         def ready
           ready = undercloud_handle.introspect_node_status(params[:id])
           render :json => {:node => {:id => params[:id], :ready => ready}}.to_json
+        end
+
+        def list_ports
+          render :json => { :ports => undercloud_handle.list_ports_detailed }
         end
 
       end

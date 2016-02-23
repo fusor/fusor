@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
-import { EqualityValidator, PasswordValidator, AlphaNumericDashUnderscoreValidator } from '../utils/validators';
+import { PresenceValidator, PasswordValidator, AlphaNumericDashUnderscoreValidator, AggregateValidator } from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
@@ -55,7 +55,12 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
        }
   ],
 
-  computerNameValidator: AlphaNumericDashUnderscoreValidator.create({}),
+  computerNameValidator: AggregateValidator.create({
+      validators: [
+        PresenceValidator.create({}),
+        AlphaNumericDashUnderscoreValidator.create({})
+      ]
+    }),
 
   isDirtyRhevDatabaseName: Ember.computed('rhevDatabaseName', function() {
       var changedAttrs = this.get('deploymentController.model').changedAttributes();

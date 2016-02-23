@@ -18,7 +18,8 @@ Fusor::Engine.routes.draw do
           resources :images, :only => :index
           get '/images/show_by_name/:name', to: 'images#show_by_name', as: 'images_show_by_name'
 
-          resources :nodes, :only => [:index, :show, :create]
+          resources :nodes, :only => [:index, :show, :create, :destroy]
+          get '/node_ports', to: 'nodes#list_ports'
 
           resources :openstack_deployments, :only => [:index, :show]
           resources :underclouds, :only => [:show, :create]

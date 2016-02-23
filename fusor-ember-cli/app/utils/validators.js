@@ -118,15 +118,15 @@ const UniquenessValidator = Validator.extend({
 // String message;
 const RegExpValidator = Validator.extend({
   isValid(value) {
-    let trimmedValue = value ? value.trim() : value;
-    return this.get('regExp').test(trimmedValue);
+    let trimmedValue = Ember.typeOf(value) === 'string' ? value.trim() : value;
+    return Ember.isBlank(trimmedValue) || this.get('regExp').test(trimmedValue);
   }
 });
 
 
 const AlphaNumericDashUnderscoreValidator = RegExpValidator.extend({
   regExp: new RegExp(/^[A-Za-z0-9_-]*$/),
-  message: "must contain only 'A-Z', 'a-z', '0-9', '_' or '-' characters",
+  message: "must contain only 'A-Z', 'a-z', '0-9', '_' or '-' characters"
 });
 
 const IpRangeValidator = RegExpValidator.extend({

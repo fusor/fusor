@@ -1,0 +1,36 @@
+<form class="form-horizontal new-node-form-manual">
+
+  {{select-f  cssId="autoVendorInput"
+              label="Vendor"
+              labelSize='col-xs-3'
+              inputSize='col-xs-4'
+              content=vendors
+              optionLabelPath="content.label"
+              optionValuePath="content.value"
+              value=nodeInfo.vendor
+              isRequired=true}}
+
+  {{text-f  cssId="autoIpmiAddressInput"
+            label="IPMI Address"
+            type='text'
+            labelSize='col-xs-3'
+            inputSize='col-xs-4'
+            value=nodeInfo.address
+            isRequired=true}}
+
+  {{text-f  cssId="autoIpmiUserInput"
+            label="IPMI User"
+            type='text'
+            labelSize='col-xs-3'
+            inputSize='col-xs-4'
+            value=nodeInfo.username
+            isRequired=true}}
+
+  {{text-f  cssId="autoIpmiPasswordInput"
+            label="IPMI Password"
+            type='password'
+            labelSize='form-label-nowrap col-xs-3'
+            inputSize='col-xs-4'
+            value=nodeInfo.password
+            isRequired=true}}
+</form>

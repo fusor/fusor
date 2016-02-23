@@ -107,6 +107,10 @@ export default function() {
     return db.nodes.find(id);
   });
 
+  this.get('/fusor/api/openstack/deployments/:id/node_ports', function(db, request) {
+    return {ports: db.node_ports};
+  });
+
   this.get('/fusor/api/openstack/deployments/:id/flavors', function(db, request) {
     // NOTE root node is flavor and not flavors
     return {flavor: db.flavors};

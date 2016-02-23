@@ -493,3 +493,101 @@
   margin: 0 0 15px;
   padding: 15px 0 0;
 }
+
+.register-nodes-button , .register-more-nodes-button {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  padding: 6px 10px 6px 10px;
+}
+
+.new-node-submit-button {
+  min-width: 70px;
+}
+
+.csv-upload-input {
+  line-height: 12px;
+}
+
+.osp-node-manager-list {
+  margin-top: 24px;
+}
+
+span.registered-node-count {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.osp-node-manager-panel-body {
+  padding-top: 0;
+}
+
+.osp-node-manager-nodes-count-section {
+  padding-top: 0;
+  padding-right: 6px;
+}
+
+.osp-node-manager-nodes-info-section {
+  padding-top: 10px;
+  padding-left: 0px;
+}
+
+.node-info {
+  margin-bottom: 0;
+}
+
+.node-info-label {
+  font-weight: bold;
+}
+
+.osp-node-manager-panel {
+  border-color: #333333;
+}
+
+.panel-heading.osp-node-manager-panel-heading {
+  border-color: #333333;
+  font-size: 14px;
+}
+
+.osp-node-progress {
+  margin-bottom: 0;
+}
+
+.osp-node-progress-bar {
+  background-color: lightgray;
+  color: #333;
+  text-align: left;
+}
+
+.osp-node-progress-bar-label {
+  margin-left: 2px;
+}
+
+.osp-node-progress-bar.progress-bar-danger {
+  background-color: $error-color;
+  color: white;
+  min-width: 100px;
+}
+
+.osp-node-status-column {
+  padding: 0;
+  text-align: right;
+
+  >.fa.fa-exclamation-triangle {
+    font-size: 14px;
+    color: $warning-color;
+  }
+
+  >.fa.fa-times-circle-o {
+    font-size: 14px;
+    color: $error-color;
+  }
+
+  >.spinner.spinner-xs.spinner-inline {
+    margin-right: 0;
+  }
+}
+
+.osp-node-list-title, .osp-progress-column {
+  padding-left: 10px;
+  padding-right: 2px;
+}

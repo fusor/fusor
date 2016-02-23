@@ -1,117 +1,65 @@
-{{#em-modal class="scrollable-form" configName="bs" id="nodeRegistrationModal" closeIfClickedOutside=handleOutsideClick open-if=registerNodesModalOpened close-if=registerNodesModalClosed in-async=async}}
+{{#em-modal configName="bs" id="nodeRegistrationModal" closeIfClickedOutside=false open-if=openNewNodeRegistrationModal close-if=closeNewNodeRegistrationModal}}
+  {{#em-modal-title}}
+    {{#em-modal-toggler class="close"}}
+      <span aria-hidden="true">×</span><span class="sr-only">Close</span>
+    {{/em-modal-toggler}}
+    <h4 class="modal-title">Register Nodes</h4>
+  {{/em-modal-title}}
 
-    {{#em-modal-title}}
-        {{#em-modal-toggler class="close"}}
-            <span aria-hidden="true" {{action "cancelRegisterNodes"}}>×</span><span class="sr-only">Close</span>
-        {{/em-modal-toggler}}
-        <h4 class="modal-title">Node Registration</h4>
-    {{/em-modal-title}}
+  {{#em-modal-body}}
+    <div class="row">
+      <div class="col-xs-12">
+        <p>Nodes can be added through auto-discovery by an Intelligent Platform Management Interface (IPMI) system, a
+          CSV file specifying the desired nodes, or by manually identifying each node.</p>
+        <p>Determine how to register nodes.</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-offset-1 col-xs-12">
 
-    {{#em-modal-body}}
-        {{#if async}}
-            Submitting, please wait...
-        {{else}}
-            {{#if registrationPaused}}
-              <span>
-                Warning: The registration process is paused while editting Nodes.
-              </span>
-            {{/if}}
-            <div class="row register-nodes-formset" id="formset-register_nodes">
-                <div class="col-xs-5">
-                    <div class="row">
-                        <div class="col-xs-12 column" style="padding-bottom: 5px;">
-                            <h3 class="col-xs-6 nodes-registered-count">{{edittedNodes.length}} Nodes</h3>
-                            <a class="col-xs-2  nodes-add-button add-node-link" title="Upload from CSV" {{action "updloadCsvFile"}}>
-                                <i class="fa fa-upload"></i>
-                            </a>
-                            <a class="col-xs-2  nodes-add-button add-node-link" title="Add node" {{action "addNode"}}>
-                                <i class="fa fa-plus"></i>
-                            </a>
-                        </div>
-                    </div>
-                        <div style="display: none;">
-                            <input id="regNodesUploadFileInput" value=selectedFile type="file" accept='text/csv' {{action "csvFileChosen" on="change"}}>
-                        </div>
-                    <ul class="nav nav-pills nav-stacked nav-registered-nodes">
-                        {{#each edittedNodes as |node|}}
-                            <li class="{{node.isActiveClass}}">
-                                <a {{action "selectNode" node}}>{{node.name}}</a>
-                              {{#if node.isSelected}}
-                                  <i class="fa fa-trash-o" {{action "removeNode" node}}></i>
-                              {{/if}}
-                            </li>
-                        {{/each}}
-                    </ul>
-                </div>
-                <form>
-                      <div class="col-xs-7" style="{{nodeFormStyle}}">
-                          <div>
-                              <h4>Node Detail</h4>
-                              <div class="form-horizontal">
-                                  <fieldset>
-                                      <legend>Management</legend>
-                                      {{select-req-f label="Driver"
-                                        labelSize='col-xs-4'
-                                        inputSize='col-xs-6'
-                                        prompt='Select a driver'
-                                        content=drivers
-                                        value=selectedNode.driver
-                                        selection=selectedNode.driverObj
-                                        optionLabelPath='content.driver'
-                                        optionValuePath='content.driver'
-                                        isValid=selectedNode.isDriverValid
-                                        showValidationError=showDriverValidationError
-                                        isRequired=true}}
+        <div class='radio'>
+          <label>
+            {{#radio-button value="ipmi_auto_detect" groupValue=registerNodesMethod cssId="optionNewNodeMethodAuto"}}{{/radio-button}}
+            IPMI auto-detection
+          </label>
+        </div>
 
-                                      {{text-f label="IP Address"
-                                        type='text'
-                                        labelSize='col-xs-4'
-                                        inputSize='col-xs-6'
-                                        value=selectedNode.ipAddress
-                                        validator=ipAddressValidator
-                                        resetErrorsMessageKey=resetErrorsMessageKey
-                                        isRequired=true}}
-
-                                      {{text-f label="IPMI User"
-                                        type='text'
-                                        labelSize='col-xs-4'
-                                        inputSize='col-xs-6'
-                                        value=selectedNode.ipmiUsername
-                                        resetErrorsMessageKey=resetErrorsMessageKey
-                                        isRequired=false}}
-
-                                      {{text-f label="IPMI Password"
-                                        type='password'
-                                        labelSize='form-label-nowrap col-xs-4'
-                                        inputSize='col-xs-6'
-                                        value=selectedNode.ipmiPassword
-                                        resetErrorsMessageKey=resetErrorsMessageKey
-                                        isRequired=false}}
-
-                                  </fieldset>
-                                  <fieldset>
-                                      <legend>Networking</legend>
-                                      {{text-f label="NIC MAC Address"
-                                        type='text'
-                                        labelSize='form-label-nowrap col-xs-4'
-                                        inputSize='col-xs-6'
-                                        value=selectedNode.nicMacAddress
-                                        placeholder="unspecified"
-                                        validator=macAddressValidator
-                                        resetErrorsMessageKey=resetErrorsMessageKey
-                                        isRequired=true}}
-                                  </fieldset>
-                              </div>
-                          </div>
-                      </div>
-                </form>
-            </div>
+        {{#if isNewNodeMethodAuto}}
+          {{partial "new-node-registration-auto"}}
         {{/if}}
-    {{/em-modal-body}}
 
-    {{#em-modal-footer}}
-        <button type="cancel" class="btn btn-default" disabled={{async}} {{action "cancelRegisterNodes"}}>Cancel</button>
-        <button type="submit" class="btn btn-primary" disabled={{disableModalRegisterNodes}} {{action "registerNodes"}}>Register Nodes</button>
-    {{/em-modal-footer}}
+        <div class="radio">
+          <label>
+            {{#radio-button value="csv_upload" groupValue=registerNodesMethod cssId="optionNewNodeMethodCSV"}}{{/radio-button}}
+            Upload a CSV file
+          </label>
+        </div>
 
+        {{#if isNewNodeMethodCSV}}
+          {{partial "new-node-registration-csv"}}
+        {{/if}}
+
+        <div class="radio">
+          <label>
+            {{#radio-button value="manual" groupValue=registerNodesMethod cssId="optionNewNodeMethodManual"}}{{/radio-button}}
+            Manual entry
+          </label>
+        </div>
+
+        {{#if isNewNodeMethodManual}}
+          {{partial "new-node-registration-manual"}}
+        {{/if}}
+
+      </div>
+    </div>
+  {{/em-modal-body}}
+
+  {{#em-modal-footer}}
+    <button type="button" id="newNodeCancelButton" class="btn btn-default delete-node-cancel-button" {{action "cancelRegisterNodes"}}>
+      Cancel
+    </button>
+    <button type="submit" id="newNodeSubmitButton" class="btn btn-primary new-node-submit-button" disabled={{disableNewNodesSubmit}} {{action "registerNodes"}}>
+      {{newNodeSubmitButtonText}}
+    </button>
+  {{/em-modal-footer}}
 {{/em-modal}}

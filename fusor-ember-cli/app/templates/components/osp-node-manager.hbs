@@ -1,0 +1,51 @@
+<div class="row osp-node-manager">
+  <div class="col-xs-12 col-md-9">
+    <div class="panel panel-default osp-node-manager-panel">
+      <div class="panel-heading osp-node-manager-panel-heading">{{nodeManager.address}}
+        {{#if false}}
+          <button type="button" id="editNodeManagerButton{{safeLabel}}" class="btn btn-icon" disabled={{isEditManagerButtonDisabled}} {{action "editManager"}}><i class="fa fa-pencil"></i></button>
+        {{/if}}
+        {{#if nodesPendingRegistration}}
+          <button type="button" id="continueRegistrationButton{{safeLabel}}" class="btn btn-primary pull-right" disabled={{isContinueRegistrationDisabled}} {{action "continueRegistration"}}>Continue Registration</button>
+        {{/if}}
+      </div>
+      <div class="panel-body osp-node-manager-panel-body">
+        <div class="row">
+          <div class="col-xs-1 osp-node-manager-nodes-count-section">
+            <span class="registered-node-count pull-right">{{nodeCount}}</span>
+          </div>
+          <div class="col-xs-3 osp-node-manager-nodes-info-section">
+            <span class="node-info">nodes, each has:</span>
+            <div class="row">
+              <div class="col-xs-4">
+                <span class="node-info-label">vCPU</span>
+                <span class="node-info-label">RAM</span>
+                <span class="node-info-label">Disk</span>
+              </div>
+              <div class="col-xs-8">
+                <p class="node-info">{{cpuRange}}</p>
+                <p class="node-info">{{memRange}}</p>
+                <p class="node-info">{{storageRange}}</p>
+              </div>
+            </div>
+
+          </div>
+          <div class="col-xs-8 osp-node-manager-nodes-list-section">
+            <div class="row">
+              <div class="col-xs-offset-1 col-xs-11 osp-node-list-title">
+                <h4>Nodes <button type="button" id="managerAddNodeButton{{safeLabel}}" class="btn btn-icon btn-icon-primary" {{action "onAddNode"}}><i class="fa fa-plus"></i></button></h4>
+              </div>
+            </div>
+
+            {{#each nodeManager.nodes as |node|}}
+              {{osp-node node=node ospPorts=ospPorts introspectionTasks=introspectionTasks foremanTasks=foremanTasks deleteNode="deleteNode" editable=editable}}
+            {{/each}}
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

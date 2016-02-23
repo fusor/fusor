@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import DeploymentRouteMixin from "../mixins/deployment-route-mixin";
+import OspNodeManager from "../models/osp-node-manager";
 import request from 'ic-ajax';
 
 export default Ember.Route.extend(DeploymentRouteMixin, {
@@ -45,7 +46,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
   },
 
   loadOpenStack(controller, model) {
-    var self = this;
     if (model.get('deploy_openstack') && !Ember.isBlank(model.get('openstack_undercloud_password'))) {
       controller.set('isOspLoading', true);
       Ember.RSVP.hash({
@@ -53,21 +53,22 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
         images: this.store.query('image', {deployment_id: model.get('id')}),
         nodes: this.store.query('node', {deployment_id: model.get('id')}),
         profiles: this.store.query('flavor', {deployment_id: model.get('id')})
-      }).then(function (hash) {
-          var openStack = Ember.Object.create(hash);
+      }).then(
+        (hash) => {
+          let openStack = Ember.Object.create(hash);
           controller.set('openStack', openStack);
-          self.fixBadOpenStackDefaults();
+          this.fixBadOpenStackDefaults();
 
-        // for some reason using the binding the computed property blanks it out on the first edit,
-        // so we're using an alias which updates the plan on route deactivate on the corresponding page anyway
+          // for some reason using the binding the computed property blanks it out on the first edit,
+          // so we're using an alias which updates the plan on route deactivate on the corresponding page anyway
           controller.set('openStack.externalNetworkInterface', openStack.get('plan.externalNetworkInterface'));
           controller.set('openStack.overcloudPassword', openStack.get('plan.overcloudPassword'));
           controller.set('isOspLoading', false);
         },
-        function (error) {
+        (error) => {
           controller.set('isOspLoading', false);
           console.log('Error retrieving OpenStack data', error);
-          return self.send('error', error);
+          return this.send('error', error);
         });
     }
   },
