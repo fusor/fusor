@@ -39,6 +39,7 @@ if [ $1 == "install" ]; then
   echo "gem 'egon'" >> bundler.d/local.rb
   echo "gem 'coveralls', require: false" >> bundler.d/local.rb
   echo "gem 'foreman_docker', '< 2.0.0'" >> bundler.d/local.rb
+  echo "gem 'jwt', '< 1.5.3'" >> bundler.d/local.rb
 
   # TODO: use the latest version of foreman once this PR is merged
   # https://github.com/theforeman/foreman/pull/3034
