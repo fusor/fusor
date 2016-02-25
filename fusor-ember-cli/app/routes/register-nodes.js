@@ -38,33 +38,24 @@ export default Ember.Route.extend({
 
   actions: {
     refreshModelOnOverviewRoute() {
-        console.log('refreshing introspection progress bar tasks');
-        var self = this;
-        var controller = this.get('controller');
+      let taskPromises = [];
+      let introspection_tasks = this.modelFor('deployment')
+        .get('introspection_tasks');
 
-        var introspection_tasks = this.modelFor('deployment').get('introspection_tasks');
-        var arrayTasks = Ember.A();
-
-        var continuePolling = false;
-        introspection_tasks.forEach(function(node, i) {
-          if (node.get('task_id') && node.get('poll')) {
-              self.store.findRecord('foreman-task', node.get('task_id'), {reload: true}).then(function(result) {
-                  arrayTasks.addObject(result);
-                  if (!result.get('pending')) {
-                      node.set('poll', false);
-                      self.send('refreshOpenStack');
-                  }
-              });
-              // There is at least one task that still needs refreshing
-              continuePolling = true;
-          }
-        });
-
-        controller.set('arrayTasks', arrayTasks);
-        if (!continuePolling) {
-            self.deactivate();
+      introspection_tasks.forEach((node) => {
+        let nodeTaskId = node.get('task_id');
+        if (nodeTaskId && node.get('poll')) {
+          taskPromises.push(this.store.findRecord(
+            'foreman-task', nodeTaskId, { reload: true }));
         }
+      });
 
+      Ember.RSVP.all(taskPromises).then((resolvedTasks) => {
+        if(taskPromises.length === 0) {
+          this.deactivate();
+        }
+        this.get('controller').set('arrayTasks', resolvedTasks);
+      });
     }
   }
 

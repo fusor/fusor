@@ -3,8 +3,57 @@ import request from 'ic-ajax';
 import ProgressBarMixin from "../mixins/progress-bar-mixin";
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
+import {
+  AggregateValidator,
+  MacAddressValidator,
+  IpAddressValidator,
+  PresenceValidator,
+  validateZipper
+} from  "../utils/validators";
 
+const OspNode = Ember.Object.extend({
+  name: Ember.computed('ipAddress', function () {
+    let ip = this.get('ipAddress');
+    return !Ember.isEmpty(ip) ? ip : 'Undefined node';
+  }),
+  driver: null,
+  driverObj: null,
+  ipAddress: null,
+  ipmiUsername: '',
+  ipmiPassword: '',
+  nicMacAddress: '',
+  isSelected: false,
+  isActiveClass: Ember.computed('isSelected', function() {
+    return this.get('isSelected') === true ?
+      'active' : 'inactive';
+  }),
+  isError: false,
+  errorMessage: '',
+  isValid: Ember.computed(
+    'ipAddress',
+    'nicMacAddress',
+    'driver',
+    function() {
+      let retVal = validateZipper([
+        [this.get('controller.ipAddressFullValidator'), this.get('ipAddress')],
+        [this.get('controller.macAddressFullValidator'), this.get('nicMacAddress')],
+      ]);
+
+      return retVal && this.get('isDriverValid');
+  }),
+  isDriverValid: Ember.computed('driverObj', function(){
+    // Data down (select-req-f) -> bound to select to tell it when the selected value is valid
+    // or not. driverObj will be null initially (if nothing has ever been selected).
+    // It's also possible for the prompt to have been selected, but this needs to be
+    // explicitly setup on the component (in this case, it is not, so we don't expect)
+    // to ever return false based on that. Still included for safety.
+    return this.get('driverObj') !== null &&
+      this.get('driverObj.isPrompt') === undefined;
+  })
+});
+
+export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
+  resetErrorsMessageKey: 'deployment.openstack.register-nodes.text-f:resetErrors',
   assignNodesController: Ember.inject.controller('assign-nodes'),
 
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
@@ -13,47 +62,47 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
   init() {
     this._super();
-    this.Node = Ember.Object.extend({
-      name: Ember.computed('ipAddress', function () {
-        var ipAddress = this.get('ipAddress');
-        if (!Ember.isEmpty(ipAddress))
-        {
-          return ipAddress;
-        }
-        else
-        {
-          return 'Undefined node';
-        }
-      }),
-      driver: null,
-      ipAddress: null,
-      ipmiUsername: '',
-      ipmiPassword: '',
-      nicMacAddress: '',
 
-      isSelected: false,
-      isActiveClass: Ember.computed('isSelected', function() {
-        if (this.get('isSelected') === true)
-        {
-          return 'active';
-        }
-        else
-        {
-          return 'inactive';
-        }
-      }),
-      isError: false,
-      errorMessage: ''
+    this.presenceValidator = PresenceValidator.create({});
+    this.macAddressValidator = MacAddressValidator.create({});
+    this.macAddressFullValidator = AggregateValidator.create({
+      validators: [
+        this.get('macAddressValidator'),
+        this.get('presenceValidator')
+      ]
+    });
+    this.ipAddressValidator = IpAddressValidator.create({});
+    this.ipAddressFullValidator = AggregateValidator.create({
+      validators: [
+        this.get('ipAddressValidator'),
+        this.get('presenceValidator')
+      ]
     });
   },
 
   newNodes: Ember.A(),
   errorNodes: Ember.A(),
   edittedNodes: Ember.A(),
-
-  drivers: ['pxe_ipmitool', 'pxe_ssh'],
   selectedNode: null,
 
+  drivers: [
+    Ember.Object.create({driver: 'pxe_impitool'}),
+    Ember.Object.create({driver: 'pxe_ssh'})
+  ],
+
+  // Data down (select-req-f) -> tells selet component when to light up
+  // showValidationError=showDriverValidationError
+  showDriverValidationError: Ember.computed(
+    'selectedNode.ipAddress',
+    'selectedNode.nicMacAddress',
+    function () {
+      let showDriverValidationError =
+        !!this.get('selectedNode.ipAddress') ||
+        !!this.get('selectedNode.nicMacAddress');
+
+      return showDriverValidationError;
+    }
+  ),
 
   registrationInProgress: false,
   initRegInProcess: false,
@@ -120,10 +169,15 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
       oldSelection.set('isSelected', false);
     }
 
-    if (node)
-    {
+    if(node) {
       node.set('isSelected', true);
     }
+
+    if(node.get('isValid')) {
+      // Need to reset error state on form left over from other nodes
+      this.eventBus.trigger(this.get('resetErrorsMessageKey'));
+    }
+
     this.set('selectedNode', node);
   },
 
@@ -182,7 +236,9 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
       // Always start with at least one profile
       if (edittedNodes.get('length') === 0) {
-        var newNode = this.Node.create({});
+        var newNode = OspNode.create({
+          controller: this
+        });
         newNode.isDefault = true;
         edittedNodes.addObject(newNode);
       }
@@ -225,7 +281,9 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
     addNode() {
       var edittedNodes = this.get('edittedNodes');
-      var newNode = this.Node.create({});
+      var newNode = OspNode.create({
+        controller: this
+      });
       edittedNodes.insertAt(0, newNode);
       this.updateNodeSelection(newNode);
     },
@@ -269,7 +327,8 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
               var ipmi_password = node_data[3].trim();
               var mac_address = node_data[4].trim();
 
-              var newNode = self.Node.create({
+              var newNode = OspNode.create({
+                controller: self,
                 driver: driver,
                 ipAddress: ipmi_address,
                 ipmiUsername: ipmi_username,
@@ -296,6 +355,16 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     var nodeCount = this.get('openStack.nodes.length');
     return !nodeCount || nodeCount < 2;
   }),
+
+  disableModalRegisterNodes: Ember.computed(
+    'edittedNodes.@each.isValid',
+    function() {
+      let edittedNodes = this.get('edittedNodes');
+      return !(edittedNodes && edittedNodes
+        .map((node) => node.get('isValid'))
+        .reduce((lhs, rhs) => lhs && rhs));
+    }
+  ),
 
   updateAfterRegistration(resolve) {
     var self = this;
@@ -395,3 +464,6 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   },
 
 });
+
+export { OspNode };
+

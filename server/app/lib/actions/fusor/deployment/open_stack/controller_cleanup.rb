@@ -31,8 +31,8 @@ module Actions
           def run
             ::Fusor.log.debug '====== ControllerCleanup run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
-            fetch_overcloud_ssh_key(deployment)
-            fix_controller_services(deployment)
+            key_file_path = fetch_overcloud_ssh_key(deployment)
+            fix_controller_services(deployment, key_file_path)
             ::Fusor.log.debug '=== Leaving ControllerCleanup run method ==='
           end
 
@@ -47,14 +47,16 @@ module Actions
           private
 
           def fetch_overcloud_ssh_key(deployment)
+            keyfile = File.open("/tmp/#{deployment.label}_undercloud_ssh_id_rsa", "w", 0600)
             client = Net::SSH.start(deployment.openstack_undercloud_ip_addr, 'root',
                                     :password => deployment.openstack_undercloud_user_password)
-            keyfile = File.open("/usr/share/foreman/.ssh/id_rsa", "w", 0600)
             keyfile << client.exec!('cat /home/stack/.ssh/id_rsa')
             keyfile.close
+            client.close
+            return keyfile
           end
 
-          def fix_controller_services(deployment)
+          def fix_controller_services(deployment, keyfile_path)
             undercloud_compute = Fog::Compute::OpenStack.new(
               :openstack_auth_url => "http://#{deployment.openstack_undercloud_ip_addr}:5000/v2.0/tokens",
               :openstack_username => 'admin', :openstack_tenant => 'admin',
@@ -64,7 +66,7 @@ module Actions
 
             controllers.each do |controller|
               chost_addr = undercloud_compute.list_addresses(controller["id"]).body["addresses"]["ctlplane"][0]["addr"]
-              client = Net::SSH.start(chost_addr, 'heat-admin')
+              client = Net::SSH.start(chost_addr, 'heat-admin', :keys => [keyfile_path])
               client.exec!("""sudo sed -ri 's/\\[app:proxy-server\\]/\\[app:proxy-server\\]\\\nnode_timeout=60/g'"""\
                            """ /etc/swift/proxy-server.conf""")
               client.exec!("sudo systemctl restart openstack-swift-proxy")
@@ -72,6 +74,7 @@ module Actions
                 client.exec!("sudo systemctl enable #{service}")
                 client.exec!("sudo systemctl start #{service}")
               end
+              client.close
             end
           end
         end
