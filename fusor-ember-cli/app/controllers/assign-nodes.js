@@ -3,7 +3,8 @@ import request from 'ic-ajax';
 import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
+export default Ember.Controller.extend(
+  DeploymentControllerMixin, NeedsDeploymentMixin, {
 
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
   openStack: Ember.computed.alias("deploymentController.openStack"),
@@ -116,36 +117,42 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   loadingSpinnerText: "Loading...",
 
   doAssignRole(plan, role, profile) {
-    var data, self = this, unassignedRoles,
-      token = Ember.$('meta[name="csrf-token"]').attr('content');
+    var data;
+    var self = this;
+    var unassignedRoles;
+    var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
-      if (profile == null) {
-        unassignedRoles = this.get('unassignedRoles');
-        if (unassignedRoles.contains(role)) {
-          // Role is already unassigned, do nothing
-          return;
-        }
-        data = { 'role_name': role.get('name'), 'flavor_name': null };
-      } else {
-        data = { 'role_name': role.get('name'), 'flavor_name': profile.get('name') };
+    if (profile == null) {
+      unassignedRoles = this.get('unassignedRoles');
+      if (unassignedRoles.contains(role)) {
+        // Role is already unassigned, do nothing
+        return;
       }
+      data = { 'role_name': role.get('name'), 'flavor_name': null };
+    } else {
+      data = { 'role_name': role.get('name'), 'flavor_name': profile.get('name') };
+    }
 
-      plan.updateParam(data.role_name + "-1::Flavor", data.flavor_name);
-      request({
-        url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_role_flavor',
-        type: 'PUT',
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-          "X-CSRF-Token": token
-        },
-        data: JSON.stringify(data)
-      }).catch(function (error) {
-        console.log('ERROR');
-        console.log(error.jqXHR);
-        return self.send('error', error.jqXHR);
-      }
-              );
+    var updateUrl =
+      '/fusor/api/openstack/deployments/' +
+      this.get('deploymentId') +
+      '/deployment_plans/overcloud/update_role_flavor';
+
+    plan.updateParam(data.role_name + "-1::Flavor", data.flavor_name);
+    request({
+      url: updateUrl,
+      type: 'PUT',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-CSRF-Token": token
+      },
+      data: JSON.stringify(data)
+    }).catch(function (error) {
+      console.log('ERROR');
+      console.log(error.jqXHR);
+      return self.send('error', error.jqXHR);
+    });
   },
 
   edittedRole: null,
@@ -221,14 +228,16 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
             param.set('inputType', param.get('parameter_type'));
           }
 
-          if ((paramId === role.get('imageParameterName')) ||
-              (paramId === role.get('countParameterName')) ||
-              (paramId === role.get('flavorParameterName'))) {
-                roleParams.addObject(param);
-              }
-              else if (param.get('parameter_type') !== 'json') {
-                advancedParams.addObject(param);
-              }
+          let shouldAddParam =
+            (paramId === role.get('imageParameterName')) ||
+            (paramId === role.get('countParameterName')) ||
+            (paramId === role.get('flavorParameterName'));
+
+          if (shouldAddParam) {
+            roleParams.addObject(param);
+          } else if (param.get('parameter_type') !== 'json') {
+            advancedParams.addObject(param);
+          }
         }
       });
 
@@ -369,13 +378,15 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     'openStack.plan.computeRoleCount',
     'openStack.plan.controllerRoleCount',
     function () {
-      var unassignedRoleTypes = this.get('unassignedRoles').getEach('roleType'),
-        computeRoleCount = this.get('openStack.plan.computeRoleCount'),
-          controllerRoleCount = this.get('openStack.plan.controllerRoleCount');
+      var unassignedRoleTypes = this.get('unassignedRoles').getEach('roleType');
+      var computeRoleCount = this.get('openStack.plan.computeRoleCount');
+      var controllerRoleCount = this.get('openStack.plan.controllerRoleCount');
 
-          return unassignedRoleTypes.contains('controller') ||
-            unassignedRoleTypes.contains('compute') ||
-              !computeRoleCount || computeRoleCount === '0' ||
-                !controllerRoleCount || controllerRoleCount === '0';
-    })
+      let disableAssignNodesNext =
+        unassignedRoleTypes.contains('controller') ||
+        unassignedRoleTypes.contains('compute') ||
+        !computeRoleCount || computeRoleCount === '0' ||
+        !controllerRoleCount || controllerRoleCount === '0';
+    }
+  )
 });
