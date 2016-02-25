@@ -7,6 +7,7 @@ import {
   RegExpValidator,
   AlphaNumericDashUnderscoreValidator,
   IpRangeValidator,
+  IpAddressValidator,
   CidrValidator,
   MacAddressValidator,
   HostnameValidator
@@ -246,6 +247,40 @@ test('AlphaNumericDashUnderscoreValidator rejects invalid values', function (ass
     assert.notOk(anduValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(anduValidator.getMessages(value).length, 1);
     assert.equal(anduValidator.getMessages(value)[0], "must contain only 'A-Z', 'a-z', '0-9', '_' or '-' characters");
+  });
+});
+
+test('IpAddressValidator accepts valid values', function (assert) {
+  let ipAddressValidator = IpAddressValidator.create({});
+  let validValues = [
+    '192.168.2.0',
+    '192.168.153.0',
+  ];
+
+  validValues.forEach((value) => {
+    assert.ok(ipAddressValidator.isValid(value), `"${value}" was not accepted as valid`);
+    assert.notOk(ipAddressValidator.isInvalid(value), `"${value}" was rejected as invalid`);
+    assert.equal(ipAddressValidator.getMessages(value).length, 0);
+  });
+});
+
+test('IpAddressValidator rejects invalid values', function (assert) {
+  let ipAddressValidator = IpAddressValidator.create({});
+  let invalidValues = [
+    null,
+    undefined,
+    '192.168.2.2000',
+    '192.162.257',
+    'garbage192.168.1.2',
+    '192.168.1.2/24',
+    '192.168.1.2/',
+    '192.168.1.2postfix',
+  ];
+  invalidValues.forEach((value) => {
+    assert.ok(ipAddressValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+    assert.notOk(ipAddressValidator.isValid(value), `"${value}" was accepted as valid`);
+    assert.equal(ipAddressValidator.getMessages(value).length, 1);
+    assert.equal(ipAddressValidator.getMessages(value)[0], 'invalid ip address');
   });
 });
 

@@ -2,7 +2,7 @@ import Ember from 'ember';
 import request from 'ic-ajax';
 import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
-import { AggregateValidator, PresenceValidator, IpRangeValidator } from '../utils/validators';
+import { AggregateValidator, PresenceValidator, IpAddressValidator } from '../utils/validators';
 
 export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
 
@@ -22,7 +22,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   undercloudIpValidator: AggregateValidator.create({
     validators: [
       PresenceValidator.create({}),
-      IpRangeValidator.create({})
+      IpAddressValidator.create({})
     ]
   }),
 
