@@ -138,6 +138,15 @@ const IpRangeValidator = RegExpValidator.extend({
     ].join(''), ''),
   message: 'invalid network range'
 });
+const IpAddressValidator = IpRangeValidator.extend({
+  regExp: new RegExp([
+      '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
+      '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
+      '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
+      '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+    ].join(''), ''),
+  message: 'invalid ip address'
+});
 
 const CidrValidator = AggregateValidator.extend({
   validators: [
@@ -157,6 +166,12 @@ const HostnameValidator = RegExpValidator.extend({
   message: 'invalid hostname'
 });
 
+function validateZipper(zipper){
+  return zipper
+    .map((pair) => pair[0].isValid(pair[1]))
+    .reduce((lhs, rhs) => lhs && rhs);
+}
+
 export {
   Validator,
   AggregateValidator,
@@ -168,7 +183,9 @@ export {
   RegExpValidator,
   AlphaNumericDashUnderscoreValidator,
   IpRangeValidator,
+  IpAddressValidator,
   CidrValidator,
   MacAddressValidator,
-  HostnameValidator
+  HostnameValidator,
+  validateZipper
 };

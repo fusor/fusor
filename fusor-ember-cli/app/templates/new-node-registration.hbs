@@ -50,45 +50,56 @@
                               <div class="form-horizontal">
                                   <fieldset>
                                       <legend>Management</legend>
-                                      {{select-simple-f label="Driver"
-                                                        labelSize='col-xs-4'
-                                                        inputSize='col-xs-6'
-                                                        content=drivers
-                                                        value=selectedNode.driver
-                                                        selection=selectedNode.driver prompt='unspecified'
-                                                        isRequired=true}}
+                                      {{select-req-f label="Driver"
+                                        labelSize='col-xs-4'
+                                        inputSize='col-xs-6'
+                                        prompt='Select a driver'
+                                        content=drivers
+                                        value=selectedNode.driver
+                                        selection=selectedNode.driverObj
+                                        optionLabelPath='content.driver'
+                                        optionValuePath='content.driver'
+                                        isValid=selectedNode.isDriverValid
+                                        showValidationError=showDriverValidationError
+                                        isRequired=true}}
 
                                       {{text-f label="IP Address"
-                                               type='text'
-                                               labelSize='col-xs-4'
-                                               inputSize='col-xs-6'
-                                               value=selectedNode.ipAddress
-                                               isRequired=true}}
+                                        type='text'
+                                        labelSize='col-xs-4'
+                                        inputSize='col-xs-6'
+                                        value=selectedNode.ipAddress
+                                        validator=ipAddressValidator
+                                        resetErrorsMessageKey=resetErrorsMessageKey
+                                        isRequired=true}}
 
                                       {{text-f label="IPMI User"
-                                               type='text'
-                                               labelSize='col-xs-4'
-                                               inputSize='col-xs-6'
-                                               value=selectedNode.ipmiUsername
-                                               isRequired=false}}
+                                        type='text'
+                                        labelSize='col-xs-4'
+                                        inputSize='col-xs-6'
+                                        value=selectedNode.ipmiUsername
+                                        resetErrorsMessageKey=resetErrorsMessageKey
+                                        isRequired=false}}
 
                                       {{text-f label="IPMI Password"
-                                               type='password'
-                                               labelSize='form-label-nowrap col-xs-4'
-                                               inputSize='col-xs-6'
-                                               value=selectedNode.ipmiPassword
-                                               isRequired=false}}
+                                        type='password'
+                                        labelSize='form-label-nowrap col-xs-4'
+                                        inputSize='col-xs-6'
+                                        value=selectedNode.ipmiPassword
+                                        resetErrorsMessageKey=resetErrorsMessageKey
+                                        isRequired=false}}
 
                                   </fieldset>
                                   <fieldset>
                                       <legend>Networking</legend>
-                                      {{textarea-f label="NIC MAC Address"
-                                                   labelSize='form-label-nowrap col-xs-4' inputSize='col-xs-6'
-                                                   value=selectedNode.nicMacAddress
-                                                   cols="40"
-                                                   placeholder="unspecified"
-                                                   rows="2"
-                                                   isRequired=true}}
+                                      {{text-f label="NIC MAC Address"
+                                        type='text'
+                                        labelSize='form-label-nowrap col-xs-4'
+                                        inputSize='col-xs-6'
+                                        value=selectedNode.nicMacAddress
+                                        placeholder="unspecified"
+                                        validator=macAddressValidator
+                                        resetErrorsMessageKey=resetErrorsMessageKey
+                                        isRequired=true}}
                                   </fieldset>
                               </div>
                           </div>
@@ -100,7 +111,7 @@
 
     {{#em-modal-footer}}
         <button type="cancel" class="btn btn-default" disabled={{async}} {{action "cancelRegisterNodes"}}>Cancel</button>
-        <button type="submit" class="btn btn-primary" disabled={{async}} {{action "registerNodes"}}>Register Nodes</button>
+        <button type="submit" class="btn btn-primary" disabled={{disableModalRegisterNodes}} {{action "registerNodes"}}>Register Nodes</button>
     {{/em-modal-footer}}
 
 {{/em-modal}}
