@@ -104,9 +104,7 @@
   background: #ffffff;
   border: 2px solid #bbbbbb;
   border-radius: 1px;
-  float: left;
   margin: 0 10px 10px 0;
-  min-width: 150px;
   padding: 6px 20px;
   position: relative;
   text-align: center;
@@ -287,6 +285,10 @@
 .deployment-roles-assigned .draggable-object {
   padding: 0;
   display: block;
+}
+.deployment-roles-unassigned .draggable-object {
+  width: 150px;
+  display: inline-block;
 }
 .deployment-roles-all-assigned {
   color: #999999;
