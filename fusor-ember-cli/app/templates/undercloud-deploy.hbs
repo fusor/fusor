@@ -27,17 +27,20 @@
             Detect Undercloud
         </button>
     </form>
-
-    {{#if deploymentError}}
-        <div class='col-md-9' style="padding-top: 10px;">
-            <div class="alert alert-danger" style="margin-bottom: 0px;">
-                <span class="pficon pficon-error-circle-o"></span>
-                Undercloud detection failed: {{deploymentError}}
-            </div>
-        </div>
-    {{/if}}
   </div>
 </div>
+
+{{#if deploymentError}}
+  <div class="row">
+    <div class='col-md-9' style="padding-top: 10px;">
+        <div class="alert alert-danger" style="margin-bottom: 0px; max-width: 600px">
+          <span class="pficon pficon-error-circle-o"></span>
+          Undercloud detection failed: {{deploymentError}}
+        </div>
+    </div>
+  </div>
+{{/if}}
+
 {{else}}
 <div class="row">
   <div class='col-md-9'>
