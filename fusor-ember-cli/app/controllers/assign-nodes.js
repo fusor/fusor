@@ -3,7 +3,8 @@ import request from 'ic-ajax';
 import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
-export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
+export default Ember.Controller.extend(
+  DeploymentControllerMixin, NeedsDeploymentMixin, {
 
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
   openStack: Ember.computed.alias("deploymentController.openStack"),
@@ -94,9 +95,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       }
 
       this.get('openStack.plan.roles').forEach(function (role) {
-            if (role.get('isDraggingObject') === true) {
-              isDragging = true;
-            }
+        if (role.get('isDraggingObject') === true) {
+          isDragging = true;
+        }
       });
 
       return isDragging;
@@ -116,8 +117,10 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   loadingSpinnerText: "Loading...",
 
   doAssignRole(plan, role, profile) {
-    var data, self = this, unassignedRoles,
-      token = Ember.$('meta[name="csrf-token"]').attr('content');
+    var data;
+    var self = this;
+    var unassignedRoles;
+    var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
     if (profile == null) {
       unassignedRoles = this.get('unassignedRoles');
@@ -130,22 +133,26 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       data = { 'role_name': role.get('name'), 'flavor_name': profile.get('name') };
     }
 
+    var updateUrl =
+      '/fusor/api/openstack/deployments/' +
+      this.get('deploymentId') +
+      '/deployment_plans/overcloud/update_role_flavor';
+
     plan.updateParam(data.role_name + "-1::Flavor", data.flavor_name);
     request({
-      url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/deployment_plans/overcloud/update_role_flavor',
+      url: updateUrl,
       type: 'PUT',
       headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-          "X-CSRF-Token": token
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-CSRF-Token": token
       },
       data: JSON.stringify(data)
     }).catch(function (error) {
-        console.log('ERROR');
-        console.log(error.jqXHR);
-        return self.send('error', error.jqXHR);
-      }
-    );
+      console.log('ERROR');
+      console.log(error.jqXHR);
+      return self.send('error', error.jqXHR);
+    });
   },
 
   edittedRole: null,
@@ -210,10 +217,10 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
           param.displayId = param.displayId.replace(/([a-z])([A-Z])/g, '$1 $2');
 
           /* Using boolean breaks saving...
-                    if (param.get('parameter_type') === 'boolean') {
-                      param.set('isBoolean', true);
-                    }
-          */
+             if (param.get('parameter_type') === 'boolean') {
+             param.set('isBoolean', true);
+             }
+             */
           if (param.get('hidden')) {
             param.set('inputType', 'password');
           }
@@ -221,12 +228,14 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
             param.set('inputType', param.get('parameter_type'));
           }
 
-          if ((paramId === role.get('imageParameterName')) ||
-              (paramId === role.get('countParameterName')) ||
-              (paramId === role.get('flavorParameterName'))) {
+          let shouldAddParam =
+            (paramId === role.get('imageParameterName')) ||
+            (paramId === role.get('countParameterName')) ||
+            (paramId === role.get('flavorParameterName'));
+
+          if (shouldAddParam) {
             roleParams.addObject(param);
-          }
-          else if (param.get('parameter_type') !== 'json') {
+          } else if (param.get('parameter_type') !== 'json') {
             advancedParams.addObject(param);
           }
         }
@@ -274,9 +283,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
         type: 'PUT',
         data: JSON.stringify(data),
         headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "X-CSRF-Token": token
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "X-CSRF-Token": token
         }
       }).catch(function (error) {
         error = error.jqXHR;
@@ -327,11 +336,11 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       this.get('openStack.plan.parameters').forEach(function(param) {
         if (param.get('id').indexOf('::') === -1) {
           param.displayId = param.get('id').replace(/([a-z])([A-Z])/g, '$1 $2');
-/* Using boolean breaks saving...
-          if (param.get('parameter_type') === 'boolean') {
-            param.set('isBoolean', true);
-          }
-*/
+          /* Using boolean breaks saving...
+             if (param.get('parameter_type') === 'boolean') {
+             param.set('isBoolean', true);
+             }
+             */
           if (param.get('hidden')) {
             param.set('inputType', 'password');
           }
@@ -369,13 +378,15 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     'openStack.plan.computeRoleCount',
     'openStack.plan.controllerRoleCount',
     function () {
-      var unassignedRoleTypes = this.get('unassignedRoles').getEach('roleType'),
-        computeRoleCount = this.get('openStack.plan.computeRoleCount'),
-        controllerRoleCount = this.get('openStack.plan.controllerRoleCount');
+      var unassignedRoleTypes = this.get('unassignedRoles').getEach('roleType');
+      var computeRoleCount = this.get('openStack.plan.computeRoleCount');
+      var controllerRoleCount = this.get('openStack.plan.controllerRoleCount');
 
-      return unassignedRoleTypes.contains('controller') ||
+      let disableAssignNodesNext =
+        unassignedRoleTypes.contains('controller') ||
         unassignedRoleTypes.contains('compute') ||
         !computeRoleCount || computeRoleCount === '0' ||
         !controllerRoleCount || controllerRoleCount === '0';
-    })
+    }
+  )
 });
