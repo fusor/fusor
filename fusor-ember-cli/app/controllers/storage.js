@@ -32,8 +32,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   }),
 
   errorsHashSharePath: Ember.computed('hasEndingSlashInSharePath', 'deploymentController.model.rhev_share_path', function() {
-    if (this.get('hasNoLeadingSlashInSharePath')) {
+    if (this.get('isNFS') && this.get('hasNoLeadingSlashInSharePath')) {
       return {"name": 'You must have a leading slash'};
+    } else if (this.get('isGluster') && !this.get('hasNoLeadingSlashInSharePath')) {
+      return {"name": 'You cannot have a leading slash'};
     } else if (this.get('hasEndingSlashInSharePath')) {
       return {"name": 'You cannot have a trailing slash'};
     } else {
@@ -42,8 +44,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   }),
 
   errorsHashExportPath: Ember.computed('hasEndingSlashInExportPath', 'deploymentController.model.rhev_export_domain_path', function() {
-    if (this.get('hasNoLeadingSlashInExportPath')) {
+    if (this.get('isNFS') && this.get('hasNoLeadingSlashInExportPath')) {
       return {"name": 'You must have a leading slash'};
+    } else if (this.get('isGluster') && !this.get('hasNoLeadingSlashInExportPath')) {
+      return {"name": 'You cannot have a leading slash'};
     } else if (this.get('hasEndingSlashInExportPath')) {
       return {"name": 'You cannot have a trailing slash'};
     } else {
@@ -60,7 +64,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   }),
 
   isGluster: Ember.computed('deploymentController.model.rhev_storage_type', function() {
-    return (this.get('deploymentController.model.rhev_storage_type') === 'Gluster');
+    return (this.get('deploymentController.model.rhev_storage_type') === 'glusterfs');
   }),
 
   isInvalidStorageFields: Ember.computed(
@@ -113,10 +117,13 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     'deploymentController.model.rhev_share_path',
     'hasEndingSlashInSharePath',
     'hasNoLeadingSlashInSharePath',
+    'isNFS',
+    'isGluster',
     function () {
       return Ember.isBlank(this.get('deploymentController.model.rhev_share_path')) ||
         this.get('hasEndingSlashInSharePath') ||
-        this.get('hasNoLeadingSlashInSharePath');
+        (this.get('isNFS') && this.get('hasNoLeadingSlashInExportPath')) ||
+        (this.get('isGluster') && !this.get('hasNoLeadingSlashInExportPath'));
     }),
 
   invalidExportDomainName: Ember.computed('deploymentController.model.rhev_export_domain_name', function() {
@@ -131,10 +138,13 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     'deploymentController.model.rhev_export_domain_path',
     'hasEndingSlashInExportPath',
     'hasNoLeadingSlashInExportPath',
+    'isNFS',
+    'isGluster',
     function () {
       return Ember.isBlank(this.get('deploymentController.model.rhev_export_domain_path')) ||
         this.get('hasEndingSlashInExportPath') ||
-        this.get('hasNoLeadingSlashInExportPath');
+        (this.get('isNFS') && this.get('hasNoLeadingSlashInExportPath')) ||
+        (this.get('isGluster') && !this.get('hasNoLeadingSlashInExportPath'));
     }),
 
 

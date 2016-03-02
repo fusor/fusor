@@ -152,23 +152,16 @@ class DeploymentTest < ActiveSupport::TestCase
 
     test "should not save rhev deployment if storage type is gluster and missing gluster address" do
       rhev = fusor_deployments(:rhev)
-      rhev.rhev_storage_type = 'Gluster'
-      rhev.rhev_gluster_node_address = nil
+      rhev.rhev_storage_type = 'glusterfs'
+      rhev.rhev_storage_address = nil
       assert_not rhev.save, "Saved rhev deployment that used gluster storage but had no address"
     end
 
     test "should not save rhev deployment if storage type is gluster and missing gluster name" do
       rhev = fusor_deployments(:rhev)
-      rhev.rhev_storage_type = 'Gluster'
-      rhev.rhev_gluster_node_name = nil
+      rhev.rhev_storage_type = 'glusterfs'
+      rhev.rhev_storage_path = nil
       assert_not rhev.save, "Saved rhev deployment that used gluster storage but had no name"
-    end
-
-    test "should not save rhev deployment if storage type is gluster and missing gluster password" do
-      rhev = fusor_deployments(:rhev)
-      rhev.rhev_storage_type = 'Gluster'
-      rhev.rhev_gluster_root_password = nil
-      assert_not rhev.save, "Saved rhev deployment that used gluster storage but had no password"
     end
 
     test "should not save cfme deployment with short password" do
