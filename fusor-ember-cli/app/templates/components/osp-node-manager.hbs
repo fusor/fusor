@@ -38,7 +38,7 @@
             </div>
 
             {{#each nodeManager.nodes as |node|}}
-              {{osp-node node=node ospPorts=ospPorts introspectionTasks=introspectionTasks foremanTasks=foremanTasks deleteNode="deleteNode" editable=editable}}
+              {{osp-node node=node ports=ports introspectionTasks=introspectionTasks foremanTasks=foremanTasks deleteNode="deleteNode" editable=editable}}
             {{/each}}
 
           </div>

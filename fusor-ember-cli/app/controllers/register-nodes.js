@@ -97,6 +97,54 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     return this.get('isNewNodeMethodAuto') ? 'Detect' : 'Register';
   }),
 
+  nodeErrors: Ember.computed(
+    'nodeManagers.[]',
+    'nodes.@each',
+    'introspectionTasks.@each',
+    'foremanTasks.@each.humanized_errors',
+    'ports.@each',
+    function () {
+      let nodeManagers = this.get('nodeManagers') || [];
+      let foremanTasks = this.get('foremanTasks') || [];
+      let nodeErrors = [];
+      nodeManagers.forEach((manager) => {
+        manager.get('nodes').forEach((node) => {
+          let errorMessage = this.getNodeErrorMessage(manager, node);
+          if (errorMessage) {
+            nodeErrors.pushObject(errorMessage);
+          }
+        });
+      });
+
+      return nodeErrors;
+    }),
+
+  showNodeErrors: Ember.computed('nodeErrors', function() {
+    return Ember.isPresent(this.get('nodeErrors'));
+  }),
+
+  registrationErrors: Ember.computed(
+    'newIntrospectionTaskIds.@each',
+    'foremanTasks.@each.humanized_errors',
+    function () {
+      let newIntrospectionTaskIds = this.get('newIntrospectionTaskIds') || [];
+      let foremanTasks = this.get('foremanTasks') || [];
+      let registrationErrors = [];
+
+      newIntrospectionTaskIds.forEach((taskId) => {
+        let errorMessage = this.getRegistrationErrorMessage(taskId);
+        if (errorMessage) {
+          registrationErrors.pushObject(errorMessage);
+        }
+      });
+
+      return registrationErrors;
+    }),
+
+  showRegistrationErrors: Ember.computed('registrationErrors', function() {
+    return Ember.isPresent(this.get('registrationErrors'));
+  }),
+
   isValidNewNodeAuto: Ember.computed(function() {
     return false;
   }),
@@ -179,6 +227,7 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
     registerNodes() {
       let nodeInfo = this.get('nodeInfo');
+      this.set('newIntrospectionTaskIds', []);
       nodeInfo.get('macAddresses').forEach((macAddress) => {
         if (macAddress && Ember.isPresent(macAddress.value)) {
           this.registerNode(nodeInfo, macAddress.value);
@@ -224,9 +273,9 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   },
 
   deleteNodeRequest() {
-    console.log('deleteNodeRequest', this.get('nodeToDelete.id'));
+    let url = `/fusor/api/openstack/deployments/${this.get('deploymentId')}/nodes/${this.get('nodeToDelete.id')}`
     return request({
-      url: `/fusor/api/openstack/deployments/${this.get('deploymentId')}/nodes/${this.get('nodeToDelete.id')}`,
+      url: url,
       type: 'DELETE',
       headers: {
         "Accept": "application/json",
@@ -235,6 +284,8 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
       }
     }).then((result) => {
       this.removeNode(this.get('nodeToDelete'));
+    }, (error) => {
+      this.send('error', error, `Unable to delete node. DELETE ${url} failed with status code ${error.jqXHR.status}`);
     }).finally((result) => {
       this.set('openDeleteNodeConfirmation', false);
       this.set('closeDeleteNodeConfirmation', true);
@@ -266,9 +317,12 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     nodeInfo.set('address', nodeInfo.get('address').trim());
     nodeInfo.set('username', nodeInfo.get('username').trim());
 
+    this.closeRegDialog();
     let nodeParam = this.createNodeHash(nodeInfo, macAddress);
+    let url = `/fusor/api/openstack/deployments/${this.get('deploymentId')}/nodes`;
+
     return request({
-      url: '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/nodes',
+      url: url,
       type: 'POST',
       headers: {
         "Accept": "application/json",
@@ -276,12 +330,12 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
         "X-CSRF-Token": Ember.$('meta[name="csrf-token"]').attr('content')
       },
       data: JSON.stringify({ node: nodeParam })
-    }).then((introspectionTask) => {
+    }).then((result) => {
+        this.get('newIntrospectionTaskIds').pushObject(result.id);
         this.get('savedInfo').unshiftObject(nodeInfo);
         this.send('refreshModelOnOverviewRoute');
-        this.closeRegDialog();
       }, (error) => {
-        this.closeRegDialog();
+      this.send('error', error, `Unable to register node. POST ${url} failed with status code ${error.jqXHR.status}.`);
       });
   },
 
@@ -314,14 +368,83 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     };
   },
 
-  getPassword(manager) {
-    let foundInfo = this.get('savedInfo').find((savedInfo) => {
-      return savedInfo.get('driver') === manager.get('driver') &&
-       savedInfo.get('address') === manager.get('address') &&
-       savedInfo.get('username') === manager.get('username');
-    });
+  getNodeErrorMessage(nodeManager, node) {
+    let macAddress = node.getMacAddress(this.get('ports'));
+    let nodeLabel = macAddress ? `MAC Address ${macAddress}` : node.get('id');
 
+    let foremanTask = node.getForemanTask(this.get('introspectionTasks'), this.get('foremanTasks'));
+    let foremanErrors = foremanTask ? foremanTask.get('humanized_errors') : '';
+
+    let lastError = node.get('last_error') || '';
+
+    if (Ember.isBlank(lastError) && Ember.isBlank(foremanErrors)) {
+      return null;
+    }
+
+    foremanErrors = this.formatForemanTaskError(foremanErrors);
+
+    return `${nodeLabel} from ${nodeManager.get('address')} ${foremanErrors} ${lastError}`;
+  },
+
+  getRegistrationErrorMessage(taskId) {
+    let foremanTasks = this.get('foremanTasks');
+    let foremanTask = foremanTasks ? foremanTasks.findBy('id', taskId) : null;
+    let foremanErrors = foremanTask ? foremanTask.get('humanized_errors') : '';
+
+    if (Ember.isBlank(foremanErrors)) {
+      return null;
+    }
+
+    foremanErrors = this.formatForemanTaskError(foremanErrors);
+
+    let introspectionTasks = this.get('introspectionTasks');
+    let introspectionTask = introspectionTasks ? introspectionTasks.findBy('task_id', taskId) : null;
+    let macAddress = introspectionTask ? introspectionTask.get('mac_address') : '??';
+
+    return Ember.isPresent(foremanErrors) ? `Introspection task for ${macAddress} error: ${foremanErrors}` : null;
+  },
+
+  formatForemanTaskError(errorMessage) {
+    let requestErrorMatches = errorMessage.match(/@body=".*", @headers/i);
+
+    if (Ember.isPresent(requestErrorMatches)) {
+      return requestErrorMatches[0].replace('@body="', '').replace('", @headers', '');
+    }
+
+    return errorMessage;
+  },
+
+  getErrorMessageFromReason(reason) {
+    try {
+      var displayMessage = reason.responseJSON.displayMessage;
+
+      if (displayMessage.indexOf('{') >= 0 && displayMessage.indexOf('}') >= 1) {
+        displayMessage = displayMessage.substring(displayMessage.indexOf('{'),displayMessage.indexOf('}') + 1) + "}";
+        displayMessage = displayMessage.replace(/\\/g, "");
+        displayMessage = displayMessage.replace(/"\{/g, "{");
+
+        var errorObj = JSON.parse(displayMessage);
+        displayMessage = errorObj.error_message.faultstring;
+      }
+
+      return displayMessage;
+    }
+    catch (e) {
+      return reason.statusText;
+    }
+  },
+
+  getPassword(manager) {
+    let foundInfo = this.getSavedInfo(manager);
     return foundInfo ? foundInfo.get('password') : null;
+  },
+
+  getSavedInfo(manager) {
+    return this.get('savedInfo').find((savedInfo) => {
+      return savedInfo.get('driver') === manager.get('driver') &&
+        savedInfo.get('address') === manager.get('address') &&
+        savedInfo.get('username') === manager.get('username');
+    });
   },
 
   getCSVFileInput() {

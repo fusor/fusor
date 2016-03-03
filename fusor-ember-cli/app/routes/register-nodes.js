@@ -37,6 +37,11 @@ export default Ember.Route.extend({
 
     refreshModelOnOverviewRoute() {
       this.loadAll();
+    },
+
+    error(error, message) {
+      console.log(error, message);
+      this.set('controller.errorMsg', this.formatError(error, message));
     }
   },
 
@@ -58,8 +63,7 @@ export default Ember.Route.extend({
         controller.set('nodes', result);
       },
       (error) => {
-        console.log('Error retrieving OpenStack nodes', error);
-        return this.send('error', error);
+        return this.send('error', error, 'Error retrieving OpenStack nodes');
       });
   },
 
@@ -67,9 +71,10 @@ export default Ember.Route.extend({
     let controller = this.get('controller');
     let deploymentId = this.get('controller.deploymentId');
     let token = Ember.$('meta[name="csrf-token"]').attr('content');
+    let url = `/fusor/api/openstack/deployments/${deploymentId}/node_ports`;
 
     return request({
-      url: `/fusor/api/openstack/deployments/${deploymentId}/node_ports`,
+      url: url,
       type: 'GET',
       headers: {
         "Accept": "application/json",
@@ -77,15 +82,11 @@ export default Ember.Route.extend({
         "X-CSRF-Token": token
       },
       data: {}
-    }).then(
-      (result) => {
-        controller.set('ports', result.ports);
-      },
-      (error) => {
-        error = error.jqXHR;
-        console.log('ERROR retrieving OpenStack port list', error);
-        return this.send('error', error);
-      });
+    }).then((result) => {
+      controller.set('ports', result.ports);
+    }, (error) => {
+      return this.send('error', error, `Unable to load node ports. GET "${url}" failed with status code ${error.jqXHR.status}.`);
+    });
   },
 
   loadIntrospectionTasks() {
@@ -96,21 +97,22 @@ export default Ember.Route.extend({
         controller.set('introspectionTasks', deployment.get('introspection_tasks'));
       },
       (error) => {
-        error = error.jqXHR;
-        console.log('ERROR retrieving deployment introspection tasks', error);
-        return this.send('error', error);
+        return this.send('error', error, 'ERROR retrieving deployment introspection tasks');
       });
   },
 
   organizeNodes() {
     let nodes = this.get('controller.nodes');
     let nodeManagers = this.get('controller.nodeManagers');
+    let processedNodeIds = {};
 
     if (!nodes) {
       return;
     }
 
     nodes.forEach((node) => {
+      processedNodeIds[node.get('id')] = true;
+
       let manager = nodeManagers.find(mgr => mgr.driverMatchesNode(node));
 
       if (!manager) {
@@ -121,18 +123,28 @@ export default Ember.Route.extend({
 
       manager.putNode(node);
     });
+
+    nodeManagers.forEach((manager) => {
+      let notDeleted = manager.get('nodes').filter(node => processedNodeIds[node.get('id')]);
+      manager.set('nodes', notDeleted);
+    });
   },
 
   loadForemanTasks() {
     let taskPromises = [];
     let introspectionTasks = this.get('controller.introspectionTasks') || [];
+    let newIntrospectionTaskIds = this.get('controller.newIntrospectionTaskIds') || [];
     let nodes = this.get('controller.nodes') || [];
 
-    introspectionTasks.forEach((isTask) => {
-      let foremanTaskId = isTask.get('task_id');
-      let node = nodes.findBy('id', isTask.get('node_uuid'));
+    introspectionTasks.forEach((introspectionTask) => {
+      let foremanTaskId = introspectionTask.get('task_id');
 
-      if (foremanTaskId && node && !node.get('ready')) {
+      let node = nodes.findBy('id', introspectionTask.get('node_uuid'));
+      let nodeNotReady = node && !node.get('ready');
+
+      let isNewIntrospectionTask = !!newIntrospectionTaskIds.contains(introspectionTask.get('task_id'));
+
+      if (foremanTaskId && (nodeNotReady || isNewIntrospectionTask)) {
         taskPromises.push(this.store.findRecord('foreman-task', foremanTaskId, {reload: true}));
       }
     });
@@ -140,6 +152,19 @@ export default Ember.Route.extend({
     return Ember.RSVP.all(taskPromises).then((resolvedTasks) => {
       this.get('controller').set('foremanTasks', resolvedTasks);
     });
-  }
+  },
 
+  formatError(error, message) {
+    let errorMessage = '';
+    switch (Ember.typeOf(error)) {
+      case 'string':
+        errorMessage = error;
+        break;
+      case 'error':
+        errorMessage = error.errors.join(' ');
+        break;
+    }
+
+    return message ? message + ' ' + errorMessage: errorMessage;
+  }
 });

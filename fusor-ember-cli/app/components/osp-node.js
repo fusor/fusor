@@ -6,14 +6,10 @@ export default Ember.Component.extend({
 
   deleteEnabled: true,
 
-  label: Ember.computed('node', 'ospPorts', function() {
-    let ospPorts = this.get('ospPorts');
-    if (!ospPorts) {
-      return null;
-    }
-
-    let port = ospPorts.findBy('node_uuid', this.get('node.id'));
-    return port && port.address ? port.address : this.get('node.id');
+  label: Ember.computed('node', 'ports', function() {
+    let node = this.get('node');
+    let macAddress = node ? node.getMacAddress(this.get('ports')): null;
+    return macAddress || node.get('id');
   }),
 
   safeLabel: Ember.computed('label', function() {
@@ -33,26 +29,12 @@ export default Ember.Component.extend({
     return 'Free';
   }),
 
-  introspectionTask: Ember.computed('node.id', 'introspectionTasks.@each', function() {
-    let nodeId = this.get('node.id');
-    let introspectionTasks = this.get('introspectionTasks');
-
-    if (!nodeId || !introspectionTasks) {
-      return null;
-    }
-
-    return this.get('introspectionTasks').findBy('node_uuid', nodeId);
+  introspectionTask: Ember.computed('node', 'introspectionTasks.@each', function() {
+    return this.get('node').getIntrospectionTask(this.get('introspectionTasks'));
   }),
 
-  foremanTask: Ember.computed('introspectionTask.task_id', 'foremanTasks.@each', function() {
-    let introspectionTask = this.get('introspectionTask');
-    let foremanTasks = this.get('foremanTasks');
-
-    if (!introspectionTask || !foremanTasks) {
-      return null;
-    }
-
-    return this.get('foremanTasks').findBy('id', introspectionTask.get('task_id'));
+  foremanTask: Ember.computed('introspectionTasks.@each', 'foremanTasks.@each', function() {
+    return this.get('node').getForemanTask(this.get('introspectionTasks'), this.get('foremanTasks'));
   }),
 
   isNodeReady: Ember.computed('node.properties.cpu', 'node.properties.memory_mb', 'node.properties.local_gb', function() {
