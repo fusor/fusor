@@ -27,12 +27,6 @@ export default Ember.Mixin.create({
   // isOpenStack
   // isCloudForms
 
-  // route names will be overwrriten by active hook in routes/deployment.js
-  // and routes/deployment-new.js and routes/start.js and routes/deployment-new/start.js
-  satelliteTabRouteName: null,
-  organizationTabRouteName: null,
-  lifecycleEnvironmentTabRouteName: null,
-
   disableNextOnStart: Ember.computed('isRhev', 'isOpenStack', 'isCloudForms', function () {
     return (!(this.get('isRhev') || this.get('isOpenStack') || this.get('isCloudForms')));
   }),
