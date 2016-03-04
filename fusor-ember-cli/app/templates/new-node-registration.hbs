@@ -1,4 +1,4 @@
-{{#em-modal configName="bs" id="nodeRegistrationModal" closeIfClickedOutside=false open-if=openNewNodeRegistrationModal close-if=closeNewNodeRegistrationModal}}
+{{#em-modal configName="bs" id="nodeRegistrationModal" closeIfClickedOutside=handleOutsideClick open-if=openNewNodeRegistrationModal close-if=closeNewNodeRegistrationModal}}
   {{#em-modal-title}}
     {{#em-modal-toggler class="close"}}
       <span aria-hidden="true">×</span><span class="sr-only">Close</span>
@@ -58,7 +58,7 @@
     <button type="button" id="newNodeCancelButton" class="btn btn-default delete-node-cancel-button" {{action "cancelRegisterNodes"}}>
       Cancel
     </button>
-    <button type="submit" id="newNodeSubmitButton" class="btn btn-primary new-node-submit-button" disabled={{disableNewNodesSubmit}} {{action "registerNodes"}}>
+    <button type="submit" id="newNodeSubmitButton" class="btn btn-primary new-node-submit-button" disabled={{disableNewNodesSubmit}} {{action "submitRegisterNodes"}}>
       {{newNodeSubmitButtonText}}
     </button>
   {{/em-modal-footer}}

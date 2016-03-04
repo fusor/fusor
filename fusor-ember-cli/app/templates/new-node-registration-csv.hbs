@@ -2,8 +2,26 @@
   <div class="col-xs-offset-1 col-xs-10">
     <p>Sample syntax for specifying nodes via CSV can be seen here:
       <a href="/assets/r/sample-nodes.csv" target="_blank">sample-nodes.csv</a></p>
-    <form class="form-horizontal new-node-form-manual">
-        <input id="csvUploadInput" class="csv-upload-input" value=selectedCSVFile type="file" accept=".csv" {{action "fileChosen" on="change"}}>
+    <form class="form-horizontal new-node-form-csv">
+        <input id="csvUploadInput" class="csv-upload-input" value=selectedCSVFile type="file" accept=".csv" {{action "csvFileChosen" on="change"}}>
     </form>
   </div>
 </div>
+{{#if hasCsvErrors}}
+  <div class="row new-node-registration-csv-errors">
+    <div class="col-xs-offset-1 col-xs-10">
+      <p>There were errors encountered while trying to parse the CSV file.</p>
+      <ul>
+        {{#each csvErrors as |error|}}
+          <li>{{error}}</li>
+        {{/each}}
+      </ul>
+    </div>
+  </div>
+{{else if hasCsvInfo}}
+  <div class="row new-node-registration-csv-success">
+    <div class="col-xs-offset-1 col-xs-10">
+      <p class="csv-success-message">{{csvInfo.length}} nodes ready for registration.</p>
+    </div>
+  </div>
+{{/if}}

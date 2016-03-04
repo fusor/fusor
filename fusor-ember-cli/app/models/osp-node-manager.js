@@ -15,7 +15,7 @@ export default Ember.Object.extend({
     }
 
     if (nodeDriver === 'pxe_ipmitool') {
-      return node.get('driver_info.ipAddress') === this.get('address') &&
+      return node.get('driver_info.ipmi_address') === this.get('address') &&
         node.get('driver_info.ipmi_username') === this.get('username');
     }
     return  node.get('driver_info.ssh_address') === this.get('address') &&

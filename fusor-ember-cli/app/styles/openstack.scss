@@ -508,6 +508,18 @@
   line-height: 12px;
 }
 
+.new-node-form-csv {
+  margin-bottom: 10px;
+}
+
+.new-node-registration-csv-errors {
+  color: $error-color;
+}
+
+.new-node-registration-csv-success {
+  color: darkgreen;
+}
+
 .osp-node-manager-list {
   margin-top: 24px;
 }

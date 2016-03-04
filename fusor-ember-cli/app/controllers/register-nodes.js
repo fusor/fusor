@@ -29,6 +29,8 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   }),
 
   savedInfo: [],
+  csvInfo: [],
+  csvErrors: [],
 
   drivers: [
     {label: 'IPMI Driver', value: 'pxe_ipmitool'},
@@ -126,6 +128,8 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   registrationErrors: Ember.computed(
     'newIntrospectionTaskIds.@each',
     'foremanTasks.@each.humanized_errors',
+    'introspectionTasks.[]',
+    'nodes.[]',
     function () {
       let newIntrospectionTaskIds = this.get('newIntrospectionTaskIds') || [];
       let foremanTasks = this.get('foremanTasks') || [];
@@ -149,8 +153,16 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     return false;
   }),
 
-  isValidNewNodeCsv: Ember.computed(function() {
-    return false;
+  hasCsvInfo: Ember.computed('csvInfo.[]', function() {
+    return Ember.isPresent(this.get('csvInfo'));
+  }),
+
+  hasCsvErrors: Ember.computed('csvErrors.[]', function() {
+    return Ember.isPresent(this.get('csvErrors'));
+  }),
+
+  isValidNewNodeCsv: Ember.computed('hasCsvInfo', 'hasCsvErrors', function() {
+    return this.get('hasCsvInfo') && !this.get('hasCsvErrors');
   }),
 
   isValidNewNodeManual: Ember.computed(
@@ -195,9 +207,11 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
       return numberInvalidMacs === 0 && numberValidMacs > 0;
     }),
 
-  disableNewNodesSubmit: Ember.computed('isValidNewNodeAuto', 'isValidNewNodeCsv', 'isValidNewNodeManual', function() {
-    return !this.get('isValidNewNodeManual');
+  hasValidNodesForRegistration: Ember.computed('isValidNewNodeAuto', 'isValidNewNodeCsv', 'isValidNewNodeManual', function() {
+    return this.get('isValidNewNodeAuto') || this.get('isValidNewNodeCsv') || this.get('isValidNewNodeManual');
   }),
+
+  disableNewNodesSubmit: Ember.computed.not('hasValidNodesForRegistration'),
 
   enableRegisterNodesNext: Ember.computed('nodeCount', function() {
     return this.get('nodeCount') >= 2;
@@ -208,6 +222,8 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   actions: {
     showNodeRegistrationModal() {
       this.set('registerNodesMethod', 'manual');
+      this.set('csvInfo', []);
+      this.set('csvErrors', []);
 
       this.set('nodeInfo', Ember.Object.create({
         vendor: null,
@@ -225,15 +241,27 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
       this.get('nodeInfo.macAddresses').pushObject(Ember.Object.create({value: ''}));
     },
 
-    registerNodes() {
-      let nodeInfo = this.get('nodeInfo');
+    submitRegisterNodes() {
+      let method = this.get('registerNodesMethod');
       this.set('newIntrospectionTaskIds', []);
-      nodeInfo.get('macAddresses').forEach((macAddress) => {
-        if (macAddress && Ember.isPresent(macAddress.value)) {
-          this.registerNode(nodeInfo, macAddress.value);
-        }
-      });
+
+      if (method === 'manual') {
+        let nodeInfo = this.get('nodeInfo');
+        this.registerNodes(nodeInfo);
+      } else if (method === 'csv_upload') {
+        let csvInfo = this.get('csvInfo');
+        csvInfo.forEach((nodeInfo) => {
+          this.registerNodes(nodeInfo);
+        });
+      } else if (method === 'ipmi_auto_detect') {
+
+      }
+
       this.closeRegDialog();
+    },
+
+    csvFileChosen() {
+      this.parseCsvFile(this.getCSVFileInput());
     },
 
     addNodesToManager(nodeManager) {
@@ -269,11 +297,15 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
     cancelRegisterNodes() {
       this.closeRegDialog();
+    },
+
+    handleOutsideClick() {
+      //do nothing
     }
   },
 
   deleteNodeRequest() {
-    let url = `/fusor/api/openstack/deployments/${this.get('deploymentId')}/nodes/${this.get('nodeToDelete.id')}`
+    let url = `/fusor/api/openstack/deployments/${this.get('deploymentId')}/nodes/${this.get('nodeToDelete.id')}`;
     return request({
       url: url,
       type: 'DELETE',
@@ -313,12 +345,20 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     this.set('closeNewNodeRegistrationModal', true);
   },
 
-  registerNode(nodeInfo, macAddress) {
-    nodeInfo.set('address', nodeInfo.get('address').trim());
-    nodeInfo.set('username', nodeInfo.get('username').trim());
+  registerNodes(nodeInfo) {
+    nodeInfo.get('macAddresses').forEach((macAddress) => {
+      if (macAddress && Ember.isPresent(macAddress.value)) {
+        this.registerNode(nodeInfo, macAddress.value);
+      }
+    });
+  },
+
+  registerNode(nodeDriverInfo, macAddress) {
+    nodeDriverInfo.set('address', nodeDriverInfo.get('address').trim());
+    nodeDriverInfo.set('username', nodeDriverInfo.get('username').trim());
 
     this.closeRegDialog();
-    let nodeParam = this.createNodeHash(nodeInfo, macAddress);
+    let nodeParam = this.createNodeHash(nodeDriverInfo, macAddress);
     let url = `/fusor/api/openstack/deployments/${this.get('deploymentId')}/nodes`;
 
     return request({
@@ -329,14 +369,16 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
         "Content-Type": "application/json",
         "X-CSRF-Token": Ember.$('meta[name="csrf-token"]').attr('content')
       },
-      data: JSON.stringify({ node: nodeParam })
+      data: JSON.stringify({node: nodeParam})
     }).then((result) => {
-        this.get('newIntrospectionTaskIds').pushObject(result.id);
-        this.get('savedInfo').unshiftObject(nodeInfo);
-        this.send('refreshModelOnOverviewRoute');
-      }, (error) => {
+      this.get('newIntrospectionTaskIds').pushObject(result.id);
+      this.get('savedInfo').unshiftObject(nodeDriverInfo);
+      this.send('refreshModelOnOverviewRoute');
+      this.stopPolling();
+      this.startPolling();
+    }, (error) => {
       this.send('error', error, `Unable to register node. POST ${url} failed with status code ${error.jqXHR.status}.`);
-      });
+    });
   },
 
   createNodeHash(nodeInfo, macAddress) {
@@ -401,17 +443,24 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     let introspectionTask = introspectionTasks ? introspectionTasks.findBy('task_id', taskId) : null;
     let macAddress = introspectionTask ? introspectionTask.get('mac_address') : '??';
 
+    let node = this.get('nodes').findBy('id', introspectionTask.get('node_uuid')); //we'll already show this under node errors.
+
+    if (node) {
+      return null;
+    }
+
     return Ember.isPresent(foremanErrors) ? `Introspection task for ${macAddress} error: ${foremanErrors}` : null;
   },
 
   formatForemanTaskError(errorMessage) {
+    let formattedErrorMessage = errorMessage;
     let requestErrorMatches = errorMessage.match(/@body=".*", @headers/i);
 
     if (Ember.isPresent(requestErrorMatches)) {
-      return requestErrorMatches[0].replace('@body="', '').replace('", @headers', '');
+      formattedErrorMessage = requestErrorMatches[0].replace('@body="', '').replace('", @headers', '');
     }
 
-    return errorMessage;
+    return formattedErrorMessage.substring(0, Math.min(250, errorMessage.length));
   },
 
   getErrorMessageFromReason(reason) {
@@ -448,7 +497,7 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   },
 
   getCSVFileInput() {
-    return $('#regNodesUploadFileInput')[0];
+    return Ember.$('#csvUploadInput')[0];
   },
 
   updloadCsvFile() {
@@ -456,45 +505,96 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     uploadfile.click();
   },
 
-  csvFileChosen() {
-    var fileInput = this.getCSVFileInput();
-    var file = fileInput.files[0];
-    var self = this;
+  parseCsvFile(fileInput) {
+    let csvInfo = [];
+    let csvErrors = [];
+    let controller = this;
+    let file = fileInput.files[0];
+
+
     if (file) {
-      var reader = new FileReader();
+      let reader = new FileReader();
       reader.onload = function() {
         var text = reader.result;
-        var data = $.csv.toArrays(text);
-        var edittedNodes = self.get('edittedNodes');
-        // If the default added node is still listed, remove it
-        if (edittedNodes.get('length') === 1 && edittedNodes[0].isDefault && Ember.isEmpty(edittedNodes[0].get('ipAddress'))) {
-          edittedNodes.removeObject(edittedNodes[0]);
+        var csvArray;
+
+        try {
+          csvArray = Ember.$.csv.toArrays(text);
+        } catch (e) {
+          console.log(e);
+          controller.set('csvInfo', []);
+          controller.set('csvErrors', [e.message]);
+          return;
         }
 
-        for (var row in data) {
-          var node_data = data[row];
-          if (Array.isArray(node_data) && node_data.length >=5) {
-            var driver = node_data[0].trim();
-            var ipmi_address = node_data[1].trim();
-            var ipmi_username = node_data[2].trim();
-            var ipmi_password = node_data[3].trim();
-            var mac_address = node_data[4].trim();
-
-            var newNode = self.Node.create({
-              driver: driver,
-              ipAddress: ipmi_address,
-              ipmiUsername: ipmi_username,
-              ipmiPassword: ipmi_password,
-              nicMacAddress: mac_address
-            });
-            edittedNodes.insertAt(0, newNode);
-            self.updateNodeSelection(newNode);
+        csvArray.forEach((row, rowIndex) => {
+          if (!Array.isArray(row) || row.length < 5) {
+            csvErrors.pushObject(`Row ${rowIndex + 1} Invalid row`);
+            return;
           }
-        }
+
+          if (row.length < 5) {
+            csvErrors.pushObject(`Row ${rowIndex + 1} does not have enough fields (${row.length})`);
+            return;
+          }
+
+          if (rowIndex === 0 && Ember.isPresent(row[0]) && row[0].toLowerCase().includes('driver')) {
+            return;  //skip header row if present
+          }
+
+          let csvNode = Ember.Object.create({});
+          let errorsFound = false;
+
+          if (row[0].toLowerCase().includes('ssh')) {
+            csvNode.set('driver', 'pxe_ssh');
+          } else if(row[0].toLowerCase().includes('ipmi')) {
+            csvNode.set('driver', 'pxe_ipmitool');
+          } else {
+            csvErrors.pushObject(`Row ${rowIndex + 1}, Column 1: "${row[0]}" is not a valid driver value`);
+            errorsFound = true;
+          }
+
+          if (controller.get('ipAddressValidator').isValid(row[1])) {
+            csvNode.set('address', row[1]);
+          } else {
+            csvErrors.pushObject(`Row ${rowIndex + 1}, Column 2: "${row[1]}" is not a valid IP Address`);
+            errorsFound = true;
+          }
+
+          if (Ember.isPresent(row[2])) {
+            csvNode.set('username', row[2]);
+          } else {
+            csvErrors.pushObject(`Row ${rowIndex + 1}, Column 3: "${row[2]}" is not a valid username`);
+            errorsFound = true;
+          }
+
+          if (Ember.isPresent(row[3])) {
+            csvNode.set('password', row[3]);
+          } else {
+            csvErrors.pushObject(`Row ${rowIndex + 1}, Column 4: "${row[3]}" is not a valid password`);
+            errorsFound = true;
+          }
+
+          if (Ember.isPresent(row[4]) && controller.get('macAddressValidator')) {
+            csvNode.set('macAddresses', [Ember.Object.create({value: row[4]})]);
+          } else {
+            csvErrors.pushObject(`Row ${rowIndex + 1}, Column 5 "${row[4]}" is not a valid MAC address`);
+            errorsFound = true;
+          }
+
+          if (!errorsFound) {
+            csvInfo.pushObject(csvNode);
+          }
+        });
+
+        controller.set('csvInfo', csvInfo);
+        controller.set('csvErrors', csvErrors);
       };
+
       reader.onloadend = function() {
         if (reader.error) {
           console.log(reader.error.message);
+          controller.set('csvErrors', [reader.error.message]);
         }
       };
 
