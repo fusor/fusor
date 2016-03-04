@@ -111,9 +111,9 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
       let nodeErrors = [];
       nodeManagers.forEach((manager) => {
         manager.get('nodes').forEach((node) => {
-          let errorMessage = this.getNodeErrorMessage(manager, node);
-          if (errorMessage) {
-            nodeErrors.pushObject(errorMessage);
+          let nodeError = this.getNodeError(manager, node);
+          if (nodeError) {
+            nodeErrors.pushObject(nodeError);
           }
         });
       });
@@ -136,9 +136,9 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
       let registrationErrors = [];
 
       newIntrospectionTaskIds.forEach((taskId) => {
-        let errorMessage = this.getRegistrationErrorMessage(taskId);
-        if (errorMessage) {
-          registrationErrors.pushObject(errorMessage);
+        let registrationError = this.getRegistrationError(taskId);
+        if (registrationError) {
+          registrationErrors.pushObject(registrationError);
         }
       });
 
@@ -297,10 +297,6 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
     cancelRegisterNodes() {
       this.closeRegDialog();
-    },
-
-    handleOutsideClick() {
-      //do nothing
     }
   },
 
@@ -357,7 +353,6 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     nodeDriverInfo.set('address', nodeDriverInfo.get('address').trim());
     nodeDriverInfo.set('username', nodeDriverInfo.get('username').trim());
 
-    this.closeRegDialog();
     let nodeParam = this.createNodeHash(nodeDriverInfo, macAddress);
     let url = `/fusor/api/openstack/deployments/${this.get('deploymentId')}/nodes`;
 
@@ -410,7 +405,7 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     };
   },
 
-  getNodeErrorMessage(nodeManager, node) {
+  getNodeError(nodeManager, node) {
     let macAddress = node.getMacAddress(this.get('ports'));
     let nodeLabel = macAddress ? `MAC Address ${macAddress}` : node.get('id');
 
@@ -419,19 +414,30 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
     let lastError = node.get('last_error') || '';
 
+    if (foremanTask && foremanTask.get('state') === 'running') {
+      return null;
+    }
+
     if (Ember.isBlank(lastError) && Ember.isBlank(foremanErrors)) {
       return null;
     }
 
     foremanErrors = this.formatForemanTaskError(foremanErrors);
 
-    return `${nodeLabel} from ${nodeManager.get('address')} ${foremanErrors} ${lastError}`;
+    return Ember.Object.create({
+      taskUrl: foremanTask ? foremanTask.get('taskUrl') : '',
+      message: `${nodeLabel} from ${nodeManager.get('address')} ${foremanErrors} ${lastError}`
+    });
   },
 
-  getRegistrationErrorMessage(taskId) {
+  getRegistrationError(taskId) {
     let foremanTasks = this.get('foremanTasks');
     let foremanTask = foremanTasks ? foremanTasks.findBy('id', taskId) : null;
     let foremanErrors = foremanTask ? foremanTask.get('humanized_errors') : '';
+
+    if (foremanTask && foremanTask.get('state') === 'running') {
+      return null;
+    }
 
     if (Ember.isBlank(foremanErrors)) {
       return null;
@@ -445,11 +451,14 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
     let node = this.get('nodes').findBy('id', introspectionTask.get('node_uuid')); //we'll already show this under node errors.
 
-    if (node) {
+    if (node || Ember.isBlank(foremanErrors)) {
       return null;
     }
 
-    return Ember.isPresent(foremanErrors) ? `Introspection task for ${macAddress} error: ${foremanErrors}` : null;
+    return Ember.Object.create({
+      taskUrl: foremanTask ? foremanTask.get('taskUrl') : '',
+      message: `Introspection task for ${macAddress} error: ${foremanErrors}`
+    });
   },
 
   formatForemanTaskError(errorMessage) {
@@ -600,6 +609,10 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
       reader.readAsText(file);
     }
+  },
+
+  handleOutsideClick() {
+    //do nothing
   }
 
 });

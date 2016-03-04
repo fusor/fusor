@@ -8,6 +8,7 @@ export default DS.Model.extend({
     driver_info: DS.attr(),
     properties: DS.attr(),
     address: DS.attr('string'),
+    power_state: DS.attr('string'),
     last_error: DS.attr('string'),
 
     ready: Ember.computed('properties.cpu', 'properties.memory_mb', 'properties.local_gb', function() {

@@ -486,6 +486,11 @@
     margin-top: 5px;
   }
 }
+
+.register-nodes-errors .foreman-task-error-link {
+ color: #333;
+}
+
 .upload-nodes {
   border-bottom: 1px solid #e9e8e8;
   border-top: 1px solid #e9e8e8;
@@ -599,7 +604,15 @@ span.registered-node-count {
   }
 }
 
-.osp-node-list-title, .osp-progress-column {
+.osp-node-list-title, .osp-node-progress-column {
   padding-left: 10px;
   padding-right: 2px;
+}
+
+.osp-node-action-column {
+  padding-left: 2px;
+  font-size: 14px;
+  .fa.fa-power-off {
+    color: #969696;
+  }
 }

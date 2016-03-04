@@ -29,6 +29,10 @@ export default Ember.Component.extend({
     return 'Free';
   }),
 
+  powerOn: Ember.computed('node.power_state', function() {
+    return this.get('node.power_state') === 'power on';
+  }),
+
   introspectionTask: Ember.computed('node', 'introspectionTasks.@each', function() {
     return this.get('node').getIntrospectionTask(this.get('introspectionTasks'));
   }),
