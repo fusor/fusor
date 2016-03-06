@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import DS from 'ember-data';
+import ForemanTaskUtil from '../utils/foreman-task-util';
 
 export default DS.Model.extend({
   label: DS.attr('string'),
@@ -18,5 +19,10 @@ export default DS.Model.extend({
   repository: DS.attr('string'),
   taskUrl: Ember.computed('id', function() {
     return '/foreman_tasks/tasks/' + this.get('id');
-  })
+  }),
+  resume() {
+    const csrfToken = Ember.$('meta[name="csrf-token"]').attr('content');
+    const taskUtil = new ForemanTaskUtil(csrfToken);
+    return taskUtil.resume(this.get('id'));
+  }
 });

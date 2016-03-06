@@ -31,16 +31,18 @@
   </div>
 </div>
 
-{{#cancel-back-next backRouteName='review.installation'
-                    disableBack=false
-                    disableCancel=isStarted}}
-  {{#if deployTaskIsFinished}}
-    {{#link-to 'review.summary' role="button" class='btn btn-primary'}}
-        Next <i class="fa fa-angle-right"></i>
-    {{/link-to}}
-  {{else}}
-    <button class='btn btn-primary' disabled=true>
-        {{deployButtonTitle}} <i class="fa fa-angle-right"></i>
-    </button>
-  {{/if}}
-{{/cancel-back-next}}
+{{#unless deploymentController.model.has_content_error}}
+  {{#cancel-back-next backRouteName='review.installation'
+                      disableBack=false
+                      disableCancel=isStarted}}
+    {{#if deployTaskIsFinished}}
+      {{#link-to 'review.summary' role="button" class='btn btn-primary'}}
+          Next <i class="fa fa-angle-right"></i>
+      {{/link-to}}
+    {{else}}
+      <button class='btn btn-primary' disabled=true>
+          {{deployButtonTitle}} <i class="fa fa-angle-right"></i>
+      </button>
+    {{/if}}
+  {{/cancel-back-next}}
+{{/unless}}

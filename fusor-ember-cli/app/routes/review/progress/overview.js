@@ -20,6 +20,7 @@ export default Ember.Route.extend({
            rhevTask: rhevTask,
            openstackTask: openstackTask,
            cfmeTask: cfmeTask,
+           deployment: deployment
         });
 
       });
@@ -32,8 +33,42 @@ export default Ember.Route.extend({
     controller.set('rhevTask', model.rhevTask);
     controller.set('openstackTask', model.openstackTask);
     controller.set('cfmeTask', model.cfmeTask);
+    controller.set('deployment', model.deployment);
     controller.stopPolling();
-    controller.startPolling();
+
+    ////////////////////////////////////////////////////////////
+    // NOTE: If an error during a pulp sync occurs, the Katelo::Sync
+    // task scheduled in the Fusor Deploy task tree will throw itself
+    // into a skipped/warning state. This ultimately bubbles, sending
+    // Fusor::Actions::ManageContent into a paused/error state due to
+    // sub-task error.
+    //
+    // We can push the Deployment task into a clean state by triggering
+    // resume on ManageContent. This releases any locks held by the failed
+    // task and allows for redeployment, abondonment, or manual content sync.
+    //
+    // TODO: It's safer for ManageContent to be monitored and resumed
+    // serverside once a given deployment has been initiated.
+    ////////////////////////////////////////////////////////////
+    let contentErrorDiscovered =
+      model.manageContentTask.get('result') === 'error' &&
+      model.manageContentTask.get('state') === 'paused';
+    ////////////////////////////////////////////////////////////
+
+    if(contentErrorDiscovered) {
+      model.deployment.set('has_content_error', true);
+
+      model.deployment.save()
+      .then(() => model.manageContentTask.resume())
+      .then((resumeResult) => this.refresh())
+      .catch((reason) => {
+        console.log(
+          'ERROR: Something broke trying to recover the ManageContentTask');
+      });
+
+    } else if(!model.deployment.get('has_content_error')) {
+      controller.startPolling();
+    }
   },
 
   activate() {
