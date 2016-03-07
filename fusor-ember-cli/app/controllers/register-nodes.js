@@ -2,7 +2,7 @@ import Ember from 'ember';
 import request from 'ic-ajax';
 import ProgressBarMixin from "../mixins/progress-bar-mixin";
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
-import OspNodeManager from "../models/osp-node-manager";
+import OspNodeManager from "../utils/osp/osp-node-manager";
 
 import {
   AggregateValidator,
@@ -51,6 +51,10 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
   isNewNodeMethodManual: Ember.computed('registerNodesMethod', function() {
     return this.get('registerNodesMethod') === 'manual';
+  }),
+
+  nodeDriverHumanized: Ember.computed('nodeInfo.driver', function () {
+    return this.get('drivers').findBy('value', this.get('nodeInfo.driver')).label;
   }),
 
   newNodeManualAddressLabel: Ember.computed('nodeInfo.driver', function () {
@@ -242,21 +246,11 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     },
 
     submitRegisterNodes() {
-      let method = this.get('registerNodesMethod');
-      this.set('newIntrospectionTaskIds', []);
+      this.submitNodes();
+      this.closeRegDialog();
+    },
 
-      if (method === 'manual') {
-        let nodeInfo = this.get('nodeInfo');
-        this.registerNodes(nodeInfo);
-      } else if (method === 'csv_upload') {
-        let csvInfo = this.get('csvInfo');
-        csvInfo.forEach((nodeInfo) => {
-          this.registerNodes(nodeInfo);
-        });
-      } else if (method === 'ipmi_auto_detect') {
-
-      }
-
+    cancelRegisterNodes() {
       this.closeRegDialog();
     },
 
@@ -276,7 +270,16 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
         macAddresses: [Ember.Object.create({value: ''})]
       }));
 
-      this.openRegDialog();
+      this.openAddNodeDialog();
+    },
+
+    submitAddNodes() {
+      this.submitNodes();
+      this.closeAddNodeDialog();
+    },
+
+    cancelAddNodes() {
+      this.closeAddNodeDialog();
     },
 
     deleteNode(node, nodeLabel) {
@@ -293,10 +296,6 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
     confirmDeleteNode() {
       this.deleteNodeRequest();
-    },
-
-    cancelRegisterNodes() {
-      this.closeRegDialog();
     }
   },
 
@@ -339,6 +338,35 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   closeRegDialog() {
     this.set('openNewNodeRegistrationModal', false);
     this.set('closeNewNodeRegistrationModal', true);
+  },
+
+  openAddNodeDialog() {
+    this.set('openAddNodeRegistrationModal', true);
+    this.set('closeAddNodeRegistrationModal', false);
+  },
+
+  closeAddNodeDialog() {
+    this.set('openAddNodeRegistrationModal', false);
+    this.set('closeAddNodeRegistrationModal', true);
+  },
+
+  submitNodes() {
+    let method = this.get('registerNodesMethod');
+    this.set('newIntrospectionTaskIds', []);
+
+    if (method === 'manual') {
+      let nodeInfo = this.get('nodeInfo');
+      this.registerNodes(nodeInfo);
+    } else if (method === 'csv_upload') {
+      let csvInfo = this.get('csvInfo');
+      csvInfo.forEach((nodeInfo) => {
+        this.registerNodes(nodeInfo);
+      });
+    } else if (method === 'ipmi_auto_detect') {
+
+    }
+
+    this.closeRegDialog();
   },
 
   registerNodes(nodeInfo) {

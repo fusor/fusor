@@ -2,12 +2,7 @@
   <div class="col-xs-12 col-md-9">
     <div class="panel panel-default osp-node-manager-panel">
       <div class="panel-heading osp-node-manager-panel-heading">{{nodeManager.address}}
-        {{#if false}}
-          <button type="button" id="editNodeManagerButton{{safeLabel}}" class="btn btn-icon" disabled={{isEditManagerButtonDisabled}} {{action "editManager"}}><i class="fa fa-pencil"></i></button>
-        {{/if}}
-        {{#if nodesPendingRegistration}}
-          <button type="button" id="continueRegistrationButton{{safeLabel}}" class="btn btn-primary pull-right" disabled={{isContinueRegistrationDisabled}} {{action "continueRegistration"}}>Continue Registration</button>
-        {{/if}}
+        <button type="button" id="managerAddNodeButton{{safeLabel}}" class="btn btn-default pull-right"  {{action "onAddNode"}}>Add Node</button>
       </div>
       <div class="panel-body osp-node-manager-panel-body">
         <div class="row">
@@ -33,7 +28,7 @@
           <div class="col-xs-8 osp-node-manager-nodes-list-section">
             <div class="row">
               <div class="col-xs-offset-1 col-xs-11 osp-node-list-title">
-                <h4>Nodes <button type="button" id="managerAddNodeButton{{safeLabel}}" class="btn btn-icon btn-icon-primary" {{action "onAddNode"}}><i class="fa fa-plus"></i></button></h4>
+                <h4>Nodes</h4>
               </div>
             </div>
 

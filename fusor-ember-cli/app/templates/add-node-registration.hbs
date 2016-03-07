@@ -1,0 +1,73 @@
+{{#em-modal configName="bs" id="addNodeModal" closeIfClickedOutside=handleOutsideClick open-if=openAddNodeRegistrationModal close-if=closeAddNodeRegistrationModal}}
+  {{#em-modal-title}}
+    {{#em-modal-toggler class="close"}}
+      <span aria-hidden="true">×</span><span class="sr-only">Close</span>
+    {{/em-modal-toggler}}
+    <h4 class="modal-title">Add Node(s) to {{nodeInfo.address}}</h4>
+  {{/em-modal-title}}
+
+  {{#em-modal-body}}
+    <div class="row">
+      <div class="col-xs-12">
+        <p>Enter information for additional nodes that should be registered to {{nodeInfo.address}}</p>
+      </div>
+    </div>
+    <div class="row">
+      <form class="form-horizontal add-node-form">
+
+        {{#base-f cssId="addDriverInput"
+                  label="Driver"
+                  labelSize='col-xs-3'
+                  inputSize='col-xs-4'}}
+            <div class="add-node-uneditable-input-container"><span>{{nodeDriverHumanized}}</span></div>
+        {{/base-f}}
+
+        {{#base-f cssId="addAddressInput"
+        label=newNodeManualAddressLabel
+        labelSize='col-xs-3'
+        inputSize='col-xs-4'}}
+          <div class="add-node-uneditable-input-container"><span>{{nodeInfo.address}}</span></div>
+        {{/base-f}}
+
+
+        {{#base-f cssId="addUsernameInput"
+        label=newNodeManualUsernameLabel
+        labelSize='col-xs-3'
+        inputSize='col-xs-4'}}
+          <div class="add-node-uneditable-input-container"><span>{{nodeInfo.username}}</span></div>
+        {{/base-f}}
+
+        {{text-f  cssId="manualPasswordInput"
+        label=newNodeManualPasswordLabel
+        type='password'
+        labelSize='form-label-nowrap col-xs-3'
+        inputSize='col-xs-4'
+        value=nodeInfo.password
+        isRequired=true}}
+
+        {{#each nodeInfo.macAddresses as |macAddress key| }}
+          {{new-node-registration-mac-address macAddress=macAddress index=key}}
+        {{/each}}
+      </form>
+      <div class="row">
+        <div class="col-xs-offset-3 col-xs-9">
+          <button type="button" id="manualAddMacAddressButton" class="btn btn-primary" {{action "addMacAddress"}}><i
+              class="fa fa-plus"></i> Add Another Node
+          </button>
+        </div>
+      </div>
+
+    </div>
+  {{/em-modal-body}}
+
+  {{#em-modal-footer}}
+    <button type="button" id="addNodeCancelButton"
+            class="btn btn-default delete-node-cancel-button" {{action "cancelAddNodes"}}>
+      Cancel
+    </button>
+    <button type="submit" id="addNodeSubmitButton" class="btn btn-primary new-node-submit-button"
+            disabled={{disableNewNodesSubmit}} {{action "submitAddNodes"}}>
+      {{newNodeSubmitButtonText}}
+    </button>
+  {{/em-modal-footer}}
+{{/em-modal}}

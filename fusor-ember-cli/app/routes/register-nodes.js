@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
-import OspNodeManager from "../models/osp-node-manager";
+import OspNodeManager from "../utils/osp/osp-node-manager";
 
 export default Ember.Route.extend({
 
