@@ -9,20 +9,26 @@
   {{#em-modal-body}}
     <div class="row">
       <div class="col-xs-12">
+    {{#if autoDetectionEnabled}}
         <p>Nodes can be added through auto-discovery by an Intelligent Platform Management Interface (IPMI) system, a
           CSV file specifying the desired nodes, or by manually identifying each node.</p>
+    {{else}}
+      <p>Nodes can be added using a CSV file specifying the desired nodes or by manually identifying each node.</p>
+    {{/if}}
         <p>Determine how to register nodes.</p>
       </div>
     </div>
     <div class="row">
       <div class="col-xs-offset-1 col-xs-12">
 
+        {{#if autoDetectionEnabled}}
         <div class='radio'>
           <label>
             {{#radio-button value="ipmi_auto_detect" groupValue=registerNodesMethod id="optionNewNodeMethodAuto"}}{{/radio-button}}
             IPMI auto-detection
           </label>
         </div>
+        {{/if}}
 
         {{#if isNewNodeMethodAuto}}
           {{partial "new-node-registration-auto"}}
