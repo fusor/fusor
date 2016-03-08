@@ -167,8 +167,8 @@ export default Ember.Route.extend({
             if (subError.title){
               errorMessage += subError.title;
             }
-            if (subError.detail){
-              errorMessage += subError.detail;
+            if (subError.status){
+              errorMessage += `  Status: ${subError.status}`;
             }
           });
         }

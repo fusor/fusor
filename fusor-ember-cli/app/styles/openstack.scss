@@ -505,6 +505,10 @@
   padding: 6px 10px 6px 10px;
 }
 
+.node-registration-modal .modal-body {
+  min-height: 460px;
+}
+
 .new-node-submit-button {
   min-width: 70px;
 }
@@ -620,6 +624,8 @@ span.registered-node-count {
   padding-left: 2px;
   font-size: 14px;
   .fa.fa-power-off {
+    font-size: 12px;
+    margin-left: 7px;
     color: #969696;
   }
 }

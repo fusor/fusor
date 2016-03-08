@@ -92,7 +92,7 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
   nodeCount: Ember.computed('nodes.@each', function() {
     let nodes = this.get('nodes');
-    return nodes ? nodes.reduce((prev, node) => prev + (node.get('isReady') ? 1 : 0), 0) : 0;
+    return nodes ? nodes.reduce((prev, node) => prev + (node.get('ready') ? 1 : 0), 0) : 0;
   }),
 
   hasNodes: Ember.computed('nodeCount', function() {

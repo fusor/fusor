@@ -26,7 +26,7 @@ export default Ember.Component.extend({
   isNodeListDisabled: Ember.computed.not('isValidLogin'),
 
   nodeCount: Ember.computed('nodeManager.nodes.@each.properties', function() {
-    return this.get('nodeManager.nodes').reduce((prev, node) => prev + (node.get('isReady') ? 1 : 0), 0);
+    return this.get('nodeManager.nodes').reduce((prev, node) => prev + (node.get('ready') ? 1 : 0), 0);
   }),
 
   nodesPendingRegistration: Ember.computed('autoNodes.[]', 'manualNodes.[]', function() {
