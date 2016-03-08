@@ -161,7 +161,17 @@ export default Ember.Route.extend({
         errorMessage = error;
         break;
       case 'error':
-        errorMessage = error.errors.join(' ');
+        errorMessage = error.message + ': ';
+        if (error.errors) {
+          error.errors.forEach((subError) => {
+            if (subError.title){
+              errorMessage += subError.title;
+            }
+            if (subError.detail){
+              errorMessage += subError.detail;
+            }
+          });
+        }
         break;
     }
 

@@ -11,10 +11,10 @@ export default DS.Model.extend({
     power_state: DS.attr('string'),
     last_error: DS.attr('string'),
 
-    ready: Ember.computed('properties.cpu', 'properties.memory_mb', 'properties.local_gb', function() {
-        return Ember.isPresent(this.get('node.properties.cpu')) &&
-          Ember.isPresent(this.get('node.properties.memory_mb')) &&
-          Ember.isPresent(this.get('node.properties.local_gb'));
+    ready: Ember.computed('properties.cpus', 'properties.memory_mb', 'properties.local_gb', function() {
+        return Ember.isPresent(this.get('properties.cpus')) &&
+          Ember.isPresent(this.get('properties.memory_mb')) &&
+          Ember.isPresent(this.get('properties.local_gb'));
     }),
 
     getMacAddress(ports) {
