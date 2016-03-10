@@ -30,6 +30,7 @@ module Fusor
                :openstack_overcloud_hostname,
                :cfme_hostname,
                :is_disconnected,
+               :has_content_error,
                :cdn_url, :manifest_file,
                :created_at, :updated_at
 

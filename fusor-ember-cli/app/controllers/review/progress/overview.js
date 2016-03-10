@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import request from 'ic-ajax';
 import ProgressBarMixin from "../../../mixins/progress-bar-mixin";
 import NeedsDeploymentMixin from "../../../mixins/needs-deployment-mixin";
 
@@ -52,6 +53,44 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     }
 
     return true;
-  })
+  }),
 
+  isAbandonModalOpen: false,
+  loadingRedeployment: false,
+
+  actions: {
+    redeploy() {
+      this.set('loadingRedeployment', true);
+
+      let depl = this.get('deploymentController.model');
+      let token = Ember.$('meta[name="csrf-token"]').attr('content');
+
+      request({
+        url: '/fusor/api/v21/deployments/' + depl.get('id') + '/redeploy',
+        type: "PUT",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "X-CSRF-Token": token,
+          "Authorization": "Basic " + this.get('session.basicAuthToken')
+        }
+      }).then((response) => {
+        let newTaskUUID = response.id;
+        depl.set('foreman_task_uuid', newTaskUUID);
+        depl.set('has_content_error', false);
+        depl.save();
+        this.send('refreshModelOnOverviewRoute');
+      }).catch((err) => {
+        console.log('ERROR occurred attempting a redeploy', err);
+      }).finally(() => this.set('loadingRedeployment', false));
+    },
+    abandon() {
+      this.set('isAbandonModalOpen', true);
+    },
+    executeAbandonment() {
+      let depl = this.get('deploymentController.model');
+      depl.destroyRecord();
+      this.transitionToRoute('deployments');
+    }
+  }
 });

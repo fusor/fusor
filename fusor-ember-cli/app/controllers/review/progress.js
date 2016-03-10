@@ -24,5 +24,4 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
         return 'Deploying ...';
     }
   })
-
 });
