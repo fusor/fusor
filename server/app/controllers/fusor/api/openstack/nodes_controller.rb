@@ -55,7 +55,6 @@ module Fusor
           @deployment.introspection_tasks.push(it)
           @deployment.save(:validate => false)
           respond_for_async :resource => task
-          # render :json => {node: node}
         end
 
         def destroy
@@ -73,6 +72,9 @@ module Fusor
           render :json => { :ports => undercloud_handle.list_ports_detailed }
         end
 
+        def discover_macs
+          render :json => { :nodes => Utils::Fusor::DiscoverMacs.new(params).discover }
+        end
       end
     end
   end

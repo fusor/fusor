@@ -1,6 +1,5 @@
 import Ember from 'ember';
 import DeploymentRouteMixin from "../mixins/deployment-route-mixin";
-import OspNodeManager from "../utils/osp/osp-node-manager";
 import request from 'ic-ajax';
 
 export default Ember.Route.extend(DeploymentRouteMixin, {

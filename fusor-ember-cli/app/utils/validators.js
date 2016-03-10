@@ -23,7 +23,7 @@ const Validator = Ember.Object.extend({
   }
 });
 
-const AggregateValidator = Validator.extend({
+const AllValidator = Validator.extend({
   isValid(value) {
     let validators = this.get('validators');
     return validators ? validators.every(validator => validator.isValid(value)) : true;
@@ -43,6 +43,13 @@ const AggregateValidator = Validator.extend({
     }
 
     return messages;
+  }
+});
+
+const AnyValidator = Validator.extend({
+  isValid(value) {
+    let validators = this.get('validators');
+    return validators ? validators.any(validator => validator.isValid(value)) : true;
   }
 });
 
@@ -138,7 +145,8 @@ const IpRangeValidator = RegExpValidator.extend({
     ].join(''), ''),
   message: 'invalid network range'
 });
-const IpAddressValidator = IpRangeValidator.extend({
+
+const IpAddressValidator = RegExpValidator.extend({
   regExp: new RegExp([
       '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
       '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
@@ -148,7 +156,7 @@ const IpAddressValidator = IpRangeValidator.extend({
   message: 'invalid ip address'
 });
 
-const CidrValidator = AggregateValidator.extend({
+const CidrValidator = AllValidator.extend({
   validators: [
       IpRangeValidator.create({}),
       RegExpValidator.create({regExp: new RegExp(/\/(3[0-2]|[1-2]?[0-9])$/)})
@@ -166,6 +174,14 @@ const HostnameValidator = RegExpValidator.extend({
   message: 'invalid hostname'
 });
 
+const HostAddressValidator = AnyValidator.extend({
+  validators: [
+    IpAddressValidator.create({}),
+    HostnameValidator.create({})
+  ],
+  message: 'invalid host or ip address'
+});
+
 function validateZipper(zipper){
   return zipper
     .map((pair) => pair[0].isValid(pair[1]))
@@ -174,7 +190,8 @@ function validateZipper(zipper){
 
 export {
   Validator,
-  AggregateValidator,
+  AllValidator,
+  AnyValidator,
   PresenceValidator,
   EqualityValidator,
   LengthValidator,
@@ -185,6 +202,7 @@ export {
   IpRangeValidator,
   IpAddressValidator,
   CidrValidator,
+  HostAddressValidator,
   MacAddressValidator,
   HostnameValidator,
   validateZipper

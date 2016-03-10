@@ -1,71 +1,53 @@
-{{#em-modal configName="bs" id="nodeRegistrationModal" closeIfClickedOutside=handleOutsideClick open-if=openNewNodeRegistrationModal close-if=closeNewNodeRegistrationModal}}
+{{#em-modal configName="bs" id="nodeRegistrationModal" class="node-registration-modal"
+            closeIfClickedOutside=handleOutsideClick open-if=openNewNodeRegistrationModal close-if=closeNewNodeRegistrationModal}}
   {{#em-modal-title}}
-    {{#em-modal-toggler class="close"}}
-      <span aria-hidden="true">×</span><span class="sr-only">Close</span>
-    {{/em-modal-toggler}}
-    <h4 class="modal-title">Register Nodes</h4>
+    {{#if isStep1}}
+      {{#em-modal-toggler class="close"}}
+        <span aria-hidden="true">×</span><span class="sr-only">Close</span>
+      {{/em-modal-toggler}}
+      <h4 class="modal-title">Register Nodes</h4>
+    {{else}}
+      {{#em-modal-toggler class="close"}}
+        <span aria-hidden="true">×</span><span class="sr-only">Close</span>
+      {{/em-modal-toggler}}
+      <h4 class="modal-title">Node Auto-detection</h4>
+    {{/if}}
   {{/em-modal-title}}
 
   {{#em-modal-body}}
-    <div class="row">
-      <div class="col-xs-12">
-    {{#if autoDetectionEnabled}}
-        <p>Nodes can be added through auto-discovery by an Intelligent Platform Management Interface (IPMI) system, a
-          CSV file specifying the desired nodes, or by manually identifying each node.</p>
+    {{#if isStep1}}
+      {{partial "new-node-registration-step1-body"}}
     {{else}}
-      <p>Nodes can be added using a CSV file specifying the desired nodes or by manually identifying each node.</p>
+      {{partial "new-node-registration-step2-body"}}
     {{/if}}
-        <p>Determine how to register nodes.</p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-xs-offset-1 col-xs-12">
-
-        {{#if autoDetectionEnabled}}
-        <div class='radio'>
-          <label>
-            {{#radio-button value="ipmi_auto_detect" groupValue=registerNodesMethod id="optionNewNodeMethodAuto"}}{{/radio-button}}
-            IPMI auto-detection
-          </label>
-        </div>
-        {{/if}}
-
-        {{#if isNewNodeMethodAuto}}
-          {{partial "new-node-registration-auto"}}
-        {{/if}}
-
-        <div class="radio">
-          <label>
-            {{#radio-button value="csv_upload" groupValue=registerNodesMethod id="optionNewNodeMethodCSV"}}{{/radio-button}}
-            Upload a CSV file
-          </label>
-        </div>
-
-        {{#if isNewNodeMethodCSV}}
-          {{partial "new-node-registration-csv"}}
-        {{/if}}
-
-        <div class="radio">
-          <label>
-            {{#radio-button value="manual" groupValue=registerNodesMethod id="optionNewNodeMethodManual"}}{{/radio-button}}
-            Manual entry
-          </label>
-        </div>
-
-        {{#if isNewNodeMethodManual}}
-          {{partial "new-node-registration-manual"}}
-        {{/if}}
-
-      </div>
-    </div>
   {{/em-modal-body}}
 
   {{#em-modal-footer}}
-    <button type="button" id="newNodeCancelButton" class="btn btn-default delete-node-cancel-button" {{action "cancelRegisterNodes"}}>
-      Cancel
-    </button>
-    <button type="submit" id="newNodeSubmitButton" class="btn btn-primary new-node-submit-button" disabled={{disableNewNodesSubmit}} {{action "submitRegisterNodes"}}>
-      {{newNodeSubmitButtonText}}
-    </button>
+    {{#if isStep1}}
+      <button type="button" id="newNodeCancelButton" class="btn btn-default delete-node-cancel-button" {{action "cancelRegisterNodes"}}>
+        Cancel
+      </button>
+      {{#if isNewNodeMethodAuto}}
+        <button type="submit" id="detectNodeSubmitButton" class="btn btn-primary detect-node-submit-button"
+                disabled={{disableDetectNodesSubmit}} {{action "submitDetectNodes"}}>
+          Next <i class="fa fa-angle-right"></i>
+        </button>
+      {{else}}
+        <button type="submit" id="newNodeSubmitButton" class="btn btn-primary new-node-submit-button"
+                disabled={{disableNewNodesSubmit}} {{action "submitRegisterNodes"}}>
+          Register
+        </button>
+      {{/if}}
+    {{else}}
+      <button type="button" id="newNodeCancelButton" class="btn btn-default delete-node-cancel-button pull-left" {{action "cancelRegisterNodes"}}>
+        Cancel
+      </button>
+      <button type="button" id="newNodeBackButton" class="btn btn-default detect-node-back-button" {{action "backStep"}}>
+        <i class="fa fa-angle-left"></i> Back
+      </button>
+      <button type="submit" id="newNodeSubmitButton" class="btn btn-primary new-node-submit-button" disabled={{disableNewNodesSubmit}} {{action "submitRegisterNodes"}}>
+        Register
+      </button>
+    {{/if}}
   {{/em-modal-footer}}
 {{/em-modal}}

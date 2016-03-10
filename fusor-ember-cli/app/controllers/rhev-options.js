@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
-import { PresenceValidator, PasswordValidator, AlphaNumericDashUnderscoreValidator, AggregateValidator } from '../utils/validators';
+import { PresenceValidator, PasswordValidator, AlphaNumericDashUnderscoreValidator, AllValidator } from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
@@ -55,7 +55,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
        }
   ],
 
-  computerNameValidator: AggregateValidator.create({
+  computerNameValidator: AllValidator.create({
       validators: [
         PresenceValidator.create({}),
         AlphaNumericDashUnderscoreValidator.create({})

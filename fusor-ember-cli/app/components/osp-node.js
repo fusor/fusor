@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
-  classNames: ['row'],
+  classNames: ['row osp-node-row'],
 
   deleteEnabled: true,
 
@@ -29,15 +29,7 @@ export default Ember.Component.extend({
     return 'Free';
   }),
 
-  powerOn: Ember.computed('node.power_state', function() {
-    return this.get('node.power_state') === 'power on';
-  }),
-
-  introspectionTask: Ember.computed('node', 'introspectionTasks.@each', function() {
-    return this.get('node').getIntrospectionTask(this.get('introspectionTasks'));
-  }),
-
-  foremanTask: Ember.computed('introspectionTasks.@each', 'foremanTasks.@each', function() {
+  foremanTask: Ember.computed('node', 'introspectionTasks.@each', 'foremanTasks.@each', function() {
     return this.get('node').getForemanTask(this.get('introspectionTasks'), this.get('foremanTasks'));
   }),
 
@@ -52,8 +44,18 @@ export default Ember.Component.extend({
       this.get('foremanTask.result') === 'pending';
   }),
 
-  isNodeError: Ember.computed('isNodeReady', 'isNodeInspecting', 'foremanTask', 'foremanTask.state', 'foremanTask.result', function() {
-    return !this.get('isNodeReady') && !this.get('isNodeInspecting') && this.get('foremanTask.result') === 'error';
+  isNodeError: Ember.computed(
+    'isNodeReady',
+    'isNodeInspecting',
+    'foremanTask',
+    'foremanTask.result',
+    'foremanTask.humanized_errors',
+    function() {
+    if(this.get('isNodeReady') || this.get('isNodeInspecting')) {
+      return false;
+    }
+
+    return this.get('foremanTask.result') === 'error' || Ember.isPresent(this.get('foremanTask.humanized_errors'));
   }),
 
   progressWidth: Ember.computed('foremanTask.progress', function() {

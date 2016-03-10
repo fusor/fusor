@@ -1,25 +1,50 @@
 <form class="form-horizontal new-node-form-manual">
 
-  {{select-f  cssId="autoVendorInput"
-              label="Vendor"
-              labelSize='col-xs-3'
-              inputSize='col-xs-4'
-              content=vendors
-              optionLabelPath="content.label"
-              optionValuePath="content.value"
-              value=nodeInfo.vendor
-              isRequired=true}}
+  {{select-req-f  cssId="autoDriverInput"
+                  label="Driver"
+                  labelSize='col-xs-3'
+                  inputSize='col-xs-4'
+                  content=drivers
+                  optionLabelPath="content.label"
+                  optionValuePath="content.value"
+                  value=nodeInfo.driver
+                  isValid=isDriverValid
+                  showValidationError=showDriverValidationError
+                  isRequired=true}}
 
-  {{text-f  cssId="autoIpmiAddressInput"
-            label="IPMI Address"
+  {{#if isIpmi}}
+    {{select-req-f  cssId="autoVendorInputIpmi"
+                    label=newNodeVendorLabel
+                    labelSize='col-xs-3'
+                    inputSize='col-xs-4'
+                    content=vendors
+                    optionLabelPath="content.label"
+                    optionValuePath="content.value"
+                    value=ipmiVendor
+                    isRequired=true}}
+  {{else}}
+    {{select-req-f  cssId="autoVendorInputSsh"
+                    label=newNodeVendorLabel
+                    labelSize='col-xs-3'
+                    inputSize='col-xs-4'
+                    content=vendors
+                    optionLabelPath="content.label"
+                    optionValuePath="content.value"
+                    value=virtVendor
+                    isRequired=true}}
+  {{/if}}
+
+  {{text-f  cssId="autoAddressInput"
+            label=newNodeAddressLabel
             type='text'
             labelSize='col-xs-3'
             inputSize='col-xs-4'
             value=nodeInfo.address
+            validator=hostAddressValidator
             isRequired=true}}
 
   {{text-f  cssId="autoIpmiUserInput"
-            label="IPMI User"
+            label=newNodeUsernameLabel
             type='text'
             labelSize='col-xs-3'
             inputSize='col-xs-4'
@@ -27,7 +52,7 @@
             isRequired=true}}
 
   {{text-f  cssId="autoIpmiPasswordInput"
-            label="IPMI Password"
+            label=newNodePasswordLabel
             type='password'
             labelSize='form-label-nowrap col-xs-3'
             inputSize='col-xs-4'

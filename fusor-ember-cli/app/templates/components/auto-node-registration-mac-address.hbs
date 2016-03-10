@@ -1,0 +1,17 @@
+<form class="form-inline new-node-detect-form">
+  <div class="checkbox new-node-detect-checkbox">
+    <label>{{input type="checkbox" name="autoDetectedNodeSelected" checked=host.selected}}</label>
+  </div>
+  <div class="form-group">
+    <label class="control-label new-node-detect-hostnumber">
+      {{hostNumber}}.
+    </label>
+    {{#if multipleMacAddresses}}
+      {{view "select" id=selectId class="form-control new-node-detect-select"
+        prompt="Select an interface" disabled=deselected content=host.macAddresses value=host.value}}
+    {{else}}
+      <span class="new-node-detect-mac-address new-node-form-span {{deselectedTextClass}}">{{host.value}}</span>
+    {{/if}}
+    <span class="new-node-detect-hostname new-node-form-span {{deselectedTextClass}}">{{host.name}}</span>
+  </div>
+</form>

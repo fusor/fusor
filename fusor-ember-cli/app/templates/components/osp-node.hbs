@@ -10,7 +10,7 @@
     <span class="fa fa-exclamation-triangle"></span>
   {{/if}}
 </div>
-<div class="col-xs-9 osp-node-progress-column">
+<div class="col-xs-10 osp-node-progress-column">
   <div class="progress osp-node-progress">
     <div class="{{progressBarClass}}" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: {{progressWidth}};">
       <span class="osp-node-progress-bar-label">{{label}}</span>
@@ -18,9 +18,5 @@
   </div>
 </div>
 <div class="col-xs-1 osp-node-action-column ">
-  {{#if powerOn}}
-    <i class="fa fa-power-off"></i>
-  {{else}}
-    <button type="button" id="deleteNodeButton{{safeLabel}}" class="btn btn-icon" {{action "onDeleteClicked"}}><i class="fa fa-trash-o"></i></button>
-  {{/if}}
+    <button type="button" id="deleteNodeButton{{safeLabel}}" class="btn btn-icon btn-delete-node" {{action "onDeleteClicked"}}><i class="pficon pficon-delete"></i></button>
 </div>

@@ -13,17 +13,16 @@
                   isRequired=true}}
 
   {{text-f  cssId="manualAddressInput"
-            label=newNodeManualAddressLabel
+            label=newNodeAddressLabel
             type='text'
             labelSize='col-xs-3'
             inputSize='col-xs-4'
             value=nodeInfo.address
-            validator=ipAddressValidator
-            resetErrorsMessageKey=resetErrorsMessageKey
+            validator=hostAddressValidator
             isRequired=true}}
 
   {{text-f  cssId="manualUsernameInput"
-            label=newNodeManualUsernameLabel
+            label=newNodeUsernameLabel
             type='text'
             labelSize='col-xs-3'
             inputSize='col-xs-4'
@@ -31,16 +30,16 @@
             isRequired=true}}
 
   {{text-f  cssId="manualPasswordInput"
-            label=newNodeManualPasswordLabel
+            label=newNodePasswordLabel
             type='password'
             labelSize='form-label-nowrap col-xs-3'
             inputSize='col-xs-4'
             value=nodeInfo.password
             isRequired=true}}
 
-    {{#each nodeInfo.macAddresses as |macAddress key| }}
-      {{new-node-registration-mac-address macAddress=macAddress index=key}}
-    {{/each}}
+  {{#each nodeInfo.macAddresses as |macAddress key| }}
+    {{new-node-registration-mac-address macAddress=macAddress index=key}}
+  {{/each}}
 </form>
 <div class="row">
   <div class="col-xs-offset-3 col-xs-9">

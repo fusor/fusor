@@ -8,7 +8,6 @@ export default Ember.Route.extend({
     controller.set('model', model);
     controller.set('nodeManagers', []);
     controller.set('introspectionTasks', []);
-    //controller.set('showAlertMessage', false);
 
     var deploymentId = this.modelFor('deployment').get('id');
     this.store.query('image', {deployment_id: deploymentId}).then(function(results) {
@@ -63,7 +62,7 @@ export default Ember.Route.extend({
         controller.set('nodes', result);
       },
       (error) => {
-        return this.send('error', error, 'Error retrieving OpenStack nodes');
+        return this.send('error', error, 'Error retrieving OpenStack nodes.');
       });
   },
 
@@ -97,7 +96,7 @@ export default Ember.Route.extend({
         controller.set('introspectionTasks', deployment.get('introspection_tasks'));
       },
       (error) => {
-        return this.send('error', error, 'ERROR retrieving deployment introspection tasks');
+        return this.send('error', error, 'ERROR retrieving deployment introspection tasks.');
       });
   },
 
@@ -175,6 +174,6 @@ export default Ember.Route.extend({
         break;
     }
 
-    return message ? message + ' ' + errorMessage: errorMessage;
+    return message ? message + ' ' + errorMessage : errorMessage;
   }
 });

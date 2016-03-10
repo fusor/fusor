@@ -2,12 +2,11 @@ import Ember from 'ember';
 import request from 'ic-ajax';
 import ProgressBarMixin from "../mixins/progress-bar-mixin";
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
-import OspNodeManager from "../utils/osp/osp-node-manager";
 
 import {
-  AggregateValidator,
+  AllValidator,
   MacAddressValidator,
-  IpAddressValidator,
+  HostAddressValidator,
   PresenceValidator,
   validateZipper
 } from  "../utils/validators";
@@ -21,13 +20,15 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   presenceValidator: PresenceValidator.create({}),
   macAddressValidator: MacAddressValidator.create({}),
 
-  ipAddressValidator: AggregateValidator.create({
+  hostAddressValidator: AllValidator.create({
     validators: [
       PresenceValidator.create({}),
-      IpAddressValidator.create({})
+      HostAddressValidator.create({})
     ]
   }),
 
+  step: 1,
+  detectNodesRequestNum: 0,
   savedInfo: [],
   csvInfo: [],
   csvErrors: [],
@@ -37,12 +38,39 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     {label: 'PXE + SSH', value: 'pxe_ssh'}
   ],
 
-  vendors: [
+  ipmiVendors: [
     {label: 'Dell', value: 'dell'}
   ],
 
+  ipmiVendor: 'dell',
+
+  virtVendors: [
+    {label: 'KVM', value: 'kvm'}
+  ],
+
+  virtVendor: 'kvm',
+
+  vendors: Ember.computed('nodeInfo.driver', function () {
+    switch (this.get('nodeInfo.driver')) {
+      case 'pxe_ssh':
+        return this.get('virtVendors');
+      case 'pxe_ipmitool':
+        return this.get('ipmiVendors');
+      default:
+        return [];
+    }
+  }),
+
+  isStep1: Ember.computed('step', function() {
+    return this.get('step') === 1;
+  }),
+
+  isStep2: Ember.computed('step', function() {
+    return this.get('step') === 2;
+  }),
+
   isNewNodeMethodAuto: Ember.computed('registerNodesMethod', function() {
-    return this.get('registerNodesMethod') === 'ipmi_auto_detect';
+    return this.get('registerNodesMethod') === 'auto_detect';
   }),
 
   isNewNodeMethodCSV: Ember.computed('registerNodesMethod', function() {
@@ -57,18 +85,34 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     return this.get('drivers').findBy('value', this.get('nodeInfo.driver')).label;
   }),
 
-  newNodeManualAddressLabel: Ember.computed('nodeInfo.driver', function () {
+  isPxeSsh: Ember.computed('nodeInfo.driver', function() {
+    return this.get('nodeInfo.driver') === 'pxe_ssh';
+  }),
+
+  isIpmi: Ember.computed('nodeInfo.driver', function() {
+    return this.get('nodeInfo.driver') === 'pxe_ipmitool';
+  }),
+
+  newNodeVendorLabel: Ember.computed('nodeInfo.driver', function () {
+    if (this.get('nodeInfo.driver') === 'pxe_ipmitool') {
+      return 'IPMI Vendor';
+    }
+
+    return 'Vendor';
+  }),
+
+  newNodeAddressLabel: Ember.computed('nodeInfo.driver', function () {
     switch (this.get('nodeInfo.driver')) {
       case 'pxe_ssh':
         return 'SSH Address';
       case 'pxe_ipmitool':
         return 'IPMI Address';
       default:
-        return 'IP Address';
+        return 'Address';
     }
   }),
 
-  newNodeManualUsernameLabel: Ember.computed('nodeInfo.driver', function () {
+  newNodeUsernameLabel: Ember.computed('nodeInfo.driver', function () {
     switch (this.get('nodeInfo.driver')) {
       case 'pxe_ssh':
         return 'SSH User';
@@ -79,7 +123,7 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     }
   }),
 
-  newNodeManualPasswordLabel: Ember.computed('nodeInfo.driver', function () {
+  newNodePasswordLabel: Ember.computed('nodeInfo.driver', function () {
     switch (this.get('nodeInfo.driver')) {
       case 'pxe_ssh':
         return 'SSH Password';
@@ -97,10 +141,6 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
   hasNodes: Ember.computed('nodeCount', function() {
     return this.get('nodeCount') > 0;
-  }),
-
-  newNodeSubmitButtonText: Ember.computed('isNewNodeMethodAuto', function() {
-    return this.get('isNewNodeMethodAuto') ? 'Detect' : 'Register';
   }),
 
   nodeErrors: Ember.computed(
@@ -153,10 +193,6 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     return Ember.isPresent(this.get('registrationErrors'));
   }),
 
-  isValidNewNodeAuto: Ember.computed(function() {
-    return false;
-  }),
-
   hasCsvInfo: Ember.computed('csvInfo.[]', function() {
     return Ember.isPresent(this.get('csvInfo'));
   }),
@@ -164,6 +200,107 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   hasCsvErrors: Ember.computed('csvErrors.[]', function() {
     return Ember.isPresent(this.get('csvErrors'));
   }),
+
+  hasAutoDetectedNodesMultiMac: Ember.computed('autoDetectedNodesMultiMac.[]', function () {
+    return this.get('autoDetectedNodesMultiMac.length') > 0;
+  }),
+
+  hasAutoDetectedNodesSingleMac: Ember.computed('autoDetectedNodesSingleMac.[]', function () {
+    return this.get('autoDetectedNodesSingleMac.length') > 0;
+  }),
+
+  hasAutoDetectedNodes: Ember.computed('hasAutoDetectedNodesMultiMac', 'hasAutoDetectedNodesSingleMac', function() {
+    return this.get('hasAutoDetectedNodesMultiMac') && this.get('hasAutoDetectedNodesSingleMac');
+  }),
+
+  noNodesDetected: Ember.computed('hasAutoDetectedNodes', 'detectNodesCanceled', function() {
+    return !this.get('hasAutoDetectedNodes') && !this.get('detectNodesCanceled');
+  }),
+
+  numAutoDetectedNodesInvalidCount: Ember.computed(
+    'autoDetectedNodesMultiMac.@each.value',
+    'autoDetectedNodesMultiMac.@each.selected',
+    'autoDetectedNodesSingleMac.@each.value',
+    'autoDetectedNodesSingleMac.@each.selected',
+    function() {
+      return this.countAutoDetectedNodes(node => node.get('selected') && !Ember.isPresent(node.get('value')));
+    }
+  ),
+
+  hasInvalidAutoDetectedNodes: Ember.computed('numAutoDetectedNodesInvalidCount', function() {
+    return this.get('numAutoDetectedNodesInvalidCount') > 0;
+  }),
+
+  numAutoDetectedNodesDeselectedCount: Ember.computed(
+    'autoDetectedNodesMultiMac.@each.selected',
+    'autoDetectedNodesSingleMac.@each.selected',
+    function() {
+      return this.countAutoDetectedNodes(node => !node.get('selected'));
+    }
+  ),
+
+  hasDeselectedAutoDetectedNodes: Ember.computed('numAutoDetectedNodesDeselectedCount', function() {
+    return this.get('numAutoDetectedNodesDeselectedCount') > 0;
+  }),
+
+  numAutoDetectedNodesValidCount: Ember.computed(
+    'autoDetectedNodesMultiMac.@each.value',
+    'autoDetectedNodesMultiMac.@each.selected',
+    'autoDetectedNodesSingleMac.@each.value',
+    'autoDetectedNodesSingleMac.@each.selected',
+    function() {
+      return this.countAutoDetectedNodes(node => node.get('selected') && Ember.isPresent(node.get('value')));
+    }
+  ),
+
+  countAutoDetectedNodes(matchFn) {
+    let numMultiMacNodes = this.get('autoDetectedNodesMultiMac').reduce((prev, node) => prev + (matchFn(node) ? 1 : 0), 0);
+    let numSingleMacNodes = this.get('autoDetectedNodesSingleMac').reduce((prev, node) => prev + (matchFn(node) ? 1 : 0), 0);
+
+    return numMultiMacNodes + numSingleMacNodes;
+  },
+
+  hasValidAutoDetectedNodes: Ember.computed('numAutoDetectedNodesValidCount', function() {
+    return this.get('numAutoDetectedNodesValidCount') > 0;
+  }),
+
+  selectedVendor:  Ember.computed('isIpmi', 'ipmiVendor', 'virtVendor', function() {
+    return this.get('isIpmi') ? this.get('ipmiVendor') : this.get('virtVendor');
+  }),
+
+  isValidAutoDetectInfo: Ember.computed(
+    'registerNodesMethod',
+      'nodeInfo.driver',
+      'nodeInfo.vendor',
+      'nodeInfo.address',
+      'nodeInfo.username',
+      'nodeInfo.password',
+      function () {
+        return this.get('registerNodesMethod') === 'auto_detect' &&
+          Ember.isPresent(this.get('nodeInfo.driver')) &&
+          Ember.isPresent(this.get('selectedVendor')) &&
+          Ember.isPresent(this.get('nodeInfo.address')) &&
+          Ember.isPresent(this.get('nodeInfo.username')) &&
+          Ember.isPresent(this.get('nodeInfo.password')) &&
+          this.get('hostAddressValidator').isValid(this.get('nodeInfo.address'));
+      }),
+
+  isValidNewNodeAuto: Ember.computed(
+    'isValidAutoDetectInfo',
+    'hasInvalidAutoDetectedNodes',
+    'hasValidAutoDetectedNodes',
+    function () {
+      if (!this.get('isValidAutoDetectInfo')) {
+        return false;
+      }
+
+      let macAddresses = this.get('nodeInfo.macAddresses');
+      if (!macAddresses) {
+        return false;
+      }
+
+      return this.get('hasValidAutoDetectedNodes') && !this.get('hasInvalidAutoDetectedNodes');
+    }),
 
   isValidNewNodeCsv: Ember.computed('hasCsvInfo', 'hasCsvErrors', function() {
     return this.get('hasCsvInfo') && !this.get('hasCsvErrors');
@@ -182,7 +319,7 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
         Ember.isPresent(this.get('nodeInfo.address')) &&
         Ember.isPresent(this.get('nodeInfo.username')) &&
         Ember.isPresent(this.get('nodeInfo.password')) &&
-        this.get('ipAddressValidator').isValid(this.get('nodeInfo.address'));
+        this.get('hostAddressValidator').isValid(this.get('nodeInfo.address'));
 
       if (!validConnection) {
         return false;
@@ -215,6 +352,8 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     return this.get('isValidNewNodeAuto') || this.get('isValidNewNodeCsv') || this.get('isValidNewNodeManual');
   }),
 
+  disableDetectNodesSubmit: Ember.computed.not('isValidAutoDetectInfo'),
+
   disableNewNodesSubmit: Ember.computed.not('hasValidNodesForRegistration'),
 
   enableRegisterNodesNext: Ember.computed('nodeCount', function() {
@@ -225,20 +364,12 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
   actions: {
     showNodeRegistrationModal() {
-      this.set('registerNodesMethod', 'manual');
-      this.set('csvInfo', []);
-      this.set('csvErrors', []);
-
-      this.set('nodeInfo', Ember.Object.create({
-        vendor: null,
-        driver: null,
-        address: null,
-        username: null,
-        password: null,
-        macAddresses: [Ember.Object.create({value: ''})]
-      }));
-
+      this.initInfo();
       this.openRegDialog();
+    },
+
+    backStep() {
+      this.set('step', 1);
     },
 
     addMacAddress() {
@@ -256,6 +387,18 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
     csvFileChosen() {
       this.parseCsvFile(this.getCSVFileInput());
+    },
+
+    submitDetectNodes() {
+      this.detectNodes();
+      this.set('step', 2);
+    },
+
+    cancelDetectNodes() {
+      this.set('detectNodesCanceled', true);
+      this.set('detectNodesRequestNum', this.get('detectNodesRequestNum') + 1);
+      this.set('autoDetectedNodesMultiMac', []);
+      this.set('autoDetectedNodesSingleMac', []);
     },
 
     addNodesToManager(nodeManager) {
@@ -299,6 +442,24 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     }
   },
 
+  initInfo() {
+    this.set('registerNodesMethod', 'auto_detect');
+
+    this.set('nodeInfo', Ember.Object.create({
+      vendor: null,
+      driver: null,
+      address: null,
+      username: null,
+      password: null,
+      macAddresses: [Ember.Object.create({value: ''})]
+    }));
+
+    this.set('csvInfo', []);
+    this.set('csvErrors', []);
+    this.set('autoDetectedNodesMultiMac', []);
+    this.set('autoDetectedNodesSingleMac', []);
+  },
+
   deleteNodeRequest() {
     let url = `/fusor/api/openstack/deployments/${this.get('deploymentId')}/nodes/${this.get('nodeToDelete.id')}`;
     return request({
@@ -312,7 +473,7 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     }).then((result) => {
       this.removeNode(this.get('nodeToDelete'));
     }, (error) => {
-      this.send('error', error, `Unable to delete node. DELETE ${url} failed with status code ${error.jqXHR.status}`);
+      this.send('error', error, `Unable to delete node. DELETE ${url} failed with status code ${error.jqXHR.status}.`);
     }).finally((result) => {
       this.set('openDeleteNodeConfirmation', false);
       this.set('closeDeleteNodeConfirmation', true);
@@ -331,6 +492,7 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   },
 
   openRegDialog() {
+    this.set('step', 1);
     this.set('openNewNodeRegistrationModal', true);
     this.set('closeNewNodeRegistrationModal', false);
   },
@@ -355,15 +517,12 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     this.set('newIntrospectionTaskIds', []);
 
     if (method === 'manual') {
-      let nodeInfo = this.get('nodeInfo');
-      this.registerNodes(nodeInfo);
+      this.registerNodes(this.get('nodeInfo'));
     } else if (method === 'csv_upload') {
-      let csvInfo = this.get('csvInfo');
-      csvInfo.forEach((nodeInfo) => {
-        this.registerNodes(nodeInfo);
-      });
-    } else if (method === 'ipmi_auto_detect') {
-
+      this.get('csvInfo').forEach(nodeInfo => this.registerNodes(nodeInfo));
+    } else if (method === 'auto_detect') {
+      this.prepAutoDetectNodeInfo();
+      this.registerNodes(this.get('nodeInfo'));
     }
 
     this.closeRegDialog();
@@ -433,7 +592,93 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     };
   },
 
+  detectNodes() {
+    let nodeInfo = this.get('nodeInfo');
+    let detectNodesRequestNum = this.get('detectNodesRequestNum') + 1;
+
+    nodeInfo.set('address', nodeInfo.get('address').trim());
+    nodeInfo.set('username', nodeInfo.get('username').trim());
+    nodeInfo.set('vendor', this.get('selectedVendor'));
+
+    this.set('autoDetectedNodesMultiMac', []);
+    this.set('autoDetectedNodesSingleMac', []);
+    this.set('detectNodesRequestNum', detectNodesRequestNum);
+
+    let driverParams = {
+      driver: nodeInfo.get('driver'),
+      vendor: nodeInfo.get('vendor'),
+      hostname: nodeInfo.get('address'),
+      username: nodeInfo.get('username'),
+      password: nodeInfo.get('password')
+    };
+
+    let url = `/fusor/api/openstack/deployments/${this.get('deploymentId')}/node_mac_addresses`;
+
+    this.set('autoDetectNodesInProgress', true);
+    return request({
+      url: url,
+      type: 'POST', //GET would expose password in a query param
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-CSRF-Token": Ember.$('meta[name="csrf-token"]').attr('content')
+      },
+      data: JSON.stringify(driverParams)
+    }).then((result) => {
+      if (detectNodesRequestNum === this.get('detectNodesRequestNum')){
+        this.updateAutoDetectedNodes(result.nodes);
+      }
+    }, (error) => {
+      console.log(error);
+      this.set('detectNodesErrorMsg', `Unable to detect nodes. Failed with status code ${error.jqXHR.status}.`);
+    }).finally(() => {
+      this.set('autoDetectNodesInProgress', false);
+    });
+  },
+
+  updateAutoDetectedNodes(hostArray) {
+    let autoDetectedNodesMultiMac = [];
+    let autoDetectedNodesSingleMac = [];
+
+    hostArray.forEach((hostHash) => {
+      let host = Ember.Object.create({
+        name: hostHash.hostname,
+        macAddresses: hostHash.mac_addresses,
+        selected: true
+      });
+
+      if (host.get('macAddresses.length') === 1) {
+        host.set('value', host.get('macAddresses')[0]);
+        autoDetectedNodesSingleMac.pushObject(host);
+      } else if (host.get('macAddresses.length') > 1) {
+        host.set('value', '');
+        autoDetectedNodesMultiMac.pushObject(host);
+      }
+    });
+
+    this.set('autoDetectedNodesMultiMac', autoDetectedNodesMultiMac);
+    this.set('autoDetectedNodesSingleMac', autoDetectedNodesSingleMac);
+  },
+
+  prepAutoDetectNodeInfo() {
+    let nodeInfo = this.get('nodeInfo');
+    let macAddresses = this.get('autoDetectedNodesMultiMac').filter(node => node.get('selected'));
+
+    this.get('autoDetectedNodesSingleMac').forEach(node => {
+      if (node.get('selected')) {
+        macAddresses.pushObject(node);
+      }
+    });
+
+    nodeInfo.set('macAddresses', macAddresses);
+    nodeInfo.set('vendor', this.get('selectedVendor'));
+  },
+
   getNodeError(nodeManager, node) {
+    if (node.get('ready')) {
+      return null;
+    }
+
     let macAddress = node.getMacAddress(this.get('ports'));
     let nodeLabel = macAddress ? `MAC Address ${macAddress}` : node.get('id');
 
@@ -591,10 +836,10 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
             errorsFound = true;
           }
 
-          if (controller.get('ipAddressValidator').isValid(row[1])) {
+          if (controller.get('hostAddressValidator').isValid(row[1])) {
             csvNode.set('address', row[1]);
           } else {
-            csvErrors.pushObject(`Row ${rowIndex + 1}, Column 2: "${row[1]}" is not a valid IP Address`);
+            csvErrors.pushObject(`Row ${rowIndex + 1}, Column 2: "${row[1]}" is not a valid host address`);
             errorsFound = true;
           }
 
@@ -612,7 +857,7 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
             errorsFound = true;
           }
 
-          if (Ember.isPresent(row[4]) && controller.get('macAddressValidator')) {
+          if (Ember.isPresent(row[4]) && controller.get('macAddressValidator').isValid(row[4])) {
             csvNode.set('macAddresses', [Ember.Object.create({value: row[4]})]);
           } else {
             csvErrors.pushObject(`Row ${rowIndex + 1}, Column 5 "${row[4]}" is not a valid MAC address`);
