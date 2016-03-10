@@ -37,7 +37,7 @@ export default Ember.Route.extend({
     controller.stopPolling();
 
     ////////////////////////////////////////////////////////////
-    // NOTE: If an error during a pulp sync occurs, the Katelo::Sync
+    // NOTE: If an error during a pulp sync occurs, the Katello::Sync
     // task scheduled in the Fusor Deploy task tree will throw itself
     // into a skipped/warning state. This ultimately bubbles, sending
     // Fusor::Actions::ManageContent into a paused/error state due to

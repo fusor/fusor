@@ -6,8 +6,8 @@
     <div style="float: left; margin-top: 2px" class="spinner spinner-md spinner-inline"></div>
   {{else}}
     <h1>Content Error Occurred</h1>
-    <button {{action 'abandon'}}>Abandon Deployment</button>
-    <button {{action 'redeploy'}}>Redeploy</button>
+    <button class="btn btn-default" {{action 'abandon'}}>Abandon Deployment</button>
+    <button class="btn btn-primary" {{action 'redeploy'}}>Redeploy</button>
   {{/if}}
 {{else}}
 

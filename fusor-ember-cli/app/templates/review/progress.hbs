@@ -31,6 +31,7 @@
   </div>
 </div>
 
+{{! Hide buttons if the deployment has_content_error }}
 {{#unless deploymentController.model.has_content_error}}
   {{#cancel-back-next backRouteName='review.installation'
                       disableBack=false
