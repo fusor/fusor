@@ -1,0 +1,120 @@
+<div class='row'>
+  <div class='col-md-9'>
+
+    <p>
+      Select where to provision the OpenShift Enterprise nodes.
+    </p>
+
+    <div class='ident-radio'>
+      {{#radio-button value="RHEV" groupValue=openshiftInstallLoc changed="openshiftLocationChanged" id="install_on_rhev" disabled=disableRHEVradio}}
+        <span class="{{if disableRHEV 'disabled'}}">
+          Red Hat Enterprise Virtualization
+        </span>
+      {{/radio-button}}
+    </div>
+
+    <div class='ident-radio'>
+      {{#radio-button value="OpenStack" groupValue=openshiftInstallLoc changed="openshiftLocationChanged" id="install_on_openstack" disabled=disableOpenstackradio}}
+        <span class="inline-block {{if disableOpenStack 'disabled'}}">
+          Red Hat Enterprise Linux OpenStack Platform
+        </span>
+      {{/radio-button}}
+    </div>
+
+    <br />
+    <p>
+      Select how many virtual machines should be created as nodes for the OpenShift environment.
+    </p>
+
+    {{button-selection label=1
+                       value=1
+                       groupValue=model.numNodes
+                       changed="numNodesChanged"
+                       disabled=isOver1Capacity}}
+    {{button-selection label=2
+                       value=2
+                       groupValue=model.numNodes
+                       changed="numNodesChanged"
+                       disabled=isOver2Capacity}}
+    {{button-selection label=3
+                       value=3
+                       groupValue=model.numNodes
+                       changed="numNodesChanged"
+                       disabled=isOver3Capacity}}
+    {{button-selection label=4
+                       value=4
+                       groupValue=model.numNodes
+                       changed="numNodesChanged"
+                       disabled=isOver4Capacity}}
+    {{button-selection label=5
+                       value=5
+                       groupValue=model.numNodes
+                       changed="numNodesChanged"
+                       disabled=isOver5Capacity}}
+    <!--<div style='color: #999; font-style: italic;'>
+      Not Highly Available
+    </div>-->
+
+    <br />
+    <br />
+    <p>
+    Select how much additional storage is needed for Docker containers on each worker node.
+    </p>
+    {{button-selection label='15 GB'
+                       value=15
+                       groupValue=model.openshift_storage_size
+                       changed="storageSizeChanged"}}
+    {{button-selection label='20 GB'
+                       value=20
+                       groupValue=model.openshift_storage_size
+                       changed="storageSizeChanged"}}
+    {{button-selection label='25 GB'
+                       value=25
+                       groupValue=model.openshift_storage_size
+                       changed="storageSizeChanged"}}
+    {{button-selection label='30 GB'
+                       value=30
+                       groupValue=model.openshift_storage_size
+                       changed="storageSizeChanged"}}
+
+    {{#if showEnvironmentSummary}}
+        {{ose-env-summary numNodes=numNodes
+                          numMasterNodes=numMasterNodes
+                          numWorkerNodes=numWorkerNodes
+                          storageSize=storageSize
+                          masterVcpu=masterVcpu
+                          masterRam=masterRam
+                          masterDisk=masterDisk
+                          nodeVcpu=nodeVcpu
+                          nodeRam=nodeRam
+                          nodeDisk=nodeDisk
+                          vcpuNeeded=vcpuNeeded
+                          ramNeeded=ramNeeded
+                          diskNeeded=diskNeeded
+                          vcpuAvailable=vcpuAvailable
+                          ramAvailable=ramAvailable
+                          diskAvailable=diskAvailable
+                          substractCfme=substractCfme
+                          cfmeDisk=cfmeDisk}}
+
+        {{node-details numNodes=model.numNodes
+                       numMasterNodes=numMasterNodes
+                       numWorkerNodes=numWorkerNodes
+                       storageSize=storageSize
+                       masterVcpu=masterVcpu
+                       masterRam=masterRam
+                       masterDisk=masterDisk
+                       nodeVcpu=nodeVcpu
+                       nodeRam=nodeRam
+                       nodeDisk=nodeDisk}}
+    {{/if}}
+
+  </div>
+</div>
+
+{{cancel-back-next backRouteName=backRouteName
+                   disableBack=false
+                   nextRouteName='openshift.openshift-configuration'
+                   disableNext=isInvalidOpenshiftNodes
+                   disableCancel=isStarted
+                   deploymentName=deploymentName}}

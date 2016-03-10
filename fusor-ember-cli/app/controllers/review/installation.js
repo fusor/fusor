@@ -1,7 +1,8 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
+import OpenshiftMixin from "../../mixins/openshift-mixin";
 
-export default Ember.Controller.extend(NeedsDeploymentMixin, {
+export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
 
   rhevController: Ember.inject.controller('rhev'),
   rhevSetupController: Ember.inject.controller('rhev-setup'),
@@ -68,6 +69,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isOpenStackOpen: true,
   isCloudFormsOpen: true,
   isSubscriptionsOpen: true,
+  isOpenshiftOpen: true,
 
   engineHostAddressDefault: 'ovirt-hypervisor.rhci.redhat.com',
   hostAddress: Ember.computed.alias("rhevOptionsController.hostAddress"),
@@ -81,6 +83,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isRhev: Ember.computed.alias("deploymentController.isRhev"),
   isOpenStack: Ember.computed.alias("deploymentController.isOpenStack"),
   openStack: Ember.computed.alias("deploymentController.openStack"),
+  isOpenShift: Ember.computed.alias("deploymentController.isOpenShift"),
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
   isSubscriptions: Ember.computed.alias("deploymentController.isSubscriptions"),
 
@@ -135,9 +138,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
         }
       } else {
         if (this.get('isCloudForms')) {
-          return 'cloudforms/cfme-configuration';
+          return 'cloudforms.cfme-configuration';
+        } else if (this.get('isOpenShift')) {
+          return 'openshift.openshift-configuration';
         } else if (this.get('isOpenStack')) {
-          // TODO
+          return 'openstack.overcloud';
         } else if (this.get('isRhev')) {
           return 'storage';
         }
@@ -160,6 +165,18 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     } else {
       return 'Quantity Added';
     }
+  }),
+
+  ramNeededGB: Ember.computed('ramNeeded', function() {
+    return this.get('ramNeeded') + ' GB';
+  }),
+
+  diskNeededGB: Ember.computed('diskNeeded', function() {
+    return this.get('diskNeeded') + ' GB';
+  }),
+
+  storageSizeGB: Ember.computed('storageSize', function() {
+    return this.get('storageSize') + ' GB';
   }),
 
   closeContinueDeployModal() {

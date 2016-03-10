@@ -13,8 +13,8 @@ export default Ember.Mixin.create({
   satelliteTabRouteName: null,
 
   // disable Next button if none selected
-  disableNextOnStart: Ember.computed('isRhev', 'isOpenStack', 'isCloudForms', function () {
-    return (!(this.get('isRhev') || this.get('isOpenStack') || this.get('isCloudForms')));
+  disableNextOnStart: Ember.computed('isRhev', 'isOpenStack', 'isCloudForms', 'isOpenShift', function () {
+    return (!(this.get('isRhev') || this.get('isOpenStack') || this.get('isCloudForms') || this.get('isOpenShift')));
   }),
 
   // names
@@ -42,6 +42,8 @@ export default Ember.Mixin.create({
     if (this.get('isUpstream')) { return "ManageIQ"; } else { return "CloudForms"; }
   }),
 
+  nameOpenShift: "OpenShift",
+
   // images
   imgRhev: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "/assets/r/ovirt-640-210.png"; } else { return "/assets/r/rhci-rhev-640-210.png"; }
@@ -53,6 +55,8 @@ export default Ember.Mixin.create({
 
   imgCloudForms: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "/assets/r/manageiq-640-210.png"; } else { return "/assets/r/rhci-cloudforms-640-210.png"; }
-  })
+  }),
+
+  imgOpenShift: "/assets/r/openshift_logo-300x75.png"
 
 });

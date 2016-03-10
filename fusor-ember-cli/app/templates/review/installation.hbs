@@ -160,6 +160,73 @@
       {{/accordion-item}}
     {{/if}}
 
+    {{#if isOpenShift}}
+      {{#accordion-item name="Openshift Enterprise" isOpen=isOpenshiftOpen}}
+
+        {{review-link label='Nodes Location'
+                      routeName='openshift.openshift-nodes'
+                      isRequired=true
+                      value=model.openshift_install_loc}}
+
+        {{review-link label='# of Master Nodes'
+                      routeName='openshift.openshift-nodes'
+                      isRequired=true
+                      value=model.openshift_number_master_nodes}}
+
+        {{review-link label='# of Worker Nodes'
+                      routeName='openshift.openshift-nodes'
+                      isRequired=true
+                      value=model.openshift_number_worker_nodes}}
+
+        {{review-link label='Docker Storage per Worker'
+                      routeName='openshift.openshift-nodes'
+                      isRequired=true
+                      value=storageSizeGB}}
+
+        {{review-link label='vCPU Needed'
+                      routeName='openshift.openshift-nodes'
+                      isRequired=true
+                      value=vcpuNeeded}}
+
+        {{review-link label='RAM Needed'
+                      routeName='openshift.openshift-nodes'
+                      isRequired=true
+                      value=ramNeededGB}}
+
+        {{review-link label='Disk Needed'
+                      routeName='openshift.openshift-nodes'
+                      isRequired=true
+                      value=diskNeededGB}}
+
+        {{review-link label='Storage Type'
+                      routeName='openshift.openshift-configuration'
+                      isRequired=true
+                      value=model.openshift_storage_type}}
+
+        {{review-link label='Storage Name'
+                      routeName='openshift.openshift-configuration'
+                      isRequired=true
+                      value=model.openshift_storage_name}}
+
+        {{review-link label='Storage Description'
+                      routeName='openshift.openshift-configuration'
+                      value=model.openshift_storage_desc}}
+
+        {{review-link label='Export Path'
+                      routeName='openshift.openshift-configuration'
+                      value=model.openshift_export_path}}
+
+        {{review-link label='Username'
+                      routeName='openshift.openshift-configuration'
+                      value=model.openshift_username}}
+
+        {{review-link label='Sudomain'
+                      routeName='openshift.openshift-configuration'
+                      value=model.openshift_subdomain_name}}
+
+      {{/accordion-item}}
+    {{/if}}
+
     {{#if isCloudForms}}
       {{#accordion-item name="Cloud Forms Management Engine" isOpen=isCloudFormsOpen}}
           {{review-link label='Installation Location' routeName='where-install' isRequired=true

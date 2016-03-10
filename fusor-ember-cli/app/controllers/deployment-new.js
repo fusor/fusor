@@ -14,6 +14,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   // these tabs will always be disabled within deployment-new
   isDisabledRhev: true,
   isDisabledOpenstack: true,
+  isDisabledOpenShift: true,
   isDisabledCloudForms: true,
   isDisabledSubscriptions: true,
   isDisabledReview: true,

@@ -5,6 +5,8 @@ export default Ember.Route.extend({
   setupController(controller, model) {
     controller.set('model', model);
     controller.set('satelliteTabRouteName', 'deployment-new.satellite.index');
+    controller.set('isDisabledOpenShift', true);
+    controller.set('isDisabledCfme', true);
   },
 
   activate() {

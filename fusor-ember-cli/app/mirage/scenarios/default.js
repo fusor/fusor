@@ -50,12 +50,23 @@ export default function(server) {
                                       lifecycle_environment_id: env.id,
                                      });
 
-  server.create('deployment', {name: 'all_3_products_deployment',
+  server.create('deployment', {name: 'rhev_and_openshift_deployment',
                                       deploy_rhev: true,
-                                      deploy_openstack: true,
+                                      deploy_openshift: true,
+                                      organization_id: org.id,
+                                      lifecycle_environment_id: env.id,
+                                      discovered_host_id: engine.id,
+                                      discovered_host_ids: [hypervisor1.id, hypervisor2.id]
+                                     });
+
+  server.create('deployment', {name: 'rhev_openshift_cfme_deployment',
+                                      deploy_rhev: true,
+                                      deploy_openshift: true,
                                       deploy_cfme: true,
                                       organization_id: org.id,
                                       lifecycle_environment_id: env.id,
+                                      discovered_host_id: engine.id,
+                                      discovered_host_ids: [hypervisor1.id, hypervisor2.id]
                                      });
 
 }

@@ -1,11 +1,18 @@
 <span id="{{cssId}}">
-  <img src="{{srcImage}}" class="img-responsive {{if isDisabled 'disabledImage'}}">
+  <div class="rhci-product-image">
+    <img src="{{srcImage}}" class="img-responsive {{if isDisabled 'disabledImage'}}">
+  </div>
+
+  <p class="rhci-item-desc">
+      {{desc}}
+  </p>
+
 
   <div class="rhci-footer {{if isChecked 'rhci-footer-selected' 'rhci-footer-unselected'}}">
        <span class='rhci-install-footer'>
          {{#if isChecked}}
            <i class="fa fa-1x fa-check"></i>
-           Deploy this product
+           Install this product
          {{/if}}
        </span>
   </div>
