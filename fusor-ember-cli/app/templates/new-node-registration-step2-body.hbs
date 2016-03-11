@@ -1,0 +1,124 @@
+{{#if detectNodesErrorMsg}}
+  <div class="row new-node-detect-infobar">
+    <div class="col-xs-1 new-node-detect-infobar-col">
+      <div class="new-node-detect-infobar-left">
+        <span class="fa fa-exclamation-triangle detect-nodes-error-icon"></span>
+      </div>
+    </div>
+    <div class="col-xs-9 new-node-detect-infobar-col">
+      <div class="new-node-detect-infobar-middle">
+        <span>{{detectNodesErrorMsg}}</span>
+      </div>
+    </div>
+    <div class="col-xs-2 new-node-detect-infobar-col">
+      <div class="new-node-detect-infobar-right">
+        <a {{action "submitDetectNodes"}}>Re-scan</a>
+      </div>
+    </div>
+  </div>
+{{else if detectNodesCanceled}}
+  <div class="row new-node-detect-infobar">
+    <div class="col-xs-1 new-node-detect-infobar-col">
+      <div class="new-node-detect-infobar-left">
+        <span class="fa fa-exclamation-triangle"></span>
+      </div>
+    </div>
+    <div class="col-xs-9 new-node-detect-infobar-col">
+      <div class="new-node-detect-infobar-middle">
+        <span>Detection canceled.</span>
+      </div>
+    </div>
+    <div class="col-xs-2 new-node-detect-infobar-col">
+      <div class="new-node-detect-infobar-right">
+        <a {{action "submitDetectNodes"}}>Re-scan</a>
+      </div>
+    </div>
+  </div>
+{{else if autoDetectNodesInProgress}}
+  <div class="row new-node-detect-infobar">
+    <div class="col-xs-1 new-node-detect-infobar-col">
+      <div class="new-node-detect-infobar-left">
+        <span class="spinner spinner-sm spinner-inline"></span>
+      </div>
+    </div>
+    <div class="col-xs-9 new-node-detect-infobar-col">
+      <div class="new-node-detect-infobar-middle">
+        <span>Detecting nodes...</span>
+      </div>
+    </div>
+    <div class="col-xs-2 new-node-detect-infobar-col">
+      <div class="new-node-detect-infobar-right">
+        <a {{action "cancelDetectNodes"}}>Cancel</a>
+      </div>
+    </div>
+  </div>
+{{else}}
+  <div class="row new-node-detect-infobar">
+    <div class="col-xs-1 new-node-detect-infobar-col">
+      <div class="new-node-detect-infobar-left">
+        <span class="pficon pficon-info"></span>
+      </div>
+    </div>
+    <div class="col-xs-9 new-node-detect-infobar-col">
+      <div class="new-node-detect-infobar-middle">
+        <span>Detection finished.</span>
+      </div>
+    </div>
+    <div class="col-xs-2 new-node-detect-infobar-col">
+      <div class="new-node-detect-infobar-right">
+        <a {{action "submitDetectNodes"}}>Re-scan</a>
+      </div>
+    </div>
+  </div>
+{{/if}}
+
+<div class="row">
+  <div class="col-xs-offset-1 col-xs-10">
+    <p>Select a network interface for registration on any node with multiple available.
+      Nodes with a single network interface will not require any interaction.</p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-offset-1 col-xs-10">
+    {{#if autoDetectNodesInProgress}}
+      <p>No nodes detected yet... wait for it...</p>
+    {{else}}
+      {{#if noNodesDetected}}
+        <p>No nodes detected. Double check your connection information.</p>
+      {{/if}}
+
+      {{#if hasInvalidAutoDetectedNodes}}
+        <p class="new-node-auto-detect-count">{{numAutoDetectedNodesInvalidCount}} nodes need attention</p>
+      {{/if}}
+
+      {{#if hasDeselectedAutoDetectedNodes}}
+        <p class="new-node-auto-detect-count">{{numAutoDetectedNodesDeselectedCount}} set to not register</p>
+      {{/if}}
+
+      {{#if hasValidAutoDetectedNodes}}
+        <p class="new-node-auto-detect-count">{{numAutoDetectedNodesValidCount}}  nodes ready to register</p>
+      {{/if}}
+
+      <div class="new-node-detect-hosts-container">
+        {{#if hasAutoDetectedNodesMultiMac}}
+          <div class="new-node-detect-list-multimac">
+            <p>Select between available interfaces for the following nodes</p>
+            {{#each autoDetectedNodesMultiMac as |host index| }}
+              {{auto-node-registration-mac-address host=host index=index}}
+            {{/each}}
+          </div>
+        {{/if}}
+
+        {{#if hasAutoDetectedNodesSingleMac}}
+          <div class="new-node-detect-list-singlemac">
+            <p>Nodes ready to register</p>
+            {{#each autoDetectedNodesSingleMac as |host index| }}
+              {{auto-node-registration-mac-address host=host index=index indexOffset=autoDetectedNodesMultiMac.length}}
+            {{/each}}
+          </div>
+        {{/if}}
+      </div>
+    {{/if}}
+  </div>
+</div>

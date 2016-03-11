@@ -1,24 +1,13 @@
 import Ember from 'ember';
+import request from 'ic-ajax';
+import OspNodeManager from "../utils/osp/osp-node-manager";
 
 export default Ember.Route.extend({
 
   setupController(controller, model) {
     controller.set('model', model);
-    controller.set('showAlertMessage', false);
-    var self = this;
-
-    var introspection_tasks = this.modelFor('deployment').get('introspection_tasks');
-    var arrayTasks = Ember.A();
-
-    introspection_tasks.forEach(function(node, i) {
-      if (node.get('task_id') && node.get('poll')) {
-          self.store.findRecord('foreman-task', node.get('task_id'), {reload: true}).then(function(result) {
-              arrayTasks.addObject(result);
-          });
-      }
-    });
-
-    controller.set('arrayTasks', arrayTasks);
+    controller.set('nodeManagers', []);
+    controller.set('introspectionTasks', []);
 
     var deploymentId = this.modelFor('deployment').get('id');
     this.store.query('image', {deployment_id: deploymentId}).then(function(results) {
@@ -28,6 +17,8 @@ export default Ember.Route.extend({
       controller.set('bmDeployRamdiskImage', bmDeployRamdiskImage);
     });
 
+    controller.set('showSpinner', true);
+    this.loadAll().then(() => controller.set('showSpinner', false));
     controller.stopPolling();
     controller.startPolling();
   },
@@ -37,26 +28,152 @@ export default Ember.Route.extend({
   },
 
   actions: {
+    deleteNode(node) {
+      this.set('deleteNode', node);
+      this.set('openDeleteNodeConfirmation', true);
+      this.set('closeDeleteNodeConfirmation', false);
+    },
+
     refreshModelOnOverviewRoute() {
-      let taskPromises = [];
-      let introspection_tasks = this.modelFor('deployment')
-        .get('introspection_tasks');
+      this.loadAll();
+    },
 
-      introspection_tasks.forEach((node) => {
-        let nodeTaskId = node.get('task_id');
-        if (nodeTaskId && node.get('poll')) {
-          taskPromises.push(this.store.findRecord(
-            'foreman-task', nodeTaskId, { reload: true }));
-        }
-      });
-
-      Ember.RSVP.all(taskPromises).then((resolvedTasks) => {
-        if(taskPromises.length === 0) {
-          this.deactivate();
-        }
-        this.get('controller').set('arrayTasks', resolvedTasks);
-      });
+    error(error, message) {
+      console.log(error, message);
+      this.set('controller.errorMsg', this.formatError(error, message));
     }
-  }
+  },
 
+  loadAll() {
+    return Ember.RSVP.Promise.all([
+      this.loadNodes(),
+      this.loadPorts(),
+      this.loadIntrospectionTasks()
+    ]).then(() => {
+      this.organizeNodes();
+      this.loadForemanTasks();
+    });
+  },
+
+  loadNodes() {
+    let controller = this.get('controller');
+    return this.store.query('node', {deployment_id: controller.get('deploymentId')}).then(
+      (result) => {
+        controller.set('nodes', result);
+      },
+      (error) => {
+        return this.send('error', error, 'Error retrieving OpenStack nodes.');
+      });
+  },
+
+  loadPorts() {
+    let controller = this.get('controller');
+    let deploymentId = this.get('controller.deploymentId');
+    let token = Ember.$('meta[name="csrf-token"]').attr('content');
+    let url = `/fusor/api/openstack/deployments/${deploymentId}/node_ports`;
+
+    return request({
+      url: url,
+      type: 'GET',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-CSRF-Token": token
+      },
+      data: {}
+    }).then((result) => {
+      controller.set('ports', result.ports);
+    }, (error) => {
+      return this.send('error', error, `Unable to load node ports. GET "${url}" failed with status code ${error.jqXHR.status}.`);
+    });
+  },
+
+  loadIntrospectionTasks() {
+    let controller = this.get('controller');
+    let deploymentId = this.get('controller.deploymentId');
+    this.store.findRecord('deployment', deploymentId, {reload: true}).then(
+      (deployment) => {
+        controller.set('introspectionTasks', deployment.get('introspection_tasks'));
+      },
+      (error) => {
+        return this.send('error', error, 'ERROR retrieving deployment introspection tasks.');
+      });
+  },
+
+  organizeNodes() {
+    let nodes = this.get('controller.nodes');
+    let nodeManagers = this.get('controller.nodeManagers');
+    let processedNodeIds = {};
+
+    if (!nodes) {
+      return;
+    }
+
+    nodes.forEach((node) => {
+      processedNodeIds[node.get('id')] = true;
+
+      let manager = nodeManagers.find(mgr => mgr.driverMatchesNode(node));
+
+      if (!manager) {
+        manager = OspNodeManager.create({});
+        manager.setDriverInfoFromNode(node);
+        nodeManagers.unshiftObject(manager);
+      }
+
+      manager.putNode(node);
+    });
+
+    nodeManagers.forEach((manager) => {
+      let notDeleted = manager.get('nodes').filter(node => processedNodeIds[node.get('id')]);
+      manager.set('nodes', notDeleted);
+    });
+  },
+
+  loadForemanTasks() {
+    let taskPromises = [];
+    let introspectionTasks = this.get('controller.introspectionTasks') || [];
+    let newIntrospectionTaskIds = this.get('controller.newIntrospectionTaskIds') || [];
+    let nodes = this.get('controller.nodes') || [];
+
+    introspectionTasks.forEach((introspectionTask) => {
+      let foremanTaskId = introspectionTask.get('task_id');
+
+      let node = nodes.findBy('id', introspectionTask.get('node_uuid'));
+      let nodeNotReady = node && !node.get('ready');
+
+      let isNewIntrospectionTask = !!newIntrospectionTaskIds.contains(introspectionTask.get('task_id'));
+
+      if (foremanTaskId && (nodeNotReady || isNewIntrospectionTask)) {
+        taskPromises.push(this.store.findRecord('foreman-task', foremanTaskId, {reload: true}));
+      }
+    });
+
+    return Ember.RSVP.all(taskPromises).then((resolvedTasks) => {
+      this.get('controller').set('foremanTasks', resolvedTasks);
+    });
+  },
+
+  formatError(error, message) {
+    let errorMessage = '';
+    switch (Ember.typeOf(error)) {
+      case 'string':
+        errorMessage = error;
+        break;
+      case 'error':
+        errorMessage = error.message + ': ';
+        if (error.errors) {
+          error.errors.forEach((subError) => {
+            if (subError.title){
+              errorMessage += subError.title;
+            }
+            if (subError.status){
+              errorMessage += `  Status: ${subError.status}`;
+            }
+          });
+        }
+        break;
+    }
+
+    return message ? message + ' ' + errorMessage : errorMessage;
+  }
 });
