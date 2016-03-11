@@ -104,9 +104,7 @@
   background: #ffffff;
   border: 2px solid #bbbbbb;
   border-radius: 1px;
-  float: left;
   margin: 0 10px 10px 0;
-  min-width: 150px;
   padding: 6px 20px;
   position: relative;
   text-align: center;
@@ -287,6 +285,10 @@
 .deployment-roles-assigned .draggable-object {
   padding: 0;
   display: block;
+}
+.deployment-roles-unassigned .draggable-object {
+  width: 150px;
+  display: inline-block;
 }
 .deployment-roles-all-assigned {
   color: #999999;
@@ -484,10 +486,251 @@
     margin-top: 5px;
   }
 }
-.upload-nodes {
-  border-bottom: 1px solid #e9e8e8;
-  border-top: 1px solid #e9e8e8;
-  clear: right;
-  margin: 0 0 15px;
-  padding: 15px 0 0;
+
+// ----------------------------
+// OSP node registation
+
+// Node registration error alerts
+
+.register-nodes-errors {
+  .foreman-task-error-link {
+    color: #333;
+  }
+
+  .rhci-alert {
+    min-height: 48px;
+  }
+
+  .validation-alert-icon {
+    margin-top: 5px;
+  }
+}
+
+// Register nodes modals
+
+.register-nodes-button , .register-more-nodes-button {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  padding: 6px 10px 6px 10px;
+}
+
+.node-registration-modal .modal-body {
+  min-height: 460px;
+}
+
+.new-node-submit-button {
+  min-width: 70px;
+}
+
+.csv-upload-input {
+  line-height: 12px;
+}
+
+.new-node-form-csv {
+  margin-bottom: 10px;
+}
+
+.add-node-form {
+  margin-top: 16px;
+}
+
+.add-node-uneditable-input-container {
+  padding-top: 2px;
+}
+.new-node-registration-csv-errors {
+  color: $error-color;
+}
+
+.new-node-registration-csv-success {
+  color: darkgreen;
+}
+
+.new-node-detect-infobar-col {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.new-node-detect-infobar-left,
+.new-node-detect-infobar-middle,
+.new-node-detect-infobar-right {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-bottom: #333 solid 1px;
+  border-top: #333 solid 1px;
+  .fa-exclamation-triangle {
+    color: #333;
+  }
+  .fa-exclamation-triangle.detect-nodes-error-icon {
+    color: $error-color;
+  }
+}
+
+.new-node-detect-infobar-middle {
+  padding: 6px 20px 6px 20px;
+}
+
+.new-node-detect-infobar-left {
+  padding: 5px 15px 1px 15px;
+  margin-left: 20px;
+  border-left: #333 solid 1px;
+  font-size: 16px;
+}
+
+.new-node-detect-infobar-right {
+  padding: 6px 10px 6px 20px;
+  margin-right: 20px;
+  border-right: #333 solid 1px;
+}
+
+p.new-node-auto-detect-count {
+  margin-bottom: 0;
+}
+
+.new-node-detect-hosts-container {
+  max-height: 450px;
+  overflow-y: auto;
+  margin-top: 18px;
+}
+
+.new-node-detect-list-singlemac {
+  margin-top: 18px;
+}
+
+.new-node-detect-form {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+.new-node-detect-checkbox {
+  margin-right: 4px;
+}
+
+.new-node-deselected-text {
+  text-decoration: line-through;
+}
+
+.new-node-detect-hostnumber {
+  width: 25px;
+}
+.form-control.new-node-detect-select,
+.new-node-detect-mac-address {
+  width: 140px;
+  margin-right: 15px;
+}
+
+.new-node-form-span {
+  display: inline-block;
+  vertical-align: middle;
+  padding-bottom: 1px;
+}
+
+.new-node-detect-hostname {
+  font-style: italic;
+}
+
+// Node groups and status
+
+.osp-node-manager-list {
+  margin-top: 24px;
+}
+
+span.registered-node-count {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.osp-node-manager-panel-body {
+  padding-top: 0;
+}
+
+.osp-node-manager-nodes-count-section {
+  padding-top: 0;
+  padding-right: 6px;
+}
+
+.osp-node-manager-nodes-info-section {
+  padding-top: 10px;
+  padding-left: 0px;
+}
+
+.node-info {
+  margin-bottom: 0;
+}
+
+.node-info-label {
+  font-weight: bold;
+}
+
+.osp-node-manager-panel {
+  border-color: #333333;
+}
+
+.panel-heading.osp-node-manager-panel-heading {
+  border-color: #333333;
+  font-size: 14px;
+}
+
+.osp-node-row {
+  height:26px;
+}
+
+.btn-delete-node {
+  display: none;
+}
+
+.osp-node-row:hover .btn-delete-node {
+  display: inline-block;
+}
+
+.osp-node-progress {
+  margin-bottom: 0;
+}
+
+.osp-node-progress-bar {
+  background-color: lightgray;
+  color: #333;
+  text-align: left;
+}
+
+.osp-node-progress-bar-label {
+  margin-left: 2px;
+}
+
+.osp-node-progress-bar.progress-bar-danger {
+  background-color: $error-color;
+  color: white;
+  min-width: 100px;
+}
+
+.osp-node-status-column {
+  padding: 0;
+  text-align: right;
+
+  >.fa.fa-exclamation-triangle {
+    font-size: 14px;
+    color: $warning-color;
+  }
+
+  >.fa.fa-times-circle-o {
+    font-size: 14px;
+    color: $error-color;
+  }
+
+  >.spinner.spinner-xs.spinner-inline {
+    margin-right: 0;
+  }
+}
+
+.osp-node-list-title, .osp-node-progress-column {
+  padding-left: 10px;
+  padding-right: 2px;
+}
+
+.osp-node-action-column {
+  padding-left: 2px;
+  font-size: 14px;
+  .fa.fa-power-off {
+    font-size: 12px;
+    margin-left: 7px;
+    color: #969696;
+  }
 }

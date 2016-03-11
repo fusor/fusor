@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
-import { AggregateValidator, PresenceValidator, AlphaNumericDashUnderscoreValidator, HostnameValidator } from '../utils/validators';
+import { AllValidator, PresenceValidator, AlphaNumericDashUnderscoreValidator, HostnameValidator } from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
@@ -87,14 +87,14 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   ),
 
-  computerNameValidator: AggregateValidator.create({
+  computerNameValidator: AllValidator.create({
     validators: [
       PresenceValidator.create({}),
       AlphaNumericDashUnderscoreValidator.create({})
     ]
   }),
 
-  hostnameValidator: AggregateValidator.create({
+  hostnameValidator: AllValidator.create({
     validators: [
       PresenceValidator.create({}),
       HostnameValidator.create({})
@@ -139,6 +139,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
 
   disableNextStorage: Ember.computed(
+    'isCloudForms',
     'isInvalidStorageFields',
     'isInvalidExportDomainFields',
     'invalidStorageName',

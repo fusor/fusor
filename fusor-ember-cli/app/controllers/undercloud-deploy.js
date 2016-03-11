@@ -2,7 +2,7 @@ import Ember from 'ember';
 import request from 'ic-ajax';
 import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
-import { AggregateValidator, PresenceValidator, IpAddressValidator } from '../utils/validators';
+import { AllValidator, PresenceValidator, HostAddressValidator } from '../utils/validators';
 
 export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
 
@@ -19,10 +19,10 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
 
   undercloudIPHelp: "The IP address that the already-installed Red Hat Enterprise Linux OpenStack Platform undercloud is running on.",
 
-  undercloudIpValidator: AggregateValidator.create({
+  undercloudIpValidator: AllValidator.create({
     validators: [
       PresenceValidator.create({}),
-      IpAddressValidator.create({})
+      HostAddressValidator.create({})
     ]
   }),
 

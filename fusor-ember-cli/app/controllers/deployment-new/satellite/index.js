@@ -4,13 +4,13 @@ import ValidatesDeploymentNameMixin from "../../../mixins/validates-deployment-n
 
 export default Ember.Controller.extend(NeedsDeploymentNewMixin, ValidatesDeploymentNameMixin, {
 
-  deploymentNewSatelliteController: Ember.inject.controller('deployment-new/satellite'),
   deploymentNewController: Ember.inject.controller('deployment-new'),
 
   name: Ember.computed.alias("deploymentNewController.name"),
   description: Ember.computed.alias("deploymentNewController.description"),
 
-  organizationTabRouteName: Ember.computed.alias("deploymentNewSatelliteController.organizationTabRouteName"),
+  organizationTabRouteName: Ember.computed.alias("deploymentNewController.organizationTabRouteName"),
+  lifecycleEnvironmentTabRouteName: Ember.computed.alias("deploymentNewController.lifecycleEnvironmentTabRouteName"),
 
   disableNextOnDeploymentName: Ember.computed.alias("deploymentNewController.disableNextOnDeploymentName"),
 

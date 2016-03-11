@@ -14,7 +14,7 @@ module Fusor
   class Api::V21::DeploymentsController < Api::V2::DeploymentsController
 
     before_filter :find_deployment, :only => [:destroy, :show, :update,
-                                              :deploy, :validate, :log]
+                                              :deploy, :redeploy, :validate, :log]
 
     rescue_from Encoding::UndefinedConversionError, :with => :ignore_it
 
@@ -59,6 +59,19 @@ module Fusor
       # just inherit from V2
       begin
         super
+      rescue ::ActiveRecord::RecordInvalid
+        render json: {errors: @deployment.errors}, status: 422
+      end
+    end
+
+    def redeploy
+      begin
+        if @deployment.invalid?
+          raise ::ActiveRecord::RecordInvalid.new @deloyment
+        end
+        ::Fusor.log.warn "Attempting to redeploy deployment with id [ #{@deployment.id} ]"
+        new_deploy_task = async_task(::Actions::Fusor::Deploy, @deployment)
+        respond_for_async :resource => new_deploy_task
       rescue ::ActiveRecord::RecordInvalid
         render json: {errors: @deployment.errors}, status: 422
       end

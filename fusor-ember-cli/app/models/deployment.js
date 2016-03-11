@@ -13,6 +13,7 @@ export default DS.Model.extend({
   deploy_openstack: DS.attr('boolean'),
 
   is_disconnected: DS.attr('boolean'),
+  has_content_error: DS.attr('boolean'),
   rhev_is_self_hosted: DS.attr('boolean'),
 
   rhev_engine_admin_password: DS.attr('string'),

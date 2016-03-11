@@ -1,0 +1,45 @@
+<div class="row">
+  <div class="col-xs-12">
+    <p>Nodes can be detected automatically in some environments, or manually, either by identifying each node by
+      hand, or through a CSV file that maps each desired node.</p>
+    <p>Determine how to register nodes.</p>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-offset-1 col-xs-11">
+
+    <div class='radio'>
+      <label>
+        {{#radio-button value="auto_detect" groupValue=registerNodesMethod id="optionNewNodeMethodAuto"}}{{/radio-button}}
+        Auto-detection
+      </label>
+    </div>
+
+    {{#if isNewNodeMethodAuto}}
+      {{partial "new-node-registration-auto"}}
+    {{/if}}
+
+    <div class="radio">
+      <label>
+        {{#radio-button value="csv_upload" groupValue=registerNodesMethod id="optionNewNodeMethodCSV"}}{{/radio-button}}
+        Upload a CSV file
+      </label>
+    </div>
+
+    {{#if isNewNodeMethodCSV}}
+      {{partial "new-node-registration-csv"}}
+    {{/if}}
+
+    <div class="radio">
+      <label>
+        {{#radio-button value="manual" groupValue=registerNodesMethod id="optionNewNodeMethodManual"}}{{/radio-button}}
+        Manual entry
+      </label>
+    </div>
+
+    {{#if isNewNodeMethodManual}}
+      {{partial "new-node-registration-manual"}}
+    {{/if}}
+
+  </div>
+</div>

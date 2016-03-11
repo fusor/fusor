@@ -16,7 +16,7 @@ module FusorUi
           }
         end
 
-        sub_menu :top_menu, :fusor_menu, :caption => N_('RHCI Installer'), :after => :infrastructure_menu do
+        sub_menu :top_menu, :fusor_menu, :caption => N_('QuickStart Cloud Installer'), :after => :infrastructure_menu do
           menu :top_menu, :fusor_deployments,
                :url_hash => { :controller => 'fusor_ui/placeholders', :action => :index },
                :caption  => N_('Deployments')

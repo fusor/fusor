@@ -139,9 +139,14 @@ p.error.errorForValidation {
 
 .validation-alert-icon {
   float: left;
+  margin-top: 10px;
 }
 
-.validation-alert-message {
+p.validation-alert-message {
+  margin-left: 48px;
+}
+
+ul.validation-alert-message {
   margin-left: 24px;
 }
 
@@ -518,4 +523,19 @@ table.fusor-table {
   color: #6d6e70;
   font-style: italic;
   font-weight: lighter;
+}
+
+.btn-icon {
+  color: #333;
+  background-color: transparent;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  i.fa {
+    font-size: 14px;
+  }
+}
+
+.btn-icon.btn-icon-primary {
+  color: #189ad1;
 }
