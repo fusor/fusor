@@ -1,0 +1,11 @@
+<div class='col-xs-2 col-sm-2 col-md-1'>
+  <strong>{{label}}</strong>
+</div>
+
+<div class='col-xs-4 col-sm-6 col-md-9'>
+  {{#if isEditMode}}
+    {{input value=value class='input-ose'}} {{suffix}}
+  {{else}}
+    {{value}} {{suffix}}
+  {{/if}}
+</div>

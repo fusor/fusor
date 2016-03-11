@@ -139,6 +139,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
 
   disableNextStorage: Ember.computed(
+    'isCloudForms',
     'isInvalidStorageFields',
     'isInvalidExportDomainFields',
     'invalidStorageName',

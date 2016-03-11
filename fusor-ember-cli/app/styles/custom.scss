@@ -11,12 +11,14 @@ $error-color: #cc0000;
 }
 
 .rhci-footer-selected{
-  background-color: #eee; /*#5cb85c*/
+  background-color: #0099d3;
+  color: #ffffff;
   vertical-align: middle;
 }
 
 .rhci-footer-unselected{
   background-color:#eee;
+  color: #0099d3;
 }
 
 .rhci-footer-box {
@@ -32,20 +34,20 @@ $error-color: #cc0000;
 }
 
 i.fa-check {
-  color: #0099d3;
+  color: #ffffff;
 }
 
 .rhci-install-footer {
-  color: #0099d3;
   font-size: 130%;
 }
 
 .rhci-item {
   background-color:#eee;
+  margin:2px;
 }
 
 .rhci-item-selected {
-  border-bottom: solid 6px #0099d3;
+  /*border-: solid 6px #0099d3;*/
 }
 
 .subscriptions_needed {
@@ -518,4 +520,168 @@ table.fusor-table {
   color: #6d6e70;
   font-style: italic;
   font-weight: lighter;
+}
+
+.right-start-col {
+  margin-left: -38px;
+}
+
+.rhci-item-desc {
+  padding: 10px;
+}
+
+.rhci-product-image {
+  height: 210px;
+}
+
+.button-selection {
+  border: solid 1px #0099d3;
+  background-color: #eee;
+  color: #0099d3;
+  text-align: center;
+  display: inline-block;
+  min-width: 30px;
+  padding: 5px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.button-disabled {
+  border: solid 1px #6dd7ff;
+  color: #6dd7ff;
+  background-color: #f7f7f7;
+  cursor: not-allowed;
+}
+
+.button-selection-selected {
+  background-color: #0099d3;
+  color: #fff;
+}
+
+.progress-bar-gray {
+  background-color: #bbb !important;
+}
+
+.progress-bar-black {
+  background-color: #000 !important;
+  color: #fff;
+}
+
+.input-ose {
+  width: 20px;
+  text-align: center;
+}
+
+.ose-env-summary {
+  margin-top: 30px;
+  margin-left: 20px;
+}
+
+.node-details {
+  margin-top: 30px;
+  margin-left: 20px;
+}
+
+.env-summary-title {
+  background-color: #eee;
+  margin-left: 0px;
+  padding: 10px 10px;
+  border: solid 1px #000;
+}
+
+.env-summary-body {
+  margin-left: 0px;
+  padding: 10px 10px 0px 10px;
+  border-left: solid 1px #000;
+  border-right: solid 1px #000;
+}
+
+.env-summary-progressbars {
+  margin-left: 0px;
+  padding: 10px 30px 10px 20px;
+  border-left: solid 1px #000;
+  border-right: solid 1px #000;
+  border-bottom: solid 1px #000;
+}
+
+.node-details-body {
+  margin-left: 0px;
+  padding: 10px 30px 10px 20px;
+  border-left: solid 1px #000;
+  border-right: solid 1px #000;
+  border-bottom: solid 1px #000;
+}
+
+.ose-help-msg {
+  padding-left: 30px;
+  font-style: italic;
+}
+
+.env-summary-needed-available {
+  padding-bottom: 8px;
+  padding-right: -15px;
+}
+
+.amt-needed {
+  position: absolute;
+  top: 0px;
+  left: 7px;
+  height: 20px;
+}
+.amt-available {
+  position: absolute;
+  top: 0px;
+  right: 10px;
+  height: 20px;
+}
+
+.needed-available-bar {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 20px;
+}
+
+.label-needed-available {
+  position: absolute;
+  top: 0px;
+  left: 10px;
+  height: 20px;
+}
+
+.light-gray-background {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 20px;
+  width: 100%;
+  background-color: #eee;
+}
+
+.white {
+  color: #fff;
+}
+
+.black {
+  color: #000;
+}
+
+.node-details-col {
+  padding-left: 10px;
+}
+
+h1.num-ose-node {
+  padding: 0px;
+  margin: 0px;
+  font-weight: bold;
+  font-size: 36px;
+}
+
+.node-details-block {
+  padding-left: 40px;
+}
+
+.ose-node-line {
+  padding-top: 5px;
+  min-height: 20px;
 }

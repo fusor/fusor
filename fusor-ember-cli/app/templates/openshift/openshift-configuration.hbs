@@ -1,0 +1,60 @@
+<p>
+  Select external storage to store the docker registry images.
+</p>
+
+<form class="form form-horizontal">
+
+  {{#base-f label="Storage Type" isRequired=true}}
+
+    {{#radio-button value="NFS" groupValue=model.openshift_storage_type id='nfs'
+                    disabled=isStarted}}
+      <span class="{{if isStarted 'disabled'}}">
+        NFS
+      </span>
+    {{/radio-button}}
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    {{#radio-button value="Gluster" groupValue=model.openshift_storage_type id='gluster' disabled=true}}
+      <span class="disabled">
+        Gluster
+      </span>
+    {{/radio-button}}
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    {{#radio-button value="DoNotUse" groupValue=model.openshift_storage_type id='do_not_use' disabled=true}}
+      <span class="disabled">
+        Do not use
+      </span>
+    {{/radio-button}}
+  {{/base-f}}
+
+  {{#if isNFS}}
+      {{text-f label="Name" value=model.openshift_storage_name isRequired=true cssId='openshift_storage_name' disabled=isStarted isAlphaNumeric=true}}
+      {{text-f label="Description (Optional)" value=model.openshift_storage_desc  cssId='openshift_storage_desc' disabled=isStarted}}
+      {{text-f label="Export Path" value=model.openshift_export_path isRequired=true cssId='openshift_export_path' disabled=isStarted errors=errorsHashExportPath}}
+
+      <br />
+      <p>
+        Set the user account that will be created and used to configure all nodes.
+      </p>
+      {{text-f label="Username" value=model.openshift_username isRequired=true cssId='openshift_username' disabled=isStarted validator=openshiftUsernameValidator}}
+
+  {{else if isGluster}}
+
+  {{else if isDoNotUse}}
+
+  {{/if}}
+
+  <br />
+  <p>
+    Set subdomain name for a wildcard entry to point to the OpenShift router.
+  </p>
+  {{text-f label="Subdomain" value=model.openshift_subdomain_name isRequired=true cssId='openshift_subdomain_name' disabled=isStarted validator=hostnameValidator
+  preText="*." postText=postTextDomainName}}
+
+</form>
+
+{{cancel-back-next backRouteName='openshift.openshift-nodes'
+                   disableBack=false
+                   nextRouteName=nextRouteNameAfterOpenshift
+                   disableNext=disableNextOpenshiftConfig
+                   disableCancel=isStarted
+                   deploymentName=deploymentName}}

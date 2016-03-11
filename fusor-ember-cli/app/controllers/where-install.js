@@ -10,7 +10,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isNotRhev: Ember.computed.not("isRhev"),
   isOpenStack: Ember.computed.alias("deploymentController.isOpenStack"),
   isNotOpenStack: Ember.computed.not("isOpenStack"),
+  isOpenStack: Ember.computed.alias("deploymentController.isOpenStack"),
   isInvalidCfmeInstallLocation: Ember.computed.alias("cloudformsController.isInvalidCfmeInstallLocation"),
+  isOpenShift: Ember.computed.alias("deploymentController.isOpenShift"),
 
   disableRHEV: Ember.computed('isStarted', 'isNotRhev', function() {
     return (this.get('isStarted') || this.get('isNotRhev'));
@@ -28,8 +30,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return (this.get('disableOpenStack') || this.get('isStarted'));
   }),
 
-  backRouteName: Ember.computed('isOpenStack', 'isRhev', function() {
-    if (this.get('isOpenStack')) {
+  backRouteName: Ember.computed('isOpenStack', 'isRhev', 'isOpenShift', function() {
+    if (this.get('isOpenShift')) {
+      return 'openshift.openshift-configuration';
+    } else if (this.get('isOpenStack')) {
       return 'openstack.overcloud';
     } else if (this.get('isRhev')) {
       return 'storage';

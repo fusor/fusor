@@ -11,6 +11,7 @@ export default DS.Model.extend({
   deploy_rhev: DS.attr('boolean'),
   deploy_cfme: DS.attr('boolean'),
   deploy_openstack: DS.attr('boolean'),
+  deploy_openshift: DS.attr('boolean'),
 
   is_disconnected: DS.attr('boolean'),
   rhev_is_self_hosted: DS.attr('boolean'),
@@ -64,6 +65,43 @@ export default DS.Model.extend({
 
   cdn_url: DS.attr('string'),
   manifest_file: DS.attr('string'),
+
+  openshift_install_loc: DS.attr('string'),
+
+  openshift_number_master_nodes: DS.attr('number'),
+  openshift_number_worker_nodes: DS.attr('number'),
+
+  numNodes: Ember.computed('openshift_number_master_nodes',
+                           'openshift_number_worker_nodes', function() {
+      return this.get('openshift_number_master_nodes') + this.get('openshift_number_worker_nodes');
+  }),
+
+  openshift_storage_size: DS.attr('number'),
+  openshift_username: DS.attr('string'),
+  openshift_master_vcpu: DS.attr('number'),
+  openshift_master_ram: DS.attr('number'),
+  openshift_master_disk: DS.attr('number'),
+  openshift_node_vcpu: DS.attr('number'),
+  openshift_node_ram: DS.attr('number'),
+  openshift_node_disk: DS.attr('number'),
+  openshift_available_vcpu: DS.attr('number'),
+  openshift_available_ram: DS.attr('number'),
+  openshift_available_disk: DS.attr('number'),
+  openshift_storage_type: DS.attr('string'),
+  openshift_storage_name: DS.attr('string'),
+  openshift_storage_desc: DS.attr('string'),
+  openshift_export_path: DS.attr('string'),
+  openshift_subdomain_name: DS.attr('string'),
+
+  cloudforms_vcpu: DS.attr('number'),
+  cloudforms_ram: DS.attr('number'),
+  cloudforms_vm_disk_size: DS.attr('number'),
+  cloudforms_db_disk_size: DS.attr('number'),
+
+  cfmeDisk: Ember.computed('cloudforms_vm_disk_size',
+                           'cloudforms_db_disk_size', function() {
+      return this.get('cloudforms_vm_disk_size') + this.get('cloudforms_db_disk_size');
+  }),
 
   created_at: DS.attr('date'),
   updated_at: DS.attr('date'),

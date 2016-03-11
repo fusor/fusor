@@ -3,7 +3,7 @@ module Fusor
 
     embed :ids, include: true
     attributes :id, :name, :label, :description,
-               :deploy_rhev, :deploy_cfme, :deploy_openstack,
+               :deploy_rhev, :deploy_cfme, :deploy_openstack, :deploy_openshift,
                :rhev_engine_admin_password,
                :rhev_database_name, :rhev_cluster_name, :rhev_storage_name,
                :rhev_storage_type, :rhev_storage_address, :rhev_cpu_type, :rhev_share_path,
@@ -31,7 +31,33 @@ module Fusor
                :cfme_hostname,
                :is_disconnected,
                :cdn_url, :manifest_file,
+               :openshift_install_loc,
+               :openshift_number_nodes,
+               :openshift_storage_size,
+               :openshift_username,
+               :openshift_master_vcpu,
+               :openshift_master_ram,
+               :openshift_master_disk,
+               :openshift_node_vcpu,
+               :openshift_node_ram,
+               :openshift_node_disk,
+               :openshift_available_vcpu,
+               :openshift_available_ram,
+               :openshift_available_disk,
+               :openshift_number_master_nodes,
+               :openshift_number_worker_nodes,
+               :openshift_storage_type,
+               :openshift_storage_name,
+               :openshift_storage_desc,
+               :openshift_export_path,
+               :openshift_username,
+               :openshift_subdomain_name,
+               :cloudforms_vcpu,
+               :cloudforms_ram,
+               :cloudforms_vm_disk_size,
+               :cloudforms_db_disk_size,
                :created_at, :updated_at
+
 
     has_one :organization, serializer: ::OrganizationSerializer
     has_one :lifecycle_environment, serializer: ::LifecycleEnvironmentSerializer

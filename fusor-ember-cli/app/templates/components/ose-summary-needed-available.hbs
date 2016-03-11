@@ -1,0 +1,29 @@
+<div class='col-xs-2 col-sm-2 col-md-2 col-lg-2'>
+  <div class='label-needed-available'>
+    <strong>{{label}}</strong>
+  </div>
+</div>
+
+<div class='col-xs-10 col-sm-10 col-md-10 col-lg-10'>
+    <div class='light-gray-background'>
+      &nbsp;
+    </div>
+    <div class="needed-available-bar {{progressBarClass}}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={{percentProgressInt}} style="width: {{styleWidth}};">
+      &nbsp;{{helpText}}
+    </div>
+    <div class="amt-needed {{fontColorClass}}">
+      {{needed}} {{suffix}}
+    </div>
+    <div class='amt-available {{fontColorClass}}'>
+      {{available}} {{suffix}}
+      {{#if showSubstractTooltip}}
+        {{tool-tip srcImage='/assets/r/blue-i.png' title=tooltipDisk}}
+      {{/if}}
+    </div>
+    <div class="ose-help-msg {{helpTextClass}}">
+      {{helpText}}
+      &nbsp;
+    </div>
+</div>
+
+

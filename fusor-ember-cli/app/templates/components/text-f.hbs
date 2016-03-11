@@ -1,7 +1,7 @@
 {{#base-f label=label labelSize=labelSize inputSize=inputSize unitsSize=unitsSize unitsLabel=unitsLabel help-inline=help-inline errors=errors isRequired=isRequired hasError=hasError helpText=helpText}}
 
-  {{input class="form-control" value=value placeholder=placeholder type=typeInput focus-out="showValidationErrors" id=cssId disabled=disabled autocomplete='off'
-  maxlength="250"}}
+  {{preText}}{{input class=cssFormClass value=value placeholder=placeholder type=typeInput focus-out="showValidationErrors" id=cssId disabled=disabled autocomplete='off'
+  maxlength="250"}}{{postText}}
 
   {{#if canShowPassword}}
           <i {{action 'showPassword'}} class="fa {{eyeIcon}} eye-icon"></i>

@@ -13,6 +13,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isRhev: Ember.computed.alias("deploymentController.model.deploy_rhev"),
   isOpenStack: Ember.computed.alias("deploymentController.model.deploy_openstack"),
   isCloudForms: Ember.computed.alias("deploymentController.model.deploy_cfme"),
+  isOpenShift: Ember.computed.alias("deploymentController.model.deploy_openshift"),
 
   //overwritten by setupController
   organizationUpstreamConsumerUUID: null,
@@ -36,9 +37,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return Ember.isPresent(this.get('organizationUpstreamConsumerUUID'));
   }),
 
-  backRouteNameonCredentials: Ember.computed('isRhev', 'isOpenStack', 'isCloudForms', function() {
+  backRouteNameonCredentials: Ember.computed('isRhev', 'isOpenStack', 'isOpenShift', 'isCloudForms', function() {
     if (this.get('isCloudForms')) {
       return 'cloudforms.cfme-configuration';
+    } else if (this.get('isOpenShift')) {
+      return 'openshift.openshift-configuration';
     } else if (this.get('isOpenStack')) {
       return 'openstack.overcloud';
     } else if (this.get('isRhev')) {

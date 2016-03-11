@@ -9,20 +9,27 @@
   </div>
 </div>
 
-<div class='row' style='height:370px;'>
+<div class='row'>
 
   <div class='col-md-4'>
-    {{rhci-item srcImage=imgRhev isChecked=isRhev name=nameRhev cssId='is_rhev'}}
+    {{rhci-item srcImage=imgRhev isChecked=isRhev name=nameRhev cssId='is_rhev' desc=descRhev}}
   </div>
+
+  <div class='col-md-4 right-start-col'>
+    {{rhci-item srcImage=imgOpenStack isChecked=isOpenStack name=nameOpenStack cssId='is_openstack' desc=descOpenstack}}
+  </div>
+
+</div>
+
+<div class='row'>
 
   <div class='col-md-4'>
-    {{rhci-item srcImage=imgOpenStack isChecked=isOpenStack name=nameOpenStack cssId='is_openstack'}}
+    {{rhci-item srcImage=imgCloudForms isChecked=isCloudForms name=nameCloudForms cssId='is_cloudforms' isDisabled=isDisabledCfme desc=descCfme}}
   </div>
 
-  <div class='col-md-4'>
-    {{rhci-item srcImage=imgCloudForms isChecked=isCloudForms name=nameCloudForms cssId='is_cloudforms' isDisabled=isDisabledCfme}}
+  <div class='col-md-4 right-start-col'>
+    {{rhci-item srcImage=imgOpenShift isChecked=isOpenShift name=nameOpenShift cssId='is_openshift' isDisabled=isDisabledOpenShift desc=descOpenshift}}
   </div>
-
 </div>
 
 {{#unless isUpstream}}

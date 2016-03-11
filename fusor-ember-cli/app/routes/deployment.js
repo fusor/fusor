@@ -21,6 +21,8 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     controller.set('confirmOvercloudPassword', model.get('openstack_overcloud_password'));
 
     this.loadOpenStack(controller, model);
+    this.loadOpenshiftDefaults(controller, model);
+    this.loadCloudFormsDefaults(controller, model);
     // copied from setupController in app/routes/subscriptions/credentials.js
     // to fix bug of Review Tab being disabled on refresh and needing to click
     // on subscriptions to enable it
@@ -42,6 +44,66 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       }
     });
 
+  },
+
+  loadCloudFormsDefaults(controller, model) {
+    // GET from API v2 CFME settings for Foreman/Sat6 - if CFME is selected
+    if (model.get('deploy_cfme')) {
+      request('api/v2/settings?search=cloudforms').then(function(settings) {
+        var results = settings['results'];
+        if (!(model.get('cloudforms_vcpu') > 0)) {
+          model.set('cloudforms_vcpu', results.findBy('name', 'cloudforms_vcpu').value);
+        }
+        if (!(model.get('cloudforms_ram') > 0)) {
+          model.set('cloudforms_ram', results.findBy('name', 'cloudforms_ram').value);
+        }
+        if (!(model.get('cloudforms_vm_disk_size') > 0)) {
+          model.set('cloudforms_vm_disk_size', results.findBy('name', 'cloudforms_vm_disk_size').value);
+        }
+        if (!(model.get('cloudforms_db_disk_size') > 0)) {
+          model.set('cloudforms_db_disk_size', results.findBy('name', 'cloudforms_db_disk_size').value);
+        }
+      });
+    }
+  },
+
+  loadOpenshiftDefaults(controller, model) {
+    // GET from API v2 OSE settings for Foreman/Sat6
+    if (model.get('deploy_openshift')) {
+      request('api/v2/settings?search=openshift').then(function(settings) {
+        var results = settings['results'];
+        if (!(model.get('openshift_master_vcpu') > 0)) {
+          model.set('openshift_master_vcpu', results.findBy('name', 'openshift_master_vcpu').value);
+        }
+        if (!(model.get('openshift_master_ram') > 0)) {
+          model.set('openshift_master_ram', results.findBy('name', 'openshift_master_ram').value);
+        }
+        if (!(model.get('openshift_master_disk') > 0)) {
+          model.set('openshift_master_disk', results.findBy('name', 'openshift_master_disk').value);
+        }
+        if (!(model.get('openshift_node_vcpu') > 0)) {
+          model.set('openshift_node_vcpu', results.findBy('name', 'openshift_node_vcpu').value);
+        }
+        if (!(model.get('openshift_node_ram') > 0)) {
+          model.set('openshift_node_ram', results.findBy('name', 'openshift_node_ram').value);
+        }
+        if (!(model.get('openshift_node_disk') > 0)) {
+          model.set('openshift_node_disk', results.findBy('name', 'openshift_node_disk').value);
+        }
+      });
+
+      // set default values 1 Master, 1 Worker, 20GB storage for OSE
+      if (!(model.get('openshift_number_master_nodes') > 0)) {
+        model.set('openshift_number_master_nodes', 1);
+      }
+      if (!(model.get('openshift_number_worker_nodes') > 0)) {
+        model.set('openshift_number_worker_nodes', 1);
+      }
+      if (!(model.get('openshift_storage_size') > 0)) {
+        model.set('openshift_storage_size', 20);
+      }
+
+    }
   },
 
   loadOpenStack(controller, model) {
