@@ -4734,7 +4734,7 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember', 'fusor-ember-
       return _ember['default'].isBlank(this.get('deploymentController.model.rhev_export_domain_path')) || this.get('hasEndingSlashInExportPath') || this.get('hasNoLeadingSlashInExportPath');
     }),
 
-    disableNextStorage: _ember['default'].computed('isInvalidStorageFields', 'isInvalidExportDomainFields', 'invalidStorageName', 'invalidStorageAddress', 'invalidExportDomainName', 'invalidExportAddress', function () {
+    disableNextStorage: _ember['default'].computed('isCloudForms', 'isInvalidStorageFields', 'isInvalidExportDomainFields', 'invalidStorageName', 'invalidStorageAddress', 'invalidExportDomainName', 'invalidExportAddress', function () {
       if (this.get('isCloudForms')) {
         return this.get('isInvalidStorageFields') || this.get('isInvalidExportDomainFields') || this.get('invalidStorageName') || this.get('invalidStorageAddress') || this.get('invalidExportDomainName') || this.get('invalidExportAddress');
       } else {
@@ -33481,7 +33481,7 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
           var el1 = dom.createTextNode("      ");
           dom.appendChild(el0, el1);
           var el1 = dom.createElement("p");
-          var el2 = dom.createTextNode("No nodes detected yet... wait for it...");
+          var el2 = dom.createTextNode("No nodes detected yet...");
           dom.appendChild(el1, el2);
           dom.appendChild(el0, el1);
           var el1 = dom.createTextNode("\n");
@@ -33963,7 +33963,7 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
         var el3 = dom.createTextNode("\n    ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("p");
-        var el4 = dom.createTextNode("Select a network interface for registration on any node with multiple available.\n      Nodes with a single network interface will not require any interaction.");
+        var el4 = dom.createTextNode("Choose a network interface for registration on any node with multiple detected.\n      Unselected nodes will not be registered.");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n  ");
@@ -36536,7 +36536,7 @@ define("fusor-ember-cli/templates/register-nodes", ["exports"], function (export
           var el3 = dom.createTextNode("\n      ");
           dom.appendChild(el2, el3);
           var el3 = dom.createElement("p");
-          var el4 = dom.createTextNode("Register nodes with the selected undercloud to build out your OpenStack environment.");
+          var el4 = dom.createTextNode("Register at least 2 nodes with the selected undercloud to build out your OpenStack environment.");
           dom.appendChild(el3, el4);
           dom.appendChild(el2, el3);
           var el3 = dom.createTextNode("\n    ");
@@ -46573,11 +46573,11 @@ define('fusor-ember-cli/utils/validators', ['exports', 'ember'], function (expor
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+be94edd7"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+39adc867"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+be94edd7"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+39adc867"});
 }
 
 /* jshint ignore:end */
