@@ -49,7 +49,7 @@ module Fusor
       app.routes_reloader.paths << "#{Fusor::Engine.root}/config/routes/api/customer_portal.rb"
     end
 
-    initializer 'fusor.register_plugin', :after => :finisher_hook do |app|
+    initializer 'fusor.register_plugin' do |app|
       Foreman::Plugin.register :fusor do
         requires_foreman '>= 1.7'
 

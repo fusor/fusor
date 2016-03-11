@@ -32,8 +32,8 @@ module Actions
           host = ::Host::Base.find(input[:host_id])
           fail _("====== Host is null! Cannot wait for host! ====== ") unless host
 
-          ::Fusor.log.info "Waiting for host #{host.name}'s provisioning to complete..."
-          if host.is_a?(::Host::Managed) && host.error?
+          ::Fusor.log.info "Waiting for host #{host.name}'s deployment to complete..."
+          if host.is_a?(::Host::Managed) && host.global_status > 0
             fail _("Failed to provision host '%s'.") % host.name
           end
 

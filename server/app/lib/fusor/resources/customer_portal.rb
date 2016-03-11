@@ -65,7 +65,7 @@ module Fusor
           settings = SETTINGS[:fusor][:customer_portal]
           prefix = (settings && settings[:url]) || "https://subscription.rhn.redhat.com:443/subscription"
 
-          if ::Katello.config.cdn_proxy && ::Katello.config.cdn_proxy.host
+          if SETTINGS[:katello][:cdn_proxy] && SETTINGS[:katello][:cdn_proxy][:host]
             proxy_config = ::Katello.config.cdn_proxy
             uri = URI('')
 

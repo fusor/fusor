@@ -56,6 +56,7 @@ if [ $1 == "install" ]; then
   ln -s ../../../fusor/server/test/fixtures/* .
   rm -f hosts.yml
   ln -s ../../../katello/test/fixtures/models/* .
+  echo "" >> hosts.yml
   cat ../../../fusor/server/test/fixtures/hosts.yml >> hosts.yml
 
 else

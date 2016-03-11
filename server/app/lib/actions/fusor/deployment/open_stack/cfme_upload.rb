@@ -50,7 +50,7 @@ module Actions
           private
 
           def upload_cfme_image(overcloud, name, cfme_image)
-            glance = Fog::Image::OpenStack.new(overcloud)
+            glance = Fog::Image::OpenStack::V1.new(overcloud)
             # This has at times proven unreliable
 
             tries = 25

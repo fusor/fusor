@@ -95,14 +95,13 @@ module Actions
                     "operatingsystem_id" => Operatingsystem.find_by_title('RedHat 7.1')['id'],
                     "domain_id" => 1,
                     "root_pass" => "smartvm",
-                    "mac" => "admin",
                     "provision_method" => "image",
                     "build" => 1,
                     "is_owned_by" => "3-Users",
                     "compute_profile_id" => ComputeProfile.find_by_name("#{deployment.label}-cfme").id}
             host = ::Host.create(cfme)
 
-            if host.errors.empty?
+            if host.global_status == 0
               cfme_launch_completed
               return host
             else

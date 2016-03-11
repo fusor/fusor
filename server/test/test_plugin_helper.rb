@@ -100,12 +100,13 @@ module FixtureTestCase
     self.set_fixture_class :hosts => "::Host::Base"
     self.set_fixture_class :fusor_subscriptions => "Fusor::Subscription"
 
-    load_fixtures
+
     fixtures(:all)
+    FIXTURES = load_fixtures(ActiveRecord::Base)
   end
 end
 
-class ActiveSupport::TestCase
+class ActionController::TestCase
   include FixtureTestCase
 
   def fix_routes()

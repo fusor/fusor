@@ -6,11 +6,11 @@ module FusorUi
     # since Sat6 would strip after # if referral link is a Katello/AngularJS page
     # redirect from "no hash" /r/ to "with hash" /r/# fixes this bug
     def index
-      redirect_to index_with_hash_fusor_deployment_path
+      redirect_to "/r/#/deployments"
     end
 
     def new
-      redirect_to new_with_hash_fusor_deployment_path
+      redirect_to "/r/#/deployments/new/start"
     end
 
     def index_with_hash
