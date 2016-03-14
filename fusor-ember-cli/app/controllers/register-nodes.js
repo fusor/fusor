@@ -396,6 +396,7 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
     cancelDetectNodes() {
       this.set('detectNodesCanceled', true);
+      this.set('autoDetectNodesInProgress', false);
       this.set('detectNodesRequestNum', this.get('detectNodesRequestNum') + 1);
       this.set('autoDetectedNodesMultiMac', []);
       this.set('autoDetectedNodesSingleMac', []);
@@ -462,6 +463,10 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
   deleteNodeRequest() {
     let url = `/fusor/api/openstack/deployments/${this.get('deploymentId')}/nodes/${this.get('nodeToDelete.id')}`;
+
+    this.set('openDeleteNodeConfirmation', false);
+    this.set('closeDeleteNodeConfirmation', true);
+
     return request({
       url: url,
       type: 'DELETE',
@@ -474,9 +479,6 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
       this.removeNode(this.get('nodeToDelete'));
     }, (error) => {
       this.send('error', error, `Unable to delete node. DELETE ${url} failed with status code ${error.jqXHR.status}.`);
-    }).finally((result) => {
-      this.set('openDeleteNodeConfirmation', false);
-      this.set('closeDeleteNodeConfirmation', true);
     });
   },
 
@@ -614,7 +616,9 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
     let url = `/fusor/api/openstack/deployments/${this.get('deploymentId')}/node_mac_addresses`;
 
+    this.set('detectNodesCanceled', false);
     this.set('autoDetectNodesInProgress', true);
+
     return request({
       url: url,
       type: 'POST', //GET would expose password in a query param
@@ -627,12 +631,14 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     }).then((result) => {
       if (detectNodesRequestNum === this.get('detectNodesRequestNum')){
         this.updateAutoDetectedNodes(result.nodes);
+        this.set('autoDetectNodesInProgress', false);
       }
     }, (error) => {
       console.log(error);
-      this.set('detectNodesErrorMsg', `Unable to detect nodes. Failed with status code ${error.jqXHR.status}.`);
-    }).finally(() => {
-      this.set('autoDetectNodesInProgress', false);
+      if (detectNodesRequestNum === this.get('detectNodesRequestNum')) {
+        this.set('detectNodesErrorMsg', `Unable to detect nodes. Failed with status code ${error.jqXHR.status}.`);
+        this.set('autoDetectNodesInProgress', false);
+      }
     });
   },
 
