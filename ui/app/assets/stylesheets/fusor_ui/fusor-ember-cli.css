@@ -1420,7 +1420,8 @@ span.registered-node-count {
   margin-bottom: 0; }
 
 .node-info-label {
-  font-weight: bold; }
+  font-weight: bold;
+  margin-bottom: 0; }
 
 .osp-node-manager-panel {
   border-color: #333333; }
