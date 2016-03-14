@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
-import { PresenceValidator, PasswordValidator, AlphaNumericDashUnderscoreValidator, AllValidator } from '../utils/validators';
+import { PresenceValidator, EqualityValidator, PasswordValidator, AlphaNumericDashUnderscoreValidator, AllValidator } from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
