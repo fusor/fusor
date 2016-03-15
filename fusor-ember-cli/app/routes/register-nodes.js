@@ -24,7 +24,8 @@ export default Ember.Route.extend({
   },
 
   deactivate() {
-    return this.get('controller').stopPolling();
+    this.get('controller').stopPolling();
+    this.send('refreshOpenStack');
   },
 
   actions: {
