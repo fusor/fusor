@@ -134,8 +134,8 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     }
   }),
 
-  nodeCount: Ember.computed('nodes.@each', function() {
-    let nodes = this.get('nodes');
+  nodeCount: Ember.computed('nodes.@each', 'openStack.nodes.@each', function() {
+    let nodes = this.get('nodes') || this.get('openStack.nodes'); //checking openStack.nodes for tabs/validation
     return nodes ? nodes.reduce((prev, node) => prev + (node.get('ready') ? 1 : 0), 0) : 0;
   }),
 
