@@ -10,7 +10,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   infoChecked: true,
   debugChecked: false,
   logTypes: [
-    {label: 'RHCI Deployment (deployment.log)', value: 'fusor_log'},
+    {label: 'QCI Deployment (deployment.log)', value: 'fusor_log'},
     {label: 'Satellite (foreman.log)', value: 'foreman_log'},
     //{label: 'Satellite Proxy (proxy.log)', value: 'foreman_proxy_log'},
     {label: 'Subscriptions (candlepin.log)', value: 'candlepin_log'},
