@@ -3185,8 +3185,8 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
       }
     }),
 
-    nodeCount: _ember['default'].computed('nodes.@each', function () {
-      var nodes = this.get('nodes');
+    nodeCount: _ember['default'].computed('nodes.@each', 'openStack.nodes.@each', function () {
+      var nodes = this.get('nodes') || this.get('openStack.nodes'); //checking openStack.nodes for tabs/validation
       return nodes ? nodes.reduce(function (prev, node) {
         return prev + (node.get('ready') ? 1 : 0);
       }, 0) : 0;
@@ -3406,6 +3406,7 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
 
       cancelDetectNodes: function cancelDetectNodes() {
         this.set('detectNodesCanceled', true);
+        this.set('autoDetectNodesInProgress', false);
         this.set('detectNodesRequestNum', this.get('detectNodesRequestNum') + 1);
         this.set('autoDetectedNodesMultiMac', []);
         this.set('autoDetectedNodesSingleMac', []);
@@ -3474,6 +3475,10 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
       var _this3 = this;
 
       var url = '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/nodes/' + this.get('nodeToDelete.id');
+
+      this.set('openDeleteNodeConfirmation', false);
+      this.set('closeDeleteNodeConfirmation', true);
+
       return (0, _icAjax['default'])({
         url: url,
         type: 'DELETE',
@@ -3486,9 +3491,6 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
         _this3.removeNode(_this3.get('nodeToDelete'));
       }, function (error) {
         _this3.send('error', error, 'Unable to delete node. DELETE ' + url + ' failed with status code ' + error.jqXHR.status + '.');
-      })['finally'](function (result) {
-        _this3.set('openDeleteNodeConfirmation', false);
-        _this3.set('closeDeleteNodeConfirmation', true);
       });
     },
 
@@ -3638,7 +3640,9 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
 
       var url = '/fusor/api/openstack/deployments/' + this.get('deploymentId') + '/node_mac_addresses';
 
+      this.set('detectNodesCanceled', false);
       this.set('autoDetectNodesInProgress', true);
+
       return (0, _icAjax['default'])({
         url: url,
         type: 'POST', //GET would expose password in a query param
@@ -3651,12 +3655,14 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
       }).then(function (result) {
         if (detectNodesRequestNum === _this7.get('detectNodesRequestNum')) {
           _this7.updateAutoDetectedNodes(result.nodes);
+          _this7.set('autoDetectNodesInProgress', false);
         }
       }, function (error) {
         console.log(error);
-        _this7.set('detectNodesErrorMsg', 'Unable to detect nodes. Failed with status code ' + error.jqXHR.status + '.');
-      })['finally'](function () {
-        _this7.set('autoDetectNodesInProgress', false);
+        if (detectNodesRequestNum === _this7.get('detectNodesRequestNum')) {
+          _this7.set('detectNodesErrorMsg', 'Unable to detect nodes. Failed with status code ' + error.jqXHR.status + '.');
+          _this7.set('autoDetectNodesInProgress', false);
+        }
       });
     },
 
@@ -4415,11 +4421,11 @@ define('fusor-ember-cli/controllers/rhev-options', ['exports', 'ember', 'fusor-e
     passwordValidator: _fusorEmberCliUtilsValidators.PasswordValidator.create({}),
 
     confirmRhevRootPasswordValidator: _ember['default'].computed('rhevRootPassword', function () {
-      return EqualityValidator.create({ equals: this.get('rhevRootPassword') });
+      return _fusorEmberCliUtilsValidators.EqualityValidator.create({ equals: this.get('rhevRootPassword') });
     }),
 
     confirmRhevEngineAdminPasswordValidator: _ember['default'].computed('rhevEngineAdminPassword', function () {
-      return EqualityValidator.create({ equals: this.get('rhevEngineAdminPassword') });
+      return _fusorEmberCliUtilsValidators.EqualityValidator.create({ equals: this.get('rhevEngineAdminPassword') });
     }),
 
     optionsBackRouteName: _ember['default'].computed('rhevIsSelfHosted', function () {
@@ -9866,7 +9872,8 @@ define('fusor-ember-cli/routes/register-nodes', ['exports', 'ember', 'ic-ajax', 
     },
 
     deactivate: function deactivate() {
-      return this.get('controller').stopPolling();
+      this.get('controller').stopPolling();
+      this.send('refreshOpenStack');
     },
 
     actions: {
@@ -19282,21 +19289,21 @@ define("fusor-ember-cli/templates/components/osp-node-manager", ["exports"], fun
         dom.setAttribute(el8, "class", "col-xs-4");
         var el9 = dom.createTextNode("\n                ");
         dom.appendChild(el8, el9);
-        var el9 = dom.createElement("span");
+        var el9 = dom.createElement("p");
         dom.setAttribute(el9, "class", "node-info-label");
         var el10 = dom.createTextNode("vCPU");
         dom.appendChild(el9, el10);
         dom.appendChild(el8, el9);
         var el9 = dom.createTextNode("\n                ");
         dom.appendChild(el8, el9);
-        var el9 = dom.createElement("span");
+        var el9 = dom.createElement("p");
         dom.setAttribute(el9, "class", "node-info-label");
         var el10 = dom.createTextNode("RAM");
         dom.appendChild(el9, el10);
         dom.appendChild(el8, el9);
         var el9 = dom.createTextNode("\n                ");
         dom.appendChild(el8, el9);
-        var el9 = dom.createElement("span");
+        var el9 = dom.createElement("p");
         dom.setAttribute(el9, "class", "node-info-label");
         var el10 = dom.createTextNode("Disk");
         dom.appendChild(el9, el10);
@@ -19676,7 +19683,7 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
         var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
         var el1 = dom.createElement("div");
-        dom.setAttribute(el1, "class", "col-xs-10 osp-node-progress-column");
+        dom.setAttribute(el1, "class", "col-xs-9 osp-node-progress-column");
         var el2 = dom.createTextNode("\n  ");
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("div");
@@ -19707,7 +19714,7 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
         var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
         var el1 = dom.createElement("div");
-        dom.setAttribute(el1, "class", "col-xs-1 osp-node-action-column ");
+        dom.setAttribute(el1, "class", "col-xs-2 osp-node-action-column ");
         var el2 = dom.createTextNode("\n    ");
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("button");
@@ -36149,7 +36156,7 @@ define("fusor-ember-cli/templates/register-nodes", ["exports"], function (export
             dom.appendChild(el3, el4);
             var el4 = dom.createElement("p");
             dom.setAttribute(el4, "class", "validation-alert-message");
-            var el5 = dom.createTextNode("There were errors encountered while trying to register nodes.");
+            var el5 = dom.createTextNode("There were errors encountered while trying to register nodes:");
             dom.appendChild(el4, el5);
             dom.appendChild(el3, el4);
             var el4 = dom.createTextNode("\n          ");
@@ -36277,7 +36284,7 @@ define("fusor-ember-cli/templates/register-nodes", ["exports"], function (export
             dom.appendChild(el3, el4);
             var el4 = dom.createElement("p");
             dom.setAttribute(el4, "class", "validation-alert-message");
-            var el5 = dom.createTextNode("The following nodes have errors");
+            var el5 = dom.createTextNode("The following nodes have errors:");
             dom.appendChild(el4, el5);
             dom.appendChild(el3, el4);
             var el4 = dom.createTextNode("\n          ");
@@ -46573,11 +46580,11 @@ define('fusor-ember-cli/utils/validators', ['exports', 'ember'], function (expor
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+0f69dbb9"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+c211c5e6"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+0f69dbb9"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+c211c5e6"});
 }
 
 /* jshint ignore:end */
