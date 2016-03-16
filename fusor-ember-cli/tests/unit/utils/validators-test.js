@@ -253,6 +253,8 @@ test('AlphaNumericDashUnderscoreValidator rejects invalid values', function (ass
 test('IpAddressValidator accepts valid values', function (assert) {
   let ipAddressValidator = IpAddressValidator.create({});
   let validValues = [
+    null,
+    undefined,
     '192.168.2.0',
     '192.168.153.0',
   ];
@@ -267,8 +269,6 @@ test('IpAddressValidator accepts valid values', function (assert) {
 test('IpAddressValidator rejects invalid values', function (assert) {
   let ipAddressValidator = IpAddressValidator.create({});
   let invalidValues = [
-    null,
-    undefined,
     '192.168.2.2000',
     '192.162.257',
     'garbage192.168.1.2',
@@ -287,6 +287,8 @@ test('IpAddressValidator rejects invalid values', function (assert) {
 test('IpRangeValidator accepts valid values', function (assert) {
   let ipRangeValidator = IpRangeValidator.create({});
   let validValues = [
+    null,
+    undefined,
     '192.168.2.0',
     '192.168.2.0/3',
     '192.168.2.0/32',
@@ -305,8 +307,6 @@ test('IpRangeValidator accepts valid values', function (assert) {
 test('IpRangeValidator rejects invalid values', function (assert) {
   let ipRangeValidator = IpRangeValidator.create({});
   let invalidValues = [
-    null,
-    undefined,
     '192.168.2.2000',
     '192.168.2.257',
     'garbage'
@@ -322,6 +322,8 @@ test('IpRangeValidator rejects invalid values', function (assert) {
 test('CidrValidator accepts valid values', function (assert) {
   let cidrValidator = CidrValidator.create({});
   let validValues = [
+    null,
+    undefined,
     '192.168.153.0/3',
     '192.168.153.0/32',
     '192.168.153.254/12',
@@ -341,8 +343,6 @@ test('CidrValidator accepts valid values', function (assert) {
 test('CidrValidator rejects invalid values', function (assert) {
   let cidrValidator = CidrValidator.create({});
   let invalidValues = [
-    null,
-    undefined,
     '192.168.2.2000',
     '192.168.2.257',
     'garbage',

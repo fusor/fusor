@@ -1,96 +1,105 @@
-{{#if showAlertMessage}}
-    <div class="row">
-        <div class='col-md-9'>
-            <div class='alert alert-success rhci-alert'>
-                <i class="fa fa-2x fa-check-circle-o green-circle"></i>
-                &nbsp;
-              {{registeredNode.name}} registered successfully.
-            </div>
-        </div>
-    </div>
-{{/if}}
-
-{{#if registrationError}}
-<div class="progress-description">
-      <span class="pficon-layered" data-toggle="tooltip" data-placement="top" title={{registrationErrorTip}}>
-          <span class="pficon pficon-error-octagon"></span>
-          <span class="pficon pficon-error-exclamation"></span>
-            <strong>Error:</strong>  {{registrationErrorMessage}}
-        </span>
-</div>
-{{/if}}
-
-{{#if hasIntrospectionTasks}}
-
-    <div class="row">
-        <div class='col-md-5'>
-            <h2>Registering Nodes</h2>
-        </div>
-    </div>
-
-    {{#each arrayTasks as |introspectionTask| }}
-      {{progress-bar model=introspectionTask isNodeProgressBar=true}}
-    {{/each}}
-
+{{#if showSpinner}}
+  <div class="spinner spinner-md spinner-inline"></div>
+  <span class='spinner-text'>
+    Loading OSP Nodes
+  </span>
 {{else}}
+
+  {{#if errorMsg}}
+    <div class="row register-nodes-errors">
+      <div class='col-md-9 col-lg-6'>
+        <div class='alert alert-danger rhci-alert'>
+          <i class="fa fa-2x fa-exclamation-triangle errorForValidation validation-alert-icon"></i>
+          <p class="validation-alert-message">{{errorMsg}}</p>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+  {{#if showRegistrationErrors}}
+    <div class="row register-nodes-errors">
+      <div class='col-md-9 col-lg-6'>
+        <div class='alert alert-danger rhci-alert'>
+          <i class="fa fa-2x fa-exclamation-triangle errorForValidation validation-alert-icon"></i>
+          <p class="validation-alert-message">There were errors encountered while trying to register nodes:</p>
+          <ul class="validation-alert-message">
+            {{#each registrationErrors as |registrationError|}}
+              <li><a href="{{registrationError.taskUrl}}" target="_blank" class="foreman-task-error-link">{{registrationError.message}}</a></li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+  {{#if showNodeErrors}}
+    <div class="row register-nodes-errors">
+      <div class='col-md-9 col-lg-6'>
+        <div class='alert alert-danger rhci-alert'>
+          <i class="fa fa-2x fa-exclamation-triangle errorForValidation validation-alert-icon"></i>
+          <p class="validation-alert-message">The following nodes have errors:</p>
+          <ul class="validation-alert-message">
+            {{#each nodeErrors as |nodeError|}}
+              <li><a href="{{nodeError.taskUrl}}" target="_blank" class="foreman-task-error-link">{{nodeError.message}}</a></li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
   <div class="row">
-    <div class='col-md-5'>
-      <h2>Register Nodes</h2>
+    <div class='col-md-9 col-lg-6'>
+      <p>Register at least 2 nodes with the selected undercloud to build out your OpenStack environment.</p>
     </div>
   </div>
 
-  <div class="row">
-    <div class='col-md-7'>
-    {{#if noRegisteredNodes}}
-      <p>
-        Currently, there are no registered nodes available. You must have at least 2 nodes in order to continue this deployment. Use the Register Nodes button below to begin the registration process.
-      </p>
-    {{else}}
-      <p>
-        You can register more nodes to coalesce into Flavors. Use the Register Nodes button below to begin the registration process.
-      </p>
-    {{/if}}
+  {{#if hasNodes}}
+    <div class="row">
+      <div class='col-md-9 col-lg-6'>
+        <button id="register-nodes-button" class="btn btn-default register-more-nodes-button" {{action "showNodeRegistrationModal"}}>
+          Register More Nodes
+        </button>
+      </div>
     </div>
+  {{else}}
+    <div class="row">
+      <div class='col-md-9 col-lg-6'>
+        <button id="register-nodes-button" class="btn btn-primary register-nodes-button" {{action "showNodeRegistrationModal"}}>
+          Register Nodes
+        </button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class='col-md-9 col-lg-6'>
+        <p>
+          No nodes have been registered yet. Discover nodes through auto-detection,
+          mapping them in a CSV file, or entering node information manually.
+        </p>
+      </div>
+    </div>
+  {{/if}}
+
+  <div class="osp-node-manager-list">
+    {{#each nodeManagers as |nodeManager|}}
+      {{osp-node-manager  nodeManager=nodeManager
+                          ports=ports
+                          introspectionTasks=introspectionTasks
+                          foremanTasks=foremanTasks
+                          addNodes="addNodesToManager"
+                          deleteNode="deleteNode"}}
+    {{/each}}
   </div>
 {{/if}}
 
-<div class="row">
-    <div class='col-md-5'>
-      <button class="btn btn-primary" {{action "showNodeRegistrationModal"}}>
-          Register Nodes
-      </button>
-    </div>
-</div>
-
-{{#unless noProfiles}}
-  <div class="row">
-      <div class='col-md-5'>
-          <h2>Flavors</h2>
-      </div>
-  </div>
-
-  {{#each openStack.profiles as |profile|}}
-      <div class="row">
-          <div class='col-md-7'>
-            {{#if openStack.nodes}}
-              {{node-profile profile=profile
-                             nodes=openStack.nodes
-                             stepNumberOpenstack=stepNumberOpenstack}}
-            {{else}}
-              {{node-profile profile=profile
-                             stepNumberOpenstack=stepNumberOpenstack}}
-            {{/if}}
-          </div>
-      </div>
-  {{/each}}
-{{/unless}}
-
-<br />
-{{cancel-back-next backRouteName='undercloud-deploy'
-                   disableBack=false
-                   nextRouteName='assign-nodes'
-                   disableNext=disableRegisterNodesNext
-                   disableCancel=isStarted
-                   deploymentName=deploymentName}}
+{{cancel-back-next  backRouteName='undercloud-deploy'
+                    disableBack=false
+                    nextRouteName='assign-nodes'
+                    disableNext=disableRegisterNodesNext
+                    disableCancel=isStarted
+                    deploymentName=deploymentName}}
 
 {{partial 'new-node-registration'}}
+{{partial 'add-node-registration'}}
+{{partial 'delete-node-confirmation'}}

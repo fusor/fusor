@@ -8,6 +8,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesDeployment
   description: Ember.computed.alias("deploymentController.description"),
 
   organizationTabRouteName: Ember.computed.alias("deploymentController.organizationTabRouteName"),
+  lifecycleEnvironmentTabRouteName: Ember.computed.alias("deploymentController.lifecycleEnvironmentTabRouteName"),
 
   disableNextOnDeploymentName: Ember.computed.alias("deploymentController.disableNextOnDeploymentName"),
 

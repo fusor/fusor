@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import DeploymentControllerMixin from "../../mixins/deployment-controller-mixin";
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
-import { PresenceValidator, EqualityValidator, IpRangeValidator, CidrValidator} from '../../utils/validators';
+import { PresenceValidator, EqualityValidator, IpRangeValidator, CidrValidator, AllValidator } from '../../utils/validators';
 
 let OvercloudController = Ember.Controller.extend(
   DeploymentControllerMixin,
@@ -17,8 +17,20 @@ let OvercloudController = Ember.Controller.extend(
   overcloudPassword: Ember.computed.alias("deploymentController.model.openstack_overcloud_password"),
   confirmOvercloudPassword: Ember.computed.alias("deploymentController.confirmOvercloudPassword"),
 
-  ipValidator: IpRangeValidator.create({}),
-  cidrValidator: CidrValidator.create({}),
+  ipValidator: AllValidator.create({
+    validators: [
+      PresenceValidator.create({}),
+      IpRangeValidator.create({})
+    ]
+  }),
+
+  cidrValidator: AllValidator.create({
+    validators: [
+      PresenceValidator.create({}),
+      CidrValidator.create({})
+    ]
+  }),
+
   confirmOvercloudPasswordValidator: Ember.computed('overcloudPassword', function() {
     return EqualityValidator.create({equals: this.get('overcloudPassword')});
   }),

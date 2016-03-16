@@ -1,0 +1,46 @@
+<div class="row osp-node-manager">
+  <div class="col-md-9 col-lg-6">
+    <div class="panel panel-default osp-node-manager-panel">
+      <div class="panel-heading osp-node-manager-panel-heading">{{nodeManager.address}}
+        <button type="button" id="managerAddNodeButton{{safeLabel}}" class="btn btn-default pull-right"  {{action "onAddNode"}}>Add node to group</button>
+      </div>
+      <div class="panel-body osp-node-manager-panel-body">
+        <div class="row">
+          <div class="col-xs-1 osp-node-manager-nodes-count-section">
+            <span class="registered-node-count pull-right">{{nodeCount}}</span>
+          </div>
+          <div class="col-xs-4 osp-node-manager-nodes-info-section">
+            <span class="node-info">nodes, each has:</span>
+            <div class="row">
+              <div class="col-xs-4">
+                <p class="node-info-label">vCPU</p>
+                <p class="node-info-label">RAM</p>
+                <p class="node-info-label">Disk</p>
+              </div>
+              <div class="col-xs-8">
+                <p class="node-info">{{cpuRange}}</p>
+                <p class="node-info">{{memRange}}</p>
+                <p class="node-info">{{storageRange}}</p>
+              </div>
+            </div>
+
+          </div>
+          <div class="col-xs-7 osp-node-manager-nodes-list-section">
+            <div class="row">
+              <div class="col-xs-offset-1 col-xs-11 osp-node-list-title">
+                <h4>Nodes</h4>
+              </div>
+            </div>
+
+            {{#each nodeManager.nodes as |node|}}
+              {{osp-node node=node ports=ports introspectionTasks=introspectionTasks foremanTasks=foremanTasks deleteNode="deleteNode" editable=editable}}
+            {{/each}}
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

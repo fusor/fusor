@@ -2,7 +2,7 @@ module FusorUi
   class Engine < ::Rails::Engine
     engine_name 'fusor_ui'
 
-    initializer "static assets" do |app|
+    initializer "static assets", :before => :build_middleware_stack do |app|
       app.middleware.insert_before(::ActionDispatch::Static, ::ActionDispatch::Static, "#{config.root}/public")
     end
 
@@ -16,7 +16,7 @@ module FusorUi
           }
         end
 
-        sub_menu :top_menu, :fusor_menu, :caption => N_('RHCI Installer'), :after => :infrastructure_menu do
+        sub_menu :top_menu, :fusor_menu, :caption => N_('QuickStart Cloud Installer'), :after => :infrastructure_menu do
           menu :top_menu, :fusor_deployments,
                :url_hash => { :controller => 'fusor_ui/placeholders', :action => :index },
                :caption  => N_('Deployments')

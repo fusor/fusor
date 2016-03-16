@@ -53,7 +53,7 @@ module Actions
             keyfile << client.exec!('cat /home/stack/.ssh/id_rsa')
             keyfile.close
             client.close
-            return keyfile
+            return keyfile.path
           end
 
           def fix_controller_services(deployment, keyfile_path)

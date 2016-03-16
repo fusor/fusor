@@ -1,19 +1,34 @@
 <br />
 
-{{progress-bar model=manageContentTask name=nameSatellite isSatelliteProgressBar=true}}
+{{#if deployment.has_content_error}}
+  {{#if loadingRedeployment}}
+    <h1 style="float: left; margin: 0 15px 0 0">Content Error Occurred</h1>
+    <div style="float: left; margin-top: 2px" class="spinner spinner-md spinner-inline"></div>
+  {{else}}
+    <h1>Content Error Occurred</h1>
+    <button class="btn btn-default" {{action 'abandon'}}>Abandon Deployment</button>
+    <button class="btn btn-primary" {{action 'redeploy'}}>Redeploy</button>
+  {{/if}}
+{{else}}
 
-{{#if isRhev}}
-  {{progress-bar model=rhevTask name=nameRhev isSatelliteProgressBar=false}}
+  {{progress-bar model=manageContentTask name=nameSatellite isSatelliteProgressBar=true}}
+
+  {{#if isRhev}}
+    {{progress-bar model=rhevTask name=nameRhev isSatelliteProgressBar=false}}
+  {{/if}}
+
+  {{#if isOpenStack}}
+    {{progress-bar model=openstackTask name=nameOpenStack isSatelliteProgressBar=false}}
+  {{/if}}
+
+  {{#if isCloudForms}}
+    {{progress-bar model=cfmeTask name=nameCloudForms isSatelliteProgressBar=false}}
+  {{/if}}
+
+  {{#if showDeployTaskProgressBar}}
+    {{progress-bar model=deployTask name='Total Deployment' isSatelliteProgressBar=false}}
+  {{/if}}
+
 {{/if}}
 
-{{#if isOpenStack}}
-  {{progress-bar model=openstackTask name=nameOpenStack isSatelliteProgressBar=false}}
-{{/if}}
-
-{{#if isCloudForms}}
-  {{progress-bar model=cfmeTask name=nameCloudForms isSatelliteProgressBar=false}}
-{{/if}}
-
-{{#if showDeployTaskProgressBar}}
-  {{progress-bar model=deployTask name='Total Deployment' isSatelliteProgressBar=false}}
-{{/if}}
+{{partial 'abandon-deployment-modal'}}

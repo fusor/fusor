@@ -141,9 +141,14 @@ p.error.errorForValidation {
 
 .validation-alert-icon {
   float: left;
+  margin-top: 10px;
 }
 
-.validation-alert-message {
+p.validation-alert-message {
+  margin-left: 48px;
+}
+
+ul.validation-alert-message {
   margin-left: 24px;
 }
 
@@ -684,4 +689,18 @@ h1.num-ose-node {
 .ose-node-line {
   padding-top: 5px;
   min-height: 20px;
+
+.btn-icon {
+  color: #333;
+  background-color: transparent;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  i.fa {
+    font-size: 14px;
+  }
+}
+
+.btn-icon.btn-icon-primary {
+  color: #189ad1;
 }

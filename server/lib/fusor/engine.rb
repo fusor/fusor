@@ -25,7 +25,9 @@ module Fusor
 
     # Add any db migrations
     initializer "fusor.load_app_instance_data" do |app|
-      app.config.paths['db/migrate'] += Fusor::Engine.paths['db/migrate'].existent
+      Fusor::Engine.paths['db/migrate'].existent.each do |migrate_file|
+        app.config.paths['db/migrate'] << migrate_file
+      end
     end
 
     initializer 'fusor.mount_engine', :after => :build_middleware_stack do |app|
