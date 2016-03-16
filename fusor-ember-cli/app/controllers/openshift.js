@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 import OpenshiftMixin from "../mixins/openshift-mixin";
-import { AggregateValidator, PresenceValidator, AlphaNumericDashUnderscoreValidator } from '../utils/validators';
+import { AllValidator, PresenceValidator, AlphaNumericDashUnderscoreValidator } from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
 
@@ -53,7 +53,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
   }),
   isInvalidOpenshiftNodes: Ember.computed.not("isValidOpenshiftNodes"),
 
-  openshiftUsernameValidator: AggregateValidator.create({
+  openshiftUsernameValidator: AllValidator.create({
     validators: [
       PresenceValidator.create({}),
       AlphaNumericDashUnderscoreValidator.create({})
