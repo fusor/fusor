@@ -24,21 +24,15 @@ module Actions
             ::Fusor.log.info "Planning OpenShift Deployment"
 
             sequence do
-              # the following arbitrary image file name will be used to 
-              # create the ose image path, and will also be used for  
-              # uploading the image via engine uploader
-              image_file_name = "rhel-guest-image-7"
-
-              plan_action(::Actions::Fusor::Deployment::OpenShift::TransferImage,
-                          deployment, image_file_name)
-
-              upload_action = plan_action(::Actions::Fusor::Deployment::Rhev::UploadImage,
-                          deployment, image_file_name, "ose")
-
-              plan_action(::Actions::Fusor::Deployment::Rhev::ImportTemplate,
-                          deployment, upload_action.output[:template_name])
-
               plan_action(::Actions::Fusor::Deployment::Rhev::OseLaunch, deployment)
+
+              #TODO wait for all master and node VMs to finish booting
+#              concurrence do
+#                list_of_all_openshift_vms.each do |host|
+#                  plan_action(::Actions::Fusor::Host::WaitUntilProvisioned,
+#                              host.name)
+#                end
+#              end
             end
           end
         end
