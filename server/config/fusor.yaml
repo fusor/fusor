@@ -94,6 +94,14 @@
         :releasever: "7.1"
         #Need Red Hat 7.1 Operating Sysetem setup including Media, architecture, and other associations.
 
+    :openshift:
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :product_id: "69"
+        :repository_set_id: "2455"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
+        :basearch: "x86_64"
+        :releasever: "7.1"
+
     :openstack:
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
@@ -208,6 +216,17 @@
          :activation_key:
            :name: "RHEV-Hypervisor"
            :content: :rhevh
+           :subscription_descriptions:
+             - "Red Hat Cloud Infrastructure"
+
+       - :name: "OpenShift"
+         :os: "RedHat"
+         :major: "7"
+         :minor: "1"
+         :parent: :root_deployment
+         :activation_key:
+           :name: "OpenShift"
+           :content: :openshift
            :subscription_descriptions:
              - "Red Hat Cloud Infrastructure"
 
