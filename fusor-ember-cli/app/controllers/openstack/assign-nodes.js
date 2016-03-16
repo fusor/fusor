@@ -1,6 +1,6 @@
 import Ember from 'ember';
-import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
-import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
+import DeploymentControllerMixin from "../../mixins/deployment-controller-mixin";
+import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
 const Role = Ember.Object.extend({
   isAssigned() {

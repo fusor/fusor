@@ -2,6 +2,6 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
   beforeModel() {
-    this.transitionTo('undercloud-deploy');
+    this.transitionTo('openstack.undercloud-deploy');
   }
 });

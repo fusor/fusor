@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
-import ProgressBarMixin from "../mixins/progress-bar-mixin";
-import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
+import ProgressBarMixin from "../../mixins/progress-bar-mixin";
+import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
 import {
   AllValidator,
@@ -9,7 +9,7 @@ import {
   MacAddressValidator,
   HostAddressValidator,
   PresenceValidator
-} from  "../utils/validators";
+} from  "../../utils/validators";
 
 export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
@@ -26,7 +26,7 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     if (enteredMacs) {
       enteredMacs.forEach(mac => { unavailableMacs.pushObject(mac.value); });
     }
-    
+
     return unavailableMacs;
   }),
 

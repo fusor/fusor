@@ -1,8 +1,8 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
-import DeploymentControllerMixin from "../mixins/deployment-controller-mixin";
-import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
-import { AllValidator, PresenceValidator, HostAddressValidator } from '../utils/validators';
+import DeploymentControllerMixin from "../../mixins/deployment-controller-mixin";
+import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
+import { AllValidator, PresenceValidator, HostAddressValidator } from '../../utils/validators';
 
 export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
 

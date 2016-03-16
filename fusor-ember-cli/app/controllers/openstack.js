@@ -3,8 +3,8 @@ import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  registerNodesController: Ember.inject.controller('register-nodes'),
-  assignNodesController: Ember.inject.controller('assign-nodes'),
+  registerNodesController: Ember.inject.controller('openstack/register-nodes'),
+  assignNodesController: Ember.inject.controller('openstack/assign-nodes'),
   overcloudController: Ember.inject.controller('openstack/overcloud'),
 
   stepNumberOpenstack: Ember.computed.alias("deploymentController.stepNumberOpenstack"),
