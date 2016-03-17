@@ -25,6 +25,10 @@
     {{progress-bar model=cfmeTask name=nameCloudForms isSatelliteProgressBar=false}}
   {{/if}}
 
+  {{#if isOpenShift}}
+    {{progress-bar model=openshiftTask name=nameOpenShift isSatelliteProgressBar=false}}
+  {{/if}}
+  
   {{#if showDeployTaskProgressBar}}
     {{progress-bar model=deployTask name='Total Deployment' isSatelliteProgressBar=false}}
   {{/if}}
