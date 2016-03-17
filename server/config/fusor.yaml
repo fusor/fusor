@@ -95,12 +95,45 @@
         #Need Red Hat 7.1 Operating Sysetem setup including Media, architecture, and other associations.
 
     :openshift:
+      - :product_name: "Red Hat OpenShift Enterprise"
+        :product_id: "290"
+        :repository_set_id: "4658"
+        :repository_set_name: "Red Hat OpenShift Enterprise 3.1 (RPMs)"
+        :basearch: "x86_64"
+
+      - :product_name: "Red Hat OpenShift Enterprise"
+        :product_id: "290"
+        :repository_set_id: "4659"
+        :repository_set_name: "Red Hat OpenShift Enterprise 3.1 (Files)"
+        :basearch: "x86_64"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :product_id: "69"
+        :repository_set_id: "2456"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server (RPMs)"
+        :basearch: "x86_64"
+        :releasever: "7Server"
+
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
         :repository_set_id: "2455"
         :repository_set_name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
         :basearch: "x86_64"
         :releasever: "7.1"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :product_id: "69"
+        :repository_set_id: "3030"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server - Extras (RPMs)"
+        :basearch: "x86_64"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :product_id: "69"
+        :repository_set_id: "2463"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server - Optional (RPMs)"
+        :basearch: "x86_64"
+        :releasever: "7Server"
+
 
     :openstack:
       - :product_name: "Red Hat Enterprise Linux Server"
@@ -219,6 +252,11 @@
            :subscription_descriptions:
              - "Red Hat Cloud Infrastructure"
 
+    :openshift:
+     :root_name: "Fusor Base" # seeded by the fusor-installer
+     :host_groups:
+       - :parent: "Fusor Base"
+
        - :name: "OpenShift"
          :os: "RedHat"
          :major: "7"
@@ -229,7 +267,8 @@
            :content: :openshift
            :subscription_descriptions:
              - "Red Hat Cloud Infrastructure"
-
+             - "OpenShift Enterprise"
+             
     :openstack:
      :root_name: "Fusor Base" # seeded by the fusor-installer
      :host_groups:
@@ -247,7 +286,7 @@
              - "Red Hat Cloud Infrastructure"
   :system:
     :logging:
-      :level: ":debug" 
+      :level: ":debug"
       :watch:
         - :file: "/var/log/foreman/production.log"
         - :file: "/var/log/foreman-proxy/proxy.log"
