@@ -7872,7 +7872,7 @@ define('fusor-ember-cli/mixins/deployment-controller-mixin', ['exports', 'ember'
       if (this.get('isUpstream')) {
         return "Fusor";
       } else {
-        return "RHCI";
+        return "QCI";
       }
     }),
 
@@ -8240,7 +8240,7 @@ define('fusor-ember-cli/mixins/start-controller-mixin', ['exports', 'ember'], fu
       if (this.get('isUpstream')) {
         return "Fusor";
       } else {
-        return "RHCI";
+        return "QCI";
       }
     }),
 
@@ -13025,7 +13025,7 @@ define("fusor-ember-cli/templates/cancel-deployment-modal", ["exports"], functio
             dom.appendChild(el0, el1);
             var el1 = dom.createElement("h4");
             dom.setAttribute(el1, "class", "modal-title");
-            var el2 = dom.createTextNode("Cancel RHCI Deployment - ");
+            var el2 = dom.createTextNode("Cancel QCI Deployment - ");
             dom.appendChild(el1, el2);
             var el2 = dom.createComment("");
             dom.appendChild(el1, el2);
@@ -13043,7 +13043,7 @@ define("fusor-ember-cli/templates/cancel-deployment-modal", ["exports"], functio
             dom.insertBoundary(fragment, 0);
             return morphs;
           },
-          statements: [["block", "em-modal-toggler", [], ["class", "close"], 0, null, ["loc", [null, [3, 8], [5, 29]]]], ["content", "deploymentName", ["loc", [null, [6, 57], [6, 75]]]]],
+          statements: [["block", "em-modal-toggler", [], ["class", "close"], 0, null, ["loc", [null, [3, 8], [5, 29]]]], ["content", "deploymentName", ["loc", [null, [6, 56], [6, 74]]]]],
           locals: [],
           templates: [child0]
         };
@@ -13232,8 +13232,8 @@ define("fusor-ember-cli/templates/cancel-deployment-modal", ["exports"], functio
             "column": 0
           },
           "end": {
-            "line": 24,
-            "column": 13
+            "line": 25,
+            "column": 0
           }
         },
         "moduleName": "fusor-ember-cli/templates/cancel-deployment-modal.hbs"
@@ -26510,7 +26510,7 @@ define("fusor-ember-cli/templates/continue-deployment-modal", ["exports"], funct
             dom.appendChild(el0, el1);
             var el1 = dom.createElement("h4");
             dom.setAttribute(el1, "class", "modal-title");
-            var el2 = dom.createTextNode("Continue RHCI Deployment - ");
+            var el2 = dom.createTextNode("Continue QCI Deployment - ");
             dom.appendChild(el1, el2);
             var el2 = dom.createComment("");
             dom.appendChild(el1, el2);
@@ -26528,7 +26528,7 @@ define("fusor-ember-cli/templates/continue-deployment-modal", ["exports"], funct
             dom.insertBoundary(fragment, 0);
             return morphs;
           },
-          statements: [["block", "em-modal-toggler", [], ["class", "close"], 0, null, ["loc", [null, [3, 8], [5, 29]]]], ["content", "deploymentInModal.name", ["loc", [null, [6, 59], [6, 85]]]]],
+          statements: [["block", "em-modal-toggler", [], ["class", "close"], 0, null, ["loc", [null, [3, 8], [5, 29]]]], ["content", "deploymentInModal.name", ["loc", [null, [6, 58], [6, 84]]]]],
           locals: [],
           templates: [child0]
         };
@@ -27073,7 +27073,7 @@ define("fusor-ember-cli/templates/delete-deployment-modal", ["exports"], functio
             dom.appendChild(el0, el1);
             var el1 = dom.createElement("h4");
             dom.setAttribute(el1, "class", "modal-title");
-            var el2 = dom.createTextNode("Delete RHCI Deployment - ");
+            var el2 = dom.createTextNode("Delete QCI Deployment - ");
             dom.appendChild(el1, el2);
             var el2 = dom.createComment("");
             dom.appendChild(el1, el2);
@@ -27091,7 +27091,7 @@ define("fusor-ember-cli/templates/delete-deployment-modal", ["exports"], functio
             dom.insertBoundary(fragment, 0);
             return morphs;
           },
-          statements: [["block", "em-modal-toggler", [], ["class", "close"], 0, null, ["loc", [null, [3, 8], [5, 29]]]], ["content", "deploymentInModal.name", ["loc", [null, [6, 57], [6, 83]]]]],
+          statements: [["block", "em-modal-toggler", [], ["class", "close"], 0, null, ["loc", [null, [3, 8], [5, 29]]]], ["content", "deploymentInModal.name", ["loc", [null, [6, 56], [6, 82]]]]],
           locals: [],
           templates: [child0]
         };
@@ -27276,8 +27276,8 @@ define("fusor-ember-cli/templates/delete-deployment-modal", ["exports"], functio
             "column": 0
           },
           "end": {
-            "line": 20,
-            "column": 13
+            "line": 21,
+            "column": 0
           }
         },
         "moduleName": "fusor-ember-cli/templates/delete-deployment-modal.hbs"
@@ -30866,7 +30866,7 @@ define("fusor-ember-cli/templates/mainmenu", ["exports"], function (exports) {
             },
             "end": {
               "line": 13,
-              "column": 63
+              "column": 62
             }
           },
           "moduleName": "fusor-ember-cli/templates/mainmenu.hbs"
@@ -30876,7 +30876,7 @@ define("fusor-ember-cli/templates/mainmenu", ["exports"], function (exports) {
         hasRendered: false,
         buildFragment: function buildFragment(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("FUSOR-EMBER-CLI / RHCI DEMO");
+          var el1 = dom.createTextNode("FUSOR-EMBER-CLI / QCI DEMO");
           dom.appendChild(el0, el1);
           return el0;
         },
@@ -31116,7 +31116,7 @@ define("fusor-ember-cli/templates/mainmenu", ["exports"], function (exports) {
         morphs[4] = dom.createMorphAt(dom.childAt(element1, [7]), 0, 0);
         return morphs;
       },
-      statements: [["attribute", "class", ["concat", ["navbar navbar-default navbar-inner navbar-fixed-top persist-header ", ["subexpr", "if", [["get", "isUpstream", ["loc", [null, [1, 84], [1, 94]]]], "navbar-inner-upstream"], [], ["loc", [null, [1, 79], [1, 120]]]]]]], ["block", "link-to", ["deployments"], [], 0, null, ["loc", [null, [13, 10], [13, 75]]]], ["block", "link-to", ["deployments"], [], 1, null, ["loc", [null, [14, 10], [14, 63]]]], ["block", "link-to", ["deployment-new.start"], [], 2, null, ["loc", [null, [15, 10], [15, 71]]]], ["block", "link-to", ["readme"], [], 3, null, ["loc", [null, [16, 10], [16, 49]]]]],
+      statements: [["attribute", "class", ["concat", ["navbar navbar-default navbar-inner navbar-fixed-top persist-header ", ["subexpr", "if", [["get", "isUpstream", ["loc", [null, [1, 84], [1, 94]]]], "navbar-inner-upstream"], [], ["loc", [null, [1, 79], [1, 120]]]]]]], ["block", "link-to", ["deployments"], [], 0, null, ["loc", [null, [13, 10], [13, 74]]]], ["block", "link-to", ["deployments"], [], 1, null, ["loc", [null, [14, 10], [14, 63]]]], ["block", "link-to", ["deployment-new.start"], [], 2, null, ["loc", [null, [15, 10], [15, 71]]]], ["block", "link-to", ["readme"], [], 3, null, ["loc", [null, [16, 10], [16, 49]]]]],
       locals: [],
       templates: [child0, child1, child2, child3]
     };
@@ -45307,7 +45307,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
           var el5 = dom.createComment("");
           dom.appendChild(el4, el5);
           dom.appendChild(el3, el4);
-          var el4 = dom.createTextNode(" for the components of your RHCI deployment, please do so before proceeding.\n    ");
+          var el4 = dom.createTextNode(" for the components of your QCI deployment, please do so before proceeding.\n    ");
           dom.appendChild(el3, el4);
           dom.appendChild(el2, el3);
           var el3 = dom.createTextNode("\n\n    ");
@@ -46580,11 +46580,11 @@ define('fusor-ember-cli/utils/validators', ['exports', 'ember'], function (expor
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+9233ebac"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+0f686eab"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+9233ebac"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+0f686eab"});
 }
 
 /* jshint ignore:end */
