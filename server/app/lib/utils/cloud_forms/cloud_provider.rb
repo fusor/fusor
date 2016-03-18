@@ -25,6 +25,7 @@ module Utils
             {
               :name => provider_params[:name],
               :type => "ManageIQ::Providers::Openstack::CloudManager",
+              :security_protocol => 'non-ssl',
               :hostname => provider_params[:ip],
               :port => "5000",
               :zone_id => "1000000000001",
