@@ -1868,6 +1868,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'ic-ajax
     deploymentId: _ember['default'].computed.alias("deploymentController.model.id"),
     openStack: _ember['default'].computed.alias("deploymentController.openStack"),
     isCloudForms: _ember['default'].computed.alias("deploymentController.isCloudForms"),
+    showSpinner: _ember['default'].computed.alias("deploymentController.isOspLoading"),
 
     images: _ember['default'].computed('openStack.images.[]', function () {
       return this.get('openStack.images');
@@ -1972,9 +1973,6 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'ic-ajax
         return '';
       }
     }),
-
-    showLoadingSpinner: false,
-    loadingSpinnerText: "Loading...",
 
     doAssignRole: function doAssignRole(plan, role, profile) {
       var data;
@@ -2224,7 +2222,7 @@ define('fusor-ember-cli/controllers/assign-nodes', ['exports', 'ember', 'ic-ajax
       var computeRoleCount = this.get('openStack.plan.computeRoleCount');
       var controllerRoleCount = this.get('openStack.plan.controllerRoleCount');
 
-      var disableAssignNodesNext = unassignedRoleTypes.contains('controller') || unassignedRoleTypes.contains('compute') || !computeRoleCount || computeRoleCount === '0' || !controllerRoleCount || controllerRoleCount === '0';
+      return unassignedRoleTypes.contains('controller') || unassignedRoleTypes.contains('compute') || !computeRoleCount || computeRoleCount === '0' || !controllerRoleCount || controllerRoleCount === '0';
     })
   });
 });
@@ -12505,20 +12503,144 @@ define("fusor-ember-cli/templates/application", ["exports"], function (exports) 
 define("fusor-ember-cli/templates/assign-nodes", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template((function () {
     var child0 = (function () {
+      return {
+        meta: {
+          "revision": "Ember@1.13.10",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 1,
+              "column": 0
+            },
+            "end": {
+              "line": 6,
+              "column": 0
+            }
+          },
+          "moduleName": "fusor-ember-cli/templates/assign-nodes.hbs"
+        },
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          dom.setAttribute(el1, "class", "spinner spinner-md spinner-inline");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("span");
+          dom.setAttribute(el1, "class", "spinner-text");
+          var el2 = dom.createTextNode("\n    Loading...\n  ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes() {
+          return [];
+        },
+        statements: [],
+        locals: [],
+        templates: []
+      };
+    })();
+    var child1 = (function () {
       var child0 = (function () {
         var child0 = (function () {
+          var child0 = (function () {
+            return {
+              meta: {
+                "revision": "Ember@1.13.10",
+                "loc": {
+                  "source": null,
+                  "start": {
+                    "line": 14,
+                    "column": 12
+                  },
+                  "end": {
+                    "line": 16,
+                    "column": 12
+                  }
+                },
+                "moduleName": "fusor-ember-cli/templates/assign-nodes.hbs"
+              },
+              arity: 0,
+              cachedFragment: null,
+              hasRendered: false,
+              buildFragment: function buildFragment(dom) {
+                var el0 = dom.createDocumentFragment();
+                var el1 = dom.createTextNode("              ");
+                dom.appendChild(el0, el1);
+                var el1 = dom.createComment("");
+                dom.appendChild(el0, el1);
+                var el1 = dom.createTextNode("\n");
+                dom.appendChild(el0, el1);
+                return el0;
+              },
+              buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+                var morphs = new Array(1);
+                morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+                return morphs;
+              },
+              statements: [["inline", "deployment-role", [], ["role", ["subexpr", "@mut", [["get", "role", ["loc", [null, [15, 37], [15, 41]]]]], [], []], "edit", "editRole"], ["loc", [null, [15, 14], [15, 59]]]]],
+              locals: [],
+              templates: []
+            };
+          })();
           return {
             meta: {
               "revision": "Ember@1.13.10",
               "loc": {
                 "source": null,
                 "start": {
-                  "line": 10,
-                  "column": 16
+                  "line": 13,
+                  "column": 10
                 },
                 "end": {
-                  "line": 12,
-                  "column": 16
+                  "line": 17,
+                  "column": 10
+                }
+              },
+              "moduleName": "fusor-ember-cli/templates/assign-nodes.hbs"
+            },
+            arity: 1,
+            cachedFragment: null,
+            hasRendered: false,
+            buildFragment: function buildFragment(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+              var morphs = new Array(1);
+              morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+              dom.insertBoundary(fragment, 0);
+              dom.insertBoundary(fragment, null);
+              return morphs;
+            },
+            statements: [["block", "draggable-object", [], ["content", ["subexpr", "@mut", [["get", "role", ["loc", [null, [14, 40], [14, 44]]]]], [], []]], 0, null, ["loc", [null, [14, 12], [16, 33]]]]],
+            locals: ["role"],
+            templates: [child0]
+          };
+        })();
+        var child1 = (function () {
+          return {
+            meta: {
+              "revision": "Ember@1.13.10",
+              "loc": {
+                "source": null,
+                "start": {
+                  "line": 18,
+                  "column": 10
+                },
+                "end": {
+                  "line": 20,
+                  "column": 10
                 }
               },
               "moduleName": "fusor-ember-cli/templates/assign-nodes.hbs"
@@ -12528,7 +12650,99 @@ define("fusor-ember-cli/templates/assign-nodes", ["exports"], function (exports)
             hasRendered: false,
             buildFragment: function buildFragment(dom) {
               var el0 = dom.createDocumentFragment();
-              var el1 = dom.createTextNode("                  ");
+              var el1 = dom.createTextNode("            ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createElement("span");
+              dom.setAttribute(el1, "class", "deployment-roles-all-assigned");
+              var el2 = dom.createTextNode("All deployment roles have been assigned.");
+              dom.appendChild(el1, el2);
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            buildRenderNodes: function buildRenderNodes() {
+              return [];
+            },
+            statements: [],
+            locals: [],
+            templates: []
+          };
+        })();
+        return {
+          meta: {
+            "revision": "Ember@1.13.10",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 11,
+                "column": 6
+              },
+              "end": {
+                "line": 22,
+                "column": 6
+              }
+            },
+            "moduleName": "fusor-ember-cli/templates/assign-nodes.hbs"
+          },
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("div");
+            var el2 = dom.createTextNode("\n");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createComment("");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createComment("");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createTextNode("        ");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var element0 = dom.childAt(fragment, [1]);
+            var morphs = new Array(3);
+            morphs[0] = dom.createAttrMorph(element0, 'class');
+            morphs[1] = dom.createMorphAt(element0, 1, 1);
+            morphs[2] = dom.createMorphAt(element0, 2, 2);
+            return morphs;
+          },
+          statements: [["attribute", "class", ["concat", ["row col-md-12 deployment-roles deployment-roles-unassigned deployment-roles-assignable ", ["get", "droppableClass", ["loc", [null, [12, 109], [12, 123]]]]]]], ["block", "each", [["get", "unassignedRoles", ["loc", [null, [13, 18], [13, 33]]]]], [], 0, null, ["loc", [null, [13, 10], [17, 19]]]], ["block", "if", [["get", "allRolesAssigned", ["loc", [null, [18, 16], [18, 32]]]]], [], 1, null, ["loc", [null, [18, 10], [20, 17]]]]],
+          locals: [],
+          templates: [child0, child1]
+        };
+      })();
+      var child1 = (function () {
+        var child0 = (function () {
+          return {
+            meta: {
+              "revision": "Ember@1.13.10",
+              "loc": {
+                "source": null,
+                "start": {
+                  "line": 31,
+                  "column": 20
+                },
+                "end": {
+                  "line": 41,
+                  "column": 19
+                }
+              },
+              "moduleName": "fusor-ember-cli/templates/assign-nodes.hbs"
+            },
+            arity: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            buildFragment: function buildFragment(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("                      ");
               dom.appendChild(el0, el1);
               var el1 = dom.createComment("");
               dom.appendChild(el0, el1);
@@ -12541,7 +12755,47 @@ define("fusor-ember-cli/templates/assign-nodes", ["exports"], function (exports)
               morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
               return morphs;
             },
-            statements: [["inline", "deployment-role", [], ["role", ["subexpr", "@mut", [["get", "role", ["loc", [null, [11, 41], [11, 45]]]]], [], []], "edit", "editRole"], ["loc", [null, [11, 18], [11, 63]]]]],
+            statements: [["inline", "node-profile", [], ["profile", ["subexpr", "@mut", [["get", "profile", ["loc", [null, [32, 45], [32, 52]]]]], [], []], "nodes", ["subexpr", "@mut", [["get", "nodes", ["loc", [null, [33, 43], [33, 48]]]]], [], []], "plan", ["subexpr", "@mut", [["get", "openStack.plan", ["loc", [null, [34, 42], [34, 56]]]]], [], []], "doAssign", true, "assignRole", "assignRole", "unassignRole", "unassignRole", "editRole", "editRole", "setRoleCount", "setRoleCount", "removeRole", "removeRole"], ["loc", [null, [32, 22], [40, 62]]]]],
+            locals: [],
+            templates: []
+          };
+        })();
+        var child1 = (function () {
+          return {
+            meta: {
+              "revision": "Ember@1.13.10",
+              "loc": {
+                "source": null,
+                "start": {
+                  "line": 41,
+                  "column": 19
+                },
+                "end": {
+                  "line": 50,
+                  "column": 19
+                }
+              },
+              "moduleName": "fusor-ember-cli/templates/assign-nodes.hbs"
+            },
+            arity: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            buildFragment: function buildFragment(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("                      ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+              var morphs = new Array(1);
+              morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+              return morphs;
+            },
+            statements: [["inline", "node-profile", [], ["profile", ["subexpr", "@mut", [["get", "profile", ["loc", [null, [42, 45], [42, 52]]]]], [], []], "plan", ["subexpr", "@mut", [["get", "openStack.plan", ["loc", [null, [43, 42], [43, 56]]]]], [], []], "doAssign", true, "assignRole", "assignRole", "unassignRole", "unassignRole", "editRole", "editRole", "setRoleCount", "setRoleCount", "removeRole", "removeRole"], ["loc", [null, [42, 22], [49, 62]]]]],
             locals: [],
             templates: []
           };
@@ -12552,12 +12806,12 @@ define("fusor-ember-cli/templates/assign-nodes", ["exports"], function (exports)
             "loc": {
               "source": null,
               "start": {
-                "line": 9,
-                "column": 14
+                "line": 28,
+                "column": 10
               },
               "end": {
-                "line": 13,
-                "column": 14
+                "line": 53,
+                "column": 10
               }
             },
             "moduleName": "fusor-ember-cli/templates/assign-nodes.hbs"
@@ -12567,61 +12821,36 @@ define("fusor-ember-cli/templates/assign-nodes", ["exports"], function (exports)
           hasRendered: false,
           buildFragment: function buildFragment(dom) {
             var el0 = dom.createDocumentFragment();
-            var el1 = dom.createComment("");
+            var el1 = dom.createTextNode("              ");
             dom.appendChild(el0, el1);
-            return el0;
-          },
-          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-            var morphs = new Array(1);
-            morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
-            dom.insertBoundary(fragment, 0);
-            dom.insertBoundary(fragment, null);
-            return morphs;
-          },
-          statements: [["block", "draggable-object", [], ["content", ["subexpr", "@mut", [["get", "role", ["loc", [null, [10, 44], [10, 48]]]]], [], []]], 0, null, ["loc", [null, [10, 16], [12, 37]]]]],
-          locals: ["role"],
-          templates: [child0]
-        };
-      })();
-      var child1 = (function () {
-        return {
-          meta: {
-            "revision": "Ember@1.13.10",
-            "loc": {
-              "source": null,
-              "start": {
-                "line": 14,
-                "column": 14
-              },
-              "end": {
-                "line": 16,
-                "column": 14
-              }
-            },
-            "moduleName": "fusor-ember-cli/templates/assign-nodes.hbs"
-          },
-          arity: 0,
-          cachedFragment: null,
-          hasRendered: false,
-          buildFragment: function buildFragment(dom) {
-            var el0 = dom.createDocumentFragment();
-            var el1 = dom.createTextNode("                  ");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createElement("span");
-            dom.setAttribute(el1, "class", "deployment-roles-all-assigned");
-            var el2 = dom.createTextNode("All deployment roles have been assigned.");
+            var el1 = dom.createElement("div");
+            dom.setAttribute(el1, "class", "row");
+            var el2 = dom.createTextNode("\n                  ");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createElement("div");
+            dom.setAttribute(el2, "class", "col-md-7");
+            var el3 = dom.createTextNode("\n");
+            dom.appendChild(el2, el3);
+            var el3 = dom.createComment("");
+            dom.appendChild(el2, el3);
+            var el3 = dom.createTextNode("                  ");
+            dom.appendChild(el2, el3);
+            dom.appendChild(el1, el2);
+            var el2 = dom.createTextNode("\n              ");
             dom.appendChild(el1, el2);
             dom.appendChild(el0, el1);
             var el1 = dom.createTextNode("\n");
             dom.appendChild(el0, el1);
             return el0;
           },
-          buildRenderNodes: function buildRenderNodes() {
-            return [];
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var morphs = new Array(1);
+            morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1, 1]), 1, 1);
+            return morphs;
           },
-          statements: [],
-          locals: [],
-          templates: []
+          statements: [["block", "if", [["get", "nodes", ["loc", [null, [31, 26], [31, 31]]]]], [], 0, 1, ["loc", [null, [31, 20], [50, 26]]]]],
+          locals: ["profile"],
+          templates: [child0, child1]
         };
       })();
       return {
@@ -12630,12 +12859,12 @@ define("fusor-ember-cli/templates/assign-nodes", ["exports"], function (exports)
           "loc": {
             "source": null,
             "start": {
-              "line": 7,
-              "column": 8
+              "line": 6,
+              "column": 0
             },
             "end": {
-              "line": 18,
-              "column": 8
+              "line": 71,
+              "column": 0
             }
           },
           "moduleName": "fusor-ember-cli/templates/assign-nodes.hbs"
@@ -12645,166 +12874,117 @@ define("fusor-ember-cli/templates/assign-nodes", ["exports"], function (exports)
         hasRendered: false,
         buildFragment: function buildFragment(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("            ");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createElement("div");
-          var el2 = dom.createTextNode("\n");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createComment("");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createComment("");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createTextNode("            ");
-          dom.appendChild(el1, el2);
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-          var element0 = dom.childAt(fragment, [1]);
-          var morphs = new Array(3);
-          morphs[0] = dom.createAttrMorph(element0, 'class');
-          morphs[1] = dom.createMorphAt(element0, 1, 1);
-          morphs[2] = dom.createMorphAt(element0, 2, 2);
-          return morphs;
-        },
-        statements: [["attribute", "class", ["concat", ["row col-md-12 deployment-roles deployment-roles-unassigned deployment-roles-assignable ", ["get", "droppableClass", ["loc", [null, [8, 113], [8, 127]]]]]]], ["block", "each", [["get", "unassignedRoles", ["loc", [null, [9, 22], [9, 37]]]]], [], 0, null, ["loc", [null, [9, 14], [13, 23]]]], ["block", "if", [["get", "allRolesAssigned", ["loc", [null, [14, 20], [14, 36]]]]], [], 1, null, ["loc", [null, [14, 14], [16, 21]]]]],
-        locals: [],
-        templates: [child0, child1]
-      };
-    })();
-    var child1 = (function () {
-      var child0 = (function () {
-        return {
-          meta: {
-            "revision": "Ember@1.13.10",
-            "loc": {
-              "source": null,
-              "start": {
-                "line": 27,
-                "column": 18
-              },
-              "end": {
-                "line": 37,
-                "column": 17
-              }
-            },
-            "moduleName": "fusor-ember-cli/templates/assign-nodes.hbs"
-          },
-          arity: 0,
-          cachedFragment: null,
-          hasRendered: false,
-          buildFragment: function buildFragment(dom) {
-            var el0 = dom.createDocumentFragment();
-            var el1 = dom.createTextNode("                    ");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createComment("");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("\n");
-            dom.appendChild(el0, el1);
-            return el0;
-          },
-          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-            var morphs = new Array(1);
-            morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
-            return morphs;
-          },
-          statements: [["inline", "node-profile", [], ["profile", ["subexpr", "@mut", [["get", "profile", ["loc", [null, [28, 43], [28, 50]]]]], [], []], "nodes", ["subexpr", "@mut", [["get", "nodes", ["loc", [null, [29, 41], [29, 46]]]]], [], []], "plan", ["subexpr", "@mut", [["get", "openStack.plan", ["loc", [null, [30, 40], [30, 54]]]]], [], []], "doAssign", true, "assignRole", "assignRole", "unassignRole", "unassignRole", "editRole", "editRole", "setRoleCount", "setRoleCount", "removeRole", "removeRole"], ["loc", [null, [28, 20], [36, 60]]]]],
-          locals: [],
-          templates: []
-        };
-      })();
-      var child1 = (function () {
-        return {
-          meta: {
-            "revision": "Ember@1.13.10",
-            "loc": {
-              "source": null,
-              "start": {
-                "line": 37,
-                "column": 17
-              },
-              "end": {
-                "line": 46,
-                "column": 17
-              }
-            },
-            "moduleName": "fusor-ember-cli/templates/assign-nodes.hbs"
-          },
-          arity: 0,
-          cachedFragment: null,
-          hasRendered: false,
-          buildFragment: function buildFragment(dom) {
-            var el0 = dom.createDocumentFragment();
-            var el1 = dom.createTextNode("                    ");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createComment("");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("\n");
-            dom.appendChild(el0, el1);
-            return el0;
-          },
-          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-            var morphs = new Array(1);
-            morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
-            return morphs;
-          },
-          statements: [["inline", "node-profile", [], ["profile", ["subexpr", "@mut", [["get", "profile", ["loc", [null, [38, 43], [38, 50]]]]], [], []], "plan", ["subexpr", "@mut", [["get", "openStack.plan", ["loc", [null, [39, 40], [39, 54]]]]], [], []], "doAssign", true, "assignRole", "assignRole", "unassignRole", "unassignRole", "editRole", "editRole", "setRoleCount", "setRoleCount", "removeRole", "removeRole"], ["loc", [null, [38, 20], [45, 60]]]]],
-          locals: [],
-          templates: []
-        };
-      })();
-      return {
-        meta: {
-          "revision": "Ember@1.13.10",
-          "loc": {
-            "source": null,
-            "start": {
-              "line": 24,
-              "column": 8
-            },
-            "end": {
-              "line": 49,
-              "column": 8
-            }
-          },
-          "moduleName": "fusor-ember-cli/templates/assign-nodes.hbs"
-        },
-        arity: 1,
-        cachedFragment: null,
-        hasRendered: false,
-        buildFragment: function buildFragment(dom) {
-          var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("            ");
+          var el1 = dom.createTextNode("  ");
           dom.appendChild(el0, el1);
           var el1 = dom.createElement("div");
           dom.setAttribute(el1, "class", "row");
-          var el2 = dom.createTextNode("\n                ");
+          var el2 = dom.createTextNode("\n    ");
           dom.appendChild(el1, el2);
           var el2 = dom.createElement("div");
-          dom.setAttribute(el2, "class", "col-md-7");
+          dom.setAttribute(el2, "class", "col-md-12");
+          dom.setAttribute(el2, "style", "float: left;");
+          var el3 = dom.createTextNode("\n      ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createElement("h2");
+          dom.setAttribute(el3, "style", "vertical-align: bottom;display:inline-block;");
+          var el4 = dom.createTextNode("Available Deployment Roles");
+          dom.appendChild(el3, el4);
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n      ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createElement("a");
+          dom.setAttribute(el3, "class", "edit-global-config");
+          var el4 = dom.createTextNode(" Edit Global Configuration");
+          dom.appendChild(el3, el4);
+          dom.appendChild(el2, el3);
           var el3 = dom.createTextNode("\n");
           dom.appendChild(el2, el3);
           var el3 = dom.createComment("");
           dom.appendChild(el2, el3);
-          var el3 = dom.createTextNode("                ");
+          var el3 = dom.createTextNode("    ");
           dom.appendChild(el2, el3);
           dom.appendChild(el1, el2);
-          var el2 = dom.createTextNode("\n            ");
+          var el2 = dom.createComment(" /col ");
           dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n  ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment(" /row ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          dom.setAttribute(el1, "class", "row");
+          var el2 = dom.createTextNode("\n      ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("div");
+          dom.setAttribute(el2, "class", "col-md-12");
+          var el3 = dom.createTextNode("\n          ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createElement("h2");
+          var el4 = dom.createTextNode("Flavors");
+          dom.appendChild(el3, el4);
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createComment("");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("      ");
+          dom.appendChild(el2, el3);
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n      ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("div");
+          dom.setAttribute(el2, "class", "col-sm-6 col-md-5");
+          var el3 = dom.createTextNode("\n          ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createComment(" a network topology is planned for this space ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n      ");
+          dom.appendChild(el2, el3);
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n  ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n\n  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("br");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n\n  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
           dom.appendChild(el0, el1);
           var el1 = dom.createTextNode("\n");
           dom.appendChild(el0, el1);
           return el0;
         },
         buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-          var morphs = new Array(1);
-          morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1, 1]), 1, 1);
+          var element1 = dom.childAt(fragment, [1, 1]);
+          var element2 = dom.childAt(element1, [3]);
+          var morphs = new Array(7);
+          morphs[0] = dom.createElementMorph(element2);
+          morphs[1] = dom.createMorphAt(element1, 5, 5);
+          morphs[2] = dom.createMorphAt(dom.childAt(fragment, [4, 1]), 3, 3);
+          morphs[3] = dom.createMorphAt(fragment, 8, 8, contextualElement);
+          morphs[4] = dom.createMorphAt(fragment, 10, 10, contextualElement);
+          morphs[5] = dom.createMorphAt(fragment, 12, 12, contextualElement);
+          morphs[6] = dom.createMorphAt(fragment, 14, 14, contextualElement);
           return morphs;
         },
-        statements: [["block", "if", [["get", "nodes", ["loc", [null, [27, 24], [27, 29]]]]], [], 0, 1, ["loc", [null, [27, 18], [46, 24]]]]],
-        locals: ["profile"],
+        statements: [["element", "action", ["editGlobalServiceConfig"], [], ["loc", [null, [10, 36], [10, 72]]]], ["block", "draggable-object-target", [], ["action", "unassignRole"], 0, null, ["loc", [null, [11, 6], [22, 34]]]], ["block", "each", [["get", "profiles", ["loc", [null, [28, 18], [28, 26]]]]], [], 1, null, ["loc", [null, [28, 10], [53, 19]]]], ["inline", "cancel-back-next", [], ["backRouteName", "register-nodes", "disableBack", false, "nextRouteName", "openstack.overcloud", "disableNext", ["subexpr", "@mut", [["get", "disableAssignNodesNext", ["loc", [null, [64, 33], [64, 55]]]]], [], []], "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [65, 35], [65, 44]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [66, 36], [66, 50]]]]], [], []]], ["loc", [null, [61, 2], [66, 52]]]], ["inline", "partial", ["edit-deployment-role"], [], ["loc", [null, [68, 2], [68, 36]]]], ["inline", "partial", ["edit-global-service-config"], [], ["loc", [null, [69, 2], [69, 42]]]], ["inline", "loading-spinner", [], ["show", ["subexpr", "@mut", [["get", "showLoadingSpinner", ["loc", [null, [70, 25], [70, 43]]]]], [], []], "text", ["subexpr", "@mut", [["get", "loadingSpinnerText", ["loc", [null, [70, 49], [70, 67]]]]], [], []]], ["loc", [null, [70, 2], [70, 69]]]]],
+        locals: [],
         templates: [child0, child1]
       };
     })();
@@ -12818,8 +12998,8 @@ define("fusor-ember-cli/templates/assign-nodes", ["exports"], function (exports)
             "column": 0
           },
           "end": {
-            "line": 67,
-            "column": 0
+            "line": 71,
+            "column": 7
           }
         },
         "moduleName": "fusor-ember-cli/templates/assign-nodes.hbs"
@@ -12829,120 +13009,18 @@ define("fusor-ember-cli/templates/assign-nodes", ["exports"], function (exports)
       hasRendered: false,
       buildFragment: function buildFragment(dom) {
         var el0 = dom.createDocumentFragment();
-        var el1 = dom.createElement("div");
-        dom.setAttribute(el1, "class", "row");
-        var el2 = dom.createTextNode("\n    ");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createElement("div");
-        dom.setAttribute(el2, "class", "col-md-12");
-        dom.setAttribute(el2, "style", "float: left;");
-        var el3 = dom.createTextNode("\n        ");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createElement("p");
-        var el4 = dom.createTextNode("\n            ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("h2");
-        dom.setAttribute(el4, "style", "vertical-align: bottom;display:inline-block;");
-        var el5 = dom.createTextNode("Available Deployment Roles");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n            ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("a");
-        dom.setAttribute(el4, "class", "edit-global-config");
-        var el5 = dom.createTextNode(" Edit Global Configuration");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n        ");
-        dom.appendChild(el3, el4);
-        dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("\n");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createComment("");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("    ");
-        dom.appendChild(el2, el3);
-        dom.appendChild(el1, el2);
-        var el2 = dom.createComment(" /col ");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\n");
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        var el1 = dom.createComment(" /row ");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("div");
-        dom.setAttribute(el1, "class", "row");
-        var el2 = dom.createTextNode("\n    ");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createElement("div");
-        dom.setAttribute(el2, "class", "col-md-12");
-        var el3 = dom.createTextNode("\n        ");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createElement("h2");
-        var el4 = dom.createTextNode("Flavors");
-        dom.appendChild(el3, el4);
-        dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("\n");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createComment("");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("    ");
-        dom.appendChild(el2, el3);
-        dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\n    ");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createElement("div");
-        dom.setAttribute(el2, "class", "col-sm-6 col-md-5");
-        var el3 = dom.createTextNode("\n        ");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createComment(" a network topology is planned for this space ");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("\n    ");
-        dom.appendChild(el2, el3);
-        dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\n");
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("br");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
         var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
         return el0;
       },
       buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-        var element1 = dom.childAt(fragment, [0, 1]);
-        var element2 = dom.childAt(element1, [1, 3]);
-        var morphs = new Array(7);
-        morphs[0] = dom.createElementMorph(element2);
-        morphs[1] = dom.createMorphAt(element1, 3, 3);
-        morphs[2] = dom.createMorphAt(dom.childAt(fragment, [3, 1]), 3, 3);
-        morphs[3] = dom.createMorphAt(fragment, 7, 7, contextualElement);
-        morphs[4] = dom.createMorphAt(fragment, 9, 9, contextualElement);
-        morphs[5] = dom.createMorphAt(fragment, 11, 11, contextualElement);
-        morphs[6] = dom.createMorphAt(fragment, 13, 13, contextualElement);
+        var morphs = new Array(1);
+        morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+        dom.insertBoundary(fragment, 0);
+        dom.insertBoundary(fragment, null);
         return morphs;
       },
-      statements: [["element", "action", ["editGlobalServiceConfig"], [], ["loc", [null, [5, 42], [5, 78]]]], ["block", "draggable-object-target", [], ["action", "unassignRole"], 0, null, ["loc", [null, [7, 8], [18, 36]]]], ["block", "each", [["get", "profiles", ["loc", [null, [24, 16], [24, 24]]]]], [], 1, null, ["loc", [null, [24, 8], [49, 17]]]], ["inline", "cancel-back-next", [], ["backRouteName", "register-nodes", "disableBack", false, "nextRouteName", "openstack.overcloud", "disableNext", ["subexpr", "@mut", [["get", "disableAssignNodesNext", ["loc", [null, [60, 31], [60, 53]]]]], [], []], "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [61, 33], [61, 42]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [62, 34], [62, 48]]]]], [], []]], ["loc", [null, [57, 0], [62, 50]]]], ["inline", "partial", ["edit-deployment-role"], [], ["loc", [null, [64, 0], [64, 34]]]], ["inline", "partial", ["edit-global-service-config"], [], ["loc", [null, [65, 0], [65, 40]]]], ["inline", "loading-spinner", [], ["show", ["subexpr", "@mut", [["get", "showLoadingSpinner", ["loc", [null, [66, 23], [66, 41]]]]], [], []], "text", ["subexpr", "@mut", [["get", "loadingSpinnerText", ["loc", [null, [66, 47], [66, 65]]]]], [], []]], ["loc", [null, [66, 0], [66, 67]]]]],
+      statements: [["block", "if", [["get", "showSpinner", ["loc", [null, [1, 6], [1, 17]]]]], [], 0, 1, ["loc", [null, [1, 0], [71, 7]]]]],
       locals: [],
       templates: [child0, child1]
     };
@@ -46580,11 +46658,11 @@ define('fusor-ember-cli/utils/validators', ['exports', 'ember'], function (expor
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+0f686eab"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+c25431c2"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+0f686eab"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+c25431c2"});
 }
 
 /* jshint ignore:end */
