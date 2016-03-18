@@ -19,7 +19,7 @@ export default Ember.Mixin.create({
 
   // names
   nameRHCI: Ember.computed('isUpstream', function() {
-    if (this.get('isUpstream')) { return "Fusor"; } else { return "RHCI"; }
+    if (this.get('isUpstream')) { return "Fusor"; } else { return "QCI"; }
   }),
 
   nameRedHat: Ember.computed('isUpstream', function() {
