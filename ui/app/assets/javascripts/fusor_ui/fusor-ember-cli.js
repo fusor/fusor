@@ -32697,11 +32697,11 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
           "loc": {
             "source": null,
             "start": {
-              "line": 13,
+              "line": 14,
               "column": 8
             },
             "end": {
-              "line": 13,
+              "line": 14,
               "column": 105
             }
           },
@@ -32729,11 +32729,11 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
           "loc": {
             "source": null,
             "start": {
-              "line": 18,
+              "line": 19,
               "column": 4
             },
             "end": {
-              "line": 20,
+              "line": 21,
               "column": 4
             }
           },
@@ -32757,7 +32757,7 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
           morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
           return morphs;
         },
-        statements: [["inline", "partial", ["new-node-registration-auto"], [], ["loc", [null, [19, 6], [19, 46]]]]],
+        statements: [["inline", "partial", ["new-node-registration-auto"], [], ["loc", [null, [20, 6], [20, 46]]]]],
         locals: [],
         templates: []
       };
@@ -32769,11 +32769,11 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
           "loc": {
             "source": null,
             "start": {
-              "line": 24,
+              "line": 25,
               "column": 8
             },
             "end": {
-              "line": 24,
+              "line": 25,
               "column": 103
             }
           },
@@ -32801,11 +32801,11 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
           "loc": {
             "source": null,
             "start": {
-              "line": 29,
+              "line": 30,
               "column": 4
             },
             "end": {
-              "line": 31,
+              "line": 32,
               "column": 4
             }
           },
@@ -32829,7 +32829,7 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
           morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
           return morphs;
         },
-        statements: [["inline", "partial", ["new-node-registration-csv"], [], ["loc", [null, [30, 6], [30, 45]]]]],
+        statements: [["inline", "partial", ["new-node-registration-csv"], [], ["loc", [null, [31, 6], [31, 45]]]]],
         locals: [],
         templates: []
       };
@@ -32841,11 +32841,11 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
           "loc": {
             "source": null,
             "start": {
-              "line": 35,
+              "line": 36,
               "column": 8
             },
             "end": {
-              "line": 35,
+              "line": 36,
               "column": 102
             }
           },
@@ -32873,11 +32873,11 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
           "loc": {
             "source": null,
             "start": {
-              "line": 40,
+              "line": 41,
               "column": 4
             },
             "end": {
-              "line": 42,
+              "line": 43,
               "column": 4
             }
           },
@@ -32901,7 +32901,7 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
           morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
           return morphs;
         },
-        statements: [["inline", "partial", ["new-node-registration-manual"], [], ["loc", [null, [41, 6], [41, 48]]]]],
+        statements: [["inline", "partial", ["new-node-registration-manual"], [], ["loc", [null, [42, 6], [42, 48]]]]],
         locals: [],
         templates: []
       };
@@ -32916,7 +32916,7 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
             "column": 0
           },
           "end": {
-            "line": 46,
+            "line": 47,
             "column": 0
           }
         },
@@ -32936,7 +32936,7 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
         var el3 = dom.createTextNode("\n    ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("p");
-        var el4 = dom.createTextNode("Nodes can be detected automatically in some environments, or manually, either by identifying each node by\n      hand, or through a CSV file that maps each desired node.");
+        var el4 = dom.createTextNode("Nodes are registered with OpenStack by connecting to their power management interfaces.\n      In some environments, nodes can be auto-detected using those interfaces.\n      Otherwise, you can upload a CSV file that includes node details, or manually provide those details for each node.");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n    ");
@@ -33043,7 +33043,7 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
         morphs[5] = dom.createMorphAt(element0, 11, 11);
         return morphs;
       },
-      statements: [["block", "radio-button", [], ["value", "auto_detect", "groupValue", ["subexpr", "@mut", [["get", "registerNodesMethod", ["loc", [null, [13, 55], [13, 74]]]]], [], []], "id", "optionNewNodeMethodAuto"], 0, null, ["loc", [null, [13, 8], [13, 122]]]], ["block", "if", [["get", "isNewNodeMethodAuto", ["loc", [null, [18, 10], [18, 29]]]]], [], 1, null, ["loc", [null, [18, 4], [20, 11]]]], ["block", "radio-button", [], ["value", "csv_upload", "groupValue", ["subexpr", "@mut", [["get", "registerNodesMethod", ["loc", [null, [24, 54], [24, 73]]]]], [], []], "id", "optionNewNodeMethodCSV"], 2, null, ["loc", [null, [24, 8], [24, 120]]]], ["block", "if", [["get", "isNewNodeMethodCSV", ["loc", [null, [29, 10], [29, 28]]]]], [], 3, null, ["loc", [null, [29, 4], [31, 11]]]], ["block", "radio-button", [], ["value", "manual", "groupValue", ["subexpr", "@mut", [["get", "registerNodesMethod", ["loc", [null, [35, 50], [35, 69]]]]], [], []], "id", "optionNewNodeMethodManual"], 4, null, ["loc", [null, [35, 8], [35, 119]]]], ["block", "if", [["get", "isNewNodeMethodManual", ["loc", [null, [40, 10], [40, 31]]]]], [], 5, null, ["loc", [null, [40, 4], [42, 11]]]]],
+      statements: [["block", "radio-button", [], ["value", "auto_detect", "groupValue", ["subexpr", "@mut", [["get", "registerNodesMethod", ["loc", [null, [14, 55], [14, 74]]]]], [], []], "id", "optionNewNodeMethodAuto"], 0, null, ["loc", [null, [14, 8], [14, 122]]]], ["block", "if", [["get", "isNewNodeMethodAuto", ["loc", [null, [19, 10], [19, 29]]]]], [], 1, null, ["loc", [null, [19, 4], [21, 11]]]], ["block", "radio-button", [], ["value", "csv_upload", "groupValue", ["subexpr", "@mut", [["get", "registerNodesMethod", ["loc", [null, [25, 54], [25, 73]]]]], [], []], "id", "optionNewNodeMethodCSV"], 2, null, ["loc", [null, [25, 8], [25, 120]]]], ["block", "if", [["get", "isNewNodeMethodCSV", ["loc", [null, [30, 10], [30, 28]]]]], [], 3, null, ["loc", [null, [30, 4], [32, 11]]]], ["block", "radio-button", [], ["value", "manual", "groupValue", ["subexpr", "@mut", [["get", "registerNodesMethod", ["loc", [null, [36, 50], [36, 69]]]]], [], []], "id", "optionNewNodeMethodManual"], 4, null, ["loc", [null, [36, 8], [36, 119]]]], ["block", "if", [["get", "isNewNodeMethodManual", ["loc", [null, [41, 10], [41, 31]]]]], [], 5, null, ["loc", [null, [41, 4], [43, 11]]]]],
       locals: [],
       templates: [child0, child1, child2, child3, child4, child5]
     };
@@ -46658,11 +46658,11 @@ define('fusor-ember-cli/utils/validators', ['exports', 'ember'], function (expor
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+ab0e6344"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+e393ac6e"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+ab0e6344"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+e393ac6e"});
 }
 
 /* jshint ignore:end */
