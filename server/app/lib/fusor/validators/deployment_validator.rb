@@ -27,9 +27,7 @@ module Fusor
             deployment.errors[:rhev_storage_type] << _('RHEV deployments must specify a valid storage type (NFS, Local, glusterfs)')
           end
 
-          Rails.logger.warn("XXX #{deployment.rhev_storage_type}")
-
-          if deployment.rhev_storage_type == 'NFS' && deployment.rhev_storage_type != 'glusterfs'
+          if deployment.rhev_storage_type == 'NFS'
             if deployment.rhev_storage_address.empty?
               deployment.errors[:rhev_storage_address] << _('NFS share specified but missing address of NFS server')
             end
@@ -54,15 +52,11 @@ module Fusor
 
               validate_nfs_share(deployment)
             end
-          end
-
-          if deployment.rhev_storage_type == 'Local'
+          elsif deployment.rhev_storage_type == 'Local'
             if deployment.rhev_local_storage_path.empty?
               deployment.errors[:rhev_local_storage_path] << _('Local storage specified but missing local storage path')
             end
-          end
-
-          if deployment.rhev_storage_type == 'glusterfs' && deployment.rhev_storage_type != 'NFS'
+          elsif deployment.rhev_storage_type == 'glusterfs'
             if deployment.rhev_share_path.empty?
               deployment.errors[:rhev_share_path] << _('Gluster share specified but missing path to the share')
             else
