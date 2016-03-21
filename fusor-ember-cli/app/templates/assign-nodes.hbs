@@ -1,66 +1,71 @@
-<div class="row">
+{{#if showSpinner}}
+  <div class="spinner spinner-md spinner-inline"></div>
+  <span class='spinner-text'>
+    Loading...
+  </span>
+{{else}}
+  <div class="row">
     <div class="col-md-12" style="float: left;">
-        <p >
-            <h2 style="vertical-align: bottom;display:inline-block;">Available Deployment Roles</h2>
-            <a class="edit-global-config" {{action "editGlobalServiceConfig"}}> Edit Global Configuration</a>
-        </p>
-        {{#draggable-object-target action="unassignRole"}}
-            <div class="row col-md-12 deployment-roles deployment-roles-unassigned deployment-roles-assignable {{droppableClass}}">
-              {{#each unassignedRoles as |role|}}
-                {{#draggable-object content=role}}
-                  {{deployment-role role=role edit="editRole"}}
-                {{/draggable-object}}
-              {{/each}}
-              {{#if allRolesAssigned}}
-                  <span class="deployment-roles-all-assigned">All deployment roles have been assigned.</span>
-              {{/if}}
-            </div>
-        {{/draggable-object-target}}
+      <h2 style="vertical-align: bottom;display:inline-block;">Available Deployment Roles</h2>
+      <a class="edit-global-config" {{action "editGlobalServiceConfig"}}> Edit Global Configuration</a>
+      {{#draggable-object-target action="unassignRole"}}
+        <div class="row col-md-12 deployment-roles deployment-roles-unassigned deployment-roles-assignable {{droppableClass}}">
+          {{#each unassignedRoles as |role|}}
+            {{#draggable-object content=role}}
+              {{deployment-role role=role edit="editRole"}}
+            {{/draggable-object}}
+          {{/each}}
+          {{#if allRolesAssigned}}
+            <span class="deployment-roles-all-assigned">All deployment roles have been assigned.</span>
+          {{/if}}
+        </div>
+      {{/draggable-object-target}}
     </div><!-- /col -->
-</div><!-- /row -->
-<div class="row">
-    <div class="col-md-12">
-        <h2>Flavors</h2>
-        {{#each profiles as |profile|}}
-            <div class="row">
-                <div class='col-md-7'>
-                  {{#if nodes}}
-                    {{node-profile profile=profile
-                                   nodes=nodes
-                                   plan=openStack.plan
-                                   doAssign=true
-                                   assignRole="assignRole"
-                                   unassignRole="unassignRole"
-                                   editRole="editRole"
-                                   setRoleCount="setRoleCount"
-                                   removeRole="removeRole"}}
-                 {{else}}
-                    {{node-profile profile=profile
-                                   plan=openStack.plan
-                                   doAssign=true
-                                   assignRole="assignRole"
-                                   unassignRole="unassignRole"
-                                   editRole="editRole"
-                                   setRoleCount="setRoleCount"
-                                   removeRole="removeRole"}}
-                 {{/if}}
-                </div>
-            </div>
-        {{/each}}
-    </div>
-    <div class="col-sm-6 col-md-5">
-        <!-- a network topology is planned for this space -->
-    </div>
-</div>
+  </div><!-- /row -->
+  <div class="row">
+      <div class="col-md-12">
+          <h2>Flavors</h2>
+          {{#each profiles as |profile|}}
+              <div class="row">
+                  <div class='col-md-7'>
+                    {{#if nodes}}
+                      {{node-profile profile=profile
+                                     nodes=nodes
+                                     plan=openStack.plan
+                                     doAssign=true
+                                     assignRole="assignRole"
+                                     unassignRole="unassignRole"
+                                     editRole="editRole"
+                                     setRoleCount="setRoleCount"
+                                     removeRole="removeRole"}}
+                   {{else}}
+                      {{node-profile profile=profile
+                                     plan=openStack.plan
+                                     doAssign=true
+                                     assignRole="assignRole"
+                                     unassignRole="unassignRole"
+                                     editRole="editRole"
+                                     setRoleCount="setRoleCount"
+                                     removeRole="removeRole"}}
+                   {{/if}}
+                  </div>
+              </div>
+          {{/each}}
+      </div>
+      <div class="col-sm-6 col-md-5">
+          <!-- a network topology is planned for this space -->
+      </div>
+  </div>
 
-<br />
-{{cancel-back-next backRouteName='register-nodes'
-                   disableBack=false
-                   nextRouteName='openstack.overcloud'
-                   disableNext=disableAssignNodesNext
-                   disableCancel=isStarted
-                   deploymentName=deploymentName}}
+  <br />
+  {{cancel-back-next backRouteName='register-nodes'
+                     disableBack=false
+                     nextRouteName='openstack.overcloud'
+                     disableNext=disableAssignNodesNext
+                     disableCancel=isStarted
+                     deploymentName=deploymentName}}
 
-{{partial 'edit-deployment-role'}}
-{{partial 'edit-global-service-config'}}
-{{loading-spinner show=showLoadingSpinner text=loadingSpinnerText}}
+  {{partial 'edit-deployment-role'}}
+  {{partial 'edit-global-service-config'}}
+  {{loading-spinner show=showLoadingSpinner text=loadingSpinnerText}}
+{{/if}}
