@@ -23,8 +23,8 @@ module Fusor
             deployment.errors[:rhev_engine_admin_password] << _('RHEV deployments must specify an admin password for the RHEV Engine')
           end
 
-          if deployment.rhev_storage_type.empty? or !['NFS', 'Local', 'Gluster'].include?(deployment.rhev_storage_type)
-            deployment.errors[:rhev_storage_type] << _('RHEV deployments must specify a valid storage type (NFS, Local, Gluster)')
+          if deployment.rhev_storage_type.empty? or !['NFS', 'Local', 'glusterfs'].include?(deployment.rhev_storage_type)
+            deployment.errors[:rhev_storage_type] << _('RHEV deployments must specify a valid storage type (NFS, Local, glusterfs)')
           end
 
           if deployment.rhev_storage_type == 'NFS'
@@ -52,25 +52,28 @@ module Fusor
 
               validate_nfs_share(deployment)
             end
-          end
-
-          if deployment.rhev_storage_type == 'Local'
+          elsif deployment.rhev_storage_type == 'Local'
             if deployment.rhev_local_storage_path.empty?
               deployment.errors[:rhev_local_storage_path] << _('Local storage specified but missing local storage path')
             end
-          end
+          elsif deployment.rhev_storage_type == 'glusterfs'
+            if deployment.rhev_share_path.empty?
+              deployment.errors[:rhev_share_path] << _('Gluster share specified but missing path to the share')
+            else
+              # See https://tools.ietf.org/html/rfc2224#section-1
+              # NFS paths cannot end in slash or contain non-ascii chars
+              if deployment.rhev_share_path.end_with?("/") && deployment.rhev_share_path.length > 1
+                deployment.errors[:rhev_share_path] << _('Gluster path specified ends in a "/", which is invalid')
+              end
 
-          if deployment.rhev_storage_type == 'Gluster'
-            if deployment.rhev_gluster_node_name.empty?
-              deployment.errors[:rhev_gluster_node_name] << _('Gluster storage specified but missing Gluster node name')
-            end
+              # Glusterfs paths must start with a slash
+              if deployment.rhev_share_path.start_with?("/")
+                deployment.errors[:rhev_share_path] << _('Gluster path specified starts with a "/", which is invalid')
+              end
 
-            if deployment.rhev_gluster_node_address.empty?
-              deployment.errors[:rhev_gluster_node_address] << _('Gluster storage specified but missing Gluster node address')
-            end
-
-            if deployment.rhev_gluster_root_password.empty?
-              deployment.errors[:rhev_gluster_root_password] << _('Gluster storage specified but missing Gluster root password')
+              if !deployment.rhev_share_path.ascii_only?
+                deployment.errors[:rhev_share_path] << _('Gluster path specified contains non-ascii characters, which is invalid')
+              end
             end
           end
 

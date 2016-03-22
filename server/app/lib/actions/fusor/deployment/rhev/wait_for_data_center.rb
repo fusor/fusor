@@ -34,6 +34,22 @@ module Actions
             external_task
           end
 
+          def poll_intervals
+            # It takes almost 7 minutes to do the rpm installation via puppet,
+            # so no point in spinning our wheels trying to see if the datacenter
+            # is up yet. Also, another 22 minutes of "other" activitties after
+            # the last rpm is installed before the datacenter can be checked.
+            #
+            # So reversing the polling intervals so that dynflow will wait 6
+            # minutes before doing the second check. After the first interval
+            # checks fail, it will speed them up as it takes longer. This should
+            # minimize the number of polling actions we do on the datacenter and
+            # reduce the noise in the logs.
+            #
+            # 6m, 4m, 1m, 30s, 8s, 4s, 1s, .5s
+            [360, 240, 60, 30, 8, 4, 1, 0.5]
+          end
+
           def invoke_external_task
             is_up? get_status(input[:deployment_id])
           end
