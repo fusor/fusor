@@ -826,16 +826,16 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
             return;
           }
 
-          if (rowIndex === 0 && Ember.isPresent(row[0]) && row[0].toLowerCase().includes('driver')) {
+          if (rowIndex === 0 && Ember.isPresent(row[0]) && row[0].toLowerCase().indexOf('driver') >= 0) {
             return;  //skip header row if present
           }
 
           let csvNode = Ember.Object.create({});
           let errorsFound = false;
 
-          if (row[0].toLowerCase().includes('ssh')) {
+          if (row[0].toLowerCase().indexOf('ssh') >= 0) {
             csvNode.set('driver', 'pxe_ssh');
-          } else if(row[0].toLowerCase().includes('ipmi')) {
+          } else if(row[0].toLowerCase().indexOf('ipmi') >= 0) {
             csvNode.set('driver', 'pxe_ipmitool');
           } else {
             csvErrors.pushObject(`Row ${rowIndex + 1}, Column 1: "${row[0]}" is not a valid driver value`);
