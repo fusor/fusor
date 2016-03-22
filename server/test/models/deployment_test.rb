@@ -157,11 +157,25 @@ class DeploymentTest < ActiveSupport::TestCase
       assert_not rhev.save, "Saved rhev deployment that used gluster storage but had no address"
     end
 
-    test "should not save rhev deployment if storage type is gluster and missing gluster name" do
+    test "should not save rhev deployment if storage type is gluster and missing gluster path" do
       rhev = fusor_deployments(:rhev)
       rhev.rhev_storage_type = 'glusterfs'
-      rhev.rhev_storage_path = nil
-      assert_not rhev.save, "Saved rhev deployment that used gluster storage but had no name"
+      rhev.rhev_share_path = nil
+      assert_not rhev.save, "Saved rhev deployment that used gluster storage but had no path"
+    end
+
+    test "should not save rhev deployment if glusterfs path ends in slash" do
+      rhev = fusor_deployments(:rhev)
+      rhev.rhev_storage_type = 'glusterfs'
+      rhev.rhev_share_path = 'gv1/'
+      assert_not rhev.save, "Saved rhev deployment who's glusterfs path ended in a slash"
+    end
+
+    test "should not save rhev deployment if glusterfs path starts in slash" do
+      rhev = fusor_deployments(:rhev)
+      rhev.rhev_storage_type = 'glusterfs'
+      rhev.rhev_share_path = '/gv0'
+      assert_not rhev.save, "Saved rhev deployment who's glusterfs path ended in a slash"
     end
 
     test "should not save cfme deployment with short password" do
