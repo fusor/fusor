@@ -25,11 +25,20 @@ module Fusor
 
     # Add any db migrations
     initializer "fusor.load_app_instance_data" do |app|
-      app.config.paths['db/migrate'] += Fusor::Engine.paths['db/migrate'].existent
+      Fusor::Engine.paths['db/migrate'].existent.each do |migrate_file|
+        app.config.paths['db/migrate'] << migrate_file
+      end
     end
 
     initializer 'fusor.mount_engine', :after => :build_middleware_stack do |app|
       app.routes_reloader.paths << "#{Fusor::Engine.root}/config/routes/mount_engine.rb"
+    end
+
+    # Load this before the Foreman config initializers, so that the Setting.descendants
+    # list includes the plugin STI setting class
+    initializer 'fusor.load_default_settings', :before => :load_config_initializers do |app|
+      require_dependency File.expand_path("#{Fusor::Engine.root}/app/models/setting/openshift.rb", __FILE__) if (Setting.table_exists? rescue(false))
+      require_dependency File.expand_path("#{Fusor::Engine.root}/app/models/setting/cloudforms.rb", __FILE__) if (Setting.table_exists? rescue(false))
     end
 
     initializer "fusor.paths" do |app|
