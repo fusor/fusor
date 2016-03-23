@@ -6,6 +6,9 @@ rvm:
 branches:
  only:
  - master
+ - develop
+ - satellite-6.2
+ - openshift3
 
 notifications:
  email: false
