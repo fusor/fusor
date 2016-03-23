@@ -1,0 +1,67 @@
+---
+- name: Setup docker containers
+  hosts: all
+  user: ansible_ssh_user
+  tasks:
+    - name: install docker
+      shell: sudo yum install -y {{item}}
+      with_items:
+        - docker
+
+    - name: temporarily downgrade docker
+      shell: sudo yum downgrade -y docker
+
+    #- name: scp docker storage configuration
+    #  action: copy src="../files/docker-storage-setup" dest="/etc/sysconfig/docker-storage-setup" owner=root mode=0775
+
+    #- name: check if docker volume already exists
+    #  stat: path=/dev/{{docker_volume}}
+    #  register: p
+
+    #- name: Setup docker storage
+    #  command: docker-storage-setup
+    #  when: p.stat.isdir is not defined
+
+    - name: Add external route temporarily for docker registry
+      shell: route add default gw 192.168.52.1
+      ignore_errors: yes
+
+    - name: Start docker services
+      shell: systemctl restart docker.service
+
+    - name: Install docker containers
+      action: shell docker pull {{item}}
+      with_items:
+        - rhscl/php-56-rhel7
+        - rhscl/mysql-56-rhel7
+        - rhscl/ruby-22-rhel7
+        - openshift3/ose-docker-registry:v3.1.0.4
+        - openshift3/ose-pod:v3.1.0.4
+        - openshift3/ose-sti-builder:v3.1.0.4
+        - openshift3/ose-deployer:v3.1.0.4
+        - openshift3/ose-haproxy-router:v3.1.0.4
+        - openshift3/ose-docker-builder:v3.1.0.4
+        - openshift3/ose-keepalived-ipfailover:v3.1.0.4
+
+- name: Configure master node
+  hosts: masters
+  user: ansible_ssh_user
+  tasks:
+    - name: install ansible and necessary packages
+      shell: sudo yum install -y {{item}}
+      with_items:
+        - ansible
+        - deltarpm
+        - wget
+        - git
+        - net-tools
+        - bind-utils
+        - iptables-services
+        - bridge-utils
+        - httpd-tools
+        - gcc
+        - python-virtualenv
+        - docker
+
+    - name: install atomic-openshift-utils
+      shell: sudo yum install -y atomic-openshift-utils

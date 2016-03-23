@@ -1,0 +1,40 @@
+# Create an OSEv3 group that contains the masters and nodes groups
+[OSEv3:children]
+masters
+nodes
+
+# Set variables common for all OSEv3 hosts
+[OSEv3:vars]
+# SSH user, this user should allow ssh based auth without requiring a password
+ansible_ssh_user=<ssh_user>
+ansible_ssh_private_key_file=<ssh_private_key>
+
+# If ansible_ssh_user is not root, ansible_sudo must be set to true
+#ansible_sudo=true
+
+product_type=openshift
+deployment_type=enterprise
+
+# uncomment the following to enable htpasswd authentication; defaults to DenyAllPasswordIdentityProvider
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/openshift/openshift-passwd'}]
+
+docker_storage=<docker_storage>
+docker_volume=<docker_volume>
+docker_registry_host=<docker_registry_host>
+docker_registry_path=<docker_registry_path>
+
+ose_user=<ose_user>
+ose_password=<ose_password>
+http_pass_file=/etc/origin/openshift-passwd
+
+output_dir=<output_dir>
+
+subdomain_name=<subdomain_name>
+
+# host group for masters
+[masters]
+<master_nodes>
+
+# host group for nodes, includes region info
+[nodes]
+<worker_nodes>

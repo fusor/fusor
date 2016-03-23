@@ -1,0 +1,72 @@
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": { },
+    "items": [
+
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "name": "hello-openshift",
+                "labels": {
+                    "name": "hello-openshift"
+                }
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "name": "hello-openshift",
+                        "image": "openshift/hello-openshift",
+                        "ports": [
+                            {
+                                "containerPort": 8080
+                            }
+                         ]
+                    }
+                ]
+            }
+        },
+
+        {
+            "kind": "Service",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "hello-openshift",
+                "labels": {
+                    "name": "hello-openshift"
+                }
+            },
+            "spec": {
+                "ports": [
+                    {
+                        "port": 80,
+                        "targetPort": 8080
+                    }
+                ],
+                "selector": {
+                    "name": "hello-openshift"
+                }
+            }
+        },
+        
+        {
+            "apiVersion": "v1",
+            "kind": "Route",
+            "metadata": {
+                "name": "hello-openshift",
+                "labels": {
+                    "name": "hello-openshift"
+                }
+             },
+            "spec": {
+                "host": "hello-openshift.cloudapps.example.com",
+                "to": {
+                    "kind": "Service",
+                    "name": "hello-openshift"
+                }
+            }
+        }
+
+    ]
+}

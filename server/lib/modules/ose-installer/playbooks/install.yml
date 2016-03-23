@@ -1,0 +1,20 @@
+---
+- name: Prepare and execute atomic-openshift-installer
+  hosts: masters
+  user: ansible_ssh_user
+  tasks:
+    - name: scp generated ansible inventory file
+      action: copy src="{{output_dir}}/ansible.hosts" dest="/etc/ansible/hosts" owner=root mode=0775
+
+    - debug: "**Workaround**"
+    - debug: "  https://github.com/openshift/openshift-ansible/blob/master/roles/openshift_node/tasks/main.yml#L120"
+    - debug: "  copying main.yml to main.yml /usr/share/ansible/openshift-ansible/roles/openshift_node/tasks"
+
+    - name: scp main.yml
+      action: copy src="../files/main.yml" dest="/usr/share/ansible/openshift-ansible/roles/openshift_node/tasks" owner=root mode=0775
+
+    - name: scp atomic-openshift-installer.answers.cfg.yml
+      action: copy src="{{output_dir}}/atomic-openshift-installer.answers.cfg.yml" dest="/tmp/atomic-openshift-installer.answers.cfg.yml" owner={{ansible_ssh_user}} mode=0775
+
+    - name: execute atomic-openshift-installer
+      shell: atomic-openshift-installer -u -c /tmp/atomic-openshift-installer.answers.cfg.yml install

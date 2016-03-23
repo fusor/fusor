@@ -1,0 +1,9 @@
+ansible_config: /usr/share/atomic-openshift-utils/ansible.cfg
+ansible_log_path: /tmp/ansible.log
+ansible_ssh_user: root
+hosts:
+<node_entries>
+<master_entries>
+variant: openshift-enterprise
+variant_version: '3.1'
+version: v1

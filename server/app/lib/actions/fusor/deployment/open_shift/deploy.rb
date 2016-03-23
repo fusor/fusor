@@ -21,14 +21,24 @@ module Actions
 
           def plan(deployment)
             super(deployment)
-            ::Fusor.log.info "Planning OpenShift Deployment"
+            ::Fusor.log.info "================ Starting OpenShift Deployment ===================="
             sequence do
               plan_action(::Actions::Fusor::Deployment::Rhev::OseLaunch,
                           deployment)
 
               plan_action(::Actions::Fusor::Deployment::OpenShift::CopySshKey,
                           deployment, 'rsa')
+
+              plan_action(::Actions::Fusor::Deployment::OpenShift::SetupOSE,
+                          deployment)
+
+              plan_action(::Actions::Fusor::Deployment::OpenShift::InstallOSE,
+                          deployment)
+
+              plan_action(::Actions::Fusor::Deployment::OpenShift::PostInstallOSE,
+                          deployment)
             end
+            ::Fusor.log.info "================ Finished OpenShift Deployment ===================="
           end
         end
       end
