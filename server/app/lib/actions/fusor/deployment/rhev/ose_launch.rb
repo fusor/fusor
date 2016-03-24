@@ -31,13 +31,13 @@ module Actions
 
             # launch master nodes
             for i in 1..deployment.openshift_number_master_nodes do
-              vmlauncher = Utils::Fusor::VMLauncher.new(deployment, 
-                                                        'ose', 
+              vmlauncher = Utils::Fusor::VMLauncher.new(deployment,
+                                                        'ose',
                                                         deployment.openshift_install_loc,
                                                         'RedHat 7.1',
                                                         'x86_64')
               vmlauncher.set_hostname("#{deployment.label.tr('_', '-')}-ose-master#{i}")
-              
+
               host = vmlauncher.launch_openshift_vm(deployment.openshift_master_vcpu,
                                                     deployment.openshift_master_ram,
                                                     deployment.openshift_master_disk,
@@ -53,13 +53,13 @@ module Actions
 
             # launch worker nodes
             for i in 1..deployment.openshift_number_worker_nodes do
-              vmlauncher = Utils::Fusor::VMLauncher.new(deployment, 
-                                                        'ose', 
+              vmlauncher = Utils::Fusor::VMLauncher.new(deployment,
+                                                        'ose',
                                                         deployment.openshift_install_loc,
                                                         'RedHat 7.1',
                                                         'x86_64')
               vmlauncher.set_hostname("#{deployment.label.tr('_', '-')}-ose-node#{i}")
-              
+
               host = vmlauncher.launch_openshift_vm(deployment.openshift_node_vcpu,
                                                     deployment.openshift_node_ram,
                                                     deployment.openshift_node_disk,

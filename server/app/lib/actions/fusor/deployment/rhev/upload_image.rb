@@ -45,7 +45,7 @@ module Actions
             username = "admin@internal"
             imported_template_name = "#{deployment.label}-#{input[:appliance]}-template"
             export_domain_name = deployment.rhev_export_domain_name
-            image_path = "/root/#{input[:image_file_name]}" 
+            image_path = "/root/#{input[:image_file_name]}"
 
             # NOTE: the image file found locally is DIFFERENT than the one on
             # the rhev engine host. Also note this uses /usr/bin/ because it is on
