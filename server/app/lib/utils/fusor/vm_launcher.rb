@@ -235,19 +235,12 @@ module Utils
       def launch_vm
         host = ::Host.create(@host_attrs)
         if host.errors.empty?
-          launch_vm_completed
+          ::Fusor.log.info "VMLauncher: Launch VM Completed for '#{@host_name}' "
           return host
         else
-          launch_vm_failed
+          ::Fusor.log.error "VMLauncher: Launch VM for '#{@host_name}' FAILED "
+          return nil
         end
-      end
-
-      def launch_vm_completed
-        ::Fusor.log.info "VMLauncher: Launch VM Completed for '#{@host_name}' "
-      end
-
-      def launch_vm_failed
-        fail _("VMLauncher: Launch VM for '#{@host_name}' FAILED")
       end
 
       def find_hostgroup(deployment, name)

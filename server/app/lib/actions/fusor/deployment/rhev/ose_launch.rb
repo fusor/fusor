@@ -42,9 +42,13 @@ module Actions
                                                     deployment.openshift_master_ram,
                                                     deployment.openshift_master_disk,
                                                     deployment.openshift_storage_size)
-              ::Fusor.log.debug "====== OSE Launched VM Name : #{host.name} ======"
-              ::Fusor.log.debug "====== OSE Launched VM IP   : #{host.ip}   ======"
-              #TODO save host.ip and host.name in deployment
+              if host.nil?
+                fail _("====== Launch OSE Master #{i} VM FAILED! ======")
+              else
+                deployment.ose_master_hosts << host
+                ::Fusor.log.debug "====== OSE Launched VM Name : #{host.name} ======"
+                ::Fusor.log.debug "====== OSE Launched VM IP   : #{host.ip}   ======"
+              end
             end
 
             # launch worker nodes
@@ -60,20 +64,16 @@ module Actions
                                                     deployment.openshift_node_ram,
                                                     deployment.openshift_node_disk,
                                                     deployment.openshift_storage_size)
-              ::Fusor.log.debug "====== OSE Launched VM Name : #{host.name} ======"
-              ::Fusor.log.debug "====== OSE Launched VM IP   : #{host.ip}   ======"
-              #TODO save host.ip and host.name in deployment
+              if host.nil?
+                fail _("====== Launch OSE Worker #{i} VM FAILED! ======")
+              else
+                deployment.ose_worker_hosts << host
+                ::Fusor.log.debug "====== OSE Launched VM Name : #{host.name} ======"
+                ::Fusor.log.debug "====== OSE Launched VM IP   : #{host.ip}   ======"
+              end
             end
 
             ::Fusor.log.debug '====== Leaving OSE Launch run method ======'
-          end
-
-          def ose_launch_completed
-            ::Fusor.log.info 'OSE Launch Completed'
-          end
-
-          def ose_launch_failed(hostname)
-            fail _('OSE Launch failed #{hostname}')
           end
         end
       end

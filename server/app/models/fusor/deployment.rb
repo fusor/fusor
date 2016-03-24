@@ -29,12 +29,17 @@ module Fusor
     belongs_to :rhev_engine_host, :class_name => "::Host::Base", :foreign_key => :rhev_engine_host_id
     # if we want to envorce discovered host uniqueness uncomment this line
     #validates :rhev_engine_host_id, uniqueness: { :message => _('This Host is already a RHEV Engine for a different deployment') }
-    has_many :rhev_hypervisor_hosts, :class_name => "::Host::Base", :through => :deployment_hosts, :source => :discovered_host
+    has_many :rhev_hypervisor_hosts, :class_name => "::Host::Base", :through => :deployment_hypervisor_hosts, :source => :discovered_host
     validates_with ::Katello::Validators::KatelloNameFormatValidator, :attributes => :name
 
+    #TODO need to rename to hypervisor_hosts
     belongs_to :discovered_host, :class_name => "::Host::Base", :foreign_key => :rhev_engine_host_id
-    has_many :deployment_hosts, :class_name => "Fusor::DeploymentHost", :foreign_key => :deployment_id, :inverse_of => :deployment
-    has_many :discovered_hosts, :through => :deployment_hosts, :foreign_key => :discovered_host_id, :source => :discovered_host
+    has_many :deployment_hypervisor_hosts, :class_name => "Fusor::DeploymentHost", :conditions => {:deployment_host_type => 'rhev_hypervisor' }
+    has_many :discovered_hosts, :through => :deployment_hypervisor_hosts, :class_name => "::Host::Base", :source => :discovered_host
+    has_many :ose_deployment_master_hosts, :class_name => "Fusor::DeploymentHost", :conditions => {:deployment_host_type => 'ose_master' }
+    has_many :ose_master_hosts, :through => :ose_deployment_master_hosts, :class_name => "::Host::Base", :source => :discovered_host
+    has_many :ose_deployment_worker_hosts, :class_name => "Fusor::DeploymentHost", :conditions => {:deployment_host_type => 'ose_worker' }
+    has_many :ose_worker_hosts, :through => :ose_deployment_worker_hosts, :class_name => "::Host::Base", :source => :discovered_host
     alias_attribute :discovered_host_id, :rhev_engine_host_id
     attr_accessor :foreman_task_id
 
