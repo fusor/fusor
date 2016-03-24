@@ -2,6 +2,12 @@ import Ember from 'ember';
 import request from 'ic-ajax';
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
+const MirrorStatus = {
+  VALID: 1,
+  INVALID: 2,
+  VALIDATING: 3
+};
+
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
@@ -62,6 +68,17 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   hasManifestFile: Ember.computed.notEmpty('manifestFile'),
   noManifestFile: Ember.computed.empty('manifestFile'),
 
+  disableNextDisconnected: Ember.computed(
+    'noManifestFile',
+    'currentMirrorStatus',
+    function()
+  {
+    // If currentMirrorStatus is not VALID, disable next
+    let retVal = this.get('noManifestFile') ||
+      this.get('currentMirrorStatus') !== this.get('MirrorStatus').VALID;
+    return retVal;
+  }),
+
   contentProviderType: Ember.computed('isDisconnected', function() {
     return (this.get('isDisconnected') ? "disconnected" : "redhat_cdn");
   }),
@@ -73,6 +90,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isDisconnectedSelected: Ember.computed('contentProviderType', function() {
     return (this.get('contentProviderType') === 'disconnected');
   }),
+
+  MirrorStatus: MirrorStatus,
+  currentMirrorStatus: MirrorStatus.INVALID,
 
   actions: {
     providerTypeChanged() {
@@ -112,8 +132,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
     uploadDifferentManifest() {
       return this.set("manifestFile", null);
+    },
+
+    mirrorStatusUpdate(newStatus) {
+      this.set('currentMirrorStatus', newStatus);
     }
   }
-
 
 });

@@ -10,6 +10,9 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+require "net/http"
+require "uri"
+
 module Fusor
   class Api::V21::DeploymentsController < Api::V2::DeploymentsController
 
@@ -80,12 +83,45 @@ module Fusor
     def validate
       @deployment.valid?
       render json: {
-          :validation => {
-              :deployment_id => @deployment.id,
-              :errors => @deployment.errors.full_messages,
-              :warnings => @deployment.warnings
-          }
+        :validation => {
+          :deployment_id => @deployment.id,
+          :errors => @deployment.errors.full_messages,
+          :warnings => @deployment.warnings
+        }
       }
+    end
+
+    def validate_cdn
+      begin
+        if params.key?('cdn_url')
+          ad_hoc_req = lambda do |uri_str|
+            uri = URI.parse(uri_str)
+            http = Net::HTTP.new(uri.host, uri.port)
+            request = Net::HTTP::Head.new(uri.request_uri)
+            http.request(request)
+          end
+
+          unescaped_uri_str = URI.unescape(params[:cdn_url])
+          # Best we can reasonably do here is to check to make sure we get
+          # back a 200 when we hit $URL/content, since we can be reasonably
+          # certain a repo needs to have the /content path
+          full_uri_str = "#{unescaped_uri_str}/content"
+          full_uri_str = "#{unescaped_uri_str}content" if unescaped_uri_str =~ /\/$/
+
+          response = ad_hoc_req.call(full_uri_str)
+          # Follow a 301 once in case redirect /content -> /content/
+          final_code = response.code
+          final_code = ad_hoc_req.call(response['location']).code if response.code == '301'
+
+          render json: { :cdn_url_code => final_code }, status: 200
+        else
+          raise 'cdn_url parameter missing'
+        end
+      rescue => error
+        message = 'Malformed request'
+        message = error.message if error.respond_to?(:message)
+        render json: { :error => message }, status: 400
+      end
     end
 
     def log

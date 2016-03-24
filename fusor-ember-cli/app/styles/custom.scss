@@ -539,3 +539,24 @@ table.fusor-table {
 .btn-icon.btn-icon-primary {
   color: #189ad1;
 }
+
+.content-mirror-status {
+  margin-top: 5px;
+  margin-left: 3px;
+
+  .spinner {
+    margin-left: 5px;
+    width: 15px;
+    height: 15px;
+  }
+
+  .valid-msg {
+    color: green;
+    font-weight: bold;
+  }
+
+  .invalid-msg {
+    color: red;
+    font-weight: bold;
+  }
+}
