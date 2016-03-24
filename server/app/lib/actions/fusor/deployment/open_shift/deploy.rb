@@ -22,17 +22,12 @@ module Actions
           def plan(deployment)
             super(deployment)
             ::Fusor.log.info "Planning OpenShift Deployment"
-
             sequence do
-              plan_action(::Actions::Fusor::Deployment::Rhev::OseLaunch, deployment)
+              plan_action(::Actions::Fusor::Deployment::Rhev::OseLaunch,
+                          deployment)
 
-              # TODO wait for all master and node VMs to finish booting
-              # concurrence do
-              #   list_of_all_openshift_vms.each do |host|
-              #     plan_action(::Actions::Fusor::Host::WaitUntilProvisioned,
-              #                 host.name)
-              #   end
-              # end
+              plan_action(::Actions::Fusor::Deployment::OpenShift::CopySshKey,
+                          deployment, 'rsa')
             end
           end
         end
