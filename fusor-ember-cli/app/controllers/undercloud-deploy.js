@@ -172,9 +172,6 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
         self.set('showLoadingSpinner', false);
         self.set('isDeployed', true);
         self.set('isDirty', false);
-        self.get('model').reload().then(function(model) {
-          self.send('refreshOpenStack');
-        });
       }
     };
 

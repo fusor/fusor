@@ -22,6 +22,18 @@ export default DS.Model.extend({
       return this.get('parameterPrefix') + 'Image';
   }),
 
+  snakeCaseName: Ember.computed('name', function() {
+    return this.get('name').toLowerCase().replace('-', '_');
+  }),
+
+  flavorDeploymentAttributeName: Ember.computed('snakeCaseName', function() {
+    return `openstack_overcloud_${this.get('snakeCaseName')}_flavor`;
+  }),
+
+  countDeploymentAttributeName: Ember.computed('snakeCaseName', function() {
+    return `openstack_overcloud_${this.get('snakeCaseName')}_count`;
+  }),
+
   roleType: Ember.computed('name', function() {
     var name = this.get('name').toLowerCase();
     if (name.indexOf('controller') >= 0) {

@@ -15,19 +15,7 @@ export default Ember.Route.extend({
         }
       ];
 
-    this.updateLocalPlanParameters(changedParams);
     this.send('updateOpenStackPlan', changedParams);
     return this.send('saveDeployment', null);
-  },
-
-  updateLocalPlanParameters(changedParams) {
-    var existingParams = this.get('controller.openStack.plan.parameters');
-
-    existingParams.forEach(function (existingParam) {
-      var changedParam = changedParams.findBy('name', existingParam.get('id'));
-      if (changedParam) {
-        existingParam.set('value', changedParam.value);
-      }
-    });
   }
 });

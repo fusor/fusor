@@ -3,16 +3,12 @@ import DeploymentControllerMixin from "../../mixins/deployment-controller-mixin"
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 import { PresenceValidator, EqualityValidator, IpRangeValidator, CidrValidator, AllValidator } from '../../utils/validators';
 
-let OvercloudController = Ember.Controller.extend(
-  DeploymentControllerMixin,
-  NeedsDeploymentMixin,
-{
-  openStack: Ember.computed.alias("deploymentController.openStack"),
+let OvercloudController = Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
   openstackOvercloudPrivateNet: Ember.computed.alias('deploymentController.model.openstack_overcloud_private_net'),
   openstackOvercloudFloatNet: Ember.computed.alias('deploymentController.model.openstack_overcloud_float_net'),
   openstackOvercloudFloatGateway: Ember.computed.alias('deploymentController.model.openstack_overcloud_float_gateway'),
-  externalNetworkInterface: Ember.computed.alias('openStack.externalNetworkInterface'),
+  externalNetworkInterface: Ember.computed.alias('deploymentController.model.openstack_overcloud_ext_net_interface'),
   overcloudPassword: Ember.computed.alias("deploymentController.model.openstack_overcloud_password"),
   confirmOvercloudPassword: Ember.computed.alias("deploymentController.confirmOvercloudPassword"),
 
@@ -48,7 +44,7 @@ let OvercloudController = Ember.Controller.extend(
   }),
 
   validOvercloudNetworks: Ember.computed(
-    'openStack.externalNetworkInterface',
+    'externalNetworkInterface',
     'openstackOvercloudPrivateNet',
     'openstackOvercloudFloatNet',
     'openstackOvercloudFloatGateway',
@@ -57,7 +53,7 @@ let OvercloudController = Ember.Controller.extend(
     'isValidFloatingIpNetworkRange',
     'isValidFloatingIpGateway',
     function () {
-      return Ember.isPresent(this.get('openStack.externalNetworkInterface')) &&
+      return Ember.isPresent(this.get('externalNetworkInterface')) &&
         Ember.isPresent(this.get('openstackOvercloudPrivateNet')) &&
         Ember.isPresent(this.get('openstackOvercloudFloatNet')) &&
         Ember.isPresent(this.get('openstackOvercloudFloatGateway')) &&

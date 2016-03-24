@@ -20,7 +20,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     controller.set('confirmCfmeAdminPassword', model.get('cfme_admin_password'));
     controller.set('confirmOvercloudPassword', model.get('openstack_overcloud_password'));
 
-    this.loadOpenStack(controller, model);
     // copied from setupController in app/routes/subscriptions/credentials.js
     // to fix bug of Review Tab being disabled on refresh and needing to click
     // on subscriptions to enable it
@@ -42,62 +41,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       }
     });
 
-  },
-
-  loadOpenStack(controller, model) {
-    if (model.get('deploy_openstack') && !Ember.isBlank(model.get('openstack_undercloud_password'))) {
-      controller.set('isOspLoading', true);
-      Ember.RSVP.hash({
-        plan: this.store.findRecord('deployment-plan', model.get('id')),
-        images: this.store.query('image', {deployment_id: model.get('id')}),
-        nodes: this.store.query('node', {deployment_id: model.get('id')}),
-        profiles: this.store.query('flavor', {deployment_id: model.get('id')})
-      }).then(
-        (hash) => {
-          let openStack = Ember.Object.create(hash);
-          controller.set('openStack', openStack);
-          this.fixBadOpenStackDefaults();
-
-          // for some reason using the binding the computed property blanks it out on the first edit,
-          // so we're using an alias which updates the plan on route deactivate on the corresponding page anyway
-          controller.set('openStack.externalNetworkInterface', openStack.get('plan.externalNetworkInterface'));
-          controller.set('openStack.overcloudPassword', openStack.get('plan.overcloudPassword'));
-          controller.set('isOspLoading', false);
-        },
-        (error) => {
-          controller.set('isOspLoading', false);
-          console.log('Error retrieving OpenStack data', error);
-          return this.send('error', error);
-        });
-    }
-  },
-
-  fixBadOpenStackDefaults() {
-    var newParams = [], existingParams = this.get('controller.openStack.plan.parameters');
-
-    if (!existingParams) {
-      return;
-    }
-
-    existingParams.forEach(function (param) {
-      var id = param.get('id'), value = param.get('value');
-
-      if (id === 'Controller-1::NeutronPublicInterface' &&
-        (!value || value === 'nic1')) {
-        param.set('value', 'nic2');
-        newParams.push({name: id, value: 'nic2'});
-      }
-
-      if (id === 'Compute-1::NovaComputeLibvirtType' &&
-        (!value || value === 'qemu')) {
-        param.set('value', 'kvm');
-        newParams.push({name: id, value: 'kvm'});
-      }
-    });
-
-    if (newParams.length > 0) {
-      this.send('updateOpenStackPlan', newParams);
-    }
   },
 
   actions: {
@@ -243,11 +186,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     refreshModel() {
       console.log('refreshModelOnDeploymentRoute');
       return this.refresh();
-    },
-
-    refreshOpenStack() {
-      console.log('refreshOpenStack');
-      this.loadOpenStack(this.get('controller'), this.get('controller.model'));
     },
 
     updateOpenStackPlan(params) {

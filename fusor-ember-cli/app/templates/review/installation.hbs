@@ -153,10 +153,11 @@
                           isRequired=true
                           routeName='openstack.overcloud'}}
             {{review-link label='Overcloud Admin Password'
-                          value=model.openstack_overcloud_password
+                          value=openStack.plan.overcloudPassword
                           isPassword=true
                           isRequired=true
-                          routeName='openstack.overcloud'}}
+                          routeName='openstack.overcloud'
+                          isLoading=isOspLoading}}
       {{/accordion-item}}
     {{/if}}
 

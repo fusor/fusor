@@ -31,6 +31,8 @@ export default Ember.Route.extend({
         controller.set('hasSubscriptionPools', Ember.isPresent(this.controllerFor('subscriptions/select-subscriptions').get('subscriptionPools')));
     }
 
+    this.loadOpenStack(controller, model);
+
     if (!model.get('isStarted')) {
         var self = this;
         var deployment = self.modelFor('deployment');
@@ -61,6 +63,27 @@ export default Ember.Route.extend({
           controller.set('showSpinner', false);
           controller.set('errorMsg', error.jqXHR.responseText);
           controller.set('showErrorMessage', true);
+        });
+    }
+  },
+
+  loadOpenStack(controller, model) {
+    if (model.get('deploy_openstack') && !Ember.isBlank(model.get('openstack_undercloud_password'))) {
+      controller.set('isOspLoading', true);
+      Ember.RSVP.hash({
+        plan: this.store.findRecord('deployment-plan', model.get('id')),
+        nodes: this.store.query('node', {deployment_id: model.get('id')}),
+        profiles: this.store.query('flavor', {deployment_id: model.get('id')})
+      }).then(
+        (hash) => {
+          let openStack = Ember.Object.create(hash);
+          controller.set('openStack', openStack);
+          controller.set('isOspLoading', false);
+        },
+        (error) => {
+          controller.set('isOspLoading', false);
+          console.log('Error retrieving OpenStack data', error);
+          return this.send('error', error);
         });
     }
   }
