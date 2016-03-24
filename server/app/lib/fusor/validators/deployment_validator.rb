@@ -167,7 +167,7 @@ module Fusor
           return
         end
 
-        files = Dir["#{output}/*"] # this may return [] if it can't read the share
+        files = Dir["/tmp/fusor-test-mount-#{deployment.id}/*"] # this may return [] if it can't read the share
         Utils::Fusor::CommandUtils.run_command("sudo safe-umount.sh #{deployment.id}")
 
         if files.length > 0
