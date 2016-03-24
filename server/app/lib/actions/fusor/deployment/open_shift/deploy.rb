@@ -26,13 +26,13 @@ module Actions
             sequence do
               plan_action(::Actions::Fusor::Deployment::Rhev::OseLaunch, deployment)
 
-              #TODO wait for all master and node VMs to finish booting
-#              concurrence do
-#                list_of_all_openshift_vms.each do |host|
-#                  plan_action(::Actions::Fusor::Host::WaitUntilProvisioned,
-#                              host.name)
-#                end
-#              end
+              # TODO wait for all master and node VMs to finish booting
+              # concurrence do
+              #   list_of_all_openshift_vms.each do |host|
+              #     plan_action(::Actions::Fusor::Host::WaitUntilProvisioned,
+              #                 host.name)
+              #   end
+              # end
             end
           end
         end
