@@ -21,36 +21,54 @@ module Actions
 
           def plan(deployment)
             super(deployment)
-            fail _("Unable to locate a RHEV Engine Host") unless deployment.rhev_engine_host
 
-            sequence do
-              deployment.discovered_hosts.each do |host|
-                plan_action(::Actions::Fusor::Host::TriggerProvisioning,
-                            deployment,
-                            "RHEV-Hypervisor",
-                            host)
-              end
-
-              concurrence do
+            if deployment.self_hosted
+              fail _("Unable to locate a RHEV Hypervisor Host") unless (deployment.discovered_hosts.length > 0)
+              # Do self-hosted stuff
+              sequence do
                 deployment.discovered_hosts.each do |host|
-                  plan_action(::Actions::Fusor::Host::WaitUntilProvisioned,
+                  plan_action(::Actions::Fusor::Host::TriggerProvisioning,
+                              deployment,
+                              "RHEV-Self-hosted",
                               host)
                 end
+                concurrence do
+                  deployment.discovered_hosts.each do |host|
+                    plan_action(::Actions::Fusor::Host::WaitUntilProvisioned,
+                                host)
+                  end
+                end
               end
+            else
+              fail _("Unable to locate a RHEV Engine Host") unless deployment.rhev_engine_host
+              sequence do
+                deployment.discovered_hosts.each do |host|
+                  plan_action(::Actions::Fusor::Host::TriggerProvisioning,
+                              deployment,
+                              "RHEV-Hypervisor",
+                              host)
+                end
 
-              plan_action(::Actions::Fusor::Host::TriggerProvisioning,
-                          deployment,
-                          "RHEV-Engine",
-                          deployment.rhev_engine_host)
+                concurrence do
+                  deployment.discovered_hosts.each do |host|
+                    plan_action(::Actions::Fusor::Host::WaitUntilProvisioned,
+                                host)
+                  end
+                end
 
-              plan_action(::Actions::Fusor::Host::WaitUntilProvisioned,
-                          deployment.rhev_engine_host)
+                plan_action(::Actions::Fusor::Host::TriggerProvisioning,
+                            deployment,
+                            "RHEV-Engine",
+                            deployment.rhev_engine_host)
 
+                plan_action(::Actions::Fusor::Host::WaitUntilProvisioned,
+                            deployment.rhev_engine_host)
+
+              end
               plan_action(::Actions::Fusor::Deployment::Rhev::WaitForDataCenter,
                           deployment)
 
               plan_action(::Actions::Fusor::Deployment::Rhev::CreateCr, deployment)
-            end
           end
 
           private

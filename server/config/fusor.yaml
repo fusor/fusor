@@ -78,6 +78,37 @@
         :basearch: "x86_64"
         :releasever: "7Server"
 
+    # TODO(fabianvf)
+    :rhevsh:
+      # rhel-7-server-rpms
+      # rhel-7-server-rhev-mgmt-rpms
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :product_id: "69"
+        :repository_set_id: "168"
+        :repository_set_name: "Red Hat Enterprise Linux 6 Server (RPMs)"
+        :basearch: "x86_64"
+        :releasever: "6Server"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :product_id: "69"
+        :repository_set_id: "1952"
+        :repository_set_name: "Red Hat Enterprise Linux 6 Server (Kickstart)"
+        :basearch: "x86_64"
+        :releasever: "6.7"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :product_id: "69"
+        :repository_set_id: "4185"
+        :repository_set_name: "Red Hat Satellite Tools 6.1 (for RHEL 6 Server) (RPMs)"
+        :basearch: "x86_64"
+
+      - :product_name: "Red Hat Enterprise Virtualization"
+        :product_id: "150"
+        :repository_set_id: "1099"
+        :repository_set_name: "Red Hat Enterprise Virtualization Management Agents (RPMs)"
+        :basearch: "x86_64"
+        :releasever: "6Server"
+
     :cloudforms:
       - :product_name: "Red Hat CloudForms"
         :product_id: "167"
@@ -165,6 +196,8 @@
     - :name: "ovirt::engine::import_template"
     - :name: "ovirt::engine::run_vm"
     - :name: "ovirt::hypervisor::packages"
+    - :name: "ovirt::self_hosted::setup"
+    - :name: "ovirt::self_hosted::packages"
 
   :host_groups:
     :rhev:
@@ -211,6 +244,26 @@
            :subscription_descriptions:
              - "Red Hat Cloud Infrastructure"
 
+      - :name: "RHEV-Self-Hosted"
+         :os: "RedHat"
+         :major: "7"
+         :minor: "2"
+         :parent: :root_deployment
+         :puppet_classes:
+           - :name: "ovirt"
+             :parameters:
+             - :name: "product"
+               :override: "RHEV"
+           # - :name: "ovirt::self_hosted::config"
+           - :name: "ovirt::self_hosted::packages"
+           - :name: "ovirt::self_hosted::setup"
+         # TODO (fabianvf)
+         :activation_key:
+           :name: "RHEV-Self-hosted"
+           :content: :rhevsh
+           :subscription_descriptions:
+             - "Red Hat Cloud Infrastructure"
+
     :openstack:
      :root_name: "Fusor Base" # seeded by the fusor-installer
      :host_groups:
@@ -228,7 +281,7 @@
              - "Red Hat Cloud Infrastructure"
   :system:
     :logging:
-      :level: ":debug" 
+      :level: ":debug"
       :watch:
         - :file: "/var/log/foreman/production.log"
         - :file: "/var/log/foreman-proxy/proxy.log"
