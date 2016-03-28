@@ -1,0 +1,30 @@
+
+rhel72:
+  name: RedHat
+  major: 7
+  minor: 2
+  type: Redhat
+  description: RHEL 7.2
+  architectures: x86_64
+  media: one
+  title: 'RHEL 7.2'
+
+rhel71:
+  name: RedHat
+  major: 7
+  minor: 1
+  type: Redhat
+  description: RHEL 7.1
+  architectures: x86_64
+  media: one
+  title: 'RHEL 7.1'
+
+rhel67:
+  name: RedHat
+  major: 6
+  minor: 7
+  type: Redhat
+  description: RHEL 6.7
+  architectures: x86_64
+  media: one
+  title: 'RHEL 6.7'

@@ -37,6 +37,13 @@
           {{text-f label="Share Path" value=model.rhev_export_domain_path cssId='rhev_export_domain_path' isRequired=true disabled=deploymentController.isStarted errors=errorsHashExportPath}}
       {{/if}}
 
+      {{#if rhevIsSelfHosted}}
+        <h4> Self-hosted RHEV Engine Storage Domain </h4>
+          {{text-f label="Hosted Engine Storage Domain Name" value=model.hosted_storage_name cssId='hosted_storage_name' isRequired=true disabled=deploymentController.isStarted validator=computerNameValidator}}
+          {{text-f label="Storage Address" value=model.hosted_storage_address cssId='hosted_storage_address' isRequired=true disabled=deploymentController.isStarted validator=hostnameValidator}}
+          {{text-f label="Share Path" value=model.hosted_storage_path cssId='hosted_storage_path' isRequired=true disabled=deploymentController.isStarted errors=errorsHashhosted_enginePath}}
+      {{/if}}
+
   {{else if isLocal}}
       {{text-f label="Storage Path" value=model.rhev_local_storage_path placeholder='Ex. /rhev/data_storage' isRequired=true cssId='rhev_local_storage_path' help-inline='This path will be created and given appropriate permissions - chown 36:36; chmod 0755, etc' disabled=isStarted}}
 
@@ -50,6 +57,14 @@
           {{text-f label="Storage Address" value=model.rhev_export_domain_address cssId='rhev_export_domain_address' isRequired=true disabled=deploymentController.isStarted validator=hostnameValidator}}
           {{text-f label="Share Path" value=model.rhev_export_domain_path cssId='rhev_export_domain_path' isRequired=true disabled=deploymentController.isStarted errors=errorsHashExportPath}}
       {{/if}}
+
+      {{#if rhevIsSelfHosted}}
+        <h4> Self-hosted RHEV Engine Storage Domain </h4>
+          {{text-f label="Hosted Engine Storage Domain Name" value=model.hosted_storage_name cssId='hosted_storage_name' isRequired=true disabled=deploymentController.isStarted validator=computerNameValidator}}
+          {{text-f label="Storage Address" value=model.hosted_storage_address cssId='hosted_storage_address' isRequired=true disabled=deploymentController.isStarted validator=hostnameValidator}}
+          {{text-f label="Share Path" value=model.hosted_storage_path cssId='hosted_storage_path' isRequired=true disabled=deploymentController.isStarted errors=errorsHashhosted_enginePath}}
+      {{/if}}
+
   {{/if}}
 
 </form>

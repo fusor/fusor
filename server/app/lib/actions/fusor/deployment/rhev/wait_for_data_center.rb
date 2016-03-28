@@ -67,7 +67,10 @@ module Actions
             # If it isn't available, it is likely that the puppet facts have not been uploaded,
             # yet; therefore, skip checking the status until the next interval.
             deployment = ::Fusor::Deployment.find(deployment_id)
-            api_host = deployment.rhev_engine_host.facts['ipaddress']
+
+            api_host = deployment.rhev_engine_host.ip
+            fail _("API Host not found") if api_host.nil?
+            ::Fusor.log.debug "Using host address #{api_host}"
             unless api_host.blank?
               script_dir = "/usr/share/fusor_ovirt/bin/"
               api_user = "admin@internal"

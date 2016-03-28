@@ -100,6 +100,7 @@ module FixtureTestCase
     self.set_fixture_class :fusor_deployment_hosts => Fusor::DeploymentHost
     self.set_fixture_class :hosts => ::Host::Base
     self.set_fixture_class :fusor_subscriptions => Fusor::Subscription
+    self.set_fixture_class :operatingsystems => ::Operatingsystem
 
     #self.fixture_path = Dir.mktmpdir("katello_fixtures")
     #FileUtils.cp(Dir.glob("#{Katello::Engine.root}/test/fixtures/models/*"), self.fixture_path)

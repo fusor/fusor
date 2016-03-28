@@ -1236,34 +1236,34 @@ span.hanging-indent {
 .deployment-roles .role-controller.role-assigned {
   background: #8461f7; }
 
-.deployment-roles .role-swift {
+.deployment-roles .role-object-storage {
   border-color: #ec7a08; }
 
-.deployment-roles li.role-swift:before {
+.deployment-roles li.role-object-storage:before {
   background-image: linear-gradient(to bottom, #ec7a08 60%, #ffffff 0%);
   border-color: #ec7a08; }
 
-.deployment-roles li.role-swift.role-assigned {
+.deployment-roles li.role-object-storage.role-assigned {
   background: #f39d3c; }
 
-.deployment-roles .role-ceph {
+.deployment-roles .role-ceph-storage {
   border-color: #007a87; }
 
-.deployment-roles li.role-ceph:before {
+.deployment-roles li.role-ceph-storage:before {
   background-image: linear-gradient(to bottom, #007a87 60%, #ffffff 0%);
   border-color: #007a87; }
 
-.deployment-roles li.role-ceph.role-assigned {
+.deployment-roles li.role-ceph-storage.role-assigned {
   background: #3a9ca6; }
 
-.deployment-roles .role-cinder {
+.deployment-roles .role-block-storage {
   border-color: #6ca100; }
 
-.deployment-roles li.role-cinder:before {
+.deployment-roles li.role-block-storage:before {
   background-image: linear-gradient(to bottom, #6ca100 60%, #ffffff 0%);
   border-color: #6ca100; }
 
-.deployment-roles li.role-cinder.role-assigned {
+.deployment-roles li.role-block-storage.role-assigned {
   background: #92d400; }
 
 .deployment-roles .role-hidden {

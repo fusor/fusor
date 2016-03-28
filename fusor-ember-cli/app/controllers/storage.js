@@ -6,6 +6,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   step3RouteName: Ember.computed.alias("deploymentController.step3RouteName"),
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
+  rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
 
   hasEndingSlashInSharePath: Ember.computed('deploymentController.model.rhev_share_path', function() {
     if (Ember.isPresent(this.get('deploymentController.model.rhev_share_path'))) {

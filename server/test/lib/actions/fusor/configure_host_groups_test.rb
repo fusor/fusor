@@ -24,7 +24,12 @@ module Actions::Fusor
       def architectures
         return [ID.new]
       end
+
+      def save
+        return nil
+      end
     end
+
 
     def setup
       @deployment = fusor_deployments(:rhev)
@@ -43,6 +48,8 @@ module Actions::Fusor
       end
       @activation_key_length = key_params.length
       ::Hostgroup.stubs(:where).returns([@hostgroup])
+      ::Redhat.any_instance.stubs(:ptables).returns([nil])
+      ::Ptable.stubs(:where).returns([nil])
       ::GroupParameter.stubs(:where).returns([parameters(:group)])
       ConfigureHostGroups.any_instance.stubs(:find_hostgroup).returns(@hostgroup)
       ConfigureHostGroups.any_instance.stubs(:find_operating_system).returns(OS.new)

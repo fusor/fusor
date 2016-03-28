@@ -29,7 +29,7 @@ module Actions
           sequence do
             content = SETTINGS[:fusor][:content]
             host_groups = SETTINGS[:fusor][:host_groups]
-            product_map = {rhev: [:rhevm, :rhevh],
+            product_map = {rhev: [:rhevm, :rhevh, :rhevsh],
                            cfme: [:cloudforms],
                            openstack: [:openstack],
                            openshift: [:openshift]
