@@ -590,7 +590,7 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
       properties: {
         capabilities: 'boot_option:local'
       },
-      address: macAddress
+      address: macAddress.trim()
     };
   },
 
