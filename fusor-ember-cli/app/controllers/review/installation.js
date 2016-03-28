@@ -95,7 +95,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   undercloudPassword: Ember.computed.alias("model.openstack_undercloud_password"),
 
   undercloudUrl: Ember.computed('model.openstack_undercloud_ip_addr', function() {
-    return ('http://' + this.get('model.openstack_undercloud_ip_addr'));
+    let ipAddr = this.get('model.openstack_undercloud_ip_addr');
+    return ipAddr ? `http://${ipAddr}` : ipAddr;
   }),
 
   engineNamePlusDomain: Ember.computed(
