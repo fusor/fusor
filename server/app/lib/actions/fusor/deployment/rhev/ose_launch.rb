@@ -28,7 +28,7 @@ module Actions
           end
 
           def run
-            ::Fusor.log.debug '====== OSE Launch run method ======'
+            ::Fusor.log.info '====== OSE Launch run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
 
             # launch master nodes
@@ -75,6 +75,9 @@ module Actions
               end
             end
 
+            #TODO: Need to revisit and remove these hardcoded values.
+            # https://trello.com/c/sSVPuP8b
+
             username = 'root'
             password = 'dog8code'
 
@@ -89,7 +92,7 @@ module Actions
               status = wait_for_sshd_on_host(host.name, username, password)
               fail _("====== Could not ssh into #{host.name}!") unless status.eql?(true)
             end
-            ::Fusor.log.debug '====== Leaving OSE Launch run method ======'
+            ::Fusor.log.info '====== Leaving OSE Launch run method ======'
           end
 
           private
@@ -123,7 +126,7 @@ module Actions
                 count += 1
               end
             end
-            ::Fusor.log.error "====== waiting for ssd on #{host} TIMED OUT! ======"
+            ::Fusor.log.error "====== waiting for ssh on #{host} TIMED OUT! ======"
             return false
           end
         end

@@ -10,6 +10,7 @@ module Utils
         @key_base_name = "id_#{@key_type}"
 
         #TODO need to read this from deployment set from WebUI
+        # https://trello.com/c/sSVPuP8b
         @root_password = 'dog8code'
       end
 
@@ -38,7 +39,7 @@ module Utils
         client.execute("cp ~/#{@key_to_path}/#{@key_base_name} /home/#{username}/#{@key_to_path}/")
         client.execute("chown #{username} /home/#{username}/#{@key_to_path}/#{@key_base_name}")
         client.execute("chgrp #{username} /home/#{username}/#{@key_to_path}/#{@key_base_name}")
-        client.execute("runuser -l #{username} -c 'more ~/#{@key_to_path}/#{@key_base_name}.pub > ~/#{@key_to_path}/authorized_keys'")
+        client.execute("runuser -l #{username} -c 'cat ~/#{@key_to_path}/#{@key_base_name}.pub > ~/#{@key_to_path}/authorized_keys'")
         client.execute("runuser -l #{username} -c 'chmod 644 ~/#{@key_to_path}/#{@key_base_name}.pub'")
         client.execute("runuser -l #{username} -c 'chmod 600 ~/#{@key_to_path}/#{@key_base_name}'")
         client.execute("runuser -l #{username} -c 'chmod 644 ~/#{@key_to_path}/authorized_keys'")
@@ -57,6 +58,8 @@ module Utils
             scp.upload!(from_path, to_path)
           end
         }
+        client.execute("cat ~/#{@key_to_path}/#{@key_base_name}.pub > ~/#{@key_to_path}/authorized_keys")
+        client.execute("chmod 644 ~/#{@key_to_path}/authorized_keys")
       end
     end
   end

@@ -16,7 +16,7 @@ module Actions
       module OpenShift
         class Deploy < Actions::Fusor::FusorBaseAction
           def humanized_name
-            _("Deploy OpenShift Management Engine")
+            _("Deploy OpenShift Enterprise")
           end
 
           def plan(deployment)

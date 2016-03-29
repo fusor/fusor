@@ -13,7 +13,8 @@ export default Ember.Route.extend({
         var rhevTask          = subtasksOfDeploy.findBy('humanized_name', 'Deploy Red Hat Enterprise Virtualization');
         var openstackTask     = subtasksOfDeploy.findBy('humanized_name', 'Deploy Red Hat OpenStack Platform overcloud');
         var cfmeTask          = subtasksOfDeploy.findBy('humanized_name', 'Deploy CloudForms Management Engine');
-        var openshiftTask     = subtasksOfDeploy.findBy('humanized_name', 'Deploy OpenShift Management Engine');
+        var openshiftTask     = subtasksOfDeploy.findBy('humanized_name', 'Deploy OpenShift Enterprise');
+
 
         return Ember.RSVP.hash({
            deployTask: deployTask,
