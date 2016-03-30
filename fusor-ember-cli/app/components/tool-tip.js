@@ -9,6 +9,8 @@ export default Ember.Component.extend({
 
   hasImage: Ember.computed.notEmpty('srcImage'),
 
+  hasFaIcon: Ember.computed.notEmpty('faIcon'),
+
   didInsertElement() {
     return Ember.$('[data-toggle="tooltip"]').tooltip({placement: 'top'});
   },
