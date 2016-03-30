@@ -155,10 +155,6 @@ module Fusor
           deployment.errors[:openstack_overcloud_float_gateway] << _('Openstack deployments must specify a floating network gateway for the Overcloud')
         end
 
-        if deployment.openstack_overcloud_node_count.nil? || deployment.openstack_overcloud_node_count < 2
-          deployment.errors[:openstack_overcloud_node_count] << _('Openstack deployments must have at least 2 registered nodes for the Overcloud')
-        end
-
         if deployment.openstack_overcloud_compute_flavor.empty? || deployment.openstack_overcloud_compute_count.nil? || deployment.openstack_overcloud_compute_count < 1
           deployment.errors[:openstack_overcloud_compute_flavor] << _('Openstack deployments must have at least 1 compute node for the Overcloud')
         end

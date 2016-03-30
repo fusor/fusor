@@ -11,6 +11,7 @@ let OvercloudController = Ember.Controller.extend(DeploymentControllerMixin, Nee
   externalNetworkInterface: Ember.computed.alias('deploymentController.model.openstack_overcloud_ext_net_interface'),
   overcloudPassword: Ember.computed.alias("deploymentController.model.openstack_overcloud_password"),
   confirmOvercloudPassword: Ember.computed.alias("deploymentController.confirmOvercloudPassword"),
+  openstackOvercloudLibvirtType: Ember.computed.alias("deploymentController.model.openstack_overcloud_libvirt_type"),
 
   ipValidator: AllValidator.create({
     validators: [

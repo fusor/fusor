@@ -285,18 +285,6 @@ class DeploymentTest < ActiveSupport::TestCase
         assert_not osp.save, "Saved openstack deployment that did not specify overcloud floating network gateway"
       end
 
-      test "openstack deployments must specify number of registered nodes available for the overcloud" do
-        osp = fusor_deployments(:osp)
-        osp.openstack_overcloud_node_count = nil
-        assert_not osp.save, "Saved openstack deployment that did not specify number of registered nodes"
-      end
-
-      test "openstack deployments must have at least 2 registered nodes" do
-        osp = fusor_deployments(:osp)
-        osp.openstack_overcloud_node_count = 1
-        assert_not osp.save, "Saved openstack deployment that did not have at least 2 registered nodes"
-      end
-
       test "openstack deployments must specify overcloud compute flavor" do
         osp = fusor_deployments(:osp)
         osp.openstack_overcloud_compute_flavor = ''

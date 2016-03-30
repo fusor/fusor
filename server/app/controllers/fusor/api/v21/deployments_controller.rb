@@ -27,6 +27,12 @@ module Fusor
     end
 
     def show
+      begin
+        sync_openstack if params[:sync_openstack] == 'true'
+      rescue => e
+        Rails.logger.error "Error syncing openstack for deployment #{e.message}"
+      end
+
       render :json => @deployment, :serializer => Fusor::DeploymentSerializer
     end
 
@@ -70,7 +76,7 @@ module Fusor
     def redeploy
       begin
         if @deployment.invalid?
-          raise ::ActiveRecord::RecordInvalid.new @deloyment
+          raise ::ActiveRecord::RecordInvalid.new @deployment
         end
         ::Fusor.log.warn "Attempting to redeploy deployment with id [ #{@deployment.id} ]"
         new_deploy_task = async_task(::Actions::Fusor::Deploy, @deployment)
@@ -81,11 +87,21 @@ module Fusor
     end
 
     def validate
+      error_syncing_openstack = nil
+      begin
+        sync_openstack
+      rescue => e
+        error_syncing_openstack =  _("Error contacting Openstack undercloud #{e.message}")
+      end
+
       @deployment.valid?
+      errors = @deployment.errors.full_messages
+      errors << error_syncing_openstack unless error_syncing_openstack.nil?
+
       render json: {
         :validation => {
           :deployment_id => @deployment.id,
-          :errors => @deployment.errors.full_messages,
+          :errors => errors,
           :warnings => @deployment.warnings
         }
       }
@@ -181,6 +197,35 @@ module Fusor
         else
           ::Fusor.log_file_path(@deployment.label, @deployment.id)
       end
+    end
+
+    def undercloud_handle
+      Overcloud::UndercloudHandle.new('admin', @deployment.openstack_undercloud_password, @deployment.openstack_undercloud_ip_addr, 5000)
+    end
+
+    def get_openstack_param_value(plan, param_name)
+      param = plan.parameters.find { |p| p['name'] == param_name }
+      param['value'] if param
+    end
+
+    def sync_openstack
+      return unless @deployment.deploy_openstack?
+      plan = undercloud_handle.get_plan('overcloud')
+
+      @deployment.openstack_overcloud_ext_net_interface = get_openstack_param_value(plan, 'Controller-1::NeutronPublicInterface')
+      @deployment.openstack_overcloud_libvirt_type = get_openstack_param_value(plan, 'Compute-1::NovaComputeLibvirtType')
+      @deployment.openstack_overcloud_compute_flavor = get_openstack_param_value(plan, 'Compute-1::Flavor')
+      @deployment.openstack_overcloud_compute_count = get_openstack_param_value(plan, 'Compute-1::count')
+      @deployment.openstack_overcloud_controller_flavor = get_openstack_param_value(plan, 'Controller-1::Flavor')
+      @deployment.openstack_overcloud_controller_count = get_openstack_param_value(plan, 'Controller-1::count')
+      @deployment.openstack_overcloud_ceph_storage_flavor = get_openstack_param_value(plan, 'Ceph-Storage-1::Flavor')
+      @deployment.openstack_overcloud_ceph_storage_count = get_openstack_param_value(plan, 'Ceph-Storage-1::Flavor')
+      @deployment.openstack_overcloud_cinder_storage_flavor = get_openstack_param_value(plan, 'Cinder-Storage-1::Flavor')
+      @deployment.openstack_overcloud_cinder_storage_count = get_openstack_param_value(plan, 'Cinder-Storage-1::Flavor')
+      @deployment.openstack_overcloud_swift_storage_flavor = get_openstack_param_value(plan, 'Swift-Storage-1::Flavor')
+      @deployment.openstack_overcloud_swift_storage_count = get_openstack_param_value(plan, 'Swift-Storage-1::Flavor')
+
+      @deployment.save(:validate => false)
     end
   end
 end
