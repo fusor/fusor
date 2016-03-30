@@ -47,7 +47,10 @@ module Actions
             deployment.ose_worker_hosts.each do |host|
               keyutils.copy_keys_to_user(host.name, deployment.openshift_username)
             end
-            ::Fusor.log.debug "SSH Keys have been copied:  deployment.ose_private_key_path = #{deployment.ose_private_key_path}, deployment.ose_public_key_path = #{deployment.ose_public_key_path}"
+            ::Fusor.log.debug "SSH Keys have been copied:"
+            ::Fusor.log.debug "  deployment.ose_private_key_path = #{deployment.ose_private_key_path}"
+            ::Fusor.log.debug "  deployment.ose_public_key_path  = #{deployment.ose_public_key_path}"
+
             ::Fusor.log.debug "================ Leaving Copy SSH Key run method ===================="
           end
         end
