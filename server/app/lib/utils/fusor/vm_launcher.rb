@@ -186,6 +186,8 @@ module Utils
       end
 
       def set_common_host_attrs
+        #TODO:  Remove the hardcoding of "root_pass"
+        # https://trello.com/c/sSVPuP8b
         @host_attrs = {"name" => @host_name,
                        "location_id" => Location.find_by_name('Default Location').id,
                        "environment_id" => Environment.where(:katello_id => "Default_Organization/Library/Fusor_Puppet_Content").first.id,
