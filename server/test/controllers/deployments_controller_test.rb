@@ -243,5 +243,110 @@ module Fusor
         assert_not_nil response['messages_log'], 'Response missing messsages log'
       end
     end
+
+    context 'validate_cdn' do
+      test 'validate_cdn endpoint responds 200 with 200 payload if valid CDN' do
+        mock_res = Object.new
+        def mock_res.code
+          "200"
+        end
+
+        Net::HTTP.any_instance
+          .stubs(:request).returns(mock_res)
+
+        response = JSON.parse(get(
+          :validate_cdn,
+          :id => @deployment.id,
+          :cdn_url => 'http://porsche.rdu.redhat.com/pub/sat-import').body)
+
+        assert_response :success
+        cdn_url_code = response['cdn_url_code']
+        assert_not_nil cdn_url_code
+        assert_equal cdn_url_code, "200"
+      end
+
+      test 'if cdn url returns a 301, should make additional request to location and report 200' do
+        # Initial URI
+        initial_uri = 'http://porsche.rdu.redhat.com/pub/sat-import'
+
+        valid_res = Object.new
+        def valid_res.code
+          "200"
+        end
+
+        redirect_res = Object.new
+        def redirect_res.code
+          "301"
+        end
+
+        def redirect_res.[](_)
+          # Mock object only ever needs to return uri_with_slash, expecting
+          # we'll receive key == 'location', no other case is valid
+          # Method definition does not close over initial_uri, end up with
+          # "undefined local variable or method" error. Need to fully qualify
+          'http://porsche.rdu.redhat.com/pub/sat-import/content/'
+        end
+
+        # NOTE: The full uri is not publically available on the request instance
+        # here <Net::HTTP::Head> for some absurd reason. Best we can test is
+        # the path, since that is available.
+        Net::HTTP.any_instance
+          .stubs(:request)
+          .with { |request| request.path == '/pub/sat-import/content' }
+          .returns(redirect_res)
+
+        Net::HTTP.any_instance
+          .stubs(:request)
+          .with { |request| request.path == '/pub/sat-import/content/' }
+          .returns(valid_res)
+
+        response = JSON.parse(get(
+          :validate_cdn,
+          :id => @deployment.id,
+          :cdn_url => initial_uri).body)
+
+        assert_response :success
+        cdn_url_code = response['cdn_url_code']
+        assert_not_nil cdn_url_code
+        assert_equal cdn_url_code, "200"
+      end
+
+      test 'validate_cdn should return a 400 if cdn_url param is missing' do
+        mock_res = Object.new
+        def mock_res.code
+          "200"
+        end
+
+        Net::HTTP.any_instance
+          .stubs(:request).returns(mock_res)
+
+        response = JSON.parse(get(:validate_cdn, :id => @deployment.id).body)
+
+        assert_response 400
+        response_error = response['error']
+        assert_not_nil response_error
+        assert_equal response_error, 'cdn_url parameter missing'
+      end
+
+      test 'unexpected exception should return a 400' do
+        mock_res = Object.new
+        def mock_res.code
+          raise 'ForcedError'
+        end
+
+        Net::HTTP.any_instance
+          .stubs(:request).returns(mock_res)
+
+        response = JSON.parse(get(
+          :validate_cdn,
+          :id => @deployment.id,
+          :cdn_url => 'http://porsche.rdu.redhat.com/pub/sat-import').body)
+
+        assert_response 400
+        response_error = response['error']
+        assert_not_nil response_error
+        assert_equal response_error, 'ForcedError'
+      end
+    end
   end
 end

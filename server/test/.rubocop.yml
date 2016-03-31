@@ -1,0 +1,5 @@
+inherit_from: ../../.rubocop.yml
+
+# Disable class length offenses for test files
+Metrics/ClassLength:
+  Enabled: false
