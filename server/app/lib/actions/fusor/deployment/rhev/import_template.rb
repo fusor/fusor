@@ -34,10 +34,9 @@ module Actions
             api_host = deployment.rhev_engine_host.facts['ipaddress']
 
             # TODO: Revisit how the data center is stored in the deployment object
-            #       name of "rhev_database_name" is non-intuitive,
-            #       it'd be better to store "Default" in it opposed to allowing it to be empt
-            # Warning, the rhev_database_name may be empty, if so then assume value of "Default"
-            data_center = deployment.rhev_database_name.to_s[/.+/m] || "Default"
+            #       it'd be better to store "Default" in it opposed to allowing it to be empty
+            # Warning, the rhev_data_center_name may be empty, if so then assume value of "Default"
+            data_center = deployment.rhev_data_center_name.to_s[/.+/m] || "Default"
 
             cmd = "#{script_dir}ovirt_import_template.py "\
                 "--api_user '#{api_user}' "\

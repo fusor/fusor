@@ -73,7 +73,7 @@ module Actions
               api_user = "admin@internal"
               api_password = deployment.rhev_engine_admin_password
               # if db name is empty or nil, use Default
-              data_center = deployment.rhev_database_name.to_s[/.+/m] || "Default"
+              data_center = deployment.rhev_data_center_name.to_s[/.+/m] || "Default"
 
               cmd = "#{script_dir}ovirt_get_datacenter_status.py "\
                 "--api_user #{api_user} "\

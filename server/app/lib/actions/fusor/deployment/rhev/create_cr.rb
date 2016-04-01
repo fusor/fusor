@@ -38,7 +38,7 @@ module Actions
                      "password" => deployment.rhev_root_password,
                      "organization_ids" => [deployment.organization_id] }
             cr = ::Foreman::Model::Ovirt.create(rhev)
-            cr.uuid = cr.datacenters.find { |dc| dc[0] == deployment.rhev_database_name }[1]
+            cr.uuid = cr.datacenters.find { |dc| dc[0] == deployment.rhev_data_center_name }[1]
             cr.save
             ::Fusor.log.debug '=== Leaving RHEV Compute Resource run method ==='
           end

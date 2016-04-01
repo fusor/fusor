@@ -17,7 +17,7 @@ export default DS.Model.extend({
   rhev_is_self_hosted: DS.attr('boolean'),
 
   rhev_engine_admin_password: DS.attr('string'),
-  rhev_database_name: DS.attr('string'),
+  rhev_data_center_name: DS.attr('string'),
   rhev_cluster_name: DS.attr('string'),
   rhev_storage_name: DS.attr('string'),
   rhev_storage_type: DS.attr('string'),

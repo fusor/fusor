@@ -12,7 +12,7 @@ export default Mirage.Factory.extend({
   is_disconnected: false,
   rhev_is_self_hosted: false,
   rhev_engine_admin_password: '12345678',
-  rhev_database_name: 'Default',
+  rhev_data_center_name: 'Default',
   rhev_cluster_name: 'Default',
   rhev_storage_name: 'my_storage',
   rhev_storage_type: 'NFS',

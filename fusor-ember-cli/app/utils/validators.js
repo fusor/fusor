@@ -124,8 +124,10 @@ const UniquenessValidator = Validator.extend({
 // RegExp regExp;
 // String message;
 const RegExpValidator = Validator.extend({
+  trim: true,
+  
   isValid(value) {
-    let trimmedValue = Ember.typeOf(value) === 'string' ? value.trim() : value;
+    let trimmedValue = this.get('trim') && Ember.typeOf(value) === 'string' ? value.trim() : value;
     return Ember.isBlank(trimmedValue) || this.get('regExp').test(trimmedValue);
   }
 });

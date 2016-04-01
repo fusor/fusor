@@ -5,7 +5,7 @@ module Fusor
     attributes :id, :name, :label, :description,
                :deploy_rhev, :deploy_cfme, :deploy_openstack,
                :rhev_engine_admin_password,
-               :rhev_database_name, :rhev_cluster_name, :rhev_storage_name,
+               :rhev_data_center_name, :rhev_cluster_name, :rhev_storage_name,
                :rhev_storage_type, :rhev_storage_address, :rhev_cpu_type, :rhev_share_path,
                :rhev_export_domain_name, :rhev_export_domain_address,
                :rhev_export_domain_path, :rhev_local_storage_path,
