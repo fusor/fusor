@@ -54,7 +54,12 @@ module Actions
                                                :hostname => "*.#{deployment.openshift_subdomain_name}.#{Domain.find(host.domain_id)}",
                                                :proxy => Domain.find(1).proxy
                                              })
-            subdomain.create
+            if subdomain.valid?
+              subdomain.create
+              ::Fusor.log.debug "====== OSE wildcard subdomain created successfully ======"
+            else
+              ::Fusor.log.debug "====== OSE wildcard subdomain is not valid, it might conflict with a previous entry. Skipping. ======"
+            end
 
             # launch worker nodes
             for i in 1..deployment.openshift_number_worker_nodes do
