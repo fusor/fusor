@@ -52,6 +52,16 @@ module Actions
                 ::Fusor.log.debug "====== OSE Launched VM IP   : #{host.ip}   ======"
               end
             end
+            subdomain = Net::DNS::ARecord.new({:ip => host.ip,
+                                               :hostname => "*.#{deployment.openshift_subdomain_name}.#{Domain.find(host.domain_id)}",
+                                               :proxy => Domain.find(1).proxy
+                                             })
+            if subdomain.valid?
+              subdomain.create
+              ::Fusor.log.debug "====== OSE wildcard subdomain created successfully ======"
+            else
+              ::Fusor.log.debug "====== OSE wildcard subdomain is not valid, it might conflict with a previous entry. Skipping. ======"
+            end
 
             # launch worker nodes
             for i in 1..deployment.openshift_number_worker_nodes do
