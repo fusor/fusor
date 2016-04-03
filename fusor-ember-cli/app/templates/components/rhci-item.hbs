@@ -1,19 +1,22 @@
 <span id="{{cssId}}">
-  <div class="rhci-product-image">
-    <img src="{{srcImage}}" class="img-responsive {{if isDisabled 'disabledImage'}}">
-  </div>
+      <div class='col-md-1 product-item-checkbox'>
+        {{input type="checkbox" name="isChecked" checked=isChecked disabled=isDisabled}}
+      </div>
 
-  <p class="rhci-item-desc">
-      {{desc}}
-  </p>
+      <div class='col-md-9'>
+        <div class='product-item-name'>
+            <span class="{{if isDisabled 'disabled'}}">
+              {{name}}
+            </span>
+        </div>
+        <div class='product-item-tagline'>
+            <span class="{{if isDisabled 'disabled'}}">
+              {{tagline}}
+            </span>
 
-
-  <div class="rhci-footer {{if isChecked 'rhci-footer-selected' 'rhci-footer-unselected'}}">
-       <span class='rhci-install-footer'>
-         {{#if isChecked}}
-           <i class="fa fa-1x fa-check"></i>
-           Install this product
-         {{/if}}
-       </span>
-  </div>
+          {{#tool-tip title=desc}}
+            <i class="fa fa-info-circle {{if isDisabled 'disabled'}}"></i>
+          {{/tool-tip}}
+        </div>
+      </div>
 </span>

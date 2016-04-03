@@ -44,19 +44,19 @@ export default Ember.Mixin.create({
 
   nameOpenShift: "OpenShift",
 
-  // images
-  imgRhev: Ember.computed('isUpstream', function() {
-    if (this.get('isUpstream')) { return "/assets/r/ovirt-640-210.png"; } else { return "/assets/r/rhci-rhev-640-210.png"; }
+  // TODO DRY names mixins
+  fullnameRhev: Ember.computed('isUpstream', function() {
+    if (this.get('isUpstream')) { return "oVirt Project"; } else { return "Red Hat Enterprise Virtualization"; }
   }),
 
-  imgOpenStack: Ember.computed('isUpstream', function() {
-    if (this.get('isUpstream')) { return "/assets/r/rdo-640-210.png"; } else { return "/assets/r/rhci-openstack-640-210.png"; }
+  fullnameOpenStack: Ember.computed('isUpstream', function() {
+    if (this.get('isUpstream')) { return "RDO Project"; } else { return "Red Hat OpenStack Platform"; }
   }),
 
-  imgCloudForms: Ember.computed('isUpstream', function() {
-    if (this.get('isUpstream')) { return "/assets/r/manageiq-640-210.png"; } else { return "/assets/r/rhci-cloudforms-640-210.png"; }
+  fullnameCloudForms: Ember.computed('isUpstream', function() {
+    if (this.get('isUpstream')) { return "ManageIQ"; } else { return "Red Hat CloudForms"; }
   }),
 
-  imgOpenShift: "/assets/r/openshift_logo-300x75.png"
+  fullnameOpenShift: "OpenShift Enterprise by Red Hat",
 
 });

@@ -1,61 +1,59 @@
-<div class='row'>
-  <div class='col-md-12'>
-    <br />
-    <h2>New Deployment: Select Products</h2>
-
-    Choose the products to deploy. This wizard guides you through creating a new deployment.
-    <br />
-    <br />
-  </div>
-</div>
-
-<div class='row'>
-
-  <div class='col-md-4'>
-    {{rhci-item srcImage=imgRhev isChecked=isRhev name=nameRhev cssId='is_rhev' desc=descRhev}}
-  </div>
-
-  <div class='col-md-4 right-start-col'>
-    {{rhci-item srcImage=imgOpenStack isChecked=isOpenStack name=nameOpenStack cssId='is_openstack' desc=descOpenstack}}
-  </div>
-
-</div>
-
-<div class='row'>
-
-  <div class='col-md-4'>
-    {{rhci-item srcImage=imgCloudForms isChecked=isCloudForms name=nameCloudForms cssId='is_cloudforms' isDisabled=isDisabledCfme desc=descCfme}}
-  </div>
-
-  <div class='col-md-4 right-start-col'>
-    {{rhci-item srcImage=imgOpenShift isChecked=isOpenShift name=nameOpenShift cssId='is_openshift' isDisabled=isDisabledOpenShift desc=descOpenshift}}
-  </div>
-</div>
-
-{{#unless isUpstream}}
-<div class='subscriptions_needed'>
-
-  <i class="fa fa-info-circle"></i>
-  <strong>Before you begin:</strong>
-
-  <p>
-    <strong>Subscriptions required to complete this deployment.</strong> Check your account in the <a href='https://idp.redhat.com/idp/' target='_blank'>Red Hat Customer Portal</a> to verify you have subscriptions available to cover the selected products.
-    <br />
-    <strong>Start up host machines.</strong> Ensure that the bare-metal computers and the virtual machines that you plan to use are turned on and discoverable.
-    <br />
-    <strong>Configure your network.</strong> Ensure that the network and subnets are set up and available.
-  </p>
-
-</div>
-{{/unless}}
-
 <br />
-<div class='row'>
-  <div class='col-md-12'>
-    <div style='float:right;'>
-      {{#link-to 'deployments' class="btn btn-default"}}Cancel{{/link-to}}
-      {{#link-to satelliteTabRouteName class="btn btn-primary" disabled=disableNextOnStart}}Select{{/link-to}}
-      {{!satelliteTabRouteName}}
-    </div>
+<h1>Select Product(s) for New Cloud Infrastructure Deployment</h1>
+<br />
+<br />
+
+<div class='col-md-4'>
+  <strong>Choose at least one:</strong>
+
+  {{rhci-item isChecked=isRhev name=fullnameRhev tagline=taglineRhev desc=descRhev cssId='is_rhev'}}
+  {{rhci-item isChecked=isOpenStack name=fullnameOpenStack tagline=taglineOpenStack desc=descOpenStack cssId='is_openstack' }}
+  <br />
+  <div>
+    <strong>Optionally, choose:</strong>
   </div>
+
+  {{rhci-item isChecked=isCloudForms name=fullnameCloudForms tagline=taglineCloudForms desc=descCloudForms cssId='is_cloudforms' isDisabled=isDisabledCfme }}
+  {{rhci-item isChecked=isOpenShift name=fullnameOpenShift tagline=taglineOpenShift desc=descOpenShift cssId='is_openshift' isDisabled=isDisabledOpenShift }}
+</div>
+
+<div class='col-md-4'>
+  <strong>To deploy the selected products, you will need:</strong>
+
+  <div class='req-block'>
+    {{partial 'req-general'}}
+
+    {{#if isRhev}}
+      {{partial 'req-rhev'}}
+    {{/if}}
+
+    {{#if isOpenStack}}
+      {{partial 'req-openstack'}}
+    {{/if}}
+
+    {{#if isCloudForms}}
+      {{partial 'req-cloudforms'}}
+    {{/if}}
+
+    {{#if isOpenShift}}
+      {{partial 'req-openshift'}}
+    {{/if}}
+
+    {{partial 'req-disconnected'}}
+  </div>
+
+  <div class='download-reqs'>
+    <a download href="QCI_Requirements.txt">
+      <span class="pficon pficon-save"></span>
+      Download these requirements
+    </a>
+  </div>
+
+  <div class='next-start'>
+    {{#link-to 'deployments' class="btn btn-default"}}Cancel{{/link-to}}
+    {{#link-to satelliteTabRouteName class="btn btn-primary" disabled=disableNextOnStart}}
+      Next &nbsp; <i class="fa fa-angle-right"></i> &nbsp;
+    {{/link-to}}
+  </div>
+
 </div>
