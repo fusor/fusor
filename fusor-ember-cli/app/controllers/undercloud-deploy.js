@@ -16,8 +16,11 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   sshPassword: null,
 
   isRhev: Ember.computed.alias("deploymentController.isRhev"),
+  fullnameOpenStack: Ember.computed.alias("deploymentController.fullnameOpenStack"),
 
-  undercloudIPHelp: "The IP address that the already-installed Red Hat Enterprise Linux OpenStack Platform undercloud is running on.",
+  undercloudIPHelp: Ember.computed('fullnameOpenStack', function() {
+    return `The IP address that the already-installed ${this.get('fullnameOpenStack')} undercloud is running on.`;
+  }),
 
   undercloudIpValidator: AllValidator.create({
     validators: [
