@@ -38,7 +38,7 @@ module Actions
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             repository = ::Katello::Repository.find(input[:repository_id])
 
-            image_full_path, image_file_name = find_image_details(repository, input[:image_file_name])
+            image_full_path, image_file_name = Utils::CloudForms::ImageLookup.find_image_details(repository, input[:image_file_name], 'cfme-rhev')
             scp_image_file(deployment, image_full_path)
 
             output[:image_full_path] = image_full_path
@@ -59,22 +59,6 @@ module Actions
               scp.upload!(image_file, "/root")
             end
           end
-
-          def find_image_details(repository, image_file_name)
-            images = ::Katello.pulp_server.extensions.repository.unit_search(repository.pulp_id)
-
-            if image_file_name
-              image_name = images.find { |image| image[:metadata][:name] == image_file_name }
-              image_path = image_file[:metadata][:_storage_path] if image_name
-            else
-              images = images.find_all { |image| image[:metadata][:name].starts_with?("cfme-rhevm") }
-              image_name = images.compact.sort_by { |k| k[:name] }.last[:metadata][:name]
-              image_path = images.compact.sort_by { |k| k[:name] }.last[:metadata][:_storage_path]
-            end
-
-            return image_path, image_name
-          end
-
         end
       end
     end
