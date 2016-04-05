@@ -35,7 +35,7 @@ export default Ember.Mixin.create({
   }),
 
   nameOpenStack: Ember.computed('isUpstream', function() {
-    if (this.get('isUpstream')) { return "RDO"; } else { return "RHELOSP"; }
+    if (this.get('isUpstream')) { return "RDO"; } else { return "RHOSP"; }
   }),
 
   nameCloudForms: Ember.computed('isUpstream', function() {

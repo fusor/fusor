@@ -16,7 +16,7 @@
     <div class='ident-radio'>
       {{#radio-button value="OpenStack" groupValue=cfmeInstallLoc changed="cfmeLocationChanged" id="install_on_openstack" disabled=disableOpenstackradio}}
         <span class="inline-block {{if disableOpenStack 'disabled'}}">
-          Install CloudForms on Red Hat Enterprise Linux OpenStack Platform
+          Install CloudForms on {{fullnameOpenStack}}
           <p style='margin-left:16px;' class="explanatory-text">
             Able to split virtualization workloads across multiple controller nodes
           </p>
