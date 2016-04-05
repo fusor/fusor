@@ -84,7 +84,12 @@
         :repository_set_id: "4631"
         :repository_set_name: "Red Hat CloudForms Management Engine 5.5 (Files)"
         :basearch: "x86_64"
-        #:image_file_name: "cfme-rhevm-5.3-54.x86_64.rhevm.ova" # Default behavior uses the 'latest' image file.
+        # Default behavior is to use the latest available image found
+        # in the repository if either :rhos_image_file_name or :rhev_image_file_name
+        # are commented out.
+        #
+        #:rhos_image_file_name: "cfme-rhos-5.5.2.4-1.x86_64.qcow2"
+        #:rhev_image_file_name: "cfme-rhevm-5.5.2.4-1.x86_64.rhevm.ova"
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
