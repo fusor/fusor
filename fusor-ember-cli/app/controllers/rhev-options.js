@@ -1,12 +1,12 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
-import { PresenceValidator, EqualityValidator, PasswordValidator, AlphaNumericDashUnderscoreValidator, AllValidator } from '../utils/validators';
+import { Validator, EqualityValidator, PasswordValidator, AlphaNumericDashUnderscoreValidator, AllValidator } from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   rhevRootPassword: Ember.computed.alias("deploymentController.model.rhev_root_password"),
   rhevEngineAdminPassword: Ember.computed.alias("deploymentController.model.rhev_engine_admin_password"),
-  rhevDatabaseName: Ember.computed.alias("deploymentController.model.rhev_database_name"),
+  rhevDataCenterName: Ember.computed.alias("deploymentController.model.rhev_data_center_name"),
   rhevClusterName: Ember.computed.alias("deploymentController.model.rhev_cluster_name"),
   rhevCpuType: Ember.computed.alias("deploymentController.model.rhev_cpu_type"),
   rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
@@ -55,40 +55,30 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
        }
   ],
 
-  computerNameValidator: AllValidator.create({
+  createComputerNameValidator(fieldName, otherFieldValue) {
+    if (Ember.isBlank(otherFieldValue) || otherFieldValue === 'Default') {
+      return AlphaNumericDashUnderscoreValidator.create({trim: false});
+    }
+
+    return AllValidator.create({
       validators: [
-        PresenceValidator.create({}),
-        AlphaNumericDashUnderscoreValidator.create({})
+        Validator.create({
+          message: `Note: You must change the ${fieldName} after changing the cluster name`,
+          isValid(value) {
+            return Ember.isPresent(value) && value !== 'Default';
+          }
+        }),
+        AlphaNumericDashUnderscoreValidator.create({trim: false})
       ]
-    }),
+    });
+  },
 
-  isDirtyRhevDatabaseName: Ember.computed('rhevDatabaseName', function() {
-      var changedAttrs = this.get('deploymentController.model').changedAttributes();
-      return Ember.isPresent(changedAttrs['rhev_database_name']);
+  dataCenterNameValidator: Ember.computed('rhevClusterName', function() {
+    return this.createComputerNameValidator('data center name', this.get('rhevClusterName'));
   }),
 
-  isDirtyRhevClusterName: Ember.computed('rhevClusterName', function() {
-      var changedAttrs = this.get('deploymentController.model').changedAttributes();
-      return Ember.isPresent(changedAttrs['rhev_cluster_name']);
-  }),
-  isNotDirtyRhevClusterName: Ember.computed.not('isDirtyRhevClusterName'),
-
-  isClusterNeedRenaming: false,
-
-  showMsgToChangeCluster: Ember.observer('rhevClusterName', 'rhevDatabaseName', function() {
-    if ((this.get('isDirtyRhevDatabaseName') &&
-        this.get('rhevClusterName') &&
-        this.get('isNotDirtyRhevClusterName')) ||
-        (this.get('rhevDatabaseName') !== 'Default') &&
-        this.get('rhevClusterName') === 'Default') {
-            return this.set('isClusterNeedRenaming', true);
-    }
-  }),
-
-  removeMsgToChangeCluster: Ember.observer('rhevClusterName', function() {
-    if (this.get('rhevClusterName.length') > 0 && this.get('isDirtyRhevClusterName')) {
-        return this.set('isClusterNeedRenaming', false);
-    }
+  clusterNameValidator: Ember.computed('rhevDataCenterName', function () {
+    return this.createComputerNameValidator('cluster name', this.get('rhevDataCenterName'));
   }),
 
   validRhevOptions: Ember.computed(
@@ -98,17 +88,17 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     'rhevEngineAdminPassword',
     'confirmRhevEngineAdminPassword',
     'confirmRhevEngineAdminPasswordValidator',
-    'rhevDatabaseName',
+    'rhevDataCenterName',
+    'dataCenterNameValidator',
     'rhevClusterName',
-    'isClusterNeedRenaming',
+    'clusterNameValidator',
     function () {
       return this.get('passwordValidator').isValid(this.get('rhevRootPassword')) &&
         this.get('passwordValidator').isValid(this.get('rhevEngineAdminPassword')) &&
         this.get('confirmRhevRootPasswordValidator').isValid(this.get('confirmRhevRootPassword')) &&
         this.get('confirmRhevEngineAdminPasswordValidator').isValid(this.get('confirmRhevEngineAdminPassword')) &&
-        this.get('computerNameValidator').isValid(this.get('rhevDatabaseName')) &&
-        this.get('computerNameValidator').isValid(this.get('rhevClusterName')) &&
-        !this.get('isClusterNeedRenaming');
+        this.get('dataCenterNameValidator').isValid(this.get('rhevDataCenterName')) &&
+        this.get('clusterNameValidator').isValid(this.get('rhevClusterName'));
     }),
 
   disableNextRhevOptions: Ember.computed.not('validRhevOptions')

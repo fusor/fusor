@@ -176,7 +176,7 @@ module Actions
       def apply_deployment_parameter_overrides(hostgroup, deployment, product_type, puppet_environment)
         # TODO: ISSUE: the following attributes exist on the deployment object, but I do not know
         # if they should be mapping to puppet class parameters and if so, which class & parameter?
-        # :name => , :value => deployment.rhev_database_name,
+        # :name => , :value => deployment.rhev_data_center_name,
         # :name => , :value => deployment.cfme_install_loc,
         # :name => , :value => deployment.rhev_is_self_hosted,
 
@@ -206,7 +206,7 @@ module Actions
                     # necessary because the puppet parameter needs to store it in clear text and
                     # the hostgroup stores it using one-time encryption.
                     { :name => "root_password", :value => root_password(deployment, product_type) },
-                    { :name => "dc_name", :value => deployment.rhev_database_name },
+                    { :name => "dc_name", :value => deployment.rhev_data_center_name },
                     { :name => "cluster_name", :value => deployment.rhev_cluster_name },
                     { :name => "storage_name", :value => deployment.rhev_storage_name },
                     { :name => "storage_address", :value => deployment.rhev_storage_address },

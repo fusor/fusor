@@ -20,16 +20,11 @@
       isRequired=true disabled=isStarted validator=confirmRhevEngineAdminPasswordValidator
       placeholder="Must match engine admin password"}}
 
-      {{text-f label="Data Center Name" value=rhevDatabaseName placeholder="Leave blank for default" cssId="rhev-database-name" disabled=isStarted validator=computerNameValidator}}
-      {{#if isClusterNeedRenaming}}
-        {{#base-f}}
-        <span class="error errorForValidation">
-            Note: You must change the cluster name after changing the database name
-        </span>
-        {{/base-f}}
-      {{/if}}
+      {{text-f label="Data Center Name" value=rhevDataCenterName placeholder="Leave blank for default" cssId="rhev-data-center-name"
+               disabled=isStarted validator=dataCenterNameValidator showValidationError=true}}
 
-      {{text-f label="Cluster Name" value=rhevClusterName placeholder="Leave blank for default" cssId="rhev-cluster-name" disabled=isStarted validator=computerNameValidator}}
+      {{text-f label="Cluster Name" value=rhevClusterName placeholder="Leave blank for default" cssId="rhev-cluster-name"
+               disabled=isStarted validator=clusterNameValidator showValidationError=true}}
 
       {{select-simple-f label="CPU Type"
                         content=cpuTypes
