@@ -51,18 +51,11 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     if (model.get('deploy_cfme')) {
       request('api/v2/settings?search=cloudforms').then(function(settings) {
         var results = settings['results'];
-        if (!(model.get('cloudforms_vcpu') > 0)) {
-          model.set('cloudforms_vcpu', results.findBy('name', 'cloudforms_vcpu').value);
-        }
-        if (!(model.get('cloudforms_ram') > 0)) {
-          model.set('cloudforms_ram', results.findBy('name', 'cloudforms_ram').value);
-        }
-        if (!(model.get('cloudforms_vm_disk_size') > 0)) {
-          model.set('cloudforms_vm_disk_size', results.findBy('name', 'cloudforms_vm_disk_size').value);
-        }
-        if (!(model.get('cloudforms_db_disk_size') > 0)) {
-          model.set('cloudforms_db_disk_size', results.findBy('name', 'cloudforms_db_disk_size').value);
-        }
+        // overwrite values for deployment since Sat6 settings is only place to change CFME VM requirements
+        model.set('cloudforms_vcpu', results.findBy('name', 'cloudforms_vcpu').value);
+        model.set('cloudforms_ram', results.findBy('name', 'cloudforms_ram').value);
+        model.set('cloudforms_vm_disk_size', results.findBy('name', 'cloudforms_vm_disk_size').value);
+        model.set('cloudforms_db_disk_size', results.findBy('name', 'cloudforms_db_disk_size').value);
       });
     }
   },

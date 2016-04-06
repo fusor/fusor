@@ -24,6 +24,9 @@
     <br />
     <p>
       Select how many virtual machines should be created as nodes for the OpenShift environment.
+      {{tool-tip faIcon='fa-info-circle'
+                 title="The environment consists of worker nodes and one master node, which orchestrates tasks across the other nodes. Master and worker nodes are provisioned with different specifications, as seen in Node Details."}}
+
     </p>
 
     {{button-selection label=1
@@ -95,7 +98,9 @@
                           ramAvailable=ramAvailable
                           diskAvailable=diskAvailable
                           substractCfme=substractCfme
-                          cfmeDisk=cfmeDisk}}
+                          cfmeDisk=cfmeDisk
+                          cfmeRam=cfmeRam
+                          cfmeVcpu=cfmeVcpu}}
 
         {{node-details numNodes=model.numNodes
                        numMasterNodes=numMasterNodes
