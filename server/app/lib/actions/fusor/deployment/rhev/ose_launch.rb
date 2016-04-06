@@ -57,10 +57,10 @@ module Actions
                                                :proxy => Domain.find(1).proxy
                                              })
             if subdomain.valid?
+              ::Fusor.log.debug "====== OSE wildcard subdomain is not valid, it might conflict with a previous entry. Skipping. ======"
+            else
               subdomain.create
               ::Fusor.log.debug "====== OSE wildcard subdomain created successfully ======"
-            else
-              ::Fusor.log.debug "====== OSE wildcard subdomain is not valid, it might conflict with a previous entry. Skipping. ======"
             end
 
             # launch worker nodes
