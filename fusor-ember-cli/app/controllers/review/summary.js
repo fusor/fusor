@@ -5,11 +5,13 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   isRhev: Ember.computed.alias('deploymentController.isRhev'),
   isOpenStack: Ember.computed.alias('deploymentController.isOpenStack'),
+  isOpenShift: Ember.computed.alias('deploymentController.isOpenShift'),
   isCloudForms: Ember.computed.alias('deploymentController.isCloudForms'),
 
   isRhevOpen: true,
   isOpenStackOpen: true,
   isCloudFormsOpen: true,
+  isOpenShiftOpen: true,
 
   undercloudUsername: 'admin',
   undercloudPassword: Ember.computed.alias("model.openstack_undercloud_password"),
@@ -32,6 +34,14 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   }),
 
   selectedRhevEngine: Ember.computed.alias("deploymentController.model.discovered_host"),
+  deploymentLabel: Ember.computed.alias('deploymentController.model.label'),
+
+  oseMasterUrl: Ember.computed('deploymentLabel', 'fusorDomainName', function() {
+    let label = this.get('deploymentLabel');
+    let processedLabel = label.replace(/_/g, "-");
+    let fusorDomainName = this.get('fusorDomainName');
+    return `https://${processedLabel}-ose-master1.${fusorDomainName}:8443`;
+  }),
 
   rhevEngineUrl: Ember.computed('selectedRhevEngine', function() {
     return ('https://' + this.get('selectedRhevEngine.name') + '/ovirt-engine/');
