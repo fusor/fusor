@@ -18,7 +18,7 @@ module Fusor
       class NodesController < Api::Openstack::BaseController
 
         def index
-          render :json => undercloud_handle.list_nodes
+          render :json => undercloud_handle.list_nodes, :serializer => RootArraySerializer
         end
 
         def show
