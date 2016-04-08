@@ -18,7 +18,7 @@ module Fusor
       class OpenstackDeploymentsController < Api::Openstack::BaseController
 
         def index
-          render :json => undercloud_handle.list_stacks
+          render :json => undercloud_handle.list_stacks, :serializer => RootArraySerializer
         end
 
         def show
