@@ -36,11 +36,20 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   selectedRhevEngine: Ember.computed.alias("deploymentController.model.discovered_host"),
   deploymentLabel: Ember.computed.alias('deploymentController.model.label'),
 
-  oseMasterUrl: Ember.computed('deploymentLabel', 'fusorDomainName', function() {
-    let label = this.get('deploymentLabel');
-    let processedLabel = label.replace(/_/g, "-");
-    let fusorDomainName = this.get('fusorDomainName');
-    return `https://${processedLabel}-ose-master1.${fusorDomainName}:8443`;
+  oseMasterUrl: Ember.computed('oseMasterHost', function() {
+    let masterHost = this.get('oseMasterHost');
+    return `https://${masterHost.get('name')}:8443`;
+  }),
+
+  oseMasterIpUrl: Ember.computed('deploymentLabel', 'fusorDomainName', function() {
+    let masterHost = this.get('oseMasterHost');
+    return `https://${masterHost.get('ip')}:8443`;
+  }),
+
+  oseMasterHosts: Ember.computed.alias('deploymentController.model.openshift_master_hosts'),
+
+  oseMasterHost: Ember.computed('oseMasterHosts', function() {
+    return this.get('oseMasterHosts')[0];
   }),
 
   rhevEngineUrl: Ember.computed('selectedRhevEngine', function() {

@@ -66,6 +66,11 @@ module Fusor
     # has many hypervisors
     has_many :discovered_hosts, serializer: ::HostBaseSerializer
 
+    has_many :openshift_hosts, serializer: ::HostBaseSerializer
+    def openshift_hosts
+      object.ose_master_hosts
+    end
+
     has_many :subscriptions, serializer: Fusor::SubscriptionSerializer
     has_many :introspection_tasks, serializer: Fusor::IntrospectionTaskSerializer
 

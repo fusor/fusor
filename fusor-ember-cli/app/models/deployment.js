@@ -94,6 +94,12 @@ export default DS.Model.extend({
   openshift_export_path: DS.attr('string'),
   openshift_subdomain_name: DS.attr('string'),
 
+  openshift_hosts: DS.hasMany('openshift-host', {async: true}),
+  openshift_master_hosts: Ember.computed('openshift_hosts', function() {
+    return this.get('openshift_hosts')
+      .filter(host => host.get('name').indexOf('master') > -1);
+  }),
+
   cloudforms_vcpu: DS.attr('number'),
   cloudforms_ram: DS.attr('number'),
   cloudforms_vm_disk_size: DS.attr('number'),
