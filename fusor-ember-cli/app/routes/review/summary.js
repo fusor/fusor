@@ -10,7 +10,7 @@ export default Ember.Route.extend({
         return hostgroups.filterBy('name', 'Fusor Base').get('firstObject')
           .get('domain.name');
       })
-    })
+    });
   },
   setupController(controller, model) {
     controller.set('model', model.deployment);
