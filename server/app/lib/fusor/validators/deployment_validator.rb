@@ -101,6 +101,50 @@ module Fusor
             deployment.errors[:cfme_root_password] << _('CloudForms deployments must specify a root password for the CloudForms machines')
           end
         end
+
+        if deployment.deploy_openshift
+          validate_openshift_parameters(deployment)
+        end
+      end
+
+      def validate_openshift_parameters(deployment)
+        # 1) must also deploy either rhev or openstack
+        # 2) must have install location
+        # 3) must have at least one master node with valid resource requirements
+        # 4) must have an OSE username
+        # 5) must have a unique wildcard subdomain entry
+
+        if !(deployment.deploy_rhev or deployment.deploy_openstack)
+          deployment.errors[:deploy_openshift] << _("OpenShift deployments must also deploy either RHEV or OpenStack")
+        end
+
+        if deployment.openshift_install_loc.empty?
+          deployment.errors[:openshift_install_loc] << _('OpenShift deployments must specify an install location')
+        end
+
+        if deployment.openshift_number_master_nodes < 1
+          deployment.errors[:openshift_number_master_nodes] << _("OpenShift deployments must have at least one master node")
+        else
+          if deployment.openshift_master_vcpu < 1 or deployment.openshift_master_ram < 1 or deployment.openshift_master_disk < 1
+            deployment.errors[:openshift_master_vcpu] << _("OpenShift deployments must specify amount of resources to be used")
+          end
+        end
+
+        if deployment.openshift_username.empty?
+          deployment.errors[:openshift_username] << _("OpenShift deployments must specify an OSE user to be created")
+        end
+
+        if deployment.openshift_subdomain_name.empty?
+          deployment.errors[:openshift_subdomain_name] << _("Openshift deployments must specify a wildcard subdomain region")
+        else
+          subdomain = Net::DNS::ARecord.new({:ip => "0.0.0.0",
+                                             :hostname => "*.#{deployment.openshift_subdomain_name}.#{Domain.find(Hostgroup.find_by_name('Fusor Base').domain_id)}",
+                                             :proxy => Domain.find(1).proxy
+                                           })
+          if !subdomain.conflicts.empty?
+            deployment.errors[:openshift_subdomain_name] << _("already in use or conflicts with existing entry")
+          end
+        end
       end
 
       private
