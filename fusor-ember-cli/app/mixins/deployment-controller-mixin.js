@@ -71,7 +71,7 @@ export default Ember.Mixin.create({
     if (this.get('isUpstream')) { return "ManageIQ"; } else { return "Red Hat Cloud Forms Management Engine"; }
   }),
 
-  fullnameOpenShift: "Red Hat Cloud OpenShift",
+  fullnameOpenShift: "OpenShift Enterprise by Red Hat",
 
   // logo
   logoPath: Ember.computed('isUpstream', function() {

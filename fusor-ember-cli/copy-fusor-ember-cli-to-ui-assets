@@ -40,19 +40,12 @@ then
     cp ./dist/assets/fusor-ember-cli.map     ../ui/app/assets/javascripts/fusor_ui/;
 fi
 
-cp ./dist/assets/r/rhci-rhev-640-210.png            ../ui/app/assets/images/r/;
-cp ./dist/assets/r/rhci-openstack-640-210.png       ../ui/app/assets/images/r/;
-cp ./dist/assets/r/rhci-cloudforms-640-210.png      ../ui/app/assets/images/r/;
-cp ./dist/assets/r/openshift_logo-300x75.png  ../ui/app/assets/images/r/;
-
-cp ./dist/assets/r/ovirt-640-210.png     ../ui/app/assets/images/r/;
-cp ./dist/assets/r/rdo-640-210.png       ../ui/app/assets/images/r/;
-cp ./dist/assets/r/manageiq-640-210.png  ../ui/app/assets/images/r/;
-
 cp ./dist/assets/r/vm-icon-16.png           ../ui/app/assets/images/r/;
 cp ./dist/assets/r/vm-icon-inverted-16.png  ../ui/app/assets/images/r/;
 
 cp ./dist/fonts/*.*  ../ui/public/fonts/;
+
+cp ./dist/QCI_Requirements.txt               ../ui/public/;
 
 if [ "${COMMIT_ASSETS}" -eq "1" ]
 then

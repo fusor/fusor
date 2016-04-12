@@ -5,22 +5,6 @@ $info-color: #333;
 $warning-color: #ec7a08;
 $error-color: #cc0000;
 
-.rhci-footer {
-  padding: 20px 10px 10px 10px;
-  height: 60px;
-}
-
-.rhci-footer-selected{
-  background-color: #0099d3;
-  color: #ffffff;
-  vertical-align: middle;
-}
-
-.rhci-footer-unselected{
-  background-color:#eee;
-  color: #0099d3;
-}
-
 .rhci-footer-box {
   height: 100px;
 }
@@ -37,18 +21,76 @@ i.fa-check {
   color: #ffffff;
 }
 
-.rhci-install-footer {
-  font-size: 130%;
+ul.req-list {
+  padding: 0;
+}
+
+ul.req-list > li {
+  cursor: initial;
+  margin-left: 35px;
+}
+
+.rhci-start-block {
+  padding-left: 15px;
 }
 
 .rhci-item {
-  background-color:#eee;
-  margin:2px;
+  margin:1px;
+  padding: 10px 10px 10px 10px;
 }
 
 .rhci-item-selected {
-  /*border-: solid 6px #0099d3;*/
+  background-color: #def3ff;
 }
+
+.product-item-checkbox {
+  padding-top: 20px;
+  border-right: 1px solid #ccc;
+  height: 60px;
+}
+
+.product-item-name {
+  font-size: 20px;
+}
+
+.product-item-tagline {
+  font-size: 14px;
+}
+
+.req-block {
+  border: 1px solid #ccc;
+  margin-top: 5px;
+  padding: 10px 20px;
+  height:400px;
+  overflow-x: visible;
+  overflow-y: auto;
+}
+
+.req-section {
+  margin-bottom: 15px;
+}
+
+.req-section > p {
+  margin-bottom: 5px;
+}
+
+.req-title {
+  font-size: 18px;
+}
+
+.next-start {
+  float: right;
+  margin-top: 30px;
+}
+
+.download-reqs {
+  border-right: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 20px;
+  background-color: #f5f5f5;
+}
+
 
 .subscriptions_needed {
   padding: 10px;
@@ -501,7 +543,7 @@ table.fusor-table {
 }
 
 .new-deployment-button {
-  float:right;
+  float: right;
   margin-top: -33px;
 }
 
