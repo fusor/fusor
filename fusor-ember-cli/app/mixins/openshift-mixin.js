@@ -16,11 +16,11 @@ export default Ember.Mixin.create({
 
   masterVcpu: Ember.computed.alias("model.openshift_master_vcpu"),
   nodeVcpu: Ember.computed.alias("model.openshift_node_vcpu"),
-  vcpuAvailable: Ember.computed.alias("model.openshift_available_vcpu"),
+  cfmeVcpu: Ember.computed.alias("model.cloudforms_vcpu"),
 
   masterRam: Ember.computed.alias("model.openshift_master_ram"),
   nodeRam: Ember.computed.alias("model.openshift_node_ram"),
-  ramAvailable: Ember.computed.alias("model.openshift_available_ram"),
+  cfmeRam: Ember.computed.alias("model.cloudforms_ram"),
 
   masterDisk: Ember.computed.alias("model.openshift_master_disk"),
   nodeDisk: Ember.computed.alias("model.openshift_node_disk"),
@@ -48,6 +48,34 @@ export default Ember.Mixin.create({
       return this.get('model.openshift_available_disk');
     } else {
       return this.get('diskAvailableMinusCfme');
+    }
+  }),
+
+  ramAvailableMinusCfme: Ember.computed("model.openshift_available_ram", "model.cloudforms_ram", function() {
+    return this.get("model.openshift_available_ram") - this.get("model.cloudforms_ram");
+  }),
+
+  ramAvailable: Ember.computed("model.openshift_available_ram",
+                                "ignoreCfme",
+                                "ramAvailableMinusCfme", function() {
+    if (this.get('ignoreCfme')) {
+      return this.get('model.openshift_available_ram');
+    } else {
+      return this.get('ramAvailableMinusCfme');
+    }
+  }),
+
+  vcpuAvailableMinusCfme: Ember.computed("model.openshift_available_vcpu", "model.cloudforms_vcpu", function() {
+    return this.get("model.openshift_available_vcpu") - this.get("model.cloudforms_vcpu");
+  }),
+
+  vcpuAvailable: Ember.computed("model.openshift_available_vcpu",
+                                "ignoreCfme",
+                                "vcpuAvailableMinusCfme", function() {
+    if (this.get('ignoreCfme')) {
+      return this.get('model.openshift_available_vcpu');
+    } else {
+      return this.get('vcpuAvailableMinusCfme');
     }
   }),
 

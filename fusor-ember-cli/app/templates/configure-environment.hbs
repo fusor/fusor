@@ -18,7 +18,7 @@
     <div class='ident-radio'>
       {{#radio-button value="immediately" groupValue=envSetup changed="envSetupChanged" id='immediately' disabled=deploymentController.isStarted}}
         <span class="{{if deploymentController.isStarted 'disabled'}}">
-          Immediately {{tool-tip srcImage='/assets/r/blue-i.png'
+          Immediately {{tool-tip faIcon='fa-info-circle blue-active'
                                  title="Choosing to not use a lifecycle environment will result in a faster deployment time, but new content will become available to your deployment automatically.  If you use a lifecycle environment, then content needs to be manually published to that environment to be available."}}
         </span>
       {{/radio-button}}
@@ -30,7 +30,7 @@
     <div class='ident-radio'>
       {{#radio-button value="after_publishing" groupValue=envSetup changed="envSetupChanged" id='after_publishing' disabled=isStarted}}
       <span class="{{if isStarted 'disabled'}}">
-        After manually publishing them {{tool-tip srcImage='/assets/r/blue-i.png'
+        After manually publishing them {{tool-tip faIcon='fa-info-circle blue-active'
                    title="For updates to be available within a deployment, they must be published to the lifecycle environment that is assigned to that deployment."}}
       </span>
       {{/radio-button}}

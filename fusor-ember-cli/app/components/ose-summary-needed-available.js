@@ -57,9 +57,6 @@ export default Ember.Component.extend({
 
   showSubstractTooltip: Ember.computed('label', 'substractCfme', function() {
     return (this.get('label') === 'Disk' && this.get('substractCfme'));
-  }),
-
-  tooltipDisk: Ember.computed('cfmeDisk',  function() {
-    return "CloudForms VM disk requirement of " + this.get('cfmeDisk') + " GB considered";
   })
+
 });
