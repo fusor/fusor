@@ -22,20 +22,12 @@ i.fa-check {
 }
 
 ul.req-list {
-  list-style: none;
   padding: 0;
 }
 
 ul.req-list > li {
-  padding-left: 1.5em;
-}
-
-ul.req-list > li:before {
-  content: "\f00c"; /* FontAwesome Unicode */
-  font-family: FontAwesome;
-  display: inline-block;
-  margin-left: -1.5em; /* same as padding-left set on li */
-  width: 1.5em; /* same as padding-left set on li */
+  cursor: initial;
+  margin-left: 35px;
 }
 
 .rhci-start-block {
