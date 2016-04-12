@@ -1,0 +1,78 @@
+---
+# This playbook configures post-installation steps for OSE
+
+- name: Apply common configuration to all nodes
+  hosts: nodes
+  user: ansible_ssh_user
+  tasks:
+    - name: configure iptables to allow for NFS shares
+      command: iptables -I OS_FIREWALL_ALLOW -p tcp -m state --state NEW -m tcp --dport 2049 -j ACCEPT
+
+- name: Configure OSE on master
+  hosts: masters
+  user: ansible_ssh_user
+  tasks: 
+    - name: Create OSE user
+      command: htpasswd -cb {{ http_pass_file }} {{ ose_user }} {{ ose_password }}
+    
+    - name: Configure httpasswd authentication if not done already
+      replace: "dest=/etc/origin/master/master-config.yaml regexp='DenyAllPasswordIdentityProvider' replace='AllowAllPasswordIdentityProvider'"
+     
+    - name: Restart master service for new authentication
+      command: systemctl restart atomic-openshift-master.service
+    
+    - name: Check that we are system:admin user
+      command: oc login -u system:admin
+    
+    - name: Enable scheduling for master
+      command: oadm manage-node {{item}} --schedulable
+      with_items: groups['masters']
+
+    - pause: seconds=5
+
+    - name: Label master on the infra region
+      command: oc label node {{item}} region=infra --overwrite
+      with_items: groups['masters']
+
+    - name: Label worker nodes on the primary region
+      command: oc label node {{item}} region=primary --overwrite
+      with_items: groups['nodes']
+
+    - name: Create default router
+      command: "oadm router --create=true \
+        --service-account=router \
+        --credentials='/etc/origin/master/openshift-router.kubeconfig' \
+        --images='openshift3/ose-haproxy-router:${version}' \
+        --selector='region=infra'"
+
+    - name: Create default registry
+      command: "oadm registry --create=true \
+        --service-account=registry \
+        --credentials='/etc/origin/master/openshift-registry.kubeconfig' \
+        --images='openshift3/ose-docker-registry:${version}' \
+        --selector='region=infra'
+        --mount-host='{{ docker_registry_host }}:/{{ docker_registry_path }}'"
+
+    - name: Copy pod example files
+      action: copy src="../files/pod_examples" dest="/home/{{ ose_user }}" owner={{ ose_user }} mode=0775
+
+    - name: Replace default subdomain name for sample app
+      replace: "dest=/home/{{ ose_user }}/pod_examples/hello_openshift.json regexp='cloudapps' replace={{ subdomain_name }}"
+
+    - name: Create persistent volume for internal registry
+      command: oc create -f /home/{{ ose_user }}/pod_examples/registry-volume.json
+
+    - name: Create persistent volume claim for internal registry
+      command: oc create -f /home/{{ ose_user }}/pod_examples/registry-pvclaim.json
+
+    - name: Create Docker Registry deployment config with persistent storage
+      command: oc volume dc docker-registry --add --overwrite -t persistentVolumeClaim --claim-name=registry-pvclaim --name=registry-storage
+
+    - name: Login as specified OSE user
+      command: oc login -u {{ ose_user }} -p {{ ose_password }}
+
+    - name: Create Hello World project
+      command: oc new-project helloworld
+
+    - name: Create hello world pod
+      command: oc create -f /home/{{ ose_user }}/pod_examples/hello_openshift.json
