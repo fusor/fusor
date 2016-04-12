@@ -23,7 +23,7 @@ module Fusor
 
     def index
       @deployments = Deployment.search_for(params[:search], :order => params[:order]).by_id(params[:id])
-      render :json => @deployments, :each_serializer => Fusor::DeploymentSerializer
+      render :json => @deployments, :each_serializer => Fusor::DeploymentSerializer, :serializer => RootArraySerializer
     end
 
     def show
