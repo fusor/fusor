@@ -29,7 +29,7 @@ module Fusor
         ::Fusor.log.debug "finding all"
         @subscriptions = Subscription.all
       end
-      render :json => @subscriptions, :each_serializer => Fusor::SubscriptionSerializer
+      render :json => @subscriptions, :each_serializer => Fusor::SubscriptionSerializer, :serializer => RootArraySerializer
     end
 
     def create

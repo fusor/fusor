@@ -10,7 +10,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isNotRhev: Ember.computed.not("isRhev"),
   isOpenStack: Ember.computed.alias("deploymentController.isOpenStack"),
   isNotOpenStack: Ember.computed.not("isOpenStack"),
-  isOpenStack: Ember.computed.alias("deploymentController.isOpenStack"),
+  fullnameOpenStack: Ember.computed.alias("deploymentController.fullnameOpenStack"),
   isInvalidCfmeInstallLocation: Ember.computed.alias("cloudformsController.isInvalidCfmeInstallLocation"),
   isOpenShift: Ember.computed.alias("deploymentController.isOpenShift"),
 

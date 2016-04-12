@@ -34,7 +34,7 @@ export default Ember.Mixin.create({
 
   // names
   nameRHCI: Ember.computed('isUpstream', function() {
-    if (this.get('isUpstream')) { return "Fusor"; } else { return "RHCI"; }
+    if (this.get('isUpstream')) { return "Fusor"; } else { return "QCI"; }
   }),
 
   nameRedHat: Ember.computed('isUpstream', function() {
@@ -50,7 +50,7 @@ export default Ember.Mixin.create({
   }),
 
   nameOpenStack: Ember.computed('isUpstream', function() {
-    if (this.get('isUpstream')) { return "RDO"; } else { return "RHELOSP"; }
+    if (this.get('isUpstream')) { return "RDO"; } else { return "RHOSP"; }
   }),
 
   nameCloudForms: Ember.computed('isUpstream', function() {
@@ -64,7 +64,7 @@ export default Ember.Mixin.create({
   }),
 
   fullnameOpenStack: Ember.computed('isUpstream', function() {
-    if (this.get('isUpstream')) { return "RDO Project"; } else { return "Red Hat Enterprise Linux OpenStack Platform"; }
+    if (this.get('isUpstream')) { return "RDO Project"; } else { return "Red Hat OpenStack Platform"; }
   }),
 
   fullnameCloudForms: Ember.computed('isUpstream', function() {

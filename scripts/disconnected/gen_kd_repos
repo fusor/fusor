@@ -1,0 +1,120 @@
+#!/bin/python
+
+import json
+import os.path
+import shutil
+import sys
+import yaml
+from zipfile import ZipFile
+
+
+class Content(object):
+    """
+    Represents Content from fusor.yaml
+    """
+    def __init__(self, key, content):
+        self.key = key
+        self.product_name = content[':product_name']
+        self.product_id = content[':product_id']
+        self.repository_set_id = content[':repository_set_id']
+        self.repository_set_name = content[':repository_set_name']
+        self.basearch = None
+        if ':basearch' in content:
+            self.basearch = content[':basearch']
+        self.releasever = None
+        if ':releasever' in content:
+            self.releasever = content[':releasever']
+
+
+class GenerateKDRepos(object):
+    """
+    Main object that handles the parsing
+    """
+    def __init__(self):
+        self.doc = None
+        self.content_lists = []
+
+    def parse_product_json(self, product_path):
+        """
+        Reads the given product.json file.
+        """
+        with open(product_path) as product_file:
+            product_json = json.load(product_file)
+        return product_json
+
+    def parse_fusor_yaml(self, fusor_yaml_path):
+        """
+        Reads the fusor.yaml
+        """
+        if not os.path.exists(fusor_yaml_path):
+            print "\n%s is not a valid fusor.yaml." % fusor_yaml_path
+            sys.exit(1)
+
+        with open(fusor_yaml_path, 'r') as fusor_yaml:
+            self.doc = yaml.load(fusor_yaml)
+
+        for k, v in self.doc[':fusor'][':content'].iteritems():
+            if k == ":content_view":
+                continue
+            for item in v:
+                c = Content(k, item)
+                self.content_lists.append(c)
+
+    def format_repo_string(self, product_record, content_record):
+        """
+        Generates the formatted repo name used by katello-disconnected
+        """
+        releasever = ""
+        if content_record.releasever is not None:
+            releasever = content_record.releasever
+        repo_string = "%s-%s-%s" % (product_record['label'], releasever,
+                                    content_record.basearch)
+        return repo_string.replace('.', '_')
+
+    def main(self, argv):
+        """
+        Main method
+        """
+        if len(argv) < 2:
+            print "Usage: gen_kd_repos.py fusor.yaml manifest.zip"
+            sys.exit(1)
+
+        manifest_zip = argv[1]
+        if not os.path.exists(manifest_zip):
+            print "\nInvalid manifest zip file"
+            sys.exit(1)
+
+        dest = os.path.join("/tmp", os.path.splitext(manifest_zip)[0])
+
+        with ZipFile(manifest_zip, 'r') as manifest:
+            manifest.extract('consumer_export.zip', dest)
+
+        with ZipFile(os.path.join(dest, 'consumer_export.zip'), 'r') as export:
+            for productfile in export.namelist():
+                if productfile.endswith('.json') and 'products' in productfile:
+                    export.extract(productfile, dest)
+
+        products_dir = os.path.join(dest, 'export/products')
+
+        # argv[0] = path to fusor.yaml
+        self.parse_fusor_yaml(argv[0])
+
+        for c in self.content_lists:
+            product_path = os.path.join(products_dir, c.product_id + ".json")
+            if os.path.exists(product_path):
+                product_json = self.parse_product_json(product_path)
+                for p in product_json['productContent']:
+                    if c.repository_set_id == p['content']['id']:
+                        print self.format_repo_string(p['content'], c)
+
+        # cleanup
+        shutil.rmtree(dest)
+
+
+if __name__ == "__main__":
+    try:
+        GenerateKDRepos().main(sys.argv[1:])
+        # need to pass in fusor.yaml path
+        # need to pass in path to manifest directory
+    except KeyboardInterrupt:
+        pass

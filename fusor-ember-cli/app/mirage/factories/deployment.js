@@ -12,7 +12,7 @@ export default Mirage.Factory.extend({
   is_disconnected: false,
   rhev_is_self_hosted: false,
   rhev_engine_admin_password: '12345678',
-  rhev_database_name: 'Default',
+  rhev_data_center_name: 'Default',
   rhev_cluster_name: 'Default',
   rhev_storage_name: 'my_storage',
   rhev_storage_type: 'NFS',
@@ -80,10 +80,6 @@ export default Mirage.Factory.extend({
   // rhev_export_domain_path: DS.attr('string'),
 
   // rhev_local_storage_path: DS.attr('string'),
-  // rhev_gluster_node_name: DS.attr('string'),
-  // rhev_gluster_node_address: DS.attr('string'),
-  // rhev_gluster_ssh_port: DS.attr('string'),
-  // rhev_gluster_root_password: DS.attr('string'),
 
   // host_naming_scheme: DS.attr('string'),
   // custom_preprend_name: DS.attr('string'),

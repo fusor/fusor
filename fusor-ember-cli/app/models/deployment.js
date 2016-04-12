@@ -18,7 +18,7 @@ export default DS.Model.extend({
   rhev_is_self_hosted: DS.attr('boolean'),
 
   rhev_engine_admin_password: DS.attr('string'),
-  rhev_database_name: DS.attr('string'),
+  rhev_data_center_name: DS.attr('string'),
   rhev_cluster_name: DS.attr('string'),
   rhev_storage_name: DS.attr('string'),
   rhev_storage_type: DS.attr('string'),
@@ -41,10 +41,6 @@ export default DS.Model.extend({
   rhev_export_domain_path: DS.attr('string'),
 
   rhev_local_storage_path: DS.attr('string'),
-  rhev_gluster_node_name: DS.attr('string'),
-  rhev_gluster_node_address: DS.attr('string'),
-  rhev_gluster_ssh_port: DS.attr('string'),
-  rhev_gluster_root_password: DS.attr('string'),
 
   host_naming_scheme: DS.attr('string'),
   custom_preprend_name: DS.attr('string'),

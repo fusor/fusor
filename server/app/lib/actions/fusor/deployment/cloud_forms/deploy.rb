@@ -45,7 +45,7 @@ module Actions
               if deployment.cfme_install_loc == 'RHEV'
                 transfer_action = plan_action(::Actions::Fusor::Deployment::Rhev::TransferImage,
                                               deployment, file_repositories(repositories).first,
-                                              image_file_name(SETTINGS[:fusor][:content][:cloudforms]))
+                                              image_file_name(SETTINGS[:fusor][:content][:cloudforms], :rhev_image_file_name))
 
                 upload_action = plan_action(::Actions::Fusor::Deployment::Rhev::UploadImage,
                                             deployment, transfer_action.output[:image_file_name], "cfme")
@@ -57,7 +57,7 @@ module Actions
               elsif deployment.cfme_install_loc == 'OpenStack'
                 plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeUpload, deployment,
                             file_repositories(repositories).first,
-                            image_file_name(SETTINGS[:fusor][:content][:cloudforms]))
+                            image_file_name(SETTINGS[:fusor][:content][:cloudforms], :rhos_image_file_name))
                 plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeSecgroup, deployment)
                 plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeLaunch, deployment)
               end
@@ -93,9 +93,9 @@ module Actions
             repos
           end
 
-          def image_file_name(product_content)
-            product = product_content.find { |content| !content[:image_file_name].nil? }
-            product[:image_file_name] if product
+          def image_file_name(product_content, key_name)
+            product = product_content.find { |content| !content[key_name].nil? }
+            product[key_name] if product
           end
 
           def file_repositories(repositories)

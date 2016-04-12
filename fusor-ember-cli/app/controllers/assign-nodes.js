@@ -9,6 +9,7 @@ export default Ember.Controller.extend(
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
   openStack: Ember.computed.alias("deploymentController.openStack"),
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
+  showSpinner: Ember.computed.alias("deploymentController.isOspLoading"),
 
   images: Ember.computed('openStack.images.[]', function() {
     return this.get('openStack.images');
@@ -112,9 +113,6 @@ export default Ember.Controller.extend(
       return '';
     }
   }),
-
-  showLoadingSpinner: false,
-  loadingSpinnerText: "Loading...",
 
   doAssignRole(plan, role, profile) {
     var data;
@@ -382,8 +380,7 @@ export default Ember.Controller.extend(
       var computeRoleCount = this.get('openStack.plan.computeRoleCount');
       var controllerRoleCount = this.get('openStack.plan.controllerRoleCount');
 
-      let disableAssignNodesNext =
-        unassignedRoleTypes.contains('controller') ||
+      return unassignedRoleTypes.contains('controller') ||
         unassignedRoleTypes.contains('compute') ||
         !computeRoleCount || computeRoleCount === '0' ||
         !controllerRoleCount || controllerRoleCount === '0';

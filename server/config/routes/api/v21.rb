@@ -7,6 +7,7 @@ Fusor::Engine.routes.draw do
             put :deploy
             put :redeploy
             get :validate
+            get :validate_cdn
             get :log
           end
         end
