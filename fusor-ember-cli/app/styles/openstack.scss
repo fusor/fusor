@@ -65,7 +65,7 @@
   float: left;
 }
 .deploy-undercloud-param-input {
-  width: 100px;
+  width: 110px;
   float: left;
   margin-left: 20px;
 }
@@ -495,10 +495,6 @@
 .register-nodes-errors {
   .foreman-task-error-link {
     color: #333;
-  }
-
-  .rhci-alert {
-    min-height: 48px;
   }
 
   .validation-alert-icon {

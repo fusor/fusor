@@ -55,3 +55,34 @@ rhev_and_cfme:
   lifecycle_environment: library
   upstream_consumer_uuid: 1
   organization_id: 1
+
+osp:
+  name: osp
+  label: osp
+  organization: empty_organization
+  lifecycle_environment: library
+  upstream_consumer_uuid: 1
+  organization_id: 1
+  deploy_openstack: true
+  deploy_cfme: false
+  deploy_rhev: false
+  openstack_undercloud_password: undercloudAdminPassword
+  openstack_undercloud_ip_addr: 192.168.150.254
+  openstack_undercloud_user: undercloudSshUser
+  openstack_undercloud_user_password: undercloudSshPassword1234
+  openstack_overcloud_password: overcloudAdminPassword
+  openstack_overcloud_ext_net_interface: eth0
+  openstack_overcloud_private_net: 192.168.254.0/24
+  openstack_overcloud_float_net: 192.168.153.0/24
+  openstack_overcloud_float_gateway: 192.168.153.1
+  openstack_overcloud_node_count: 2
+  openstack_overcloud_compute_flavor: Flavor-1
+  openstack_overcloud_compute_count: 1
+  openstack_overcloud_controller_flavor: Flavor-2
+  openstack_overcloud_controller_count: 1
+  openstack_overcloud_ceph_storage_flavor: baremetal
+  openstack_overcloud_ceph_storage_count: 0
+  openstack_overcloud_cinder_storage_flavor: baremetal
+  openstack_overcloud_cinder_storage_count: 0
+  openstack_overcloud_swift_storage_flavor: baremetal
+  openstack_overcloud_swift_storage_count: 0

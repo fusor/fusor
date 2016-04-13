@@ -4,7 +4,7 @@
         {{#em-modal-toggler class="close"}}
             <span aria-hidden="true" {{action "cancelEditRole"}}>×</span><span class="sr-only">Close</span>
         {{/em-modal-toggler}}
-        <h4 class="modal-title">Edit Deployment Role - {{edittedRole.name}}</h4>
+        <h4 class="modal-title">Edit Deployment Role - {{editedRole.name}}</h4>
     {{/em-modal-title}}
 
     {{#em-modal-body}}
@@ -26,18 +26,18 @@
                             <div class="form-group">
                                 <label class="control-label col-sm-4 ">Name</label>
                                 <div class="col-sm-8">
-                                    <input class="form-control" type="text" value={{edittedRole.name}} readOnly="true">
+                                    <input class="form-control" type="text" value={{editedRole.name}} readOnly="true">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-sm-4 ">Description</label>
                                 <div class="col-sm-8">
-                                    <textarea class="form-control" type="text" value={{edittedRole.description}} readOnly="true"></textarea>
+                                    <textarea class="form-control" type="text" value={{editedRole.description}} readOnly="true"></textarea>
                                 </div>
                             </div>
-                            {{select-f label="Provisioning Image" labelSize='col-sm-4' inputSize='col-sm-8' content=images value=edittedRoleImage isRequired=false optionLabelPath="content.name" optionValuePath="content.name"}}
-                            {{select-f label="Flavor" labelSize='col-sm-4' inputSize='col-sm-8' content=profiles value=edittedRoleProfile  isRequired=false optionLabelPath="content.name" optionValuePath="content.name"}}
-                            {{text-f label="Number of Nodes" type='number' labelSize='col-sm-4' inputSize='col-sm-8' value=edittedRoleNodeCount isRequired=false}}
+                            {{select-f label="Provisioning Image" labelSize='col-sm-4' inputSize='col-sm-8' content=images value=editedRoleImage isRequired=false optionLabelPath="content.name" optionValuePath="content.name"}}
+                            {{select-f label="Flavor" labelSize='col-sm-4' inputSize='col-sm-8' content=profiles value=editedRoleProfile  isRequired=false optionLabelPath="content.name" optionValuePath="content.name"}}
+                            {{text-f label="Number of Nodes" type='number' labelSize='col-sm-4' inputSize='col-sm-8' value=editedRoleNodeCount isRequired=false}}
                         </fieldset>
                     </div>
                 </div>
@@ -47,7 +47,7 @@
                             <div class="form-horizontal">
                                 <fieldset>
                                     <div class="required">
-                                        {{#each edittedRoleParameters as |roleParameter|}}
+                                        {{#each editedRoleParameters as |roleParameter|}}
                                             {{#if roleParameter.isBoolean}}
                                               {{check-f label=roleParameter.displayId checked=roleParameter.value labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
                                             {{else}}

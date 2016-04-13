@@ -143,7 +143,7 @@ p.error.errorForValidation {
 
 .validation-alert-icon {
   float: left;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 p.validation-alert-message {
@@ -156,6 +156,10 @@ ul.validation-alert-message {
 
 .warningForValidation, .warningForValidation a {
   color: $warning-color;
+}
+
+.node-count-review-link {
+  padding-left: 15px;
 }
 
 .defaultValue {
@@ -450,6 +454,7 @@ table.fusor-table {
 /* override alert padding in Sat6 that is 34px */
 .rhci-alert {
   padding-left: 15px !important;
+  min-height: 48px;
 }
 
 .rhci-review-product-name {

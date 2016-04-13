@@ -25,7 +25,7 @@ export default Ember.Route.extend({
 
   deactivate() {
     this.get('controller').stopPolling();
-    this.send('refreshOpenStack');
+    this.send('saveDeployment', null);
   },
 
   actions: {
@@ -92,7 +92,7 @@ export default Ember.Route.extend({
   loadIntrospectionTasks() {
     let controller = this.get('controller');
     let deploymentId = this.get('controller.deploymentId');
-    this.store.findRecord('deployment', deploymentId, {reload: true}).then(
+    return this.store.findRecord('deployment', deploymentId, {reload: true}).then(
       (deployment) => {
         controller.set('introspectionTasks', deployment.get('introspection_tasks'));
       },
@@ -105,6 +105,7 @@ export default Ember.Route.extend({
     let nodes = this.get('controller.nodes');
     let nodeManagers = this.get('controller.nodeManagers');
     let processedNodeIds = {};
+    let nodeCount = 0;
 
     if (!nodes) {
       return;
@@ -112,6 +113,10 @@ export default Ember.Route.extend({
 
     nodes.forEach((node) => {
       processedNodeIds[node.get('id')] = true;
+
+      if (node.get('ready')) {
+        nodeCount++;
+      }
 
       let manager = nodeManagers.find(mgr => mgr.driverMatchesNode(node));
 
@@ -128,6 +133,8 @@ export default Ember.Route.extend({
       let notDeleted = manager.get('nodes').filter(node => processedNodeIds[node.get('id')]);
       manager.set('nodes', notDeleted);
     });
+
+    this.set('controller.nodeCount', nodeCount);
   },
 
   loadForemanTasks() {

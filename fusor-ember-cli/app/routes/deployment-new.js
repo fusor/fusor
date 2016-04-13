@@ -4,7 +4,16 @@ import DeploymentRouteMixin from "../mixins/deployment-route-mixin";
 export default Ember.Route.extend(DeploymentRouteMixin, {
 
   model() {
-    return this.store.createRecord('deployment');
+    return this.store.createRecord('deployment', {
+      enable_access_insights: false,
+      rhev_cluster_name: 'Default',
+      rhev_storage_name: 'my_storage',
+      rhev_export_domain_name: 'my_export',
+      rhev_data_center_name: 'Default',
+      rhev_storage_type: 'NFS',
+      openstack_overcloud_ext_net_interface: 'nic2',
+      openstack_overcloud_libvirt_type: 'kvm'
+    });
   },
 
   setupController(controller, model) {
@@ -12,12 +21,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     controller.set('satelliteTabRouteName', 'deployment-new.satellite.index');
     controller.set('organizationTabRouteName', 'deployment-new.satellite.configure-organization');
     controller.set('lifecycleEnvironmentTabRouteName', 'deployment-new.satellite.configure-environment');
-    controller.set('model.enable_access_insights', false);
-    controller.set('model.rhev_cluster_name', 'Default');
-    controller.set('model.rhev_storage_name', 'my_storage');
-    controller.set('model.rhev_export_domain_name', 'my_export');
-    controller.set('model.rhev_data_center_name', 'Default');
-    controller.set('model.rhev_storage_type', 'NFS');
     this.controllerFor('application').set('isNewDeployment', true);
   },
 

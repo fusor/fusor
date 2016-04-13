@@ -1,4 +1,14 @@
-{{#if showSpinner}}
+{{#if errorMsg}}
+  <div class="row">
+    <div class='col-md-9'>
+      <div class='alert alert-danger rhci-alert'>
+        <i class="fa fa-2x fa-exclamation-triangle errorForValidation"></i>
+        &nbsp;
+        {{errorMsg}}
+      </div>
+    </div>
+  </div>
+{{else if showSpinner}}
   <div class="spinner spinner-md spinner-inline"></div>
   <span class='spinner-text'>
     Loading...
@@ -31,7 +41,7 @@
                     {{#if nodes}}
                       {{node-profile profile=profile
                                      nodes=nodes
-                                     plan=openStack.plan
+                                     plan=plan
                                      doAssign=true
                                      assignRole="assignRole"
                                      unassignRole="unassignRole"
@@ -40,7 +50,7 @@
                                      removeRole="removeRole"}}
                    {{else}}
                       {{node-profile profile=profile
-                                     plan=openStack.plan
+                                     plan=plan
                                      doAssign=true
                                      assignRole="assignRole"
                                      unassignRole="unassignRole"
@@ -57,7 +67,6 @@
       </div>
   </div>
 
-  <br />
   {{cancel-back-next backRouteName='register-nodes'
                      disableBack=false
                      nextRouteName='openstack.overcloud'

@@ -7,15 +7,14 @@ import {
   AllValidator,
   MacAddressValidator,
   HostAddressValidator,
-  PresenceValidator,
-  validateZipper
+  PresenceValidator
 } from  "../utils/validators";
 
 export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
-  openStack: Ember.computed.alias("deploymentController.openStack"),
   deployment: Ember.computed.alias("deploymentController.model"),
   intervalPolling: 10000,
+  nodeCount: Ember.computed.alias("deployment.openstack_overcloud_node_count"),
 
   presenceValidator: PresenceValidator.create({}),
   macAddressValidator: MacAddressValidator.create({}),
@@ -132,11 +131,6 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
       default:
         return 'Password';
     }
-  }),
-
-  nodeCount: Ember.computed('nodes.@each', 'openStack.nodes.@each', function() {
-    let nodes = this.get('nodes') || this.get('openStack.nodes'); //checking openStack.nodes for tabs/validation
-    return nodes ? nodes.reduce((prev, node) => prev + (node.get('ready') ? 1 : 0), 0) : 0;
   }),
 
   hasNodes: Ember.computed('nodeCount', function() {
