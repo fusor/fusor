@@ -27,10 +27,11 @@ module Actions
           end
 
           def run
+            ::Fusor.log.info "================ OpenShift InstallOSE run method ===================="
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             opts = parse_deployment(deployment)
-            launcher = ::Fusor::OSEInstaller::Launch.new
-            inventory = launcher.prepare(opts, "#{Rails.root}/tmp")
+            launcher = ::Fusor::OSEInstaller::Launch.new("#{Rails.root}/tmp/#{deployment.name}", ::Fusor.log)
+            inventory = launcher.prepare(opts)
 
             # Workaround for https://trello.com/c/4T7e9IFr
             success = false
@@ -50,6 +51,8 @@ module Actions
               fail _("ansible-playbook returned a non-zero exit code during installation. Please refer to the log"\
                  " for more information regarding the failure.")
             end
+
+            ::Fusor.log.info "================ Leaving OpenShift InstallOSE run method ===================="
           end
 
           def parse_deployment(deployment)

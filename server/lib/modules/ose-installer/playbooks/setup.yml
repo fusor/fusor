@@ -28,6 +28,8 @@
 
     - name: Start docker services
       shell: systemctl restart docker.service
+      retries: 2
+      delay: 10
 
     - name: Install docker containers
       action: shell docker pull {{item}}
@@ -61,7 +63,6 @@
         - httpd-tools
         - gcc
         - python-virtualenv
-        - docker
 
     - name: install atomic-openshift-utils
       shell: sudo yum install -y atomic-openshift-utils

@@ -18,7 +18,7 @@ module Actions
       module OpenShift
         class PostInstallOSE < Actions::Fusor::FusorBaseAction
           def humanized_name
-            _("Install Openshift Enterprise onto deployed VMs")
+            _("Post installation of Openshift Enterprise in deployed VMs")
           end
 
           def plan(deployment)
@@ -27,16 +27,20 @@ module Actions
           end
 
           def run
+            ::Fusor.log.info "================ OpenShift PostInstallOSE run method ===================="
+
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             opts = parse_deployment(deployment)
-            launcher = ::Fusor::OSEInstaller::Launch.new
-            inventory = launcher.prepare(opts, "#{Rails.root}/tmp")
+            launcher = ::Fusor::OSEInstaller::Launch.new("#{Rails.root}/tmp/#{deployment.name}", ::Fusor.log)
+            inventory = launcher.prepare(opts)
             exit_code = launcher.post_install(inventory, true)
             if exit_code > 0
               # Something went wrong w/ the post-installation
               fail _("ansible-playbook returned a non-zero exit code during post-installation. Please refer to the log"\
                  " for more information regarding the failure.")
             end
+
+            ::Fusor.log.info "================ Leaving OpenShift PostInstallOSE run method ===================="
           end
 
           def parse_deployment(deployment)

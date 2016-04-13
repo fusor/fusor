@@ -19,10 +19,14 @@ require 'ostruct'
 module Fusor
   module OSEInstaller
     class Launch
-      attr_accessor :output_dir
+      attr_accessor :output_dir, :logger
 
-      def initialize
-        @output_dir = "./tmp"
+      def initialize(output_dir = nil, logger = nil)
+        @output_dir = output_dir
+        @output_dir ||= "./tmp"
+
+        @logger = logger
+        @logger ||= Logger.new("#{@output_dir}/ose_installer.log", File::WRONLY | File::APPEND)
       end
 
       # rubocop:disable Style/MethodCalledOnDoEndBlock
@@ -59,6 +63,9 @@ module Fusor
       end
 
       def write_inventory(opts, inventory_file_name = "#{@output_dir}/ansible.hosts", template_file_name = "templates/ansible.hosts.template")
+        @logger.info "Parsing options to create inventory file."
+        @logger.debug opts
+
         template = File.read("#{File.dirname(__FILE__)}/#{template_file_name}")
 
         template = template.gsub(/<ssh_user>/, opts[:username])
@@ -96,18 +103,24 @@ module Fusor
 
         File.open(inventory_file_name, 'w') { |file| file.puts template }
 
+        @logger.info "Inventory file saved at: #{inventory_file_name}"
+
         inventory_file_name
       end
 
       def write_atomic_installer_answer_file(opts, answer_file_name = "#{@output_dir}/atomic-openshift-installer.answers.cfg.yml",
                                              template_file_name = "templates/atomic-openshift-installer.answers.cfg.yml.template")
+
+        @logger.info "Parsing options to create answers file."
+        @logger.debug opts
+
         template = File.read("#{File.dirname(__FILE__)}/#{template_file_name}")
 
         node_entries = nil
         opts[:nodes].each do |n|
           stdout = `getent hosts #{n}`
           if stdout.empty?
-            p "Cannot resolve ip for #{n}, skipping"
+            @logger.info "Cannot resolve ip for #{n}, skipping"
             next
           else
             ip = stdout.split("\n").first.split("  ").first
@@ -127,7 +140,7 @@ module Fusor
         opts[:masters].each do |m|
           stdout = `getent hosts #{m}`
           if stdout.empty?
-            p "Cannot resolve ip for #{m}, skipping"
+            @logger.info "Cannot resolve ip for #{m}, skipping"
             next
           else
             ip = stdout.split("\n").first.split("  ").first
@@ -148,6 +161,8 @@ module Fusor
         end
 
         File.open(answer_file_name, 'w') { |file| file.puts template }
+
+        @logger.info "Answers file saved at: #{answer_file_name}"
       end
 
       def spawn_process(cmd)
@@ -157,12 +172,15 @@ module Fusor
       end
 
       def create_ansible_config
+        @logger.info "Creating ansible configuration."
         # Create logging entry in ansible.cfg
         ansible_config_file = "ansible.cfg"
         File.open("#{@output_dir}/#{ansible_config_file}", 'w') { |file| file.puts "[default]\nhost_key_checking = False\nlog_path = #{@output_dir}/ansible.log" }
+        @logger.info "Ansible configuration saved at: #{ansible_config_file}"
       end
 
       def update_docker_storage_setup(opts)
+        @logger.info "Updating docker storage setup file."
         docker_storage_setup_file = "files/docker-storage-setup"
         template = File.read("#{File.dirname(__FILE__)}/templates/docker-storage-setup.template")
         if !opts[:docker_storage].nil? and !opts[:docker_volume].nil?
@@ -170,10 +188,7 @@ module Fusor
           template = template.gsub(/<docker_volume>/, opts[:docker_volume])
         end
         File.open("#{File.dirname(__FILE__)}/#{docker_storage_setup_file}", 'w') { |file| file.puts template }
-      end
-
-      def set_output_dir(output_dir)
-        @output_dir = output_dir
+        @logger.info "Docker storage setup file saved at: #{docker_storage_setup_file}"
       end
 
       def prep_run_environment
@@ -189,7 +204,7 @@ module Fusor
         end
 
         prep_run_environment
-        puts "ansible: executing #{playbook} with #{inventory}"
+        @logger.info "ansible: executing #{playbook} with #{inventory}"
         spawn_process("ansible-playbook #{flags} #{playbook} -i #{inventory}")
       end
 
@@ -200,7 +215,7 @@ module Fusor
         end
 
         prep_run_environment
-        puts "ansible: executing #{playbook} with #{inventory}"
+        @logger.info "ansible: executing #{playbook} with #{inventory}"
         spawn_process("ansible-playbook #{flags} #{playbook} -i #{inventory}")
       end
 
@@ -211,12 +226,11 @@ module Fusor
         end
 
         prep_run_environment
-        puts "ansible: executing #{playbook} with #{inventory}"
+        @logger.info "ansible: executing #{playbook} with #{inventory}"
         spawn_process("ansible-playbook #{flags} #{playbook} -i #{inventory}")
       end
 
-      def prepare(opts, output_dir)
-        set_output_dir(output_dir)
+      def prepare(opts)
         inventory = write_inventory(opts)
         write_atomic_installer_answer_file(opts)
         create_ansible_config
