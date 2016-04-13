@@ -189,8 +189,6 @@ module Fusor
         end
 
         prep_run_environment
-        p "DGAO"
-        p File.read(ENV['ANSIBLE_CONFIG'])
         puts "ansible: executing #{playbook} with #{inventory}"
         spawn_process("ansible-playbook #{flags} #{playbook} -i #{inventory}")
       end
