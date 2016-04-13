@@ -1,0 +1,15 @@
+{{#pf-modal-base idModal='registerNewSatellite'
+                 openModal=openModal
+                 title="New Subscription Management Application"}}
+
+      {{#pf-modal-body}}
+            {{text-f label="Name" value=newSatelliteName labelSize='col-md-4' inputSize='col-md-8'}}
+      {{/pf-modal-body}}
+
+      {{#pf-modal-footer}}
+          <button {{action 'createSatellite'}} class="btn btn-primary">
+              Submit
+          </button>
+      {{/pf-modal-footer}}
+
+{{/pf-modal-base}}
