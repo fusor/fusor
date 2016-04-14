@@ -17,7 +17,7 @@ Red Hat Enterprise Virtualization
 - NFS share. For both data domain and export domain: IP address and shared path
 
 Red Hat OpenStack Platform
-- IP address to the undercloud that was set up according to the instructions found in Installing Red Hat Cloud Infrastructure
+- IP address to the undercloud that was set up according to the instructions found in QuickStart Cloud Installer Installation Guide
 - 2 nodes (1 controller, 1 compute). Each node requires 100GB disk space, 16GB RAM, and 4 CPUs
 - All node hardware clocks are synchronized with the hardware clock on the Satellite system
 
