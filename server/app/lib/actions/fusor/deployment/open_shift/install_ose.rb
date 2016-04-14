@@ -28,7 +28,7 @@ module Actions
             ::Fusor.log.info "================ OpenShift InstallOSE run method ===================="
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             opts = parse_deployment(deployment)
-            launcher = ::Fusor::OSEInstaller::Launch.new("#{Rails.root}/tmp/#{deployment.name}", ::Fusor.log)
+            launcher = OSEInstaller::Launch.new("#{Rails.root}/tmp/#{deployment.name}", ::Fusor.log)
             inventory = launcher.prepare(opts)
 
             # Workaround for https://trello.com/c/4T7e9IFr

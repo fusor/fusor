@@ -15,14 +15,15 @@
 require 'fileutils'
 require 'optparse'
 require 'ostruct'
+require 'logger'
 
-module Fusor
-  class OSEInstaller::Launch
+module OSEInstaller
+  class Launch
     attr_accessor :output_dir, :logger
 
     def initialize(output_dir = nil, logger = nil)
       @output_dir = output_dir
-      @output_dir ||= "./tmp"
+      @output_dir ||= "/tmp/"
 
       @logger = logger
       @logger ||= Logger.new("#{@output_dir}/ose_installer.log", File::WRONLY | File::APPEND)

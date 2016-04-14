@@ -29,7 +29,7 @@ module Actions
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             opts = parse_deployment(deployment)
-            launcher = ::Fusor::OSEInstaller::Launch.new("#{Rails.root}/tmp/#{deployment.name}", ::Fusor.log)
+            launcher = OSEInstaller::Launch.new("#{Rails.root}/tmp/#{deployment.name}", ::Fusor.log)
             inventory = launcher.prepare(opts)
             exit_code = launcher.post_install(inventory, true)
             if exit_code > 0
