@@ -8,8 +8,8 @@
       with_items:
         - docker
 
-    - name: temporarily downgrade docker
-      shell: sudo yum downgrade -y docker
+    #- name: temporarily downgrade docker
+    #  shell: sudo yum downgrade -y docker
 
     #- name: scp docker storage configuration
     #  action: copy src="../files/docker-storage-setup" dest="/etc/sysconfig/docker-storage-setup" owner=root mode=0775
@@ -22,14 +22,12 @@
     #  command: docker-storage-setup
     #  when: p.stat.isdir is not defined
 
-    - name: Add external route temporarily for docker registry
-      shell: route add default gw 192.168.52.1
-      ignore_errors: yes
+    #- name: Add external route temporarily for docker registry
+    #  shell: route add default gw 192.168.52.1
+    #  ignore_errors: yes
 
     - name: Start docker services
-      shell: systemctl restart docker.service
-      retries: 2
-      delay: 10
+      service: name=docker state=started
 
     - name: Install docker containers
       action: shell docker pull {{item}}

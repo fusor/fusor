@@ -57,13 +57,13 @@ module Actions
             opts = Hash.new
 
             masters = Array.new
-            deployment.ose_deployment_master_hosts.each do |m|
-              masters << m.discovered_host_name
+            deployment.ose_master_hosts.each do |m|
+              masters << m.name
             end
 
             workers = Array.new
-            deployment.ose_deployment_worker_hosts.each do |w|
-              workers << w.discovered_host_name
+            deployment.ose_worker_hosts.each do |w|
+              workers << w.name
             end
 
             opts[:masters] = masters
