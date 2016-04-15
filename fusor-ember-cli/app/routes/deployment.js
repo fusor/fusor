@@ -23,6 +23,8 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     this.loadOpenStack(controller, model);
     this.loadOpenshiftDefaults(controller, model);
     this.loadCloudFormsDefaults(controller, model);
+    this.loadDefaultDomainName(controller);
+
     // copied from setupController in app/routes/subscriptions/credentials.js
     // to fix bug of Review Tab being disabled on refresh and needing to click
     // on subscriptions to enable it
@@ -44,6 +46,13 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       }
     });
 
+  },
+
+  loadDefaultDomainName(controller) {
+    this.store.findAll('hostgroup').then(function(hostgroups) {
+      return hostgroups.filterBy('name', 'Fusor Base').get('firstObject')
+      .get('domain.name');
+    }).then(domainName => controller.set('defaultDomainName', domainName));
   },
 
   loadCloudFormsDefaults(controller, model) {

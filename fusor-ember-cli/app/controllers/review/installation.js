@@ -115,6 +115,16 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     }
   ),
 
+  fullOpenshiftSubdomain: Ember.computed(
+    'model.openshift_subdomain_name',
+    'deploymentController.defaultDomainName',
+    function() {
+      const subdomainName = this.get('model.openshift_subdomain_name');
+      const defaultDomainName = this.get('deploymentController.defaultDomainName');
+      return `${subdomainName}.${defaultDomainName}`;
+    }
+  ),
+
   nameRHCI: Ember.computed.alias("deploymentController.nameRHCI"),
   nameRhev: Ember.computed.alias("deploymentController.nameRhev"),
   nameOpenStack: Ember.computed.alias("deploymentController.nameOpenStack"),

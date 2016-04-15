@@ -41,7 +41,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return `https://${masterHost.get('name')}:8443`;
   }),
 
-  oseMasterIpUrl: Ember.computed('deploymentLabel', 'fusorDomainName', function() {
+  oseMasterIpUrl: Ember.computed('deploymentLabel', function() {
     let masterHost = this.get('oseMasterHost');
     return `https://${masterHost.get('ip')}:8443`;
   }),
