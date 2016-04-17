@@ -7,6 +7,7 @@ module Fusor
     config.autoload_paths += Dir["#{config.root}/app/models/concerns"]
     config.autoload_paths += Dir["#{config.root}/app/overrides"]
     config.autoload_paths += Dir["#{config.root}/app/serializers"]
+    config.autoload_paths += Dir["#{config.root}/lib/modules"]
 
     initializer 'fusor.silenced_logger', :after => :build_middleware_stack do |app|
       # Add additional paths below if you want logging silenced

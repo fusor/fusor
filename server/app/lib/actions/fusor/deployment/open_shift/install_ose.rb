@@ -10,8 +10,6 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
-require "#{Fusor::Engine.root}/lib/modules/ose-installer/launch.rb"
-
 module Actions
   module Fusor
     module Deployment
@@ -27,10 +25,11 @@ module Actions
           end
 
           def run
+            ::Fusor.log.info "================ OpenShift InstallOSE run method ===================="
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             opts = parse_deployment(deployment)
-            launcher = ::Fusor::OSEInstaller::Launch.new
-            inventory = launcher.prepare(opts, "#{Rails.root}/tmp")
+            launcher = OSEInstaller::Launch.new("#{Rails.root}/tmp/#{deployment.name}", ::Fusor.log)
+            inventory = launcher.prepare(opts)
 
             # Workaround for https://trello.com/c/4T7e9IFr
             success = false
@@ -50,19 +49,21 @@ module Actions
               fail _("ansible-playbook returned a non-zero exit code during installation. Please refer to the log"\
                  " for more information regarding the failure.")
             end
+
+            ::Fusor.log.info "================ Leaving OpenShift InstallOSE run method ===================="
           end
 
           def parse_deployment(deployment)
             opts = Hash.new
 
             masters = Array.new
-            deployment.ose_deployment_master_hosts.each do |m|
-              masters << m.discovered_host_name
+            deployment.ose_master_hosts.each do |m|
+              masters << m.name
             end
 
             workers = Array.new
-            deployment.ose_deployment_worker_hosts.each do |w|
-              workers << w.discovered_host_name
+            deployment.ose_worker_hosts.each do |w|
+              workers << w.name
             end
 
             opts[:masters] = masters
