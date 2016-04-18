@@ -37,6 +37,14 @@
       </p>
       {{text-f label="Username" value=model.openshift_username isRequired=true cssId='openshift_username' disabled=isStarted validator=openshiftUsernameValidator}}
 
+      {{text-f label="Password" type="password" value=userpassword cssId="openshift_password"
+      isRequired=true validator=passwordValidator
+      placeholder="Must be 8 or more characters"}}
+
+      {{text-f label="Confirm Password" type="password" value=confirmUserpassword cssId="confirm_openshift_password"
+      isRequired=true validator=confirmUserpasswordValidator
+      placeholder="Must match user password"}}
+
   {{else if isGluster}}
 
   {{else if isDoNotUse}}

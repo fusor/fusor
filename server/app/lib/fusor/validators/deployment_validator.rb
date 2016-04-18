@@ -145,6 +145,10 @@ module Fusor
           deployment.errors[:openshift_username] << _("OpenShift deployments must specify an OSE user to be created")
         end
 
+        if deployment.openshift_user_password.empty?
+          deployment.errors[:openshift_user_password] << _("OpenShift deployments must specify a password for the OpenShift user")
+        end
+
         if deployment.openshift_subdomain_name.empty?
           deployment.errors[:openshift_subdomain_name] << _("Openshift deployments must specify a wildcard subdomain region")
         else

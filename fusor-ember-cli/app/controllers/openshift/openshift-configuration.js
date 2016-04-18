@@ -1,6 +1,13 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
-import { AllValidator, PresenceValidator, AlphaNumericDashUnderscoreValidator, HostnameValidator } from '../../utils/validators';
+import {
+  AllValidator,
+  PresenceValidator,
+  AlphaNumericDashUnderscoreValidator,
+  HostnameValidator,
+  PasswordValidator,
+  EqualityValidator
+} from '../../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
@@ -26,6 +33,14 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   openshiftUsernameValidator: Ember.computed.alias("openshiftController.openshiftUsernameValidator"),
   isValidOpenshiftConfiguration: Ember.computed.alias("openshiftController.isValidOpenshiftConfiguration"),
   isInvalidOpenshiftConfiguration: Ember.computed.alias("openshiftController.isInvalidOpenshiftConfiguration"),
+
+  userpassword: Ember.computed.alias('model.openshift_user_password'),
+
+  passwordValidator: PasswordValidator.create({}),
+
+  confirmUserpasswordValidator: Ember.computed('userpassword', function() {
+    return EqualityValidator.create({equals: this.get('userpassword')});
+  }),
 
   hasEndingSlashInExportPath: Ember.computed('model.openshift_export_path', function() {
     if (Ember.isPresent(this.get('model.openshift_export_path'))) {

@@ -25,6 +25,7 @@ module Fusor
     validates :rhev_root_password, :allow_blank => true, :length => {:minimum => 8, :message => _('should be 8 characters or more')}
     validates :cfme_root_password, :allow_blank => true, :length => {:minimum => 8, :message => _('should be 8 characters or more')}
     validates :cfme_admin_password, :allow_blank => true, :length => {:minimum => 8, :message => _('should be 8 characters or more')}
+    validates :openshift_user_password, :allow_blank => true, :length => {:minimum => 8, :message => _('should be 8 characters or more')}
 
     belongs_to :rhev_engine_host, :class_name => "::Host::Base", :foreign_key => :rhev_engine_host_id
     # if we want to envorce discovered host uniqueness uncomment this line
