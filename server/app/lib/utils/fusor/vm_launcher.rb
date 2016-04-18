@@ -1,26 +1,33 @@
 require 'fog'
 
-# rubocop:disable ClassLength
 module Utils
   module Fusor
     class VMLauncher
-      def initialize(deployment, application, provider, os = 'RedHat 7.1', arch = 'x86_64')
-        @deployment = deployment
-        @profile_name = "#{deployment.label}-#{application}"
+      def initialize(params)
+        @deployment      = params[:deployment]
+        @application     = params[:application]
+        @provider        = params[:provider]
+        @hostgroup       = params[:hostgroup]
+        @operatingsystem = params[:os] ||= 'RedHat 7.1'
+        @architecture    = params[:arch] ||= 'x86_64'
+        @ptable_name     = params[:ptable_name] ||= 'Kickstart default'
+        @profile_name = "#{@deployment.label}-#{@application}"
         @host_name = "changeme" # FQDN
-        @architecture = arch
-        @operatingsystem = os
         @vol_attr_id = 0
         @storage_id = 0
         @cp = create_compute_profile(@profile_name)
-        @cr = get_compute_resource("#{deployment.label}-#{provider}")
+        @cr = get_compute_resource("#{@deployment.label}-#{@provider}")
       end
 
       def set_hostname(hname)
         @host_name = hname
       end
 
-      def launch_rhev_vm(cpu = 4, ram = 6, disk_size_gb = 40)
+      def launch_rhev_vm(params)
+        cpu = params[:cpu] ||= 4
+        ram = params[:ram] ||= 6
+        disk_size_gb = params[:disk_size_gb] ||= 40
+
         set_rhev_attrs(cpu, ram, disk_size_gb)
 
         compute_attrs = create_compute_attribute(@rhev_attrs)
@@ -28,7 +35,12 @@ module Utils
         launch_vm
       end
 
-      def launch_openshift_vm(cpu = 2, ram = 2, disk_size_gb = 10, *disks)
+      def launch_openshift_vm(params)
+        cpu = params[:cpu] ||= 2
+        ram = params[:ram] ||= 2
+        disk_size_gb = params[:vda_size] ||= 10
+        disks = params[:other_disks] ||= nil
+
         set_openshift_attrs(cpu, ram, disk_size_gb)
 
         if !disks.nil?
@@ -39,9 +51,7 @@ module Utils
         set_rhev_host_attrs(compute_attrs.vm_attrs)
 
         # update host attributes
-        hostgroup = find_hostgroup(@deployment, "OpenShift")
         @host_attrs["build"] = "1"
-        @host_attrs["hostgroup_id"] = hostgroup.id
 
         launch_vm
       end
@@ -205,10 +215,9 @@ module Utils
 
       def set_rhev_host_attrs(attrs)
         set_common_host_attrs
-        hg_id = Hostgroup.where(name: @deployment.label).first.id
-        @host_attrs["ptable_id"] = Ptable.find { |p| p["name"] == "Kickstart default" }.id
+        @host_attrs["ptable_id"] = Ptable.find { |p| p["name"] == @ptable_name }.id
         @host_attrs["build"] = "0"
-        @host_attrs["hostgroup_id"] = hg_id
+        @host_attrs["hostgroup_id"] = @hostgroup.id
         @host_attrs["compute_attributes"] = {"start" => "1"}.with_indifferent_access.merge(attrs)
       end
 
@@ -244,34 +253,6 @@ module Utils
           ::Fusor.log.error "VMLauncher: Launch VM for '#{@host_name}' FAILED "
           return nil
         end
-      end
-
-      def find_hostgroup(deployment, name)
-        # locate the top-level hostgroup for the deployment...
-        # currently, we'll create a hostgroup with the same name as the
-        # deployment...
-        # Note: you need to scope the query to organization
-        parent = ::Hostgroup.where(:name => deployment.label).
-            joins(:organizations).
-            where("taxonomies.id in (?)", [deployment.organization.id]).first
-
-        # generate the ancestry, so that we can locate the hostgroups
-        # based on the hostgroup hierarchy, which assumes:
-        #  "Fusor Base"/"My Deployment"
-        # Note: there may be a better way in foreman to locate the hostgroup
-        if parent
-          if parent.ancestry
-            ancestry = [parent.ancestry, parent.id.to_s].join('/')
-          else
-            ancestry = parent.id.to_s
-          end
-        end
-
-        # locate the engine hostgroup...
-        ::Hostgroup.where(:name => name).
-            where(:ancestry => ancestry).
-            joins(:organizations).
-            where("taxonomies.id in (?)", [deployment.organization.id]).first
       end
     end
   end
