@@ -27,9 +27,9 @@ module Actions::Fusor::Deployment::OpenStack
 
       deployment = ::Fusor::Deployment.find(input[:deployment_id])
 
-      ssh_host = deployment.openstack_undercloud_ip_addr
-      ssh_username = deployment.openstack_undercloud_user
-      ssh_password = deployment.openstack_undercloud_user_password
+      ssh_host = deployment.openstack_deployment.undercloud_ip_address
+      ssh_username = deployment.openstack_deployment.undercloud_ssh_username
+      ssh_password = deployment.openstack_deployment.undercloud_ssh_password
 
       client = Utils::Fusor::SSHConnection.new(ssh_host, ssh_username, ssh_password)
       client.on_complete(lambda { ssh_command_completed })

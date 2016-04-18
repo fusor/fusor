@@ -38,9 +38,9 @@ module Actions
             repository = ::Katello::Repository.find(input[:repository_id])
             image_full_path, _image_file_name = Utils::CloudForms::ImageLookup.find_image_details(repository, input[:image_file_name], 'cfme-rhos')
 
-            overcloud = { :openstack_auth_url  => "http://#{deployment.openstack_overcloud_address}:5000/v2.0/tokens",
+            overcloud = { :openstack_auth_url  => "http://#{deployment.openstack_deployment.overcloud_address}:5000/v2.0/tokens",
                           :openstack_username  => 'admin', :openstack_tenant => 'admin',
-                          :openstack_api_key   => deployment.openstack_overcloud_password }
+                          :openstack_api_key   => deployment.openstack_deployment.overcloud_password }
             upload_cfme_image(overcloud, "#{deployment.label}-cfme", image_full_path)
             ::Fusor.log.debug '====== Leaving CFME Upload run method ======'
           ensure

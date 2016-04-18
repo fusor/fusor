@@ -11,15 +11,6 @@ test('it renders', function(assert) {
   // Handle any actions with this.on('myAction', function(val) { ... });" + EOL + EOL +
 
   this.render(hbs`{{abandon-deployment-modal}}`);
-
-  assert.equal(this.$().text().trim(), '');
-
-  // Template block usage:" + EOL +
-  this.render(hbs`
-    {{#abandon-deployment-modal}}
-      template block text
-    {{/abandon-deployment-modal}}
-  `);
-
-  assert.equal(this.$().text().trim(), 'template block text');
+  assert.equal(this.$('.modal-title').text().trim(), 'Delete QCI Deployment');
+  assert.equal(this.$('.modal-body').text().trim(), 'Are you sure that you want to delete this deployment?');
 });

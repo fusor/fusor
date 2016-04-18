@@ -1,32 +1,25 @@
 import Ember from 'ember';
 import DeploymentControllerMixin from "../../mixins/deployment-controller-mixin";
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
-import { PresenceValidator, EqualityValidator, IpAddressValidator, CidrValidator, AllValidator } from '../../utils/validators';
+import { EqualityValidator} from '../../utils/validators';
 
-let OvercloudController = Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
+const OvercloudController = Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
   isOpenShift: Ember.computed.alias("deploymentController.isOpenShift"),
-  openstackOvercloudPrivateNet: Ember.computed.alias('deploymentController.model.openstack_overcloud_private_net'),
-  openstackOvercloudFloatNet: Ember.computed.alias('deploymentController.model.openstack_overcloud_float_net'),
-  openstackOvercloudFloatGateway: Ember.computed.alias('deploymentController.model.openstack_overcloud_float_gateway'),
-  externalNetworkInterface: Ember.computed.alias('deploymentController.model.openstack_overcloud_ext_net_interface'),
-  overcloudPassword: Ember.computed.alias("deploymentController.model.openstack_overcloud_password"),
+
+  //TODO move password confirmations to transient data on the model
   confirmOvercloudPassword: Ember.computed.alias("deploymentController.confirmOvercloudPassword"),
-  openstackOvercloudLibvirtType: Ember.computed.alias("deploymentController.model.openstack_overcloud_libvirt_type"),
 
-  ipValidator: AllValidator.create({
-    validators: [
-      PresenceValidator.create({}),
-      IpAddressValidator.create({})
-    ]
-  }),
-
-  cidrValidator: AllValidator.create({
-    validators: [
-      PresenceValidator.create({}),
-      CidrValidator.create({})
-    ]
-  }),
+  openstackDeployment: Ember.computed.alias('model'),
+  externalNetworkInterface: Ember.computed.alias('openstackDeployment.overcloud_ext_net_interface'),
+  overcloudPrivateNet: Ember.computed.alias('openstackDeployment.overcloud_private_net'),
+  overcloudFloatNet: Ember.computed.alias('openstackDeployment.overcloud_float_net'),
+  overcloudFloatGateway: Ember.computed.alias('openstackDeployment.overcloud_float_gateway'),
+  overcloudPassword: Ember.computed.alias("openstackDeployment.overcloud_password"),
+  overcloudLibvirtType: Ember.computed.alias("openstackDeployment.overcloud_libvirt_type"),
+  overcloudPrivateNetValidator: Ember.computed.alias('openstackDeployment.validations.overcloud_private_net'),
+  overcloudFloatNetValidator: Ember.computed.alias('openstackDeployment.validations.overcloud_float_net'),
+  overcloudFloatGatewayValidator: Ember.computed.alias('openstackDeployment.validations.overcloud_float_gateway'),
 
   confirmOvercloudPasswordValidator: Ember.computed('overcloudPassword', function() {
     return EqualityValidator.create({equals: this.get('overcloudPassword')});
@@ -47,38 +40,22 @@ let OvercloudController = Ember.Controller.extend(DeploymentControllerMixin, Nee
       this.get('overcloudPassword') === this.get('confirmOvercloudPassword');
   }),
 
-  validOvercloudNetworks: Ember.computed(
-    'externalNetworkInterface',
-    'openstackOvercloudPrivateNet',
-    'openstackOvercloudFloatNet',
-    'openstackOvercloudFloatGateway',
-    'isValidOvercloudPassword',
-    'isValidPrivateNetworkRange',
-    'isValidFloatingIpNetworkRange',
-    'isValidFloatingIpGateway',
-    function () {
-      return Ember.isPresent(this.get('externalNetworkInterface')) &&
-        Ember.isPresent(this.get('openstackOvercloudPrivateNet')) &&
-        Ember.isPresent(this.get('openstackOvercloudFloatNet')) &&
-        Ember.isPresent(this.get('openstackOvercloudFloatGateway')) &&
-        this.get('isValidOvercloudPassword') &&
-        this.get('isValidPrivateNetworkRange') &&
-        this.get('isValidFloatingIpNetworkRange') &&
-        this.get('isValidFloatingIpGateway');
-    }),
+  validOvercloudNetworks: Ember.computed('openstackDeployment.isValidOvercloud', 'isValidOvercloudPassword', function () {
+    return this.get('openstackDeployment.isValidOvercloud') && this.get('isValidOvercloudPassword');
+  }),
 
   disableNextOvercloud: Ember.computed.not('validOvercloudNetworks'),
 
-  isValidPrivateNetworkRange: Ember.computed('openstackOvercloudPrivateNet', function () {
-    return this.get('cidrValidator').isValid(this.get('openstackOvercloudPrivateNet'));
+  isValidPrivateNetworkRange: Ember.computed('overcloudPrivateNet', function () {
+    return this.get('cidrValidator').isValid(this.get('overcloudPrivateNet'));
   }),
 
-  isValidFloatingIpNetworkRange: Ember.computed('openstackOvercloudFloatNet', function () {
-    return this.get('cidrValidator').isValid(this.get('openstackOvercloudFloatNet'));
+  isValidFloatingIpNetworkRange: Ember.computed('overcloudFloatNet', function () {
+    return this.get('cidrValidator').isValid(this.get('overcloudFloatNet'));
   }),
 
-  isValidFloatingIpGateway: Ember.computed('openstackOvercloudFloatGateway', function () {
-    return this.get('ipValidator').isValid(this.get('openstackOvercloudFloatGateway'));
+  isValidFloatingIpGateway: Ember.computed('overcloudFloatGateway', function () {
+    return this.get('ipValidator').isValid(this.get('overcloudFloatGateway'));
   })
 });
 

@@ -30,7 +30,6 @@ export default Mirage.Factory.extend({
   custom_preprend_name: null,
   enable_access_insights: true,
   openstack_undercloud_password: "dummy password",
-  openstack_overcloud_autogenerate_password: false,
   upstream_consumer_uuid: "7ffddefd-aacb-4192-a999-01beb7c2e473",
   upstream_consumer_name: "tsanders-rhci",
   openshift_storage_type: "NFS",
@@ -43,14 +42,6 @@ export default Mirage.Factory.extend({
 
 });
 
-  //       "openstack_undercloud_ip_addr": null,
-  //       "openstack_undercloud_user": null,
-  //       "openstack_undercloud_user_password": null,
-  //       "openstack_overcloud_address": null,
-  //       "openstack_overcloud_password": null,
-  //       "openstack_overcloud_private_net": null,
-  //       "openstack_overcloud_float_net": null,
-  //       "openstack_overcloud_float_gateway": null,
   //       "cdn_url": "10.35.3.63",
   //       "manifest_file": "/usr/share/foreman/tmp/import_10c9a9f7cc20541de373.zip",
   //       "created_at": "2015-11-30T09:31:03Z",
@@ -85,16 +76,6 @@ export default Mirage.Factory.extend({
   // custom_preprend_name: DS.attr('string'),
   // enable_access_insights: DS.attr('boolean'),
   // cfme_address: DS.attr('string'),
-
-  // openstack_undercloud_password: DS.attr('string'),
-  // openstack_undercloud_ip_addr: DS.attr('string'),
-  // openstack_undercloud_user: DS.attr('string'),
-  // openstack_undercloud_user_password: DS.attr('string'),
-  // openstack_overcloud_address: DS.attr('string'),
-  // openstack_overcloud_password: DS.attr('string'),
-  // openstack_overcloud_private_net: DS.attr('string'),
-  // openstack_overcloud_float_net: DS.attr('string'),
-  // openstack_overcloud_float_gateway: DS.attr('string'),
 
   // cdn_url: DS.attr('string'),
   // manifest_file: DS.attr('string'),

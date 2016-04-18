@@ -8,7 +8,7 @@
       </p>
 
       {{text-f label="External Network Interface"
-               value=model.openstack_overcloud_ext_net_interface
+               value=externalNetworkInterface
                cssId="external-osp-interface"
                isRequired=true
                disabled=isStarted
@@ -22,31 +22,31 @@
 
 
       {{text-f label="Private Network"
-               value=model.openstack_overcloud_private_net
+               value=overcloudPrivateNet
                cssId="osp-private-network"
                isRequired=true
                disabled=isStarted
                placeholder="192.168.254.0/24"
                help-inline="CIDR notation, 192.168.254.0/24"
-               validator=cidrValidator
+               validator=overcloudPrivateNetValidator
                }}
 
       {{text-f label="Floating IP Network"
-               value=model.openstack_overcloud_float_net
+               value=overcloudFloatNet
                cssId="osp-floating-network"
                isRequired=true
                disabled=isStarted
                placeholder="192.168.253.0/24"
                help-inline="CIDR notation, 192.168.253.0/24"
-               validator=cidrValidator
+               validator=overcloudFloatNetValidator
                }}
 
       {{text-f label="Floating IP Network Gateway"
-               value=model.openstack_overcloud_float_gateway
+               value=overcloudFloatGateway
                cssId="osp-float-gatewway"
                isRequired=true
                disabled=isStarted
-               validator=ipValidator
+               validator=overcloudFloatGatewayValidator
                }}
 
       <br />

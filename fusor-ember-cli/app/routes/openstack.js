@@ -1,15 +1,21 @@
 import Ember from 'ember';
-import request from 'ic-ajax';
 
 export default Ember.Route.extend({
 
   model() {
-    return this.modelFor('deployment');
+    return this.modelFor('deployment').get('openstack_deployment');
   },
 
-  setupController(controller, model) {
-    controller.set('model', model);
-    var stepNumberOpenstack = this.controllerFor('deployment').get('stepNumberOpenstack');
-    return this.controllerFor('deployment').set('currentStepNumber', stepNumberOpenstack);
+  actions: {
+    saveOpenstackDeployment() {
+      var openstackDeployment = this.get('controller.model');
+      openstackDeployment.save().then(
+        result => {
+
+        },
+        error => {
+          //TODO
+        });
+    }
   }
 });

@@ -27,16 +27,18 @@ module Actions
           def run
             Rails.logger.debug '====== AddOspHostnames run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
+            openstack_deployment = deployment.openstack_deployment
+            hostname_prefix = deployment.label.tr('_', '-')
             domain = Domain.find(Hostgroup.find_by_name('Fusor Base').domain_id)
-            deployment.openstack_overcloud_hostname = "#{deployment.label.tr('_', '-')}-overcloud.#{domain}"
-            deployment.openstack_undercloud_hostname = "#{deployment.label.tr('_', '-')}-undercloud.#{domain}"
-            deployment.save!(:validate => false)
-            overcloud = Net::DNS::ARecord.new(:ip => deployment.openstack_overcloud_address,
-                                              :hostname => deployment.openstack_overcloud_hostname,
+            openstack_deployment.overcloud_hostname = "#{hostname_prefix}-overcloud.#{domain}"
+            openstack_deployment.undercloud_hostname = "#{hostname_prefix}-undercloud.#{domain}"
+            openstack_deployment.save!(:validate => false)
+            overcloud = Net::DNS::ARecord.new(:ip => deployment.openstack_deployment.overcloud_address,
+                                              :hostname => deployment.openstack_deployment.overcloud_hostname,
                                               :proxy => domain.proxy)
             overcloud.create
-            undercloud = Net::DNS::ARecord.new(:ip => deployment.openstack_undercloud_ip_addr,
-                                               :hostname => deployment.openstack_undercloud_hostname,
+            undercloud = Net::DNS::ARecord.new(:ip => openstack_deployment.undercloud_ip_address,
+                                               :hostname => openstack_deployment.undercloud_hostname,
                                                :proxy => domain.proxy)
             undercloud.create
             Rails.logger.debug '=== Leaving AddOspHostnames run method ==='

@@ -1,9 +1,9 @@
 import Ember from 'ember';
 
 export default Ember.Route.extend({
-  model() {
-    return this.modelFor('deployment');
-  },
+  // model() {
+  //   return this.modelFor('openstack');
+  // },
 
   setupController(controller, model) {
     controller.set('model', model);

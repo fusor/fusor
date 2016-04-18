@@ -67,7 +67,49 @@ const EqualityValidator = Validator.extend({
   message: 'does not match',
 
   isValid(value) {
-    return value === this.get('equals');
+    let equals = this.get('equals');
+    let doesNotEqual = this.get('doesNotEqual');
+
+    return (Ember.isBlank(equals) || value === equals) &&
+      (Ember.isBlank(doesNotEqual) || value !== doesNotEqual);
+  },
+
+  getMessages(value) {
+    let equals = this.get('equals');
+    let doesNotEqual = this.get('doesNotEqual');
+
+    if (Ember.isPresent(equals) && value !== equals) {
+      return ['does not match'];
+    }
+
+    if (Ember.isPresent(doesNotEqual) && value === doesNotEqual) {
+      return [`must not equal ${doesNotEqual}`];
+    }
+
+    return [];
+  }
+});
+
+const NumberValidator = Validator.extend({
+  isValid(value) {
+    let min = this.get('min'), max = this.get('max');
+
+    return (Ember.isBlank(min) || value >= min) &&
+      (Ember.isBlank(max) || value <= max);
+  },
+
+  getMessages(value) {
+    let min = this.get('min'), max = this.get('max');
+
+     if (Ember.isPresent(min) && value < min) {
+      return [`must be greater than or equal to ${min}`];
+    }
+
+    if (Ember.isPresent(max) && value > max) {
+      return [`must be less than or equal to ${max}`];
+    }
+
+    return [];
   }
 });
 
@@ -234,6 +276,7 @@ export {
   AnyValidator,
   PresenceValidator,
   EqualityValidator,
+  NumberValidator,
   LengthValidator,
   PasswordValidator,
   UniquenessValidator,

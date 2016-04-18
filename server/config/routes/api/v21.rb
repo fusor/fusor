@@ -6,11 +6,15 @@ Fusor::Engine.routes.draw do
           member do
             put :deploy
             put :redeploy
-            post :sync_openstack
             get :validate
             get :validate_cdn
             get :log
             get :openshift_disk_space
+          end
+        end
+        resources :openstack_deployments do
+          member do
+            post :sync_openstack
           end
         end
         resources :subscriptions do

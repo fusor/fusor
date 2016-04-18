@@ -5,7 +5,17 @@ export default Ember.Route.extend({
 
   beforeModel() {
     // Ensure the models have been persisted so that we're validating/syncing up to date data.
-    return this.modelFor('deployment').save();
+    let deployment = this.modelFor('deployment');
+    let promises = {
+      deployment: deployment.save()
+    };
+
+    let openstack_deployment = this.get('controller.model.openstack_deployment');
+    if (deployment.get('deploy_openstack') && openstack_deployment) {
+      return promises[openstack_deployment] = openstack_deployment.save();
+    }
+
+    return Ember.RSVP.hash(promises);
   },
 
   setupController(controller, model) {
@@ -79,16 +89,17 @@ export default Ember.Route.extend({
   syncOpenStack() {
     let controller = this.get('controller');
     let deployment = this.get('controller.model');
+    let openstack_deployment = this.get('controller.model.openstack_deployment');
     let token = Ember.$('meta[name="csrf-token"]').attr('content');
 
-    if (!deployment.get('deploy_openstack')) {
-      return Ember.RSVP.Promise.resolve('no sync needed');
+    if (!deployment.get('deploy_openstack') || !openstack_deployment || Ember.isPresent(controller.get('validationErrors'))) {
+      return Ember.RSVP.Promise.resolve('no OpenStack sync needed');
     }
 
     controller.set('spinnerTextMessage', "Syncing OpenStack...");
 
     return request({
-      url: `/fusor/api/v21/deployments/${deployment.get('id')}/sync_openstack`,
+      url: `/fusor/api/v21/openstack_deployments/${openstack_deployment.get('id')}/sync_openstack`,
       type: "POST",
       headers: {
         "Accept": "application/json",

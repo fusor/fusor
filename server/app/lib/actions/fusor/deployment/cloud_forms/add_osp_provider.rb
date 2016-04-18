@@ -30,9 +30,9 @@ module Actions
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             cfme_address = deployment.cfme_address
             provider = { :name => "#{deployment.label}-RHOS",
-                         :ip => deployment.openstack_overcloud_address,
+                         :ip => deployment.openstack_deployment.overcloud_address,
                          :username => "admin",
-                         :password => deployment.openstack_overcloud_password
+                         :password => deployment.openstack_deployment.overcloud_password
             }
 
             ::Fusor.log.info "Adding OSP provider #{provider[:name]} to CFME."

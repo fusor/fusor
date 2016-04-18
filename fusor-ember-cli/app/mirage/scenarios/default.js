@@ -28,10 +28,13 @@ export default function(server) {
                                       discovered_host_ids: [hypervisor1.id, hypervisor2.id]
                                      });
 
+  var osp_d1 = server.create('openstack_deployment');
+
   server.create('deployment', {name: 'osp_only',
                                       deploy_openstack: true,
                                       organization_id: org.id,
                                       lifecycle_environment_id: env.id,
+                                      openstack_deployment_id: osp_d1.id
                                      });
 
   server.create('deployment', {name: 'rhev_and_cfme_deployment',
@@ -43,12 +46,16 @@ export default function(server) {
                                       discovered_host_ids: [hypervisor2.id]
                                      });
 
-  server.create('deployment', {name: 'osp_and_cfme_deployment',
-                                      deploy_openstack: true,
-                                      deploy_cfme: true,
-                                      organization_id: org.id,
-                                      lifecycle_environment_id: env.id,
-                                     });
+  var osp_d2 = server.create('openstack_deployment');
+
+  server.create('deployment', {
+    name: 'osp_and_cfme_deployment',
+    deploy_openstack: true,
+    deploy_cfme: true,
+    organization_id: org.id,
+    lifecycle_environment_id: env.id,
+    openstack_deployment_id: osp_d2.id
+  });
 
   server.create('deployment', {name: 'rhev_and_openshift_deployment',
                                       deploy_rhev: true,

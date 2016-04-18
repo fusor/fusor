@@ -8,10 +8,11 @@ const Role = Ember.Object.extend({
   }
 });
 
-export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
+const AssignNodesController =  Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
 
   deployment: Ember.computed.alias("deploymentController.model"),
   deploymentId: Ember.computed.alias("deployment.id"),
+  openstackDeployment: Ember.computed.alias("model"),
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
 
   globalPlanParameters: [],
@@ -24,8 +25,8 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       countParameterName: 'ComputeCount',
       flavorParameterName: 'OvercloudComputeFlavor',
       imageParameterName: 'NovaImage',
-      flavorDeploymentAttributeName: 'openstack_overcloud_compute_flavor',
-      countDeploymentAttributeName: 'openstack_overcloud_compute_count',
+      flavorDeploymentAttributeName: 'overcloud_compute_flavor',
+      countDeploymentAttributeName: 'overcloud_compute_count',
       roleType: 'compute',
       parameters: [],
       advancedParameters: []
@@ -37,8 +38,8 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       countParameterName: 'ControllerCount',
       flavorParameterName: 'OvercloudControlFlavor',
       imageParameterName: 'controllerImage',
-      flavorDeploymentAttributeName: 'openstack_overcloud_controller_flavor',
-      countDeploymentAttributeName: 'openstack_overcloud_controller_count',
+      flavorDeploymentAttributeName: 'overcloud_controller_flavor',
+      countDeploymentAttributeName: 'overcloud_controller_count',
       roleType: 'controller',
       parameters: [],
       advancedParameters: []
@@ -50,9 +51,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       countParameterName: 'CephStorageCount',
       flavorParameterName: 'OvercloudCephStorageFlavor',
       imageParameterName: 'CephStorageImage',
-      flavorDeploymentAttributeName: 'openstack_overcloud_ceph_storage_flavor',
-      countDeploymentAttributeName: 'openstack_overcloud_ceph_storage_count',
-      roleType: 'ceph',
+      flavorDeploymentAttributeName: 'overcloud_ceph_storage_flavor',
+      countDeploymentAttributeName: 'overcloud_ceph_storage_count',
+      roleType: 'ceph-storage',
       parameters: [],
       advancedParameters: []
     }),
@@ -63,9 +64,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       countParameterName: 'BlockStorageCount',
       flavorParameterName: 'OvercloudBlockStorageFlavor',
       imageParameterName: 'BlockStorageImage',
-      flavorDeploymentAttributeName: 'openstack_overcloud_cinder_storage_flavor',
-      countDeploymentAttributeName: 'openstack_overcloud_cinder_storage_count',
-      roleType: 'cinder',
+      flavorDeploymentAttributeName: 'overcloud_block_storage_flavor',
+      countDeploymentAttributeName: 'overcloud_block_storage_count',
+      roleType: 'block-storage',
       parameters: [],
       advancedParameters: []
     }),
@@ -76,9 +77,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
       countParameterName: 'ObjectStorageCount',
       flavorParameterName: 'OvercloudSwiftStorageFlavor',
       imageParameterName: 'SwiftStorageImage',
-      flavorDeploymentAttributeName: 'openstack_overcloud_swift_storage_flavor',
-      countDeploymentAttributeName: 'openstack_overcloud_swift_storage_count',
-      roleType: 'swift',
+      flavorDeploymentAttributeName: 'overcloud_object_storage_flavor',
+      countDeploymentAttributeName: 'overcloud_object_storage_count',
+      roleType: 'object-storage',
       parameters: [],
       advancedParameters: []
     })
@@ -118,20 +119,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     Ember.run.once(this, 'updateRoleCounts');
   }),
 
-  hasValidNodeAssignments: Ember.computed(
-    'deployment.openstack_overcloud_compute_flavor',
-    'deployment.openstack_overcloud_compute_count',
-    'deployment.openstack_overcloud_controller_flavor',
-    'deployment.openstack_overcloud_controller_count',
-    function () {
-      let computeFlavor = this.get('deployment.openstack_overcloud_compute_flavor');
-      let computeCount = this.get('deployment.openstack_overcloud_compute_count');
-      let controllerFlavor = this.get('deployment.openstack_overcloud_controller_flavor');
-      let controllerCount = this.get('deployment.openstack_overcloud_controller_count');
-
-      return computeFlavor && computeFlavor !== 'baremetal' && computeCount > 0 &&
-        controllerFlavor && controllerFlavor !== 'baremetal' && controllerCount > 0;
-    }),
+  hasValidNodeAssignments: Ember.computed.alias('openstackDeployment.hasValidNodeAssignments'),
 
   disableAssignNodesNext: Ember.computed.not('hasValidNodeAssignments'),
 
@@ -146,7 +134,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   doAssignRole(role, profileName) {
     role.set('isDraggingObject', false);
     role.set('flavor', profileName);
-    this.set(`deployment.${role.get('flavorDeploymentAttributeName')}`, profileName);
+    this.set(`openstackDeployment.${role.get('flavorDeploymentAttributeName')}`, profileName);
   },
 
   updateRoleCounts() {
@@ -155,7 +143,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     }
 
     this.get('roles').forEach(role => {
-      this.set(`deployment.${role.get('countDeploymentAttributeName')}`, role.get('count'));
+      this.set(`openstackDeployment.${role.get('countDeploymentAttributeName')}`, role.get('count'));
     });
   },
 
@@ -252,3 +240,5 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     }
   }
 });
+
+export default AssignNodesController;

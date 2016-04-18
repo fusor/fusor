@@ -36,9 +36,9 @@ module Actions::Fusor::Deployment::OpenStack
     private
 
     def scp_file(deployment, image_file)
-      host_address = deployment.openstack_undercloud_ip_addr
-      user = deployment.openstack_undercloud_user
-      password = deployment.openstack_undercloud_user_password
+      host_address = deployment.openstack_deployment.undercloud_ip_address
+      user = deployment.openstack_deployment.undercloud_ssh_username
+      password = deployment.openstack_deployment.undercloud_ssh_password
       Net::SCP.start(host_address, user, :password => password, :paranoid => false) do |scp|
         scp.upload!(image_file, "/tmp/")
       end

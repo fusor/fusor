@@ -14,23 +14,23 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isOpenShiftOpen: true,
 
   undercloudUsername: 'admin',
-  undercloudPassword: Ember.computed.alias("model.openstack_undercloud_password"),
+  undercloudPassword: Ember.computed.alias("model.openstack_deployment.undercloud_admin_password"),
 
-  undercloudUrl: Ember.computed('model.openstack_undercloud_hostname', function() {
-    return ('http://' + this.get('model.openstack_undercloud_hostname'));
+  undercloudUrl: Ember.computed('model.openstack_deployment.undercloud_hostname', function() {
+    return ('http://' + this.get('model.openstack_deployment.undercloud_hostname'));
   }),
-  undercloudUrlIP: Ember.computed('model.openstack_undercloud_ip_addr', function() {
-    return ('http://' + this.get('model.openstack_undercloud_ip_addr'));
+  undercloudUrlIP: Ember.computed('model.openstack_deployment.undercloud_ip_address', function() {
+    return ('http://' + this.get('model.openstack_deployment.undercloud_ip_address'));
   }),
 
   overcloudUsername: 'admin',
-  overcloudPassword: Ember.computed.alias("model.openstack_overcloud_password"),
+  overcloudPassword: Ember.computed.alias("model.openstack_deployment.overcloud_password"),
 
-  overcloudUrl: Ember.computed('model.openstack_overcloud_hostname', function() {
-    return ('http://' + this.get('model.openstack_overcloud_hostname') + '/dashboard/admin');
+  overcloudUrl: Ember.computed('model.openstack_deployment.overcloud_hostname', function() {
+    return ('http://' + this.get('model.openstack_deployment.overcloud_hostname') + '/dashboard/admin');
   }),
-  overcloudUrlIP: Ember.computed('model.openstack_overcloud_hostname', function() {
-    return ('http://' + this.get('model.openstack_overcloud_address') + '/dashboard/admin');
+  overcloudUrlIP: Ember.computed('model.openstack_deployment.overcloud_hostname', function() {
+    return ('http://' + this.get('model.openstack_deployment.overcloud_address') + '/dashboard/admin');
   }),
 
   selectedRhevEngine: Ember.computed.alias("deploymentController.model.discovered_host"),

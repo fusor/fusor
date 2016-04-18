@@ -1,0 +1,22 @@
+osp:
+  undercloud_admin_password: undercloudAdminPassword
+  undercloud_ip_address: 192.168.150.254
+  undercloud_ssh_username: undercloudSshUser
+  undercloud_ssh_password: undercloudSshPassword1234
+  overcloud_password: overcloudAdminPassword
+  overcloud_ext_net_interface: eth0
+  overcloud_libvirt_type: kvm
+  overcloud_private_net: 192.168.254.0/24
+  overcloud_float_net: 192.168.153.0/24
+  overcloud_float_gateway: 192.168.153.1
+  overcloud_node_count: 2
+  overcloud_compute_flavor: Flavor-1
+  overcloud_compute_count: 1
+  overcloud_controller_flavor: Flavor-2
+  overcloud_controller_count: 1
+  overcloud_ceph_storage_flavor: Flavor-1
+  overcloud_ceph_storage_count: 0
+  overcloud_block_storage_flavor: Flavor-1
+  overcloud_block_storage_count: 0
+  overcloud_object_storage_flavor: Flavor-1
+  overcloud_object_storage_count: 0

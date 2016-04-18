@@ -13,6 +13,12 @@ export default function() {
   this.put('/fusor/api/v21/deployments/:id');
   this.del('/fusor/api/v21/deployments/:id');
 
+  this.get('/fusor/api/v21/openstack_deployments');
+  this.post('/fusor/api/v21/openstack_deployments');
+  this.get('/fusor/api/v21/openstack_deployments/:id');
+  this.put('/fusor/api/v21/openstack_deployments/:id');
+  this.del('/fusor/api/v21/openstack_deployments/:id');
+
   this.get('/api/v21/organizations');
   this.get('/api/v21/organizations/:id');
 
@@ -74,7 +80,7 @@ export default function() {
 
   this.get('fusor/api/v21/deployments/:id/validate', function(db, request) {
     var id = request.params.id;
-    return db.deployments.find(id);
+    return {validation:{deployment_id: id, errors:[], warnings:[]}};
   });
 
   this.put('fusor/api/v21/deployments/:id/deploy', function(db, request) {
@@ -111,6 +117,10 @@ export default function() {
     return {ports: db.node_ports};
   });
 
+  this.post('/fusor/api/openstack/deployments/:id/node_mac_addresses', function(db, request) {
+    return {nodes: db.node_mac_addresses};
+  });
+
   this.get('/fusor/api/openstack/deployments/:id/flavors', function(db, request) {
     // NOTE root node is flavor and not flavors
     return {flavor: db.flavors};
@@ -128,6 +138,8 @@ export default function() {
     // return deployment plan even though UI should update not based on response
     return {deployment_plan: db.deployment_plan[0]};
   });
+
+  this.post('/fusor/api/v21/openstack_deployments/:id/sync_openstack');
 
   this.get('/fusor/api/v21/subscriptions');
   this.post('/fusor/api/v21/subscriptions');
