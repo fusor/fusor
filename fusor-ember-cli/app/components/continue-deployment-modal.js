@@ -7,7 +7,7 @@ export default Ember.Component.extend({
   }),
 
   actions: {
-    deleteDeployment() {
+    installDeployment() {
       this.set('openModal', false);
       this.sendAction('installDeployment', this.get('deployment'));
     },
