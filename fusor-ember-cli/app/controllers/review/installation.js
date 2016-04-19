@@ -12,7 +12,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
 
   isSelfHost: Ember.computed.alias("rhevController.isSelfHost"),
   isDisconnected: Ember.computed.alias("deploymentController.isDisconnected"),
-  isOspLoading: Ember.computed.alias("deploymentController.isOspLoading"),
   isNotDisconnected: Ember.computed.not("isDisconnected"),
   cdnUrl: Ember.computed.alias("model.cdn_url"),
 
@@ -59,6 +58,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     return this.get('validationErrors.length') > 0;
   }),
 
+  errorMsg: false,
+  showErrorMessage: Ember.isPresent('errorMsg'),
+  warningMsg: null,
+  showWarningMessage: Ember.isPresent('warningMsg'),
+
   foremanTasksURL: null,
   skipContent: Ember.computed.alias("deploymentController.skipContent"),
 
@@ -98,8 +102,62 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
   undercloudPassword: Ember.computed.alias("model.openstack_undercloud_password"),
 
   undercloudUrl: Ember.computed('model.openstack_undercloud_ip_addr', function() {
-    return ('http://' + this.get('model.openstack_undercloud_ip_addr'));
+    let ipAddr = this.get('model.openstack_undercloud_ip_addr');
+    return ipAddr ? `http://${ipAddr}` : ipAddr;
   }),
+
+  profiles: Ember.computed(
+    'model.openstack_overcloud_compute_flavor',
+    'model.openstack_overcloud_compute_count',
+    'model.openstack_overcloud_controller_flavor',
+    'model.openstack_overcloud_controller_count',
+    'model.openstack_overcloud_ceph_storage_flavor',
+    'model.openstack_overcloud_ceph_storage_count',
+    'model.openstack_overcloud_cinder_storage_flavor',
+    'model.openstack_overcloud_cinder_storage_count',
+    'model.openstack_overcloud_swift_storage_flavor',
+    'model.openstack_overcloud_swift_storage_count',
+    function () {
+      let profiles = [];
+
+      this.addFlavor(profiles,
+        this.get('model.openstack_overcloud_controller_flavor'),
+        this.get('model.openstack_overcloud_controller_count'),
+        'Controller');
+      this.addFlavor(profiles,
+        this.get('model.openstack_overcloud_compute_flavor'),
+        this.get('model.openstack_overcloud_compute_count'),
+        'Compute');
+      this.addFlavor(profiles,
+        this.get('model.openstack_overcloud_ceph_storage_flavor'),
+        this.get('model.openstack_overcloud_ceph_storage_count'),
+        'Ceph-Storage');
+      this.addFlavor(profiles,
+        this.get('model.openstack_overcloud_cinder_storage_flavor'),
+        this.get('model.openstack_overcloud_cinder_storage_count'),
+        'Cinder-Storage');
+      this.addFlavor(profiles,
+        this.get('model.openstack_overcloud_swift_storage_flavor'),
+        this.get('model.openstack_overcloud_swift_storage_count'),
+        'Swift-Storage');
+
+      return profiles;
+    }),
+
+  addFlavor(profiles, flavor, count, name) {
+    if (flavor === 'baremetal' || !count) {
+      return;
+    }
+
+    let profile = profiles.findBy('flavor', flavor);
+
+    if (!profile) {
+      profile = Ember.Object.create({flavor: flavor, nodes: []});
+      profiles.addObject(profile);
+    }
+
+    profile.get('nodes').addObject(Ember.Object.create({name: name, count: count}));
+  },
 
   engineNamePlusDomain: Ember.computed(
     'selectedRhevEngine.is_discovered',
@@ -189,18 +247,24 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     return this.get('storageSize') + ' GB';
   }),
 
+  deploymentButtonAction: Ember.computed('hasSubscriptionsToAttach', function() {
+    if (this.get('showWarningMessage')) {
+        return "showContinueDeployModal";
+    } else if (this.get('hasSubscriptionsToAttach')) {
+        return "attachSubscriptions";
+        return "installDeployment";
+    } else if (this.get('showWarningMessage')) {
+        return "showContinueDeployModal";
+    }
+  }),
+
   closeContinueDeployModal() {
-    this.set('continueDeploymentModalOpen', false);
-    this.set('continueDeploymentModalClosed', true);
-    this.set('modalOpen', false);
+    this.set('openModal', false);
   },
 
   actions: {
     showContinueDeployModal() {
-      this.set('deploymentInModal', this.get('model'));
-      this.set('continueDeploymentModalOpen', true);
-      this.set('continueDeploymentModalClosed', false);
-      this.set('modalOpen', true);
+      this.set('openModal', true);
     },
 
     onDeployButton() {

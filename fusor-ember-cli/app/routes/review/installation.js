@@ -3,7 +3,7 @@ import request from 'ic-ajax';
 
 export default Ember.Route.extend({
   model() {
-    return this.modelFor('deployment');
+    return this.store.queryRecord('deployment', {id: this.modelFor('deployment').get('id'), sync_openstack: true});
   },
 
   setupController(controller, model) {
@@ -64,5 +64,4 @@ export default Ember.Route.extend({
         });
     }
   }
-
 });

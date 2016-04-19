@@ -45,4 +45,6 @@
 
 {{outlet}}
 
-{{partial 'delete-deployment-modal'}}
+{{delete-deployment-modal openModal=openModal
+                          deployment=deploymentInModal
+                          deleteDeployment='deleteDeployment'}}

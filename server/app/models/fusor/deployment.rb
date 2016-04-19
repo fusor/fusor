@@ -71,6 +71,10 @@ module Fusor
       send("deploy_#{deploy_type}")
     end
 
+    def is_started?
+      foreman_task_uuid.present?
+    end
+
     protected
 
     def update_label

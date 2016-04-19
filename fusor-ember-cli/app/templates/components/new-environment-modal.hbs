@@ -1,0 +1,17 @@
+{{#pf-modal-base idModal='newLifecycleEnvironmentModal'
+                 openModal=openModal
+                 title="Enter New Environment"}}
+
+      {{#pf-modal-body}}
+            {{text-f label="Environment Name" value=name labelSize='col-md-4' inputSize='col-md-8'}}
+            {{text-f label="Label" value=envLabelName labelSize='col-md-4' inputSize='col-md-8'}}
+            {{textarea-f label="Description (Optional)" value=description labelSize='col-md-4' inputSize='col-md-8'}}
+      {{/pf-modal-body}}
+
+      {{#pf-modal-footer}}
+          <button {{action 'createEnvironment'}} class="btn btn-primary">
+              Submit
+          </button>
+      {{/pf-modal-footer}}
+
+{{/pf-modal-base}}

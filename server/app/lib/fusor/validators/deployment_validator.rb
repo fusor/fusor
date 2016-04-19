@@ -14,6 +14,10 @@ module Fusor
         if deployment.deploy_cfme
           validate_cfme_parameters(deployment)
         end
+
+        if deployment.deploy_openstack
+          validate_openstack_parameters(deployment)
+        end
       end
 
       def validate_rhev_parameters(deployment)
@@ -162,6 +166,51 @@ module Fusor
         end
       end
 
+      def validate_openstack_parameters(deployment)
+        if deployment.openstack_undercloud_password.empty?
+          deployment.errors[:openstack_undercloud_password] << _('Openstack deployments must specify an admin password for the Undercloud')
+        end
+
+        if deployment.openstack_undercloud_ip_addr.empty?
+          deployment.errors[:openstack_undercloud_ip_addr] << _('Openstack deployments must specify an ip address for the Undercloud')
+        end
+
+        if deployment.openstack_undercloud_user.empty?
+          deployment.errors[:openstack_undercloud_user] << _('Openstack deployments must specify an ssh user for the Undercloud')
+        end
+
+        if deployment.openstack_undercloud_user_password.empty?
+          deployment.errors[:openstack_undercloud_user_password] << _('Openstack deployments must specify an ssh password for the Undercloud')
+        end
+
+        if deployment.openstack_overcloud_password.empty?
+          deployment.errors[:openstack_overcloud_password] << _('Openstack deployments must specify an admin password for the Overcloud')
+        end
+
+        if deployment.openstack_overcloud_ext_net_interface.empty?
+          deployment.errors[:openstack_overcloud_ext_net_interface] << _('Openstack deployments must specify an external network interface for the Overcloud')
+        end
+
+        if deployment.openstack_overcloud_private_net.empty?
+          deployment.errors[:openstack_overcloud_private_net] << _('Openstack deployments must specify a private network for the Overcloud')
+        end
+
+        if deployment.openstack_overcloud_float_net.empty?
+          deployment.errors[:openstack_overcloud_password] << _('Openstack deployments must specify a floating network for the Overcloud')
+        end
+
+        if deployment.openstack_overcloud_float_gateway.empty?
+          deployment.errors[:openstack_overcloud_float_gateway] << _('Openstack deployments must specify a floating network gateway for the Overcloud')
+        end
+
+        if deployment.openstack_overcloud_compute_flavor.empty? || deployment.openstack_overcloud_compute_count.nil? || deployment.openstack_overcloud_compute_count < 1
+          deployment.errors[:openstack_overcloud_compute_flavor] << _('Openstack deployments must have at least 1 compute node for the Overcloud')
+        end
+
+        if deployment.openstack_overcloud_controller_flavor.empty? || deployment.openstack_overcloud_controller_count.nil? || deployment.openstack_overcloud_controller_count < 1
+          deployment.errors[:openstack_overcloud_compute_flavor] << _('Openstack deployments must have at least 1 controller node for the Overcloud')
+        end
+      end
 
       private
 

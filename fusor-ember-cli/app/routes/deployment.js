@@ -309,11 +309,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       return this.refresh();
     },
 
-    refreshOpenStack() {
-      console.log('refreshOpenStack');
-      this.loadOpenStack(this.get('controller'), this.get('controller.model'));
-    },
-
     updateOpenStackPlan(params) {
       console.log('updateOpenStackPlan');
       var deploymentId = this.modelFor('deployment').get('id'),
