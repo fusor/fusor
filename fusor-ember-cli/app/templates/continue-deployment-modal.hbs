@@ -1,0 +1,22 @@
+{{#em-modal configName="bs" id="continueDeploymentModal" open-if=continueDeploymentModalOpen close-if=continueDeploymentModalClosed}}
+    {{#em-modal-title}}
+        {{#em-modal-toggler class="close"}}
+            <span aria-hidden="true">×</span><span class="sr-only">Close</span>
+        {{/em-modal-toggler}}
+        <h4 class="modal-title">Continue QCI Deployment - {{deploymentInModal.name}} </h4>
+    {{/em-modal-title}}
+
+    {{#em-modal-body}}
+        Are you sure that you want to deploy {{deploymentInModal.name}}? There
+        are warnings that were found that could cause problems during the
+        deployment.
+    {{/em-modal-body}}
+
+    {{#em-modal-footer}}
+        {{#em-modal-toggler class="btn btn-default"}}
+          Cancel
+        {{/em-modal-toggler}}
+        <button type="submit" {{action 'installDeployment'}} class="btn btn-warning">Yes, Continue</button>
+
+    {{/em-modal-footer}}
+{{/em-modal}}

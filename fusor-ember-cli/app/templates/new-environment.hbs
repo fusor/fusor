@@ -1,0 +1,28 @@
+{{#em-modal-form configName="bs"
+                 id="newLifecycleEnvironmentModal"
+                 open-if=openNewEnvironmentModal
+                 on-submit="createEnvironment"
+                 in-async=async}}
+
+    {{#em-modal-title}}
+        {{#em-modal-toggler class="close"}}
+            <span aria-hidden="true">×</span><span class="sr-only">Close</span>
+        {{/em-modal-toggler}}
+        <h4 class="modal-title">Create Environment</h4>
+    {{/em-modal-title}}
+
+    {{#em-modal-body}}
+        {{#if async}}
+            Submitting, please wait...
+        {{else}}
+            {{text-f label="Environment Name" value=newEnvName labelSize='col-md-4' inputSize='col-md-8'}}
+            {{text-f label="Label" value=envLabelName labelSize='col-md-4' inputSize='col-md-8'}}
+            {{textarea-f label="Description (Optional)" value=description labelSize='col-md-4' inputSize='col-md-8'}}
+        {{/if}}
+    {{/em-modal-body}}
+
+    {{#em-modal-footer}}
+        <button type="submit" class="btn btn-primary" disabled={{async}}>Submit</button>
+    {{/em-modal-footer}}
+
+{{/em-modal-form}}

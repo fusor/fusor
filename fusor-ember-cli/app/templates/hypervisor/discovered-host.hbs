@@ -97,11 +97,4 @@
   <button {{action 'saveHyperVisors' 'rhev-options'}} class='btn btn-primary' disabled={{disableNextOnHypervisor}}>Next <i class="fa fa-angle-right"></i></button>
 {{/cancel-back-next}}
 
-{{naming-scheme-modal openModal=openModalNamingScheme
-                      namingOptions=namingOptions
-                      hostNamingScheme=hostNamingScheme
-                      isStarted=isStarted
-                      customPreprendName=customPreprendName
-                      saveNamingScheme='saveNamingScheme'
-                      cancelNamingScheme='cancelNamingScheme'
-                      }}
+{{partial 'naming-scheme-modal'}}

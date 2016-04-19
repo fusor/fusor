@@ -34,7 +34,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   actions: {
     registerNewSatellite() {
       this.set('showErrorMessage', false);
-      this.set('openModal', true);
+      this.set('openRegisterNewSatelliteModal', true);
     },
 
     selectManagementApp(managementApp) {

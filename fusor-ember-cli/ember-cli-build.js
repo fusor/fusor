@@ -22,7 +22,6 @@ module.exports = function(defaults) {
   // these app.import lines are used in 'master' branch
   app.import('bower_components/patternfly/components/bootstrap/js/tooltip.js');
   app.import('bower_components/patternfly/components/bootstrap/js/popover.js');
-  app.import('bower_components/patternfly/components/bootstrap/js/modal.js');
   app.import('bower_components/jquery-csv/src/jquery.csv.js');
   app.import('bower_components/matchmedia/matchMedia.js');
 

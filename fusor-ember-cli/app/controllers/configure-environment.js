@@ -23,7 +23,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymen
   hasLifecycleEnvironment: Ember.computed.alias("deploymentController.hasLifecycleEnvironment"),
   hasNoLifecycleEnvironment: Ember.computed.alias("deploymentController.hasNoLifecycleEnvironment"),
   disableNextOnLifecycleEnvironment: Ember.computed.alias("deploymentController.disableNextOnLifecycleEnvironment"),
-  openModal: false,
+  openNewEnvironmentModal: false,
 
   deployment: Ember.computed.alias("deploymentController.model"),
 
@@ -37,11 +37,10 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymen
     newEnvironment() {
       this.set('newEnvName', '');
       this.set('description', '');
-      // this opens it
-      this.set('openModal', true);
+      this.set('openNewEnvironmentModal', true);
     },
 
-    createEnvironment(fields_env) {
+    createEnvironment() {
       var self = this;
 
       var envName = this.get('newEnvName');
@@ -51,7 +50,9 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymen
       }
 
       var selectedOrganization = this.get('selectedOrganization');
-      this.set('fields_env', fields_env);
+      this.set('fields_env.name', this.get('newEnvName'));
+      this.set('fields_env.label', this.get('envLabelName'));
+      this.set('fields_env.description', this.get('description'));
       this.set('fields_env.organization', selectedOrganization);
 
       var library = this.get('libraryEnv');
