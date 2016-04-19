@@ -1,0 +1,28 @@
+The following are prerequisites for each of the products you have selected to deploy:
+
+General
+- Red Hat Customer Portal username and password
+- Sufficient subscriptions. To check your subscriptions, log in to https://access.redhat.com/management/subscriptions
+- Host machines are started and discoverable
+- Networks and subnets are set up and available
+
+Disconnected network scenario
+If you are deploying into an environment that does not have external network access, these are additional requirements:
+- URL to an alternate repository to download content from
+- Subscription manifest. For more information about obtaining a manifest, see https://access.redhat.com/solutions/118573
+
+Red Hat Enterprise Virtualization
+- 2 hosts (1 for engine, 1 for hypervisor). Engine host requires 10GB disk space, 2GB RAM, and 1 CPU. Hypervisor host requires 10GB disk space, 12GB RAM, and 4 CPUs
+- All host hardware clocks are synchronized with the hardware clock on the Satellite system
+- NFS share. For both data domain and export domain: IP address and shared path
+
+Red Hat OpenStack Platform
+- IP address to the undercloud that was set up according to the instructions found in QuickStart Cloud Installer Installation Guide
+- 2 nodes (1 controller, 1 compute). Each node requires 100GB disk space, 16GB RAM, and 4 CPUs
+- All node hardware clocks are synchronized with the hardware clock on the Satellite system
+
+Red Hat CloudForms
+No specific requirements
+
+OpenShift Enterprise by Red Hat
+No specific requirements

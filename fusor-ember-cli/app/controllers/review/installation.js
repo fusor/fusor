@@ -1,7 +1,8 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
+import OpenshiftMixin from "../../mixins/openshift-mixin";
 
-export default Ember.Controller.extend(NeedsDeploymentMixin, {
+export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
 
   rhevController: Ember.inject.controller('rhev'),
   rhevSetupController: Ember.inject.controller('rhev-setup'),
@@ -67,6 +68,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isOpenStackOpen: true,
   isCloudFormsOpen: true,
   isSubscriptionsOpen: true,
+  isOpenshiftOpen: true,
 
   engineHostAddressDefault: 'ovirt-hypervisor.rhci.redhat.com',
   hostAddress: Ember.computed.alias("rhevOptionsController.hostAddress"),
@@ -80,6 +82,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isRhev: Ember.computed.alias("deploymentController.isRhev"),
   isOpenStack: Ember.computed.alias("deploymentController.isOpenStack"),
   openStack: Ember.computed.alias("deploymentController.openStack"),
+  isOpenShift: Ember.computed.alias("deploymentController.isOpenShift"),
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
   isSubscriptions: Ember.computed.alias("deploymentController.isSubscriptions"),
 
@@ -165,6 +168,16 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   ),
 
+  fullOpenshiftSubdomain: Ember.computed(
+    'model.openshift_subdomain_name',
+    'deploymentController.defaultDomainName',
+    function() {
+      const subdomainName = this.get('model.openshift_subdomain_name');
+      const defaultDomainName = this.get('deploymentController.defaultDomainName');
+      return `${subdomainName}.${defaultDomainName}`;
+    }
+  ),
+
   nameRHCI: Ember.computed.alias("deploymentController.nameRHCI"),
   nameRhev: Ember.computed.alias("deploymentController.nameRhev"),
   nameOpenStack: Ember.computed.alias("deploymentController.nameOpenStack"),
@@ -188,9 +201,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
         }
       } else {
         if (this.get('isCloudForms')) {
-          return 'cloudforms/cfme-configuration';
+          return 'cloudforms.cfme-configuration';
+        } else if (this.get('isOpenShift')) {
+          return 'openshift.openshift-configuration';
         } else if (this.get('isOpenStack')) {
-          // TODO
+          return 'openstack.overcloud';
         } else if (this.get('isRhev')) {
           return 'storage';
         }
@@ -212,6 +227,29 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       return 'Quantity';
     } else {
       return 'Quantity Added';
+    }
+  }),
+
+  ramNeededGB: Ember.computed('ramNeeded', function() {
+    return this.get('ramNeeded') + ' GB';
+  }),
+
+  diskNeededGB: Ember.computed('diskNeeded', function() {
+    return this.get('diskNeeded') + ' GB';
+  }),
+
+  storageSizeGB: Ember.computed('storageSize', function() {
+    return this.get('storageSize') + ' GB';
+  }),
+
+  deploymentButtonAction: Ember.computed('hasSubscriptionsToAttach', function() {
+    if (this.get('showWarningMessage')) {
+        return "showContinueDeployModal";
+    } else if (this.get('hasSubscriptionsToAttach')) {
+        return "attachSubscriptions";
+        return "installDeployment";
+    } else if (this.get('showWarningMessage')) {
+        return "showContinueDeployModal";
     }
   }),
 

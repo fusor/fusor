@@ -13,6 +13,10 @@
     {{wizard-item num=stepNumberOpenstack name=nameOpenStack routeName='openstack' isDisabled=isDisabledOpenstack currentStepNumber=currentStepNumber fullname=fullnameOpenStack}}
   {{/if}}
 
+  {{#if isOpenShift}}
+    {{wizard-item num=stepNumberOpenShift name=nameOpenShift routeName='openshift' isDisabled=isDisabledOpenShift currentStepNumber=currentStepNumber fullname=fullnameOpenShift}}
+  {{/if}}
+
   {{#if isCloudForms}}
     {{wizard-item num=stepNumberCloudForms name=nameCloudForms routeName='cloudforms' isDisabled=isDisabledCloudForms currentStepNumber=currentStepNumber fullname=fullnameCloudForms}}
   {{/if}}

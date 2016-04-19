@@ -1,0 +1,20 @@
+{
+    "apiVersion": "v1",
+    "kind": "PersistentVolume",
+    "metadata": {
+        "name": "registry-volume",
+        "labels": {
+            "deploymentconfig": "docker-registry"
+        }
+    },
+    "spec": {
+        "capacity": {
+            "storage": "10Gi"
+        },
+        "accessModes": [ "ReadWriteMany" ],
+        "nfs": {
+            "path": "/var/export/registryvol",
+            "server": "master.example.com"
+        }
+    }
+}

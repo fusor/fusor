@@ -47,6 +47,11 @@ module Actions
             plan_action(::Actions::Fusor::Deployment::CloudForms::DeployAsSubPlan,
                         deployment)
           end
+
+          if deployment.deploy_openshift
+            plan_action(::Actions::Fusor::Deployment::OpenShift::DeployAsSubPlan,
+                        deployment)
+          end
         end
         plan_self(:deployment_label => deployment.label, :deployment_id => deployment.id)
       end

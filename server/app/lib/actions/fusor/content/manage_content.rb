@@ -31,7 +31,8 @@ module Actions
             host_groups = SETTINGS[:fusor][:host_groups]
             product_map = {rhev: [:rhevm, :rhevh],
                            cfme: [:cloudforms],
-                           openstack: [:openstack]
+                           openstack: [:openstack],
+                           openshift: [:openshift]
             }
 
             enable_smart_class_parameter_overrides

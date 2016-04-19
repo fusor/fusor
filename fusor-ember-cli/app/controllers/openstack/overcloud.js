@@ -5,6 +5,7 @@ import { PresenceValidator, EqualityValidator, IpRangeValidator, CidrValidator, 
 
 let OvercloudController = Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
+  isOpenShift: Ember.computed.alias("deploymentController.isOpenShift"),
   openstackOvercloudPrivateNet: Ember.computed.alias('deploymentController.model.openstack_overcloud_private_net'),
   openstackOvercloudFloatNet: Ember.computed.alias('deploymentController.model.openstack_overcloud_float_net'),
   openstackOvercloudFloatGateway: Ember.computed.alias('deploymentController.model.openstack_overcloud_float_gateway'),
@@ -34,6 +35,8 @@ let OvercloudController = Ember.Controller.extend(DeploymentControllerMixin, Nee
   nextStepRouteNameOvercloud: Ember.computed('isCloudForms', function() {
     if (this.get('isCloudForms')) {
       return 'cloudforms';
+    } else if (this.get('isOpenShift')) {
+      return 'openshift';
     } else {
       return 'subscriptions';
     }

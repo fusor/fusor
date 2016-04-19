@@ -20,6 +20,12 @@ export default Ember.Component.extend({
     return (this.get('type') ? this.get('type') : 'text');
   }),
 
+  cssFormClass: Ember.computed('preText', 'postText', function () {
+    if (Ember.isEmpty(this.get('preText')) && Ember.isEmpty(this.get('postText'))) {
+        return 'form-control';
+    }
+  }),
+
   validIsRequiredAndBlank: Ember.computed('value', 'isRequired', function() {
     return (this.get('isRequired') && Ember.isBlank(this.get('value')));
   }),

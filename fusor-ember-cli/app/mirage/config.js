@@ -135,6 +135,10 @@ export default function() {
 
   this.post('/customer_portal/consumers/:uuid/entitlements');
 
+  this.get('/api/v2/settings', function(db, request) {
+    return {results: db.settings};
+  });
+
   /*
     Route shorthand cheatsheet
   */

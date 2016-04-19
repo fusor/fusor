@@ -48,7 +48,7 @@ module Actions
                                               image_file_name(SETTINGS[:fusor][:content][:cloudforms], :rhev_image_file_name))
 
                 upload_action = plan_action(::Actions::Fusor::Deployment::Rhev::UploadImage,
-                                            deployment, transfer_action.output[:image_file_name])
+                                            deployment, transfer_action.output[:image_file_name], "cfme")
 
                 plan_action(::Actions::Fusor::Deployment::Rhev::ImportTemplate,
                             deployment, upload_action.output[:template_name])

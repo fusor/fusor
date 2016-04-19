@@ -36,6 +36,15 @@
         {{/accordion-item}}
     {{/if}}
 
+    {{#if isOpenShift}}
+        {{#accordion-item name="OpenShift Enterprise" isOpen=isOpenShiftOpen}}
+            {{review-link label='Master URL'
+                          value=oseMasterUrl
+                          isExternalURL=true
+                          ipAddress=oseMasterIpUrl}}
+        {{/accordion-item}}
+    {{/if}}
+
     {{#if isCloudForms}}
       {{#accordion-item name="Cloud Forms Management Engine" isOpen=true}}
 

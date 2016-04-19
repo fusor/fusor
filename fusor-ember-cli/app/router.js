@@ -52,6 +52,10 @@ export default Router.map(function() {
       this.route('where-install', {resetNamespace: true});
       this.route('cfme-configuration', { path: 'configuration' });
     });
+    this.route('openshift', {resetNamespace: true}, function() {
+      this.route('openshift-nodes', { path: 'nodes' });
+      this.route('openshift-configuration', { path: 'configuration' });
+    });
     this.route('subscriptions', {resetNamespace: true}, function() {
       this.route('credentials');
       this.route('management-application', function() {

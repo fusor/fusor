@@ -1,0 +1,31 @@
+<h1 class='num-ose-node pull-left'>{{numNodes}}</h1>
+
+<div class='node-details-block'>
+
+  Each {{typeNode}} node has:
+  <br />
+
+  {{ose-node-detail-line label='vCPU'
+                         value=valueVcpu
+                         isEditMode=isEditMode}}
+
+  {{ose-node-detail-line label='RAM'
+                         value=valueRam
+                         isEditMode=isEditMode
+                         suffix='GB'}}
+
+  {{ose-node-detail-line label='Disk'
+                         value=valueDisk
+                         isEditMode=isEditMode
+                         suffix='GB'}}
+
+  {{#if storageSize}}
+    <div class='row ose-node-line'>
+      <div class="col-md-1"></div>
+      <div class='col-md-9'>
+        {{storageSize}} GB for Docker
+      </div>
+    </div>
+  {{/if}}
+
+</div>
