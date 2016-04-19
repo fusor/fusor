@@ -22,6 +22,16 @@ export default Ember.Controller.extend({
     } else {
       return sortedDeployments;
     }
-  })
+  }),
 
+  // related to deleted-deployment-modal
+  isOpenModal: false,
+  deploymentInModal: null,
+
+  actions: {
+    openDeploymentModal(item) {
+      this.set('deploymentInModal', item);
+      return this.set('isOpenModal', true);
+    }
+  }
 });

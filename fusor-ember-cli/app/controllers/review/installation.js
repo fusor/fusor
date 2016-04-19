@@ -57,11 +57,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return this.get('validationErrors.length') > 0;
   }),
 
-  errorMsg: false,
-  showErrorMessage: Ember.isPresent('errorMsg'),
-  warningMsg: null,
-  showWarningMessage: Ember.isPresent('warningMsg'),
-
   foremanTasksURL: null,
   skipContent: Ember.computed.alias("deploymentController.skipContent"),
 
@@ -220,24 +215,18 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   }),
 
-  deploymentButtonAction: Ember.computed('hasSubscriptionsToAttach', function() {
-    if (this.get('showWarningMessage')) {
-        return "showContinueDeployModal";
-    } else if (this.get('hasSubscriptionsToAttach')) {
-        return "attachSubscriptions";
-        return "installDeployment";
-    } else if (this.get('showWarningMessage')) {
-        return "showContinueDeployModal";
-    }
-  }),
-
   closeContinueDeployModal() {
-    this.set('openModal', false);
+    this.set('continueDeploymentModalOpen', false);
+    this.set('continueDeploymentModalClosed', true);
+    this.set('modalOpen', false);
   },
 
   actions: {
     showContinueDeployModal() {
-      this.set('openModal', true);
+      this.set('deploymentInModal', this.get('model'));
+      this.set('continueDeploymentModalOpen', true);
+      this.set('continueDeploymentModalClosed', false);
+      this.set('modalOpen', true);
     },
 
     onDeployButton() {

@@ -1,8 +1,21 @@
-{{#pf-modal-base idModal='namingSchemeModal'
-                 openModal=openModal
-                 title="Edit Naming Scheme"}}
+{{#em-modal-form configName="bs"
+                 id="namingSchemeModal"
+                 open-if=isOpenNamingSchemeModal
+                 close-if=isCloseNamingSchemeModal
+                 on-submit="saveNamingScheme"
+                 in-async=async}}
 
-      {{#pf-modal-body}}
+    {{#em-modal-title}}
+        {{#em-modal-toggler class="close"}}
+            <span aria-hidden="true">×</span><span class="sr-only">Close</span>
+        {{/em-modal-toggler}}
+        <h4 class="modal-title">Edit Naming Scheme</h4>
+    {{/em-modal-title}}
+
+    {{#em-modal-body}}
+        {{#if async}}
+            Submitting, please wait...
+        {{else}}
             <p>
             Enforcing a naming scheme will ensure all selected hypervisors get named automatically and consistently.
             </p>
@@ -43,11 +56,12 @@
 
               </div>
             </form>
-      {{/pf-modal-body}}
+        {{/if}}
+    {{/em-modal-body}}
 
-      {{#pf-modal-footer}}
+    {{#em-modal-footer}}
         <button {{action 'cancelNamingScheme'}} class="btn btn-default">Cancel</button>
-        <button {{action 'saveNamingScheme'}} class="btn btn-primary">Edit</button>
-      {{/pf-modal-footer}}
+        <button type="submit" class="btn btn-primary" disabled={{async}}>Edit</button>
+    {{/em-modal-footer}}
 
-{{/pf-modal-base}}
+{{/em-modal-form}}

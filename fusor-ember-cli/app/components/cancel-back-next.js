@@ -11,17 +11,16 @@ export default Ember.Component.extend({
 
     saveAndCancelDeployment() {
       this.get('targetObject').send('saveAndCancelDeployment');
-      return this.set('openModal', false);
+      this.set('openModal', false);
     },
 
     cancelAndDeleteDeployment() {
       this.get('targetObject').send('cancelAndDeleteDeployment');
-      return this.set('openModal', false);
+      this.set('openModal', false);
     },
 
     cancelAndRollbackNewDeployment() {
       this.get('targetObject').send('cancelAndRollbackNewDeployment');
-      return this.set('openModal', false);
     }
   }
 
