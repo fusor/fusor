@@ -83,7 +83,7 @@ module Fusor
 
     has_many :openshift_hosts, serializer: ::HostBaseSerializer
     def openshift_hosts
-      object.ose_master_hosts
+      object.ose_master_hosts + object.ose_worker_hosts
     end
 
     has_many :subscriptions, serializer: Fusor::SubscriptionSerializer

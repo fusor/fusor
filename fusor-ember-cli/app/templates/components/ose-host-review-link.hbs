@@ -1,0 +1,9 @@
+{{#if isWorkerNode}}
+  {{review-link label=linkLabel value=oseHost.name}}
+{{else}}
+  {{review-link
+    label=linkLabel
+    value=linkValue
+    isExternalURL=true
+    ipAddress=linkIp}}
+{{/if}}
