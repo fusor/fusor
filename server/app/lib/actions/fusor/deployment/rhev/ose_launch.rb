@@ -36,9 +36,7 @@ module Actions
             hostgroup = find_hostgroup(deployment, hostgroup_name)
             os = Operatingsystem.find(hostgroup.operatingsystem_id)
 
-            ::Fusor.log.info '====== Generating randomized password for root access ======'
-            deployment.openshift_root_password = SecureRandom.hex(10)
-            deployment.save!
+            generate_root_password(deployment)
 
             ensure_vda_only_ptable(ptable_name)
             update_ptable_for_os(ptable_name, os.title)
@@ -182,6 +180,12 @@ module Actions
                 where(:ancestry => ancestry).
                 joins(:organizations).
                 where("taxonomies.id in (?)", [deployment.organization.id]).first
+          end
+
+          def generate_root_password(deployment)
+            ::Fusor.log.info '====== Generating randomized password for root access ======'
+            deployment.openshift_root_password = SecureRandom.hex(10)
+            deployment.save!
           end
 
           def ensure_vda_only_ptable(ptable_name)
