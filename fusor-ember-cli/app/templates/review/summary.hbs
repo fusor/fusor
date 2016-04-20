@@ -38,10 +38,24 @@
 
     {{#if isOpenShift}}
         {{#accordion-item name="OpenShift Enterprise" isOpen=isOpenShiftOpen}}
-            {{review-link label='Master URL'
-                          value=oseMasterUrl
-                          isExternalURL=true
-                          ipAddress=oseMasterIpUrl}}
+          {{#each model.openshift_master_hosts as |masterHost|}}
+            {{ose-host-review-link oseHost=masterHost}}
+          {{/each}}
+
+          {{#each model.openshift_worker_hosts as |workerHost|}}
+            {{ose-host-review-link oseHost=workerHost}}
+          {{/each}}
+
+          {{review-link label='Example Application'
+                        value=exampleAppUrl
+                        isExternalURL=true}}
+
+          {{review-link
+            label='WebUI Username '
+            value=model.openshift_username}}
+          {{review-link
+            label='WebUI Password'
+            value=model.openshift_user_password}}
         {{/accordion-item}}
     {{/if}}
 

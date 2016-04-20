@@ -36,20 +36,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   selectedRhevEngine: Ember.computed.alias("deploymentController.model.discovered_host"),
   deploymentLabel: Ember.computed.alias('deploymentController.model.label'),
 
-  oseMasterUrl: Ember.computed('oseMasterHost', function() {
-    let masterHost = this.get('oseMasterHost');
-    return `https://${masterHost.get('name')}:8443`;
-  }),
+  exampleAppUrl: Ember.computed('deploymentController.defaultDomainName', function() {
+    const domainName = this.get('deploymentController.defaultDomainName');
+    const subdomainName = this.get('model.openshift_subdomain_name');
 
-  oseMasterIpUrl: Ember.computed('deploymentLabel', function() {
-    let masterHost = this.get('oseMasterHost');
-    return `https://${masterHost.get('ip')}:8443`;
-  }),
-
-  oseMasterHosts: Ember.computed.alias('deploymentController.model.openshift_master_hosts'),
-
-  oseMasterHost: Ember.computed('oseMasterHosts', function() {
-    return this.get('oseMasterHosts')[0];
+    return `https://hello-openshift.${subdomainName}.${domainName}`;
   }),
 
   rhevEngineUrl: Ember.computed('selectedRhevEngine', function() {

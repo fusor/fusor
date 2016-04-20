@@ -108,8 +108,15 @@ export default DS.Model.extend({
 
   openshift_hosts: DS.hasMany('openshift-host', {async: true}),
   openshift_master_hosts: Ember.computed('openshift_hosts', function() {
+    const regexFilter = /ose-master\d+\./;
     return this.get('openshift_hosts')
-      .filter(host => host.get('name').indexOf('master') > -1);
+      .filter(host => regexFilter.test(host.get('name')));
+  }),
+
+  openshift_worker_hosts: Ember.computed('openshift_hosts', function() {
+    const regexFilter = /ose-node\d+\./;
+    return this.get('openshift_hosts')
+      .filter(host => regexFilter.test(host.get('name')));
   }),
 
   cloudforms_vcpu: DS.attr('number'),
@@ -187,5 +194,4 @@ export default DS.Model.extend({
   })
 
 });
-
 
