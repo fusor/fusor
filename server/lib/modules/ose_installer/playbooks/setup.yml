@@ -8,23 +8,16 @@
       with_items:
         - docker
 
-    #- name: temporarily downgrade docker
-    #  shell: sudo yum downgrade -y docker
+    - name: scp docker storage configuration
+      action: copy src="../files/docker-storage-setup" dest="/etc/sysconfig/docker-storage-setup" owner=root mode=0775
 
-    #- name: scp docker storage configuration
-    #  action: copy src="../files/docker-storage-setup" dest="/etc/sysconfig/docker-storage-setup" owner=root mode=0775
+    - name: check if docker volume already exists
+      stat: path=/dev/{{docker_volume}}
+      register: p
 
-    #- name: check if docker volume already exists
-    #  stat: path=/dev/{{docker_volume}}
-    #  register: p
-
-    #- name: Setup docker storage
-    #  command: docker-storage-setup
-    #  when: p.stat.isdir is not defined
-
-    #- name: Add external route temporarily for docker registry
-    #  shell: route add default gw 192.168.52.1
-    #  ignore_errors: yes
+    - name: Setup docker storage
+      command: docker-storage-setup
+      when: p.stat.isdir is not defined
 
     - name: Start docker services
       service: name=docker state=started
