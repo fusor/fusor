@@ -122,6 +122,13 @@
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
+        :repository_set_id: "2472"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server - RH Common (RPMs)"
+        :basearch: "x86_64"
+        :releasever: "7Server"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :product_id: "69"
         :repository_set_id: "3030"
         :repository_set_name: "Red Hat Enterprise Linux 7 Server - Extras (RPMs)"
         :basearch: "x86_64"
