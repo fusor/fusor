@@ -58,7 +58,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
   loadCloudFormsDefaults(controller, model) {
     // GET from API v2 CFME settings for Foreman/Sat6 - if CFME is selected
     if (model.get('deploy_cfme')) {
-      request('api/v2/settings?search=cloudforms').then(function(settings) {
+      request('/api/v2/settings?search=cloudforms').then(function(settings) {
         var results = settings['results'];
         // overwrite values for deployment since Sat6 settings is only place to change CFME VM requirements
         model.set('cloudforms_vcpu', results.findBy('name', 'cloudforms_vcpu').value);
@@ -72,7 +72,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
   loadOpenshiftDefaults(controller, model) {
     // GET from API v2 OSE settings for Foreman/Sat6
     if (model.get('deploy_openshift')) {
-      request('api/v2/settings?search=openshift').then(function(settings) {
+      request('/api/v2/settings?search=openshift').then(function(settings) {
         var results = settings['results'];
         if (!(model.get('openshift_master_vcpu') > 0)) {
           model.set('openshift_master_vcpu', results.findBy('name', 'openshift_master_vcpu').value);
