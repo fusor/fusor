@@ -40,7 +40,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     const domainName = this.get('deploymentController.defaultDomainName');
     const subdomainName = this.get('model.openshift_subdomain_name');
 
-    return `https://hello-openshift.${subdomainName}.${domainName}`;
+    return `http://hello-openshift.${subdomainName}.${domainName}`;
   }),
 
   rhevEngineUrl: Ember.computed('selectedRhevEngine', function() {
