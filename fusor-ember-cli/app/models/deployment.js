@@ -91,6 +91,7 @@ export default DS.Model.extend({
   openshift_storage_size: DS.attr('number'),
   openshift_username: DS.attr('string'),
   openshift_user_password: DS.attr('string'),
+  openshift_root_password: DS.attr('string'),
   openshift_master_vcpu: DS.attr('number'),
   openshift_master_ram: DS.attr('number'),
   openshift_master_disk: DS.attr('number'),

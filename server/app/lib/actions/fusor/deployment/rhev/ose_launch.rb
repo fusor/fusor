@@ -11,6 +11,7 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 require 'net/http'
 require 'net/ssh'
+require 'securerandom'
 
 module Actions
   module Fusor
@@ -34,6 +35,8 @@ module Actions
             ptable_name = "#{hostgroup_name} Ptable"
             hostgroup = find_hostgroup(deployment, hostgroup_name)
             os = Operatingsystem.find(hostgroup.operatingsystem_id)
+
+            generate_root_password(deployment)
 
             ensure_vda_only_ptable(ptable_name)
             update_ptable_for_os(ptable_name, os.title)
@@ -99,11 +102,8 @@ module Actions
               end
             end
 
-            #TODO: Need to revisit and remove these hardcoded values.
-            # https://trello.com/c/sSVPuP8b
-
             username = 'root'
-            password = 'dog8code'
+            password = deployment.openshift_root_password
 
             # wait for all the master nodes to fully boot with sshd available
             deployment.ose_master_hosts.each do |host|
@@ -180,6 +180,12 @@ module Actions
                 where(:ancestry => ancestry).
                 joins(:organizations).
                 where("taxonomies.id in (?)", [deployment.organization.id]).first
+          end
+
+          def generate_root_password(deployment)
+            ::Fusor.log.info '====== Generating randomized password for root access ======'
+            deployment.openshift_root_password = SecureRandom.hex(10)
+            deployment.save!
           end
 
           def ensure_vda_only_ptable(ptable_name)

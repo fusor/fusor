@@ -4,6 +4,6 @@
 # For more details refer to "man docker-storage-setup"
 
 # Workaround for https://trello.com/c/1fhpNoVQ, use loopback
-#DEVS=/dev/vdb
-#VG=docker-vg
+DEVS=/dev/vdb
+VG=docker-vg
 

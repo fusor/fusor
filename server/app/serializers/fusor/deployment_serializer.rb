@@ -49,6 +49,7 @@ module Fusor
                :openshift_storage_size,
                :openshift_username,
                :openshift_user_password,
+               :openshift_root_password,
                :openshift_master_vcpu,
                :openshift_master_ram,
                :openshift_master_disk,

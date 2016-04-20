@@ -208,7 +208,7 @@ module Utils
                        "architecture_id" => Architecture.find_by_name(@architecture)['id'],
                        "operatingsystem_id" => Operatingsystem.find_by_title(@operatingsystem)['id'],
                        "domain_id" => 1,
-                       "root_pass" => "dog8code",
+                       "root_pass" => @deployment.openshift_root_password,
                        "mac" => "admin"
                       }.with_indifferent_access
       end

@@ -8,10 +8,7 @@ module Utils
         @key_from_path = File.join(Rails.root, 'ssh-keys', 'openshift', "#{@deployment.label}-#{@deployment.id}")
         @key_to_path   = ".ssh"
         @key_base_name = "id_#{@key_type}"
-
-        #TODO need to read this from deployment set from WebUI
-        # https://trello.com/c/sSVPuP8b
-        @root_password = 'dog8code'
+        @root_password = @deployment.openshift_root_password
       end
 
       def get_ssh_private_key_path
