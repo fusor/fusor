@@ -1,12 +1,9 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 import {
-  AllValidator,
-  PresenceValidator,
-  AlphaNumericDashUnderscoreValidator,
-  HostnameValidator,
   PasswordValidator,
-  EqualityValidator
+  EqualityValidator,
+  validateZipper
 } from '../../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
@@ -30,39 +27,29 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   ),
 
-  openshiftUsernameValidator: Ember.computed.alias("openshiftController.openshiftUsernameValidator"),
-  isValidOpenshiftConfiguration: Ember.computed.alias("openshiftController.isValidOpenshiftConfiguration"),
-  isInvalidOpenshiftConfiguration: Ember.computed.alias("openshiftController.isInvalidOpenshiftConfiguration"),
+  isValidOpenshiftConfiguration: Ember.computed.alias('openshiftController.isValidOpenshiftConfiguration'),
+  isInvalidOpenshiftConfiguration: Ember.computed.alias('openshiftController.isInvalidOpenshiftConfiguration'),
+
+  storageNameValidator: Ember.computed.alias('openshiftController.storageNameValidator'),
+  storageHostValidator: Ember.computed.alias('openshiftController.storageHostValidator'),
+  exportPathValidator: Ember.computed.alias('openshiftController.exportPathValidator'),
+  usernameValidator: Ember.computed.alias('openshiftController.usernameValidator'),
+  subdomainValidator: Ember.computed.alias('openshiftController.subdomainValidator'),
 
   userpassword: Ember.computed.alias('model.openshift_user_password'),
-
   passwordValidator: PasswordValidator.create({}),
 
-  confirmUserpasswordValidator: Ember.computed('userpassword', function() {
+  confirmUserPasswordValidator: Ember.computed('userpassword', function() {
     return EqualityValidator.create({equals: this.get('userpassword')});
   }),
 
-  hasEndingSlashInExportPath: Ember.computed('model.openshift_export_path', function() {
-    if (Ember.isPresent(this.get('model.openshift_export_path'))) {
-      return (this.get('model.openshift_export_path').slice('-1') === '/');
-    }
+  isPasswordValid: Ember.computed('userpassword', 'confirmUserPassword', function() {
+    return validateZipper([
+      [this.get('passwordValidator'), this.get('userpassword')],
+      [this.get('confirmUserPasswordValidator'), this.get('confirmUserPassword')]
+    ]);
   }),
-
-  hasNoLeadingSlashInExportPath: Ember.computed('model.openshift_export_path', function() {
-    if (Ember.isPresent(this.get('model.openshift_export_path'))) {
-      return (this.get('model.openshift_export_path').charAt(0) !== '/');
-    }
-  }),
-
-  errorsHashExportPath: Ember.computed('hasEndingSlashInExportPath', 'model.openshift_export_path', function() {
-    if (this.get('hasNoLeadingSlashInExportPath')) {
-      return {"name": 'You must have a leading slash'};
-    } else if (this.get('hasEndingSlashInExportPath')) {
-      return {"name": 'You cannot have a trailing slash'};
-    } else {
-      return {};
-    }
-  }),
+  isInvalidPassword: Ember.computed.not('isPasswordValid'),
 
   isNFS: Ember.computed('model.openshift_storage_type', function() {
     return (this.get('model.openshift_storage_type') === 'NFS');
@@ -76,51 +63,15 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return (this.get('model.openshift_storage_type') === 'Gluster');
   }),
 
-  isInvalidExportPath: Ember.computed(
-    'model.openshift_export_path',
-    'hasEndingSlashInExportPath',
-    'hasNoLeadingSlashInExportPath',
-    function() {
-      return (Ember.isBlank(this.get('model.openshift_export_path')) ||
-              this.get('hasEndingSlashInExportPath') ||
-              this.get('hasNoLeadingSlashInExportPath')
-             );
-    }
-  ),
-
-  invalidStorageName: Ember.computed('model.openshift_storage_name', function() {
-      var validAlphaNumbericRegex = new RegExp(/^[A-Za-z0-9_-]+$/);
-      if (Ember.isPresent(this.get('model.openshift_storage_name'))) {
-          return !(this.get('model.openshift_storage_name').trim().match(validAlphaNumbericRegex));
-      }
-  }),
-
-  hostnameValidator: AllValidator.create({
-    validators: [
-      PresenceValidator.create({}),
-      AlphaNumericDashUnderscoreValidator.create({})
-    ]
-  }),
-
   postTextDomainName: Ember.computed('domainName', function() {
     return "." + this.get('domainName');
   }),
 
-  invalidSubdomain: Ember.computed('model.openshift_subdomain_name', function() {
-    return !this.get('hostnameValidator').isValid(this.get('model.openshift_subdomain_name'));
-  }),
-
   disableNextOpenshiftConfig: Ember.computed(
-    'invalidStorageName',
-    'isInvalidExportPath',
-    'invalidSubdomain',
+    'isInvalidOpenshiftConfiguration',
+    'isInvalidPassword',
     function () {
-        return (this.get('invalidStorageName') ||
-                this.get('isInvalidExportPath') ||
-                this.get('invalidSubdomain'));
+      return this.get('isInvalidOpenshiftConfiguration') || this.get('isInvalidPassword');
     }
-  ),
-
-  validRhevStorage: Ember.computed.not('disableNextStorage'),
-
+  )
 });

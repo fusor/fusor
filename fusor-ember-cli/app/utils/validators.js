@@ -125,7 +125,7 @@ const UniquenessValidator = Validator.extend({
 // String message;
 const RegExpValidator = Validator.extend({
   trim: true,
-  
+
   isValid(value) {
     let trimmedValue = this.get('trim') && Ember.typeOf(value) === 'string' ? value.trim() : value;
     return Ember.isBlank(trimmedValue) || this.get('regExp').test(trimmedValue);
@@ -184,6 +184,27 @@ const HostAddressValidator = AnyValidator.extend({
   message: 'invalid host or ip address'
 });
 
+const NoTrailingSlashValidator = Validator.extend({
+  message: 'You cannot have a trailing slash',
+  isValid(value) {
+    return value.slice(-1) !== '/';
+  }
+});
+
+const LeadingSlashValidator = Validator.extend({
+  message: 'You must have a leading slash',
+  isValid(value) {
+    return value.charAt(0) === '/';
+  }
+});
+
+const NfsPathValidator = AllValidator.extend({
+  validators: [
+    LeadingSlashValidator.create({}),
+    NoTrailingSlashValidator.create({})
+  ]
+});
+
 function validateZipper(zipper){
   return zipper
     .map((pair) => pair[0].isValid(pair[1]))
@@ -207,5 +228,6 @@ export {
   HostAddressValidator,
   MacAddressValidator,
   HostnameValidator,
+  NfsPathValidator,
   validateZipper
 };

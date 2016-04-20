@@ -5,7 +5,7 @@ export default Ember.Route.extend({
   setupController(controller, model) {
     controller.set('model', model);
 
-    controller.set('confirmUserpassword', model.get('openshift_user_password'));
+    controller.set('confirmUserPassword', model.get('openshift_user_password'));
 
     if (Ember.isEmpty(model.get('openshift_storage_type'))) {
       model.set('openshift_storage_type', 'NFS');

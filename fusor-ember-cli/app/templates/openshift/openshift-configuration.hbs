@@ -1,5 +1,5 @@
 <p>
-  Select external storage to store the docker registry images.
+  Configure persistent storage for OpenShift internal Docker registry
 </p>
 
 <form class="form form-horizontal">
@@ -27,35 +27,63 @@
   {{/base-f}}
 
   {{#if isNFS}}
-      {{text-f label="Name" value=model.openshift_storage_name isRequired=true cssId='openshift_storage_name' disabled=isStarted isAlphaNumeric=true}}
-      {{text-f label="Description (Optional)" value=model.openshift_storage_desc  cssId='openshift_storage_desc' disabled=isStarted}}
-      {{text-f label="Export Path" value=model.openshift_export_path isRequired=true cssId='openshift_export_path' disabled=isStarted errors=errorsHashExportPath}}
 
-      <br />
-      <p>
-        Set the user account that will be created and used to configure all nodes.
-      </p>
-      {{text-f label="Username" value=model.openshift_username isRequired=true cssId='openshift_username' disabled=isStarted validator=openshiftUsernameValidator}}
+    {{text-f label="Name"
+      value=model.openshift_storage_name isRequired=true
+      cssId='openshift_storage_name' disabled=isStarted
+      validator=storageNameValidator
+    }}
 
-      {{text-f label="Password" type="password" value=userpassword cssId="openshift_password"
-      isRequired=true validator=passwordValidator
-      placeholder="Must be 8 or more characters"}}
+    {{text-f label="Host"
+      value=model.openshift_storage_host
+      isRequired=true cssId='openshift_storage_host'
+      disabled=isStarted
+      validator=storageHostValidator
+    }}
 
-      {{text-f label="Confirm Password" type="password" value=confirmUserpassword cssId="confirm_openshift_password"
-      isRequired=true validator=confirmUserpasswordValidator
-      placeholder="Must match user password"}}
+    {{text-f label="Export Path"
+      value=model.openshift_export_path
+      isRequired=true cssId='openshift_export_path'
+      disabled=isStarted
+      validator=exportPathValidator
+    }}
+
+    <br />
+
+    <p>
+      Set the user account that will be created and used to configure all nodes.
+    </p>
+
+    {{text-f label="Username" value=model.openshift_username
+      isRequired=true cssId='openshift_username' disabled=isStarted
+      validator=usernameValidator
+    }}
+
+    {{text-f label="Password" type="password"
+      value=userpassword cssId="openshift_password" isRequired=true
+      placeholder="Must be 8 or more characters"
+      validator=passwordValidator
+    }}
+
+    {{text-f label="Confirm Password" type="password"
+      value=confirmUserPassword cssId="confirm_openshift_password" isRequired=true
+      placeholder="Must match user password"
+      validator=confirmUserPasswordValidator
+    }}
 
   {{else if isGluster}}
-
+    {{!-- TODO: Not implemented --}}
   {{else if isDoNotUse}}
-
+    {{!-- TODO: Not implemented --}}
   {{/if}}
 
   <br />
   <p>
     Set subdomain name for a wildcard entry to point to the OpenShift router.
   </p>
-  {{text-f label="Subdomain" value=model.openshift_subdomain_name isRequired=true cssId='openshift_subdomain_name' disabled=isStarted validator=hostnameValidator
+  {{text-f label="Subdomain"
+  value=model.openshift_subdomain_name isRequired=true cssId='openshift_subdomain_name'
+  disabled=isStarted validator=subdomainValidator
   preText="*." postText=postTextDomainName}}
 
 </form>

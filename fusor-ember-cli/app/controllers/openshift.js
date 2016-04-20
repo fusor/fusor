@@ -1,7 +1,16 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 import OpenshiftMixin from "../mixins/openshift-mixin";
-import { AllValidator, PresenceValidator, AlphaNumericDashUnderscoreValidator } from '../utils/validators';
+
+import {
+  AllValidator,
+  PresenceValidator,
+  IpAddressValidator,
+  NfsPathValidator,
+  AlphaNumericDashUnderscoreValidator,
+  HostnameValidator,
+  validateZipper
+} from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
 
@@ -53,18 +62,67 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
   }),
   isInvalidOpenshiftNodes: Ember.computed.not("isValidOpenshiftNodes"),
 
-  openshiftUsernameValidator: AllValidator.create({
+  ////////////////////////////////////////////////////////////
+  // OpenShift Configuration
+  ////////////////////////////////////////////////////////////
+  usernameValidator: AllValidator.create({
     validators: [
       PresenceValidator.create({}),
       AlphaNumericDashUnderscoreValidator.create({})
     ]
   }),
 
-  isValidOpenshiftConfiguration: Ember.computed('model.openshift_username', function() {
-    return this.get('openshiftUsernameValidator').isValid(this.get('model.openshift_username'));
+  storageNameValidator: AllValidator.create({
+    validators: [
+      PresenceValidator.create({}),
+      AlphaNumericDashUnderscoreValidator.create({})
+    ]
   }),
-  isInvalidOpenshiftConfiguration: Ember.computed.not("isValidOpenshiftConfiguration"),
 
+  storageHostValidator: AllValidator.create({
+    validators: [
+      PresenceValidator.create({}),
+      IpAddressValidator.create({})
+    ]
+  }),
+
+  exportPathValidator: AllValidator.create({
+    validators: [
+      PresenceValidator.create({}),
+      NfsPathValidator.create({})
+    ]
+  }),
+
+  subdomainValidator: AllValidator.create({
+    validators: [
+      PresenceValidator.create({}),
+      HostnameValidator.create({})
+    ]
+  }),
+
+  isValidOpenshiftConfiguration: Ember.computed(
+    'storageNameValidator',
+    'storageHostValidator',
+    'exportPathValidator',
+    'usernameValidator',
+    'subdomainValidator',
+    'model.openshift_storage_name',
+    'model.openshift_storage_host',
+    'model.openshift_export_path',
+    'model.openshift_username',
+    'model.openshift_subdomain_name',
+    function()
+  {
+    return validateZipper([
+      [this.get('storageNameValidator'), this.get('model.openshift_storage_name')],
+      [this.get('storageHostValidator'), this.get('model.openshift_storage_host')],
+      [this.get('exportPathValidator'), this.get('model.openshift_export_path')],
+      [this.get('usernameValidator'), this.get('model.openshift_username')],
+      [this.get('subdomainValidator'), this.get('model.openshift_subdomain_name')]
+    ]);
+  }),
+
+  isInvalidOpenshiftConfiguration: Ember.computed.not('isValidOpenshiftConfiguration'),
   validOpenshift: Ember.computed('isValidOpenshiftNodes', 'isValidOpenshiftConfiguration', function() {
       return this.get('isValidOpenshiftNodes') && this.get('isValidOpenshiftConfiguration');
   })
