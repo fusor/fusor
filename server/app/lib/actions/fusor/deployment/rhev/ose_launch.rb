@@ -31,34 +31,39 @@ module Actions
           def run
             ::Fusor.log.info '====== OSE Launch run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
-            hostgroup_name = 'OpenShift'
-            ptable_name = "#{hostgroup_name} Ptable"
-            hostgroup = find_hostgroup(deployment, hostgroup_name)
-            os = Operatingsystem.find(hostgroup.operatingsystem_id)
+            hostgroup = find_hostgroup(deployment, 'OpenShift')
 
             generate_root_password(deployment)
 
+            os = Operatingsystem.find(hostgroup.operatingsystem_id)
+            ptable_name = "#{hostgroup.name} Ptable"
             ensure_vda_only_ptable(ptable_name)
             update_ptable_for_os(ptable_name, os.title)
             update_hostgroup_ptable(hostgroup, ptable_name)
 
-            vm_init_params = {
-              :deployment => deployment,
-              :application => 'ose',
-              :provider => deployment.openshift_install_loc,
-              :hostgroup => hostgroup,
-              :os => os.title,
-              :arch => 'x86_64',
-              :ptable_name => ptable_name
-            }
+            ks_name = "#{hostgroup.name} Kickstart"
+            snippet_name = "rhevm_guest_agent"
+            ct_util = Utils::Fusor::ConfigTemplateUtils.new({:rhevm_guest_agent_snippet_name => snippet_name})
+            ret = ct_util.ensure_ks_with_snippet(ks_name, snippet_name)
+            fail _("====== Could not ensure '#{ks_name}' with '#{snippet_name}'") unless ret
+
+            ks = ConfigTemplate.find_by_name(ks_name)
+            ks.hostgroup_ids = hostgroup.id
+            ks.save!
+
+            vm_init_params = {:deployment => deployment,
+                              :application => 'ose',
+                              :provider => deployment.openshift_install_loc,
+                              :hostgroup => hostgroup,
+                              :os => os.title,
+                              :arch => 'x86_64',
+                              :ptable_name => ptable_name}
 
             # launch master nodes
-            master_vm_launch_params = {
-              :cpu => deployment.openshift_master_vcpu,
-              :ram => deployment.openshift_master_ram,
-              :vda_size => deployment.openshift_master_disk,
-              :other_disks => [deployment.openshift_storage_size]
-            }
+            master_vm_launch_params = {:cpu => deployment.openshift_master_vcpu,
+                                       :ram => deployment.openshift_master_ram,
+                                       :vda_size => deployment.openshift_master_disk,
+                                       :other_disks => [deployment.openshift_storage_size]}
             for i in 1..deployment.openshift_number_master_nodes do
               vmlauncher = Utils::Fusor::VMLauncher.new(vm_init_params)
               vmlauncher.set_hostname("#{deployment.label.tr('_', '-')}-ose-master#{i}")
@@ -73,8 +78,7 @@ module Actions
             end
             subdomain = Net::DNS::ARecord.new({:ip => host.ip,
                                                :hostname => "*.#{deployment.openshift_subdomain_name}.#{Domain.find(host.domain_id)}",
-                                               :proxy => Domain.find(1).proxy
-                                             })
+                                               :proxy => Domain.find(1).proxy})
             if subdomain.valid?
               ::Fusor.log.debug "====== OSE wildcard subdomain is not valid, it might conflict with a previous entry. Skipping. ======"
             else
@@ -83,12 +87,10 @@ module Actions
             end
 
             # launch worker nodes
-            worker_vm_launch_params = {
-              :cpu => deployment.openshift_node_vcpu,
-              :ram => deployment.openshift_node_ram,
-              :vda_size => deployment.openshift_node_disk,
-              :other_disks => [deployment.openshift_storage_size]
-            }
+            worker_vm_launch_params = {:cpu => deployment.openshift_node_vcpu,
+                                       :ram => deployment.openshift_node_ram,
+                                       :vda_size => deployment.openshift_node_disk,
+                                       :other_disks => [deployment.openshift_storage_size]}
             for i in 1..deployment.openshift_number_worker_nodes do
               vmlauncher = Utils::Fusor::VMLauncher.new(vm_init_params)
               vmlauncher.set_hostname("#{deployment.label.tr('_', '-')}-ose-node#{i}")
@@ -122,7 +124,7 @@ module Actions
           private
 
           def check_ssh(host, user, password)
-            cmd = "echo tes-ssh"
+            cmd = "echo test-ssh"
             begin
               ssh = Net::SSH.start(host, user, :password => password, :timeout => 2,
                                    :auth_methods => ["password"],
@@ -203,12 +205,9 @@ module Actions
             defaultptable = Ptable.find_by_name(default_name)
             oseptable = defaultptable.dup
 
-            layoutstring = oseptable.layout
+            layoutstring = oseptable.layout.clone
             layoutstring.sub! default_name, ptable_name
-            ret = layoutstring.sub! "autopart", "ignoredisk --only-use=vda\nautopart"
-            if ret.nil?
-              fail _("====== Could not create '#{ptable_name}', ptable layout modification step failed ======")
-            end
+            layoutstring.sub! "autopart", "ignoredisk --only-use=vda\nautopart"
 
             oseptable.layout = layoutstring
             oseptable.name = ptable_name
