@@ -181,20 +181,23 @@ module OSEInstaller
 
     def update_docker_storage_setup(opts)
       @logger.info "Updating docker storage setup file."
-      docker_storage_setup_file = "files/docker-storage-setup"
+      docker_storage_setup_file = "docker-storage-setup"
       template = File.read("#{File.dirname(__FILE__)}/templates/docker-storage-setup.template")
       if !opts[:docker_storage].nil? and !opts[:docker_volume].nil?
         template = template.gsub(/<docker_storage>/, opts[:docker_storage])
         template = template.gsub(/<docker_volume>/, opts[:docker_volume])
       end
-      File.open("#{File.dirname(__FILE__)}/#{docker_storage_setup_file}", 'w') { |file| file.puts template }
-      @logger.info "Docker storage setup file saved at: #{docker_storage_setup_file}"
+      File.open("#{@output_dir}/#{docker_storage_setup_file}", 'w') { |file| file.puts template }
+      @logger.info "Docker storage setup file saved at: #{@output_dir}/#{docker_storage_setup_file}"
     end
 
     def prep_run_environment
       #ENV['ANSIBLE_CONFIG'] = "#{@output_dir}/ansible.cfg"
       ENV['ANSIBLE_HOST_KEY_CHECKING'] = "False"
       ENV['ANSIBLE_LOG_PATH'] = "#{@output_dir}/ansible.log"
+      ENV['ANSIBLE_RETRY_FILES_ENABLED'] = "False"
+      ENV['ANSIBLE_SSH_CONTROL_PATH'] = "%(directory)s/%%h-%%r"
+      ENV['HOME'] = @output_dir
     end
 
     def setup(inventory, verbose = false, playbook = "#{File.dirname(__FILE__)}/playbooks/setup.yml")

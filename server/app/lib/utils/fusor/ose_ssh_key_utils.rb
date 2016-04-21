@@ -5,7 +5,7 @@ module Utils
       def initialize(deployment, key_type)
         @deployment = deployment
         @key_type = key_type
-        @key_from_path = File.join(Rails.root, 'ssh-keys', 'openshift', "#{@deployment.label}-#{@deployment.id}")
+        @key_from_path = File.join(Rails.root, '.ssh', 'openshift', "#{@deployment.label}-#{@deployment.id}")
         @key_to_path   = ".ssh"
         @key_base_name = "id_#{@key_type}"
         @root_password = @deployment.openshift_root_password
