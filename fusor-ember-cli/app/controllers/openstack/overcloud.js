@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import DeploymentControllerMixin from "../../mixins/deployment-controller-mixin";
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
-import { PresenceValidator, EqualityValidator, IpRangeValidator, CidrValidator, AllValidator } from '../../utils/validators';
+import { PresenceValidator, EqualityValidator, IpAddressValidator, CidrValidator, AllValidator } from '../../utils/validators';
 
 let OvercloudController = Ember.Controller.extend(
   DeploymentControllerMixin,
@@ -19,7 +19,7 @@ let OvercloudController = Ember.Controller.extend(
   ipValidator: AllValidator.create({
     validators: [
       PresenceValidator.create({}),
-      IpRangeValidator.create({})
+      IpAddressValidator.create({})
     ]
   }),
 
