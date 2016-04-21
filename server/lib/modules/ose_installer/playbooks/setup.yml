@@ -9,7 +9,7 @@
         - docker
 
     - name: scp docker storage configuration
-      action: copy src="../files/docker-storage-setup" dest="/etc/sysconfig/docker-storage-setup" owner=root mode=0775
+      action: copy src="{{ output_dir }}/docker-storage-setup" dest="/etc/sysconfig/docker-storage-setup" owner=root mode=0775
 
     - name: check if docker volume already exists
       stat: path=/dev/{{docker_volume}}
