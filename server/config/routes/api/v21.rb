@@ -6,6 +6,7 @@ Fusor::Engine.routes.draw do
           member do
             put :deploy
             put :redeploy
+            post :sync_openstack
             get :validate
             get :validate_cdn
             get :log

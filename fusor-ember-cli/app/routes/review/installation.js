@@ -2,10 +2,6 @@ import Ember from 'ember';
 import request from 'ic-ajax';
 
 export default Ember.Route.extend({
-  model() {
-    return this.store.queryRecord('deployment', {id: this.modelFor('deployment').get('id'), sync_openstack: true});
-  },
-
   setupController(controller, model) {
     controller.set('model', model);
     controller.set('showErrorMessage', false);
@@ -31,37 +27,70 @@ export default Ember.Route.extend({
         controller.set('hasSubscriptionPools', Ember.isPresent(this.controllerFor('subscriptions/select-subscriptions').get('subscriptionPools')));
     }
 
+    controller.set('validationErrors', []);
+    controller.set('validationWarnings', []);
+    controller.set('showSpinner', true);
+
     if (!model.get('isStarted')) {
-        var self = this;
-        var deployment = self.modelFor('deployment');
-        var token = Ember.$('meta[name="csrf-token"]').attr('content');
-
-        var validationErrors = controller.get('validationErrors');
-
-        controller.set('validationErrors', []);
-        controller.set('validationWarnings', []);
-
-        controller.set('showSpinner', true);
-        controller.set('spinnerTextMessage', "Validating deployment...");
-
-        request({
-            url: `/fusor/api/v21/deployments/${model.get('id')}/validate`,
-            type: "GET",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "X-CSRF-Token": token
-            }
-        }).then(function (response) {
-          controller.set('showSpinner', false);
-          controller.set('validationErrors', response.validation.errors);
-          controller.set('validationWarnings', response.validation.warnings);
-        }, function(error){
+      // the PUT request from saveDeployment was firing too late and the server was syncing/validating stale data.
+      // the model.save ensures the server has the most recent version of deployment before proceeding.
+        model.save()
+        .then(() => this.syncOpenStack())
+        .then(() => this.validate())
+        .catch(error => {
           console.log('error', error);
-          controller.set('showSpinner', false);
           controller.set('errorMsg', error.jqXHR.responseText);
           controller.set('showErrorMessage', true);
+        })
+        .finally(() => {
+          controller.set('showSpinner', false);
         });
     }
+  },
+
+  syncOpenStack() {
+    let controller = this.get('controller');
+    let deployment = this.get('controller.model');
+    let token = Ember.$('meta[name="csrf-token"]').attr('content');
+
+    if (!deployment.get('deploy_openstack')) {
+      return Ember.RSVP.Promise.resolve('no sync needed');
+    }
+
+    controller.set('spinnerTextMessage', "Syncing OpenStack...");
+
+    return request({
+      url: `/fusor/api/v21/deployments/${deployment.get('id')}/sync_openstack`,
+      type: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-CSRF-Token": token
+      }
+    });
+  },
+
+  validate() {
+    let controller = this.get('controller');
+    let deploymentId = this.get('controller.model.id');
+    let token = Ember.$('meta[name="csrf-token"]').attr('content');
+    let validationErrors = controller.get('validationErrors');
+
+    controller.set('spinnerTextMessage', "Validating deployment...");
+
+    return request({
+      url: `/fusor/api/v21/deployments/${deploymentId}/validate`,
+      type: "GET",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-CSRF-Token": token
+      },
+      data: {}
+    }).then(response => {
+      controller.set('showSpinner', false);
+      controller.set('validationErrors', response.validation.errors);
+      controller.set('validationWarnings', response.validation.warnings);
+    });
   }
 });

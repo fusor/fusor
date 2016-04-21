@@ -42,21 +42,23 @@
                       {{node-profile profile=profile
                                      nodes=nodes
                                      plan=plan
+                                     roles=roles
+                                     allRolesAssigned=allRolesAssigned
                                      doAssign=true
                                      assignRole="assignRole"
                                      unassignRole="unassignRole"
                                      editRole="editRole"
-                                     setRoleCount="setRoleCount"
-                                     removeRole="removeRole"}}
+                                     roleCountUpdated="roleCountUpdated"}}
                    {{else}}
                       {{node-profile profile=profile
                                      plan=plan
+                                     roles=roles
+                                     allRolesAssigned=allRolesAssigned
                                      doAssign=true
                                      assignRole="assignRole"
                                      unassignRole="unassignRole"
                                      editRole="editRole"
-                                     setRoleCount="setRoleCount"
-                                     removeRole="removeRole"}}
+                                     roleCountUpdated="roleCountUpdated"}}
                    {{/if}}
                   </div>
               </div>

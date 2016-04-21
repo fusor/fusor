@@ -19,28 +19,39 @@ module Fusor
 
         def deploy
           @plan = undercloud_handle.deploy_plan(params[:id])
-          render :json => {:deployment_plan => undercloud_handle.get_plan(params[:id])}
+          render :json => build_deployment_plan(params[:id])
         end
 
         def show
-          render :json => {:deployment_plan => undercloud_handle.get_plan(params[:id])}
+          render :json => build_deployment_plan(params[:id])
         end
 
         def update_role_count
           @plan = undercloud_handle.edit_plan_deployment_role_count(params[:id], params[:role_name], params[:count])
-          render :json => {:deployment_plan => undercloud_handle.get_plan(params[:id])}
+          render :json => build_deployment_plan(params[:id])
         end
 
         def update_role_flavor
           @plan = undercloud_handle.edit_plan_deployment_role_flavor(params[:id], params[:role_name], params[:flavor_name])
-          render :json => {:deployment_plan => undercloud_handle.get_plan(params[:id])}
+          render :json => build_deployment_plan(params[:id])
         end
 
         def update_parameters
           @plan = undercloud_handle.edit_plan_parameters(params[:id], params[:parameters])
-          render :json => {:deployment_plan => undercloud_handle.get_plan(params[:id])}
+          render :json => build_deployment_plan(params[:id])
         end
 
+        private
+
+        def build_deployment_plan(plan_name)
+          {
+              deployment_plan: {
+                  name: 'overcloud',
+                  parameters: undercloud_handle.get_plan_parameters(plan_name),
+                  roles: undercloud_handle.get_plan_deployment_roles(plan_name)
+              }
+          }
+        end
       end
     end
   end

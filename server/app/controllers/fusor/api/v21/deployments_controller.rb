@@ -18,7 +18,8 @@ module Fusor
   class Api::V21::DeploymentsController < Api::V2::DeploymentsController
 
     before_filter :find_deployment, :only => [:destroy, :show, :update,
-                                              :deploy, :redeploy, :validate, :log, :openshift_disk_space]
+                                              :deploy, :redeploy, :validate, :log,
+                                              :sync_openstack, :openshift_disk_space]
 
     rescue_from Encoding::UndefinedConversionError, :with => :ignore_it
 
@@ -28,12 +29,6 @@ module Fusor
     end
 
     def show
-      begin
-        sync_openstack if params[:sync_openstack] == 'true'
-      rescue => e
-        Rails.logger.error "Error syncing openstack for deployment #{e.message}"
-      end
-
       render :json => @deployment, :serializer => Fusor::DeploymentSerializer
     end
 
@@ -88,21 +83,11 @@ module Fusor
     end
 
     def validate
-      error_syncing_openstack = nil
-      begin
-        sync_openstack
-      rescue => e
-        error_syncing_openstack =  _("Error contacting Openstack undercloud #{e.message}")
-      end
-
       @deployment.valid?
-      errors = @deployment.errors.full_messages
-      errors << error_syncing_openstack unless error_syncing_openstack.nil?
-
       render json: {
         :validation => {
           :deployment_id => @deployment.id,
-          :errors => errors,
+          :errors => @deployment.errors.full_messages,
           :warnings => @deployment.warnings
         }
       }
@@ -153,6 +138,17 @@ module Fusor
       else
         render :json => {log_type_param => reader.read_full_log(log_path)}
       end
+    end
+
+    def sync_openstack
+      return render json: {}, status: 304 unless @deployment.deploy_openstack?
+
+      undercloud_handle.edit_plan_parameters('overcloud', build_openstack_params)
+
+      sync_errors = get_sync_openstack_errors
+      return render json: {errors: sync_errors}, status: 500 unless sync_errors.empty?
+
+      render json: {},  status: 204
     end
 
     def openshift_disk_space
@@ -267,24 +263,82 @@ module Fusor
       param['value'] if param
     end
 
-    def sync_openstack
-      return unless @deployment.deploy_openstack?
-      plan = undercloud_handle.get_plan('overcloud')
+    def build_openstack_params
+      {
+          NeutronPublicInterface: @deployment.openstack_overcloud_ext_net_interface,
+          NovaComputeLibvirtType: @deployment.openstack_overcloud_libvirt_type,
+          AdminPassword: @deployment.openstack_overcloud_password,
 
-      @deployment.openstack_overcloud_ext_net_interface = get_openstack_param_value(plan, 'Controller-1::NeutronPublicInterface')
-      @deployment.openstack_overcloud_libvirt_type = get_openstack_param_value(plan, 'Compute-1::NovaComputeLibvirtType')
-      @deployment.openstack_overcloud_compute_flavor = get_openstack_param_value(plan, 'Compute-1::Flavor')
-      @deployment.openstack_overcloud_compute_count = get_openstack_param_value(plan, 'Compute-1::count')
-      @deployment.openstack_overcloud_controller_flavor = get_openstack_param_value(plan, 'Controller-1::Flavor')
-      @deployment.openstack_overcloud_controller_count = get_openstack_param_value(plan, 'Controller-1::count')
-      @deployment.openstack_overcloud_ceph_storage_flavor = get_openstack_param_value(plan, 'Ceph-Storage-1::Flavor')
-      @deployment.openstack_overcloud_ceph_storage_count = get_openstack_param_value(plan, 'Ceph-Storage-1::Flavor')
-      @deployment.openstack_overcloud_cinder_storage_flavor = get_openstack_param_value(plan, 'Cinder-Storage-1::Flavor')
-      @deployment.openstack_overcloud_cinder_storage_count = get_openstack_param_value(plan, 'Cinder-Storage-1::Flavor')
-      @deployment.openstack_overcloud_swift_storage_flavor = get_openstack_param_value(plan, 'Swift-Storage-1::Flavor')
-      @deployment.openstack_overcloud_swift_storage_count = get_openstack_param_value(plan, 'Swift-Storage-1::Flavor')
+          OvercloudComputeFlavor: @deployment.openstack_overcloud_compute_flavor,
+          ComputeCount: @deployment.openstack_overcloud_compute_count,
+          OvercloudControlFlavor: @deployment.openstack_overcloud_controller_flavor,
+          ControllerCount: @deployment.openstack_overcloud_controller_count,
+          OvercloudCephStorageFlavor: @deployment.openstack_overcloud_ceph_storage_flavor,
+          CephStorageCount: @deployment.openstack_overcloud_ceph_storage_count,
+          OvercloudBlockStorageFlavor: @deployment.openstack_overcloud_cinder_storage_flavor,
+          BlockStorageCount: @deployment.openstack_overcloud_cinder_storage_count,
+          OvercloudSwiftStorageFlavor: @deployment.openstack_overcloud_swift_storage_flavor,
+          ObjectStorageCount: @deployment.openstack_overcloud_swift_storage_count,
+      }
+    end
 
-      @deployment.save(:validate => false)
+    def get_sync_openstack_errors
+      plan = undercloud_handle.get_plan_parameters('overcloud')
+      errors = {}
+
+      if @deployment.openstack_overcloud_ext_net_interface != plan['NeutronPublicInterface'].try(:[], 'Default')
+        errors[:openstack_overcloud_ext_net_interface] = [_('Openstack NeutronPublicInterface was not properly synchronized')]
+      end
+
+      if @deployment.openstack_overcloud_libvirt_type != plan['NovaComputeLibvirtType'].try(:[], 'Default')
+        errors[:openstack_overcloud_libvirt_type] = [_('Openstack NovaComputeLibvirtType was not properly synchronized')]
+      end
+
+      if @deployment.openstack_overcloud_password != plan['AdminPassword'].try(:[], 'Default')
+        errors[:openstack_overcloud_password] = [_('Openstack AdminPassword was not properly synchronized')]
+      end
+
+      if @deployment.openstack_overcloud_compute_flavor != plan['OvercloudComputeFlavor'].try(:[], 'Default')
+        errors[:openstack_overcloud_compute_flavor] = [_('Openstack OvercloudComputeFlavor was not properly synchronized')]
+      end
+
+      if @deployment.openstack_overcloud_compute_count != plan['ComputeCount'].try(:[], 'Default')
+        errors[:openstack_overcloud_compute_count] = [_('Openstack ComputeCount was not properly synchronized')]
+      end
+
+      if @deployment.openstack_overcloud_controller_flavor != plan['OvercloudControlFlavor'].try(:[], 'Default')
+        errors[:openstack_overcloud_controller_flavor] = [_('Openstack OvercloudControlFlavor was not properly synchronized')]
+      end
+
+      if @deployment.openstack_overcloud_controller_count != plan['ControllerCount'].try(:[], 'Default')
+        errors[:openstack_overcloud_controller_count] = [_('Openstack ControllerCount was not properly synchronized')]
+      end
+
+      if @deployment.openstack_overcloud_ceph_storage_flavor != plan['OvercloudCephStorageFlavor'].try(:[], 'Default')
+        errors[:openstack_overcloud_ceph_storage_flavor] = [_('Openstack OvercloudCephStorageFlavor was not properly synchronized')]
+      end
+
+      if @deployment.openstack_overcloud_ceph_storage_count != plan['CephStorageCount'].try(:[], 'Default')
+        errors[:openstack_overcloud_ceph_storage_count] = [_('Openstack CephStorageCount was not properly synchronized')]
+      end
+
+      if @deployment.openstack_overcloud_cinder_storage_flavor != plan['OvercloudBlockStorageFlavor'].try(:[], 'Default')
+        errors[:openstack_overcloud_cinder_storage_flavor] = [_('Openstack OvercloudBlockStorageFlavor was not properly synchronized')]
+      end
+
+      if @deployment.openstack_overcloud_cinder_storage_count != plan['BlockStorageCount'].try(:[], 'Default')
+        errors[:openstack_overcloud_cinder_storage_count] = [_('Openstack BlockStorageCount was not properly synchronized')]
+      end
+
+      if @deployment.openstack_overcloud_swift_storage_flavor != plan['OvercloudSwiftStorageFlavor'].try(:[], 'Default')
+        errors[:openstack_overcloud_swift_storage_flavor] = [_('Openstack OvercloudSwiftStorageFlavor was not properly synchronized')]
+      end
+
+      if @deployment.openstack_overcloud_swift_storage_count != plan['ObjectStorageCount'].try(:[], 'Default')
+        errors[:openstack_overcloud_swift_storage_count] = [_('Openstack ObjectStorageCount was not properly synchronized')]
+      end
+
+      errors
     end
   end
 end

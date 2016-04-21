@@ -1,3 +1,11 @@
+/** Currently out of date.  Osp 8 api is returning hard coded values
+ * ['Controller', 'Compute', 'BlockStorage', 'ObjectStorage', 'CephStorage']
+ *
+ * We might need this role object again soon if they change their API call
+ */
+
+/*
+
 import Ember from 'ember';
 import DS from 'ember-data';
 
@@ -55,3 +63,5 @@ export default DS.Model.extend({
     return name;
   })
 });
+
+  */

@@ -15,15 +15,11 @@
               <div class="form-horizontal">
                   <fieldset>
                       <div class="required">
-                        {{#each editedPlanParameters as |planParameter|}}
+                        {{#each globalPlanParameters as |planParameter|}}
                           {{#if planParameter.isBoolean}}
-                            {{check-f label=planParameter.displayId checked=planParameter.value labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=planParameter.description}}
+                            {{check-f label=planParameter.label checked=planParameter.newValue labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=planParameter.description}}
                           {{else}}
-                            {{#if rolerParameter.isPassword}}
-                              {{text-f label=planParameter.displayId value=planParameter.value  type='password' labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=planParameter.description}}
-                            {{else}}
-                              {{text-f label=planParameter.displayId value=planParameter.value type=planParameter.inputType labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=planParameter.description}}
-                            {{/if}}
+                            {{text-f label=planParameter.label value=planParameter.newValue type=planParameter.type labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=planParameter.description}}
                           {{/if}}
                         {{/each}}
                       </div>
