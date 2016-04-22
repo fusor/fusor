@@ -195,6 +195,37 @@ test('UniquenessValidator rejects values already in existingValues', function (a
   });
 });
 
+test('UniquenessValidator accepts values in list only once if selfIncluded', function (assert) {
+  const value = 'valid';
+  let existingValues = ['other1', 'other2'];
+  existingValues.pushObject(value);
+
+  let uniquenessValidator = UniquenessValidator.create({selfIncluded: true, existingValues: existingValues});
+  assert.ok(uniquenessValidator.isValid(value), `"${value}" was not accepted as valid`);
+  assert.notOk(uniquenessValidator.isInvalid(value), `"${value}" was rejected as invalid`);
+  assert.equal(uniquenessValidator.getMessages(value).length, 0);
+});
+
+test('UniquenessValidator rejects values in list with multiples if selfIncluded', function (assert) {
+  let invalidValues = [
+    ' reject',
+    'reject ',
+    'reject',
+    2
+  ];
+
+  invalidValues.forEach((value) => {
+    let existingValues = ['reject', 'other2', 2];
+    existingValues.pushObject(value);
+
+    let uniquenessValidator = UniquenessValidator.create({selfIncluded: true, existingValues: existingValues});
+    assert.ok(uniquenessValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+    assert.notOk(uniquenessValidator.isValid(value), `"${value}" was accepted as valid`);
+    assert.equal(uniquenessValidator.getMessages(value).length, 1);
+    assert.equal(uniquenessValidator.getMessages(value)[0], 'must be unique');
+  });
+});
+
 test('RegExpValidator accepts matching values', function (assert) {
   let regExpValidator = RegExpValidator.create({
     regExp: new RegExp(/A/),
