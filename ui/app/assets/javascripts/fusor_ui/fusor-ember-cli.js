@@ -611,10 +611,8 @@ define('fusor-ember-cli/components/log-entry', ['exports', 'ember'], function (e
 define('fusor-ember-cli/components/markdown-to-html', ['exports', 'ember-cli-showdown/components/markdown-to-html'], function (exports, _emberCliShowdownComponentsMarkdownToHtml) {
   exports['default'] = _emberCliShowdownComponentsMarkdownToHtml['default'];
 });
-define('fusor-ember-cli/components/new-node-registration-mac-address', ['exports', 'ember', 'fusor-ember-cli/utils/validators'], function (exports, _ember, _fusorEmberCliUtilsValidators) {
+define('fusor-ember-cli/components/new-node-registration-mac-address', ['exports', 'ember'], function (exports, _ember) {
   exports['default'] = _ember['default'].Component.extend({
-    macAddressValidator: _fusorEmberCliUtilsValidators.MacAddressValidator.create({}),
-
     label: _ember['default'].computed('index', function () {
       return this.get('index') === 0 ? 'MAC Address' : '';
     }),
@@ -3077,7 +3075,25 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
     intervalPolling: 10000,
 
     presenceValidator: _fusorEmberCliUtilsValidators.PresenceValidator.create({}),
-    macAddressValidator: _fusorEmberCliUtilsValidators.MacAddressValidator.create({}),
+
+    unavailableMacs: _ember['default'].computed('ports', 'nodeInfo.macAddresses.@each.value', function () {
+      var enteredMacs = this.get('nodeInfo.macAddresses');
+      var unavailableMacs = this.getPortMacAddresses();
+
+      if (enteredMacs) {
+        enteredMacs.forEach(function (mac) {
+          unavailableMacs.pushObject(mac.value);
+        });
+      }
+
+      return unavailableMacs;
+    }),
+
+    macAddressValidator: _ember['default'].computed('unavailableMacs', function () {
+      return _fusorEmberCliUtilsValidators.AllValidator.create({
+        validators: [_fusorEmberCliUtilsValidators.MacAddressValidator.create({}), _fusorEmberCliUtilsValidators.UniquenessValidator.create({ selfIncluded: true, existingValues: this.get('unavailableMacs') })]
+      });
+    }),
 
     hostAddressValidator: _fusorEmberCliUtilsValidators.AllValidator.create({
       validators: [_fusorEmberCliUtilsValidators.PresenceValidator.create({}), _fusorEmberCliUtilsValidators.HostAddressValidator.create({})]
@@ -3665,8 +3681,11 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
     },
 
     updateAutoDetectedNodes: function updateAutoDetectedNodes(hostArray) {
+      var _this8 = this;
+
       var autoDetectedNodesMultiMac = [];
       var autoDetectedNodesSingleMac = [];
+      var usedMacs = this.getPortMacAddresses();
 
       hostArray.forEach(function (hostHash) {
         var host = _ember['default'].Object.create({
@@ -3674,6 +3693,10 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
           macAddresses: hostHash.mac_addresses,
           selected: true
         });
+
+        if (!_this8.autoDetectedNodeIsValid(host, usedMacs)) {
+          return;
+        }
 
         if (host.get('macAddresses.length') === 1) {
           host.set('value', host.get('macAddresses')[0]);
@@ -3686,6 +3709,22 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
 
       this.set('autoDetectedNodesMultiMac', autoDetectedNodesMultiMac);
       this.set('autoDetectedNodesSingleMac', autoDetectedNodesSingleMac);
+    },
+
+    autoDetectedNodeIsValid: function autoDetectedNodeIsValid(host, usedMacs) {
+      var hostMacs = host.get('macAddresses');
+
+      if (!hostMacs) {
+        return false;
+      }
+
+      for (var i = 0; i < hostMacs.length; i++) {
+        if (usedMacs.contains(hostMacs[i])) {
+          return false;
+        }
+      }
+
+      return true;
     },
 
     prepAutoDetectNodeInfo: function prepAutoDetectNodeInfo() {
@@ -3819,6 +3858,8 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
       var csvErrors = [];
       var controller = this;
       var file = fileInput.files[0];
+      var macAddressValidator = _fusorEmberCliUtilsValidators.MacAddressValidator.create({});
+      var usedMacs = this.getPortMacAddresses();
 
       if (file) {
         (function () {
@@ -3884,15 +3925,19 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
                 errorsFound = true;
               }
 
-              if (_ember['default'].isPresent(row[4]) && controller.get('macAddressValidator').isValid(row[4])) {
-                csvNode.set('macAddresses', [_ember['default'].Object.create({ value: row[4] })]);
-              } else {
+              if (_ember['default'].isBlank(row[4]) || macAddressValidator.isInvalid(row[4])) {
                 csvErrors.pushObject('Row ' + (rowIndex + 1) + ', Column 5 "' + row[4] + '" is not a valid MAC address');
                 errorsFound = true;
+              } else if (usedMacs.contains(row[4].trim())) {
+                csvErrors.pushObject('Row ' + (rowIndex + 1) + ', Column 5 "' + row[4] + '" is not an available MAC address');
+                errorsFound = true;
+              } else {
+                csvNode.set('macAddresses', [_ember['default'].Object.create({ value: row[4] })]);
               }
 
               if (!errorsFound) {
                 csvInfo.pushObject(csvNode);
+                usedMacs.push(row[4].trim());
               }
             });
 
@@ -3910,6 +3955,12 @@ define('fusor-ember-cli/controllers/register-nodes', ['exports', 'ember', 'ic-aj
           reader.readAsText(file);
         })();
       }
+    },
+
+    getPortMacAddresses: function getPortMacAddresses() {
+      return this.get('ports') ? this.get('ports').map(function (port) {
+        return port.address;
+      }) : [];
     },
 
     handleOutsideClick: function handleOutsideClick() {
@@ -9907,7 +9958,7 @@ define('fusor-ember-cli/routes/register-nodes', ['exports', 'ember', 'ic-ajax', 
       return this.store.query('node', { deployment_id: controller.get('deploymentId') }).then(function (result) {
         controller.set('nodes', result);
       }, function (error) {
-        return _this2.send('error', error, 'Error retrieving OpenStack nodes.');
+        _this2.send('error', error, 'Error retrieving OpenStack nodes.');
       });
     },
 
@@ -9931,7 +9982,7 @@ define('fusor-ember-cli/routes/register-nodes', ['exports', 'ember', 'ic-ajax', 
       }).then(function (result) {
         controller.set('ports', result.ports);
       }, function (error) {
-        return _this3.send('error', error, 'Unable to load node ports. GET "' + url + '" failed with status code ' + error.jqXHR.status + '.');
+        _this3.send('error', error, 'Unable to load node ports. GET "' + url + '" failed with status code ' + error.jqXHR.status + '.');
       });
     },
 
@@ -9940,10 +9991,10 @@ define('fusor-ember-cli/routes/register-nodes', ['exports', 'ember', 'ic-ajax', 
 
       var controller = this.get('controller');
       var deploymentId = this.get('controller.deploymentId');
-      this.store.findRecord('deployment', deploymentId, { reload: true }).then(function (deployment) {
+      return this.store.findRecord('deployment', deploymentId, { reload: true }).then(function (deployment) {
         controller.set('introspectionTasks', deployment.get('introspection_tasks'));
       }, function (error) {
-        return _this4.send('error', error, 'ERROR retrieving deployment introspection tasks.');
+        _this4.send('error', error, 'ERROR retrieving deployment introspection tasks.');
       });
     },
 
@@ -12120,7 +12171,7 @@ define("fusor-ember-cli/templates/add-node-registration", ["exports"], function 
               morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
               return morphs;
             },
-            statements: [["inline", "new-node-registration-mac-address", [], ["macAddress", ["subexpr", "@mut", [["get", "macAddress", ["loc", [null, [47, 59], [47, 69]]]]], [], []], "index", ["subexpr", "@mut", [["get", "key", ["loc", [null, [47, 76], [47, 79]]]]], [], []]], ["loc", [null, [47, 12], [47, 81]]]]],
+            statements: [["inline", "new-node-registration-mac-address", [], ["macAddress", ["subexpr", "@mut", [["get", "macAddress", ["loc", [null, [47, 59], [47, 69]]]]], [], []], "macAddressValidator", ["subexpr", "@mut", [["get", "macAddressValidator", ["loc", [null, [47, 90], [47, 109]]]]], [], []], "index", ["subexpr", "@mut", [["get", "key", ["loc", [null, [47, 116], [47, 119]]]]], [], []]], ["loc", [null, [47, 12], [47, 121]]]]],
             locals: ["macAddress", "key"],
             templates: []
           };
@@ -32591,7 +32642,7 @@ define("fusor-ember-cli/templates/new-node-registration-manual", ["exports"], fu
           morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
           return morphs;
         },
-        statements: [["inline", "new-node-registration-mac-address", [], ["macAddress", ["subexpr", "@mut", [["get", "macAddress", ["loc", [null, [41, 51], [41, 61]]]]], [], []], "index", ["subexpr", "@mut", [["get", "key", ["loc", [null, [41, 68], [41, 71]]]]], [], []]], ["loc", [null, [41, 4], [41, 73]]]]],
+        statements: [["inline", "new-node-registration-mac-address", [], ["macAddress", ["subexpr", "@mut", [["get", "macAddress", ["loc", [null, [41, 51], [41, 61]]]]], [], []], "macAddressValidator", ["subexpr", "@mut", [["get", "macAddressValidator", ["loc", [null, [41, 82], [41, 101]]]]], [], []], "index", ["subexpr", "@mut", [["get", "key", ["loc", [null, [41, 108], [41, 111]]]]], [], []]], ["loc", [null, [41, 4], [41, 113]]]]],
         locals: ["macAddress", "key"],
         templates: []
       };
@@ -34064,7 +34115,7 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
         var el2 = dom.createTextNode("\n  ");
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("div");
-        dom.setAttribute(el2, "class", "col-xs-offset-1 col-xs-10");
+        dom.setAttribute(el2, "class", "col-xs-offset-1 col-xs-11");
         var el3 = dom.createTextNode("\n");
         dom.appendChild(el2, el3);
         var el3 = dom.createComment("");
@@ -46576,7 +46627,23 @@ define('fusor-ember-cli/utils/validators', ['exports', 'ember'], function (expor
       }
 
       var cleanValue = _ember['default'].typeOf(value) === 'string' ? value.trim() : value;
-      return !existingValues.contains(cleanValue);
+
+      if (!this.get('selfIncluded')) {
+        return !existingValues.contains(cleanValue);
+      }
+
+      var numFound = 0;
+      for (var i = 0; i < existingValues.length; i++) {
+        var existingValue = _ember['default'].typeOf(existingValues[i]) === 'string' ? existingValues[i].trim() : existingValues[i];
+        if (existingValue === cleanValue) {
+          numFound++;
+        }
+        if (numFound > 1) {
+          return false;
+        }
+      }
+
+      return true;
     }
   });
 
@@ -46658,11 +46725,11 @@ define('fusor-ember-cli/utils/validators', ['exports', 'ember'], function (expor
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+d0644971"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+65013097"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+d0644971"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+65013097"});
 }
 
 /* jshint ignore:end */
