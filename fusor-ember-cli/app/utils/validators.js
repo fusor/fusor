@@ -116,7 +116,23 @@ const UniquenessValidator = Validator.extend({
     }
 
     let cleanValue = Ember.typeOf(value) === 'string' ? value.trim() : value;
-    return !(existingValues.contains(cleanValue));
+
+    if (!this.get('selfIncluded')) {
+      return !(existingValues.contains(cleanValue));
+    }
+
+    let numFound = 0;
+    for (let i = 0; i < existingValues.length; i++) {
+      let existingValue = Ember.typeOf(existingValues[i]) === 'string' ? existingValues[i].trim() : existingValues[i];
+      if (existingValue === cleanValue) {
+        numFound++;
+      }
+      if (numFound > 1) {
+        return false;
+      }
+    }
+
+    return true;
   }
 });
 
