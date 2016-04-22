@@ -38,6 +38,7 @@ export default Ember.Route.extend({
     controller.set('cfmeTask', model.cfmeTask);
     controller.set('openshiftTask', model.openshiftTask);
     controller.set('deployment', model.deployment);
+    controller.set('katelloSyncErrorTasks', null);
     controller.stopPolling();
 
     ////////////////////////////////////////////////////////////
@@ -72,6 +73,15 @@ export default Ember.Route.extend({
 
     } else if(!model.deployment.get('has_content_error')) {
       controller.startPolling();
+    } else {
+      // has_content_error == true and no contentErrorDiscovered, it's been reset
+      model.manageContentTask.get('subtasks').then(tasks => {
+        controller.set('katelloSyncErrorTasks', tasks.filter(task => {
+          return task.get('humanized_name') === 'Synchronize' &&
+                 task.get('state') === 'stopped' &&
+                 task.get('result') === 'warning';
+        }));
+      });
     }
   },
 

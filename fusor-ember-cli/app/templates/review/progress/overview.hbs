@@ -1,14 +1,28 @@
 <br />
 
 {{#if deployment.has_content_error}}
-  {{#if loadingRedeployment}}
-    <h1 style="float: left; margin: 0 15px 0 0">Content Error Occurred</h1>
-    <div style="float: left; margin-top: 2px" class="spinner spinner-md spinner-inline"></div>
-  {{else}}
-    <h1>Content Error Occurred</h1>
-    <button class="btn btn-default" {{action 'abandon'}}>Abandon Deployment</button>
-    <button class="btn btn-primary" {{action 'redeploy'}}>Redeploy</button>
-  {{/if}}
+  <div class="content-error-container">
+    {{#if loadingRedeployment}}
+      <h1 class="pre-err-header">Content Error Occurred</h1>
+      <div class="spinner spinner-md spinner-inline err-spinner"></div>
+    {{else}}
+      <h1>Content Error Occurred</h1>
+
+      {{#if katelloSyncErrorTasks}}
+        <div >The following repos failed to sync:</div>
+
+        {{#each katelloSyncErrorTasks as |ktask| }}
+          <a class="repo-link" href={{ktask.taskUrl}} target='_blank'>{{ktask.repository}}</a>
+        {{/each}}
+      {{/if}}
+
+      <div style="margin-top: 10px">
+        <button class="btn btn-default" {{action 'abandon'}}>Abandon</button>
+        <button class="btn btn-default" {{action 'abandonAndDelete'}}>Abandon and Delete</button>
+        <button class="btn btn-primary" {{action 'redeploy'}}>Redeploy</button>
+      </div>
+    {{/if}}
+  </div>
 {{else}}
 
   {{progress-bar model=manageContentTask name=nameSatellite isSatelliteProgressBar=true}}
@@ -28,7 +42,7 @@
   {{#if isOpenShift}}
     {{progress-bar model=openshiftTask name=nameOpenShift isSatelliteProgressBar=false}}
   {{/if}}
-  
+
   {{#if showDeployTaskProgressBar}}
     {{progress-bar model=deployTask name='Total Deployment' isSatelliteProgressBar=false}}
   {{/if}}
