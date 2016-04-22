@@ -3,7 +3,6 @@
 #
 # For more details refer to "man docker-storage-setup"
 
-# Workaround for https://trello.com/c/1fhpNoVQ, use loopback
-#DEVS=<docker_storage>
-#VG=<docker_volume>
+DEVS=<docker_storage>
+VG=<docker_volume>
 
