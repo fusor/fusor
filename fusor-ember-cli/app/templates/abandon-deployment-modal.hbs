@@ -3,18 +3,18 @@
         {{#em-modal-toggler class="close"}}
             <span aria-hidden="true">×</span><span class="sr-only">Close</span>
         {{/em-modal-toggler}}
-        <h4 class="modal-title">Abandon QCI Deployment</h4>
+        <h4 class="modal-title">Delete QCI Deployment</h4>
     {{/em-modal-title}}
 
     {{#em-modal-body}}
-        Are you sure that you want to abandon this deployment?
+        Are you sure that you want to delete this deployment?
     {{/em-modal-body}}
 
     {{#em-modal-footer}}
         {{#em-modal-toggler class="btn btn-default"}}
           No
         {{/em-modal-toggler}}
-        <button {{action 'executeAbandonment'}} class="btn btn-danger">Yes, Abandon Deployment</button>
+        <button {{action 'executeAbandonment'}} class="btn btn-danger">Yes, Delete Deployment</button>
 
     {{/em-modal-footer}}
 {{/em-modal}}

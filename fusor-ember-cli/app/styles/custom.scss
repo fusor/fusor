@@ -777,3 +777,21 @@ h1.num-ose-node {
     font-weight: bold;
   }
 }
+
+.content-error-container {
+  .pre-err-header, .err-spinner {
+    float: left
+  }
+
+  .pre-err-header {
+    margin: 0 15px 0 0;
+  }
+
+  .err-spinner {
+    margin-top: 2px;
+  }
+
+  a.repo-link {
+    display: block;
+  }
+}

@@ -93,8 +93,11 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
         console.log('ERROR occurred attempting a redeploy', err);
       }).finally(() => this.set('loadingRedeployment', false));
     },
-    abandon() {
+    abandonAndDelete() {
       this.set('isAbandonModalOpen', true);
+    },
+    abandon() {
+      this.transitionToRoute('deployments');
     },
     executeAbandonment() {
       let depl = this.get('deploymentController.model');
