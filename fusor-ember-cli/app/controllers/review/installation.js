@@ -40,12 +40,13 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     'isMissingSubscriptions',
     'isDisconnected',
     'hasNoManifestFile',
+    'showValidationErrors',
     function()
   {
     return this.get('deploymentController.isDisabledReview') ||
            this.get('isMissingSubscriptions') ||
            (this.get('isDisconnected') && this.get('hasNoManifestFile')) ||
-           this.get('validationErrors.length') > 0;
+           this.get('showValidationErrors');
   }),
 
   validationWarnings: [],
@@ -242,33 +243,17 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     return this.get('storageSize') + ' GB';
   }),
 
-  deploymentButtonAction: Ember.computed('hasSubscriptionsToAttach', function() {
-    if (this.get('showWarningMessage')) {
-        return "showContinueDeployModal";
-    } else if (this.get('hasSubscriptionsToAttach')) {
-        return "attachSubscriptions";
-        return "installDeployment";
-    } else if (this.get('showWarningMessage')) {
-        return "showContinueDeployModal";
-    }
-  }),
-
   closeContinueDeployModal() {
-    this.set('continueDeploymentModalOpen', false);
-    this.set('continueDeploymentModalClosed', true);
-    this.set('modalOpen', false);
+    this.set('openModal', false);
   },
 
   actions: {
     showContinueDeployModal() {
-      this.set('deploymentInModal', this.get('model'));
-      this.set('continueDeploymentModalOpen', true);
-      this.set('continueDeploymentModalClosed', false);
-      this.set('modalOpen', true);
+      this.set('openModal', true);
     },
 
     onDeployButton() {
-      if (this.get('showWarningMessage')) {
+      if (this.get('showValidationWarnings')) {
         this.send('showContinueDeployModal');
       } else if (this.get('hasSubscriptionsToAttach')) {
         this.send('attachSubscriptions');
