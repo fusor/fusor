@@ -5,8 +5,6 @@ export default Ember.Component.extend({
   tagName: 'div',
   classNames: ['node-details'],
 
-  customEditLabel: "Custom Edit",
-
   isEditMode: false,
 
   customEditLabel: Ember.computed('isEditMode', function() {

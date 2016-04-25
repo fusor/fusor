@@ -1,7 +1,8 @@
 import Ember from 'ember';
+import UsesOseDefaults from '../../mixins/uses-ose-defaults';
 import request from 'ic-ajax';
 
-export default Ember.Route.extend({
+export default Ember.Route.extend(UsesOseDefaults, {
 
   setupController(controller, model) {
     controller.set('model', model);
@@ -19,13 +20,13 @@ export default Ember.Route.extend({
                    ramAvailable: 32,
                    diskAvailable: 250 };
 
-    if (!(model.get('openshift_available_vcpu') > 0)) {
+    if (this.shouldUseOseDefault(model.get('openshift_available_vcpu'))) {
       model.set('openshift_available_vcpu', result['vcpuAvailabe']);
     }
-    if (!(model.get('openshift_available_ram') > 0)) {
+    if (this.shouldUseOseDefault(model.get('openshift_available_ram'))) {
       model.set('openshift_available_ram', result['ramAvailable']);
     }
-    if (!(model.get('openshift_available_disk') > 0)) {
+    if (this.shouldUseOseDefault(model.get('openshift_available_disk'))) {
       model.set('openshift_available_disk', result['diskAvailable']);
     }
 
