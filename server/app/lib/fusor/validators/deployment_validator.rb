@@ -18,6 +18,10 @@ module Fusor
         if deployment.deploy_openstack
           validate_openstack_parameters(deployment)
         end
+
+        if deployment.deploy_openshift
+          validate_openshift_parameters(deployment)
+        end
       end
 
       def validate_rhev_parameters(deployment)
@@ -63,7 +67,7 @@ module Fusor
               deployment.errors[:rhev_share_path] << _('NFS path specified contains non-ascii characters, which is invalid')
             end
 
-            validate_nfs_share(deployment)
+            validate_nfs_share(deployment, deployment.rhev_storage_address, deployment.rhev_share_path, 36, 36)
           end
         elsif deployment.rhev_storage_type == 'Local'
           if deployment.rhev_local_storage_path.empty?
@@ -116,10 +120,6 @@ module Fusor
         if deployment.cfme_root_password.empty?
           deployment.errors[:cfme_root_password] << _('CloudForms deployments must specify a root password for the CloudForms machines')
         end
-
-        if deployment.deploy_openshift
-          validate_openshift_parameters(deployment)
-        end
       end
 
       def validate_openshift_parameters(deployment)
@@ -161,9 +161,12 @@ module Fusor
                                              :proxy => Domain.find(1).proxy
                                            })
           if !subdomain.conflicts.empty?
-            deployment.errors[:openshift_subdomain_name] << _("already in use or conflicts with existing entry")
+            add_warning(deployment, _("The specified subdomain name to deploy Openshift applications is already in use. " \
+                                      "Please specify a different subdomain name or the wildcard region will not be created."))
           end
         end
+
+        validate_nfs_share(deployment, deployment.openshift_storage_host, deployment.openshift_export_path, -1, -1)
       end
 
       def validate_openstack_parameters(deployment)
@@ -214,16 +217,13 @@ module Fusor
 
       private
 
-      def validate_nfs_share(deployment)
-        address = Shellwords.shellescape(deployment.rhev_storage_address)
-        path = Shellwords.shellescape(deployment.rhev_share_path)
-
+      def validate_nfs_share(deployment, address, path, uid, gid)
         # validate that the NFS server exists
         # don't proceed if it doesn't
         return unless validate_nfs_server(deployment, address)
 
         # validate that the NFS share exists and is clean
-        validate_nfs_mount(deployment, address, path)
+        validate_nfs_mount(deployment, address, path, uid, gid)
       end
 
       def validate_nfs_server(deployment, address)
@@ -240,7 +240,7 @@ module Fusor
         return true
       end
 
-      def validate_nfs_mount(deployment, address, path)
+      def validate_nfs_mount(deployment, address, path, uid, gid)
         cmd = "sudo safe-mount.sh '#{deployment.id}' '#{address}' '#{path}'"
         status, output = Utils::Fusor::CommandUtils.run_command(cmd)
 
@@ -251,17 +251,10 @@ module Fusor
           return
         end
 
-        # 36 is the expected UID and GID of the share
-        if File.stat("/tmp/fusor-test-mount-#{deployment.id}").uid != 36
-          add_warning(deployment, _("NFS share has an invalid UID. The expected UID is 36. " \
-                                    "Please check NFS share permissions."))
-          return
-        end
-
-        if File.stat("/tmp/fusor-test-mount-#{deployment.id}").gid != 36
-          add_warning(deployment, _("NFS share has an invalid GID. The expected GID is 36. " \
-                                    "Please check NFS share permissions."))
-          return
+        # Check if we want to verify NFS mount credentials as well
+        # If specified UID is -1, do not check
+        if uid != -1
+          validate_nfs_credentials(deployment, uid, gid)
         end
 
         files = Dir["/tmp/fusor-test-mount-#{deployment.id}/*"] # this may return [] if it can't read the share
@@ -271,6 +264,20 @@ module Fusor
           add_warning(deployment, _("NFS file share '%s' is not empty. This could cause deployment problems.") %
                       "#{address}:#{path}"
                      )
+        end
+      end
+
+      def validate_nfs_credentials(deployment, uid, gid)
+        if File.stat("/tmp/fusor-test-mount-#{deployment.id}").uid != uid
+          add_warning(deployment, _("NFS share has an invalid UID. The expected UID is '%s'. " \
+                                    "Please check NFS share permissions.") % "#{uid}")
+          return
+        end
+
+        if File.stat("/tmp/fusor-test-mount-#{deployment.id}").gid != gid
+          add_warning(deployment, _("NFS share has an invalid GID. The expected GID is '%s'. " \
+                                    "Please check NFS share permissions.") % "#{gid}")
+          return
         end
       end
 

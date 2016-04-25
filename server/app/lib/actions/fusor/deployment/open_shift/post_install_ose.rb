@@ -62,8 +62,8 @@ module Actions
             opts[:ssh_key] = deployment.ose_private_key_path
 
             # Workaround for https://trello.com/c/33ef176y
-            opts[:docker_registry_host] = opts[:masters].first
-            opts[:docker_registry_path] = "/var/export/registryvol"
+            opts[:docker_registry_host] = deployment.openshift_storage_host
+            opts[:docker_registry_path] = deployment.openshift_export_path
 
             # Workaround for https://trello.com/c/4oScsvPs
             opts[:docker_storage] = "/dev/vdb"
