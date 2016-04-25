@@ -49,7 +49,7 @@ export default Ember.Component.extend({
   actions: {
     openDeploymentModal(item) {
       this.get('targetObject').set('deploymentInModal', item);
-      return this.get('targetObject').set('isOpenModal', true);
+      return this.get('targetObject').set('openModal', true);
     }
   }
 
