@@ -1,8 +1,9 @@
 import Ember from 'ember';
-import DeploymentRouteMixin from "../mixins/deployment-route-mixin";
+import DeploymentRouteMixin from '../mixins/deployment-route-mixin';
+import UsesOseDefaults from '../mixins/uses-ose-defaults';
 import request from 'ic-ajax';
 
-export default Ember.Route.extend(DeploymentRouteMixin, {
+export default Ember.Route.extend(DeploymentRouteMixin, UsesOseDefaults, {
 
   model(params) {
     return this.store.findRecord('deployment', params.deployment_id);
@@ -71,37 +72,38 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
 
   loadOpenshiftDefaults(controller, model) {
     // GET from API v2 OSE settings for Foreman/Sat6
+
     if (model.get('deploy_openshift')) {
-      request('/api/v2/settings?search=openshift').then(function(settings) {
+      request('/api/v2/settings?search=openshift').then(settings => {
         var results = settings['results'];
-        if (!(model.get('openshift_master_vcpu') > 0)) {
+        if (this.shouldUseOseDefault(model.get('openshift_master_vcpu'))) {
           model.set('openshift_master_vcpu', results.findBy('name', 'openshift_master_vcpu').value);
         }
-        if (!(model.get('openshift_master_ram') > 0)) {
+        if (this.shouldUseOseDefault(model.get('openshift_master_ram'))) {
           model.set('openshift_master_ram', results.findBy('name', 'openshift_master_ram').value);
         }
-        if (!(model.get('openshift_master_disk') > 0)) {
+        if (this.shouldUseOseDefault(model.get('openshift_master_disk'))) {
           model.set('openshift_master_disk', results.findBy('name', 'openshift_master_disk').value);
         }
-        if (!(model.get('openshift_node_vcpu') > 0)) {
+        if (this.shouldUseOseDefault(model.get('openshift_node_vcpu'))) {
           model.set('openshift_node_vcpu', results.findBy('name', 'openshift_node_vcpu').value);
         }
-        if (!(model.get('openshift_node_ram') > 0)) {
+        if (this.shouldUseOseDefault(model.get('openshift_node_ram'))) {
           model.set('openshift_node_ram', results.findBy('name', 'openshift_node_ram').value);
         }
-        if (!(model.get('openshift_node_disk') > 0)) {
+        if (this.shouldUseOseDefault(model.get('openshift_node_disk'))) {
           model.set('openshift_node_disk', results.findBy('name', 'openshift_node_disk').value);
         }
       });
 
       // set default values 1 Master, 1 Worker, 30GB storage for OSE
-      if (!(model.get('openshift_number_master_nodes') > 0)) {
+      if (this.shouldUseOseDefault(model.get('openshift_number_master_nodes'))) {
         model.set('openshift_number_master_nodes', 1);
       }
-      if (!(model.get('openshift_number_worker_nodes') > 0)) {
+      if (this.shouldUseOseDefault(model.get('openshift_number_worker_nodes'))) {
         model.set('openshift_number_worker_nodes', 1);
       }
-      if (!(model.get('openshift_storage_size') > 0)) {
+      if (this.shouldUseOseDefault(model.get('openshift_storage_size'))) {
         model.set('openshift_storage_size', 30);
       }
 
