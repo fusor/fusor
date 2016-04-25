@@ -59,6 +59,12 @@
     - name: Replace default subdomain name for sample app
       replace: "dest=/home/{{ ose_user }}/pod_examples/hello_openshift.json regexp='cloudapps' replace={{ subdomain_name }}"
 
+    - name: Replace default persistent storage host for internal registry
+      replace: "dest=/home/{{ ose_user }}/pod_examples/registry-volume.json regexp='master.example.com' replace={{ docker_registry_host }}"
+
+    - name: Replace default persistent storage path for internal registry
+      replace: "dest=/home/{{ ose_user }}/pod_examples/registry-volume.json regexp='/var/export/registryvol' replace={{ docker_registry_path }}"
+
     - name: Create persistent volume for internal registry
       command: oc create -f /home/{{ ose_user }}/pod_examples/registry-volume.json
 
