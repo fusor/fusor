@@ -9,12 +9,12 @@ export default Ember.Route.extend({
     deleteDeployment(item) {
       return this.store.findRecord('deployment', item.get('id')).then(function(deployment) {
         deployment.deleteRecord();
-        return deployment.save();
+        deployment.save();
       });
     },
 
     willTransition() {
-      return this.controllerFor('deployment').set('isBackToDeployments', true);
+      this.controllerFor('deployment').set('isBackToDeployments', true);
     }
   }
 
