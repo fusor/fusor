@@ -34,7 +34,7 @@ module Actions
               concurrence do
                 deployment.discovered_hosts.each do |host|
                   plan_action(::Actions::Fusor::Host::WaitUntilProvisioned,
-                              host)
+                              host.id)
                 end
               end
 
@@ -44,7 +44,7 @@ module Actions
                           deployment.rhev_engine_host)
 
               plan_action(::Actions::Fusor::Host::WaitUntilProvisioned,
-                          deployment.rhev_engine_host)
+                          deployment.rhev_engine_host.id)
 
               plan_action(::Actions::Fusor::Deployment::Rhev::WaitForDataCenter,
                           deployment)

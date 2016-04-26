@@ -19,7 +19,7 @@ module Actions::Fusor::Deployment::Rhev
                                 @deployment.rhev_engine_host)
       assert_action_planed_with(@deploy,
                                 WaitUntilProvisioned,
-                                @deployment.rhev_engine_host)
+                                @deployment.rhev_engine_host.id)
 
       for hypervisor in @deployment.rhev_hypervisor_hosts
         assert_action_planed_with(@deploy,
@@ -29,7 +29,7 @@ module Actions::Fusor::Deployment::Rhev
                                   hypervisor)
         assert_action_planed_with(@deploy,
                                   WaitUntilProvisioned,
-                                  hypervisor)
+                                  hypervisor.id)
       end
     end
 

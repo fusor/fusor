@@ -23,7 +23,16 @@ module Actions
             super(deployment)
             ::Fusor.log.info "================ Starting OpenShift Deployment ===================="
             sequence do
-              plan_action(::Actions::Fusor::Deployment::Rhev::OseLaunch,
+              ose_launch_action = plan_action(::Actions::Fusor::Deployment::Rhev::OseLaunch,
+                          deployment)
+
+              concurrence do
+                ose_launch_action.output[:host_ids].each do |hostid|
+                  plan_action(::Actions::Fusor::Host::WaitUntilProvisioned, hostid)
+                end
+              end
+
+              plan_action(::Actions::Fusor::Deployment::OpenShift::WaitForSshd,
                           deployment)
 
               plan_action(::Actions::Fusor::Deployment::OpenShift::CopySshKey,
