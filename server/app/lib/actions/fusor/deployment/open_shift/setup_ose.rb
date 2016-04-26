@@ -57,21 +57,18 @@ module Actions
             opts[:masters] = masters
             opts[:nodes] = workers
 
-            # Workaround for https://trello.com/c/sfCQ1fqR
-            #opts[:username] = deployment.openshift_username
-            opts[:username] = "root"
+            opts[:username] = deployment.openshift_username
             opts[:ssh_key] = deployment.ose_private_key_path
 
             # Workaround for https://trello.com/c/33ef176y
+            # // nothing
+
             opts[:docker_registry_host] = deployment.openshift_storage_host
             opts[:docker_registry_path] = deployment.openshift_export_path
 
-            # Workaround for https://trello.com/c/4oScsvPs
             opts[:docker_storage] = "/dev/vdb"
             opts[:docker_volume] = "docker-vg"
 
-            # Reusing installation user and hardcoded password for OSE login credentials
-            # Workaround for https://trello.com/c/js4E9th5
             opts[:ose_user] = deployment.openshift_username
             opts[:ose_password] = "deployment.openshift_user_password"
 

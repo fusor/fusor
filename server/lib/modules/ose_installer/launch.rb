@@ -196,7 +196,8 @@ module OSEInstaller
       ENV['ANSIBLE_HOST_KEY_CHECKING'] = "False"
       ENV['ANSIBLE_LOG_PATH'] = "#{@output_dir}/ansible.log"
       ENV['ANSIBLE_RETRY_FILES_ENABLED'] = "False"
-      ENV['ANSIBLE_SSH_CONTROL_PATH'] = "%(directory)s/%%h-%%r"
+      ENV['ANSIBLE_SSH_CONTROL_PATH'] = "/tmp/%%h-%%r"
+      ENV['ANSIBLE_ASK_SUDO_PASS'] = "False"
       ENV['HOME'] = @output_dir
     end
 
