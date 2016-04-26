@@ -26,7 +26,7 @@ module Utils
       def ensure_snippet(name)
         if !ConfigTemplate.find_by_name(name).nil?
           ::Fusor.log.debug "====== Snippet '#{name}' already exists! ======"
-          return
+          return true
         end
 
         # create custom snippets
@@ -41,7 +41,7 @@ module Utils
       def ensure_kickstart(name)
         if !ConfigTemplate.find_by_name(name).nil?
           ::Fusor.log.debug "====== Template '#{name}' already exists! ======"
-          return
+          return true
         end
 
         default_template_name = 'Satellite Kickstart Default'
@@ -98,7 +98,7 @@ module Utils
         ks = ConfigTemplate.find_by_name(ks_name)
         if ks.template.include?(snippet_include_line)
           ::Fusor.log.debug "====== Snippet '#{snippet_name}' already in the KS '#{ks_name}'.  Nothing to do. ======"
-          return
+          return true
         end
         replacement_text = snippet_include_line + search_text
         update(ks_name, replacement_text, search_text)
