@@ -62,7 +62,7 @@ module Actions
 
             # Workaround for https://trello.com/c/33ef176y
             # //nothing
-            
+
             opts[:docker_registry_host] = deployment.openshift_storage_host
             opts[:docker_registry_path] = deployment.openshift_export_path
 
