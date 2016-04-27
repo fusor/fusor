@@ -47,13 +47,13 @@
 
       {{#accordion-item name="Red Hat Satellite" isOpen=true}}
         {{review-link label='Name' routeName='satellite' isRequired=true
-                          value=model.name}}
+                      value=model.name}}
 
-        {{review-link label='Organization' routeName='configure-organization' isRequired=true
-                          value=model.organization.name}}
+        {{review-link label='Organization' isRequired=true
+                      value=model.organization.name}}
 
         {{review-link label='Environment' routeName='configure-environment'
-                          value=lifecycleEnvironmentName}}
+                      value=lifecycleEnvironmentName}}
 
         {{review-link label='Red Hat Insights'
                       routeName='satellite.access-insights'

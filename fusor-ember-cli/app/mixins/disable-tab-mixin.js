@@ -5,7 +5,6 @@ export default Ember.Mixin.create(ValidatesDeploymentNameMixin, {
 
   deploymentController: Ember.inject.controller('deployment'),
   applicationController: Ember.inject.controller('application'),
-  configureOrganizationController: Ember.inject.controller('configure-organization'),
   configureEnvironmentController: Ember.inject.controller('configure-environment'),
 
   hasName: Ember.computed('model.name', function() {
@@ -25,9 +24,6 @@ export default Ember.Mixin.create(ValidatesDeploymentNameMixin, {
   // disable Next on Deployment Name if there is no deployment name
   disableNextOnDeploymentName: Ember.computed.not('isValidDeploymentName'),
 
-  // disable Next on Configure Organization if no organization is selected
-  disableNextOnConfigureOrganization: Ember.computed.not('isValidDeploymentName'),
-
   // disable Next on Lifecycle Environment if no lifecycle environment is selected
   // note: hasNoLifecycleEnvironment and hasNoLifecycleEnvironment is defined in /app/controllers/deployment.js
   //       and app/controllers/deployment-new.js rather than in this mixin
@@ -35,8 +31,7 @@ export default Ember.Mixin.create(ValidatesDeploymentNameMixin, {
 
   // Satellite Tabs Only
   disableTabDeploymentName: false, // always enable tab for entering deployment name
-  disableTabConfigureOrganization: Ember.computed.alias('disableNextOnDeploymentName'),
-  disableTabLifecycleEnvironment: Ember.computed.alias("disableNextOnConfigureOrganization"),
+  disableTabLifecycleEnvironment: Ember.computed.alias('disableNextOnDeploymentName'),
   disableTabAccessInsights: Ember.computed.or("disableNextOnDeploymentName", 'hasNoOrganization', 'disableNextOnLifecycleEnvironment')
 
 });
