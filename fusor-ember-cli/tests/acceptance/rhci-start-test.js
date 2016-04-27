@@ -11,7 +11,7 @@ test('Cloudforms button should be disabled on starting new deployment',
   visit('/deployments/new/start');
 
   andThen(function() {
-    assert.ok($('span#is_cloudforms').find('img').hasClass('disabledImage'));
+    assert.ok($('span#is_cloudforms').find('input').attr('disabled'));
   });
 });
 
@@ -21,14 +21,10 @@ test('Selecting rhev should enable ability to select cloudforms',
   expect(1);
   visit('/deployments/new/start');
 
-  click('.rhci-item #is_rhev');
+  click('span#is_rhev > .product-item-checkbox > .ember-checkbox');
 
   andThen(function() {
-    let isDisabled = $('span#is_cloudforms')
-      .find('img')
-      .hasClass('disabledImage');
-
-    assert.notOk(isDisabled);
+    assert.notOk($('span#is_cloudforms').find('input').attr('disabled'));
   });
 });
 
@@ -38,32 +34,10 @@ test('Selecting osp should enable ability to select cloudforms',
   expect(1);
   visit('/deployments/new/start');
 
-  click('.rhci-item #is_openstack');
+  click('span#is_openstack > .product-item-checkbox > .ember-checkbox');
 
   andThen(function() {
-    let isDisabled = $('span#is_cloudforms')
-      .find('img')
-      .hasClass('disabledImage');
-
-    assert.notOk(isDisabled);
-  });
-});
-
-test('Selecting rhev and osp should enable ability to select cloudforms',
-  function(assert)
-{
-  expect(1);
-  visit('/deployments/new/start');
-
-  click('.rhci-item #is_rhev');
-  click('.rhci-item #is_openstack');
-
-  andThen(function() {
-    let isDisabled = $('span#is_cloudforms')
-      .find('img')
-      .hasClass('disabledImage');
-
-    assert.notOk(isDisabled);
+    assert.notOk($('span#is_cloudforms').find('input').attr('disabled'));
   });
 });
 
@@ -73,23 +47,15 @@ test('Deselecting a previously active rhev should disable cloudforms',
   expect(2);
   visit('/deployments/new/start');
 
-  click('.rhci-item #is_rhev');
+  click('span#is_rhev > .product-item-checkbox > .ember-checkbox');
 
   andThen(function() {
-    let isDisabled = $('span#is_cloudforms')
-      .find('img')
-      .hasClass('disabledImage');
-
-    assert.notOk(isDisabled);
+    assert.notOk($('span#is_cloudforms').find('input').attr('disabled'));
   });
 
-  click('.rhci-item #is_rhev');
+  click('span#is_rhev > .product-item-checkbox > .ember-checkbox');
 
   andThen(function() {
-    let isDisabled = $('span#is_cloudforms')
-      .find('img')
-      .hasClass('disabledImage');
-
-    assert.ok(isDisabled);
+    assert.ok($('span#is_cloudforms').find('input').attr('disabled'));
   });
 });
