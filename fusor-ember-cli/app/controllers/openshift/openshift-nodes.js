@@ -51,11 +51,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     numNodesChanged(numNodes) {
       var numMasterNodes = 1; // for non-HA scerios
       this.set('numMasterNodes', numMasterNodes);
-      return this.set('numWorkerNodes', numNodes - numMasterNodes);
+      this.set('numWorkerNodes', numNodes - numMasterNodes);
     },
 
     storageSizeChanged(storageSize) {
-      return this.set('model.openshift_storage_size', storageSize);
+      this.set('model.openshift_storage_size', storageSize);
     }
   }
 

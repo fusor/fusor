@@ -85,9 +85,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   observeAllChecked: Ember.observer('allChecked', function(row) {
     // TODO
     if (this.get('allChecked')) {
-      return this.send('setCheckAll');
+      this.send('setCheckAll');
     } else {
-      return this.send('setUncheckAll');
+      this.send('setUncheckAll');
     }
   }),
 
@@ -126,7 +126,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       this.get('model').setObjects([]);
       this.set('checkAll', true);
       this.set('uncheckAll', false);
-      return this.get('model').addObjects(this.get('availableHosts'));
+      this.get('model').addObjects(this.get('availableHosts'));
     },
 
     setUncheckAll() {

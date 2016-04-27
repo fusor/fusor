@@ -25,7 +25,7 @@ export default Ember.Component.extend(TrEngineHypervisorMixin, {
         } else {
           this.get('host').set('name', this.get('host.name'));
         }
-        return this.send('saveHostname');
+        this.send('saveHostname');
       }
     }
   ),
@@ -40,9 +40,9 @@ export default Ember.Component.extend(TrEngineHypervisorMixin, {
 
   setOrUnceckAll: Ember.observer('checkAll', 'uncheckAll', function() {
     if (this.get('checkAll')) {
-      return this.set('isSelectedAsHypervisor', true);
+      this.set('isSelectedAsHypervisor', true);
     } else if (this.get('uncheckAll')) {
-      return this.set('isSelectedAsHypervisor', false);
+      this.set('isSelectedAsHypervisor', false);
     }
   }),
 

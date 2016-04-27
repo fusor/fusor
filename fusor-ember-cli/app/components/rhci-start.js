@@ -7,12 +7,12 @@ export default Ember.Component.extend({
   setIsDisabledCfmeAndOpenshift: Ember.observer('isRhev', 'isOpenStack', function() {
     if (this.get('isRhev') || this.get('isOpenStack')) {
       this.set('isDisabledOpenShift', false);
-      return this.set('isDisabledCfme', false);
+      this.set('isDisabledCfme', false);
     } else {
       this.set('isOpenShift', false);
       this.set('isCloudForms', false);
       this.set('isDisabledOpenShift', true);
-      return this.set('isDisabledCfme', true);
+      this.set('isDisabledCfme', true);
     }
   }),
 

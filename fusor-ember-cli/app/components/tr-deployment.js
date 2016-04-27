@@ -41,9 +41,9 @@ export default Ember.Component.extend({
       return 'review.summary';
     } else if (this.get('isStarted')) {
       return 'review.progress.overview';
+    } else {
+      return 'deployment';
     }
-
-    return 'deployment';
   }),
 
   actions: {

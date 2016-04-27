@@ -63,7 +63,7 @@ export default Ember.Component.extend({
           if (hasPostiveQty) {
             this.set('subscription.qtyToAttach', 0);
             var pool = this.get('subscription');
-            return this.sendAction('saveSubscription', pool, this.get('subscription.qtyToAttach'));
+            this.sendAction('saveSubscription', pool, this.get('subscription.qtyToAttach'));
           }
       }
   }),
@@ -73,22 +73,12 @@ export default Ember.Component.extend({
   actions: {
     setValidQty() {
       if (this.get('isQtyInValid')) {
-          return this.set('subscription.qtyToAttach', this.get('subscription.qtyAvailable') );
+        this.set('subscription.qtyToAttach', this.get('subscription.qtyAvailable') );
       }
       // TODO - call saveSubscription action from within this action
       var pool = this.get('subscription');
-      return this.sendAction('saveSubscription', pool, this.get('subscription.qtyToAttach'));
-    },
-
-    saveSubscription() {
-      // this.get('subscription') is actally of model type "pool"
-      // TODO - qtyToAttach was not passed with pool = this.get('subscription'), so including it
-      // as 2nd parameter
-      var pool = this.get('subscription');
-      alert(this.get('subscription.qtyToAttach'));
-      return this.sendAction('saveSubscription', pool, this.get('subscription.qtyToAttach'));
+      this.sendAction('saveSubscription', pool, this.get('subscription.qtyToAttach'));
     }
-
   }
 
 });

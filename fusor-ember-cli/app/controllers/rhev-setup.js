@@ -19,7 +19,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   actions: {
     rhevSetupChanged() {
-      return this.get('deploymentController').set('model.rhev_is_self_hosted', this.get('isSelfHosted'));
+      this.get('deploymentController').set('model.rhev_is_self_hosted', this.get('isSelfHosted'));
     }
   }
 
