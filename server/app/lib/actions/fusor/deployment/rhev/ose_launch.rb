@@ -30,7 +30,6 @@ module Actions
             ::Fusor.log.info '====== OSE Launch run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             hostgroup = find_hostgroup(deployment, 'OpenShift')
-            ose_hosts_ids = []
 
             generate_root_password(deployment)
 
@@ -71,7 +70,6 @@ module Actions
                 fail _("====== Launch OSE Master #{i} VM FAILED! ======")
               else
                 deployment.ose_master_hosts << host
-                ose_hosts_ids << host.id
                 ::Fusor.log.debug "====== OSE Launched VM Name : #{host.name} ======"
                 ::Fusor.log.debug "====== OSE Launched VM IP   : #{host.ip}   ======"
               end
@@ -99,13 +97,12 @@ module Actions
                 fail _("====== Launch OSE Worker #{i} VM FAILED! ======")
               else
                 deployment.ose_worker_hosts << host
-                ose_hosts_ids << host.id
                 ::Fusor.log.debug "====== OSE Launched VM Name : #{host.name} ======"
                 ::Fusor.log.debug "====== OSE Launched VM IP   : #{host.ip}   ======"
               end
             end
 
-            output[:host_ids] = ose_hosts_ids
+            deployment.save!
             ::Fusor.log.info '====== Leaving OSE Launch run method ======'
           end
 
