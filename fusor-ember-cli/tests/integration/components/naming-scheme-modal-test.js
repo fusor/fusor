@@ -6,20 +6,6 @@ moduleForComponent('naming-scheme-modal', 'Integration | Component | naming sche
 });
 
 test('it renders', function(assert) {
-  
-  // Set any properties with this.set('myProperty', 'value');
-  // Handle any actions with this.on('myAction', function(val) { ... });" + EOL + EOL +
-
   this.render(hbs`{{naming-scheme-modal}}`);
-
-  assert.equal(this.$().text().trim(), '');
-
-  // Template block usage:" + EOL +
-  this.render(hbs`
-    {{#naming-scheme-modal}}
-      template block text
-    {{/naming-scheme-modal}}
-  `);
-
-  assert.equal(this.$().text().trim(), 'template block text');
+  assert.equal(this.$('.modal-title').text().trim(), 'Edit Naming Scheme');
 });
