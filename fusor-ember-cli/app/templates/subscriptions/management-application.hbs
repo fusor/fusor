@@ -62,7 +62,8 @@
   </div>
 </div>
 
-{{partial 'new-satellite'}}
+{{new-satellite-modal openModal=openModal
+                      createSatellite='createSatellite'}}
 
 {{cancel-back-next backRouteName='subscriptions.credentials'
                    disableBack=false
