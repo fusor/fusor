@@ -37,7 +37,7 @@ module Actions
             fail _("Failed to provision host '%s'.") % host.name if host.error?
           end
 
-          watched_host_ids = watched_hosts.map{|host| host.id}
+          watched_host_ids = watched_hosts.map { |host| host.id }
 
           # Handle event
           case event
@@ -50,7 +50,7 @@ module Actions
             suspend do |suspended_action|
               # schedule timeout
               world.clock.ping suspended_action, input[:timeout], "timeout"
-              watched_host_ids.each{|host_id| set_host_trigger(suspended_action, host_id)}
+              watched_host_ids.each { |host_id| set_host_trigger(suspended_action, host_id) }
             end
           when Hash
             # One of the OSE hosts triggered this event via its 'before_provision'
@@ -76,7 +76,7 @@ module Actions
               # Go back to sleep and wait for the other hosts
               suspend do |suspended_action|
                 world.clock.ping suspended_action, input[:timeout], "timeout"
-                outstanding_host_ids.each{|host_id| set_host_trigger(suspended_action, host_id)}
+                outstanding_host_ids.each { |host_id| set_host_trigger(suspended_action, host_id) }
               end
             end
           when "timeout"
