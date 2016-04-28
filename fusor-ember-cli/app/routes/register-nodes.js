@@ -63,7 +63,7 @@ export default Ember.Route.extend({
         controller.set('nodes', result);
       },
       (error) => {
-        return this.send('error', error, 'Error retrieving OpenStack nodes.');
+        this.send('error', error, 'Error retrieving OpenStack nodes.');
       });
   },
 
@@ -85,7 +85,7 @@ export default Ember.Route.extend({
     }).then((result) => {
       controller.set('ports', result.ports);
     }, (error) => {
-      return this.send('error', error, `Unable to load node ports. GET "${url}" failed with status code ${error.jqXHR.status}.`);
+      this.send('error', error, `Unable to load node ports. GET "${url}" failed with status code ${error.jqXHR.status}.`);
     });
   },
 
@@ -97,7 +97,7 @@ export default Ember.Route.extend({
         controller.set('introspectionTasks', deployment.get('introspection_tasks'));
       },
       (error) => {
-        return this.send('error', error, 'ERROR retrieving deployment introspection tasks.');
+        this.send('error', error, 'ERROR retrieving deployment introspection tasks.');
       });
   },
 

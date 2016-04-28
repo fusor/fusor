@@ -5,6 +5,7 @@ import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 
 import {
   AllValidator,
+  UniquenessValidator,
   MacAddressValidator,
   HostAddressValidator,
   PresenceValidator
@@ -17,7 +18,26 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   nodeCount: Ember.computed.alias("deployment.openstack_overcloud_node_count"),
 
   presenceValidator: PresenceValidator.create({}),
-  macAddressValidator: MacAddressValidator.create({}),
+
+  unavailableMacs: Ember.computed('ports', 'nodeInfo.macAddresses.@each.value', function () {
+    let enteredMacs = this.get('nodeInfo.macAddresses');
+    let unavailableMacs = this.getPortMacAddresses();
+
+    if (enteredMacs) {
+      enteredMacs.forEach(mac => { unavailableMacs.pushObject(mac.value); });
+    }
+    
+    return unavailableMacs;
+  }),
+
+  macAddressValidator: Ember.computed('unavailableMacs', function () {
+    return AllValidator.create({
+      validators: [
+        MacAddressValidator.create({}),
+        UniquenessValidator.create({selfIncluded: true, existingValues: this.get('unavailableMacs')})
+      ]
+    });
+  }),
 
   hostAddressValidator: AllValidator.create({
     validators: [
@@ -639,13 +659,18 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   updateAutoDetectedNodes(hostArray) {
     let autoDetectedNodesMultiMac = [];
     let autoDetectedNodesSingleMac = [];
+    let usedMacs = this.getPortMacAddresses();
 
-    hostArray.forEach((hostHash) => {
+    hostArray.forEach(hostHash => {
       let host = Ember.Object.create({
         name: hostHash.hostname,
         macAddresses: hostHash.mac_addresses,
         selected: true
       });
+
+      if (!this.autoDetectedNodeIsValid(host, usedMacs)) {
+        return;
+      }
 
       if (host.get('macAddresses.length') === 1) {
         host.set('value', host.get('macAddresses')[0]);
@@ -658,6 +683,22 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
     this.set('autoDetectedNodesMultiMac', autoDetectedNodesMultiMac);
     this.set('autoDetectedNodesSingleMac', autoDetectedNodesSingleMac);
+  },
+
+  autoDetectedNodeIsValid(host, usedMacs) {
+    let hostMacs = host.get('macAddresses');
+
+    if (!hostMacs) {
+      return false;
+    }
+
+    for (let i = 0; i < hostMacs.length; i++) {
+      if (usedMacs.contains(hostMacs[i])) {
+        return false;
+      }
+    }
+
+    return true;
   },
 
   prepAutoDetectNodeInfo() {
@@ -792,6 +833,8 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     let csvErrors = [];
     let controller = this;
     let file = fileInput.files[0];
+    let macAddressValidator = MacAddressValidator.create({});
+    let usedMacs = this.getPortMacAddresses();
 
 
     if (file) {
@@ -857,15 +900,19 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
             errorsFound = true;
           }
 
-          if (Ember.isPresent(row[4]) && controller.get('macAddressValidator').isValid(row[4])) {
-            csvNode.set('macAddresses', [Ember.Object.create({value: row[4]})]);
-          } else {
+          if (Ember.isBlank(row[4]) || macAddressValidator.isInvalid(row[4])) {
             csvErrors.pushObject(`Row ${rowIndex + 1}, Column 5 "${row[4]}" is not a valid MAC address`);
             errorsFound = true;
+          } else if (usedMacs.contains(row[4].trim())) {
+            csvErrors.pushObject(`Row ${rowIndex + 1}, Column 5 "${row[4]}" is not an available MAC address`);
+            errorsFound = true;
+          } else {
+            csvNode.set('macAddresses', [Ember.Object.create({value: row[4]})]);
           }
 
           if (!errorsFound) {
             csvInfo.pushObject(csvNode);
+            usedMacs.push(row[4].trim());
           }
         });
 
@@ -882,6 +929,10 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
       reader.readAsText(file);
     }
+  },
+
+  getPortMacAddresses() {
+    return this.get('ports') ? this.get('ports').map(port => port.address) : [];
   },
 
   handleOutsideClick() {

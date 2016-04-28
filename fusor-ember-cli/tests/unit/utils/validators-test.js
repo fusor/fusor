@@ -195,6 +195,37 @@ test('UniquenessValidator rejects values already in existingValues', function (a
   });
 });
 
+test('UniquenessValidator accepts values in list only once if selfIncluded', function (assert) {
+  const value = 'valid';
+  let existingValues = ['other1', 'other2'];
+  existingValues.pushObject(value);
+
+  let uniquenessValidator = UniquenessValidator.create({selfIncluded: true, existingValues: existingValues});
+  assert.ok(uniquenessValidator.isValid(value), `"${value}" was not accepted as valid`);
+  assert.notOk(uniquenessValidator.isInvalid(value), `"${value}" was rejected as invalid`);
+  assert.equal(uniquenessValidator.getMessages(value).length, 0);
+});
+
+test('UniquenessValidator rejects values in list with multiples if selfIncluded', function (assert) {
+  let invalidValues = [
+    ' reject',
+    'reject ',
+    'reject',
+    2
+  ];
+
+  invalidValues.forEach((value) => {
+    let existingValues = ['reject', 'other2', 2];
+    existingValues.pushObject(value);
+
+    let uniquenessValidator = UniquenessValidator.create({selfIncluded: true, existingValues: existingValues});
+    assert.ok(uniquenessValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+    assert.notOk(uniquenessValidator.isValid(value), `"${value}" was accepted as valid`);
+    assert.equal(uniquenessValidator.getMessages(value).length, 1);
+    assert.equal(uniquenessValidator.getMessages(value)[0], 'must be unique');
+  });
+});
+
 test('RegExpValidator accepts matching values', function (assert) {
   let regExpValidator = RegExpValidator.create({
     regExp: new RegExp(/A/),
@@ -324,12 +355,10 @@ test('CidrValidator accepts valid values', function (assert) {
   let validValues = [
     null,
     undefined,
-    '192.168.153.0/3',
+    '192.168.153.0/1',
     '192.168.153.0/32',
-    '192.168.153.254/12',
-    '192.68.1.0/2',
-    '192.068.53.0/1',
-    '192.168.153.0/22'
+    '0.0.0.0/1',
+    '255.255.255.255/32'
   ];
 
   validValues.forEach((value) => {
@@ -343,11 +372,18 @@ test('CidrValidator accepts valid values', function (assert) {
 test('CidrValidator rejects invalid values', function (assert) {
   let cidrValidator = CidrValidator.create({});
   let invalidValues = [
-    '192.168.2.2000',
-    '192.168.2.257',
     'garbage',
-    '192.168.153.0',
-    '192.168.153.0/255'
+    '8.8.8.0',
+    '8.8.8.x/24',
+    '8.8.8.0/33',
+    '8.8.8.256/24',
+    '8.8.256.8/24',
+    '8.256.8.8/24',
+    '256.8.8.8/24',
+    '8.8.8.0/./24',
+    '8.8.8/24',
+    '8.8.8.8//24',
+    '8.8.8.8.8/24'
   ];
   invalidValues.forEach((value) => {
     assert.ok(cidrValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
