@@ -1,5 +1,6 @@
 module Fusor
   module Validators
+    # rubocop:disable ClassLength
     class DeploymentValidator < ActiveModel::Validator
 
       def validate(deployment)
@@ -160,10 +161,8 @@ module Fusor
                                              :hostname => "*.#{deployment.openshift_subdomain_name}.#{Domain.find(Hostgroup.find_by_name('Fusor Base').domain_id)}",
                                              :proxy => Domain.find(1).proxy
                                            })
-          if !subdomain.conflicts.empty?
-            add_warning(deployment, _("The specified subdomain name to deploy Openshift applications is already in use. " \
-                                      "Please specify a different subdomain name or the wildcard region will not be created."))
-          end
+
+          validate_openshift_subdomain(deployment, subdomain)
         end
 
         validate_nfs_share(deployment, deployment.openshift_storage_host, deployment.openshift_export_path, -1, -1)
@@ -278,6 +277,23 @@ module Fusor
           add_warning(deployment, _("NFS share has an invalid GID. The expected GID is '%s'. " \
                                     "Please check NFS share permissions.") % "#{gid}")
           return
+        end
+      end
+
+      def validate_openshift_subdomain(deployment, subdomain)
+        if !subdomain.conflicts.empty?
+          conflicting_subdomain_entry = subdomain.conflicts[0]
+          conflicting_ip = conflicting_subdomain_entry.to_s.split('/')[1]
+          active_conflicting_host = Host::Managed.where(:ip => conflicting_ip)
+
+          # If the conflicting subdomain points to an active managed host, display a warning
+          # Otherwise, delete the stale entry
+          if !active_conflicting_host.empty?
+            add_warning(deployment, _("The specified subdomain name to deploy Openshift applications is already in use. " \
+                                      "Please specify a different subdomain name or the wildcard region will not be created."))
+          else
+            conflicting_subdomain_entry.destroy
+          end
         end
       end
 
