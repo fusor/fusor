@@ -1,26 +1,22 @@
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
+import startMirage from '../../helpers/start-mirage';
 
 moduleForComponent('delete-deployment-modal', 'Integration | Component | delete deployment modal', {
-  integration: true
+  integration: true,
+  beforeEach() {
+    startMirage(this.container);
+  },
+  afterEach() {
+    window.server.shutdown();
+  }
 });
 
 test('it renders', function(assert) {
-  assert.expect(2);
+  const mockDeployment = server.create('deployment', {name: 'deploy111'});
+  this.set('mockDeployment', mockDeployment);
 
-  // Set any properties with this.set('myProperty', 'value');
-  // Handle any actions with this.on('myAction', function(val) { ... });
+  this.render(hbs`{{delete-deployment-modal deployment=mockDeployment}}`);
 
-  this.render(hbs`{{delete-deployment-modal}}`);
-
-  assert.equal(this.$().text().trim(), '');
-
-  // Template block usage:
-  this.render(hbs`
-    {{#delete-deployment-modal}}
-      template block text
-    {{/delete-deployment-modal}}
-  `);
-
-  assert.equal(this.$().text().trim(), 'template block text');
+  assert.equal(this.$('.modal-title').text().trim(), 'Delete QCI Deployment - deploy111');
 });

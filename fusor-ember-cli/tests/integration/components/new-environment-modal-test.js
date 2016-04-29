@@ -6,20 +6,7 @@ moduleForComponent('new-environment-modal', 'Integration | Component | new envir
 });
 
 test('it renders', function(assert) {
-  
-  // Set any properties with this.set('myProperty', 'value');
-  // Handle any actions with this.on('myAction', function(val) { ... });" + EOL + EOL +
-
+  assert.expect(1);
   this.render(hbs`{{new-environment-modal}}`);
-
-  assert.equal(this.$().text().trim(), '');
-
-  // Template block usage:" + EOL +
-  this.render(hbs`
-    {{#new-environment-modal}}
-      template block text
-    {{/new-environment-modal}}
-  `);
-
-  assert.equal(this.$().text().trim(), 'template block text');
+  assert.equal(this.$('.modal-title').text().trim(), 'Enter New Environment');
 });

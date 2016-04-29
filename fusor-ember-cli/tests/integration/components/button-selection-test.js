@@ -6,20 +6,12 @@ moduleForComponent('button-selection', 'Integration | Component | button selecti
 });
 
 test('it renders', function(assert) {
-  
+
   // Set any properties with this.set('myProperty', 'value');
   // Handle any actions with this.on('myAction', function(val) { ... });" + EOL + EOL +
 
-  this.render(hbs`{{button-selection}}`);
+  this.render(hbs`{{button-selection label='Submit'}}`);
 
-  assert.equal(this.$().text().trim(), '');
+  assert.equal(this.$().text().trim(), 'Submit');
 
-  // Template block usage:" + EOL +
-  this.render(hbs`
-    {{#button-selection}}
-      template block text
-    {{/button-selection}}
-  `);
-
-  assert.equal(this.$().text().trim(), 'template block text');
 });
