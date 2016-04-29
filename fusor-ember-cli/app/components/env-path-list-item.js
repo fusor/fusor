@@ -24,7 +24,7 @@ export default Ember.Component.extend({
 
   click() {
     if (!this.get('disabled')) {
-      return this.sendAction('action', this.get('env'));
+      this.sendAction('action', this.get('env'));
     }
   }
 

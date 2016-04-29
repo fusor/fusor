@@ -14,7 +14,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymen
     this.set('showAlertMessage', false);
     if (this.get('useDefaultOrgViewForEnv')) {
       this.set('selectedEnvironment', null);
-      return this.get('deploymentNewController.model').set('lifecycle_environment', null);
+      this.get('deploymentNewController.model').set('lifecycle_environment', null);
     }
   }),
 

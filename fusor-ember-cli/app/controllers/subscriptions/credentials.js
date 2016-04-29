@@ -99,7 +99,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   actions: {
     providerTypeChanged() {
-      return this.set('isDisconnected', this.get('isDisconnectedSelected'));
+      this.set('isDisconnected', this.get('isDisconnectedSelected'));
     },
 
     uploadManifest() {
@@ -134,7 +134,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     },
 
     uploadDifferentManifest() {
-      return this.set("manifestFile", null);
+      this.set("manifestFile", null);
     },
 
     mirrorStatusUpdate(newStatus) {

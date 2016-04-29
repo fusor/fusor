@@ -43,7 +43,7 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
 
   actions: {
     envSetupChanged() {
-      return this.set('useDefaultOrgViewForEnv', this.get('isImmediate'));
+      this.set('useDefaultOrgViewForEnv', this.get('isImmediate'));
     }
   }
 

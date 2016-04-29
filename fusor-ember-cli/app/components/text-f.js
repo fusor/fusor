@@ -74,10 +74,10 @@ export default Ember.Component.extend({
       this.set('isEyeOpen', this.toggleProperty('isEyeOpen'));
       if (this.get('isEyeOpen')) {
           this.set('typeInput', 'password');
-          return this.set('eyeIcon', "fa-eye");
+          this.set('eyeIcon', "fa-eye");
       } else {
           this.set('typeInput', 'text');
-          return this.set('eyeIcon', "fa-eye-slash");
+          this.set('eyeIcon', "fa-eye-slash");
       }
     }
   }
