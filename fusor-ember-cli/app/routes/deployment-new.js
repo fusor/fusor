@@ -19,7 +19,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
   setupController(controller, model) {
     controller.set('model', model);
     controller.set('satelliteTabRouteName', 'deployment-new.satellite.index');
-    controller.set('organizationTabRouteName', 'deployment-new.satellite.configure-organization');
     controller.set('lifecycleEnvironmentTabRouteName', 'deployment-new.satellite.configure-environment');
     this.controllerFor('application').set('isNewDeployment', true);
   },

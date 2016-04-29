@@ -17,7 +17,6 @@ export default Router.map(function() {
     this.route("start");
     this.route('satellite', function() {
       this.route('configure-environment');
-      this.route("configure-organization");
     });
   });
 
@@ -25,7 +24,6 @@ export default Router.map(function() {
     this.route("start");
 
     this.route('satellite', {resetNamespace: true}, function() {
-      this.route('configure-organization', {resetNamespace: true});
       this.route('configure-environment', {resetNamespace: true});
       this.route('access-insights');
     });

@@ -4,7 +4,6 @@ export default Ember.Mixin.create({
 
   applicationController: Ember.inject.controller('application'),
   subscriptionsController: Ember.inject.controller('subscriptions'),
-  configureOrganizationController: Ember.inject.controller('configure-organization'),
   configureEnvironmentController: Ember.inject.controller('configure-environment'),
   selectSubscriptionsController: Ember.inject.controller('subscriptions/select-subscriptions'),
 

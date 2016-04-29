@@ -12,7 +12,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, UsesOseDefaults, {
   setupController(controller, model) {
     controller.set('model', model);
     controller.set('satelliteTabRouteName', 'satellite.index');
-    controller.set('organizationTabRouteName', 'configure-organization');
     controller.set('lifecycleEnvironmentTabRouteName', 'configure-environment');
     controller.set('model.host_naming_scheme', 'Freeform');
     controller.set('confirmRhevRootPassword', model.get('rhev_root_password'));
