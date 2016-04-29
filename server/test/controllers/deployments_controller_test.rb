@@ -348,5 +348,43 @@ module Fusor
         assert_equal response_error, 'ForcedError'
       end
     end
+
+    context 'openshift_disk_space' do
+      test 'openshift_disk_space should return a 200 and the correct disk space' do
+        mock_stats = Object.new
+
+        def mock_stats.block_size
+          1024
+        end
+
+        def mock_stats.blocks_available
+          1024 * 1024
+        end
+
+        expected_size = 1024
+
+        Utils::Fusor::CommandUtils.stubs(:run_command).returns(0, :foo)
+        Sys::Filesystem.stubs(:stat).returns(mock_stats)
+
+        response = JSON.parse(get(
+          :openshift_disk_space,
+          :id => @deployment.id).body)
+
+        assert_response 200
+        assert_equal response['openshift_disk_space'], expected_size
+      end
+
+      test 'openshift_disk_space should return a 500 if mount fails' do
+        Utils::Fusor::CommandUtils.stubs(:run_command).returns(1, :foo)
+
+        response = JSON.parse(get(
+          :openshift_disk_space,
+          :id => @deployment.id).body)
+
+        assert_response 500
+        assert_equal response['error'],
+          'Unable to mount NFS share at specified mount point'
+      end
+    end
   end
 end

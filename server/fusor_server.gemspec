@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency "rubyzip"
   s.add_dependency "net-ssh", '2.9.2' # last ruby 1.9 version
   s.add_dependency 'net-scp'
+  s.add_dependency "sys-filesystem"
   s.add_development_dependency 'rubocop', '0.33.0'
   s.add_development_dependency 'simplecov'
   s.add_development_dependency 'coveralls'

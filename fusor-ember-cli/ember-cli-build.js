@@ -25,6 +25,7 @@ module.exports = function(defaults) {
   app.import('bower_components/patternfly/components/bootstrap/js/modal.js');
   app.import('bower_components/jquery-csv/src/jquery.csv.js');
   app.import('bower_components/matchmedia/matchMedia.js');
+  app.import('bower_components/filesize/lib/filesize.js');
 
   // any app.import lines below are should ONLY appear in development ember-cli branches and not in 'master branch'
 

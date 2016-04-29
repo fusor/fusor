@@ -11,13 +11,14 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 require "net/http"
+require "sys/filesystem"
 require "uri"
 
 module Fusor
   class Api::V21::DeploymentsController < Api::V2::DeploymentsController
 
     before_filter :find_deployment, :only => [:destroy, :show, :update,
-                                              :deploy, :redeploy, :validate, :log]
+                                              :deploy, :redeploy, :validate, :log, :openshift_disk_space]
 
     rescue_from Encoding::UndefinedConversionError, :with => :ignore_it
 
@@ -151,6 +152,32 @@ module Fusor
         render :json => {log_type_param => reader.tail_log_since(log_path, (params[:line_number_gt]).to_i)}
       else
         render :json => {log_type_param => reader.read_full_log(log_path)}
+      end
+    end
+
+    def openshift_disk_space
+      # Openshift deployments need to know how much disk space is available on the NFS storage pool
+      # This method mounts the specifed NFS share and gets the available disk space
+      begin
+        nfs_address = @deployment.rhev_storage_address
+        nfs_path = @deployment.rhev_share_path
+        deployment_id = @deployment.id
+
+        cmd = "sudo safe-mount.sh '#{deployment_id}' '#{nfs_address}' '#{nfs_path}'"
+        status, _output = Utils::Fusor::CommandUtils.run_command(cmd)
+
+        raise 'Unable to mount NFS share at specified mount point' unless status == 0
+
+        stats = Sys::Filesystem.stat("/tmp/fusor-test-mount-#{deployment_id}")
+        mb_available = stats.block_size * stats.blocks_available / 1024 / 1024
+
+        Utils::Fusor::CommandUtils.run_command("sudo safe-umount.sh #{deployment_id}")
+        render json: { :openshift_disk_space => mb_available }, status: 200
+      rescue Exception => error
+        message = 'Unable to retrieve Openshift disk space'
+        message = error.message if error.respond_to?(:message)
+
+        render json: { :error => message}, status: 500
       end
     end
 
