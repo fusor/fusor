@@ -13,7 +13,6 @@
 module Actions
   module Fusor
     module Host
-
       class WaitUntilProvisioned < Actions::Fusor::FusorBaseAction
 
         TIMEOUT = 7200
@@ -24,14 +23,16 @@ module Actions
         # the WaitUntilProvisioned because it's not a polling action.
         middleware.use Actions::Fusor::Middleware::Timeout
 
-        def plan(host)
+        def plan(hostid)
           super()
-          plan_self host_id: host.id
+          plan_self host_id: hostid
         end
 
         def run(event = nil)
           host = ::Host::Base.find(input[:host_id])
-          ::Fusor.log.info "Waiting for host #{host.name}'s deployment to complete..."
+          fail _("====== Host is null! Cannot wait for host! ====== ") unless host
+
+          ::Fusor.log.info "Waiting for host #{host.name}'s provisioning to complete..."
           if host.is_a?(::Host::Managed) && host.error?
             fail _("Failed to provision host '%s'.") % host.name
           end
@@ -44,7 +45,7 @@ module Actions
 
               # wake up when provisioning is finished
               Rails.cache.write(
-                  ::Fusor::Concerns::HostOrchestrationBuildHook.cache_id(input[:host_id]),
+                  ::Fusor::Concerns::HostOrchestrationBuildHook.cache_id(host.id),
                   { execution_plan_id: suspended_action.execution_plan_id,
                     step_id:           suspended_action.step_id })
             end
