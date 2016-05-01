@@ -1,8 +1,9 @@
 import DS from 'ember-data';
 import Ember from 'ember';
+import ActiveModelAdapter from 'active-model-adapter';
 
 var token = Ember.$('meta[name="csrf-token"]').attr('content');
-export default DS.ActiveModelAdapter.extend({
+export default ActiveModelAdapter.extend({
     namespace: 'api/v21',
     headers: {
         "X-CSRF-Token": token
