@@ -11,6 +11,9 @@ export default ActiveModelAdapter.extend({
     shouldReloadRecord(store, ticketSnapshot) {
       return true;
     },
+    shouldReloadAll() {
+      return true;
+    },
     handleResponse(status /*, headers, payload */) {
         if(status === 401) {
             this.eventBus.trigger('displayErrorModal', {

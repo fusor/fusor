@@ -1,5 +1,8 @@
 import DS from 'ember-data';
 
 export default DS.LSAdapter.extend({
-  namespace: 'rhci'
+  namespace: 'rhci',
+  shouldReloadAll() {
+    return true;
+  }
 });
