@@ -39,12 +39,9 @@ module Actions::Fusor::Deployment::OpenStack
 
       sequence do
         # work around BZ 1281908
-        overcloud_admin_password = undercloud_handle(deployment).get_plan_parameter_value('overcloud', 'Controller-1::AdminPassword')
-        plan_action(SshCommand, deployment, 'sudo sed -i "s/OVERCLOUD_ADMIN_PASSWORD.*/OVERCLOUD_ADMIN_PASSWORD=' + overcloud_admin_password + '/g" /home/stack/tripleo-overcloud-passwords')
         plan_action(UndercloudNoHostWorkaround, deployment)
         plan_self(deployment_id: deployment.id)
         plan_action(SshCommand, deployment, "/opt/theforeman/tfm/root/bin/initialize_overcloud.sh")
-        plan_action(OvercloudCredentials, deployment)
         plan_action(ControllerCleanup, deployment)
         plan_action(OvercloudConfiguration, deployment)
         plan_action(CreateCr, deployment)
@@ -83,7 +80,7 @@ module Actions::Fusor::Deployment::OpenStack
 
         # Figure out how many total nodes we have
         unless defined?(@total_nodes)
-          @total_nodes = count_nodes(undercloud_handle(deployment).get_plan('overcloud'))
+          @total_nodes = count_nodes(deployment)
         end
 
         @progress = 0.1 + 0.7 * provisioned_nodes / @total_nodes
@@ -107,17 +104,8 @@ module Actions::Fusor::Deployment::OpenStack
 
     private
 
-    def count_nodes(plan)
-      total_nodes = 0
-      for role in plan.attributes['roles']
-        param_name = role['name'] + '-' + role['version'].to_s + '::count'
-        for param in plan.parameters
-          if param['name'] == param_name
-            total_nodes += param['value'].to_i
-          end
-        end
-      end
-      return total_nodes
+    def count_nodes(d)
+      d.openstack_overcloud_ceph_storage_count+d.openstack_overcloud_cinder_storage_count+d.openstack_overcloud_swift_storage_count+d.openstack_overcloud_compute_count+d.openstack_overcloud_controller_count
     end
 
     def undercloud_handle(deployment)
