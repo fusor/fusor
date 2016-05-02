@@ -112,7 +112,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       }
 
       let vState = this.get('hostnameValidity').get('state');
-      let trackedHostIds = Ember.keys(vState);
+      let trackedHostIds = Object.keys(vState);
       return trackedHostIds.length === 0 ||
         !trackedHostIds
           .filter((hostId) => this.get('hypervisorModelIds').contains(hostId))
