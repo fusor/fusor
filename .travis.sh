@@ -16,7 +16,7 @@ if [ $1 == "install" ]; then
   git clone https://github.com/fusor/foretello_api_v21.git
 
   cd katello
-  git checkout 21bee8252e50b1b9d0ef3e08177f5084f63dbf18
+  git checkout KATELLO-3.0
   cp script/ci/katello.yml config/katello.yml
   # Hack out some qpid dependencies in katello so that it can build on ubuntu 12.04
   sed -i 's/gem.add_dependency "qpid_messaging"/#gem.add_dependency "qpid_messaging"/' katello.gemspec
@@ -25,20 +25,20 @@ if [ $1 == "install" ]; then
   sed -i "s/Qpid::Messaging::Duration/1#Qpid::Messaging::Duration'/" app/lib/actions/candlepin/candlepin_listening_service.rb
 
   cd ../foreman
-  git checkout 996b3db5141564f3a177df7766047de94a3b2acd
+  git checkout 1.11-stable
   sed -e 's/:locations_enabled: false/:locations_enabled: true/' config/settings.yaml.example > config/settings.yaml
   sed -i 's/:organizations_enabled: false/:organizations_enabled: true/' config/settings.yaml
   cp ../fusor/.foreman_database.yml config/database.yml
   echo "gem 'fusor_server', :path => '../fusor/server'" >> bundler.d/local.rb
   echo "gem 'katello', :path => '../katello'" >> bundler.d/local.rb
   echo "gem 'foretello_api_v21', :path => '../foretello_api_v21'" >> bundler.d/local.rb
-  echo "gem 'foreman_discovery', '< 4.2.0'" >> bundler.d/local.rb
+  echo "gem 'foreman_discovery', '5.0.0'" >> bundler.d/local.rb
   echo "gem 'dynflow'" >> bundler.d/local.rb
   echo "gem 'less-rails'" >> bundler.d/local.rb
   echo "gem 'logger'" >> bundler.d/local.rb
   echo "gem 'egon'" >> bundler.d/local.rb
   echo "gem 'coveralls', require: false" >> bundler.d/local.rb
-  echo "gem 'foreman_docker', '< 2.0.0'" >> bundler.d/local.rb
+  echo "gem 'foreman_docker', '2.0.1'" >> bundler.d/local.rb
   echo "gem 'jwt', '< 1.5.3'" >> bundler.d/local.rb
   echo "gem 'rake', '< 11'" >> bundler.d/local.rb
 
