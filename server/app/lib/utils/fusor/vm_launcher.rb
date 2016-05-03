@@ -32,6 +32,8 @@ module Utils
         set_rhev_attrs(cpu, ram, disk_size_gb)
 
         compute_attrs = create_compute_attribute(@rhev_attrs)
+        return nil unless compute_attrs
+
         set_rhev_host_attrs(compute_attrs.vm_attrs)
         launch_vm
       end
@@ -49,6 +51,8 @@ module Utils
         end
 
         compute_attrs = create_compute_attribute(@rhev_attrs)
+        return nil unless compute_attrs
+
         set_rhev_host_attrs(compute_attrs.vm_attrs)
 
         # update host attributes
@@ -59,7 +63,10 @@ module Utils
 
       def launch_osp_vm
         set_osp_attrs
-        create_compute_attribute(@osp_attrs)
+
+        compute_attrs = create_compute_attribute(@osp_attrs)
+        return nil unless compute_attrs
+
         set_osp_host_attrs
         launch_vm
       end
@@ -67,136 +74,167 @@ module Utils
       private
 
       def create_compute_profile(pname)
-        return ComputeProfile.create("name" => pname)
+        ret = ComputeProfile.find_by_name(pname)
+        if !ret.nil?
+          ::Fusor.log.info "====== ComputeProfile with name '#{pname}' already exists!"
+          return ret
+        end
+
+        begin
+          ComputeProfile.create!("name" => pname)
+        rescue Exception => e
+          ::Fusor.log.error "Failed to create compute profile!"
+          ::Fusor.log.error "#{e.message} \n #{e.backtrace}"
+          return nil
+        end
       end
 
       def get_compute_resource(rname)
-        return ComputeResource.find_by_name(rname)
+        ComputeResource.find_by_name(rname)
       end
 
       def set_rhev_attrs(cpu, ram, disk_size_gb)
-        cl_id  = @cr.clusters.find { |c| c.name == @deployment.rhev_cluster_name }.id
-        net_id = @cr.available_networks(cl_id).first.id
-        @storage_id = @cr.available_storage_domains(cl_id).first.id
-        template_id = @cr.templates.find { |t| t.name == "#{@profile_name}-template" }.id
+        begin
+          cl_id  = @cr.clusters.find { |c| c.name == @deployment.rhev_cluster_name }.id
+          net_id = @cr.available_networks(cl_id).first.id
+          @storage_id = @cr.available_storage_domains(cl_id).first.id
+          template_id = @cr.templates.find { |t| t.name == "#{@profile_name}-template" }.id
 
-        mem_size = ram * (1024**3) # convert to gigabytes
+          mem_size = ram * (1024**3) # convert to gigabytes
 
-        @rhev_attrs = {"compute_profile_id" => @cp.id,
-                       "compute_resource_id" => @cr.id,
-                       "vm_attrs" => {
-                         "cluster" => cl_id,
-                         "template" => template_id,
-                         "cores" => cpu,
-                         "memory" => mem_size,
-                         "interfaces_attributes" => {
-                           "new_interfaces" => {
-                             "name" => "",
-                             "network" => net_id,
-                             "delete" => ""
+          @rhev_attrs = {"compute_profile_id" => @cp.id,
+                         "compute_resource_id" => @cr.id,
+                         "vm_attrs" => {
+                           "cluster" => cl_id,
+                           "template" => template_id,
+                           "cores" => cpu,
+                           "memory" => mem_size,
+                           "interfaces_attributes" => {
+                             "new_interfaces" => {
+                               "name" => "",
+                               "network" => net_id,
+                               "delete" => ""
+                             }.with_indifferent_access,
+                             "0" => {
+                               "name" => "eth0",
+                               "network" => net_id,
+                               "delete" => ""
+                             }.with_indifferent_access
                            }.with_indifferent_access,
-                           "0" => {
-                             "name" => "eth0",
-                             "network" => net_id,
-                             "delete" => ""
-                           }.with_indifferent_access
-                         }.with_indifferent_access,
-                         "volumes_attributes" => {
-                           "new_volumes" => {
-                             "size_gb" => "",
-                             "storage_domain" => @storage_id,
-                             "_delete" => "",
-                             "id" => "",
-                             "preallocate" => "0"
-                           }.with_indifferent_access,
-                           @vol_attr_id.to_s => {
-                             "size_gb" => disk_size_gb,
-                             "storage_domain" => @storage_id,
-                             "_delete" => "",
-                             "id" => "",
-                             "preallocate" => "0"
+                           "volumes_attributes" => {
+                             "new_volumes" => {
+                               "size_gb" => "",
+                               "storage_domain" => @storage_id,
+                               "_delete" => "",
+                               "id" => "",
+                               "preallocate" => "0"
+                             }.with_indifferent_access,
+                             @vol_attr_id.to_s => {
+                               "size_gb" => disk_size_gb,
+                               "storage_domain" => @storage_id,
+                               "_delete" => "",
+                               "id" => "",
+                               "preallocate" => "0"
+                             }.with_indifferent_access
                            }.with_indifferent_access
                          }.with_indifferent_access
                        }.with_indifferent_access
-                     }.with_indifferent_access
+        rescue Exception => e
+          ::Fusor.log.error "Failed to set RHEV attributes!"
+          ::Fusor.log.error "#{e.message} \n #{e.backtrace}"
+          return nil
+        end
       end
 
       def set_openshift_attrs(cpu, ram, disk_size_gb)
-        cl_id  = @cr.clusters.find { |c| c.name == @deployment.rhev_cluster_name }.id
-        net_id = @cr.available_networks(cl_id).first.id
-        @storage_id = @cr.available_storage_domains(cl_id).first.id
+        begin
+          cl_id  = @cr.clusters.find { |c| c.name == @deployment.rhev_cluster_name }.id
+          net_id = @cr.available_networks(cl_id).first.id
+          @storage_id = @cr.available_storage_domains(cl_id).first.id
 
-        mem_size = ram * (1024**3) # convert to gigabytes
+          mem_size = ram * (1024**3) # convert to gigabytes
 
-        @rhev_attrs = {"compute_profile_id" => @cp.id,
-                       "compute_resource_id" => @cr.id,
-                       "vm_attrs" => {
-                         "cluster" => cl_id,
-                         "cores" => cpu,
-                         "memory" => mem_size,
-                         "interfaces_attributes" => {
-                           "new_interfaces" => {
-                             "name" => "",
-                             "network" => net_id,
-                             "delete" => ""
+          @rhev_attrs = {"compute_profile_id" => @cp.id,
+                         "compute_resource_id" => @cr.id,
+                         "vm_attrs" => {
+                           "cluster" => cl_id,
+                           "cores" => cpu,
+                           "memory" => mem_size,
+                           "interfaces_attributes" => {
+                             "new_interfaces" => {
+                               "name" => "",
+                               "network" => net_id,
+                               "delete" => ""
+                             }.with_indifferent_access,
+                             "0" => {
+                               "name" => "eth0",
+                               "network" => net_id,
+                               "delete" => ""
+                             }.with_indifferent_access
                            }.with_indifferent_access,
-                           "0" => {
-                             "name" => "eth0",
-                             "network" => net_id,
-                             "delete" => ""
-                           }.with_indifferent_access
-                         }.with_indifferent_access,
-                         "volumes_attributes" => {
-                           "new_volumes" => {
-                             "size_gb" => "",
-                             "storage_domain" => @storage_id,
-                             "_delete" => "",
-                             "id" => "",
-                             "preallocate" => "0"
-                           }.with_indifferent_access,
-                           @vol_attr_id.to_s => {
-                             "size_gb" => disk_size_gb,
-                             "storage_domain" => @storage_id,
-                             "_delete" => "",
-                             "id" => "",
-                             "bootable" => "1",
-                             "preallocate" => "0"
+                           "volumes_attributes" => {
+                             "new_volumes" => {
+                               "size_gb" => "",
+                               "storage_domain" => @storage_id,
+                               "_delete" => "",
+                               "id" => "",
+                               "preallocate" => "0"
+                             }.with_indifferent_access,
+                             @vol_attr_id.to_s => {
+                               "size_gb" => disk_size_gb,
+                               "storage_domain" => @storage_id,
+                               "_delete" => "",
+                               "id" => "",
+                               "bootable" => "1",
+                               "preallocate" => "0"
+                             }.with_indifferent_access
                            }.with_indifferent_access
                          }.with_indifferent_access
                        }.with_indifferent_access
-                     }.with_indifferent_access
+        rescue Exception => e
+          ::Fusor.log.error "Failed to set OpenShift attributes!"
+          ::Fusor.log.error "#{e.message} \n #{e.backtrace}"
+          return nil
+        end
       end
 
       def set_osp_attrs
-        image = Image.create("name" => @profile_name,
-                             "username" => 'root',
-                             "user_data" => 1,
-                             "uuid" => @cr.available_images.find { |hash| @profile_name == hash.name }.id,
-                             "compute_resource_id" => @cr.id,
-                             "operatingsystem_id" => Operatingsystem.find_by_title(@operatingsystem)['id'],
-                             "architecture_id" => Architecture.find_by_name('x86_64')['id'])
-        overcloud = {:openstack_auth_url => "http://#{@deployment.openstack_deployment.overcloud_address}:5000/v2.0/tokens",
-                     :openstack_username => 'admin', :openstack_tenant => 'admin',
-                     :openstack_api_key  => @deployment.openstack_deployment.overcloud_password }
-        keystone  = Fog::Identity::OpenStack.new(overcloud)
-        tenant    = keystone.get_tenants_by_name(@deployment.label).body["tenant"]
-        neutron   = Fog::Network::OpenStack.new(overcloud)
-        nic       = neutron.list_networks.body["networks"].find { |hash| "#{@deployment.label}-net" == hash["name"] }['id']
+        begin
+          image = Image.create("name" => @profile_name,
+                               "username" => 'root',
+                               "user_data" => 1,
+                               "uuid" => @cr.available_images.find { |hash| @profile_name == hash.name }.id,
+                               "compute_resource_id" => @cr.id,
+                               "operatingsystem_id" => Operatingsystem.find_by_title(@operatingsystem)['id'],
+                               "architecture_id" => Architecture.find_by_name('x86_64')['id'])
+          overcloud = {:openstack_auth_url => "http://#{@deployment.openstack_deployment.overcloud_address}:5000/v2.0/tokens",
+                       :openstack_username => 'admin', :openstack_tenant => 'admin',
+                       :openstack_api_key  => @deployment.openstack_deployment.overcloud_password }
+          keystone  = Fog::Identity::OpenStack.new(overcloud)
+          tenant    = keystone.get_tenants_by_name(@deployment.label).body["tenant"]
+          neutron   = Fog::Network::OpenStack.new(overcloud)
+          nic       = neutron.list_networks.body["networks"].find { |hash| "#{@deployment.label}-net" == hash["name"] }['id']
 
-        @osp_attrs = {"compute_profile_id" => @cp.id,
-                      "compute_resource_id" => @cr.id,
-                      "vm_attrs" => {
-                        "flavor_ref" => "4",
-                        "network" => "#{@deployment.label}-float-net",
-                        "image_ref" => image.find_by_name(@profile_name).uuid,
-                        "security_groups" => "#{@deployment.label}-sec-group",
-                        "nics" => ["", nic],
-                        "tenant_id" => tenant['id']
-                      }.with_indifferent_access
-                     }.with_indifferent_access
+          @osp_attrs = {"compute_profile_id" => @cp.id,
+                        "compute_resource_id" => @cr.id,
+                        "vm_attrs" => {
+                          "flavor_ref" => "4",
+                          "network" => "#{@deployment.label}-float-net",
+                          "image_ref" => image.find_by_name(@profile_name).uuid,
+                          "security_groups" => "#{@deployment.label}-sec-group",
+                          "nics" => ["", nic],
+                          "tenant_id" => tenant['id']
+                        }.with_indifferent_access
+                       }.with_indifferent_access
+        rescue Exception => e
+          ::Fusor.log.error "Failed to set OSP attributes!"
+          ::Fusor.log.error "#{e.message} \n #{e.backtrace}"
+          return nil
+        end
       end
 
       def set_common_host_attrs
+        ::Fusor.log.debug "====== setting common host attributes ======"
         @host_attrs = {"name" => @host_name,
                        "location_id" => Location.find_by_name('Default Location').id,
                        "environment_id" => Environment.where(:katello_id => "Default_Organization/Library/Fusor_Puppet_Content").first.id,
@@ -214,6 +252,7 @@ module Utils
 
       def set_rhev_host_attrs(attrs)
         set_common_host_attrs
+        ::Fusor.log.debug "====== setting RHEV specific host attributes ======"
         cl_id  = @cr.clusters.find { |c| c.name == @deployment.rhev_cluster_name }.id
         net_id = @cr.available_networks(cl_id).first.id
         @host_attrs["ptable_id"] = Ptable.find { |p| p["name"] == @ptable_name }.id
@@ -264,6 +303,7 @@ module Utils
 
       def set_osp_host_attrs
         set_common_host_attrs
+        ::Fusor.log.debug "====== setting OpenShift specific host attributes ======"
         @host_attrs["build"] = 1
         @host_attrs["provision_method"] = "image"
         @host_attrs["is_owned_by"] = "3-Users"
@@ -282,16 +322,31 @@ module Utils
       end
 
       def create_compute_attribute(attrs)
-        ComputeAttribute.create(attrs)
+        ::Fusor.log.debug "====== creating compute attributes ======"
+        begin
+          ComputeAttribute.create(attrs)
+        rescue Exception => e
+          ::Fusor.log.error "Failed to create compute attributes!"
+          ::Fusor.log.error "#{e.message} \n #{e.backtrace}"
+          return nil
+        end
       end
 
       def launch_vm
-        host = ::Host.create(@host_attrs)
-        if host.errors.empty?
-          ::Fusor.log.info "VMLauncher: Launch VM Completed for '#{@host_name}' "
-          return host
-        else
-          ::Fusor.log.error "VMLauncher: Launch VM for '#{@host_name}' FAILED "
+        ::Fusor.log.debug "====== launching VM ======"
+        begin
+          host = ::Host.create!(@host_attrs)
+          if host.errors.empty?
+            ::Fusor.log.info "VMLauncher: Launch VM Completed for '#{@host_name}'"
+            return host
+          else
+            ::Fusor.log.error "VMLauncher: Launch VM for '#{@host_name}' FAILED "
+            ::Fusor.log.error "#{host.errors}"
+            return nil
+          end
+        rescue Exception => e
+          ::Fusor.log.error "Failed to launch VM!"
+          ::Fusor.log.error "#{e.message} \n #{e.backtrace}"
           return nil
         end
       end
