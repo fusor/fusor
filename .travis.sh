@@ -51,9 +51,12 @@ if [ $1 == "install" ]; then
   # hacky, find a better way to do this...
   # rails only supports loading fixtures from one directory, so link the
   # katello / fusor fixtures in to forman so they all will be loaded
+  # Now with an even uglier workaround for katello and fusor both having a hosts.yml
   cd test/fixtures
-  ln -sf ../../../fusor/server/test/fixtures/* .
-  ln -sf ../../../katello/test/fixtures/models/* .
+  ln -s ../../../fusor/server/test/fixtures/* .
+  rm -f hosts.yml
+  ln -s ../../../katello/test/fixtures/models/* .
+  cat ../../../fusor/server/test/fixtures/hosts.yml >> hosts.yml
 
 else
   cd ../foreman
