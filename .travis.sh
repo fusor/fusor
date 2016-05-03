@@ -52,8 +52,8 @@ if [ $1 == "install" ]; then
   # rails only supports loading fixtures from one directory, so link the
   # katello / fusor fixtures in to forman so they all will be loaded
   cd test/fixtures
-  ln -s ../../../fusor/server/test/fixtures/* .
-  ln -s ../../../katello/test/fixtures/models/* .
+  ln -sf ../../../fusor/server/test/fixtures/* .
+  ln -sf ../../../katello/test/fixtures/models/* .
 
 else
   cd ../foreman
