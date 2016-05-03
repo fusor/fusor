@@ -38,7 +38,7 @@ module Fusor
     end
 
     def create
-      @deployment = Deployment.new(params[:deployment])
+      @deployment = Deployment.new(deployment_params)
       if @deployment.save
         render :json => @deployment, :serializer => Fusor::DeploymentSerializer
       else
@@ -55,7 +55,7 @@ module Fusor
       params[:deployment].delete :openstack_undercloud_ip_addr
       params[:deployment].delete :openstack_undercloud_user
       params[:deployment].delete :openstack_undercloud_user_password
-      @deployment.attributes = params[:deployment]
+      @deployment.attributes = deployment_params
       @deployment.save(:validate => false)
       render :json => @deployment, :serializer => Fusor::DeploymentSerializer
     end
@@ -186,6 +186,38 @@ module Fusor
     end
 
     private
+
+    def deployment_params
+      params.require(:deployment).permit(:name, :description, :deploy_rhev, :deploy_cfme,
+                                         :deploy_openstack, :is_disconnected, :rhev_is_self_hosted,
+                                         :rhev_engine_admin_password, :rhev_database_name,
+                                         :rhev_cluster_name, :rhev_storage_name, :rhev_storage_type,
+                                         :rhev_storage_address, :rhev_cpu_type, :rhev_share_path,
+                                         :cfme_install_loc, :rhev_root_password, :cfme_root_password,
+                                         :cfme_admin_password, :foreman_task_uuid, :upstream_consumer_uuid,
+                                         :upstream_consumer_name, :rhev_export_domain_name,
+                                         :rhev_export_domain_address, :rhev_export_domain_path,
+                                         :rhev_local_storage_path, :rhev_gluster_node_name,
+                                         :rhev_gluster_node_address, :rhev_gluster_ssh_port,
+                                         :rhev_gluster_root_password, :host_naming_scheme, :has_content_error,
+                                         :custom_preprend_name, :enable_access_insights, :cfme_address,
+                                         :cfme_hostname, :openstack_undercloud_password,
+                                         :openstack_undercloud_ip_addr, :openstack_undercloud_user,
+                                         :openstack_undercloud_user_password, :openstack_undercloud_hostname,
+                                         :openstack_overcloud_hostname, :openstack_overcloud_address,
+                                         :openstack_overcloud_password, :openstack_overcloud_private_net,
+                                         :openstack_overcloud_float_net, :openstack_overcloud_float_gateway,
+                                         :cdn_url, :manifest_file, :created_at, :updated_at, :rhev_engine_host_id,
+                                         :organization_id, :lifecycle_environment_id, :discovered_host_id,
+                                         :foreman_task_id, :openstack_overcloud_node_count,
+                                         :openstack_overcloud_ceph_storage_flavor, :openstack_overcloud_ceph_storage_count,
+                                         :openstack_overcloud_cinder_storage_flavor, :openstack_overcloud_cinder_storage_count,
+                                         :openstack_overcloud_swift_storage_flavor, :openstack_overcloud_swift_storage_count,
+                                         :openstack_overcloud_compute_flavor, :openstack_overcloud_compute_count,
+                                         :openstack_overcloud_controller_flavor, :openstack_overcloud_controller_count,
+                                         :openstack_overcloud_ext_net_interface, :openstack_overcloud_libvirt_type,
+                                         :discovered_host_ids => [])
+    end
 
     def find_deployment
       id = params[:deployment_id] || params[:id]

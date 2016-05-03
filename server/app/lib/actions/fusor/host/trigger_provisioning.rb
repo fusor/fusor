@@ -83,6 +83,11 @@ module Actions
             # root_pass is not copied for some reason
             host.root_pass = hostgroup.root_pass
 
+            #See BZ1319283 for the next 3 lines
+            host.environment_id = hostgroup.parent.environment_id
+            host.puppet_proxy_id = hostgroup.parent.puppet_proxy_id
+            host.puppet_ca_proxy_id = hostgroup.parent.puppet_ca_proxy_id
+
             ::Fusor.log.debug "assignee host type is now: #{assignee_host.type}"
             ::Fusor.log.debug "saving host of type: #{host.type}"
             ::Fusor.log.debug "calling save"

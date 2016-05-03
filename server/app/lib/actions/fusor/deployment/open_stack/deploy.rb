@@ -43,7 +43,7 @@ module Actions::Fusor::Deployment::OpenStack
         plan_action(SshCommand, deployment, 'sudo sed -i "s/OVERCLOUD_ADMIN_PASSWORD.*/OVERCLOUD_ADMIN_PASSWORD=' + overcloud_admin_password + '/g" /home/stack/tripleo-overcloud-passwords')
         plan_action(UndercloudNoHostWorkaround, deployment)
         plan_self(deployment_id: deployment.id)
-        plan_action(SshCommand, deployment, "/opt/rh/ruby193/root/bin/initialize_overcloud.sh")
+        plan_action(SshCommand, deployment, "/opt/theforeman/tfm/root/bin/initialize_overcloud.sh")
         plan_action(OvercloudCredentials, deployment)
         plan_action(ControllerCleanup, deployment)
         plan_action(OvercloudConfiguration, deployment)

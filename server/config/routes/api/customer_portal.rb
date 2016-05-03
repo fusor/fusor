@@ -1,5 +1,5 @@
 Fusor::Engine.routes.draw do
-  scope :api, :module => :api do
+  scope :module => :api do
     match '/customer_portal' => 'v2/root#resource_list', :via => :get
 
     scope :path => :customer_portal, :module => :customer_portal, :as => :customer_portal do

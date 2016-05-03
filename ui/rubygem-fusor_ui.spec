@@ -28,8 +28,8 @@
 Summary: Fusor Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
-Version: 0.0.1
-Release: 22%{dist}
+Version: 0.0.2
+Release: 0%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
@@ -99,7 +99,7 @@ cp -a .%{gem_dir}/* \
 
 mkdir -p %{buildroot}%{foreman_dir}/public/assets
 ln -s %{foreman_assets_plugin} %{buildroot}%{foreman_dir}/public/assets/fusor_ui
-
+ln -s %{gem_instdir}/app/assets/images/r %{buildroot}%{foreman_dir}/public/assets/r
 %clean
 %{__rm} -rf %{buildroot}
 
@@ -110,6 +110,7 @@ ln -s %{foreman_assets_plugin} %{buildroot}%{foreman_dir}/public/assets/fusor_ui
 %{gem_spec}
 %{foreman_bundlerd_dir}/%{gem_name}.rb
 %{foreman_dir}/public/assets/fusor_ui
+%{foreman_dir}/public/assets/r
 %{foreman_assets_plugin}
 
 %files doc

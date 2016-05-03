@@ -97,6 +97,10 @@ module Actions
 
           def create_host(deployment, compute_attrs)
             hg_id = Hostgroup.where(name: deployment.label).first.id
+            cr = ComputeResource.find_by_name("#{deployment.label}-RHEV")
+            cl_id = cr.clusters.find { |c| c.name == deployment.rhev_cluster_name }.id
+            net_id = cr.available_networks(cl_id).first.id
+
             cfme = {"name" => "#{deployment.label.tr('_', '-')}-cfme",
                     "location_id" => Location.find_by_name('Default Location').id,
                     "environment_id" => Environment.where(:katello_id => "Default_Organization/Library/Fusor_Puppet_Content").first.id,
@@ -107,13 +111,53 @@ module Actions
                     "architecture_id" => Architecture.find_by_name('x86_64')['id'],
                     "operatingsystem_id" => Operatingsystem.find_by_title('RedHat 7.1')['id'],
                     "ptable_id" => Ptable.find { |p| p["name"] == "Kickstart default" }.id,
-                    "domain_id" => 1,
                     "root_pass" => "smartvm1",
-                    "mac" => "admin",
                     "build" => "0",
                     "hostgroup_id" => hg_id,
                     #using a compute_profile_id the vm does not start, so for now merge with attr.
-                    "compute_attributes" => {"start" => "1"}.with_indifferent_access.merge(compute_attrs)}
+                    "compute_attributes" => {"start" => "1"}.with_indifferent_access.merge(compute_attrs),
+                    "interfaces_attributes" => {
+                      "0" => {
+                        "_destroy" => "0",
+                        "type" => "Nic::Managed",
+                        "mac" => "",
+                        "identifier" => "",
+                        "name" => "",
+                        "domain_id" => "1",
+                        "subnet_id" => "1",
+                        "managed" => "1",
+                        "primary" => "1",
+                        "provision" => "1",
+                        "virtual" => "0",
+                        "tag" => "",
+                        "attached_to" => "",
+                        "compute_attributes" => {
+                          "name" => "",
+                          "network" => net_id
+                        }
+                      },
+                      "new_interfaces" => {
+                        "_destroy" => "1",
+                        "type" => "Nic::Managed",
+                        "mac" => "",
+                        "identifier" => "",
+                        "name" => "",
+                        "domain_id" => "",
+                        "subnet_id" => "",
+                        "ip" => "",
+                        "managed" => "1",
+                        "primary" => "0",
+                        "provision" => "0",
+                        "virtual" => "0",
+                        "tag" => "",
+                        "attached_to" => "",
+                        "compute_attributes" => {
+                          "name" => "",
+                          "network" => net_id
+                        }
+                      }
+                    }
+            }
             host = ::Host.create(cfme)
 
             if host.errors.empty?

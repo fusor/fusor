@@ -35,11 +35,11 @@ module Fusor
 
     #TODO need to rename to hypervisor_hosts
     belongs_to :discovered_host, :class_name => "::Host::Base", :foreign_key => :rhev_engine_host_id
-    has_many :deployment_hypervisor_hosts, :class_name => "Fusor::DeploymentHost", :conditions => {:deployment_host_type => 'rhev_hypervisor' }
+    has_many :deployment_hypervisor_hosts, -> { where(:deployment_host_type => 'rhev_hypervisor') }, :class_name => "Fusor::DeploymentHost"
     has_many :discovered_hosts, :through => :deployment_hypervisor_hosts, :class_name => "::Host::Base", :source => :discovered_host
-    has_many :ose_deployment_master_hosts, :class_name => "Fusor::DeploymentHost", :conditions => {:deployment_host_type => 'ose_master' }
+    has_many :ose_deployment_master_hosts, -> { where(:deployment_host_type => 'ose_master') }, :class_name => "Fusor::DeploymentHost"
     has_many :ose_master_hosts, :through => :ose_deployment_master_hosts, :class_name => "::Host::Base", :source => :discovered_host
-    has_many :ose_deployment_worker_hosts, :class_name => "Fusor::DeploymentHost", :conditions => {:deployment_host_type => 'ose_worker' }
+    has_many :ose_deployment_worker_hosts, -> { where(:deployment_host_type => 'ose_worker') }, :class_name => "Fusor::DeploymentHost"
     has_many :ose_worker_hosts, :through => :ose_deployment_worker_hosts, :class_name => "::Host::Base", :source => :discovered_host
     alias_attribute :discovered_host_id, :rhev_engine_host_id
     attr_accessor :foreman_task_id

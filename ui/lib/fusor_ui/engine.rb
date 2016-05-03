@@ -6,7 +6,7 @@ module FusorUi
       app.middleware.insert_before(::ActionDispatch::Static, ::ActionDispatch::Static, "#{config.root}/public")
     end
 
-    initializer 'fusor_ui.register_plugin', :after => :finisher_hook do |app|
+    initializer 'fusor_ui.register_plugin' do |app|
       Foreman::Plugin.register :fusor_ui do
         requires_foreman '>= 1.4'
 
@@ -18,11 +18,15 @@ module FusorUi
 
         sub_menu :top_menu, :fusor_menu, :caption => N_('QuickStart Cloud Installer'), :after => :infrastructure_menu do
           menu :top_menu, :fusor_deployments,
+               :url      => '/r/#/deployments',
                :url_hash => { :controller => 'fusor_ui/placeholders', :action => :index },
-               :caption  => N_('Deployments')
+               :caption  => N_('Deployments'),
+               :engine   => FusorUi::Engine
           menu :top_menu, :new_fusor_deployment,
+               :url      => '/r/#/deployments/new/start',
                :url_hash => { :controller => 'fusor_ui/placeholders', :action => :new },
-               :caption  => N_('New Deployment')
+               :caption  => N_('New Deployment'),
+               :engine   => FusorUi::Engine
         end
 
       end
