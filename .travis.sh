@@ -40,6 +40,8 @@ if [ $1 == "install" ]; then
   echo "gem 'coveralls', require: false" >> bundler.d/local.rb
   echo "gem 'foreman_docker', '2.0.1'" >> bundler.d/local.rb
   echo "gem 'jwt', '< 1.5.3'" >> bundler.d/local.rb
+  echo "gem 'webmock'" >> bundler.d/local.rb
+  echo "gem 'vcr', '< 3.0.0'" >> bundler.d/local.rb
   echo "gem 'rake', '< 11'" >> bundler.d/local.rb
 
   # TODO: use the latest version of foreman once this PR is merged
@@ -52,6 +54,11 @@ if [ $1 == "install" ]; then
   # rails only supports loading fixtures from one directory, so link the
   # katello / fusor fixtures in to forman so they all will be loaded
   # Now with an even uglier workaround for katello and fusor both having a hosts.yml
+  
+  pushd test
+  sed -i 's/relative_url_root/relative_url_root rescue nil/g' test_helper.rb
+  popd
+
   cd test/fixtures
   ln -s ../../../fusor/server/test/fixtures/* .
   rm -f hosts.yml
