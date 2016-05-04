@@ -1,5 +1,8 @@
-import DS from 'ember-data';
+import LSAdapter from 'ember-localstorage-adapter';
 
-export default DS.LSAdapter.extend({
-  namespace: 'rhci'
+export default LSAdapter.extend({
+  namespace: 'rhci',
+  shouldReloadAll() {
+    return true;
+  }
 });

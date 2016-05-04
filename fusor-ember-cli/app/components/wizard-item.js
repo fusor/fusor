@@ -1,9 +1,10 @@
 import Ember from 'ember';
+import ActiveLinkMixin from 'ember-cli-active-link-wrapper/mixins/active-link';
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(ActiveLinkMixin, {
   tagName: 'li',
 
-  classNameBindings: ['active', 'completed'],
+  classNameBindings: ['completed'],
 
   attributeBindings: ['dataToggle:data-toggle', 'dataPlacement:data-placement', 'title'],
 
@@ -17,24 +18,24 @@ export default Ember.Component.extend({
     return (!this.get('isDisabled') && !this.get('active'));
   }),
 
-  // code borrowed addon ember-cli-active-link-wrapper
-  // github.com/alexspeller/ember-cli-active-link-wrapper/blob/master/addon/components/active-link.js
-  childLinkViews: [],
+  // // code borrowed addon ember-cli-active-link-wrapper
+  // // github.com/alexspeller/ember-cli-active-link-wrapper/blob/master/addon/components/active-link.js
+  // childLinkViews: [],
 
-  active: Ember.computed('childLinkViews.@each.active', function() {
-    return Ember.A(this.get('childLinkViews')).isAny('active');
-  }),
+  // active: Ember.computed('childLinkViews.@each.active', function() {
+  //   return Ember.A(this.get('childLinkViews')).isAny('active');
+  // }),
 
-  didRender: function() {
-    Ember.run.schedule('afterRender', this, function() {
-      var childLinkElements = this.$('a.ember-view');
+  // didRender: function() {
+  //   Ember.run.schedule('afterRender', this, function() {
+  //     var childLinkElements = this.$('a.ember-view');
 
-      var childLinkViews = childLinkElements.toArray().map(view =>
-        this._viewRegistry[view.id]
-      );
+  //     var childLinkViews = childLinkElements.toArray().map(view =>
+  //       this._viewRegistry[view.id]
+  //     );
 
-      this.set('childLinkViews', childLinkViews);
-    });
-  },
+  //     this.set('childLinkViews', childLinkViews);
+  //   });
+  // },
 
 });

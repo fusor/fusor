@@ -49,10 +49,13 @@
   width: 50%;
 }
 .rhci-steps li.active {
-  color: #0099d3;
+  color: #0099d3 !important;
 }
 .rhci-steps li.active:after {
-  background-color: #0099d3;
+  background-color: #0099d3 !important;
+}
+.rhci-steps li.active a {
+  color: #0099d3 !important;
 }
 .rhci-steps li.completed {
   color: #555555;
