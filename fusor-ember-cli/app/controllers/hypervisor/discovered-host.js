@@ -140,7 +140,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     },
 
     cancelNamingScheme() {
-      this.get('deploymentController.model').rollback();
+      this.get('deploymentController.model').rollbackAttributes();
     },
 
     saveNamingScheme() {
