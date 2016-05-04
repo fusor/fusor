@@ -101,7 +101,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
         this.get('clusterNameValidator').isValid(this.get('rhevClusterName'));
     }),
 
-  disableNextRhevOptions: Ember.computed.not('validRhevOptions')
+  disableNextRhevOptions: Ember.computed.not('validRhevOptions'),
+
+  actions: {
+    setSelectValue(fieldName, selectionValue) {
+      this.set(fieldName, selectionValue);
+    }
+  }
 });
-
-
