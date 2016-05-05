@@ -99,6 +99,8 @@ module FixtureTestCase
     self.set_fixture_class :fusor_deployment_hosts => "Fusor::DeploymentHost"
     self.set_fixture_class :hosts => "::Host::Base"
     self.set_fixture_class :fusor_subscriptions => "Fusor::Subscription"
+    self.set_fixture_class :hostgroups => "Hostgroup"
+    self.set_fixture_class :operationsystems => "Operatingsystem"
 
     load_fixtures
     fixtures(:all)
