@@ -55,7 +55,10 @@ const OvercloudController = Ember.Controller.extend(DeploymentControllerMixin, N
   }),
 
   isValidFloatingIpGateway: Ember.computed('overcloudFloatGateway', function () {
-    return this.get('ipValidator').isValid(this.get('overcloudFloatGateway'));
+    var network = new Address4(this.get('overcloudFloatGateway'));
+    var isInSubnet = network.isInSubnet(this.get('overcloudFloatGateway'));
+
+    return this.get('overcloudFloatGatewayValidator').isValid(this.get('overcloudFloatGateway')) && isInSubnet;
   })
 });
 
