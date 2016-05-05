@@ -31,9 +31,55 @@ end
 
 require 'yaml'
 require 'test_helper'
+require 'factory_girl_rails'
+require "webmock/minitest"
+require "mocha/setup"
+require 'set'
+
+require "#{Katello::Engine.root}/test/support/minitest/spec/shared_examples"
+require "#{Katello::Engine.root}/spec/models/model_spec_helper"
+require "#{Katello::Engine.root}/spec/helpers/locale_helper_methods"
+require "#{Katello::Engine.root}/spec/helpers/organization_helper_methods"
+require "#{Katello::Engine.root}/spec/helpers/system_helper_methods"
+require "#{Katello::Engine.root}/spec/helpers/product_helper_methods"
+require "#{Katello::Engine.root}/spec/helpers/repository_helper_methods"
+require "#{Katello::Engine.root}/test/support/vcr"
+require "#{Katello::Engine.root}/test/support/controller_support"
+require "#{Katello::Engine.root}/test/support/capsule_support"
+require "#{Katello::Engine.root}/test/support/fixtures_support"
+
 require 'dynflow/testing'
 
-# load our settings
+Mocha::Mock.send :include, Dynflow::Testing::Mimic
+Dynflow::Testing.logger_adapter.level = 1
+require "#{Katello::Engine.root}/test/support/actions/fixtures"
+require "#{Katello::Engine.root}/test/support/actions/remote_action"
+require "#{Katello::Engine.root}/test/support/foreman_tasks/task"
+
+FactoryGirl.definition_file_paths = ["#{Katello::Engine.root}/test/factories"]
+FactoryGirl.find_definitions
+
+module MiniTest::Expectations
+  infect_an_assertion :assert_redirected_to, :must_redirect_to
+  infect_an_assertion :assert_template, :must_render_template
+  infect_an_assertion :assert_response, :must_respond_with
+  infect_an_assertion :assert_routing, :must_route_to, :do_not_flip
+  infect_an_assertion :assert_recognizes, :must_recognize, :do_not_flip
+end
+
+def load_permissions
+  Dir["#{File.expand_path("#{Katello::Engine.root}/lib/katello/permissions", __FILE__)}/*.rb"].each do |file|
+    load file
+  end
+end
+
+def load_repository_types
+  Dir["#{File.expand_path("#{Katello::Engine.root}/lib/katello/repository_types", __FILE__)}/*.rb"].each do |file|
+    load file
+  end
+end
+
+#load our settings
 SETTINGS.merge! YAML.load_file File.join(File.dirname(__FILE__), '../config/fusor.yaml')
 
 module FixtureTestCase
@@ -46,71 +92,116 @@ module FixtureTestCase
     self.use_instantiated_fixtures = false
     self.pre_loaded_fixtures = true
 
-    # foreman fixtures
-    # No need to specify fixture_class for foreman fixtures, class can be
-    # inferred due to namespace
-
-    # katello fixtures
-    self.set_fixture_class :katello_activation_keys => "Katello::ActivationKey"
-    self.set_fixture_class :katello_content_views => "Katello::ContentView"
-    self.set_fixture_class :katello_content_view_environments => "Katello::ContentViewEnvironment"
-    self.set_fixture_class :katello_content_view_filters => "Katello::ContentViewFilter"
-    self.set_fixture_class :katello_content_view_erratum_filter_rules => "Katello::ContentViewErratumFilterRule"
-    self.set_fixture_class :katello_content_view_package_filter_rules => "Katello::ContentViewPackageFilterRule"
-    self.set_fixture_class :katello_content_view_package_group_filter_rules => "Katello::ContentViewPackageGroupFilterRule"
-    self.set_fixture_class :katello_content_view_puppet_modules => "Katello::ContentViewPuppetModule"
-    self.set_fixture_class :katello_content_view_puppet_environments => "Katello::ContentViewPuppetEnvironment"
-    self.set_fixture_class :katello_content_view_repositories => "Katello::ContentViewRepository"
-    self.set_fixture_class :katello_content_view_version_environments => "Katello::ContentViewVersionEnvironment"
-    self.set_fixture_class :katello_content_view_versions => "Katello::ContentViewVersion"
-    self.set_fixture_class :katello_environment_priors => "Katello::EnvironmentPrior"
-    self.set_fixture_class :katello_environments => "Katello::KTEnvironment"
-    self.set_fixture_class :katello_gpg_keys => "Katello::GpgKey"
-    self.set_fixture_class :katello_products => "Katello::Product"
-    self.set_fixture_class :katello_providers => "Katello::Provider"
-    self.set_fixture_class :katello_repositories => "Katello::Repository"
-    self.set_fixture_class :katello_sync_plans => "Katello::SyncPlan"
-    self.set_fixture_class :katello_host_collections => "Katello::HostCollection"
-    self.set_fixture_class :katello_systems => "Katello::System"
-    self.set_fixture_class :katello_system_host_collections => "Katello::SystemHostCollection"
-    self.set_fixture_class :katello_task_statuses => "Katello::TaskStatus"
-    self.set_fixture_class :katello_errata => "Katello::Erratum"
-    self.set_fixture_class :katello_erratum_packages => "Katello::ErratumPackage"
-    self.set_fixture_class :katello_erratum_cves => "Katello::ErratumCve"
-    self.set_fixture_class :katello_repository_errata => "Katello::RepositoryErratum"
-    self.set_fixture_class :katello_system_errata => "Katello::SystemErratum"
-    self.set_fixture_class :katello_content_view_histories => "Katello::ContentViewHistory"
-    self.set_fixture_class :katello_package_groups => "Katello::PackageGroup"
-    self.set_fixture_class :katello_pool_activation_keys => "Katello::PoolActivationKey"
-    self.set_fixture_class :katello_pools => "Katello::Pool"
-    self.set_fixture_class :katello_puppet_modules => "Katello::PuppetModule"
-    self.set_fixture_class :katello_repository_package_groups => "Katello::RepositoryPackageGroup"
-    self.set_fixture_class :katello_repository_puppet_modules => "Katello::RepositoryPuppetModule"
-    self.set_fixture_class :katello_repository_rpms => "Katello::RepositoryRpm"
-    self.set_fixture_class :katello_rpms => "Katello::Rpm"
-    self.set_fixture_class :katello_subscriptions => "Katello::Subscription"
-    self.set_fixture_class :katello_distributors => "Katello::Distributor"
-    self.set_fixture_class :katello_help_tips => "Katello::HelpTip"
-    self.set_fixture_class :katello_notices => "Katello::Notice"
-    self.set_fixture_class :katello_user_notices => "Katello::UserNotice"
+    Katello::FixturesSupport.set_fixture_classes(self)
 
     # fusor fixtures
-    self.set_fixture_class :fusor_deployments => "Fusor::Deployment"
-    self.set_fixture_class :fusor_deployment_hosts => "Fusor::DeploymentHost"
-    self.set_fixture_class :hosts => "::Host::Base"
-    self.set_fixture_class :fusor_subscriptions => "Fusor::Subscription"
+    self.set_fixture_class :fusor_deployments => Fusor::Deployment
+    self.set_fixture_class :fusor_deployment_hosts => Fusor::DeploymentHost
+    self.set_fixture_class :hosts => ::Host::Base
+    self.set_fixture_class :fusor_subscriptions => Fusor::Subscription
 
-
+    #self.fixture_path = Dir.mktmpdir("katello_fixtures")
+    #FileUtils.cp(Dir.glob("#{Katello::Engine.root}/test/fixtures/models/*"), self.fixture_path)
+    #FileUtils.cp(Dir.glob("#{Rails.root}/test/fixtures/*"), self.fixture_path)
     fixtures(:all)
     FIXTURES = load_fixtures(ActiveRecord::Base)
+
+    load_permissions
+    load_repository_types
+    configure_vcr
+
+    Setting::Katello.load_defaults
+
+    @admin = ::User.find(FIXTURES['users']['admin']['id'])
+    User.current = @admin
   end
 end
 
 class ActionController::TestCase
+  include LocaleHelperMethods
+  include ControllerSupport
+
+  def setup_engine_routes
+    @routes = Katello::Engine.routes
+  end
+
+  def setup_foreman_routes
+    @routes = ::Foreman::Application.routes
+  end
+
+  def setup_fusor_routes
+    @routes = Fusor::Engine.routes
+  end
+
+  def setup_controller_defaults(is_api = false, load_engine_routes = true)
+    set_user(User.current, is_api)
+    set_default_locale
+    setup_engine_routes if load_engine_routes
+    @controller.stubs(:require_org).returns({})
+    load_permissions
+  end
+
+  def set_user(user = nil, is_api = false)
+    user = super(user)
+    unless is_api
+      session[:user] = user.id
+      session[:expires_at] = 5.minutes.from_now
+    end
+  end
+
+  def setup_controller_defaults_api
+    setup_controller_defaults(true)
+  end
+
+  alias_method :login_user, :set_user
+
+  def set_organization(org)
+    session[:current_organization_id] = org.id
+  end
+
+  def stub_find_organization(org)
+    Organization.stubs(:find_by_id).returns(org)
+  end
+end
+
+class ActiveSupport::TestCase
+  include FactoryGirl::Syntax::Methods
   include FixtureTestCase
 
-  def fix_routes()
-    @routes = Fusor::Engine.routes
+  before do
+    stub_ping
+    stub_certs
+    Setting::Katello.load_defaults
+  end
+
+  def self.stubbed_ping_response
+    status = {:services => {}}
+    ::Katello::Ping::SERVICES.each do |service|
+      status[:services][service] = {:status => Katello::Ping::OK_RETURN_CODE}
+    end
+    status
+  end
+
+  def stub_certs
+    unless ENV['mode'] == 'all'
+      Cert::Certs.stubs(:ca_cert).returns("file")
+      Cert::Certs.stubs(:ssl_client_cert).returns("ssl_client_cert")
+      Cert::Certs.stubs(:ssl_client_key).returns("ssl_client_key")
+    end
+  end
+
+  def self.stub_ping
+    Katello::Ping.stubs(:ping).returns(stubbed_ping_response)
+  end
+
+  def stub_ping
+    self.class.stub_ping
+  end
+
+  def self.run_as_admin
+    User.current = User.find(FIXTURES['users']['admin']['id'])
+    yield
+    User.current = nil
   end
 
   def set_user(user = nil)
@@ -118,8 +209,92 @@ class ActionController::TestCase
     user = User.find(user) if user.id
     User.current = user
   end
+
+  def get_organization(org = nil)
+    saved_user = User.current
+    User.current = User.find(users(:admin))
+    org = org.nil? ? :empty_organization : org
+    organization = Organization.find(taxonomies(org.to_sym))
+    organization.stubs(:label_not_changed).returns(true)
+    organization.setup_label_from_name
+    organization.save!
+    User.current = saved_user
+    organization
+  end
+
+  def mock_active_records(*records)
+    records.each do |record|
+      record.class.stubs(:instantiate).with(has_entry('id', record.id.to_s), instance_of(Hash)).returns(record)
+      record.stubs(:reload).returns(record)
+    end
+  end
+
+  def assert_equal_arrays(array1, array2)
+    assert_equal array1.sort, array2.sort
+  end
+
+  def refute_equal_arrays(array1, array2)
+    refute_equal array1.sort, array2.sort
+  end
+
+  def render_rabl(filepath, resource)
+    Rabl::Renderer.new(filepath, resource, :view_path => "#{Katello::Engine.root}/app/views/",
+                       :format => 'hash', :locals => {:resource => resource}).render
+  end
+
+  def assert_service_not_used(service_class)
+    service_class.any_instance.expects(:backend_data).never
+    yield
+  end
+
+  def assert_service_used(service_class)
+    service_class.any_instance.expects(:backend_data).returns({})
+    yield
+  end
+
+  def stub_cp_consumer_with_uuid(uuid)
+    cp_consumer_user = ::Katello::CpConsumerUser.new
+    cp_consumer_user.uuid = uuid
+    cp_consumer_user.login = uuid
+    User.stubs(:current).returns(cp_consumer_user)
+  end
+
+  def set_default_location
+    loc = Location.first
+    loc.katello_default = true
+    loc.save!
+  end
+end
+
+def disable_lazy_accessors
+  models = Katello::Model.subclasses.find_all do |model|
+    model.ancestors.include?(Katello::LazyAccessor)
+  end
+  models.each do |model|
+    target = model.is_a?(Class) ? model.any_instance : target
+    target.stubs(:lazy_attribute_get)
+  end
+end
+
+def stub_lazy_accessors(model, stubs)
+  if model.is_a?(Class)
+    target = model.any_instance
+    model_class = model
+  else
+    target = model
+    model_class = model.class
+  end
+  return unless model_class.ancestors.include?(Katello::LazyAccessor)
+  stubs.keys.each do |attr|
+    unless model_class.lazy_attributes.include?(attr)
+      fail "#{attr} is not a lazy attribute for #{model_class}, expected one of #{model_class.lazy_attributes}"
+    end
+  end
+  target.stubs(stubs)
 end
 
 class FusorActionTest < ActiveSupport::TestCase
   include Dynflow::Testing
+  include Support::Actions::Fixtures
+  include FactoryGirl::Syntax::Methods
 end

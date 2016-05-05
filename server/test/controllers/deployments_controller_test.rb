@@ -6,7 +6,8 @@ module Fusor
     def setup
       @deployment = fusor_deployments(:rhev)
       # magic, without this some of the routes don't resolve for some reason
-      fix_routes
+      setup_fusor_routes
+      @controller = ::Fusor::Api::V21::DeploymentsController.new
     end
 
     test "index request should return array of deployments" do
@@ -30,7 +31,7 @@ module Fusor
       response = JSON.parse(put(:update, :id => @deployment.id, deployment: {name: new_name}).body)
       assert_response :success
       assert_equal new_name, response['deployment']['name'], "Response was not correct, name was not updated"
-      assert_not_nil Deployment.find_by_name new_name, "The deployment was not really updated in the database"
+      assert_not_nil Deployment.find_by_name new_name
     end
 
     test "create request should successfully create deployment" do
@@ -44,19 +45,17 @@ module Fusor
       end
       assert_response :success
       assert_equal new_name, response['deployment']['name'], "Response was not correct, did not return deployment"
-      assert_not_nil Deployment.find_by_name new_name, "The deployment was not really created in the database"
+      assert_not_nil Deployment.find_by_name new_name
     end
 
     test "delete request should successfully delete deployment" do
-      # failing after recent changes in foreman / katello. TODO: investigate and fix
-      skip
       response = nil # set scope
       assert_difference('Deployment.count', -1, 'The number of deployments should decrease by one if we delete one') do
         response = JSON.parse(delete(:destroy, :id => @deployment.id).body)
       end
       assert_response :success
       assert_equal @deployment.name, response['name'], "Response was not correct, did not return deployment"
-      assert_nil Deployment.find_by_name @deployment.name, "The deployment was not really deleted in the database"
+      assert_nil Deployment.find_by_name @deployment.name
     end
 
     test "deploy request should successfully deploy deployment" do
