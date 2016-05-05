@@ -5,16 +5,7 @@
 <td class="{{if isSelectedAsHypervisor 'white-font' 'not-selected'}}">
   {{#if isSelectedAsHypervisor}}
     {{#if isFreeform}}
-      {{#if disabled}}
-          {{host.name}}
-      {{else}}
-          {{input type="text" value=host.name class='form-control' focus-out='saveHostname' id=cssHostHostId }}
-          {{#if isInvalidHostname}}
-              <span class="error errorForValidation">
-                  invalid hostname
-              </span>
-          {{/if}}
-      {{/if}}
+      {{partial 'rhev-hostname-input'}}
     {{else}}
       {{host.name}}
     {{/if}}

@@ -1,0 +1,12 @@
+{{#if disabled}}
+  {{host.name}}
+{{else}}
+   <div class="{{if isInvalidHostname 'has-error'}}">
+      {{input type="text" value=host.name class='form-control' focus-out='saveHostname' id=cssHostHostId }}
+      {{#if isInvalidHostname}}
+        <span class="error errorForValidation invalid-rhev-hostname">
+          <i class="fa fa-warning"></i> invalid hostname
+        </span>
+      {{/if}}
+   </div>
+{{/if}}
