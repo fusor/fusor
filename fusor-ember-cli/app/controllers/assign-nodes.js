@@ -151,6 +151,10 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
   },
 
   updateRoleCounts() {
+    if (!this.get('plan')) {
+      return;
+    }
+
     this.get('roles').forEach(role => {
       this.set(`deployment.${role.get('countDeploymentAttributeName')}`, role.get('count'));
       this.get('plan').setParamValue(role.get('countParameterName'), role.get('count'));

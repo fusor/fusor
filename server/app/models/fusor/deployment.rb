@@ -62,6 +62,22 @@ module Fusor
 
     attr_accessor :warnings
 
+    OPENSTACK_ATTR_PARAM_HASH = {
+        openstack_overcloud_ext_net_interface: 'NeutronPublicInterface',
+        openstack_overcloud_libvirt_type: 'NovaComputeLibvirtType',
+        openstack_overcloud_password: 'AdminPassword',
+        openstack_overcloud_compute_flavor: 'OvercloudComputeFlavor',
+        openstack_overcloud_compute_count: 'ComputeCount',
+        openstack_overcloud_controller_flavor: 'OvercloudControlFlavor',
+        openstack_overcloud_controller_count: 'ControllerCount',
+        openstack_overcloud_ceph_storage_flavor: 'OvercloudCephStorageFlavor',
+        openstack_overcloud_ceph_storage_count: 'CephStorageCount',
+        openstack_overcloud_cinder_storage_flavor: 'OvercloudBlockStorageFlavor',
+        openstack_overcloud_cinder_storage_count: 'BlockStorageCount',
+        openstack_overcloud_swift_storage_flavor: 'OvercloudSwiftStorageFlavor',
+        openstack_overcloud_swift_storage_count: 'ObjectStorageCount'
+    }
+
     def setup_warnings
       self.warnings = []
     end

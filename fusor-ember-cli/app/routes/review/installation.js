@@ -2,6 +2,12 @@ import Ember from 'ember';
 import request from 'ic-ajax';
 
 export default Ember.Route.extend({
+
+  beforeModel() {
+    // Ensure the models have been persisted so that we're validating/syncing up to date data.
+    return this.modelFor('deployment').save();
+  },
+
   setupController(controller, model) {
     controller.set('model', model);
     controller.set('showErrorMessage', false);
@@ -34,9 +40,8 @@ export default Ember.Route.extend({
     if (!model.get('isStarted')) {
       // the PUT request from saveDeployment was firing too late and the server was syncing/validating stale data.
       // the model.save ensures the server has the most recent version of deployment before proceeding.
-        model.save()
+      this.validate()
         .then(() => this.syncOpenStack())
-        .then(() => this.validate())
         .catch(error => {
           console.log('error', error);
           controller.set('errorMsg', error.jqXHR.responseText);
@@ -46,6 +51,29 @@ export default Ember.Route.extend({
           controller.set('showSpinner', false);
         });
     }
+  },
+
+  validate() {
+    let controller = this.get('controller');
+    let deploymentId = this.get('controller.model.id');
+    let token = Ember.$('meta[name="csrf-token"]').attr('content');
+    let validationErrors = controller.get('validationErrors');
+
+    controller.set('spinnerTextMessage', "Validating deployment...");
+
+    return request({
+      url: `/fusor/api/v21/deployments/${deploymentId}/validate`,
+      type: "GET",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-CSRF-Token": token
+      },
+      data: {}
+    }).then(response => {
+      controller.set('validationErrors', response.validation.errors);
+      controller.set('validationWarnings', response.validation.warnings);
+    });
   },
 
   syncOpenStack() {
@@ -67,30 +95,6 @@ export default Ember.Route.extend({
         "Content-Type": "application/json",
         "X-CSRF-Token": token
       }
-    });
-  },
-
-  validate() {
-    let controller = this.get('controller');
-    let deploymentId = this.get('controller.model.id');
-    let token = Ember.$('meta[name="csrf-token"]').attr('content');
-    let validationErrors = controller.get('validationErrors');
-
-    controller.set('spinnerTextMessage', "Validating deployment...");
-
-    return request({
-      url: `/fusor/api/v21/deployments/${deploymentId}/validate`,
-      type: "GET",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "X-CSRF-Token": token
-      },
-      data: {}
-    }).then(response => {
-      controller.set('showSpinner', false);
-      controller.set('validationErrors', response.validation.errors);
-      controller.set('validationWarnings', response.validation.warnings);
     });
   }
 });

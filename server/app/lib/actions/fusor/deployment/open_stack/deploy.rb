@@ -105,7 +105,11 @@ module Actions::Fusor::Deployment::OpenStack
     private
 
     def count_nodes(d)
-      d.openstack_overcloud_ceph_storage_count+d.openstack_overcloud_cinder_storage_count+d.openstack_overcloud_swift_storage_count+d.openstack_overcloud_compute_count+d.openstack_overcloud_controller_count
+      d.openstack_overcloud_ceph_storage_count +
+          d.openstack_overcloud_cinder_storage_count +
+          d.openstack_overcloud_swift_storage_count +
+          d.openstack_overcloud_compute_count +
+          d.openstack_overcloud_controller_count
     end
 
     def undercloud_handle(deployment)

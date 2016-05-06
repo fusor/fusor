@@ -59,7 +59,6 @@ export default Ember.Component.extend({
       this.sendAction('assignRole', role, this.get('profile'));
       if ((role.get('name') === 'Compute' || role.get('name') == 'Controller') && !role.get('count')){
         role.set('count', 1);
-        this.sendAction('roleCountUpdated', role);
       }
 
       if (this.get('matchingNodeCount') < role.get('count')) {
@@ -70,10 +69,6 @@ export default Ember.Component.extend({
 
     editRole(role) {
       this.sendAction('editRole', role);
-    },
-
-    roleCountUpdated(role) {
-      this.sendAction('roleCountUpdated', role);
     },
 
     removeRole(role) {

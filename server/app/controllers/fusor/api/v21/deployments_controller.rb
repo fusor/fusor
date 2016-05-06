@@ -24,7 +24,10 @@ module Fusor
     rescue_from Encoding::UndefinedConversionError, :with => :ignore_it
 
     def index
-      @deployments = Deployment.search_for(params[:search], :order => params[:order]).by_id(params[:id])
+      @deployments = Deployment.includes(:organization, :lifecycle_environment, :discovered_host,
+                                         :discovered_hosts, :ose_master_hosts, :ose_worker_hosts, :subscriptions,
+                                         :introspection_tasks, :foreman_task)
+                                .search_for(params[:search], :order => params[:order]).by_id(params[:id])
       render :json => @deployments, :each_serializer => Fusor::DeploymentSerializer, :serializer => RootArraySerializer
     end
 
@@ -218,7 +221,9 @@ module Fusor
     def find_deployment
       id = params[:deployment_id] || params[:id]
       not_found and return false if id.blank?
-      @deployment = Deployment.find(id)
+      @deployment = Deployment.includes(:organization, :lifecycle_environment, :discovered_host, :discovered_hosts,
+                                        :ose_master_hosts, :ose_worker_hosts, :subscriptions, :introspection_tasks,
+                                        :foreman_task).find(id)
     end
 
     def ignore_it
@@ -264,78 +269,19 @@ module Fusor
     end
 
     def build_openstack_params
-      {
-          NeutronPublicInterface: @deployment.openstack_overcloud_ext_net_interface,
-          NovaComputeLibvirtType: @deployment.openstack_overcloud_libvirt_type,
-          AdminPassword: @deployment.openstack_overcloud_password,
-
-          OvercloudComputeFlavor: @deployment.openstack_overcloud_compute_flavor,
-          ComputeCount: @deployment.openstack_overcloud_compute_count,
-          OvercloudControlFlavor: @deployment.openstack_overcloud_controller_flavor,
-          ControllerCount: @deployment.openstack_overcloud_controller_count,
-          OvercloudCephStorageFlavor: @deployment.openstack_overcloud_ceph_storage_flavor,
-          CephStorageCount: @deployment.openstack_overcloud_ceph_storage_count,
-          OvercloudBlockStorageFlavor: @deployment.openstack_overcloud_cinder_storage_flavor,
-          BlockStorageCount: @deployment.openstack_overcloud_cinder_storage_count,
-          OvercloudSwiftStorageFlavor: @deployment.openstack_overcloud_swift_storage_flavor,
-          ObjectStorageCount: @deployment.openstack_overcloud_swift_storage_count,
-      }
+      osp_params = {}
+      Deployment::OPENSTACK_ATTR_PARAM_HASH.each { |attr_name, param_name| osp_params[param_name] = @deployment.send(attr_name) }
+      osp_params
     end
 
     def get_sync_openstack_errors
       plan = undercloud_handle.get_plan_parameters('overcloud')
       errors = {}
 
-      if @deployment.openstack_overcloud_ext_net_interface != plan['NeutronPublicInterface'].try(:[], 'Default')
-        errors[:openstack_overcloud_ext_net_interface] = [_('Openstack NeutronPublicInterface was not properly synchronized')]
-      end
-
-      if @deployment.openstack_overcloud_libvirt_type != plan['NovaComputeLibvirtType'].try(:[], 'Default')
-        errors[:openstack_overcloud_libvirt_type] = [_('Openstack NovaComputeLibvirtType was not properly synchronized')]
-      end
-
-      if @deployment.openstack_overcloud_password != plan['AdminPassword'].try(:[], 'Default')
-        errors[:openstack_overcloud_password] = [_('Openstack AdminPassword was not properly synchronized')]
-      end
-
-      if @deployment.openstack_overcloud_compute_flavor != plan['OvercloudComputeFlavor'].try(:[], 'Default')
-        errors[:openstack_overcloud_compute_flavor] = [_('Openstack OvercloudComputeFlavor was not properly synchronized')]
-      end
-
-      if @deployment.openstack_overcloud_compute_count != plan['ComputeCount'].try(:[], 'Default')
-        errors[:openstack_overcloud_compute_count] = [_('Openstack ComputeCount was not properly synchronized')]
-      end
-
-      if @deployment.openstack_overcloud_controller_flavor != plan['OvercloudControlFlavor'].try(:[], 'Default')
-        errors[:openstack_overcloud_controller_flavor] = [_('Openstack OvercloudControlFlavor was not properly synchronized')]
-      end
-
-      if @deployment.openstack_overcloud_controller_count != plan['ControllerCount'].try(:[], 'Default')
-        errors[:openstack_overcloud_controller_count] = [_('Openstack ControllerCount was not properly synchronized')]
-      end
-
-      if @deployment.openstack_overcloud_ceph_storage_flavor != plan['OvercloudCephStorageFlavor'].try(:[], 'Default')
-        errors[:openstack_overcloud_ceph_storage_flavor] = [_('Openstack OvercloudCephStorageFlavor was not properly synchronized')]
-      end
-
-      if @deployment.openstack_overcloud_ceph_storage_count != plan['CephStorageCount'].try(:[], 'Default')
-        errors[:openstack_overcloud_ceph_storage_count] = [_('Openstack CephStorageCount was not properly synchronized')]
-      end
-
-      if @deployment.openstack_overcloud_cinder_storage_flavor != plan['OvercloudBlockStorageFlavor'].try(:[], 'Default')
-        errors[:openstack_overcloud_cinder_storage_flavor] = [_('Openstack OvercloudBlockStorageFlavor was not properly synchronized')]
-      end
-
-      if @deployment.openstack_overcloud_cinder_storage_count != plan['BlockStorageCount'].try(:[], 'Default')
-        errors[:openstack_overcloud_cinder_storage_count] = [_('Openstack BlockStorageCount was not properly synchronized')]
-      end
-
-      if @deployment.openstack_overcloud_swift_storage_flavor != plan['OvercloudSwiftStorageFlavor'].try(:[], 'Default')
-        errors[:openstack_overcloud_swift_storage_flavor] = [_('Openstack OvercloudSwiftStorageFlavor was not properly synchronized')]
-      end
-
-      if @deployment.openstack_overcloud_swift_storage_count != plan['ObjectStorageCount'].try(:[], 'Default')
-        errors[:openstack_overcloud_swift_storage_count] = [_('Openstack ObjectStorageCount was not properly synchronized')]
+      Deployment::OPENSTACK_ATTR_PARAM_HASH.each do |attr_name, param_name|
+        attr_value = @deployment.send(attr_name)
+        param_value = plan[param_name].try(:[], 'Default')
+        errors[attr_name] = [_("Openstack #{param_name} was not properly synchronized.  Expected: #{attr_value} but got #{param_value}")] unless attr_value == param_value
       end
 
       errors
