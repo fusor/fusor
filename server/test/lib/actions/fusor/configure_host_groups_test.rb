@@ -55,24 +55,20 @@ module Actions::Fusor
     end
 
     test "run should create hostgroup if it doesn't already exist" do
-      # Needs to be rewritten for 6.2
-      skip
       ConfigureHostGroups.any_instance.stubs(:find_hostgroup).returns(nil)
       # I can't think of a great way to test this. for now just check to
       # ensure the methods were called
 
       ConfigureHostGroups.any_instance.expects(:apply_setting_parameter_overrides).times(@rhev_hostgroup_length)
       ConfigureHostGroups.any_instance.expects(:apply_deployment_parameter_overrides).times(@rhev_hostgroup_length)
-      ::Hostgroup.expects(:create!).times(@rhev_hostgroup_length)
       ::GroupParameter.expects(:create!).times(@activation_key_length)
-
       plan = plan_action @action, @deployment, 'rhev', @rhev_hostgroup
-      run_action plan
+      assert_difference('Hostgroup.count', +@rhev_hostgroup_length, 'The number of hostgroups should increase') do
+        run_action plan
+      end
     end
 
     test "run should update hostgroup if it already exists" do
-      # Needs to be rewritten for 6.2
-      skip
       # I can't think of a great way to test this. for now just check to
       # ensure the methods were called
       ConfigureHostGroups.any_instance.expects(:apply_setting_parameter_overrides).times(@rhev_hostgroup_length)
