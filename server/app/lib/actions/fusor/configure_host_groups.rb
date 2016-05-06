@@ -51,6 +51,7 @@ module Actions
       private
 
       # TODO: break up this method
+      # rubocop:disable MethodLength
       def find_or_ensure_hostgroup(deployment, product_type, organization_id, lifecycle_environment_id,
                                    hostgroup_settings)
 
@@ -112,6 +113,7 @@ module Actions
             default_capsule_id = ::Katello::CapsuleContent.default_capsule.try(:capsule).try(:id)
 
             hostgroup_params[:name] = deployment.label
+            hostgroup_params[:title] = deployment.label
             hostgroup_params[:lifecycle_environment_id] = lifecycle_environment.id
             hostgroup_params[:environment_id] = puppet_environment.try(:id)
             hostgroup_params[:content_view_id] = content_view.try(:id)
@@ -137,7 +139,8 @@ module Actions
           # Note: when setting the arch, medium and ptable, we assume that there will only be 1
           # associated with the operating system.  If we need to support multiple in the future,
           # we'll need to update this behavior.
-          hostgroup = ::Hostgroup.create!(hostgroup_params)
+          hostgroup = ::Hostgroup.new(hostgroup_params)
+          hostgroup.save!
 
           if activation_key_name = activation_key_name(deployment, hostgroup_settings)
             ::GroupParameter.create!(:reference_id => hostgroup.id,
