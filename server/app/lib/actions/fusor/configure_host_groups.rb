@@ -13,6 +13,7 @@
 module Actions
   module Fusor
     # TODO Cleanup class to make it shorter
+    # rubocop:disable ClassLength
     class ConfigureHostGroups < Actions::Fusor::FusorBaseAction
       def humanized_name
         _("Configure Host Groups")
@@ -124,11 +125,13 @@ module Actions
 
         if hostgroup = find_hostgroup(organization_id, hostgroup_params[:name], parent)
           hostgroup.update_attributes!(hostgroup_params)
-
+          parameter = ::GroupParameter.where(:type => "GroupParameter",
+                                             :reference_id => hostgroup.id,
+                                             :name => "kt_activation_keys").first
           if activation_key_name = activation_key_name(deployment, hostgroup_settings)
-            GroupParameter.create(:reference_id => hostgroup.id,
-                                  :name => "kt_activation_keys",
-                                  :value => activation_key_name)
+            parameter.update_attributes!(:reference_id => hostgroup.id,
+                                         :name => "kt_activation_keys",
+                                         :value => activation_key_name)
           end
         else
           # Note: when setting the arch, medium and ptable, we assume that there will only be 1
@@ -138,7 +141,6 @@ module Actions
 
           if activation_key_name = activation_key_name(deployment, hostgroup_settings)
             ::GroupParameter.create!(:reference_id => hostgroup.id,
-                                     :hostgroup => hostgroup,
                                      :name => "kt_activation_keys",
                                      :value => activation_key_name)
           end
