@@ -4,12 +4,12 @@
         <a>2A. Setup Type</a>
       {{/link-to}}
 
-      {{#link-to 'engine' tagName='li' disabled=disableTabRhevEngine}}
+      {{#link-to 'engine.discovered-host' tagName='li' disabled=disableTabRhevEngine}}
         <a>2B. {{engineTabName}}</a>
       {{/link-to}}
 
       {{#unless isSelfHost}}
-      {{#link-to 'hypervisor' tagName='li' disabled=disableTabRhevHypervisors}}
+      {{#link-to 'hypervisor.discovered-host' tagName='li' disabled=disableTabRhevHypervisors}}
         <a>2C. Hypervisors</a>
       {{/link-to}}
       {{/unless}}
