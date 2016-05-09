@@ -13,12 +13,5 @@ export default DS.Model.extend({
   getParamValue(fieldName) {
     let param =  this.getParam(fieldName);
     return param ? param.Default : undefined;
-  },
-
-  setParamValue(fieldName, value) {
-    let param =  this.getParam(fieldName);
-    if (param) {
-      param.Default = value;
-    }
   }
 });

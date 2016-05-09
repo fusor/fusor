@@ -147,7 +147,6 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
     role.set('isDraggingObject', false);
     role.set('flavor', profileName);
     this.set(`deployment.${role.get('flavorDeploymentAttributeName')}`, profileName);
-    this.get('plan').setParamValue(role.get('flavorParameterName'), profileName);
   },
 
   updateRoleCounts() {
@@ -157,7 +156,6 @@ export default Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymen
 
     this.get('roles').forEach(role => {
       this.set(`deployment.${role.get('countDeploymentAttributeName')}`, role.get('count'));
-      this.get('plan').setParamValue(role.get('countParameterName'), role.get('count'));
     });
   },
 
