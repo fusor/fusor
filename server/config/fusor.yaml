@@ -63,7 +63,7 @@
         :repository_set_id: "2455"
         :repository_set_name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
         :basearch: "x86_64"
-        :releasever: "7.1"
+        :releasever: "7.2"
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
@@ -96,8 +96,8 @@
         :repository_set_id: "2455"
         :repository_set_name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
         :basearch: "x86_64"
-        :releasever: "7.1"
-        #Need Red Hat 7.1 Operating Sysetem setup including Media, architecture, and other associations.
+        :releasever: "7.2"
+        #Need Red Hat 7.2 Operating Sysetem setup including Media, architecture, and other associations.
 
     :openshift:
       - :product_name: "Red Hat OpenShift Enterprise"
@@ -118,7 +118,7 @@
         :repository_set_id: "2455"
         :repository_set_name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
         :basearch: "x86_64"
-        :releasever: "7.1"
+        :releasever: "7.2"
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
@@ -154,7 +154,7 @@
         :repository_set_id: "2455"
         :repository_set_name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
         :basearch: "x86_64"
-        :releasever: "7.1"
+        :releasever: "7.2"
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
@@ -244,7 +244,7 @@
        - :name: "RHEV-Hypervisor"
          :os: "RedHat"
          :major: "7"
-         :minor: "1"
+         :minor: "2"
          :parent: :root_deployment
          :puppet_classes:
            - :name: "ovirt"
@@ -266,7 +266,7 @@
        - :name: "OpenShift"
          :os: "RedHat"
          :major: "7"
-         :minor: "1"
+         :minor: "2"
          :parent: :root_deployment
          :activation_key:
            :name: "OpenShift"
@@ -274,7 +274,7 @@
            :subscription_descriptions:
              - "Red Hat Cloud Infrastructure"
              - "OpenShift Enterprise"
-             
+
     :openstack:
      :root_name: "Fusor Base" # seeded by the fusor-installer
      :host_groups:
@@ -284,7 +284,7 @@
          :parent: :root_deployment
          :os: "RedHat"
          :major: "7"
-         :minor: "1"
+         :minor: "2"
          :activation_key:
            :name: "OpenStack-Undercloud"
            :content: :openstack
