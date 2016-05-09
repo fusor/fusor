@@ -33,7 +33,7 @@ module Actions
           fail _("====== Host is null! Cannot wait for host! ====== ") unless host
 
           ::Fusor.log.info "Waiting for host #{host.name}'s deployment to complete..."
-          if host.is_a?(::Host::Managed) && host.global_status > 0
+          if host.is_a?(::Host::Managed) && host.global_status > 1
             fail _("Failed to provision host '%s'.") % host.name
           end
 
