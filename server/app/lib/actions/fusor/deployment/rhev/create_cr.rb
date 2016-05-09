@@ -31,12 +31,14 @@ module Actions
           def run
             ::Fusor.log.debug '====== RHEV Compute Resource run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
+            rhevm = ::Host.find(deployment.rhev_engine_host_id).name
             rhev = { "name" => "#{deployment.label}-RHEV",
                      "location_ids" => ["", Location.where(:name => "Default Location").first.id],
-                     "url" => "https://#{::Host.find(deployment.rhev_engine_host_id).name}/api",
+                     "url" => "https://#{rhevm}/api",
                      "provider" => "Foreman::Model::Ovirt", "user" => 'admin@internal',
                      "password" => deployment.rhev_root_password,
-                     "organization_ids" => [deployment.organization_id] }
+                     "organization_ids" => [deployment.organization_id],
+                     "public_key" => "#{Net::HTTP.get(URI.parse("http://#{rhevm}/ca.crt"))}" }
             cr = ::Foreman::Model::Ovirt.create(rhev)
             cr.uuid = cr.datacenters.find { |dc| dc[0] == deployment.rhev_data_center_name }[1]
             cr.save

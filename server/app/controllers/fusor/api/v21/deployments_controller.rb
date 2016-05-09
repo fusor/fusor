@@ -190,7 +190,7 @@ module Fusor
     def deployment_params
       params.require(:deployment).permit(:name, :description, :deploy_rhev, :deploy_cfme,
                                          :deploy_openstack, :is_disconnected, :rhev_is_self_hosted,
-                                         :rhev_engine_admin_password, :rhev_database_name,
+                                         :rhev_engine_admin_password, :rhev_data_center_name,
                                          :rhev_cluster_name, :rhev_storage_name, :rhev_storage_type,
                                          :rhev_storage_address, :rhev_cpu_type, :rhev_share_path,
                                          :cfme_install_loc, :rhev_root_password, :cfme_root_password,
