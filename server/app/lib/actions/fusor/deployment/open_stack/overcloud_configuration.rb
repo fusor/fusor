@@ -31,6 +31,7 @@ module Actions
           def run
             ::Fusor.log.debug '====== OvercloudConfiguration run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
+            find_overcloud(deployment)
             overcloud = { :openstack_auth_url  => "http://#{deployment.openstack_overcloud_address}:5000/v2.0/tokens",
                           :openstack_username  => 'admin', :openstack_tenant => 'admin',
                           :openstack_api_key   => deployment.openstack_overcloud_password }
@@ -50,6 +51,18 @@ module Actions
           end
 
           private
+
+          def find_overcloud(deployment)
+            service = Fog::Orchestration::OpenStack.new(
+              :openstack_auth_url  => "http://#{deployment.openstack_undercloud_ip_addr}:5000/v2.0/tokens",
+              :openstack_username  => 'admin',
+              :openstack_tenant    => 'admin',
+              :openstack_api_key   => deployment.openstack_undercloud_password)
+            stack = service.stacks.get("overcloud", service.stacks.first.id)
+            vip = stack.outputs.find { |hash| hash["output_key"] == "PublicVip" }["output_value"]
+            deployment.openstack_overcloud_address = vip
+            deployment.save!(:validate => false)
+          end
 
           def configure_keystone(deployment, overcloud)
             keystone = Fog::Identity::OpenStack.new(overcloud)

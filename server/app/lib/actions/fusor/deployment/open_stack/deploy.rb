@@ -38,11 +38,8 @@ module Actions::Fusor::Deployment::OpenStack
       end
 
       sequence do
-        # work around BZ 1281908
-        plan_action(UndercloudNoHostWorkaround, deployment)
         plan_self(deployment_id: deployment.id)
         plan_action(SshCommand, deployment, "/opt/theforeman/tfm/root/bin/initialize_overcloud.sh")
-        plan_action(ControllerCleanup, deployment)
         plan_action(OvercloudConfiguration, deployment)
         plan_action(CreateCr, deployment)
         plan_action(AddOspHostnames, deployment)
