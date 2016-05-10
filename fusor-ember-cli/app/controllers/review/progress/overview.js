@@ -64,7 +64,6 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     return true;
   }),
 
-  isAbandonModalOpen: false,
   loadingRedeployment: false,
 
   actions: {
@@ -94,7 +93,7 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
       }).finally(() => this.set('loadingRedeployment', false));
     },
     abandonAndDelete() {
-      this.set('isAbandonModalOpen', true);
+      this.set('openModal', true);
     },
     abandon() {
       this.transitionToRoute('deployments');
