@@ -1,26 +1,46 @@
 {{#wizard-step outlet=outlet}}
 
       {{#link-to 'subscriptions.credentials' tagName='li' disabled=disableTabCredentials}}
-        <a>{{stepNumberSubscriptions}}A. Content Provider</a>
+        <a>
+          <span class="hanging-indent">
+            {{stepNumberSubscriptions}}A. Content Provider
+          </span>
+        </a>
       {{/link-to}}
 
       {{#if isDisconnected}}
           {{#link-to 'subscriptions.review-subscriptions' tagName='li' disabled=disableTabReviewSubsciptions}}
-            <a>{{stepNumberSubscriptions}}B. Review Subscriptions</a>
+            <a>
+              <span class="hanging-indent">
+                {{stepNumberSubscriptions}}B. Review Subscriptions
+              </span>
+            </a>
           {{/link-to}}
 
       {{else}}
 
           {{#link-to 'subscriptions.management-application' tagName='li' disabled=disableTabManagementApplication}}
-            <a>{{stepNumberSubscriptions}}B. Subscription Management Application</a>
+            <a>
+              <span class="hanging-indent">
+                {{stepNumberSubscriptions}}B. Subscription Management Application
+              </span>
+            </a>
           {{/link-to}}
 
           {{#link-to 'subscriptions.select-subscriptions' tagName='li' disabled=disableTabSelectSubsciptions}}
-            <a>{{stepNumberSubscriptions}}C. Add Subscriptions</a>
+            <a>
+              <span class="hanging-indent">
+                {{stepNumberSubscriptions}}C. Add Subscriptions
+              </span>
+            </a>
           {{/link-to}}
 
           {{#link-to 'subscriptions.review-subscriptions' tagName='li' disabled=disableTabSelectSubsciptions}}
-            <a>{{stepNumberSubscriptions}}D. Review Subscriptions</a>
+            <a>
+              <span class="hanging-indent">
+                {{stepNumberSubscriptions}}D. Review Subscriptions
+              </span>
+            </a>
           {{/link-to}}
       {{/if}}
 

@@ -813,3 +813,9 @@ $ember-power-select-border-color: #bababa !default;
 $ember-power-select-placeholder-color: #333333 !default;
 $ember-power-select-line-height: 24px !default;
 $ember-power-select-default-border-radius: 1px !default;
+
+span.hanging-indent{
+    display:block;
+    text-indent: -1.6em;  /*this pulls the first line to the left*/
+    padding-left: 1.6em;  /*this pushes the wrapped text to the right*/
+}

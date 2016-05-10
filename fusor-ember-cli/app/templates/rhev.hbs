@@ -1,25 +1,45 @@
 {{#wizard-step outlet=outlet}}
 
       {{#link-to 'rhev-setup' tagName='li' disabled=disableTabRhevSetupType}}
-        <a>2A. Setup Type</a>
+        <a>
+          <span class="hanging-indent">
+            2A. Setup Type
+          </span>
+        </a>
       {{/link-to}}
 
       {{#link-to 'engine.discovered-host' tagName='li' disabled=disableTabRhevEngine}}
-        <a>2B. {{engineTabName}}</a>
+        <a>
+          <span class="hanging-indent">
+            2B. {{engineTabName}}
+          </span>
+        </a>
       {{/link-to}}
 
       {{#unless isSelfHost}}
       {{#link-to 'hypervisor.discovered-host' tagName='li' disabled=disableTabRhevHypervisors}}
-        <a>2C. Hypervisors</a>
+        <a>
+          <span class="hanging-indent">
+            2C. Hypervisors
+          </span>
+        </a>
       {{/link-to}}
       {{/unless}}
 
       {{#link-to 'rhev-options' tagName='li' disabled=disableTabRhevConfiguration}}
-        <a>{{if isSelfHost '2C' '2D'}}. Configuration</a>
+        <a>
+          <span class="hanging-indent">
+            {{if isSelfHost '2C' '2D'}}. Configuration
+          </span>
+        </a>
       {{/link-to}}
 
       {{#link-to 'storage' tagName='li' disabled=disableTabRhevStorage}}
-        <a>{{if isSelfHost '2D' '2E'}}. Storage</a>
+        <a>
+          <span class="hanging-indent">
+            {{if isSelfHost '2D' '2E'}}. Storage
+          </span>
+        </a>
       {{/link-to}}
 
 {{/wizard-step}}

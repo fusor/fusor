@@ -1,15 +1,27 @@
 {{#wizard-step outlet=outlet}}
 
       {{#link-to 'review.installation' tagName='li' disabled=disableTabInstallation}}
-        <a>{{stepNumberReview}}A. Installation Review</a>
+        <a>
+          <span class="hanging-indent">
+            {{stepNumberReview}}A. Installation Review
+          </span>
+        </a>
       {{/link-to}}
 
       {{#link-to 'review.progress.overview' tagName='li' disabled=disableTabProgress}}
-        <a>{{stepNumberReview}}B. Installation Progress</a>
+        <a>
+          <span class="hanging-indent">
+            {{stepNumberReview}}B. Installation Progress
+          </span>
+        </a>
       {{/link-to}}
 
       {{#link-to 'review.summary' tagName='li' disabled=disableTabSummary}}
-        <a>{{stepNumberReview}}C. Installation Summary</a>
+        <a>
+          <span class="hanging-indent">
+            {{stepNumberReview}}C. Installation Summary
+          </span>
+        </a>
       {{/link-to}}
 
 {{/wizard-step}}
