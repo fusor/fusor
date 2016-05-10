@@ -15,6 +15,7 @@ require "sys/filesystem"
 require "uri"
 
 module Fusor
+  # rubocop:disable ClassLength
   class Api::V21::DeploymentsController < Api::V2::DeploymentsController
 
     before_filter :find_deployment, :only => [:destroy, :show, :update,
@@ -189,7 +190,7 @@ module Fusor
 
     def deployment_params
       params.require(:deployment).permit(:name, :description, :deploy_rhev, :deploy_cfme,
-                                         :deploy_openstack, :is_disconnected, :rhev_is_self_hosted,
+                                         :deploy_openstack, :deploy_openshift, :is_disconnected, :rhev_is_self_hosted,
                                          :rhev_engine_admin_password, :rhev_data_center_name,
                                          :rhev_cluster_name, :rhev_storage_name, :rhev_storage_type,
                                          :rhev_storage_address, :rhev_cpu_type, :rhev_share_path,
@@ -207,6 +208,14 @@ module Fusor
                                          :openstack_overcloud_hostname, :openstack_overcloud_address,
                                          :openstack_overcloud_password, :openstack_overcloud_private_net,
                                          :openstack_overcloud_float_net, :openstack_overcloud_float_gateway,
+                                         :openshift_install_loc, :openshift_number_master_nodes, :openshift_number_worker_nodes,
+                                         :openshift_storage_size, :openshift_username, :openshift_user_password,
+                                         :openshift_root_password, :openshift_master_vcpu, :openshift_master_ram,
+                                         :openshift_master_disk, :openshift_node_vcpu, :openshift_node_ram, :openshift_node_disk,
+                                         :openshift_available_vcpu, :openshift_available_ram, :openshift_available_disk,
+                                         :openshift_storage_type, :openshift_storage_name, :openshift_storage_host,
+                                         :openshift_export_path, :openshift_subdomain_name, :cloudforms_vcpu,
+                                         :cloudforms_ram, :cloudforms_vm_disk_size, :cloudforms_db_disk_size,
                                          :cdn_url, :manifest_file, :created_at, :updated_at, :rhev_engine_host_id,
                                          :organization_id, :lifecycle_environment_id, :discovered_host_id,
                                          :foreman_task_id, :openstack_overcloud_node_count,
