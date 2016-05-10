@@ -1,0 +1,28 @@
+{{#pf-modal-base idModal='editGlobalServiceConfigModal'
+                 openModal=openModal
+                 title='Edit Global Configuration'}}
+
+  {{#pf-modal-body}}
+    <div role="tabpanel" class="tab-pane active global-config-settings-content">
+      <div class="form-horizontal">
+        <fieldset>
+          <div class="required">
+            {{#each globalPlanParameters as |planParameter|}}
+              {{#if planParameter.isBoolean}}
+                {{check-f label=planParameter.label checked=planParameter.newValue labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=planParameter.description}}
+              {{else}}
+                {{text-f label=planParameter.label value=planParameter.newValue type=planParameter.type labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=planParameter.description}}
+              {{/if}}
+            {{/each}}
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  {{/pf-modal-body}}
+
+  {{#pf-modal-footer}}
+        <button type="cancel" class="btn btn-default" {{action "cancelGlobalServiceConfig"}}>Cancel</button>
+        <button type="submit" class="btn btn-primary" {{action "saveGlobalServiceConfig"}}>Save</button>
+  {{/pf-modal-footer}}
+
+{{/pf-modal-base}}

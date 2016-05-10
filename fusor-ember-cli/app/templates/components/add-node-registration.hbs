@@ -1,12 +1,9 @@
-{{#em-modal configName="bs" id="addNodeModal" closeIfClickedOutside=handleOutsideClick open-if=openAddNodeRegistrationModal close-if=closeAddNodeRegistrationModal}}
-  {{#em-modal-title}}
-    {{#em-modal-toggler class="close"}}
-      <span aria-hidden="true">×</span><span class="sr-only">Close</span>
-    {{/em-modal-toggler}}
-    <h4 class="modal-title">Add Node(s) to {{nodeInfo.address}}</h4>
-  {{/em-modal-title}}
+{{#pf-modal-base idModal='addNodeModal'
+                 openModal=openModal
+                 title=addNodeTitle}}
 
-  {{#em-modal-body}}
+
+  {{#pf-modal-body}}
     <div class="row">
       <div class="col-xs-12">
         <p>Enter information for additional nodes that should be registered to {{nodeInfo.address}}</p>
@@ -35,7 +32,7 @@
             <div class="add-node-uneditable-input-container"><span>{{nodeInfo.username}}</span></div>
           {{/base-f}}
 
-          {{text-f  cssId="manualPasswordInput"
+          {{text-f  cssId="manualPasswordInput2"
                     label=newNodePasswordLabel
                     type='password'
                     labelSize='form-label-nowrap col-xs-3'
@@ -56,9 +53,9 @@
         </div>
       </div>
     </div>
-  {{/em-modal-body}}
+  {{/pf-modal-body}}
 
-  {{#em-modal-footer}}
+  {{#pf-modal-footer}}
     <button type="button" id="addNodeCancelButton"
             class="btn btn-default delete-node-cancel-button" {{action "cancelAddNodes"}}>
       Cancel
@@ -67,5 +64,6 @@
             disabled={{disableNewNodesSubmit}} {{action "submitAddNodes"}}>
       Register
     </button>
-  {{/em-modal-footer}}
-{{/em-modal}}
+  {{/pf-modal-footer}}
+
+{{/pf-modal-base}}

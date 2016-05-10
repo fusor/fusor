@@ -76,7 +76,21 @@
                      disableCancel=isStarted
                      deploymentName=deploymentName}}
 
-  {{partial 'edit-deployment-role'}}
-  {{partial 'edit-global-service-config'}}
+  {{edit-deployment-role openModal=openModalEditRole
+                         settingsActiveClass=settingsActiveClass
+                         configActiveClass=configActiveClass
+                         doShowSettings='doShowSettings'
+                         doShowConfig='doShowConfig'
+                         editedRole=editedRole
+                         editedRoleImage=editedRoleImage
+                         images=images
+                         profiles=profiles
+                         editedRoleNodeCount=editedRoleNodeCount
+                         editedRoleParameters=editedRoleParameters
+                         saveRole='saveRole'}}
+  {{edit-global-service-config openModal=openModalEditGlobal
+                               globalPlanParameters=globalPlanParameters
+                               cancelGlobalServiceConfig='cancelGlobalServiceConfig'
+                               saveGlobalServiceConfig='saveGlobalServiceConfig'}}
   {{loading-spinner show=showLoadingSpinner text=loadingSpinnerText}}
 {{/if}}

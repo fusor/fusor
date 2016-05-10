@@ -11,7 +11,7 @@
 
     <div class='radio'>
       <label>
-        {{#radio-button value="auto_detect" groupValue=registerNodesMethod id="optionNewNodeMethodAuto"}}{{/radio-button}}
+        {{#radio-button value="auto_detect" groupValue=registerNodesMethod id="optionNewNodeMethodAuto" changed='nodeMethodChanged'}}{{/radio-button}}
         Auto-detection
       </label>
     </div>
@@ -22,7 +22,7 @@
 
     <div class="radio">
       <label>
-        {{#radio-button value="csv_upload" groupValue=registerNodesMethod id="optionNewNodeMethodCSV"}}{{/radio-button}}
+        {{#radio-button value="csv_upload" groupValue=registerNodesMethod id="optionNewNodeMethodCSV" changed='nodeMethodChanged'}}{{/radio-button}}
         Upload a CSV file
       </label>
     </div>
@@ -33,7 +33,7 @@
 
     <div class="radio">
       <label>
-        {{#radio-button value="manual" groupValue=registerNodesMethod id="optionNewNodeMethodManual"}}{{/radio-button}}
+        {{#radio-button value="manual" groupValue=registerNodesMethod id="optionNewNodeMethodManual" changed='nodeMethodChanged'}}{{/radio-button}}
         Manual entry
       </label>
     </div>

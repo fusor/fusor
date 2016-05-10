@@ -100,7 +100,10 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
   }),
 
   nodeDriverHumanized: Ember.computed('nodeInfo.driver', function () {
-    return this.get('drivers').findBy('value', this.get('nodeInfo.driver')).label;
+    let driver = this.get('drivers').findBy('value', this.get('nodeInfo.driver'));
+    if (driver) {
+      return driver.label;
+    }
   }),
 
   isPxeSsh: Ember.computed('nodeInfo.driver', function() {
@@ -394,10 +397,6 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
       this.closeRegDialog();
     },
 
-    cancelRegisterNodes() {
-      this.closeRegDialog();
-    },
-
     csvFileChosen() {
       this.parseCsvFile(this.getCSVFileInput());
     },
@@ -432,23 +431,13 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
 
     submitAddNodes() {
       this.submitNodes();
-      this.closeAddNodeDialog();
-    },
-
-    cancelAddNodes() {
-      this.closeAddNodeDialog();
+      this.set('openModalAddNode', false);
     },
 
     deleteNode(node, nodeLabel) {
       this.set('nodeToDelete', node);
       this.set('nodeToDeleteLabel', nodeLabel);
-      this.set('openDeleteNodeConfirmation', true);
-      this.set('closeDeleteNodeConfirmation', false);
-    },
-
-    cancelDeleteNode() {
-      this.set('openDeleteNodeConfirmation', false);
-      this.set('closeDeleteNodeConfirmation', true);
+      this.set('openModalDeleteNode', false);
     },
 
     confirmDeleteNode() {
@@ -508,23 +497,15 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
 
   openRegDialog() {
     this.set('step', 1);
-    this.set('openNewNodeRegistrationModal', true);
-    this.set('closeNewNodeRegistrationModal', false);
+    this.set('openModalNewNode', true);
   },
 
   closeRegDialog() {
-    this.set('openNewNodeRegistrationModal', false);
-    this.set('closeNewNodeRegistrationModal', true);
+    this.set('openModalNewNode', false);
   },
 
   openAddNodeDialog() {
-    this.set('openAddNodeRegistrationModal', true);
-    this.set('closeAddNodeRegistrationModal', false);
-  },
-
-  closeAddNodeDialog() {
-    this.set('openAddNodeRegistrationModal', false);
-    this.set('closeAddNodeRegistrationModal', true);
+    this.set('openModalAddNode', true);
   },
 
   submitNodes() {
@@ -539,8 +520,7 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
       this.prepAutoDetectNodeInfo();
       this.registerNodes(this.get('nodeInfo'));
     }
-
-    this.closeRegDialog();
+    this.set('openModalAddNode', false);
   },
 
   registerNodes(nodeInfo) {

@@ -100,6 +100,45 @@
                     disableCancel=isStarted
                     deploymentName=deploymentName}}
 
-{{partial 'new-node-registration'}}
-{{partial 'add-node-registration'}}
-{{partial 'delete-node-confirmation'}}
+{{new-node-registration openModal=openModalNewNode
+                        isStep1=isStep1
+                        disableDetectNodesSubmit=disableDetectNodesSubmit
+                        disableNewNodesSubmit=disableNewNodesSubmit
+                        registerNodesMethod=registerNodesMethod
+                        nodeInfo=nodeInfo
+                        isDriverValid=isDriverValid
+                        showDriverValidationError=showDriverValidationError
+                        isIpmi=isIpmi
+                        drivers=drivers
+                        vendors=vendors
+                        ipmiVendor=ipmiVendor
+                        hostAddressValidator=hostAddressValidator
+                        newNodeVendorLabel=newNodeVendorLabel
+                        newNodeUsernameLabel=newNodeUsernameLabel
+                        newNodePasswordLabel=newNodePasswordLabel
+                        newNodeAddressLabel=newNodeAddressLabel
+                        newNodeUsernameLabel=newNodeUsernameLabel
+                        newNodePasswordLabel=newNodePasswordLabel
+                        hasCsvErrors=hasCsvErrors
+                        hasCsvInfo=hasCsvInfo
+                        csvInfo=csvInfo
+                        submitDetectNodes='submitDetectNodes'
+                        backStep='backStep'
+                        csvFileChosen='csvFileChosen'
+                        addMacAddress='addMacAddress'
+}}
+{{add-node-registration openModal=openModalAddNode
+                        nodeInfo=nodeInfo
+                        nodeDriverHumanized=nodeDriverHumanized
+                        newNodeAddressLabel=newNodeAddressLabel
+                        manualPasswordInput=manualPasswordInput
+                        newNodePasswordLabel=newNodePasswordLabel
+                        macAddress=macAddress
+                        macAddressValidator=macAddressValidator
+                        newNodeUsernameLabel=newNodeUsernameLabel
+                        disableNewNodesSubmit=disableNewNodesSubmit
+                        addMacAddress='addMacAddress'
+                        submitAddNodes='submitAddNodes'}}
+{{delete-node-confirmation openModal=openModalDeleteNode
+                           nodeToDeleteLabel=nodeToDeleteLabel
+                           confirmDeleteNode='confirmDeleteNode'}}

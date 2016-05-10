@@ -1,28 +1,17 @@
-{{#em-modal configName="bs" id="nodeRegistrationModal" class="node-registration-modal"
-            closeIfClickedOutside=handleOutsideClick open-if=openNewNodeRegistrationModal close-if=closeNewNodeRegistrationModal}}
-  {{#em-modal-title}}
-    {{#if isStep1}}
-      {{#em-modal-toggler class="close"}}
-        <span aria-hidden="true">×</span><span class="sr-only">Close</span>
-      {{/em-modal-toggler}}
-      <h4 class="modal-title">Register Nodes</h4>
-    {{else}}
-      {{#em-modal-toggler class="close"}}
-        <span aria-hidden="true">×</span><span class="sr-only">Close</span>
-      {{/em-modal-toggler}}
-      <h4 class="modal-title">Node Auto-detection</h4>
-    {{/if}}
-  {{/em-modal-title}}
+{{#pf-modal-base idModal='nodeRegistrationModal'
+                 openModal=openModal
+                 title=newNodeTitle}}
 
-  {{#em-modal-body}}
+  {{#pf-modal-body}}
+  <Br />
     {{#if isStep1}}
       {{partial "new-node-registration-step1-body"}}
     {{else}}
       {{partial "new-node-registration-step2-body"}}
     {{/if}}
-  {{/em-modal-body}}
+  {{/pf-modal-body}}
 
-  {{#em-modal-footer}}
+  {{#pf-modal-footer}}
     {{#if isStep1}}
       <button type="button" id="newNodeCancelButton" class="btn btn-default delete-node-cancel-button" {{action "cancelRegisterNodes"}}>
         Cancel
@@ -49,5 +38,7 @@
         Register
       </button>
     {{/if}}
-  {{/em-modal-footer}}
-{{/em-modal}}
+
+  {{/pf-modal-footer}}
+
+{{/pf-modal-base}}
