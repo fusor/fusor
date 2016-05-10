@@ -14,11 +14,11 @@ module Fusor
       #  we want the polling of ForemanTasksController#show silenced to reduce noise in logs
       silenced_paths = ["api/v21/foreman_tasks", "fusor/api/v21/unlogged"]
 
-      if Katello.respond_to? 'config' and Katello.config.respond_to? 'logging' and Katello.config.logging.respond_to? 'ignored_paths'
+      if ::Katello.respond_to? 'config' and ::Katello.config.respond_to? 'logging' and ::Katello.config.logging.respond_to? 'ignored_paths'
         for sil_path in silenced_paths
-          Katello.config.logging.ignored_paths.push(sil_path)
+          ::Katello.config.logging.ignored_paths.push(sil_path)
         end
-        Rails.logger.warn "fusor_server has added '#{silenced_paths}' to 'Katello.config.logging.ignored_paths': #{Katello.config.logging.ignored_paths}"
+        Rails.logger.warn "fusor_server has added '#{silenced_paths}' to 'Katello.config.logging.ignored_paths': #{::Katello.config.logging.ignored_paths}"
       else
         Rails.logger.warn "fusor_server did not find 'Katello.config.logging.ignored_paths' available, skipping silence of logs for '#{silenced_paths}'"
       end
@@ -105,7 +105,7 @@ module Fusor
 
     # show fusor packages in the installed packages box on /about
     initializer 'fusor.about.pkgs' do
-      Katello::Ping::PACKAGES.push("fusor")
+      ::Katello::Ping::PACKAGES.push("fusor")
     end
 
     rake_tasks do
