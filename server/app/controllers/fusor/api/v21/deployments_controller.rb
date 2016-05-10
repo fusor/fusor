@@ -19,22 +19,20 @@ module Fusor
   class Api::V21::DeploymentsController < Api::V2::DeploymentsController
 
     before_filter :find_deployment, :only => [:destroy, :show, :update,
-                                              :deploy, :redeploy, :validate, :log, :openshift_disk_space]
+                                              :deploy, :redeploy, :validate, :log,
+                                              :sync_openstack, :openshift_disk_space]
 
     rescue_from Encoding::UndefinedConversionError, :with => :ignore_it
 
     def index
-      @deployments = Deployment.search_for(params[:search], :order => params[:order]).by_id(params[:id])
+      @deployments = Deployment.includes(:organization, :lifecycle_environment, :discovered_host,
+                                         :discovered_hosts, :ose_master_hosts, :ose_worker_hosts, :subscriptions,
+                                         :introspection_tasks, :foreman_task)
+                                .search_for(params[:search], :order => params[:order]).by_id(params[:id])
       render :json => @deployments, :each_serializer => Fusor::DeploymentSerializer, :serializer => RootArraySerializer
     end
 
     def show
-      begin
-        sync_openstack if params[:sync_openstack] == 'true'
-      rescue => e
-        Rails.logger.error "Error syncing openstack for deployment #{e.message}"
-      end
-
       render :json => @deployment, :serializer => Fusor::DeploymentSerializer
     end
 
@@ -89,21 +87,11 @@ module Fusor
     end
 
     def validate
-      error_syncing_openstack = nil
-      begin
-        sync_openstack
-      rescue => e
-        error_syncing_openstack =  _("Error contacting Openstack undercloud #{e.message}")
-      end
-
       @deployment.valid?
-      errors = @deployment.errors.full_messages
-      errors << error_syncing_openstack unless error_syncing_openstack.nil?
-
       render json: {
         :validation => {
           :deployment_id => @deployment.id,
-          :errors => errors,
+          :errors => @deployment.errors.full_messages,
           :warnings => @deployment.warnings
         }
       }
@@ -154,6 +142,17 @@ module Fusor
       else
         render :json => {log_type_param => reader.read_full_log(log_path)}
       end
+    end
+
+    def sync_openstack
+      return render json: {}, status: 304 unless @deployment.deploy_openstack?
+
+      undercloud_handle.edit_plan_parameters('overcloud', build_openstack_params)
+
+      sync_errors = get_sync_openstack_errors
+      return render json: {errors: sync_errors}, status: 500 unless sync_errors.empty?
+
+      render json: {},  status: 204
     end
 
     def openshift_disk_space
@@ -231,7 +230,9 @@ module Fusor
     def find_deployment
       id = params[:deployment_id] || params[:id]
       not_found and return false if id.blank?
-      @deployment = Deployment.find(id)
+      @deployment = Deployment.includes(:organization, :lifecycle_environment, :discovered_host, :discovered_hosts,
+                                        :ose_master_hosts, :ose_worker_hosts, :subscriptions, :introspection_tasks,
+                                        :foreman_task).find(id)
     end
 
     def ignore_it
@@ -276,24 +277,23 @@ module Fusor
       param['value'] if param
     end
 
-    def sync_openstack
-      return unless @deployment.deploy_openstack?
-      plan = undercloud_handle.get_plan('overcloud')
+    def build_openstack_params
+      osp_params = {}
+      Deployment::OPENSTACK_ATTR_PARAM_HASH.each { |attr_name, param_name| osp_params[param_name] = @deployment.send(attr_name) }
+      osp_params
+    end
 
-      @deployment.openstack_overcloud_ext_net_interface = get_openstack_param_value(plan, 'Controller-1::NeutronPublicInterface')
-      @deployment.openstack_overcloud_libvirt_type = get_openstack_param_value(plan, 'Compute-1::NovaComputeLibvirtType')
-      @deployment.openstack_overcloud_compute_flavor = get_openstack_param_value(plan, 'Compute-1::Flavor')
-      @deployment.openstack_overcloud_compute_count = get_openstack_param_value(plan, 'Compute-1::count')
-      @deployment.openstack_overcloud_controller_flavor = get_openstack_param_value(plan, 'Controller-1::Flavor')
-      @deployment.openstack_overcloud_controller_count = get_openstack_param_value(plan, 'Controller-1::count')
-      @deployment.openstack_overcloud_ceph_storage_flavor = get_openstack_param_value(plan, 'Ceph-Storage-1::Flavor')
-      @deployment.openstack_overcloud_ceph_storage_count = get_openstack_param_value(plan, 'Ceph-Storage-1::Flavor')
-      @deployment.openstack_overcloud_cinder_storage_flavor = get_openstack_param_value(plan, 'Cinder-Storage-1::Flavor')
-      @deployment.openstack_overcloud_cinder_storage_count = get_openstack_param_value(plan, 'Cinder-Storage-1::Flavor')
-      @deployment.openstack_overcloud_swift_storage_flavor = get_openstack_param_value(plan, 'Swift-Storage-1::Flavor')
-      @deployment.openstack_overcloud_swift_storage_count = get_openstack_param_value(plan, 'Swift-Storage-1::Flavor')
+    def get_sync_openstack_errors
+      plan = undercloud_handle.get_plan_parameters('overcloud')
+      errors = {}
 
-      @deployment.save(:validate => false)
+      Deployment::OPENSTACK_ATTR_PARAM_HASH.each do |attr_name, param_name|
+        attr_value = @deployment.send(attr_name)
+        param_value = plan[param_name].try(:[], 'Default')
+        errors[attr_name] = [_("Openstack #{param_name} was not properly synchronized.  Expected: #{attr_value} but got #{param_value}")] unless attr_value == param_value
+      end
+
+      errors
     end
   end
 end

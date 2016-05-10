@@ -4,7 +4,7 @@
         {{#em-modal-toggler class="close"}}
             <span aria-hidden="true" {{action "cancelEditRole"}}>×</span><span class="sr-only">Close</span>
         {{/em-modal-toggler}}
-        <h4 class="modal-title">Edit Deployment Role - {{editedRole.name}}</h4>
+        <h4 class="modal-title">Edit Deployment Role - {{editedRole.label}}</h4>
     {{/em-modal-title}}
 
     {{#em-modal-body}}
@@ -12,15 +12,15 @@
             Submitting, please wait...
         {{else}}
             <ul class="nav nav-tabs nav-tabs-pf" role="tablist">
-                <li role="presentation" class={{settingsTabActiveClass}}>
+                <li role="presentation" class={{settingsActiveClass}}>
                     <a aria-controls="overall-settings" role="tab" data-toggle="tab" {{action "doShowSettings"}}>Overall Settings</a>
                 </li>
-                <li role="presentation" class={{configTabActiveClass}}>
+                <li role="presentation" class={{configActiveClass}}>
                     <a  aria-controls="service-configuration" role="tab" data-toggle="tab" {{action "doShowConfig"}}>Service Configuration</a>
                 </li>
             </ul>
             <div class="tab-content" style="margin-top: 30px;">
-                <div role="tabpanel" class="tab-pane deployment-role-settings-content {{showRoleSettings}}" id="overall-settings">
+                <div role="tabpanel" class="tab-pane deployment-role-settings-content {{settingsActiveClass}}" id="overall-settings">
                     <div class="form-horizontal">
                         <fieldset>
                             <div class="form-group">
@@ -41,7 +41,7 @@
                         </fieldset>
                     </div>
                 </div>
-                <div role="tabpanel" class="tab-pane deployment-role-settings-content {{showRoleConfig}}" id="service-configuration">
+                <div role="tabpanel" class="tab-pane deployment-role-settings-content {{configActiveClass}}" id="service-configuration">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-horizontal">
@@ -49,13 +49,9 @@
                                     <div class="required">
                                         {{#each editedRoleParameters as |roleParameter|}}
                                             {{#if roleParameter.isBoolean}}
-                                              {{check-f label=roleParameter.displayId checked=roleParameter.value labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
+                                              {{check-f label=roleParameter.label checked=roleParameter.newValue labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
                                             {{else}}
-                                              {{#if rolerParameter.isPassword}}
-                                                {{text-f label=roleParameter.displayId value=roleParameter.value type='password' labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
-                                              {{else}}
-                                                {{text-f label=roleParameter.displayId value=roleParameter.value type=roleParameter.inputType labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
-                                              {{/if}}
+                                              {{text-f label=roleParameter.label value=roleParameter.newValue type=roleParameter.type labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
                                             {{/if}}
                                         {{/each}}
                                     </div>
