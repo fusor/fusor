@@ -51,6 +51,7 @@
     "ember-idx-modal": "~0.1.4",
     "ember-localstorage-adapter": "1.0.0-rc.1",
     "ember-moment": "1.1.1",
+    "ember-power-select": "0.10.3",
     "ember-radio-button": "~1.0.1",
     "ember-watson": "~0.7.0",
     "express": "^4.13.0",

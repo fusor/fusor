@@ -27,6 +27,12 @@ export default Ember.Component.extend({
     cancelNamingScheme() {
         this.set('openModal', false);
         this.sendAction('cancelNamingScheme');
+    },
+    setSelectValue(fieldName, selectionValue) {
+      // this just sets hostNamingScheme on the modal component
+      this.set(fieldName, selectionValue);
+      // this triggers the action to update hostNamingScheme on the deployment modal
+      this.sendAction('setSelectValue', fieldName, selectionValue);
     }
 
   }

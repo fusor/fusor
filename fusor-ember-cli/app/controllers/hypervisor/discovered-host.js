@@ -150,6 +150,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     setIfHostnameInvalid(isInvalid, hostId) {
       this.get('hostnameValidity').get('state').set(hostId, !isInvalid);
       this.get('hostnameValidity').set('updated', Date.now());
+    },
+    setSelectValue(fieldName, selectionValue) {
+      this.get('deploymentController').set(fieldName, selectionValue);
     }
   }
 });

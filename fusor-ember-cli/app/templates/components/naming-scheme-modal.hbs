@@ -14,7 +14,11 @@
                                   value=hostNamingScheme
                                   disabled=isStarted
                                   labelSize='col-md-4'
-                                  inputSize='col-md-5'}}
+                                  inputSize='col-md-5'
+                                  disabled=isStarted
+                                  renderInPlace=true
+                                  action="setSelectValue"
+                                  fieldName="hostNamingScheme"}}
 
                 {{#if isCustomScheme}}
                     {{text-f label='Prepend host names with'
