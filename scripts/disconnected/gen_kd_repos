@@ -33,6 +33,7 @@ class GenerateKDRepos(object):
     def __init__(self):
         self.doc = None
         self.content_lists = []
+        self.unique_repos = {}
 
     def parse_product_json(self, product_path):
         """
@@ -105,7 +106,11 @@ class GenerateKDRepos(object):
                 product_json = self.parse_product_json(product_path)
                 for p in product_json['productContent']:
                     if c.repository_set_id == p['content']['id']:
-                        print self.format_repo_string(p['content'], c)
+                        form_repo = self.format_repo_string(p['content'], c)
+                        self.unique_repos[form_repo] = form_repo
+
+        for key in sorted(self.unique_repos):
+            print key
 
         # cleanup
         shutil.rmtree(dest)
