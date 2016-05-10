@@ -800,6 +800,11 @@ h1.num-ose-node {
   z-index: 1200 !important;
 }
 
+.navbar-inner {
+  position: static;
+  top: 0;
+}
+
 .invalid-rhev-hostname {
   color: #fff;
 }
