@@ -56,7 +56,7 @@ module Actions
               "user_data" => 1,
               "uuid" => cr.available_images.find { |hash| "#{deployment.label}-cfme" == hash.name }.id,
               "compute_resource_id" => cr.id,
-              "operatingsystem_id" => Operatingsystem.find_by_title('RedHat 7.1')['id'],
+              "operatingsystem_id" => Operatingsystem.find_by_title('RedHat 7.2')['id'],
               "architecture_id" => Architecture.find_by_name('x86_64')['id'])
           end
 
@@ -92,7 +92,7 @@ module Actions
                     "enabled" => 1,
                     "managed" => 1,
                     "architecture_id" => Architecture.find_by_name('x86_64')['id'],
-                    "operatingsystem_id" => Operatingsystem.find_by_title('RedHat 7.1')['id'],
+                    "operatingsystem_id" => Operatingsystem.find_by_title('RedHat 7.2')['id'],
                     "domain_id" => 1,
                     "root_pass" => "smartvm",
                     "provision_method" => "image",
