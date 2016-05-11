@@ -9,13 +9,7 @@ export default Ember.Route.extend({
   actions: {
     saveOpenstackDeployment() {
       var openstackDeployment = this.get('controller.model');
-      openstackDeployment.save().then(
-        result => {
-
-        },
-        error => {
-          //TODO
-        });
+      openstackDeployment.save();
     }
   }
 });
