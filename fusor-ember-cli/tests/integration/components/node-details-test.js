@@ -12,14 +12,6 @@ test('it renders', function(assert) {
 
   this.render(hbs`{{node-details}}`);
 
-  assert.equal(this.$().text().trim(), '');
-
-  // Template block usage:" + EOL +
-  this.render(hbs`
-    {{#node-details}}
-      template block text
-    {{/node-details}}
-  `);
-
-  assert.equal(this.$().text().trim(), 'template block text');
+  let contents = this.$('.env-summary-title').text();
+  assert.ok(contents.indexOf('Node Details') >= 0);
 });

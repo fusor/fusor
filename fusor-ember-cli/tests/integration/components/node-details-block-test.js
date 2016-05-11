@@ -12,14 +12,8 @@ test('it renders', function(assert) {
 
   this.render(hbs`{{node-details-block}}`);
 
-  assert.equal(this.$().text().trim(), '');
-
-  // Template block usage:" + EOL +
-  this.render(hbs`
-    {{#node-details-block}}
-      template block text
-    {{/node-details-block}}
-  `);
-
-  assert.equal(this.$().text().trim(), 'template block text');
+  let contents = this.$('.node-details-block').text();
+  assert.ok(contents.indexOf('vCPU') >= 0);
+  assert.ok(contents.indexOf('RAM') >= 0);
+  assert.ok(contents.indexOf('Disk') >= 0);
 });
