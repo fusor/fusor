@@ -16,8 +16,12 @@ module Fusor
     # on update because we don't want to validate the empty object when
     # it is first created
     validates_with Fusor::Validators::DeploymentValidator, on: :update
+    validates_associated :openstack_deployment
+
     belongs_to :organization
     belongs_to :lifecycle_environment, :class_name => "Katello::KTEnvironment"
+
+    belongs_to :openstack_deployment, :class_name => "Fusor::OpenstackDeployment", dependent: :destroy
 
     validates :name, :presence => true, :uniqueness => {:scope => :organization_id}
     validates :label, :presence => true, :uniqueness => {:scope => :organization_id}
@@ -50,8 +54,8 @@ module Fusor
     belongs_to :foreman_task, :class_name => "::ForemanTasks::Task", :foreign_key => :foreman_task_uuid
 
     after_initialize :setup_warnings
-    before_validation :update_label, on: :create  # we validate on create, so we need to do it before those validations
-    before_save :update_label, on: :update        # but we don't validate on update, so we need to call before_save
+    before_validation :update_label, :ensure_openstack_deployment, on: :create  # we validate on create, so we need to do it before those validations
+    before_save :update_label, :ensure_openstack_deployment, on: :update        # but we don't validate on update, so we need to call before_save
 
     scoped_search :on => [:id, :name], :complete_value => true
 
@@ -61,22 +65,6 @@ module Fusor
     DEPLOYMENT_TYPES = [:rhev, :cfme, :openstack, :openshift]
 
     attr_accessor :warnings
-
-    OPENSTACK_ATTR_PARAM_HASH = {
-        openstack_overcloud_ext_net_interface: 'NeutronPublicInterface',
-        openstack_overcloud_libvirt_type: 'NovaComputeLibvirtType',
-        openstack_overcloud_password: 'AdminPassword',
-        openstack_overcloud_compute_flavor: 'OvercloudComputeFlavor',
-        openstack_overcloud_compute_count: 'ComputeCount',
-        openstack_overcloud_controller_flavor: 'OvercloudControlFlavor',
-        openstack_overcloud_controller_count: 'ControllerCount',
-        openstack_overcloud_ceph_storage_flavor: 'OvercloudCephStorageFlavor',
-        openstack_overcloud_ceph_storage_count: 'CephStorageCount',
-        openstack_overcloud_cinder_storage_flavor: 'OvercloudBlockStorageFlavor',
-        openstack_overcloud_cinder_storage_count: 'BlockStorageCount',
-        openstack_overcloud_swift_storage_flavor: 'OvercloudSwiftStorageFlavor',
-        openstack_overcloud_swift_storage_count: 'ObjectStorageCount'
-    }
 
     def setup_warnings
       self.warnings = []
@@ -95,6 +83,14 @@ module Fusor
 
     def update_label
       self.label = name ? name.gsub(/[^a-z0-9_]/i, "_") : nil
+    end
+
+    def ensure_openstack_deployment
+      if openstack_deployment
+        self.openstack_deployment.destroy unless deploy_openstack?
+      else
+        self.openstack_deployment ||= Fusor::OpenstackDeployment.new
+      end
     end
   end
 end

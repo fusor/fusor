@@ -96,6 +96,7 @@ module FixtureTestCase
 
     # fusor fixtures
     self.set_fixture_class :fusor_deployments => Fusor::Deployment
+    self.set_fixture_class :fusor_openstack_deployments => Fusor::OpenstackDeployment
     self.set_fixture_class :fusor_deployment_hosts => Fusor::DeploymentHost
     self.set_fixture_class :hosts => ::Host::Base
     self.set_fixture_class :fusor_subscriptions => Fusor::Subscription

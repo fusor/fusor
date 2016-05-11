@@ -41,19 +41,22 @@ export default Router.map(function() {
     });
 
     this.route('openstack', {resetNamespace: true}, function() {
-      this.route('undercloud-deploy', {resetNamespace: true});
-      this.route('register-nodes', {resetNamespace: true});
-      this.route('assign-nodes', {resetNamespace: true});
+      this.route('undercloud-deploy');
+      this.route('register-nodes');
+      this.route('assign-nodes');
       this.route('overcloud');
     });
+
     this.route('cloudforms', {resetNamespace: true}, function() {
       this.route('where-install', {resetNamespace: true});
       this.route('cfme-configuration', { path: 'configuration' });
     });
+
     this.route('openshift', {resetNamespace: true}, function() {
       this.route('openshift-nodes', { path: 'nodes' });
       this.route('openshift-configuration', { path: 'configuration' });
     });
+
     this.route('subscriptions', {resetNamespace: true}, function() {
       this.route('credentials');
       this.route('management-application', function() {
@@ -62,6 +65,7 @@ export default Router.map(function() {
       this.route('select-subscriptions', {path: 'select'});
       this.route('review-subscriptions', {path: 'review'});
     });
+
     this.route('review', {resetNamespace: true}, function() {
       this.route('installation');
       this.route('progress', function() {

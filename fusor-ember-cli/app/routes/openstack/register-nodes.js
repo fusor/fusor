@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
-import OspNodeManager from "../utils/osp/osp-node-manager";
+import OspNodeManager from "../../utils/osp/osp-node-manager";
 
 export default Ember.Route.extend({
 
@@ -11,8 +11,8 @@ export default Ember.Route.extend({
 
     var deploymentId = this.modelFor('deployment').get('id');
     this.store.query('image', {deployment_id: deploymentId}).then(function(results) {
-      var bmDeployKernelImage = results.findBy('name', 'bm-deploy-kernel');
-      var bmDeployRamdiskImage = results.findBy('name', 'bm-deploy-ramdisk');
+      let bmDeployKernelImage = results.findBy('name', 'bm-deploy-kernel');
+      let bmDeployRamdiskImage = results.findBy('name', 'bm-deploy-ramdisk');
       controller.set('bmDeployKernelImage', bmDeployKernelImage);
       controller.set('bmDeployRamdiskImage', bmDeployRamdiskImage);
     });
@@ -25,7 +25,7 @@ export default Ember.Route.extend({
 
   deactivate() {
     this.get('controller').stopPolling();
-    this.send('saveDeployment', null);
+    this.send('saveOpenstackDeployment');
   },
 
   actions: {
@@ -134,7 +134,7 @@ export default Ember.Route.extend({
       manager.set('nodes', notDeleted);
     });
 
-    this.set('controller.nodeCount', nodeCount);
+    this.set('controller.openstackDeployment.overcloud_node_count', nodeCount);
   },
 
   loadForemanTasks() {

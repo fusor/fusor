@@ -174,9 +174,9 @@ module Utils
                              "compute_resource_id" => @cr.id,
                              "operatingsystem_id" => Operatingsystem.find_by_title('RedHat 7.1')['id'],
                              "architecture_id" => Architecture.find_by_name('x86_64')['id'])
-        overcloud = {:openstack_auth_url => "http://#{@deployment.openstack_overcloud_address}:5000/v2.0/tokens",
+        overcloud = {:openstack_auth_url => "http://#{@deployment.openstack_deployment.overcloud_address}:5000/v2.0/tokens",
                      :openstack_username => 'admin', :openstack_tenant => 'admin',
-                     :openstack_api_key  => @deployment.openstack_overcloud_password }
+                     :openstack_api_key  => @deployment.openstack_deployment.overcloud_password }
         keystone  = Fog::Identity::OpenStack.new(overcloud)
         tenant    = keystone.get_tenants_by_name(@deployment.label).body["tenant"]
         neutron   = Fog::Network::OpenStack.new(overcloud)

@@ -21,7 +21,7 @@ module Fusor
       class UndercloudsController < Api::Openstack::BaseController
 
         def show
-          dep_has_password = (!@deployment.openstack_undercloud_password.nil? && !@deployment.openstack_undercloud_password.empty?)
+          dep_has_password = !@deployment.openstack_deployment.undercloud_admin_password.empty?
           render :json => {:deployed => dep_has_password,
                            :failed => !dep_has_password}
         end
@@ -54,11 +54,11 @@ module Fusor
                      " on the Undercloud, and that it can be reached by your RHCI server."}, status: 422)
               #system('sudo route add ' + ip_addr + ' via ' + underhost)
             else
-              @deployment.openstack_undercloud_password = admin
-              @deployment.openstack_undercloud_ip_addr = ip_addr
-              @deployment.openstack_undercloud_user = underuser
-              @deployment.openstack_undercloud_user_password = underpass
-              @deployment.save(:validate => false)
+              @deployment.openstack_deployment.undercloud_admin_password = admin
+              @deployment.openstack_deployment.undercloud_ip_address = ip_addr
+              @deployment.openstack_deployment.undercloud_ssh_username = underuser
+              @deployment.openstack_deployment.undercloud_ssh_password = underpass
+              @deployment.openstack_deployment.save(:validate => false)
               render :json => {:undercloud => @deployment.id}
             end
           end

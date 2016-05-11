@@ -1,28 +1,33 @@
-export default [
-        {
-            "disabled": false,
-            "disk": 40,
-            "ephemeral": 0,
-            "extra_specs": {
-                "capabilities:boot_option": "local",
-                "cpu_arch": "x86_64"
-            },
-            "id": "1",
-            "is_public": true,
-            "links": [
-                {
-                    "href": "http://192.0.2.1:8774/v2/434547ba69cf4a30aa5747ff012efb4e/flavors/1",
-                    "rel": "self"
-                },
-                {
-                    "href": "http://192.0.2.1:8774/434547ba69cf4a30aa5747ff012efb4e/flavors/1",
-                    "rel": "bookmark"
-                }
-            ],
-            "name": "Flavor-4-x86_64-6144-40",
-            "ram": 6144,
-            "rxtx_factor": 1.0,
-            "swap": "",
-            "vcpus": 4
-        }
-      ];
+export default [{
+  "name": "Flavor-16-x86_64-16384-99",
+  "links": [{
+    "href": "http://192.168.234.254:8774/v2/88e659ab600641d38bb9ef8fe1a6d0d5/flavors/1",
+    "rel": "self"
+  }, {"href": "http://192.168.234.254:8774/88e659ab600641d38bb9ef8fe1a6d0d5/flavors/1", "rel": "bookmark"}],
+  "ram": 16384,
+  "disabled": false,
+  "vcpus": 16,
+  "swap": "",
+  "is_public": true,
+  "rxtx_factor": 1.0,
+  "ephemeral": 0,
+  "disk": 99,
+  "id": "1",
+  "extra_specs": {"capabilities:boot_option": "local", "cpu_arch": "x86_64"}
+}, {
+  "name": "Flavor-16-x86_64-16384-40",
+  "links": [{
+    "href": "http://192.168.234.254:8774/v2/88e659ab600641d38bb9ef8fe1a6d0d5/flavors/1",
+    "rel": "self"
+  }, {"href": "http://192.168.234.254:8774/88e659ab600641d38bb9ef8fe1a6d0d5/flavors/1", "rel": "bookmark"}],
+  "ram": 8192,
+  "disabled": false,
+  "vcpus": 8,
+  "swap": "",
+  "is_public": true,
+  "rxtx_factor": 1.0,
+  "ephemeral": 0,
+  "disk": 40,
+  "id": "2",
+  "extra_specs": {"capabilities:boot_option": "local", "cpu_arch": "x86_64"}
+}];

@@ -10,19 +10,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       rhev_storage_name: 'my_storage',
       rhev_export_domain_name: 'my_export',
       rhev_data_center_name: 'Default',
-      rhev_storage_type: 'NFS',
-      openstack_overcloud_ext_net_interface: 'nic2',
-      openstack_overcloud_libvirt_type: 'kvm',
-      openstack_overcloud_compute_flavor: 'baremetal',
-      openstack_overcloud_compute_count: 0,
-      openstack_overcloud_controller_flavor: 'baremetal',
-      openstack_overcloud_controller_count: 0,
-      openstack_overcloud_ceph_storage_flavor: 'baremetal',
-      openstack_overcloud_ceph_storage_count: 0,
-      openstack_overcloud_cinder_storage_flavor: 'baremetal',
-      openstack_overcloud_cinder_storage_count: 0,
-      openstack_overcloud_swift_storage_flavor: 'baremetal',
-      openstack_overcloud_swift_storage_count: 0
+      rhev_storage_type: 'NFS'
     });
   },
 

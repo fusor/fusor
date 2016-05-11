@@ -25,7 +25,7 @@ module Actions::Fusor::Deployment::OpenStack
 
     def plan(deployment)
       super(deployment)
-      fail _("Unable to locate a RHEL OSP undercloud") unless deployment.openstack_undercloud_password
+      fail _("Unable to locate a RHEL OSP undercloud") unless deployment.openstack_deployment.undercloud_admin_password
       sequence do
         plan_action(TransferConsumerRpm, deployment)
         plan_action(SshCommand, deployment, "sudo yum -y localinstall /tmp/katello-ca-consumer-latest.noarch.rpm")
@@ -101,16 +101,17 @@ module Actions::Fusor::Deployment::OpenStack
 
     private
 
-    def count_nodes(d)
-      d.openstack_overcloud_ceph_storage_count +
-          d.openstack_overcloud_cinder_storage_count +
-          d.openstack_overcloud_swift_storage_count +
-          d.openstack_overcloud_compute_count +
-          d.openstack_overcloud_controller_count
+    def count_nodes(deployment)
+      od = deployment.openstack_deployment
+      od.overcloud_ceph_storage_count +
+          od.overcloud_block_storage_count +
+          od.overcloud_object_storage_count +
+          od.overcloud_compute_count +
+          od.overcloud_controller_count
     end
 
     def undercloud_handle(deployment)
-      return Overcloud::UndercloudHandle.new('admin', deployment.openstack_undercloud_password, deployment.openstack_undercloud_ip_addr, 5000)
+      return Overcloud::UndercloudHandle.new('admin', deployment.openstack_deployment.undercloud_admin_password, deployment.openstack_deployment.undercloud_ip_address, 5000)
     end
 
     def activation_key(deployment)

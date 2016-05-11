@@ -10,6 +10,8 @@ moduleForModel('deployment', 'Unit | Model | deployment', {
           'model:subscription',
           'model:introspection-task',
           'model:foreman-task',
+          'model:openshift-host',
+          'model:openstack-deployment',
           'adapter:application'
          ]
 });

@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
-import ProgressBarMixin from "../mixins/progress-bar-mixin";
-import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
+import ProgressBarMixin from "../../mixins/progress-bar-mixin";
+import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
 import {
   AllValidator,
@@ -9,13 +9,13 @@ import {
   MacAddressValidator,
   HostAddressValidator,
   PresenceValidator
-} from  "../utils/validators";
+} from  "../../utils/validators";
 
-export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
+const RegisterNodesController = Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
   deployment: Ember.computed.alias("deploymentController.model"),
+  openstackDeployment: Ember.computed.alias("model"),
   intervalPolling: 10000,
-  nodeCount: Ember.computed.alias("deployment.openstack_overcloud_node_count"),
 
   presenceValidator: PresenceValidator.create({}),
 
@@ -26,7 +26,7 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     if (enteredMacs) {
       enteredMacs.forEach(mac => { unavailableMacs.pushObject(mac.value); });
     }
-    
+
     return unavailableMacs;
   }),
 
@@ -153,8 +153,8 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
     }
   }),
 
-  hasNodes: Ember.computed('nodeCount', function() {
-    return this.get('nodeCount') > 0;
+  hasNodes: Ember.computed('openstackDeployment.overcloud_node_count', function() {
+    return this.get('openstackDeployment.overcloud_node_count') > 0;
   }),
 
   nodeErrors: Ember.computed(
@@ -370,8 +370,8 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
 
   disableNewNodesSubmit: Ember.computed.not('hasValidNodesForRegistration'),
 
-  enableRegisterNodesNext: Ember.computed('nodeCount', function() {
-    return this.get('nodeCount') >= 2;
+  enableRegisterNodesNext: Ember.computed('openstackDeployment.areNodesRegistered', function() {
+    return this.get('openstackDeployment.areNodesRegistered');
   }),
 
   disableRegisterNodesNext: Ember.computed.not('enableRegisterNodesNext'),
@@ -940,3 +940,5 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   }
 
 });
+
+export default RegisterNodesController;

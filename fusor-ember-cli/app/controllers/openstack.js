@@ -1,38 +1,48 @@
 import Ember from 'ember';
-import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
+import NeedsDeploymentMixin from '../mixins/needs-deployment-mixin';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  registerNodesController: Ember.inject.controller('register-nodes'),
-  assignNodesController: Ember.inject.controller('assign-nodes'),
+  //TODO move password confirmations to transient data on the model
+  confirmOvercloudPassword: Ember.computed.alias("deploymentController.confirmOvercloudPassword"),
+  openstackDeployment: Ember.computed.alias('deploymentController.model.openstack_deployment'),
+
+  registerNodesController: Ember.inject.controller('openstack/register-nodes'),
+  assignNodesController: Ember.inject.controller('openstack/assign-nodes'),
   overcloudController: Ember.inject.controller('openstack/overcloud'),
 
-  stepNumberOpenstack: Ember.computed.alias("deploymentController.stepNumberOpenstack"),
-  disableRegisterNodesNext: Ember.computed.alias("registerNodesController.disableRegisterNodesNext"),
-  disableAssignNodesNext: Ember.computed.alias("assignNodesController.disableAssignNodesNext"),
-  disableNextOvercloud: Ember.computed.alias("overcloudController.disableNextOvercloud"),
+  stepNumberOpenstack: Ember.computed.alias('deploymentController.stepNumberOpenstack'),
+  disableRegisterNodesNext: Ember.computed.alias('registerNodesController.disableRegisterNodesNext'),
+  disableAssignNodesNext: Ember.computed.alias('assignNodesController.disableAssignNodesNext'),
+  disableNextOvercloud: Ember.computed.alias('overcloudController.disableNextOvercloud'),
 
-  disableTabRegisterNodes: Ember.computed.empty("deploymentController.model.openstack_undercloud_password"),
+  disableTabRegisterNodes: Ember.computed.not('openstackDeployment.isUndercloudDeployed'),
 
-  disableTabAssignNodes: Ember.computed("disableTabRegisterNodes", "disableRegisterNodesNext", function () {
-     return (this.get('disableTabRegisterNodes') || this.get("disableRegisterNodesNext"));
+  disableTabAssignNodes: Ember.computed(
+    'openstackDeployment.isUndercloudDeployed',
+    'openstackDeployment.areNodesRegistered',
+    function () {
+     return !this.get('openstackDeployment.isUndercloudDeployed') ||
+       !this.get('openstackDeployment.areNodesRegistered');
   }),
 
-  disableTabOvercloud: Ember.computed("disableTabAssignNodes", "disableAssignNodesNext", function () {
-     return (this.get('disableTabAssignNodes') || this.get('disableAssignNodesNext'));
-  }),
-
-  isValidRegisterNodes: Ember.computed.not('disableRegisterNodesNext'),
-  isValidAssignNodes: Ember.computed.not('disableAssignNodesNext'),
-  isValidOvercloud: Ember.computed.not('disableNextOvercloud'),
+  disableTabOvercloud: Ember.computed(
+    'openstackDeployment.isUndercloudDeployed',
+    'openstackDeployment.areNodesRegistered',
+    'openstackDeployment.hasValidNodeAssignments',
+    function () {
+      return !this.get('openstackDeployment.isUndercloudDeployed') ||
+        !this.get('openstackDeployment.areNodesRegistered') ||
+        !this.get('openstackDeployment.hasValidNodeAssignments');
+    }),
 
   validOpenStack: Ember.computed(
-    'isValidRegisterNodes',
-    'isValidAssignNodes',
-    'isValidOvercloud',
+    'confirmOvercloudPassword',
+    'openstackDeployment.overcloud_password',
+    'openstackDeployment.areAllAttributesValid',
     function () {
-      return this.get('isValidRegisterNodes') &&
-        this.get('isValidAssignNodes') &&
-        this.get('isValidOvercloud');
+      //TODO move password confirmations to transient data on the model and validate them there
+      return this.get('openstackDeployment.areAllAttributesValid') &&
+        this.get('openstackDeployment.overcloud_password') === this.get('confirmOvercloudPassword');
     })
 });

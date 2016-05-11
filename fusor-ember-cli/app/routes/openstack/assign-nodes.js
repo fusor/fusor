@@ -8,20 +8,22 @@ export default Ember.Route.extend({
   },
 
   deactivate() {
-    this.updateDeployment();
+    this.updateOpenstackDeployment();
+    this.updateOpenstackDeployment();
     this.updateDeploymentPlan(this.getEditedParams());
-    this.send('saveDeployment', null);
+    this.send('saveOpenstackDeployment');
   },
 
   loadOpenStack() {
     let controller = this.get('controller');
     let deployment = this.get('controller.deployment');
     let deploymentId = this.get('controller.deploymentId');
+    let openstackDeployment = this.get('controller.openstackDeployment');
 
     controller.set('showSpinner', true);
     controller.set('errorMsg', null);
 
-    if (deployment.get('deploy_openstack') && !Ember.isBlank(deployment.get('openstack_undercloud_password'))) {
+    if (deployment.get('deploy_openstack') && !Ember.isBlank(openstackDeployment.get('undercloud_admin_password'))) {
       controller.set('isOspLoading', true);
       Ember.RSVP.hash({
           // plan: this.store.findRecord('deployment-plan', deployment.get('id'), {reload: true}),
@@ -52,8 +54,8 @@ export default Ember.Route.extend({
     let roles = this.get('controller.roles');
 
     roles.forEach(role => {
-      role.set('flavor', this.get(`controller.deployment.${role.get('flavorDeploymentAttributeName')}`));
-      role.set('count', this.get(`controller.deployment.${role.get('countDeploymentAttributeName')}`));
+      role.set('flavor', this.get(`controller.openstackDeployment.${role.get('flavorDeploymentAttributeName')}`));
+      role.set('count', this.get(`controller.openstackDeployment.${role.get('countDeploymentAttributeName')}`));
     });
   },
 
@@ -108,7 +110,7 @@ export default Ember.Route.extend({
     });
   },
 
-  updateDeployment() {
+  updateOpenstackDeployment() {
     let roles = this.get('controller.roles');
     let profiles = this.get('controller.profiles');
     let hasValidNodeAssignments = this.get('controller.hasValidNodeAssignments');
@@ -121,8 +123,8 @@ export default Ember.Route.extend({
           role.set('flavor', computeFlavor);
         }
       }
-      this.set(`controller.deployment.${role.get('flavorDeploymentAttributeName')}`, role.get('flavor'));
-      this.set(`controller.deployment.${role.get('countDeploymentAttributeName')}`, role.get('count'));
+      this.set(`controller.openstackDeployment.${role.get('flavorDeploymentAttributeName')}`, role.get('flavor'));
+      this.set(`controller.openstackDeployment.${role.get('countDeploymentAttributeName')}`, role.get('count'));
     });
   },
 

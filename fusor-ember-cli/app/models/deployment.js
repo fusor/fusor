@@ -48,33 +48,6 @@ export default DS.Model.extend({
   cfme_address: DS.attr('string'),
   cfme_hostname: DS.attr('string'),
 
-  openstack_undercloud_password: DS.attr('string'),
-  openstack_undercloud_ip_addr: DS.attr('string'),
-  openstack_undercloud_user: DS.attr('string'),
-  openstack_undercloud_user_password: DS.attr('string'),
-  openstack_undercloud_hostname: DS.attr('string'),
-
-  openstack_overcloud_hostname: DS.attr('string'),
-  openstack_overcloud_address: DS.attr('string'),
-  openstack_overcloud_password: DS.attr('string'),
-  openstack_overcloud_ext_net_interface: DS.attr('string'),
-  openstack_overcloud_private_net: DS.attr('string'),
-  openstack_overcloud_float_net: DS.attr('string'),
-  openstack_overcloud_float_gateway: DS.attr('string'),
-  openstack_overcloud_libvirt_type: DS.attr('string'),
-
-  openstack_overcloud_node_count: DS.attr('number'),
-  openstack_overcloud_compute_flavor: DS.attr('string'),
-  openstack_overcloud_compute_count: DS.attr('number'),
-  openstack_overcloud_controller_flavor: DS.attr('string'),
-  openstack_overcloud_controller_count: DS.attr('number'),
-  openstack_overcloud_ceph_storage_flavor: DS.attr('string'),
-  openstack_overcloud_ceph_storage_count: DS.attr('number'),
-  openstack_overcloud_cinder_storage_flavor: DS.attr('string'),
-  openstack_overcloud_cinder_storage_count: DS.attr('number'),
-  openstack_overcloud_swift_storage_flavor: DS.attr('string'),
-  openstack_overcloud_swift_storage_count: DS.attr('number'),
-
   cdn_url: DS.attr('string'),
   manifest_file: DS.attr('string'),
 
@@ -146,6 +119,8 @@ export default DS.Model.extend({
 
   // has one foreman_task
   foreman_task: DS.belongsTo('foreman-task',  {async: true}),
+
+  openstack_deployment: DS.belongsTo('openstack-deployment', {async: true}),
 
   // Ember Data doesn't have DS.attr('array') so I did this
   rhev_hypervisor_host_ids: Ember.computed('discovered_hosts', function() {

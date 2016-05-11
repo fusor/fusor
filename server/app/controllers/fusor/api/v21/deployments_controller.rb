@@ -15,19 +15,17 @@ require "sys/filesystem"
 require "uri"
 
 module Fusor
-  # rubocop:disable ClassLength
   class Api::V21::DeploymentsController < Api::V2::DeploymentsController
 
     before_filter :find_deployment, :only => [:destroy, :show, :update,
-                                              :deploy, :redeploy, :validate, :log,
-                                              :sync_openstack, :openshift_disk_space]
+                                              :deploy, :redeploy, :validate, :log, :openshift_disk_space]
 
     rescue_from Encoding::UndefinedConversionError, :with => :ignore_it
 
     def index
       @deployments = Deployment.includes(:organization, :lifecycle_environment, :discovered_host,
                                          :discovered_hosts, :ose_master_hosts, :ose_worker_hosts, :subscriptions,
-                                         :introspection_tasks, :foreman_task)
+                                         :introspection_tasks, :foreman_task, :openstack_deployment)
                                 .search_for(params[:search], :order => params[:order]).by_id(params[:id])
       render :json => @deployments, :each_serializer => Fusor::DeploymentSerializer, :serializer => RootArraySerializer
     end
@@ -46,14 +44,6 @@ module Fusor
     end
 
     def update
-      # OpenStack Undercloud attributes should only be set by the undercloud
-      # controller (after it has validated them), never by directly updating
-      # the deployment object.
-
-      params[:deployment].delete :openstack_undercloud_password
-      params[:deployment].delete :openstack_undercloud_ip_addr
-      params[:deployment].delete :openstack_undercloud_user
-      params[:deployment].delete :openstack_undercloud_user_password
       @deployment.attributes = deployment_params
       @deployment.save(:validate => false)
       render :json => @deployment, :serializer => Fusor::DeploymentSerializer
@@ -88,10 +78,12 @@ module Fusor
 
     def validate
       @deployment.valid?
+      error_messages = @deployment.errors.full_messages
+      error_messages += @deployment.openstack_deployment.errors.full_messages if @deployment.deploy_openstack?
       render json: {
         :validation => {
           :deployment_id => @deployment.id,
-          :errors => @deployment.errors.full_messages,
+          :errors => error_messages,
           :warnings => @deployment.warnings
         }
       }
@@ -144,17 +136,6 @@ module Fusor
       end
     end
 
-    def sync_openstack
-      return render json: {}, status: 304 unless @deployment.deploy_openstack?
-
-      undercloud_handle.edit_plan_parameters('overcloud', build_openstack_params)
-
-      sync_errors = get_sync_openstack_errors
-      return render json: {errors: sync_errors}, status: 500 unless sync_errors.empty?
-
-      render json: {},  status: 204
-    end
-
     def openshift_disk_space
       # Openshift deployments need to know how much disk space is available on the NFS storage pool
       # This method mounts the specifed NFS share and gets the available disk space
@@ -200,13 +181,7 @@ module Fusor
                                          :rhev_local_storage_path, :rhev_gluster_node_name,
                                          :rhev_gluster_node_address, :rhev_gluster_ssh_port,
                                          :rhev_gluster_root_password, :host_naming_scheme, :has_content_error,
-                                         :custom_preprend_name, :enable_access_insights, :cfme_address,
-                                         :cfme_hostname, :openstack_undercloud_password,
-                                         :openstack_undercloud_ip_addr, :openstack_undercloud_user,
-                                         :openstack_undercloud_user_password, :openstack_undercloud_hostname,
-                                         :openstack_overcloud_hostname, :openstack_overcloud_address,
-                                         :openstack_overcloud_password, :openstack_overcloud_private_net,
-                                         :openstack_overcloud_float_net, :openstack_overcloud_float_gateway,
+                                         :custom_preprend_name, :enable_access_insights, :cfme_address, :cfme_hostname,
                                          :openshift_install_loc, :openshift_number_master_nodes, :openshift_number_worker_nodes,
                                          :openshift_storage_size, :openshift_username, :openshift_user_password,
                                          :openshift_root_password, :openshift_master_vcpu, :openshift_master_ram,
@@ -217,14 +192,7 @@ module Fusor
                                          :cloudforms_ram, :cloudforms_vm_disk_size, :cloudforms_db_disk_size,
                                          :cdn_url, :manifest_file, :created_at, :updated_at, :rhev_engine_host_id,
                                          :organization_id, :lifecycle_environment_id, :discovered_host_id,
-                                         :foreman_task_id, :openstack_overcloud_node_count,
-                                         :openstack_overcloud_ceph_storage_flavor, :openstack_overcloud_ceph_storage_count,
-                                         :openstack_overcloud_cinder_storage_flavor, :openstack_overcloud_cinder_storage_count,
-                                         :openstack_overcloud_swift_storage_flavor, :openstack_overcloud_swift_storage_count,
-                                         :openstack_overcloud_compute_flavor, :openstack_overcloud_compute_count,
-                                         :openstack_overcloud_controller_flavor, :openstack_overcloud_controller_count,
-                                         :openstack_overcloud_ext_net_interface, :openstack_overcloud_libvirt_type,
-                                         :discovered_host_ids => [])
+                                         :foreman_task_id, :openstack_deployment_id, :discovered_host_ids => [])
     end
 
     def find_deployment
@@ -232,7 +200,7 @@ module Fusor
       not_found and return false if id.blank?
       @deployment = Deployment.includes(:organization, :lifecycle_environment, :discovered_host, :discovered_hosts,
                                         :ose_master_hosts, :ose_worker_hosts, :subscriptions, :introspection_tasks,
-                                        :foreman_task).find(id)
+                                        :foreman_task, :openstack_deployment).find(id)
     end
 
     def ignore_it
@@ -266,34 +234,6 @@ module Fusor
         else
           ::Fusor.log_file_path(@deployment.label, @deployment.id)
       end
-    end
-
-    def undercloud_handle
-      Overcloud::UndercloudHandle.new('admin', @deployment.openstack_undercloud_password, @deployment.openstack_undercloud_ip_addr, 5000)
-    end
-
-    def get_openstack_param_value(plan, param_name)
-      param = plan.parameters.find { |p| p['name'] == param_name }
-      param['value'] if param
-    end
-
-    def build_openstack_params
-      osp_params = {}
-      Deployment::OPENSTACK_ATTR_PARAM_HASH.each { |attr_name, param_name| osp_params[param_name] = @deployment.send(attr_name) }
-      osp_params
-    end
-
-    def get_sync_openstack_errors
-      plan = undercloud_handle.get_plan_parameters('overcloud')
-      errors = {}
-
-      Deployment::OPENSTACK_ATTR_PARAM_HASH.each do |attr_name, param_name|
-        attr_value = @deployment.send(attr_name)
-        param_value = plan[param_name].try(:[], 'Default')
-        errors[attr_name] = [_("Openstack #{param_name} was not properly synchronized.  Expected: #{attr_value} but got #{param_value}")] unless attr_value == param_value
-      end
-
-      errors
     end
   end
 end

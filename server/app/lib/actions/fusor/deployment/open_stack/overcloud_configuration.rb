@@ -31,10 +31,10 @@ module Actions
           def run
             ::Fusor.log.debug '====== OvercloudConfiguration run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
-            find_overcloud(deployment)
-            overcloud = { :openstack_auth_url  => "http://#{deployment.openstack_overcloud_address}:5000/v2.0/tokens",
+            find_overcloud(openstack_deployment)
+            overcloud = { :openstack_auth_url  => "http://#{deployment.openstack_deployment.overcloud_address}:5000/v2.0/tokens",
                           :openstack_username  => 'admin', :openstack_tenant => 'admin',
-                          :openstack_api_key   => deployment.openstack_overcloud_password }
+                          :openstack_api_key   => deployment.openstack_deployment.overcloud_password }
 
             configure_keystone(deployment, overcloud)
             #####FIX##### Once we ask for networks pass them along and stop using hardcoded values
@@ -52,16 +52,16 @@ module Actions
 
           private
 
-          def find_overcloud(deployment)
+          def find_overcloud(openstack_deployment)
             service = Fog::Orchestration::OpenStack.new(
-              :openstack_auth_url  => "http://#{deployment.openstack_undercloud_ip_addr}:5000/v2.0/tokens",
+              :openstack_auth_url  => "http://#{openstack_deployment.undercloud_ip_address}:5000/v2.0/tokens",
               :openstack_username  => 'admin',
               :openstack_tenant    => 'admin',
-              :openstack_api_key   => deployment.openstack_undercloud_password)
+              :openstack_api_key   => openstack_deployment.undercloud_admin_password)
             stack = service.stacks.get("overcloud", service.stacks.first.id)
             vip = stack.outputs.find { |hash| hash["output_key"] == "PublicVip" }["output_value"]
-            deployment.openstack_overcloud_address = vip
-            deployment.save!(:validate => false)
+            openstack_deployment.overcloud_address = vip
+            openstack_deployment.save!(:validate => false)
           end
 
           def configure_keystone(deployment, overcloud)
@@ -81,15 +81,15 @@ module Actions
 
             net = neutron.networks.create :name => "#{deployment.label}-net", :tenant_id => tenant['id']
             subnet = neutron.subnets.create :name => "#{deployment.label}-subnet", :network_id => net.id,
-                                            :ip_version => 4, :cidr => deployment.openstack_overcloud_private_net,
+                                            :ip_version => 4, :cidr => deployment.openstack_deployment.overcloud_private_net,
                                             :tenant_id => tenant['id'], :enable_dhcp => true,
                                             :dns_nameservers => ["#{::Subnet.first.dns_primary}"]
 
             public_net = neutron.networks.create :name => "#{deployment.label}-float-net", :provider_network_type => 'flat',
                                                  :router_external => true, :provider_physical_network => 'datacentre'
             neutron.subnets.create :name => "#{deployment.label}-float-subnet", :network_id => public_net.id, :enable_dhcp => false,
-                                   :ip_version => 4, :cidr => deployment.openstack_overcloud_float_net,
-                                   :gateway_ip => deployment.openstack_overcloud_float_gateway
+                                   :ip_version => 4, :cidr => deployment.openstack_deployment.overcloud_float_net,
+                                   :gateway_ip => deployment.openstack_deployment.overcloud_float_gateway
 
             router = neutron.routers.create :name => "#{deployment.label}-router", :tenant_id => tenant['id']
             neutron.add_router_interface router.id, subnet.id

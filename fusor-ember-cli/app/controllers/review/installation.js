@@ -95,48 +95,46 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
   selectedRhevEngine: Ember.computed.alias("model.discovered_host"),
   isStarted: Ember.computed.alias("model.isStarted"),
   subscriptions: Ember.computed.alias("model.subscriptions"),
-  undercloudUsername: 'admin',
-  undercloudPassword: Ember.computed.alias("model.openstack_undercloud_password"),
 
-  undercloudUrl: Ember.computed('model.openstack_undercloud_ip_addr', function() {
-    let ipAddr = this.get('model.openstack_undercloud_ip_addr');
+  undercloudUrl: Ember.computed('model.openstack_deployment.undercloud_ip_address', function() {
+    let ipAddr = this.get('model.openstack_deployment.undercloud_ip_address');
     return ipAddr ? `http://${ipAddr}` : ipAddr;
   }),
 
   profiles: Ember.computed(
-    'model.openstack_overcloud_compute_flavor',
-    'model.openstack_overcloud_compute_count',
-    'model.openstack_overcloud_controller_flavor',
-    'model.openstack_overcloud_controller_count',
-    'model.openstack_overcloud_ceph_storage_flavor',
-    'model.openstack_overcloud_ceph_storage_count',
-    'model.openstack_overcloud_cinder_storage_flavor',
-    'model.openstack_overcloud_cinder_storage_count',
-    'model.openstack_overcloud_swift_storage_flavor',
-    'model.openstack_overcloud_swift_storage_count',
+    'model.openstack_deployment.overcloud_compute_flavor',
+    'model.openstack_deployment.overcloud_compute_count',
+    'model.openstack_deployment.overcloud_controller_flavor',
+    'model.openstack_deployment.overcloud_controller_count',
+    'model.openstack_deployment.overcloud_ceph_storage_flavor',
+    'model.openstack_deployment.overcloud_ceph_storage_count',
+    'model.openstack_deployment.overcloud_block_storage_flavor',
+    'model.openstack_deployment.overcloud_block_storage_count',
+    'model.openstack_deployment.overcloud_object_storage_flavor',
+    'model.openstack_deployment.overcloud_object_storage_count',
     function () {
       let profiles = [];
 
       this.addFlavor(profiles,
-        this.get('model.openstack_overcloud_controller_flavor'),
-        this.get('model.openstack_overcloud_controller_count'),
+        this.get('model.openstack_deployment.overcloud_controller_flavor'),
+        this.get('model.openstack_deployment.overcloud_controller_count'),
         'Controller');
       this.addFlavor(profiles,
-        this.get('model.openstack_overcloud_compute_flavor'),
-        this.get('model.openstack_overcloud_compute_count'),
+        this.get('model.openstack_deployment.overcloud_compute_flavor'),
+        this.get('model.openstack_deployment.overcloud_compute_count'),
         'Compute');
       this.addFlavor(profiles,
-        this.get('model.openstack_overcloud_ceph_storage_flavor'),
-        this.get('model.openstack_overcloud_ceph_storage_count'),
-        'Ceph-Storage');
+        this.get('model.openstack_deployment.overcloud_ceph_storage_flavor'),
+        this.get('model.openstack_deployment.overcloud_ceph_storage_count'),
+        'Ceph Storage');
       this.addFlavor(profiles,
-        this.get('model.openstack_overcloud_cinder_storage_flavor'),
-        this.get('model.openstack_overcloud_cinder_storage_count'),
-        'Cinder-Storage');
+        this.get('model.openstack_deployment.overcloud_block_storage_flavor'),
+        this.get('model.openstack_deployment.overcloud_block_storage_count'),
+        'Block Storage');
       this.addFlavor(profiles,
-        this.get('model.openstack_overcloud_swift_storage_flavor'),
-        this.get('model.openstack_overcloud_swift_storage_count'),
-        'Swift-Storage');
+        this.get('model.openstack_deployment.overcloud_object_storage_flavor'),
+        this.get('model.openstack_deployment.overcloud_object_storage_count'),
+        'Object Storage');
 
       return profiles;
     }),

@@ -1,6 +1,6 @@
 {{#wizard-step outlet=outlet}}
 
-      {{#link-to 'undercloud-deploy' tagName='li'}}
+      {{#link-to 'openstack.undercloud-deploy' tagName='li'}}
         <a>
           <span class="hanging-indent">
             {{stepNumberOpenstack}}A. Detect Undercloud
@@ -8,7 +8,7 @@
         </a>
       {{/link-to}}
 
-      {{#link-to 'register-nodes' tagName='li' disabled=disableTabRegisterNodes}}
+      {{#link-to 'openstack.register-nodes' tagName='li' disabled=disableTabRegisterNodes}}
         <a>
           <span class="hanging-indent">
             {{stepNumberOpenstack}}B. Register Nodes
@@ -16,7 +16,7 @@
         </a>
       {{/link-to}}
 
-      {{#link-to 'assign-nodes' tagName='li' disabled=disableTabAssignNodes}}
+      {{#link-to 'openstack.assign-nodes' tagName='li' disabled=disableTabAssignNodes}}
         <a>
           <span class="hanging-indent">
             {{stepNumberOpenstack}}C. Assign Nodes
