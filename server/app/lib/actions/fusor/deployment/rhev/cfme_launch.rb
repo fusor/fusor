@@ -109,7 +109,7 @@ module Actions
                     "enabled" => "1",
                     "managed" => "1",
                     "architecture_id" => Architecture.find_by_name('x86_64')['id'],
-                    "operatingsystem_id" => Operatingsystem.find_by_title('RedHat 7.1')['id'],
+                    "operatingsystem_id" => Operatingsystem.find_by_title('RedHat 7.2')['id'],
                     "ptable_id" => Ptable.find { |p| p["name"] == "Kickstart default" }.id,
                     "root_pass" => "smartvm1",
                     "build" => "0",
@@ -122,7 +122,7 @@ module Actions
                         "type" => "Nic::Managed",
                         "mac" => "",
                         "identifier" => "",
-                        "name" => "",
+                        "name" => "eth0",
                         "domain_id" => "1",
                         "subnet_id" => "1",
                         "managed" => "1",
@@ -132,7 +132,7 @@ module Actions
                         "tag" => "",
                         "attached_to" => "",
                         "compute_attributes" => {
-                          "name" => "",
+                          "name" => "eth0",
                           "network" => net_id
                         }
                       },
@@ -141,7 +141,7 @@ module Actions
                         "type" => "Nic::Managed",
                         "mac" => "",
                         "identifier" => "",
-                        "name" => "",
+                        "name" => "eth0",
                         "domain_id" => "",
                         "subnet_id" => "",
                         "ip" => "",
@@ -152,7 +152,7 @@ module Actions
                         "tag" => "",
                         "attached_to" => "",
                         "compute_attributes" => {
-                          "name" => "",
+                          "name" => "eth0",
                           "network" => net_id
                         }
                       }
