@@ -34,7 +34,7 @@ module Actions
 
           watched_hosts = deployment.ose_master_hosts + deployment.ose_worker_hosts
           watched_hosts.each do |host|
-            fail _("Failed to provision host '%s'.") % host.name if host.error?
+            fail _("Failed to provision host '%s'.") % host.name if !host.errors.full_messages.empty?
           end
 
           watched_host_ids = watched_hosts.map { |host| host.id }
