@@ -1,15 +1,27 @@
 {{#wizard-step outlet=outlet}}
 
       {{#link-to satelliteTabRouteName tagName='li' disabled=disableTabDeploymentName}}
-        <a>1A. Deployment Name</a>
+        <a>
+          <span class="hanging-indent">
+            1A. Deployment Name
+          </span>
+        </a>
       {{/link-to}}
 
       {{#link-to lifecycleEnvironmentTabRouteName tagName='li' disabled=disableTabLifecycleEnvironment}}
-        <a>1B. Configure Lifecycle Environment</a>
+        <a>
+          <span class="hanging-indent">
+            1B. Configure Lifecycle Environment
+          </span>
+        </a>
       {{/link-to}}
 
       {{#link-to 'satellite.access-insights' tagName='li' disabled=disableTabAccessInsights}}
-        <a>1C. Insights</a>
+        <a>
+          <span class="hanging-indent">
+            1C. Insights
+          </span>
+        </a>
       {{/link-to}}
 
 {{/wizard-step}}
