@@ -52,13 +52,15 @@
         <div class='alert alert-info rhci-alert'>
           No lifecycle environments are in organization <strong>{{selectedOrganization.name}}</strong>
         </div>
-    {{else if hasOnlyLibraryEnvironment}}
+    {{else}}
         <div class="path-selector">
           <ul class="path-list">
             {{env-path-list-item env=libraryEnv
+                                 libraryEnv=libraryEnv
                                  selectedEnvironment=selectedEnvironment
                                  action="selectEnvironment"
-                                 disabled=isStarted}}
+                                 disabled=isStarted
+                                 isSelectable=true}}
             <li class="path-list-item">
               <label class="path-list-item-label">
                 &nbsp;
@@ -66,18 +68,21 @@
             </li>
           </ul>
         </div>
-    {{else}}
       {{#each priorLibraryEnvironments as |env|}}
         <div class="path-selector">
           <ul class="path-list">
             {{env-path-list-item env=libraryEnv
+                                 libraryEnv=libraryEnv
                                  selectedEnvironment=selectedEnvironment
                                  action="selectEnvironment"
-                                 disabled=isStarted}}
+                                 disabled=isStarted
+                                 isSelectable=false}}
             {{env-path-list-item env=env
+                                 libraryEnv=libraryEnv
                                  selectedEnvironment=selectedEnvironment
                                  action="selectEnvironment"
-                                 disabled=isStarted}}
+                                 disabled=isStarted
+                                 isSelectable=true}}
             <li class="path-list-item">
               <label class="path-list-item-label">
                 &nbsp;

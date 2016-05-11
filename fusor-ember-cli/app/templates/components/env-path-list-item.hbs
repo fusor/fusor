@@ -1,6 +1,8 @@
 <label class="{{bgColor}}">
-  <span id="{{envCssId}}">
+  <span id="{{envCssId}}" class="{{if isNonSelectableLibrary 'ident-library-label'}}">
+    {{#if isSelectable}}
+      {{radio-button value=env.name groupValue=selectedEnvironment.name disabled=disabled}}
+    {{/if}}
     {{env.name}}
   </span>
 </label>
-
