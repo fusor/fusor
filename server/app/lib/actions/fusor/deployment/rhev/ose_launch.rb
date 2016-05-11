@@ -45,7 +45,7 @@ module Actions
             ret = ct_util.ensure_ks_with_snippet(ks_name, snippet_name)
             fail _("====== Could not ensure '#{ks_name}' with '#{snippet_name}'") unless ret
 
-            ks = ConfigTemplate.find_by_name(ks_name)
+            ks = ProvisioningTemplate.find_by_name(ks_name)
             ks.hostgroup_ids = hostgroup.id
             ks.save!
 

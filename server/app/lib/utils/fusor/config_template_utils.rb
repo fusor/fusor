@@ -10,11 +10,11 @@ module Utils
       end
 
       def create_snippet(name)
-        if !ConfigTemplate.find_by_name(name).nil?
+        if !ProvisioningTemplate.find_by_name(name).nil?
           ::Fusor.log.error "====== Snippet '#{name}' already exists! ======"
           return nil
         end
-        new_snippet = ConfigTemplate.create
+        new_snippet = ProvisioningTemplate.create
         new_snippet.name = name
         new_snippet.snippet = true
         new_snippet.template = "<%#\nkind: snippet\nname: #{name}\n%>\n"
@@ -24,7 +24,7 @@ module Utils
       end
 
       def ensure_snippet(name)
-        if !ConfigTemplate.find_by_name(name).nil?
+        if !ProvisioningTemplate.find_by_name(name).nil?
           ::Fusor.log.debug "====== Snippet '#{name}' already exists! ======"
           return true
         end
@@ -39,13 +39,13 @@ module Utils
       end
 
       def ensure_kickstart(name)
-        if !ConfigTemplate.find_by_name(name).nil?
+        if !ProvisioningTemplate.find_by_name(name).nil?
           ::Fusor.log.debug "====== Template '#{name}' already exists! ======"
           return true
         end
 
         default_template_name = 'Satellite Kickstart Default'
-        default_template = ConfigTemplate.find_by_name(default_template_name)
+        default_template = ProvisioningTemplate.find_by_name(default_template_name)
         if default_template.nil?
           ::Fusor.log.error "====== Template '#{default_template_name}' does not exist! Cannot clone from default! ======"
           return nil
@@ -59,7 +59,7 @@ module Utils
       end
 
       def append(name, text)
-        template = ConfigTemplate.find_by_name(name)
+        template = ProvisioningTemplate.find_by_name(name)
         if template.nil? || text.nil?
           ::Fusor.log.error "====== Input params is nil! Cannot append. ======"
           return nil
@@ -71,7 +71,7 @@ module Utils
       end
 
       def update(name, replacement_text, search_text)
-        template = ConfigTemplate.find_by_name(name)
+        template = ProvisioningTemplate.find_by_name(name)
         if template.nil? || replacement_text.nil? || search_text.nil?
           ::Fusor.log.error "====== Input params is nil! Cannot update ======"
           return nil
@@ -95,7 +95,7 @@ module Utils
         search_text = "\nsync\n"
         snippet_include_line = "\n\n<%= snippet '#{snippet_name}' %>\n\n"
 
-        ks = ConfigTemplate.find_by_name(ks_name)
+        ks = ProvisioningTemplate.find_by_name(ks_name)
         if ks.template.include?(snippet_include_line)
           ::Fusor.log.debug "====== Snippet '#{snippet_name}' already in the KS '#{ks_name}'.  Nothing to do. ======"
           return true
