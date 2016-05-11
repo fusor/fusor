@@ -57,7 +57,7 @@ module Utils
           # close the stringio at the end
           @io.close unless @io.closed?
 
-        rescue
+        rescue Exception => e
           @io.close if @io && !@io.closed?
           fail _("Failed to add host credentials. Error message: #{e.message}")
         end
