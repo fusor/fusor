@@ -7,9 +7,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   backRouteNameReviewSubs: Ember.computed('isDisconnected', function() {
     if (this.get('isDisconnected')) {
-        return 'subscriptions.credentials';
+      return 'subscriptions.credentials';
     } else {
-        return 'subscriptions.select-subscriptions';
+      return 'subscriptions.select-subscriptions';
     }
   }),
 

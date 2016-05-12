@@ -31,9 +31,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
                                          'hasSubscriptionsToAttach',
                                          'hasSessionPortal',
                                          'hasSubscriptionPools', function() {
-    return (this.get('isNotDisconnected') && this.get('hasSubscriptionsToAttach') &&
+                                           return (this.get('isNotDisconnected') && this.get('hasSubscriptionsToAttach') &&
            (!this.get('hasSessionPortal') || !this.get('hasSubscriptionPools')));
-  }),
+                                         }),
 
   buttonDeployDisabled: Ember.computed(
     'deploymentController.isDisabledReview',

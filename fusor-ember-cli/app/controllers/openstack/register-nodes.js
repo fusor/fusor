@@ -71,12 +71,12 @@ const RegisterNodesController = Ember.Controller.extend(ProgressBarMixin, NeedsD
 
   vendors: Ember.computed('nodeInfo.driver', function () {
     switch (this.get('nodeInfo.driver')) {
-      case 'pxe_ssh':
-        return this.get('virtVendors');
-      case 'pxe_ipmitool':
-        return this.get('ipmiVendors');
-      default:
-        return [];
+    case 'pxe_ssh':
+      return this.get('virtVendors');
+    case 'pxe_ipmitool':
+      return this.get('ipmiVendors');
+    default:
+      return [];
     }
   }),
 
@@ -122,34 +122,34 @@ const RegisterNodesController = Ember.Controller.extend(ProgressBarMixin, NeedsD
 
   newNodeAddressLabel: Ember.computed('nodeInfo.driver', function () {
     switch (this.get('nodeInfo.driver')) {
-      case 'pxe_ssh':
-        return 'SSH Address';
-      case 'pxe_ipmitool':
-        return 'IPMI Address';
-      default:
-        return 'Address';
+    case 'pxe_ssh':
+      return 'SSH Address';
+    case 'pxe_ipmitool':
+      return 'IPMI Address';
+    default:
+      return 'Address';
     }
   }),
 
   newNodeUsernameLabel: Ember.computed('nodeInfo.driver', function () {
     switch (this.get('nodeInfo.driver')) {
-      case 'pxe_ssh':
-        return 'SSH User';
-      case 'pxe_ipmitool':
-        return 'IPMI User';
-      default:
-        return 'Username';
+    case 'pxe_ssh':
+      return 'SSH User';
+    case 'pxe_ipmitool':
+      return 'IPMI User';
+    default:
+      return 'Username';
     }
   }),
 
   newNodePasswordLabel: Ember.computed('nodeInfo.driver', function () {
     switch (this.get('nodeInfo.driver')) {
-      case 'pxe_ssh':
-        return 'SSH Password';
-      case 'pxe_ipmitool':
-        return 'IPMI Password';
-      default:
-        return 'Password';
+    case 'pxe_ssh':
+      return 'SSH Password';
+    case 'pxe_ipmitool':
+      return 'IPMI Password';
+    default:
+      return 'Password';
     }
   }),
 

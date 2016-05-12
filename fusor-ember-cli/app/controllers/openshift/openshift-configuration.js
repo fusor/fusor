@@ -17,13 +17,13 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     'isCloudForms',
     'isSubscriptions',
     function() {
-        if (this.get('isCloudForms')) {
-          return 'cloudforms';
-        } else if (this.get('isSubscriptions')) {
-          return 'subscriptions';
-        } else {
-          return 'review';
-        }
+      if (this.get('isCloudForms')) {
+        return 'cloudforms';
+      } else if (this.get('isSubscriptions')) {
+        return 'subscriptions';
+      } else {
+        return 'review';
+      }
     }
   ),
 

@@ -25,11 +25,11 @@ const UndercloudDeployController = Ember.Controller.extend(NeedsDeploymentMixin,
   isDeployed: Ember.computed.alias('openstackDeployment.isUndercloudDeployed'),
 
   deployDisabled: Ember.computed('isDeployed', 'undercloudIP', 'sshUser', 'sshPassword', function () {
-      return this.get('isDeployed') ||
+    return this.get('isDeployed') ||
         this.get('undercloudIpValidator').isInvalid(this.get('undercloudIP')) ||
         Ember.isBlank(this.get('sshUser')) ||
         Ember.isBlank(this.get('sshPassword'));
-    }
+  }
   ),
 
   disableDeployUndercloudNext: Ember.computed('isDeployed', function() {
@@ -90,31 +90,31 @@ const UndercloudDeployController = Ember.Controller.extend(NeedsDeploymentMixin,
             "X-CSRF-Token": token
           }
         }).then(function(response) {
-                promise.then(fulfill);
-                console.log('create success');
-                console.log(response);
-                if (self.get('applicationController.isEmberCliMode')) {
+          promise.then(fulfill);
+          console.log('create success');
+          console.log(response);
+          if (self.get('applicationController.isEmberCliMode')) {
                   // only used for development to enabled OSP tabs (disableOspTab: false)
-                  openstackDeployment.set('openstack_undercloud_password', 'this-passwd-is-populated by fusor/server');
-                  openstackDeployment.save();
-                }
-                Ember.run.later(checkForDone, 3000);
-              },  function(error) {
-                error = error.jqXHR;
-                self.set('deploymentError', error.responseJSON.errors);
-                self.set('showLoadingSpinner', false);
-                console.log('create failed');
-                console.log(error);
-              }
+            openstackDeployment.set('openstack_undercloud_password', 'this-passwd-is-populated by fusor/server');
+            openstackDeployment.save();
+          }
+          Ember.run.later(checkForDone, 3000);
+        },  function(error) {
+          error = error.jqXHR;
+          self.set('deploymentError', error.responseJSON.errors);
+          self.set('showLoadingSpinner', false);
+          console.log('create failed');
+          console.log(error);
+        }
         );
 
-      var checkForDone = function () {
-        console.log("running check for done for id " + self.get('deploymentId'));
-        request({
-          url: '/fusor/api/openstack/deployments/' + self.get('deploymentId') + '/underclouds/' + self.get('deploymentId'),
-          type: 'GET',
-          contentType: 'application/json'
-        }).then(function(response) {
+        var checkForDone = function () {
+          console.log("running check for done for id " + self.get('deploymentId'));
+          request({
+            url: '/fusor/api/openstack/deployments/' + self.get('deploymentId') + '/underclouds/' + self.get('deploymentId'),
+            type: 'GET',
+            contentType: 'application/json'
+          }).then(function(response) {
             console.log('api check success');
             console.log(response);
             if (response['deployed'] || response['failed']) {
@@ -133,27 +133,27 @@ const UndercloudDeployController = Ember.Controller.extend(NeedsDeploymentMixin,
               Ember.run.later(checkForDone, 3000);
             }
           }, function(error) {
-              error = error.jqXHR;
-              console.log('api check error');
-              console.log(error);
-              self.set('deploymentError', 'Status check failed');
-              self.set('showLoadingSpinner', false);
+            error = error.jqXHR;
+            console.log('api check error');
+            console.log(error);
+            self.set('deploymentError', 'Status check failed');
+            self.set('showLoadingSpinner', false);
           }
         );
+        };
       };
-    };
 
-    var fulfill = function (isDone) {
-      if (isDone) {
-        console.log("fulfill");
-        self.set('showLoadingSpinner', false);
-        self.set('isDeployed', true);
-      }
-    };
+      var fulfill = function (isDone) {
+        if (isDone) {
+          console.log("fulfill");
+          self.set('showLoadingSpinner', false);
+          self.set('isDeployed', true);
+        }
+      };
 
-    var promise = new Ember.RSVP.Promise(promiseFunction);
-    self.set('loadingSpinnerText', "Detecting Undercloud...");
-    self.set('showLoadingSpinner', true);
+      var promise = new Ember.RSVP.Promise(promiseFunction);
+      self.set('loadingSpinnerText', "Detecting Undercloud...");
+      self.set('showLoadingSpinner', true);
 
     }
   }

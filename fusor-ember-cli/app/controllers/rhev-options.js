@@ -41,18 +41,18 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   dbSetup: ['Automatic', 'Manual'],
   yesNo: ['Yes', 'No'],
   applicationModes2: [
-       {
-          id: 1,
-          name: 'Both'
-       },
-       {
-          id: 2,
-          name: 'Virt'
-       },
-       {
-          id: 3,
-          name: 'Gluster'
-       }
+    {
+      id: 1,
+      name: 'Both'
+    },
+    {
+      id: 2,
+      name: 'Virt'
+    },
+    {
+      id: 3,
+      name: 'Gluster'
+    }
   ],
 
   createComputerNameValidator(fieldName, otherFieldValue) {

@@ -22,9 +22,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     'openstackDeployment.isUndercloudDeployed',
     'openstackDeployment.areNodesRegistered',
     function () {
-     return !this.get('openstackDeployment.isUndercloudDeployed') ||
+      return !this.get('openstackDeployment.isUndercloudDeployed') ||
        !this.get('openstackDeployment.areNodesRegistered');
-  }),
+    }),
 
   disableTabOvercloud: Ember.computed(
     'openstackDeployment.isUndercloudDeployed',

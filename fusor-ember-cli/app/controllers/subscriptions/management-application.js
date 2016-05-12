@@ -70,33 +70,33 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
           reject();
         } else {
           request({
-              url: url,
-              type: "POST",
-              data: JSON.stringify({name: newSatelliteName,
+            url: url,
+            type: "POST",
+            data: JSON.stringify({name: newSatelliteName,
                                     type: "satellite",
                                     facts: {"distributor_version": "sat-6.0", "system.certificate_version": "3.2"}} ),
-              headers: {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-                  "X-CSRF-Token": token
-              }
-            }).then(function(response) {
-                var newMgmtApp = self.store.createRecord('management-application', {name: response.name, entitlementCount: 0, id: response.uuid});
-                self.get('model').addObject(newMgmtApp._internalModel);
-                self.get('sessionPortal').set('consumerUUID', response.uuid);
-                self.get('sessionPortal').save();
-                self.set('upstreamConsumerUuid', response.uuid);
-                self.set('upstreamConsumerName', response.name);
-                self.set('showAlertMessage', true);
-                self.set('showWaitingMessage', false);
-                console.log(response);
-                resolve(response);
-            }, function(error) {
-                console.log('error on createSatellite');
-                self.set('showErrorMessage', true);
-                self.set('errorMsg', newSatelliteName + ' failed to be added.');
-                return self.send('error');
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "X-CSRF-Token": token
             }
+          }).then(function(response) {
+            var newMgmtApp = self.store.createRecord('management-application', {name: response.name, entitlementCount: 0, id: response.uuid});
+            self.get('model').addObject(newMgmtApp._internalModel);
+            self.get('sessionPortal').set('consumerUUID', response.uuid);
+            self.get('sessionPortal').save();
+            self.set('upstreamConsumerUuid', response.uuid);
+            self.set('upstreamConsumerName', response.name);
+            self.set('showAlertMessage', true);
+            self.set('showWaitingMessage', false);
+            console.log(response);
+            resolve(response);
+          }, function(error) {
+            console.log('error on createSatellite');
+            self.set('showErrorMessage', true);
+            self.set('errorMsg', newSatelliteName + ' failed to be added.');
+            return self.send('error');
+          }
           );
         }
       });

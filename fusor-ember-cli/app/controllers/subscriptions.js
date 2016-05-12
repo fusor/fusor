@@ -8,7 +8,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isDisconnected: Ember.computed.alias("deploymentController.model.is_disconnected"),
 
   disableTabManagementApplication: Ember.computed('model.isAuthenticated', 'isStarted', function() {
-     return (!this.get('isStarted') && !this.get('model.isAuthenticated'));
+    return (!this.get('isStarted') && !this.get('model.isAuthenticated'));
   }),
 
   disableTabReviewSubsciptions: Ember.computed.empty("deploymentController.model.manifest_file"),

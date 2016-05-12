@@ -105,12 +105,12 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   markAndScrollToSearchResult(showAtTop) {
     var searchResults = this.get('searchResults'),
-     searchResultIdx = this.get('searchResultIdx'),
+      searchResultIdx = this.get('searchResultIdx'),
       currentlySelected, searchResult, searchTag;
 
-     searchTag = searchResults[searchResultIdx - 1];
-     currentlySelected = Ember.$('.log-entry-search-selected');
-     searchResult = Ember.$(`.${searchTag.cssClass}`);
+    searchTag = searchResults[searchResultIdx - 1];
+    currentlySelected = Ember.$('.log-entry-search-selected');
+    searchResult = Ember.$(`.${searchTag.cssClass}`);
 
     this.set('scrollToEndChecked', false);
     currentlySelected.removeClass('log-entry-search-selected');

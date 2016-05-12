@@ -14,7 +14,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   disableTabCFConfiguration: Ember.computed.alias("isInvalidCfmeInstallLocation"),
 
   validCloudforms: Ember.computed('isValidCfmeInstallLocation', 'isValidCfmeConfiguration', function() {
-      return this.get('isValidCfmeInstallLocation') && this.get('isValidCfmeConfiguration');
+    return this.get('isValidCfmeInstallLocation') && this.get('isValidCfmeConfiguration');
   }),
 
   notValidCloudforms: Ember.computed.not("validCloudforms")
