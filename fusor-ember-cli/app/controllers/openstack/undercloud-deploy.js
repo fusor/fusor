@@ -26,11 +26,10 @@ const UndercloudDeployController = Ember.Controller.extend(NeedsDeploymentMixin,
 
   deployDisabled: Ember.computed('isDeployed', 'undercloudIP', 'sshUser', 'sshPassword', function () {
     return this.get('isDeployed') ||
-        this.get('undercloudIpValidator').isInvalid(this.get('undercloudIP')) ||
-        Ember.isBlank(this.get('sshUser')) ||
-        Ember.isBlank(this.get('sshPassword'));
-  }
-  ),
+      this.get('undercloudIpValidator').isInvalid(this.get('undercloudIP')) ||
+      Ember.isBlank(this.get('sshUser')) ||
+      Ember.isBlank(this.get('sshPassword'));
+  }),
 
   disableDeployUndercloudNext: Ember.computed('isDeployed', function() {
     return !this.get('isDeployed');
@@ -94,19 +93,18 @@ const UndercloudDeployController = Ember.Controller.extend(NeedsDeploymentMixin,
           console.log('create success');
           console.log(response);
           if (self.get('applicationController.isEmberCliMode')) {
-                  // only used for development to enabled OSP tabs (disableOspTab: false)
+            // only used for development to enabled OSP tabs (disableOspTab: false)
             openstackDeployment.set('openstack_undercloud_password', 'this-passwd-is-populated by fusor/server');
             openstackDeployment.save();
           }
           Ember.run.later(checkForDone, 3000);
-        },  function(error) {
+        }, function(error) {
           error = error.jqXHR;
           self.set('deploymentError', error.responseJSON.errors);
           self.set('showLoadingSpinner', false);
           console.log('create failed');
           console.log(error);
-        }
-        );
+        });
 
         var checkForDone = function () {
           console.log("running check for done for id " + self.get('deploymentId'));
@@ -138,8 +136,7 @@ const UndercloudDeployController = Ember.Controller.extend(NeedsDeploymentMixin,
             console.log(error);
             self.set('deploymentError', 'Status check failed');
             self.set('showLoadingSpinner', false);
-          }
-        );
+          });
         };
       };
 

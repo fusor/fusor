@@ -72,16 +72,29 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
           request({
             url: url,
             type: "POST",
-            data: JSON.stringify({name: newSatelliteName,
-                                    type: "satellite",
-                                    facts: {"distributor_version": "sat-6.0", "system.certificate_version": "3.2"}} ),
+            data: JSON.stringify({
+              name: newSatelliteName,
+              type: "satellite",
+              facts: {
+                "distributor_version": "sat-6.0",
+                "system.certificate_version": "3.2"
+              }
+            }),
             headers: {
               "Accept": "application/json",
               "Content-Type": "application/json",
               "X-CSRF-Token": token
             }
           }).then(function(response) {
-            var newMgmtApp = self.store.createRecord('management-application', {name: response.name, entitlementCount: 0, id: response.uuid});
+            var newMgmtApp = self.store.createRecord(
+              'management-application',
+              {
+                name: response.name,
+                entitlementCount: 0,
+                id: response.uuid
+              }
+            );
+
             self.get('model').addObject(newMgmtApp._internalModel);
             self.get('sessionPortal').set('consumerUUID', response.uuid);
             self.get('sessionPortal').save();
@@ -96,8 +109,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
             self.set('showErrorMessage', true);
             self.set('errorMsg', newSatelliteName + ' failed to be added.');
             return self.send('error');
-          }
-          );
+          });
         }
       });
     }

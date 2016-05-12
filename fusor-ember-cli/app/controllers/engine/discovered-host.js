@@ -62,11 +62,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   disableNextOnEngine: Ember.computed(
     'isSelectedEngineHostnameInvalid',
     'deploymentController.hasNoEngine',
-    function()
-  {
+    function() {
       return this.get('deploymentController.hasNoEngine') ||
-      this.get('isSelectedEngineHostnameInvalid');
-    }),
+        this.get('isSelectedEngineHostnameInvalid');
+    }
+  ),
 
   actions: {
     onEngineChanged(newlySelectedHost, isInvalidHostname) {

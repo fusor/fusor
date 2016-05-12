@@ -30,39 +30,41 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
   }),
 
   //Deploy task is not 100% but All subtasks are 100%
-  showDeployTaskProgressBar: Ember.computed('isRhev',
-                                            'isOpenStack',
-                                            'isCloudForms',
-                                            'isOpenShift',
-                                            'manageContentTask.progress',
-                                            'rhevTask.progress',
-                                            'openstackTask.progress',
-                                            'cfmeTask.progress',
-                                            'openshiftTask.progress',
-                                            'progressDeployment',
-                                            function() {
-                                              if (this.get('progressDeployment') === '1' || this.get('manageContentTask.progress') !== '1') {
-                                                return false;
-                                              }
+  showDeployTaskProgressBar: Ember.computed(
+    'isRhev',
+    'isOpenStack',
+    'isCloudForms',
+    'isOpenShift',
+    'manageContentTask.progress',
+    'rhevTask.progress',
+    'openstackTask.progress',
+    'cfmeTask.progress',
+    'openshiftTask.progress',
+    'progressDeployment',
+    function() {
+      if (this.get('progressDeployment') === '1' || this.get('manageContentTask.progress') !== '1') {
+        return false;
+      }
 
-                                              if (this.get('isRhev') && this.get('rhevTask.progress') !== '1') {
-                                                return false;
-                                              }
+      if (this.get('isRhev') && this.get('rhevTask.progress') !== '1') {
+        return false;
+      }
 
-                                              if (this.get('isOpenStack') && this.get('openstackTask.progress') !== '1') {
-                                                return false;
-                                              }
+      if (this.get('isOpenStack') && this.get('openstackTask.progress') !== '1') {
+        return false;
+      }
 
-                                              if (this.get('isCloudForms') && this.get('cfmeTask.progress') !== '1') {
-                                                return false;
-                                              }
+      if (this.get('isCloudForms') && this.get('cfmeTask.progress') !== '1') {
+        return false;
+      }
 
-                                              if (this.get('isOpenShift') && this.get('openshiftTask.progress') !== '1') {
-                                                return false;
-                                              }
+      if (this.get('isOpenShift') && this.get('openshiftTask.progress') !== '1') {
+        return false;
+      }
 
-                                              return true;
-                                            }),
+      return true;
+    }
+  ),
 
   loadingRedeployment: false,
 
