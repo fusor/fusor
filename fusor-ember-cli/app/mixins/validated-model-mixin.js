@@ -1,13 +1,13 @@
 import Ember from 'ember';
 
 export default Ember.Mixin.create({
-  validate(...fieldNames) {
-    if (Ember.isEmpty(fieldNames)) {
+  validate() {
+    if (arguments.length <= 0) {
       return this.validateAll();
     }
 
-    for (let fieldName of fieldNames) {
-      if (!this.validateField(fieldName)) {
+    for (let i = 0; i < arguments.length; i++) {
+      if (!this.validateField(arguments[i])) {
         return false;
       }
     }
