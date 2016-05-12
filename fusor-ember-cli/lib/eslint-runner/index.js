@@ -3,7 +3,7 @@ var CLIEngine = require('eslint').CLIEngine;
 module.exports = {
   name: 'eslint-runner',
 
-  preBuild: function(result) {
+  outputReady: function(result) {
     var cli = new CLIEngine({
       configFile: '.eslintrc.js'
     });

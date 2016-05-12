@@ -62,8 +62,8 @@
   },
   "ember-addon": {
     "paths": [
-      "lib/eslint-runner",
-      "lib/copy-assets"
+      "lib/copy-assets",
+      "lib/eslint-runner"
     ]
   }
 }
