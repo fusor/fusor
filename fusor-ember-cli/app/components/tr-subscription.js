@@ -58,7 +58,7 @@ export default Ember.Component.extend({
         this.set('subscription.qtyToAttach', 0);
       }
     } else {
-          // Zero out and save if unchecked
+      // Zero out and save if unchecked
       var hasPostiveQty = this.get('subscription.qtyToAttach') > 0;
       if (hasPostiveQty) {
         this.set('subscription.qtyToAttach', 0);

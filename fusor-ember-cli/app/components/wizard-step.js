@@ -9,8 +9,8 @@ export default Ember.Component.extend({
   resizeWizard: Ember.on('didInsertElement', function() {
     var self = this;
     this.resizeHandler = function() {
-            // Rob's jquery code for resizing in
-            // https://github.com/patternfly/rcue-rdom/blob/master/html/assign-roles-rhci.html
+      // Rob's jquery code for resizing in
+      // https://github.com/patternfly/rcue-rdom/blob/master/html/assign-roles-rhci.html
       var documentHeight = 0;
       var navbarOuterHeight = 0;
       var navbarInnerHeight = 0;
@@ -23,7 +23,8 @@ export default Ember.Component.extend({
         pageheaderrhciHeight = Ember.$('.page-header-rhci').outerHeight();
         rowHeight = documentHeight - navbarInnerHeight - navbarOuterHeight - pageheaderrhciHeight;
       }
-            // set height of attribute in controller
+
+      // set height of attribute in controller
       return self.set('minHeight', rowHeight);
     }.bind(this);
 

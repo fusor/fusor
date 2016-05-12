@@ -56,7 +56,8 @@ export default Ember.Component.extend({
       }
 
       return this.get('foremanTask.result') === 'error' || Ember.isPresent(this.get('foremanTask.humanized_errors'));
-    }),
+    }
+  ),
 
   progressWidth: Ember.computed('foremanTask.progress', function() {
     let progressPercent = Math.floor((parseFloat(this.get('foremanTask.progress')) || 0) * 100);
