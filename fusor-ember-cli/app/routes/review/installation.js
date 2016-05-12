@@ -10,9 +10,9 @@ export default Ember.Route.extend({
       deployment: deployment.save()
     };
 
-    let openstack_deployment = this.get('controller.model.openstack_deployment');
-    if (deployment.get('deploy_openstack') && openstack_deployment) {
-      return promises[openstack_deployment] = openstack_deployment.save();
+    if (deployment.get('deploy_openstack')) {
+      promises.openstack_deployment = deployment.get('openstack_deployment')
+        .then(openstack_deployment => openstack_deployment.save());
     }
 
     return Ember.RSVP.hash(promises);
