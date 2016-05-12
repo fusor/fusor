@@ -31,7 +31,7 @@ module Actions
           def run
             ::Fusor.log.debug '====== OvercloudConfiguration run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
-            find_overcloud(openstack_deployment)
+            find_overcloud(deployment.openstack_deployment)
             overcloud = { :openstack_auth_url  => "http://#{deployment.openstack_deployment.overcloud_address}:5000/v2.0/tokens",
                           :openstack_username  => 'admin', :openstack_tenant => 'admin',
                           :openstack_api_key   => deployment.openstack_deployment.overcloud_password }
