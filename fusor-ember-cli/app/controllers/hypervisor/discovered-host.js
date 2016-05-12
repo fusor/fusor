@@ -51,8 +51,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       return this.get('model');
     } else if (availableHosts.get('length') > 0) {
       return availableHosts.filter(function(record) {
-        return
-          record.get('name').match(rx) ||
+        return record.get('name').match(rx) ||
           record.get('memory_human_size').match(rx) ||
           record.get('disks_human_size').match(rx) ||
           record.get('subnet_to_s').match(rx) ||
