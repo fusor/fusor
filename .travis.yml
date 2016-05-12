@@ -20,7 +20,7 @@ before_script: ./.travis.sh migrate
 script:
  - gem install rubocop -v 0.35.1 && rubocop
  - pushd ../foreman && rake test:fusor && popd
- - ./travis.sh ember-run
+ - ./.travis.sh ember-run
 
 services:
   - postgresql

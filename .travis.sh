@@ -71,7 +71,7 @@ if [ $1 == "install" ]; then
   ############################################################
   cd ../../../fusor
   source $HOME/.nvm/nvm.sh
-  nvm install v4.2 && nvm use v4.2
+  nvm install v4.4 && nvm use v4.4
   npm install -g bower
   npm install -g ember-cli
   cd fusor-ember-cli && bower install && npm install
@@ -79,12 +79,11 @@ if [ $1 == "install" ]; then
 elif [ $1 == "ember-run" ]; then
   # Expects to be called from fusor project root
   source $HOME/.nvm/nvm.sh
-  nvm use v4.2
+  nvm use v4.4
   cd fusor-ember-cli
 
   # Confirm ESLint passes and project can build
   TRAVIS_CI=1 ember build
-  # TODO: Execute test suite
   ember test
 else
   cd ../foreman
