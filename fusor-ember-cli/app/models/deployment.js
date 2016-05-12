@@ -56,10 +56,13 @@ export default DS.Model.extend({
   openshift_number_master_nodes: DS.attr('number'),
   openshift_number_worker_nodes: DS.attr('number'),
 
-  numNodes: Ember.computed('openshift_number_master_nodes',
-                           'openshift_number_worker_nodes', function() {
-                             return this.get('openshift_number_master_nodes') + this.get('openshift_number_worker_nodes');
-                           }),
+  numNodes: Ember.computed(
+    'openshift_number_master_nodes',
+    'openshift_number_worker_nodes',
+    function() {
+      return this.get('openshift_number_master_nodes') + this.get('openshift_number_worker_nodes');
+    }
+  ),
 
   openshift_storage_size: DS.attr('number'),
   openshift_username: DS.attr('string'),
@@ -98,10 +101,13 @@ export default DS.Model.extend({
   cloudforms_vm_disk_size: DS.attr('number'),
   cloudforms_db_disk_size: DS.attr('number'),
 
-  cfmeDisk: Ember.computed('cloudforms_vm_disk_size',
-                           'cloudforms_db_disk_size', function() {
-                             return this.get('cloudforms_vm_disk_size') + this.get('cloudforms_db_disk_size');
-                           }),
+  cfmeDisk: Ember.computed(
+    'cloudforms_vm_disk_size',
+    'cloudforms_db_disk_size',
+    function() {
+      return this.get('cloudforms_vm_disk_size') + this.get('cloudforms_db_disk_size');
+    }
+  ),
 
   created_at: DS.attr('date'),
   updated_at: DS.attr('date'),
