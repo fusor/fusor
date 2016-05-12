@@ -26,58 +26,73 @@ export default Ember.Mixin.create({
   nodeDisk: Ember.computed.alias("model.openshift_node_disk"),
   cfmeDisk: Ember.computed.alias("model.cfmeDisk"),
 
-  ignoreCfme: Ember.computed("isCloudForms", "isRhev", "isOpenStack",
-                             "openshiftInstallLoc", "cfmeInstallLoc", function() {
-    // ignore if CFME is not selected OR if both RHEV and OSP are selected
-    // but locations of CFME and OSE are different
-                               return (!this.get('isCloudForms') ||
-            (this.get('isRhev') && this.get('isOpenStack') &&
-             ((this.get('openshiftInstallLoc') === 'RHEV' && this.get('cfmeInstallLoc') === 'OpenStack') ||
-              (this.get('openshiftInstallLoc') === 'OpenStack' && this.get('cfmeInstallLoc') === 'RHEV'))));
-                             }),
+  ignoreCfme: Ember.computed(
+    "isCloudForms",
+    "isRhev",
+    "isOpenStack",
+    "openshiftInstallLoc",
+    "cfmeInstallLoc",
+    function() {
+      // ignore if CFME is not selected OR if both RHEV and OSP are selected
+      // but locations of CFME and OSE are different
+      return (!this.get('isCloudForms') ||
+              (this.get('isRhev') && this.get('isOpenStack') &&
+               ((this.get('openshiftInstallLoc') === 'RHEV' && this.get('cfmeInstallLoc') === 'OpenStack') ||
+                (this.get('openshiftInstallLoc') === 'OpenStack' && this.get('cfmeInstallLoc') === 'RHEV'))));
+    }
+  ),
   substractCfme: Ember.computed.not('ignoreCfme'),
 
   diskAvailableMinusCfme: Ember.computed("model.openshift_available_disk", "cfmeDisk", function() {
     return this.get("model.openshift_available_disk") - this.get("cfmeDisk");
   }),
 
-  diskAvailable: Ember.computed("model.openshift_available_disk",
-                                "ignoreCfme",
-                                "diskAvailableMinusCfme", function() {
-                                  if (this.get('ignoreCfme')) {
-                                    return this.get('model.openshift_available_disk');
-                                  } else {
-                                    return this.get('diskAvailableMinusCfme');
-                                  }
-                                }),
+  diskAvailable: Ember.computed(
+    "model.openshift_available_disk",
+    "ignoreCfme",
+    "diskAvailableMinusCfme",
+    function() {
+      if (this.get('ignoreCfme')) {
+        return this.get('model.openshift_available_disk');
+      } else {
+        return this.get('diskAvailableMinusCfme');
+      }
+    }
+  ),
 
   ramAvailableMinusCfme: Ember.computed("model.openshift_available_ram", "model.cloudforms_ram", function() {
     return this.get("model.openshift_available_ram") - this.get("model.cloudforms_ram");
   }),
 
-  ramAvailable: Ember.computed("model.openshift_available_ram",
-                                "ignoreCfme",
-                                "ramAvailableMinusCfme", function() {
-                                  if (this.get('ignoreCfme')) {
-                                    return this.get('model.openshift_available_ram');
-                                  } else {
-                                    return this.get('ramAvailableMinusCfme');
-                                  }
-                                }),
+  ramAvailable: Ember.computed(
+    "model.openshift_available_ram",
+    "ignoreCfme",
+    "ramAvailableMinusCfme",
+    function() {
+      if (this.get('ignoreCfme')) {
+        return this.get('model.openshift_available_ram');
+      } else {
+        return this.get('ramAvailableMinusCfme');
+      }
+    }
+  ),
 
   vcpuAvailableMinusCfme: Ember.computed("model.openshift_available_vcpu", "model.cloudforms_vcpu", function() {
     return this.get("model.openshift_available_vcpu") - this.get("model.cloudforms_vcpu");
   }),
 
-  vcpuAvailable: Ember.computed("model.openshift_available_vcpu",
-                                "ignoreCfme",
-                                "vcpuAvailableMinusCfme", function() {
-                                  if (this.get('ignoreCfme')) {
-                                    return this.get('model.openshift_available_vcpu');
-                                  } else {
-                                    return this.get('vcpuAvailableMinusCfme');
-                                  }
-                                }),
+  vcpuAvailable: Ember.computed(
+    "model.openshift_available_vcpu",
+    "ignoreCfme",
+    "vcpuAvailableMinusCfme",
+    function() {
+      if (this.get('ignoreCfme')) {
+        return this.get('model.openshift_available_vcpu');
+      } else {
+        return this.get('vcpuAvailableMinusCfme');
+      }
+    }
+  ),
 
   vcpuNeeded: Ember.computed('numMasterNodes', 'numWorkerNodes', 'masterVcpu', 'nodeVcpu', function() {
     if ((this.get('numMasterNodes') > 0) && (this.get('masterVcpu') > 0) &&
@@ -206,41 +221,55 @@ export default Ember.Mixin.create({
     return (this.get('disk5Needed') > this.get('diskAvailable'));
   }),
 
-  isOver1Capacity: Ember.computed('isVcpu1OverCapacity',
-                                 'isRam1OverCapacity',
-                                 'isDisk1OverCapacity', function() {
-                                   return (this.get('isVcpu1OverCapacity') ||
+  isOver1Capacity: Ember.computed(
+    'isVcpu1OverCapacity',
+    'isRam1OverCapacity',
+    'isDisk1OverCapacity',
+    function() {
+      return (this.get('isVcpu1OverCapacity') ||
               this.get('isRam1OverCapacity') ||
               this.get('isDisk1OverCapacity'));
-                                 }),
-  isOver2Capacity: Ember.computed('isVcpu2OverCapacity',
-                                 'isRam2OverCapacity',
-                                 'isDisk2OverCapacity', function() {
-                                   return (this.get('isVcpu2OverCapacity') ||
+    }
+  ),
+
+  isOver2Capacity: Ember.computed(
+    'isVcpu2OverCapacity',
+    'isRam2OverCapacity',
+    'isDisk2OverCapacity',
+    function() {
+      return (this.get('isVcpu2OverCapacity') ||
               this.get('isRam2OverCapacity') ||
               this.get('isDisk2OverCapacity'));
-                                 }),
-  isOver3Capacity: Ember.computed('isVcpu3OverCapacity',
-                                 'isRam3OverCapacity',
-                                 'isDisk3OverCapacity', function() {
-                                   return (this.get('isVcpu3OverCapacity') ||
+    }
+  ),
+  isOver3Capacity: Ember.computed(
+    'isVcpu3OverCapacity',
+    'isRam3OverCapacity',
+    'isDisk3OverCapacity',
+    function() {
+      return (this.get('isVcpu3OverCapacity') ||
               this.get('isRam3OverCapacity') ||
               this.get('isDisk3OverCapacity'));
-                                 }),
-  isOver4Capacity: Ember.computed('isVcpu4OverCapacity',
-                                 'isRam4OverCapacity',
-                                 'isDisk4OverCapacity', function() {
-                                   return (this.get('isVcpu4OverCapacity') ||
+    }
+  ),
+  isOver4Capacity: Ember.computed(
+    'isVcpu4OverCapacity',
+    'isRam4OverCapacity',
+    'isDisk4OverCapacity',
+    function() {
+      return (this.get('isVcpu4OverCapacity') ||
               this.get('isRam4OverCapacity') ||
               this.get('isDisk4OverCapacity'));
-                                 }),
-  isOver5Capacity: Ember.computed('isVcpu5OverCapacity',
-                                 'isRam5OverCapacity',
-                                 'isDisk5OverCapacity', function() {
-                                   return (this.get('isVcpu5OverCapacity') ||
+    }
+  ),
+  isOver5Capacity: Ember.computed(
+    'isVcpu5OverCapacity',
+    'isRam5OverCapacity',
+    'isDisk5OverCapacity',
+    function() {
+      return (this.get('isVcpu5OverCapacity') ||
               this.get('isRam5OverCapacity') ||
               this.get('isDisk5OverCapacity'));
-                                 }),
-
-
+    }
+  ),
 });
