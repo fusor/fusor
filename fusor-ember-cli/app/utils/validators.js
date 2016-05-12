@@ -101,7 +101,7 @@ const NumberValidator = Validator.extend({
   getMessages(value) {
     let min = this.get('min'), max = this.get('max');
 
-     if (Ember.isPresent(min) && value < min) {
+    if (Ember.isPresent(min) && value < min) {
       return [`must be greater than or equal to ${min}`];
     }
 
@@ -198,21 +198,21 @@ const AlphaNumericDashUnderscoreValidator = RegExpValidator.extend({
 
 const IpRangeValidator = RegExpValidator.extend({
   regExp: new RegExp([
-      '\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
-      '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
-      '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
-      '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b'
-    ].join(''), ''),
+    '\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
+    '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
+    '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
+    '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b'
+  ].join(''), ''),
   message: 'invalid network range'
 });
 
 const IpAddressValidator = RegExpValidator.extend({
   regExp: new RegExp([
-      '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
-      '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
-      '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
-      '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
-    ].join(''), ''),
+    '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
+    '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
+    '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
+    '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+  ].join(''), ''),
   message: 'invalid ip address'
 });
 
