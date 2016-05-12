@@ -14,17 +14,17 @@ class CreateOpenstackDeployments < ActiveRecord::Migration
       t.string :overcloud_password
       t.string :overcloud_libvirt_type, default: 'kvm'
 
-      t.integer :overcloud_node_count
-      t.string :overcloud_compute_flavor
-      t.integer :overcloud_compute_count
-      t.string :overcloud_controller_flavor
-      t.integer :overcloud_controller_count
-      t.string :overcloud_ceph_storage_flavor
-      t.integer :overcloud_ceph_storage_count
-      t.string :overcloud_block_storage_flavor
-      t.integer :overcloud_block_storage_count
-      t.string :overcloud_object_storage_flavor
-      t.integer :overcloud_object_storage_count
+      t.integer :overcloud_node_count, default: 0
+      t.string :overcloud_compute_flavor, default: 'baremetal'
+      t.integer :overcloud_compute_count, default: 0
+      t.string :overcloud_controller_flavor, default: 'baremetal'
+      t.integer :overcloud_controller_count, default: 0
+      t.string :overcloud_ceph_storage_flavor, default: 'baremetal'
+      t.integer :overcloud_ceph_storage_count, default: 0
+      t.string :overcloud_block_storage_flavor, default: 'baremetal'
+      t.integer :overcloud_block_storage_count, default: 0
+      t.string :overcloud_object_storage_flavor, default: 'baremetal'
+      t.integer :overcloud_object_storage_count, default: 0
 
       t.string :overcloud_hostname
       t.string :undercloud_hostname
