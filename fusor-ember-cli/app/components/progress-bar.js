@@ -7,11 +7,11 @@ export default Ember.Component.extend({
 
   valueProgress: Ember.computed('model.progress', function() {
     if (this.get('model.state') === 'planning') {
-        return 0.1;
+      return 0.1;
     } else if (this.get('model.state')) {
-        return (this.get('model.progress') * 100);
+      return (this.get('model.progress') * 100);
     } else {
-        return 0;
+      return 0;
     }
   }),
 

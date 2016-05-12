@@ -42,7 +42,7 @@ export default Ember.Component.extend({
   optValueIsOptLabel: Ember.computed(
     'optionValuePath', 'optionLabelPath', function() {
       return this.get('optionValuePath') === this.get('optionLabelPath');
-  }),
+    }),
 
   valueIsPrompt: Ember.computed('value', function() {
     return this.get('value') === null || this.get('value.isPrompt');
@@ -58,7 +58,7 @@ export default Ember.Component.extend({
   hasError: Ember.computed('showValidationError', 'errors.name', 'isInvalid',
     function() {
       return this.get('showValidationError') && this.get('isInvalid');
-  }),
+    }),
 
   showValidationError: false // Sane default if not bound to external property
 });

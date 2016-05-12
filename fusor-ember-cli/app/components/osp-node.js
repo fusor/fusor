@@ -51,12 +51,12 @@ export default Ember.Component.extend({
     'foremanTask.result',
     'foremanTask.humanized_errors',
     function() {
-    if(this.get('isNodeReady') || this.get('isNodeInspecting')) {
-      return false;
-    }
+      if(this.get('isNodeReady') || this.get('isNodeInspecting')) {
+        return false;
+      }
 
-    return this.get('foremanTask.result') === 'error' || Ember.isPresent(this.get('foremanTask.humanized_errors'));
-  }),
+      return this.get('foremanTask.result') === 'error' || Ember.isPresent(this.get('foremanTask.humanized_errors'));
+    }),
 
   progressWidth: Ember.computed('foremanTask.progress', function() {
     let progressPercent = Math.floor((parseFloat(this.get('foremanTask.progress')) || 0) * 100);

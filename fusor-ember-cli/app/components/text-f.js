@@ -22,7 +22,7 @@ export default Ember.Component.extend({
 
   cssFormClass: Ember.computed('preText', 'postText', function () {
     if (Ember.isEmpty(this.get('preText')) && Ember.isEmpty(this.get('postText'))) {
-        return 'form-control';
+      return 'form-control';
     }
   }),
 
@@ -73,11 +73,11 @@ export default Ember.Component.extend({
     showPassword() {
       this.set('isEyeOpen', this.toggleProperty('isEyeOpen'));
       if (this.get('isEyeOpen')) {
-          this.set('typeInput', 'password');
-          this.set('eyeIcon', "fa-eye");
+        this.set('typeInput', 'password');
+        this.set('eyeIcon', "fa-eye");
       } else {
-          this.set('typeInput', 'text');
-          this.set('eyeIcon', "fa-eye-slash");
+        this.set('typeInput', 'text');
+        this.set('eyeIcon', "fa-eye-slash");
       }
     }
   }

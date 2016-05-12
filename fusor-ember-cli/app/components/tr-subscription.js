@@ -43,29 +43,29 @@ export default Ember.Component.extend({
     this.get('model').forEach(function(sub) {
       // update for matching subscription only
       if (sub.get('contract_number') == self.get('subscription.contractNumber')) {
-          var hasQtyToAdd = sub.get('quantity_to_add') > 0;
-          self.get('subscription').set('isSelectedSubscription', hasQtyToAdd);
-          self.get('subscription').set('qtyToAttach', sub.get('quantity_to_add'));
-        }
+        var hasQtyToAdd = sub.get('quantity_to_add') > 0;
+        self.get('subscription').set('isSelectedSubscription', hasQtyToAdd);
+        self.get('subscription').set('qtyToAttach', sub.get('quantity_to_add'));
+      }
     });
   }),
 
   saveSubAfterCheck: Ember.observer('subscription.isSelectedSubscription', function() {
-      if (this.get('subscription.isSelectedSubscription')) {
-          if (this.get('subscription.qtyToAttach') > 0) {
+    if (this.get('subscription.isSelectedSubscription')) {
+      if (this.get('subscription.qtyToAttach') > 0) {
             // nothing - don't want to change subscription.qtyToAttach
-          } else {
-            this.set('subscription.qtyToAttach', 0);
-          }
       } else {
-          // Zero out and save if unchecked
-          var hasPostiveQty = this.get('subscription.qtyToAttach') > 0;
-          if (hasPostiveQty) {
-            this.set('subscription.qtyToAttach', 0);
-            var pool = this.get('subscription');
-            this.sendAction('saveSubscription', pool, this.get('subscription.qtyToAttach'));
-          }
+        this.set('subscription.qtyToAttach', 0);
       }
+    } else {
+          // Zero out and save if unchecked
+      var hasPostiveQty = this.get('subscription.qtyToAttach') > 0;
+      if (hasPostiveQty) {
+        this.set('subscription.qtyToAttach', 0);
+        var pool = this.get('subscription');
+        this.sendAction('saveSubscription', pool, this.get('subscription.qtyToAttach'));
+      }
+    }
   }),
 
   isChecked: Ember.computed.alias('subscription.isSelectedSubscription'),
