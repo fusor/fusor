@@ -2,13 +2,14 @@ require 'fog'
 
 module Utils
   module Fusor
+    # rubocop:disable ClassLength
     class VMLauncher
       def initialize(params)
         @deployment      = params[:deployment]
         @application     = params[:application]
         @provider        = params[:provider]
         @hostgroup       = params[:hostgroup]
-        @operatingsystem = params[:os] ||= 'RedHat 7.1'
+        @operatingsystem = params[:os] ||= 'RedHat 7.2'
         @architecture    = params[:arch] ||= 'x86_64'
         @ptable_name     = params[:ptable_name] ||= 'Kickstart default'
         @profile_name = "#{@deployment.label}-#{@application}"
@@ -172,7 +173,7 @@ module Utils
                              "user_data" => 1,
                              "uuid" => @cr.available_images.find { |hash| @profile_name == hash.name }.id,
                              "compute_resource_id" => @cr.id,
-                             "operatingsystem_id" => Operatingsystem.find_by_title('RedHat 7.1')['id'],
+                             "operatingsystem_id" => Operatingsystem.find_by_title(@operatingsystem)['id'],
                              "architecture_id" => Architecture.find_by_name('x86_64')['id'])
         overcloud = {:openstack_auth_url => "http://#{@deployment.openstack_deployment.overcloud_address}:5000/v2.0/tokens",
                      :openstack_username => 'admin', :openstack_tenant => 'admin',
@@ -196,8 +197,6 @@ module Utils
       end
 
       def set_common_host_attrs
-        #TODO:  Remove the hardcoding of "root_pass"
-        # https://trello.com/c/sSVPuP8b
         @host_attrs = {"name" => @host_name,
                        "location_id" => Location.find_by_name('Default Location').id,
                        "environment_id" => Environment.where(:katello_id => "Default_Organization/Library/Fusor_Puppet_Content").first.id,
@@ -209,16 +208,58 @@ module Utils
                        "operatingsystem_id" => Operatingsystem.find_by_title(@operatingsystem)['id'],
                        "domain_id" => 1,
                        "root_pass" => @deployment.openshift_root_password,
-                       "mac" => "admin"
+                       "mac" => ""
                       }.with_indifferent_access
       end
 
       def set_rhev_host_attrs(attrs)
         set_common_host_attrs
+        cl_id  = @cr.clusters.find { |c| c.name == @deployment.rhev_cluster_name }.id
+        net_id = @cr.available_networks(cl_id).first.id
         @host_attrs["ptable_id"] = Ptable.find { |p| p["name"] == @ptable_name }.id
         @host_attrs["build"] = "0"
         @host_attrs["hostgroup_id"] = @hostgroup.id
         @host_attrs["compute_attributes"] = {"start" => "1"}.with_indifferent_access.merge(attrs)
+        @host_attrs["interfaces_attributes"] = {"0" => {
+                                                  "_destroy" => "0",
+                                                  "type" => "Nic::Managed",
+                                                  "mac" => "",
+                                                  "identifier" => "",
+                                                  "name" => "eth0",
+                                                  "domain_id" => "1",
+                                                  "subnet_id" => "1",
+                                                  "managed" => "1",
+                                                  "primary" => "1",
+                                                  "provision" => "1",
+                                                  "virtual" => "0",
+                                                  "tag" => "",
+                                                  "attached_to" => "",
+                                                  "compute_attributes" => {
+                                                    "name" => "eth0",
+                                                    "network" => net_id
+                                                  }
+                                                },
+                                                "new_interfaces" => {
+                                                  "_destroy" => "1",
+                                                  "type" => "Nic::Managed",
+                                                  "mac" => "",
+                                                  "identifier" => "",
+                                                  "name" => "eth0",
+                                                  "domain_id" => "",
+                                                  "subnet_id" => "",
+                                                  "ip" => "",
+                                                  "managed" => "1",
+                                                  "primary" => "0",
+                                                  "provision" => "0",
+                                                  "virtual" => "0",
+                                                  "tag" => "",
+                                                  "attached_to" => "",
+                                                  "compute_attributes" => {
+                                                    "name" => "eth0",
+                                                    "network" => net_id
+                                                  }
+                                                }
+                                              }
       end
 
       def set_osp_host_attrs
