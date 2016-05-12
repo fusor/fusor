@@ -86,11 +86,12 @@ module Fusor
     end
 
     def ensure_openstack_deployment
-      if openstack_deployment
-        self.openstack_deployment.destroy unless deploy_openstack?
-      else
+      if deploy_openstack?
         self.openstack_deployment ||= Fusor::OpenstackDeployment.new
+      else
+        self.openstack_deployment.destroy if openstack_deployment
       end
+      true
     end
   end
 end
