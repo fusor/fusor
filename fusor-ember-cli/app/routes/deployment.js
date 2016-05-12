@@ -194,7 +194,6 @@ export default Ember.Route.extend(DeploymentRouteMixin, UsesOseDefaults, {
         console.log(item.get('isSelectedSubscription'));
 
         if (item.get('qtyToAttach') > 0) {
-
           // POST /customer_portal/consumers/#{CONSUMER['uuid']}/entitlements?pool=#{POOL['id']}&quantity=#{QUANTITY}
           var url = '/customer_portal/consumers/' + consumerUUID + "/entitlements?pool=" + item.get('id') + "&quantity=" + item.get('qtyToAttach');
           console.log('POST attach subscriptions using following URL');
@@ -214,9 +213,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, UsesOseDefaults, {
           }, function(error) {
             console.log('error on attachSubscriptions');
             return self.send('error');
-          }
-          );
-
+          });
         }
       });
     },

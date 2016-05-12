@@ -25,11 +25,17 @@ export default Ember.Route.extend({
       var pools        = this.store.query('pool',        {uuid: consumerUUID});
       var subscriptions = this.store.query('subscription', {deployment_id: deploymentId, source: 'added'});
 
-      return Ember.RSVP.Promise.all([entitlements, pools, subscriptions]).then(function(results) {
+      return Ember.RSVP.Promise.all([
+        entitlements,
+        pools,
+        subscriptions
+      ]).then(function(results) {
         var entitlementsResults = results[0];
         var allPoolsResults     = results[1];
         var subscriptionResults     = results[2];
-        self.modelFor('subscriptions').set('isAuthenticated', true); // in case go to this route from URL
+
+        // in case go to this route from URL
+        self.modelFor('subscriptions').set('isAuthenticated', true);
         allPoolsResults.forEach(function(pool){
           pool.set('qtyAttached', 0); //default for loop
 
@@ -39,22 +45,24 @@ export default Ember.Route.extend({
             }
           });
 
-              //create Fusor::Subscription records if they don't exist
-          var matchingSubscription = subscriptionResults.filterBy('contract_number', pool.get('contractNumber')).get('firstObject');
+          //create Fusor::Subscription records if they don't exist
+          var matchingSubscription = subscriptionResults.filterBy(
+            'contract_number', pool.get('contractNumber')).get('firstObject');
           if (Ember.isBlank(matchingSubscription)) {
-            var sub = self.store.createRecord('subscription', {'contract_number': pool.get('contractNumber'),
-                                     'product_name': pool.get('productName'),
-                                     'quantity_to_add': 0,
-                                     'quantity_attached': pool.get('qtyAttached'),
-                                     'source': 'added',
-                                     'start_date': pool.get('startDate'),
-                                     'end_date': pool.get('endDate'),
-                                     'total_quantity': pool.get('quantity'),
-                                     'deployment': deployment
-                                    });
+            var sub = self.store.createRecord('subscription', {
+              'contract_number': pool.get('contractNumber'),
+              'product_name': pool.get('productName'),
+              'quantity_to_add': 0,
+              'quantity_attached': pool.get('qtyAttached'),
+              'source': 'added',
+              'start_date': pool.get('startDate'),
+              'end_date': pool.get('endDate'),
+              'total_quantity': pool.get('quantity'),
+              'deployment': deployment
+            });
             sub.save();
           } else {
-                // update quantity_attached is it may have changed since record was created
+            // update quantity_attached is it may have changed since record was created
             matchingSubscription.set('quantity_attached', pool.get('qtyAttached'));
             matchingSubscription.save();
           }

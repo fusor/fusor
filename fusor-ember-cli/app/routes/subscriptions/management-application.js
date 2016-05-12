@@ -7,15 +7,25 @@ export default Ember.Route.extend({
     var deployment = this.modelFor('deployment');
     var sessionPortal = this.modelFor('subscriptions');
     var ownerKey = sessionPortal.get('ownerKey');
+
     // Use owner key to get consumers (subscription application manangers)
     // GET /customer_portal/owners/#{OWNER['key']}/consumers?type=satellite
-    if (deployment.get('isStarted') && deployment.get('upstream_consumer_uuid') && deployment.get('upstream_consumer_name')) {
-      var managementApp = Ember.Object.create({id: deployment.get('upstream_consumer_uuid'),
-                                                 name: deployment.get('upstream_consumer_name')});
+    if (deployment.get('isStarted') &&
+        deployment.get('upstream_consumer_uuid') &&
+        deployment.get('upstream_consumer_name')) {
+
+      var managementApp = Ember.Object.create({
+        id: deployment.get('upstream_consumer_uuid'),
+        name: deployment.get('upstream_consumer_name')
+      });
+
       return Ember.A([managementApp]);
     } else {
-      return this.store.query('management-application', {owner_key: ownerKey}).then(function(results) {
-        sessionPortal.set('isAuthenticated', true); // in case go to this route from URL
+      return this.store.query('management-application', {
+        owner_key: ownerKey
+      }).then(function(results) {
+        // in case go to this route from URL
+        sessionPortal.set('isAuthenticated', true);
         sessionPortal.save();
         return results;
       }, function(results) {
@@ -59,11 +69,11 @@ export default Ember.Route.extend({
           deployment.set('upstream_consumer_uuid', results.owner_details.upstreamConsumer.uuid);
           deployment.set('upstream_consumer_name', results.owner_details.upstreamConsumer.name);
         } else {
-            // nullify sessionPortal.consumerUUID since it's probably a different deployment
+          // nullify sessionPortal.consumerUUID since it's probably a different deployment
           sessionPortal.set('consumerUUID', null);
         }
       }, function(results) {
-          // also nullify sessionPortal.consumerUUID in case there was an error
+        // also nullify sessionPortal.consumerUUID in case there was an error
         sessionPortal.set('consumerUUID', null);
       });
     }
@@ -75,7 +85,7 @@ export default Ember.Route.extend({
 
   actions: {
     error(reason, transition) {
-        // bubble up this error event:
+      // bubble up this error event:
       return true;
     }
   }

@@ -170,18 +170,15 @@ export default Ember.Route.extend({
 
   getFullLog(params) {
     var self = this, controller = this.get('controller');
-
     controller.set('isLoading', true);
-    return this.getJsonLog(params).then(
-        function (response) {
-          self.loadLog(params.log_type, response);
-        },
-        function (error) {
-          self.showError(error);
-        })
-      .finally(function () {
-        controller.set('isLoading', false);
-      });
+
+    return this.getJsonLog(params).then(function (response) {
+      self.loadLog(params.log_type, response);
+    }, function (error) {
+      self.showError(error);
+    }).finally(function () {
+      controller.set('isLoading', false);
+    });
   },
 
   loadLog(logType, response) {

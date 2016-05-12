@@ -26,8 +26,8 @@ export default Ember.Route.extend({
     if (deployment.get('deploy_openstack') && !Ember.isBlank(openstackDeployment.get('undercloud_admin_password'))) {
       controller.set('isOspLoading', true);
       Ember.RSVP.hash({
-          // plan: this.store.findRecord('deployment-plan', deployment.get('id'), {reload: true}),
-          // findRecord on deployment-plan is caching and not reloading, so using queryRecord for now.
+        // plan: this.store.findRecord('deployment-plan', deployment.get('id'), {reload: true}),
+        // findRecord on deployment-plan is caching and not reloading, so using queryRecord for now.
         plan: this.store.queryRecord('deployment-plan', {deployment_id: deploymentId}),
         images: this.store.query('image', {deployment_id: deploymentId}),
         nodes: this.store.query('node', {deployment_id: deploymentId}),

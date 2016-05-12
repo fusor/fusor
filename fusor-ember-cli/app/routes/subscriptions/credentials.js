@@ -70,7 +70,7 @@ export default Ember.Route.extend({
       }).then(function(response) {
         //show always be {} empty successful 200 response
         self.send('saveCredentials');
-      },function(error) {
+      }, function(error) {
         console.log('error on loginPortal');
         controller.set('nextButtonTitle', "Next");
         controller.set('disableCredentialsNext', false);

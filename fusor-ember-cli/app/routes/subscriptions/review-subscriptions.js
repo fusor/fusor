@@ -10,7 +10,10 @@ export default Ember.Route.extend({
       return this.store.query('subscription', {deployment_id: deploymentId, source: 'imported'});
     } else {
         // if there are no added subscriptions we need to show what is in the manifest instead.
-      return this.store.query('subscription', {deployment_id: deploymentId, source: 'added'}).then(function(results) {
+      return this.store.query('subscription', {
+        deployment_id: deploymentId,
+        source: 'added'
+      }).then(function(results) {
 
         let noSubsFound = results.get('length') === 0;
 
