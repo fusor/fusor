@@ -14,8 +14,8 @@ export default Ember.Route.extend({
       model.set('openshift_username', 'cloudsuite-install');
     }
     this.store.findAll('hostgroup').then(function(results) {
-        var fusorBaseHostgroup = results.filterBy('name', 'Fusor Base').get('firstObject');
-        controller.set('domainName', fusorBaseHostgroup.get('domain.name'));
+      var fusorBaseHostgroup = results.filterBy('name', 'Fusor Base').get('firstObject');
+      controller.set('domainName', fusorBaseHostgroup.get('domain.name'));
     });
   },
 

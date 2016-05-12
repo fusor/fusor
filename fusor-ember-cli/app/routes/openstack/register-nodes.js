@@ -164,22 +164,22 @@ export default Ember.Route.extend({
   formatError(error, message) {
     let errorMessage = '';
     switch (Ember.typeOf(error)) {
-      case 'string':
-        errorMessage = error;
-        break;
-      case 'error':
-        errorMessage = error.message + ': ';
-        if (error.errors) {
-          error.errors.forEach((subError) => {
-            if (subError.title){
-              errorMessage += subError.title;
-            }
-            if (subError.status){
-              errorMessage += `  Status: ${subError.status}`;
-            }
-          });
-        }
-        break;
+    case 'string':
+      errorMessage = error;
+      break;
+    case 'error':
+      errorMessage = error.message + ': ';
+      if (error.errors) {
+        error.errors.forEach((subError) => {
+          if (subError.title){
+            errorMessage += subError.title;
+          }
+          if (subError.status){
+            errorMessage += `  Status: ${subError.status}`;
+          }
+        });
+      }
+      break;
     }
 
     return message ? message + ' ' + errorMessage : errorMessage;

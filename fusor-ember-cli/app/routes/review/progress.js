@@ -3,7 +3,7 @@ import Ember from 'ember';
 export default Ember.Route.extend({
 
   beforeModel() {
-      return this.transitionTo('review.progress.overview');
+    return this.transitionTo('review.progress.overview');
   }
 
 });

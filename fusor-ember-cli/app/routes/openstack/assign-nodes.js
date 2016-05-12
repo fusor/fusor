@@ -28,25 +28,23 @@ export default Ember.Route.extend({
       Ember.RSVP.hash({
           // plan: this.store.findRecord('deployment-plan', deployment.get('id'), {reload: true}),
           // findRecord on deployment-plan is caching and not reloading, so using queryRecord for now.
-          plan: this.store.queryRecord('deployment-plan', {deployment_id: deploymentId}),
-          images: this.store.query('image', {deployment_id: deploymentId}),
-          nodes: this.store.query('node', {deployment_id: deploymentId}),
-          profiles: this.store.query('flavor', {deployment_id: deploymentId})
-        })
-        .then(hash => {
-          controller.set('plan', hash.plan);
-          controller.set('images', hash.images);
-          controller.set('nodes', hash.nodes);
-          controller.set('profiles', hash.profiles);
-          this.updateRoleAssignments();
-          this.updateEditableParams();
-          controller.set('showSpinner', false);
-        })
-        .catch(error => {
-          controller.set('showSpinner', false);
-          controller.set('errorMsg', 'Error retrieving OpenStack data: ' + this.formatError(error));
-          console.log('Error retrieving OpenStack data: ', error);
-        });
+        plan: this.store.queryRecord('deployment-plan', {deployment_id: deploymentId}),
+        images: this.store.query('image', {deployment_id: deploymentId}),
+        nodes: this.store.query('node', {deployment_id: deploymentId}),
+        profiles: this.store.query('flavor', {deployment_id: deploymentId})
+      }).then(hash => {
+        controller.set('plan', hash.plan);
+        controller.set('images', hash.images);
+        controller.set('nodes', hash.nodes);
+        controller.set('profiles', hash.profiles);
+        this.updateRoleAssignments();
+        this.updateEditableParams();
+        controller.set('showSpinner', false);
+      }).catch(error => {
+        controller.set('showSpinner', false);
+        controller.set('errorMsg', 'Error retrieving OpenStack data: ' + this.formatError(error));
+        console.log('Error retrieving OpenStack data: ', error);
+      });
     }
   },
 

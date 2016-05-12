@@ -117,7 +117,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, UsesOseDefaults, {
       var controller = this.controllerFor('review/installation');
 
       if(controller.get('modalOpen')) {
-          controller.closeContinueDeployModal();
+        controller.closeContinueDeployModal();
       }
 
       controller.set('spinnerTextMessage', 'Building task list');
@@ -201,20 +201,20 @@ export default Ember.Route.extend(DeploymentRouteMixin, UsesOseDefaults, {
           console.log(url);
 
           request({
-              url: url,
-              type: "POST",
-              headers: {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-                  "X-CSRF-Token": token
-              }
-              }).then(function(response) {
-                  console.log('successfully attached ' + item.qtyToAttach + ' subscription for pool ' + item.id);
-                  self.send('installDeployment');
-              }, function(error) {
-                  console.log('error on attachSubscriptions');
-                  return self.send('error');
-              }
+            url: url,
+            type: "POST",
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "X-CSRF-Token": token
+            }
+          }).then(function(response) {
+            console.log('successfully attached ' + item.qtyToAttach + ' subscription for pool ' + item.id);
+            self.send('installDeployment');
+          }, function(error) {
+            console.log('error on attachSubscriptions');
+            return self.send('error');
+          }
           );
 
         }
