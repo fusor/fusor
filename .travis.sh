@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $1 == "install" ]; then 
+if [ $1 == "install" ]; then
   cd ..
   gem install bundler
   # I don't think these are needed in Travis Ci environment, will have to test though
@@ -54,7 +54,7 @@ if [ $1 == "install" ]; then
   # rails only supports loading fixtures from one directory, so link the
   # katello / fusor fixtures in to forman so they all will be loaded
   # Now with an even uglier workaround for katello and fusor both having a hosts.yml
-  
+
   pushd test
   sed -i 's/relative_url_root/relative_url_root rescue nil/g' test_helper.rb
   popd
@@ -66,6 +66,26 @@ if [ $1 == "install" ]; then
   echo "" >> hosts.yml
   cat ../../../fusor/server/test/fixtures/hosts.yml >> hosts.yml
 
+  ############################################################
+  # Front-end deps install
+  ############################################################
+  cd ../../../fusor
+  source $HOME/.nvm/nvm.sh
+  nvm install v4.2 && nvm use v4.2
+  npm install -g bower
+  npm install -g ember-cli
+  cd fusor-ember-cli && bower install && npm install
+  node --version && npm --version && bower --version && ember --version
+elif [ $1 == "ember-run" ]; then
+  # Expects to be called from fusor project root
+  source $HOME/.nvm/nvm.sh
+  nvm use v4.2
+  cd fusor-ember-cli
+
+  # Confirm ESLint passes and project can build
+  TRAVIS_CI=1 ember build
+  # TODO: Execute test suite
+  ember test
 else
   cd ../foreman
   rake db:create

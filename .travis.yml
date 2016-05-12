@@ -17,10 +17,10 @@ install: ./.travis.sh install
 
 before_script: ./.travis.sh migrate
 
-script: 
+script:
  - gem install rubocop -v 0.35.1 && rubocop
- - cd ../foreman
- - rake test:fusor
+ - pushd ../foreman && rake test:fusor && popd
+ - ./travis.sh ember-run
 
 services:
   - postgresql
