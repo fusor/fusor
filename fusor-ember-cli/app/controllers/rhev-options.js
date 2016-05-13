@@ -28,13 +28,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return EqualityValidator.create({equals: this.get('rhevEngineAdminPassword')});
   }),
 
-  optionsBackRouteName: Ember.computed('rhevIsSelfHosted', function() {
-    if (this.get('rhevIsSelfHosted')) {
-      return 'engine.discovered-host';
-    } else {
-      return 'hypervisor.discovered-host';
-    }
-  }),
+  optionsBackRouteName: 'hypervisor.discovered-host',
 
   applicationModes: ['Both', 'Virt', 'Gluster'],
   engineLocation: ['Local', 'Remote'],

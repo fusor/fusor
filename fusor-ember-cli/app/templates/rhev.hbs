@@ -8,6 +8,7 @@
         </a>
       {{/link-to}}
 
+      {{#unless isSelfHost}}
       {{#link-to 'engine.discovered-host' tagName='li' disabled=disableTabRhevEngine}}
         <a>
           <span class="hanging-indent">
@@ -15,16 +16,15 @@
           </span>
         </a>
       {{/link-to}}
+      {{/unless}}
 
-      {{#unless isSelfHost}}
-      {{#link-to 'hypervisor.discovered-host' tagName='li' disabled=disableTabRhevHypervisors}}
+      {{#link-to 'hypervisor' tagName='li' disabled=disableTabRhevHypervisors}}
         <a>
           <span class="hanging-indent">
-            2C. Hypervisors
+            {{if isSelfHost '2B' '2C'}}. {{hypervisorTabName }}
           </span>
         </a>
       {{/link-to}}
-      {{/unless}}
 
       {{#link-to 'rhev-options' tagName='li' disabled=disableTabRhevConfiguration}}
         <a>

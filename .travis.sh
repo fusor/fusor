@@ -65,6 +65,7 @@ if [ $1 == "install" ]; then
   ln -s ../../../katello/test/fixtures/models/* .
   echo "" >> hosts.yml
   cat ../../../fusor/server/test/fixtures/hosts.yml >> hosts.yml
+  cat ../../../fusor/server/test/fixtures/operatingsystems.yml >> operatingsystems.yml
 
   ############################################################
   # Front-end deps install

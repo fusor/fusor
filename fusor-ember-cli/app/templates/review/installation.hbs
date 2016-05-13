@@ -67,8 +67,12 @@
         {{review-link label='Setup Type' routeName='rhev-setup' isRequired=true
                           value=rhevSetupController.rhevSetupTitle}}
         {{#if isSelfHosted}}
-            {{review-link label='Engine/Hypervisor' routeName='engine.discovered-host' isRequired=true
-                          value=engineNamePlusDomain}}
+            {{#review-link label='Engine/Hypervisor Host Name' routeName='hypervisor.discovered-host' isRequired=true value=selectedHypervisorHosts useYieldInstead=true}}
+                {{#each selectedHypervisorHosts as |host|}}
+                   {{hypervisor-name host=host hypervisorDomain=hypervisorDomain}}
+                {{/each}}
+            {{/review-link}}
+
         {{else}}
             {{review-link label='Engine Host Name' routeName='engine.discovered-host' isRequired=true
                           value=engineNamePlusDomain}}
@@ -117,6 +121,18 @@
 
             {{review-link label='Export Storage Path' routeName='storage' isDefault=true
                           value=model.rhev_export_domain_path}}
+
+        {{/if}}
+        {{#if isSelfHosted}}
+
+            {{review-link label='Hosted Storage Domain Name' routeName='storage' isDefault=true
+                          value=model.hosted_storage_name}}
+
+            {{review-link label='Hosted Storage Address' routeName='storage' isDefault=true
+                          value=model.hosted_storage_address}}
+
+            {{review-link label='Hosted Storage Path' routeName='storage' isDefault=true
+                          value=model.hosted_storage_path}}
 
         {{/if}}
 

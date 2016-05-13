@@ -28,6 +28,7 @@ module Actions
           ::Fusor.log.info "Starting host #{input[:host_id]} deployment..."
           deployment = ::Fusor::Deployment.find(input[:deployment_id])
           hostgroup = find_hostgroup(deployment, input[:hostgroup_name])
+          raise "no hostgroup with name #{input[:hostgroup_name]} found" if hostgroup.nil?
           host = ::Host::Base.find(input[:host_id])
 
           host = assign_host_to_hostgroup(host, hostgroup)

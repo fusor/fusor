@@ -39,7 +39,7 @@ module Actions
             #  -m do not remove network interfaces from image
             #  upload <image_path>
 
-            ssh_host = deployment.rhev_engine_host.facts['ipaddress']
+            ssh_host = deployment.rhev_engine_host.ip
             ssh_username = "root"
 
             username = "admin@internal"
@@ -61,6 +61,7 @@ module Actions
             client = Utils::Fusor::SSHConnection.new(ssh_host, ssh_username, deployment.rhev_root_password)
             client.on_complete(lambda { upload_image_completed })
             client.on_failure(lambda { upload_image_failed })
+            ::Fusor.log.debug "Running command: #{cmd}"
             client.execute(cmd)
 
             output[:template_name] = imported_template_name

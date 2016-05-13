@@ -9,6 +9,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       rhev_cluster_name: 'Default',
       rhev_storage_name: 'my_storage',
       rhev_export_domain_name: 'my_export',
+      hosted_storage_name: 'my_hosted_storage',
       rhev_data_center_name: 'Default',
       rhev_storage_type: 'NFS'
     });

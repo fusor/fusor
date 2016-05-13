@@ -40,6 +40,10 @@ export default DS.Model.extend({
   rhev_export_domain_address: DS.attr('string'),
   rhev_export_domain_path: DS.attr('string'),
 
+  hosted_storage_name: DS.attr('string'),
+  hosted_storage_address: DS.attr('string'),
+  hosted_storage_path: DS.attr('string'),
+
   rhev_local_storage_path: DS.attr('string'),
 
   host_naming_scheme: DS.attr('string'),

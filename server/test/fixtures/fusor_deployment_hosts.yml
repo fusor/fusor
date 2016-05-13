@@ -13,3 +13,7 @@ deployment_host3:
 deployment_host4:
   discovered_host: host4
   deployment: rhev_and_cfme
+
+deployment_host5:
+  discovered_host: host5
+  deployment: rhev_self_hosted
