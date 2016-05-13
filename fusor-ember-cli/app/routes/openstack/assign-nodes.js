@@ -54,8 +54,8 @@ export default Ember.Route.extend({
     let roles = this.get('controller.roles');
 
     roles.forEach(role => {
-      role.set('flavor', this.get(`controller.openstackDeployment.${role.get('flavorDeploymentAttributeName')}`));
-      role.set('count', this.get(`controller.openstackDeployment.${role.get('countDeploymentAttributeName')}`));
+      role.set('flavor', this.get(`controller.openstackDeployment.${role.get('flavorDeploymentAttributeName')}`) || 'baremetal');
+      role.set('count', this.get(`controller.openstackDeployment.${role.get('countDeploymentAttributeName')}`) || 0);
     });
   },
 
