@@ -5,10 +5,29 @@ $info-color: #333;
 $warning-color: #ec7a08;
 $error-color: #cc0000;
 
+// ******************************
+// Foreman style overrides - begin
+
 // overriding foreman .spinner {float: left;}
 .spinner {
   float: none;
 }
+
+//overriding foreman padding so gray goes to the left/right edges
+#main {
+  padding: 0;
+}
+
+#content {
+  padding: 0;
+}
+
+//hiding foreman "common/searchbar" so gray goes to the top.
+#content > .row:first-child {
+  display: none;
+}
+
+// ******************************
 
 .rhci-footer-box {
   height: 100px;
