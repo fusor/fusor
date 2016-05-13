@@ -4,7 +4,7 @@ export default function() {
 
   // route to prevent js console error by ember-cli-blanket
   this.post('/write-blanket-coverage', function(db, request) {
-      return {};
+    return {};
   });
 
   this.get('/fusor/api/v21/deployments');
@@ -25,13 +25,13 @@ export default function() {
   this.get('/api/v21/lifecycle_environments');
   this.get('/api/v21/lifecycle_environments/:id');
   this.post('/api/v21/lifecycle_environments', function(db, request) {
-      var attrs = JSON.parse(request.requestBody).lifecycle_environment;
-      attrs['prior_id'] = 1;
-      var record = db.lifecycle_environments.insert(attrs);
-      console.log(record);
-      return {
-        lifecycle_environment: record
-      };
+    var attrs = JSON.parse(request.requestBody).lifecycle_environment;
+    attrs['prior_id'] = 1;
+    var record = db.lifecycle_environments.insert(attrs);
+    console.log(record);
+    return {
+      lifecycle_environment: record
+    };
   });
 
   this.get('/api/v21/discovered_hosts');

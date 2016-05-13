@@ -5,6 +5,8 @@ inherit_from:
 
 AllCops:
   RunRailsCops: true # automatically run rails cops
+  Exclude:
+    - 'fusor-ember-cli/**/*'
 
 #MethodLength:
   #Description: 'Avoid methods longer than 30 lines of code.'

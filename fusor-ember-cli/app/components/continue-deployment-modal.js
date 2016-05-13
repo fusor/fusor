@@ -3,7 +3,7 @@ import Ember from 'ember';
 export default Ember.Component.extend({
 
   title: Ember.computed('deployment.name', function() {
-      return "Continue QCI Deployment - " + this.get('deployment.name');
+    return "Continue QCI Deployment - " + this.get('deployment.name');
   }),
 
   actions: {

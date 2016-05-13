@@ -31,16 +31,14 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   availableHosts: Ember.computed('allDiscoveredHosts.[]', 'hypervisorModelIds.[]', function() {
     // TODO: Ember.computed.filter() caused problems. error item.get is not a function
     var self = this;
-     var allDiscoveredHosts = this.get('allDiscoveredHosts');
-     if (this.get('allDiscoveredHosts')) {
-        return allDiscoveredHosts.filter(function(item) {
-          if (self.get('hypervisorModelIds')) {
-            //console.log(item.get('id'));
-            //console.log(self.get('hypervisorModelIds'));
-            return (item.get('id') !== self.get('selectedRhevEngine.id'));
-          }
-        });
-      }
+    var allDiscoveredHosts = this.get('allDiscoveredHosts');
+    if (this.get('allDiscoveredHosts')) {
+      return allDiscoveredHosts.filter(function(item) {
+        if (self.get('hypervisorModelIds')) {
+          return (item.get('id') !== self.get('selectedRhevEngine.id'));
+        }
+      });
+    }
   }),
 
   // same as Engine. TODO. put it mixin
@@ -53,10 +51,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       return this.get('model');
     } else if (availableHosts.get('length') > 0) {
       return availableHosts.filter(function(record) {
-        return (record.get('name').match(rx) || record.get('memory_human_size').match(rx) ||
-                record.get('disks_human_size').match(rx) || record.get('subnet_to_s').match(rx) ||
-                record.get('mac').match(rx)
-               );
+        return record.get('name').match(rx) ||
+          record.get('memory_human_size').match(rx) ||
+          record.get('disks_human_size').match(rx) ||
+          record.get('subnet_to_s').match(rx) ||
+          record.get('mac').match(rx);
       });
     } else {
       return availableHosts;
@@ -75,7 +74,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   cntSelectedHypervisorHosts: Ember.computed.alias('hypervisorModelIds.length'),
 
   hostInflection: Ember.computed('cntSelectedHypervisorHosts', function() {
-      return this.get('cntSelectedHypervisorHosts') === 1 ? 'host' : 'hosts';
+    return this.get('cntSelectedHypervisorHosts') === 1 ? 'host' : 'hosts';
   }),
 
   isAllChecked: Ember.computed('availableHosts.[]', 'cntSelectedHypervisorHosts', function() {

@@ -19,24 +19,22 @@ export default Ember.Route.extend(DiscoveredHostRouteMixin, {
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
 
       request({
-            url: '/fusor/api/v21/deployments/' + deployment.get('id'),
-            type: "PUT",
-            data: JSON.stringify({'deployment': { 'discovered_host_ids': hypervisorModelIds } }),
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "X-CSRF-Token": token,
-                "Authorization": "Basic " + self.get('session.basicAuthToken')
-            }
-          }).then(function(response) {
-              if (redirectPath) {
-                self.transitionTo('rhev-options');
-              }
-            },
-              function(error) {
-              console.log(error);
-            }
-      );
+        url: '/fusor/api/v21/deployments/' + deployment.get('id'),
+        type: "PUT",
+        data: JSON.stringify({'deployment': { 'discovered_host_ids': hypervisorModelIds } }),
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "X-CSRF-Token": token,
+          "Authorization": "Basic " + self.get('session.basicAuthToken')
+        }
+      }).then(function(response) {
+        if (redirectPath) {
+          self.transitionTo('rhev-options');
+        }
+      }, function(error) {
+        console.log(error);
+      });
     }
   }
 

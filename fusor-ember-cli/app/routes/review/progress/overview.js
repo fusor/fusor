@@ -2,31 +2,32 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
   model() {
-      var deployment = this.modelFor('deployment');
-      var deployTaskPromise = this.store.findRecord('foreman-task', deployment.get('foreman_task_uuid'));
-      var subtasksOfDeployPromise = this.store.query('foreman-task', {search: "parent_task_id = " + deployment.get('foreman_task_uuid')});
-      var self = this;
-      return Ember.RSVP.Promise.all([deployTaskPromise, subtasksOfDeployPromise]).then(function(results) {
-        var deployTask = results[0];
-        var subtasksOfDeploy = results[1];
-        var manageContentTask = subtasksOfDeploy.findBy('humanized_name', 'Manage Content');
-        var rhevTask          = subtasksOfDeploy.findBy('humanized_name', 'Deploy Red Hat Enterprise Virtualization');
-        var openstackTask     = subtasksOfDeploy.findBy('humanized_name', 'Deploy Red Hat OpenStack Platform overcloud');
-        var cfmeTask          = subtasksOfDeploy.findBy('humanized_name', 'Deploy CloudForms Management Engine');
-        var openshiftTask     = subtasksOfDeploy.findBy('humanized_name', 'Deploy OpenShift Enterprise');
+    var deployment = this.modelFor('deployment');
+    var deployTaskPromise = this.store.findRecord('foreman-task', deployment.get('foreman_task_uuid'));
+    var subtasksOfDeployPromise = this.store.query('foreman-task', {search: "parent_task_id = " + deployment.get('foreman_task_uuid')});
+    var self = this;
+    return Ember.RSVP.Promise.all([
+      deployTaskPromise,
+      subtasksOfDeployPromise
+    ]).then(function(results) {
+      var deployTask = results[0];
+      var subtasksOfDeploy = results[1];
+      var manageContentTask = subtasksOfDeploy.findBy('humanized_name', 'Manage Content');
+      var rhevTask          = subtasksOfDeploy.findBy('humanized_name', 'Deploy Red Hat Enterprise Virtualization');
+      var openstackTask     = subtasksOfDeploy.findBy('humanized_name', 'Deploy Red Hat OpenStack Platform overcloud');
+      var cfmeTask          = subtasksOfDeploy.findBy('humanized_name', 'Deploy CloudForms Management Engine');
+      var openshiftTask     = subtasksOfDeploy.findBy('humanized_name', 'Deploy OpenShift Enterprise');
 
-
-        return Ember.RSVP.hash({
-           deployTask: deployTask,
-           manageContentTask: manageContentTask,
-           rhevTask: rhevTask,
-           openstackTask: openstackTask,
-           cfmeTask: cfmeTask,
-           openshiftTask: openshiftTask,
-           deployment: deployment
-        });
-
+      return Ember.RSVP.hash({
+        deployTask: deployTask,
+        manageContentTask: manageContentTask,
+        rhevTask: rhevTask,
+        openstackTask: openstackTask,
+        cfmeTask: cfmeTask,
+        openshiftTask: openshiftTask,
+        deployment: deployment
       });
+    });
   },
 
   setupController(controller, model) {

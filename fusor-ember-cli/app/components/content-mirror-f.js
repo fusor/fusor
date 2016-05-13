@@ -88,7 +88,7 @@ export default TextFComponent.extend({
       }
     }).finally(() => {
       if(shouldUpdate()) {
-       this.setIsVerifyingContentMirror(false);
+        this.setIsVerifyingContentMirror(false);
       }
     });
   },

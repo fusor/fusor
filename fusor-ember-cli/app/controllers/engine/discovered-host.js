@@ -24,14 +24,14 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   availableHosts: Ember.computed('allDiscoveredHosts.[]', 'hypervisorModelIds.[]', function() {
     // TODO: Ember.computed.filter() caused problems. error item.get is not a function
     var self = this;
-     var allDiscoveredHosts = this.get('allDiscoveredHosts');
-     if (this.get('allDiscoveredHosts')) {
-        return allDiscoveredHosts.filter(function(item) {
-          if (self.get('hypervisorModelIds')) {
-            return !(self.get('hypervisorModelIds').contains(item.get('id')));
-          }
-        });
-      }
+    var allDiscoveredHosts = this.get('allDiscoveredHosts');
+    if (this.get('allDiscoveredHosts')) {
+      return allDiscoveredHosts.filter(function(item) {
+        if (self.get('hypervisorModelIds')) {
+          return !(self.get('hypervisorModelIds').contains(item.get('id')));
+        }
+      });
+    }
   }),
 
   filteredHosts: Ember.computed('availableHosts.[]', 'searchString', 'isStarted', function(){
@@ -62,11 +62,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   disableNextOnEngine: Ember.computed(
     'isSelectedEngineHostnameInvalid',
     'deploymentController.hasNoEngine',
-    function()
-  {
-    return this.get('deploymentController.hasNoEngine') ||
-      this.get('isSelectedEngineHostnameInvalid');
-  }),
+    function() {
+      return this.get('deploymentController.hasNoEngine') ||
+        this.get('isSelectedEngineHostnameInvalid');
+    }
+  ),
 
   actions: {
     onEngineChanged(newlySelectedHost, isInvalidHostname) {

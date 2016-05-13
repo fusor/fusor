@@ -22,9 +22,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     'openstackDeployment.isUndercloudDeployed',
     'openstackDeployment.areNodesRegistered',
     function () {
-     return !this.get('openstackDeployment.isUndercloudDeployed') ||
+      return !this.get('openstackDeployment.isUndercloudDeployed') ||
        !this.get('openstackDeployment.areNodesRegistered');
-  }),
+    }
+  ),
 
   disableTabOvercloud: Ember.computed(
     'openstackDeployment.isUndercloudDeployed',
@@ -34,7 +35,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       return !this.get('openstackDeployment.isUndercloudDeployed') ||
         !this.get('openstackDeployment.areNodesRegistered') ||
         !this.get('openstackDeployment.hasValidNodeAssignments');
-    }),
+    }
+  ),
 
   validOpenStack: Ember.computed(
     'confirmOvercloudPassword',
@@ -44,5 +46,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       //TODO move password confirmations to transient data on the model and validate them there
       return this.get('openstackDeployment.areAllAttributesValid') &&
         this.get('openstackDeployment.overcloud_password') === this.get('confirmOvercloudPassword');
-    })
+    }
+  )
 });

@@ -106,12 +106,12 @@ export default Ember.Route.extend({
       self.updateForemanTask(),
       self.updateLog()
     ]).then(function () {
-        if (self.get('pollingActive') && controller.get('deploymentInProgress')) {
-          self.startPolling();
-        } else {
-          self.set('pollingActive', false);
-        }
-      });
+      if (self.get('pollingActive') && controller.get('deploymentInProgress')) {
+        self.startPolling();
+      } else {
+        self.set('pollingActive', false);
+      }
+    });
   },
 
   updateLog() {
@@ -165,23 +165,20 @@ export default Ember.Route.extend({
   },
 
   pollingAction() {
-      this.updateLog().then(() => this.updateForemanTask());
+    this.updateLog().then(() => this.updateForemanTask());
   },
 
   getFullLog(params) {
     var self = this, controller = this.get('controller');
-
     controller.set('isLoading', true);
-    return this.getJsonLog(params).then(
-        function (response) {
-          self.loadLog(params.log_type, response);
-        },
-        function (error) {
-          self.showError(error);
-        })
-      .finally(function () {
-        controller.set('isLoading', false);
-      });
+
+    return this.getJsonLog(params).then(function (response) {
+      self.loadLog(params.log_type, response);
+    }, function (error) {
+      self.showError(error);
+    }).finally(function () {
+      controller.set('isLoading', false);
+    });
   },
 
   loadLog(logType, response) {
@@ -296,16 +293,16 @@ export default Ember.Route.extend({
     var controller = this.get('controller');
 
     switch (entry.get('level')) {
-      case 'error':
-        return controller.get('errorChecked');
-      case 'warn':
-        return controller.get('warnChecked');
-      case 'info':
-        return controller.get('infoChecked');
-      case 'debug':
-        return controller.get('debugChecked');
-      default:
-        return true;
+    case 'error':
+      return controller.get('errorChecked');
+    case 'warn':
+      return controller.get('warnChecked');
+    case 'info':
+      return controller.get('infoChecked');
+    case 'debug':
+      return controller.get('debugChecked');
+    default:
+      return true;
     }
   },
 

@@ -6,7 +6,7 @@ export default Ember.Route.extend(DeploymentNewSatelliteRouteMixin, {
   setupController(controller, model) {
     controller.set('model', model);
     this.store.findRecord('organization', 1).then(function(result) {
-        model.set('organization', result);
+      model.set('organization', result);
     });
   },
 
