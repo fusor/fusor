@@ -12,11 +12,11 @@ export default Ember.Route.extend({
     ]).then(function(results) {
       var deployTask = results[0];
       var subtasksOfDeploy = results[1];
-      var manageContentTask = subtasksOfDeploy.findBy('humanized_name', 'Manage Content');
-      var rhevTask          = subtasksOfDeploy.findBy('humanized_name', 'Deploy Red Hat Enterprise Virtualization');
-      var openstackTask     = subtasksOfDeploy.findBy('humanized_name', 'Deploy Red Hat OpenStack Platform overcloud');
-      var cfmeTask          = subtasksOfDeploy.findBy('humanized_name', 'Deploy CloudForms Management Engine');
-      var openshiftTask     = subtasksOfDeploy.findBy('humanized_name', 'Deploy OpenShift Enterprise');
+      var manageContentTask = subtasksOfDeploy.findBy('label', 'Actions::Fusor::Content::ManageContent');
+      var rhevTask          = subtasksOfDeploy.findBy('label', 'Actions::Fusor::Deployment::Rhev::Deploy');
+      var openstackTask     = subtasksOfDeploy.findBy('label', 'Actions::Fusor::Deployment::OpenStack::Deploy');
+      var cfmeTask          = subtasksOfDeploy.findBy('label', 'Actions::Fusor::Deployment::CloudForms::Deploy');
+      var openshiftTask     = subtasksOfDeploy.findBy('label', 'Actions::Fusor::Deployment::OpenShift::Deploy');
 
       return Ember.RSVP.hash({
         deployTask: deployTask,
