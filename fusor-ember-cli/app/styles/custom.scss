@@ -5,6 +5,11 @@ $info-color: #333;
 $warning-color: #ec7a08;
 $error-color: #cc0000;
 
+// overriding foreman .spinner {float: left;}
+.spinner {
+  float: none;
+}
+
 .rhci-footer-box {
   height: 100px;
 }
