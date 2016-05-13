@@ -6,7 +6,7 @@ import {
   EqualityValidator,
   NumberValidator,
   HostAddressValidator,
-  IpRangeValidator,
+  IpAddressValidator,
   CidrValidator,
   AllValidator
 } from '../utils/validators';
@@ -28,7 +28,7 @@ const FlavorValidator = AllValidator.extend({
 const PresentIpValidator = AllValidator.extend({
   validators: [
     PresenceValidator.create({}),
-    IpRangeValidator.create({})
+    IpAddressValidator.create({})
   ]
 });
 

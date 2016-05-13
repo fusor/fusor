@@ -10,7 +10,8 @@ import {
   IpAddressValidator,
   CidrValidator,
   MacAddressValidator,
-  HostnameValidator
+  HostnameValidator,
+  HostAddressValidator
 } from '../../../utils/validators';
 
 
@@ -287,7 +288,7 @@ test('IpAddressValidator accepts valid values', function (assert) {
     null,
     undefined,
     '192.168.2.0',
-    '192.168.153.0',
+    '192.168.153.0'
   ];
 
   validValues.forEach((value) => {
@@ -305,7 +306,7 @@ test('IpAddressValidator rejects invalid values', function (assert) {
     'garbage192.168.1.2',
     '192.168.1.2/24',
     '192.168.1.2/',
-    '192.168.1.2postfix',
+    '192.168.1.2postfix'
   ];
   invalidValues.forEach((value) => {
     assert.ok(ipAddressValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
@@ -454,5 +455,41 @@ test('HostnameValidator rejects invalid values', function (assert) {
     assert.notOk(hostnameValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(hostnameValidator.getMessages(value).length, 1);
     assert.equal(hostnameValidator.getMessages(value)[0], 'invalid hostname');
+  });
+});
+
+test('HostAddressValidator accepts valid values', function (assert) {
+  let hostAddressValidator = HostAddressValidator.create({});
+  let validValues = [    '',
+    null,
+    undefined,
+    '192.168.2.0',
+    '192.168.153.0',
+    'ValidHostName',
+    'Valid-Host-Name'
+  ];
+
+  validValues.forEach((value) => {
+    assert.ok(hostAddressValidator.isValid(value), `"${value}" was not accepted as valid`);
+    assert.notOk(hostAddressValidator.isInvalid(value), `"${value}" was rejected as invalid`);
+    assert.equal(hostAddressValidator.getMessages(value).length, 0);
+  });
+});
+
+test('HostAddressValidator rejects invalid values', function (assert) {
+  let hostAddressValidator = HostAddressValidator.create({});
+  let invalidValues = [
+    '8.8.8.256/24',
+    'spaces invalid',
+    'underscores_are_invalid',
+    'special%chars',
+    '.startsWithPeriod'
+  ];
+
+  invalidValues.forEach((value) => {
+    assert.ok(hostAddressValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+    assert.notOk(hostAddressValidator.isValid(value), `"${value}" was accepted as valid`);
+    assert.equal(hostAddressValidator.getMessages(value).length, 1);
+    assert.equal(hostAddressValidator.getMessages(value)[0], 'invalid host or ip address');
   });
 });
