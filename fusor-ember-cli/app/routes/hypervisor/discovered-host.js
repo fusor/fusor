@@ -17,11 +17,10 @@ export default Ember.Route.extend(DiscoveredHostRouteMixin, {
       var deployment = this.modelFor('deployment');
       var hypervisorModelIds = this.controllerFor('hypervisor/discovered-host').get('hypervisorModelIds');
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
-
       request({
-        url: '/fusor/api/v21/deployments/' + deployment.get('id'),
-        type: "PUT",
-        data: JSON.stringify({'deployment': { 'discovered_host_ids': hypervisorModelIds } }),
+        url: '/fusor/api/v3/deployments/' + deployment.get('id'),
+        type: "PATCH",
+        data: JSON.stringify({data: {attributes: { 'discovered_host_ids': hypervisorModelIds } } }),
         headers: {
           "Accept": "application/json",
           "Content-Type": "application/json",

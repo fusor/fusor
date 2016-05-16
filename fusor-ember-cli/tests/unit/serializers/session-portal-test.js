@@ -1,15 +1,15 @@
 import { moduleForModel, test } from 'ember-qunit';
 
-moduleForModel('foreman-task', 'Unit | Serializer | foreman task', {
+moduleForModel('session-portal', 'Unit | Serializer | session portal', {
   // Specify the other units that are required for this test.
-  needs: ['serializer:foreman-task']
+  needs: ['serializer:session-portal']
 });
 
 // Replace this with your real tests.
 test('it serializes records', function(assert) {
-  var record = this.subject();
+  let record = this.subject();
 
-  var serializedRecord = record.serialize();
+  let serializedRecord = record.serialize();
 
   assert.ok(serializedRecord);
 });

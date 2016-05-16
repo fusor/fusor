@@ -9,10 +9,17 @@ module Fusor
     config.autoload_paths += Dir["#{config.root}/app/serializers"]
     config.autoload_paths += Dir["#{config.root}/lib/modules"]
 
+    ActiveModelSerializers.config.adapter = :json_api
+    ActiveModelSerializers.config.key_transform = :unaltered
+
+    # perform_deep_munge is false allows discovered_host_ids => [] to be passed as [] and not nil
+    # See http://guides.rubyonrails.org/security.html#unsafe-query-generation
+    config.action_dispatch.perform_deep_munge = false
+
     initializer 'fusor.silenced_logger', :after => :build_middleware_stack do |app|
       # Add additional paths below if you want logging silenced
       #  we want the polling of ForemanTasksController#show silenced to reduce noise in logs
-      silenced_paths = ["api/v21/foreman_tasks", "fusor/api/v21/unlogged"]
+      silenced_paths = ["/fusor/api/v3/foreman_tasks", "/fusor/api/v3/unlogged"]
 
       if ::Katello.respond_to? 'config' and ::Katello.config.respond_to? 'logging' and ::Katello.config.logging.respond_to? 'ignored_paths'
         for sil_path in silenced_paths
@@ -44,7 +51,7 @@ module Fusor
 
     initializer "fusor.paths" do |app|
       app.routes_reloader.paths << "#{Fusor::Engine.root}/config/routes/api/v2.rb"
-      app.routes_reloader.paths << "#{Fusor::Engine.root}/config/routes/api/v21.rb"
+      app.routes_reloader.paths << "#{Fusor::Engine.root}/config/routes/api/v3.rb"
       app.routes_reloader.paths << "#{Fusor::Engine.root}/config/routes/api/openstack.rb"
       app.routes_reloader.paths << "#{Fusor::Engine.root}/config/routes/api/customer_portal.rb"
     end
@@ -55,20 +62,16 @@ module Fusor
 
         security_block :fusor do
           permission :view_fusor_deployments, {
-            :"fusor/api/v2/deployments" => [:index, :show],
-            :"fusor/api/v21/deployments" => [:index, :show]
+            :"fusor/api/v3/deployments" => [:index, :show],
           }, :resource_type => 'Fusor::Deployment'
           permission :create_fusor_deployments, {
-            :"fusor/api/v2/deployments" => [:create],
-            :"fusor/api/v21/deployments" => [:create]
+            :"fusor/api/v3/deployments" => [:create],
           }, :resource_type => 'Fusor::Deployment'
           permission :edit_fusor_deployments, {
-            :"fusor/api/v2/deployments" => [:update],
-            :"fusor/api/v21/deployments" => [:update]
+            :"fusor/api/v3/deployments" => [:update],
           }, :resource_type => 'Fusor::Deployment'
           permission :destroy_fusor_deployments, {
-            :"fusor/api/v2/deployments" => [:destroy],
-            :"fusor/api/v21/deployments" => [:destroy]
+            :"fusor/api/v3/deployments" => [:destroy],
           }, :resource_type => 'Fusor::Deployment'
         end
 
@@ -80,6 +83,7 @@ module Fusor
 
     initializer "fusor.apipie" do
       Apipie.configuration.api_controllers_matcher << "#{Fusor::Engine.root}/app/controllers/fusor/api/v2/*.rb"
+      Apipie.configuration.api_controllers_matcher << "#{Fusor::Engine.root}/app/controllers/fusor/api/v3/*.rb"
       Apipie.configuration.checksum_path += ['/fusor/api/']
     end
 

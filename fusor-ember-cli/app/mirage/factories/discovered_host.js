@@ -6,14 +6,14 @@
 import Mirage from 'ember-cli-mirage';
 
 export default Mirage.Factory.extend({
-  name: function(i) {                  // and functions
+  name(i) {
     return 'mac' + i + '254000f6568';
   },
   type: 'Host::Discovered',
-  ip: function(i) {                  // and functions
+  ip(i) {
     return '192.168.152. ' + i;
   },
-  mac: function(i) {                  // and functions
+  mac(i) {
     return i + '2:54:00:0f:65:68';
   },
   cpus: 1,

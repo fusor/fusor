@@ -1,8 +1,8 @@
-import ApplicationAdapter from './application';
+import DS from 'ember-data';
+import Ember from 'ember';
 
-export default ApplicationAdapter.extend({
+export default DS.ActiveModelAdapter.extend({
 
-  namespace: '',
   urlForQuery(query, modelName) {
     // Use consumer UUID to get pools
     // GET /customer_portal/pools?consumer=' + consumerUUID + '&listall=false');

@@ -1,6 +1,7 @@
-import ApplicationAdapter from './application';
+import DS from 'ember-data';
+import Ember from 'ember';
 
-export default ApplicationAdapter.extend({
+export default DS.ActiveModelAdapter.extend({
 
   urlForQuery(query, modelName) {
     return '/fusor/api/openstack/deployments/' + query['deployment_id'] + '/images';

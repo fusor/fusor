@@ -76,7 +76,7 @@ export default Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
       let token = Ember.$('meta[name="csrf-token"]').attr('content');
 
       request({
-        url: '/fusor/api/v21/deployments/' + depl.get('id') + '/redeploy',
+        url: '/fusor/api/v3/deployments/' + depl.get('id') + '/redeploy',
         type: "PUT",
         headers: {
           "Accept": "application/json",

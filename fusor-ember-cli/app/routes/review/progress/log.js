@@ -234,7 +234,7 @@ export default Ember.Route.extend({
     var self = this,
       token = Ember.$('meta[name="csrf-token"]').attr('content'),
       deploymentId = this.modelFor('deployment').get('id'),
-      url = '/fusor/api/v21/unlogged/deployments/' + deploymentId + "/log";
+      url = '/fusor/api/v3/unlogged/deployments/' + deploymentId + "/log";
 
     this.set('requestActive', true);
     return request({

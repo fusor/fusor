@@ -15,7 +15,9 @@ require "sys/filesystem"
 require "uri"
 
 module Fusor
-  class Api::V21::DeploymentsController < Api::V2::DeploymentsController
+  class Api::V3::DeploymentsController < Api::V3::BaseController
+
+    #include Api::Version3
 
     before_filter :find_deployment, :only => [:destroy, :show, :update,
                                               :deploy, :redeploy, :validate, :log, :openshift_disk_space]
@@ -27,7 +29,7 @@ module Fusor
                                          :discovered_hosts, :ose_master_hosts, :ose_worker_hosts, :subscriptions,
                                          :introspection_tasks, :foreman_task, :openstack_deployment)
                                 .search_for(params[:search], :order => params[:order]).by_id(params[:id])
-      render :json => @deployments, :each_serializer => Fusor::DeploymentSerializer, :serializer => RootArraySerializer
+      render :json => @deployments, :include => :organization, :each_serializer => Fusor::DeploymentSerializer
     end
 
     def show
@@ -55,9 +57,38 @@ module Fusor
     end
 
     def deploy
-      # just inherit from V2
       begin
-        super
+        # If we're deploying then the deployment object needs to be valid.
+        # This should be the only time we run the DeploymentValidator.
+        if @deployment.invalid?
+          raise ::ActiveRecord::RecordInvalid.new @deployment
+        end
+
+        ::Fusor.log_change_deployment(@deployment)
+
+        # update the provider with the url
+        ::Fusor.log.debug "setting provider url to [#{@deployment.cdn_url}]"
+        provider = @deployment.organization.redhat_provider
+        # just in case save it on the @deployment.org as well
+        @deployment.organization.redhat_provider.repository_url = @deployment.cdn_url
+        provider.repository_url = @deployment.cdn_url
+        provider.save!
+
+        save_deployment_attributes
+
+        manifest_task = sync_task(::Actions::Fusor::Subscription::ManageManifest,
+                                  @deployment,
+                                  customer_portal_credentials)
+
+        # If the manifest action failed, there is no need to continue with
+        # the deploy actions, since it requires subscriptions & content
+        # both of which are enabled by the manifest.
+        unless manifest_task["result"] == "error"
+          task = async_task(::Actions::Fusor::Deploy,
+                            @deployment,
+                            params[:skip_content])
+        end
+        respond_for_async :resource => task
       rescue ::ActiveRecord::RecordInvalid
         render json: {errors: @deployment.errors}, status: 422
       end
@@ -206,6 +237,75 @@ module Fusor
 
     def ignore_it
       true
+    end
+
+    def customer_portal_credentials
+      { :username => session[:portal_username], :password => session[:portal_password] }
+    end
+
+    def save_deployment_attributes
+      Fusor.log.info "====== Saving Deployment Atrributes ======"
+
+      path = ::Fusor.log_file_dir(@deployment.label, @deployment.id)
+      FileUtils.mkdir_p tmp_dir if !File.directory?(path)
+
+      dep_text = JSON.pretty_generate(@deployment.serializable_hash)
+      write_file(path, 'deployment.json', dep_text)
+
+      if @deployment.deploy_openstack
+        osp_text = JSON.pretty_generate(@deployment.openstack_deployment.serializable_hash)
+        write_file(path, 'openstack.json', osp_text)
+      end
+    end
+
+    def write_file(path, filename, text)
+      file = "#{path}/#{filename}"
+      FileUtils.rmtree(file) if File.exist?(file)
+      Fusor.log.info "====== '#{file}' ====== \n #{text}"
+      begin
+        File.write(file, text)
+      rescue
+        Fusor.log.error "Failed to write file : '#{file}'!"
+      end
+    end
+
+    def deployment_params
+
+      # add belongs_to attributes: organization_id, lifecycle_environment_id, rhev_engine_host_id
+      if params[:data][:relationships]
+        if (org = params[:data][:relationships][:organization])
+          org_id = org[:data] ? org[:data][:id] : nil
+          params[:data][:attributes][:organization_id] = org_id
+        end
+        if (env = params[:data][:relationships][:lifecycle_environment])
+          env_id = env[:data] ? env[:data][:id] : nil
+          params[:data][:attributes][:lifecycle_environment_id] = env_id
+        end
+        if (engine = params[:data][:relationships][:discovered_host])
+          engine_id = engine[:data] ? engine[:data][:id] : nil
+          params[:data][:attributes][:rhev_engine_host_id] = engine_id
+        end
+      end
+
+      # add discovered_host_ids => [] as permitted in addition to model attrs
+      # Note: config.action_dispatch.perform_deep_munge = false, so [] is passed as [] and not null
+      params.require(:data).require(:attributes).permit(:name, :lifecycle_environment_id,
+              :organization_id, :deploy_rhev, :deploy_cfme, :deploy_openstack, :rhev_engine_host_id,
+              :rhev_data_center_name, :rhev_cluster_name, :rhev_storage_name, :rhev_storage_type,
+              :rhev_storage_address, :rhev_cpu_type, :rhev_share_path, :cfme_install_loc,
+              :description, :rhev_is_self_hosted, :rhev_engine_admin_password, :foreman_task_uuid,
+              :upstream_consumer_uuid, :rhev_root_password, :cfme_root_password,
+              :upstream_consumer_name, :rhev_export_domain_name, :rhev_export_domain_address,
+              :rhev_export_domain_path, :rhev_local_storage_path, :host_naming_scheme,
+              :custom_preprend_name, :enable_access_insights, :cfme_address, :cfme_admin_password,
+              :openstack_undercloud_password, :openstack_undercloud_ip_addr,
+              :openstack_undercloud_user, :openstack_undercloud_user_password, :cdn_url,
+              :manifest_file, :is_disconnected, :openstack_overcloud_address,
+              :openstack_overcloud_password, :openstack_overcloud_private_net,
+              :openstack_overcloud_float_net, :openstack_overcloud_float_gateway,
+              :openstack_overcloud_hostname, :openstack_undercloud_hostname, :cfme_hostname,
+              :label, :has_content_error,
+              :discovered_host_ids => [])
     end
 
     def create_log_reader(log_type_param)

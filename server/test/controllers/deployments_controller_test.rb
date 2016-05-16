@@ -1,7 +1,7 @@
 require 'test_plugin_helper'
 
 module Fusor
-  class Api::V21::DeploymentsControllerTest < ActionController::TestCase
+  class Api::V3::DeploymentsControllerTest < ActionController::TestCase
 
     def setup
       @deployment = fusor_deployments(:rhev)

@@ -6,7 +6,17 @@
 import Mirage from 'ember-cli-mirage';
 
 export default Mirage.Factory.extend({
-  name: function(i) {
+  name(i) {
     return 'org ' + i;
-  }
+  },
+  title(i) {
+    return 'org ' + i;
+  },
+  label(i) {
+    return 'org_' + i;
+  },
+  created_at: "2016-05-19",
+  updated_at: "2016-05-19",
+  description: null
+
 });

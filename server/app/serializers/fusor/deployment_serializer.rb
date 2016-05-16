@@ -1,7 +1,8 @@
 module Fusor
   class DeploymentSerializer < ActiveModel::Serializer
 
-    embed :ids, include: true
+    type :deployments
+
     attributes :id, :name, :label, :description,
                :deploy_rhev, :deploy_cfme, :deploy_openstack, :deploy_openshift,
                :rhev_engine_admin_password,
@@ -49,23 +50,22 @@ module Fusor
                :cloudforms_db_disk_size,
                :created_at, :updated_at
 
-
-    has_one :organization, serializer: ::OrganizationSerializer
-    has_one :lifecycle_environment, serializer: ::LifecycleEnvironmentSerializer
+    has_one :organization, serializer: OrganizationSerializer
+    has_one :lifecycle_environment, serializer: LifecycleEnvironmentSerializer
     # has one engine
-    has_one :discovered_host, serializer: ::HostBaseSerializer
+    has_one :discovered_host, serializer: DiscoveredHostSerializer
     # has many hypervisors
-    has_many :discovered_hosts, serializer: ::HostBaseSerializer
+    has_many :discovered_hosts, serializer: DiscoveredHostSerializer
 
-    has_many :openshift_hosts, serializer: ::HostBaseSerializer
+    has_many :openshift_hosts, serializer: HostBaseSerializer
     def openshift_hosts
       object.ose_master_hosts + object.ose_worker_hosts
     end
 
-    has_many :subscriptions, serializer: Fusor::SubscriptionSerializer
-    has_many :introspection_tasks, serializer: Fusor::IntrospectionTaskSerializer
+    has_many :subscriptions, serializer: SubscriptionSerializer
+    has_many :introspection_tasks, serializer: IntrospectionTaskSerializer
 
-    has_one :foreman_task, key: :foreman_task_uuid, serializer: ::ForemanTaskSerializer
+    has_one :foreman_task, key: :foreman_task_uuid, serializer: ForemanTaskSerializer
 
     has_one :openstack_deployment, serializer: Fusor::OpenstackDeploymentSerializer
   end

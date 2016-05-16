@@ -13,7 +13,7 @@
 module Fusor
   module Api
     module CustomerPortal
-      class CustomerPortalProxiesController < Api::V2::BaseController
+      class CustomerPortalProxiesController < Api::V3::BaseController
 
         before_filter :verify_logged_in, :except => [:login, :logout]
         before_filter :verify_portal_credentials, :only => [:login]

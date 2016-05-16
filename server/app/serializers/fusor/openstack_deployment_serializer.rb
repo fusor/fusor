@@ -1,6 +1,8 @@
 module Fusor
   class OpenstackDeploymentSerializer < ActiveModel::Serializer
 
+    type :openstack_deployments
+
     attributes :id,
 
                :undercloud_admin_password,

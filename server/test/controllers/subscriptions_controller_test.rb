@@ -1,7 +1,7 @@
 require 'test_plugin_helper'
 
 module Fusor
-  class Api::V21::SubscriptionsControllerTest < ActionController::TestCase
+  class Api::V3::SubscriptionsControllerTest < ActionController::TestCase
     include ActionDispatch::TestProcess
 
     def setup

@@ -111,11 +111,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       formData.append('manifest_file[file]', manifestFile);
       formData.append('manifest_file[deployment_id]', this.get('deploymentId'));
 
-      console.log('action: uploadManifest, PUT /fusor/api/v21/subscriptions/upload');
+      console.log('action: uploadManifest, PUT /fusor/api/v3/subscriptions/upload');
       //ic-ajax request
       request({
         type: 'PUT',
-        url: '/fusor/api/v21/subscriptions/upload',
+        url: '/fusor/api/v3/subscriptions/upload',
         data: formData,
         processData: false,
         headers: {'X-CSRF-Token': token},

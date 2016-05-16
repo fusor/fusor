@@ -1,8 +1,8 @@
-import ApplicationAdapter from './application';
+import DS from 'ember-data';
+import Ember from 'ember';
 
-export default ApplicationAdapter.extend({
+export default DS.ActiveModelAdapter.extend({
 
-  namespace: '',
   urlForQuery(query, modelName) {
     // Use owner key to get consumers (subscription application manangers)
     // GET /customer_portal/owners/#{OWNER['key']}/consumers?type=satellite
