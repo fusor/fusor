@@ -70,7 +70,7 @@ class GenerateKDRepos(object):
             releasever = content_record.releasever
         repo_string = "%s-%s-%s" % (product_record['label'], releasever,
                                     content_record.basearch)
-        return repo_string.replace('.', '_')
+        return (repo_string.replace('.', '_'), product_record['contentUrl'])
 
     def main(self, argv):
         """
@@ -107,10 +107,10 @@ class GenerateKDRepos(object):
                 for p in product_json['productContent']:
                     if c.repository_set_id == p['content']['id']:
                         form_repo = self.format_repo_string(p['content'], c)
-                        self.unique_repos[form_repo] = form_repo
+                        self.unique_repos[form_repo[0]] = form_repo
 
         for key in sorted(self.unique_repos):
-            print key
+            print "%s - %s" % (key, self.unique_repos[key][1])
 
         # cleanup
         shutil.rmtree(dest)
