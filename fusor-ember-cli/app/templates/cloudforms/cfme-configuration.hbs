@@ -31,6 +31,21 @@
                disabled=isStarted
                placeholder="Must match admin password"}}
 
+      {{text-f label="Database Password" type="password" value=cfmeDbPassword
+               cssId="cfme_db_password"
+               isRequired=true
+               disabled=isStarted
+               validator=passwordValidator
+               help-inline="Applies to database account for CloudForms instance"
+               placeholder="Must be 8 or more characters"}}
+
+      {{text-f label="Confirm Database Password" type="password" value=confirmCfmeDbPassword
+               cssId="confirm_cfme_db_password"
+               isRequired=true
+               validator=confirmCfmeDbPasswordValidator
+               disabled=isStarted
+               placeholder="Must match db password"}}
+
     </form>
   </div>
 </div>
