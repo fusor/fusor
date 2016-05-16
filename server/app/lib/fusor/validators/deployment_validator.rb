@@ -233,7 +233,7 @@ module Fusor
         if !subdomain.conflicts.empty?
           conflicting_subdomain_entry = subdomain.conflicts[0]
           conflicting_ip = conflicting_subdomain_entry.to_s.split('/')[1]
-          active_conflicting_host = Host::Managed.where(:ip => conflicting_ip)
+          active_conflicting_host = Host::Managed.all.select { |h| h.ip == conflicting_ip }
 
           # If the conflicting subdomain points to an active managed host, display a warning
           # Otherwise, delete the stale entry
