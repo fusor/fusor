@@ -64,6 +64,8 @@ module Actions
                                        :other_disks => [deployment.openshift_storage_size]}
             for i in 1..deployment.openshift_number_master_nodes do
               vmlauncher = Utils::Fusor::VMLauncher.new(vm_init_params)
+              fail _("====== vmlauncher is nil for Master #{i}! ======") unless vmlauncher
+
               vmlauncher.set_hostname("#{deployment.label.tr('_', '-')}-ose-master#{i}")
               host = vmlauncher.launch_openshift_vm(master_vm_launch_params)
               if host.nil?
@@ -91,6 +93,8 @@ module Actions
                                        :other_disks => [deployment.openshift_storage_size]}
             for i in 1..deployment.openshift_number_worker_nodes do
               vmlauncher = Utils::Fusor::VMLauncher.new(vm_init_params)
+              fail _("====== vmlauncher is nil for Worker #{i}! ======") unless vmlauncher
+
               vmlauncher.set_hostname("#{deployment.label.tr('_', '-')}-ose-node#{i}")
               host = vmlauncher.launch_openshift_vm(worker_vm_launch_params)
               if host.nil?
