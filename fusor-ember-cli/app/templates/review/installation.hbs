@@ -255,8 +255,8 @@
     {{/if}}
 
     {{#if isSubscriptions}}
-        {{#if isDisconnected}}
-            {{#accordion-item name='Subscriptions' isOpen=isSubscriptionsOpen}}
+        {{#accordion-item name='Subscriptions' isOpen=isSubscriptionsOpen}}
+            {{#if isDisconnected}}
                 {{review-link label='Content Mirror URL'
                               routeName='subscriptions.credentials'
                               isRequired=true
@@ -265,53 +265,37 @@
                               routeName='subscriptions.credentials'
                               isRequired=true
                               value=model.manifest_file }}
-
-                {{#each reviewSubscriptions as |sub|}}
-                    {{review-link label='Subscription Name'
-                                  routeName='subscriptions.select-subscriptions'
-                                  value=sub.product_name }}
-                    {{review-link label='Contract Number'
-                                  routeName='subscriptions.select-subscriptions'
-                                  value=sub.contract_number }}
-                    {{review-link label='Quantity'
-                                  routeName='subscriptions.select-subscriptions'
-                                  value=sub.quantity_attached }}
-                {{else}}
-                      {{review-link label='Quantity'
-                                    routeName='subscriptions.select-subscriptions'
-                                    value="0 - no subscriptions in manifest" }}
-                {{/each}}
-
-            {{/accordion-item}}
-
-        {{else}}
-            {{#accordion-item name='Subscriptions' isOpen=isSubscriptionsOpen}}
+            {{else}}
                 {{review-link label='Subscription Management Application'
                               routeName='subscriptions.management-application' isRequired=true
                               value=deploymentController.managementApplicationName }}
+            {{/if}}
 
-                {{#each reviewSubscriptions as |sub|}}
-                    {{review-link label='Subscription Name'
-                                  routeName='subscriptions.select-subscriptions'
-                                  value=sub.product_name }}
-                    {{review-link label='Contract Number'
-                                  routeName='subscriptions.select-subscriptions'
-                                  value=sub.contract_number }}
-                    {{review-link label=qtyLabel
+            {{#each reviewSubscriptions as |sub|}}
+                {{review-link label='Subscription Name'
+                              routeName='subscriptions.select-subscriptions'
+                              value=sub.product_name }}
+                {{review-link label='Contract Number'
+                              routeName='subscriptions.select-subscriptions'
+                              value=sub.contract_number }}
+                {{review-link label='Quantity Attached'
+                              routeName='subscriptions.select-subscriptions'
+                              value=sub.quantity_attached }}
+                {{#if hasSubscriptionsToAttach}}
+                    {{review-link label='Quantity Added'
                                   routeName='subscriptions.select-subscriptions'
                                   value=(if isMissingSubscriptions null sub.quantity_to_add)
                                   isRequired=true
                                   validationMessage="Need to re-enter"}}
-                {{else}}
-                      {{review-link label='Quantity'
-                                    routeName='subscriptions.select-subscriptions'
-                                    value=(if isMissingSubscriptions null "0 - no new subscriptions to attach")
-                                    isRequired=true
-                                    validationMessage="Need to re-enter"}}
-                {{/each}}
+                {{/if}}
+            {{else}}
+                {{review-link label='Quantity'
+                              routeName='subscriptions.select-subscriptions'
+                              value="0 - no subscriptions in manifest" }}
+            {{/each}}
 
-            {{/accordion-item}}
-        {{/if}}
+        {{/accordion-item}}
+
     {{/if}}
 
     </div>
