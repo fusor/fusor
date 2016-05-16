@@ -9,6 +9,7 @@ import {
   IpRangeValidator,
   IpAddressValidator,
   CidrValidator,
+  IpSubnetValidator,
   MacAddressValidator,
   HostnameValidator,
   HostAddressValidator
@@ -391,6 +392,53 @@ test('CidrValidator rejects invalid values', function (assert) {
     assert.notOk(cidrValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(cidrValidator.getMessages(value).length, 1);
     assert.equal(cidrValidator.getMessages(value)[0], 'invalid CIDR notation');
+  });
+});
+
+test('IpSubnetValidator accepts valid values', function (assert) {
+  let ipSubnetValidator = IpSubnetValidator.create({subnet: '8.8.8.0/23'});
+  let validValues = [
+    '8.8.8.0',
+    '8.8.9.255'
+  ];
+
+  validValues.forEach((value) => {
+    assert.ok(ipSubnetValidator.isValid(value), `"${value}" was not accepted as valid`);
+    assert.notOk(ipSubnetValidator.isInvalid(value), `"${value}" was rejected as invalid`);
+    assert.equal(ipSubnetValidator.getMessages(value).length, 0);
+  });
+});
+
+
+test('IpSubnetValidator rejects invalid values', function (assert) {
+  let ipSubnetValidator = IpSubnetValidator.create({subnet: '8.8.8.0/23'});
+  let invalidIpAddresses = [
+    null,
+    undefined,
+    '',
+    '8.8.8.256',
+    '8.8.8',
+    'garbage8.8.8.8',
+    '8.8.8.8/24',
+    '8.8.8.8/',
+    '8.8.8.8postfix'
+  ];
+  let invalidSubnetAddresses = [
+    '8.8.7.255',
+    '8.8.10.0'
+  ];
+  invalidIpAddresses.forEach((value) => {
+    assert.ok(ipSubnetValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+    assert.notOk(ipSubnetValidator.isValid(value), `"${value}" was accepted as valid`);
+    assert.equal(ipSubnetValidator.getMessages(value).length, 1);
+    assert.equal(ipSubnetValidator.getMessages(value)[0], 'invalid ip address');
+  });
+
+  invalidSubnetAddresses.forEach((value) => {
+    assert.ok(ipSubnetValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+    assert.notOk(ipSubnetValidator.isValid(value), `"${value}" was accepted as valid`);
+    assert.equal(ipSubnetValidator.getMessages(value).length, 1);
+    assert.equal(ipSubnetValidator.getMessages(value)[0], 'must belong to subnet 8.8.8.0/23');
   });
 });
 

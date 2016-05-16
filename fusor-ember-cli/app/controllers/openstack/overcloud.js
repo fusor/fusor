@@ -44,22 +44,7 @@ const OvercloudController = Ember.Controller.extend(DeploymentControllerMixin, N
     return this.get('openstackDeployment.isValidOvercloud') && this.get('isValidOvercloudPassword');
   }),
 
-  disableNextOvercloud: Ember.computed.not('validOvercloudNetworks'),
-
-  isValidPrivateNetworkRange: Ember.computed('overcloudPrivateNet', function () {
-    return this.get('cidrValidator').isValid(this.get('overcloudPrivateNet'));
-  }),
-
-  isValidFloatingIpNetworkRange: Ember.computed('overcloudFloatNet', function () {
-    return this.get('cidrValidator').isValid(this.get('overcloudFloatNet'));
-  }),
-
-  isValidFloatingIpGateway: Ember.computed('overcloudFloatGateway', function () {
-    var network = new Address4(this.get('overcloudFloatGateway'));
-    var isInSubnet = network.isInSubnet(this.get('overcloudFloatGateway'));
-
-    return this.get('overcloudFloatGatewayValidator').isValid(this.get('overcloudFloatGateway')) && isInSubnet;
-  })
+  disableNextOvercloud: Ember.computed.not('validOvercloudNetworks')
 });
 
 export default OvercloudController;

@@ -31,7 +31,6 @@ const validFieldHash = {
   overcloud_ext_net_interface: validPresence,
   overcloud_private_net: validCidr,
   overcloud_float_net: validCidr,
-  overcloud_float_gateway: validIpAddress,
   overcloud_password: validPresence
 };
 
@@ -80,7 +79,6 @@ const invalidFieldHash = {
   overcloud_ext_net_interface: invalidPresence,
   overcloud_private_net: invalidCidr,
   overcloud_float_net: invalidCidr,
-  overcloud_float_gateway: invalidIpAddress,
   overcloud_password: invalidPresence
 };
 
@@ -110,6 +108,35 @@ test ('validateField(fieldName) should be false when data is invalid', function(
     let invalidValues = invalidFieldHash[fieldName];
     invalidValues.forEach(checkFieldValidation);
   }
+});
+
+test('validateField(overcloud_float_gateway) should be true when overcloud_float_gateway is valid', function (assert) {
+  const model = this.subject();
+  const validValues = ['8.8.8.0', '8.8.9.255'];
+  Ember.run(() => model.set('overcloud_float_net', '8.8.8.0/23'));
+
+  validValues.forEach(value => {
+    Ember.run(() => model.set('overcloud_float_gateway', value));
+    assert.ok(model.validateField('overcloud_float_gateway'), `overcloud_float_gateway: ${value} was not accepted as valid`);
+  });
+});
+
+test ('validateField(overcloud_float_gateway) should be false when overcloud_float_gateway is invalid', function(assert){
+  const model = this.subject();
+  const invalidValues = [null, undefined, '', '8.8.8.blah', '8.8.7.255', '8.8.10.0'];
+  Ember.run(() => model.set('overcloud_float_net' , '8.8.8.0/23'));
+
+  invalidValues.forEach(value => {
+    Ember.run(() => model.set('overcloud_float_gateway', value));
+    assert.notOk(model.validateField('overcloud_float_gateway'), `overcloud_float_gateway: ${value} was not rejected as invalid`);
+  });
+});
+
+test ('validateField(overcloud_float_gateway) should be false when overcloud_float_net is invalid', function(assert){
+  const model = this.subject();
+  Ember.run(() => model.set('overcloud_float_net' , '8.8.8.0/bad'));
+  Ember.run(() => model.set('overcloud_float_gateway', '8.8.8.1'));
+  assert.notOk(model.validateField('overcloud_float_gateway'), 'invalid overcloud_float_net did not cause overcloud_float_gateway to be rejected');
 });
 
 const validOpenstackDeploymentFields = {

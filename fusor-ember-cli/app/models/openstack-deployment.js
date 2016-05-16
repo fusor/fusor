@@ -6,7 +6,7 @@ import {
   EqualityValidator,
   NumberValidator,
   HostAddressValidator,
-  IpAddressValidator,
+  IpSubnetValidator,
   CidrValidator,
   AllValidator
 } from '../utils/validators';
@@ -22,13 +22,6 @@ const FlavorValidator = AllValidator.extend({
   validators: [
     PresenceValidator.create({}),
     EqualityValidator.create({doesNotEqual: 'baremetal'})
-  ]
-});
-
-const PresentIpValidator = AllValidator.extend({
-  validators: [
-    PresenceValidator.create({}),
-    IpAddressValidator.create({})
   ]
 });
 
@@ -82,9 +75,12 @@ export default DS.Model.extend(ValidatedModel, {
     overcloud_ext_net_interface: PresenceValidator.create({}),
     overcloud_private_net: PresentCidrValidator.create({}),
     overcloud_float_net: PresentCidrValidator.create({}),
-    overcloud_float_gateway: PresentIpValidator.create({}),
     overcloud_password: PresenceValidator.create({})
   }),
+
+  onOvercloudFloatNetChanged: Ember.on('init', Ember.observer('overcloud_float_net', function() {
+    this.set('validations.overcloud_float_gateway', IpSubnetValidator.create({subnet: this.get('overcloud_float_net')}));
+  })),
 
   isUndercloudDeployed: Ember.computed(
     'undercloud_admin_password',
