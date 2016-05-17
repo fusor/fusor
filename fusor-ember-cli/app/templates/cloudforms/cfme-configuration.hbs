@@ -1,42 +1,46 @@
 <div class="row">
   <div class="col-md-12">
     <form class="form form-horizontal">
-      {{text-f label="Root Password" type="password" value=cfmeRootPassword
-               cssId="cfme_root_password"
-               isRequired=true
-               disabled=isStarted
-               validator=passwordValidator
-               help-inline="Applies to root user account for this CloudForms instance"
-               placeholder="Must be 8 or more characters"}}
+      <div class="cfme-config-padding">
+        {{text-f label="Root Password" type="password" value=cfmeRootPassword
+                 cssId="cfme_root_password"
+                 isRequired=true
+                 disabled=isStarted
+                 validator=passwordValidator
+                 help-inline="Applies to root user account for this CloudForms instance"
+                 placeholder="Must be 8 or more characters"}}
 
-      {{text-f label="Confirm Root Password" type="password" value=confirmCfmeRootPassword
-               cssId="confirm_cfme_root_password"
-               isRequired=true
-               validator=confirmCfmeRootPasswordValidator
-               disabled=isStarted
-               placeholder="Must match root password"}}
+        {{text-f label="Confirm Root Password" type="password" value=confirmCfmeRootPassword
+                 cssId="confirm_cfme_root_password"
+                 isRequired=true
+                 validator=confirmCfmeRootPasswordValidator
+                 disabled=isStarted
+                 placeholder="Must match root password"}}
+      </div>
 
-      {{text-f label="Admin Password" type="password" value=cfmeAdminPassword
-               cssId="cfme_admin_password"
-               isRequired=true
-               disabled=isStarted
-               validator=passwordValidator
-               help-inline="Applies to admin user account for CloudForms web UI"
-               placeholder="Must be 8 or more characters"}}
+      <div class="cfme-config-padding">
+        {{text-f label="Admin Password" type="password" value=cfmeAdminPassword
+                 cssId="cfme_admin_password"
+                 isRequired=true
+                 disabled=isStarted
+                 validator=passwordValidator
+                 help-inline="Applies to admin user account for CloudForms web UI"
+                 placeholder="Must be 8 or more characters"}}
 
-      {{text-f label="Confirm Admin Password" type="password" value=confirmCfmeAdminPassword
-               cssId="confirm_cfme_admin_password"
-               isRequired=true
-               validator=confirmCfmeAdminPasswordValidator
-               disabled=isStarted
-               placeholder="Must match admin password"}}
+        {{text-f label="Confirm Admin Password" type="password" value=confirmCfmeAdminPassword
+                 cssId="confirm_cfme_admin_password"
+                 isRequired=true
+                 validator=confirmCfmeAdminPasswordValidator
+                 disabled=isStarted
+                 placeholder="Must match admin password"}}
+      </div>
 
       {{text-f label="Database Password" type="password" value=cfmeDbPassword
                cssId="cfme_db_password"
                isRequired=true
                disabled=isStarted
                validator=passwordValidator
-               help-inline="Applies to database account for CloudForms instance"
+               help-inline="Applies to database account for this CloudForms instance"
                placeholder="Must be 8 or more characters"}}
 
       {{text-f label="Confirm Database Password" type="password" value=confirmCfmeDbPassword
@@ -44,7 +48,7 @@
                isRequired=true
                validator=confirmCfmeDbPasswordValidator
                disabled=isStarted
-               placeholder="Must match db password"}}
+               placeholder="Must match database password"}}
 
     </form>
   </div>
