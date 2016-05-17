@@ -29,8 +29,8 @@
 Summary: Fusor Server Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
-Version: 0.0.1
-Release: 19%{dist}
+Version: 1.0.0
+Release: 0%{dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
