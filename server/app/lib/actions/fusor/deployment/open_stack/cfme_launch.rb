@@ -51,12 +51,13 @@ module Actions
 
           def create_image(deployment)
             cr = ComputeResource.find_by_name("#{deployment.label}-RHOS")
+            hostgroup = find_hostgroup(deployment, "Cloudforms")
             Image.create("name" => "#{deployment.label}-cfme",
               "username" => 'root',
               "user_data" => 1,
               "uuid" => cr.available_images.find { |hash| "#{deployment.label}-cfme" == hash.name }.id,
               "compute_resource_id" => cr.id,
-              "operatingsystem_id" => Operatingsystem.find_by_title('RedHat 7.2')['id'],
+              "operatingsystem_id" => hostgroup["operatingsystem_id"],
               "architecture_id" => Architecture.find_by_name('x86_64')['id'])
           end
 
@@ -92,7 +93,7 @@ module Actions
                     "enabled" => 1,
                     "managed" => 1,
                     "architecture_id" => Architecture.find_by_name('x86_64')['id'],
-                    "operatingsystem_id" => Operatingsystem.find_by_title('RedHat 7.2')['id'],
+                    "hostgroup_id" => find_hostgroup(deployment, "Cloudforms")["id"],
                     "domain_id" => 1,
                     "root_pass" => "smartvm",
                     "provision_method" => "image",
@@ -107,6 +108,33 @@ module Actions
             else
               cfme_launch_failed
             end
+          end
+
+          def find_hostgroup(deployment, name)
+            # locate the top-level hostgroup for the deployment...
+            # currently, we'll create a hostgroup with the same name as the
+            # deployment...
+            # Note: you need to scope the query to organization
+            parent = ::Hostgroup.where(:name => deployment.label).
+                joins(:organizations).
+                where("taxonomies.id in (?)", [deployment.organization.id]).first
+
+            # generate the ancestry, so that we can locate the hostgroups
+            # based on the hostgroup hierarchy, which assumes:
+            #  "Fusor Base"/"My Deployment"
+            # Note: there may be a better way in foreman to locate the hostgroup
+            if parent
+              if parent.ancestry
+                ancestry = [parent.ancestry, parent.id.to_s].join('/')
+              else
+                ancestry = parent.id.to_s
+              end
+            end
+
+            ::Hostgroup.where(:name => name).
+                where(:ancestry => ancestry).
+                joins(:organizations).
+                where("taxonomies.id in (?)", [deployment.organization.id]).first
           end
         end
       end

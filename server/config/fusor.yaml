@@ -343,6 +343,23 @@
            :content: :openstack
            :subscription_descriptions:
              - "Red Hat Cloud Infrastructure"
+
+    :cfme:
+     :root_name: "Fusor Base" # seeded by the fusor-installer
+     :host_groups:
+       - :parent: "Fusor Base"
+
+       - :name: "Cloudforms"
+         :parent: :root_deployment
+         :os: "RedHat"
+         :major: "7"
+         :minor: "2"
+         :activation_key:
+           :name: "Cloudforms"
+           :content: :openstack
+           :subscription_descriptions:
+             - "Cloudforms"
+
   :system:
     :logging:
       :level: ":debug"
