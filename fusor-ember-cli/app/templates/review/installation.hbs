@@ -142,7 +142,6 @@
 
     {{#if isOpenStack}}
       {{#accordion-item name=deploymentController.nameOpenStack isOpen=isOpenStackOpen}}
-          {{review-link label='Undercloud URL' value=undercloudUrl isRequired=true isExternalURL=true}}
             {{review-link label='Undercloud username' value='admin' isRequired=true}}
             {{review-link label='Undercloud password' value=model.openstack_deployment.undercloud_admin_password isPassword=true isRequired=true}}
             {{#review-link label='Assigned Nodes' routeName='openstack.assign-nodes' isRequired=true
