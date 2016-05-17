@@ -14,7 +14,7 @@ module Fusor
                :foreman_task_uuid, :upstream_consumer_uuid, :upstream_consumer_name,
                :rhev_root_password, :cfme_root_password, :cfme_admin_password,
                :host_naming_scheme, :custom_preprend_name, :enable_access_insights,
-               :cfme_address,
+               :cfme_address, :cfme_db_password,
                :rhev_engine_host_id,
                :cfme_hostname,
                :is_disconnected,

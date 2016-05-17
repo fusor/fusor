@@ -26,12 +26,11 @@ module Actions
 
           def run
             ::Fusor.log.debug "================ RunApplianceConsole run method ===================="
+            deployment = ::Fusor::Deployment.find(input[:deployment_id])
 
             script_dir = "/usr/share/fusor_ovirt/bin/"
-            db_password = "changeme" # TODO: we may want to make this configurable in the future
+            db_password = deployment.cfme_db_password
             ssh_user = "root"
-
-            deployment = ::Fusor::Deployment.find(input[:deployment_id])
             cfme_address = deployment.cfme_address
             #
             # JWM 6/9/2015, We are not yet setting the CloudForms VM root password

@@ -31,6 +31,7 @@ export default DS.Model.extend({
   rhev_root_password: DS.attr('string'),
   cfme_root_password: DS.attr('string'),
   cfme_admin_password: DS.attr('string'),
+  cfme_db_password: DS.attr('string'),
 
   foreman_task_uuid: DS.attr('string'),
   upstream_consumer_uuid: DS.attr('string'),
