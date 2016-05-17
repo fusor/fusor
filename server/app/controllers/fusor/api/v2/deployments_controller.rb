@@ -62,6 +62,8 @@ module Fusor
       provider.repository_url = @deployment.cdn_url
       provider.save!
 
+      save_deployment_attributes
+
       manifest_task = sync_task(::Actions::Fusor::Subscription::ManageManifest,
                                 @deployment,
                                 customer_portal_credentials)
@@ -86,6 +88,32 @@ module Fusor
 
     def customer_portal_credentials
       { :username => session[:portal_username], :password => session[:portal_password] }
+    end
+
+    def save_deployment_attributes
+      Fusor.log.info "====== Saving Deployment Atrributes ======"
+
+      path = ::Fusor.log_file_dir(@deployment.label, @deployment.id)
+      FileUtils.mkdir_p tmp_dir if !File.directory?(path)
+
+      dep_text = JSON.pretty_generate(@deployment.serializable_hash)
+      write_file(path, 'deployment.json', dep_text)
+
+      if @deployment.deploy_openstack
+        osp_text = JSON.pretty_generate(@deployment.openstack_deployment.serializable_hash)
+        write_file(path, 'openstack.json', osp_text)
+      end
+    end
+
+    def write_file(path, filename, text)
+      file = "#{path}/#{filename}"
+      FileUtils.rmtree(file) if File.exist?(file)
+      Fusor.log.info "====== '#{file}' ====== \n #{text}"
+      begin
+        File.write(file, text)
+      rescue
+        Fusor.log.error "Failed to write file : '#{file}'!"
+      end
     end
   end
 end
