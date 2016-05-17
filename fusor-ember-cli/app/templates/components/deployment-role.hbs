@@ -11,8 +11,11 @@
         {{role.label}}
     </div>
     {{#if roleAssigned}}
-      {{view "select" class="node-count-selectpicker"
-        content=availableOptions value=role.count}}
+      {{#x-select value=role.count }}
+        {{#each availableOptions as |opt| }}
+          {{#x-option value=opt}}{{opt}}{{/x-option}}
+        {{/each}}
+      {{/x-select}}
     {{/if}}
     {{#unless readOnly}}
       <a class="role-option delete">
