@@ -225,6 +225,53 @@ const CidrValidator = RegExpValidator.extend({
   message: 'invalid CIDR notation'
 });
 
+// expects values to be set during construction:
+// String subnet;
+const IpSubnetValidator = Validator.extend({
+  ipAddressValidator: IpAddressValidator.create(),
+  cidrValidator: CidrValidator.create(),
+
+  isValidSubnet() {
+    let subnetStr = this.get('subnet');
+    return Ember.isPresent(subnetStr) && this.get('cidrValidator').isValid(subnetStr);
+  },
+
+  isValidIpAddress(ipAddress) {
+    return Ember.isPresent(ipAddress) && this.get('ipAddressValidator').isValid(ipAddress);
+  },
+
+  isValid(value) {
+    let ipAddress, subnet;
+    let subnetStr = this.get('subnet');
+
+    if (Ember.isEmpty(value) || !this.isValidSubnet() || !this.isValidIpAddress(value)) {
+      return false;
+    }
+
+    ipAddress = new Address4(value);
+    subnet = new Address4(subnetStr);
+    return ipAddress.isInSubnet(subnet);
+  },
+
+  getMessages(value) {
+    let subnet = this.get('subnet');
+
+    if (Ember.isEmpty(value) || !this.isValidIpAddress(value)) {
+      return ['invalid ip address'];
+    }
+
+    if (!this.isValidSubnet()) {
+      return ['invalid subnet'];
+    }
+
+    if (!this.isValid(value)) {
+      return [`must belong to subnet ${subnet}`];
+    }
+
+    return [];
+  }
+});
+
 const MacAddressValidator = RegExpValidator.extend({
   regExp: new RegExp(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/),
   message: 'invalid mac address'
@@ -285,6 +332,7 @@ export {
   IpRangeValidator,
   IpAddressValidator,
   CidrValidator,
+  IpSubnetValidator,
   HostAddressValidator,
   MacAddressValidator,
   HostnameValidator,
