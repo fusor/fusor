@@ -250,17 +250,23 @@ ul.validation-alert-message {
   font-weight: bold;
 }
 
-.log-selection-row, .log-search-row {
+.log-selection-row {
+  margin-top: 20px;
+  margin-bottom: 12px;
+}
+
+.log-search-row {
   margin-bottom: 12px;
 }
 
 .log-file-select {
   height: 26px;
-  margin-right: 12px;
+  display: inline;
 }
 
 .log-file-path {
   font-style: italic;
+  padding-left: 5px;
 }
 
 .log-search-form .log-search-input-group > .btn:hover {

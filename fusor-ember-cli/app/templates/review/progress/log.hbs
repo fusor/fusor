@@ -1,9 +1,11 @@
 <div class="row log-selection-row">
-  <div class="col-sm-12 col-lg-9">
-    <form role="form-inline" class="log-file-form">
-      {{view "select" id="log-file-select" class="selectpicker log-file-select"
-                      content=logTypes value=logType selection=logTypeSelection
-                      optionLabelPath="content.label" optionValuePath="content.value"}}
+  <div class="col-sm-12 col-lg-4 col-md-6 col-lg-4">
+    <form role="form-inline" class="form-inline log-file-form">
+      {{#x-select value=logType id="log-file-select" class="form-control log-file-select"}}
+        {{#each logTypes as |opt| }}
+          {{#x-option value=opt.value}}{{opt.label}}{{/x-option}}
+        {{/each}}
+      {{/x-select}}
       <span class="log-file-path">Viewing {{logPath}}</span>
     </form>
   </div>

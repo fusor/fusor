@@ -1,6 +1,10 @@
 {{#base-f label=label labelSize=labelSize inputSize=inputSize unitsSize=unitsSize unitsLabel=unitsLabel isRequired=isRequired helpText=helpText}}
 
-  {{view "select" content=content value=value optionLabelPath=optionLabelPath optionValuePath=optionValuePath selection=selection prompt=prompt class="form-control" id=cssId disabled=disabled}}
+  {{#x-select value=value prompt=prompt class="form-control" id=cssId disabled=disabled}}
+    {{#each content as |opt| }}
+      {{#x-option value=opt.name}}{{opt.name}}{{/x-option}}
+    {{/each}}
+  {{/x-select}}
 
   {{yield}}
 

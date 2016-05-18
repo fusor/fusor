@@ -1,14 +1,10 @@
 {{#base-f label=label labelSize=labelSize inputSize=inputSize unitsSize=unitsSize unitsLabel=unitsLabel isRequired=isRequired helpText=helpText errors=errors hasError=hasError}}
 
-  {{view "select"
-    id=cssId
-    content=_content
-    value=value
-    optionLabelPath=optionLabelPath
-    optionValuePath=optionValuePath
-    selection=selection
-    class="form-control"
-    disabled=disabled}}
+  {{#x-select value=value class="form-control" disabled=disabled id=cssId}}
+    {{#each _content as |opt| }}
+      {{#x-option value=opt.value}}{{opt.label}}{{/x-option}}
+    {{/each}}
+  {{/x-select}}
 
   {{#if showValidationError}}
     {{#if hasError}}

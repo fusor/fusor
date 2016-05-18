@@ -151,6 +151,16 @@ export default function() {
     return {results: db.settings};
   });
 
+  this.get('/fusor/api/v21/unlogged/deployments/:id/log', function(db, request) {
+    return {
+      "fusor_log": {path: ''},
+      "foreman_log": {path: ''},
+      "foreman_proxy_log": {path: ''},
+      "candlepin_log": {path: ''},
+      "messages_log": {path: ''}
+    };
+  });
+
   /*
     Route shorthand cheatsheet
   */
