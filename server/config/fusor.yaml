@@ -206,22 +206,22 @@
 
       - :product_name: "Red Hat OpenStack"
         :product_id: "191"
-        :repository_set_id: "4492"
-        :repository_set_name: "Red Hat Enterprise Linux OpenStack Platform 7.0 for RHEL 7 (RPMs)"
+        :repository_set_id: "4713"
+        :repository_set_name: "Red Hat OpenStack Platform 8 for RHEL 7 (RPMs)"
         :basearch: "x86_64"
         :releasever: "7Server"
 
       - :product_name: "Red Hat OpenStack"
         :product_id: "191"
-        :repository_set_id: "4495"
-        :repository_set_name: "Red Hat Enterprise Linux OpenStack Platform 7.0 director for RHEL 7 (RPMs)"
+        :repository_set_id: "4716"
+        :repository_set_name: "Red Hat OpenStack Platform 8 director for RHEL 7 (RPMs)"
         :basearch: "x86_64"
         :releasever: "7Server"
 
       - :product_name: "Red Hat OpenStack"
         :product_id: "191"
-        :repository_set_id: "4497"
-        :repository_set_name: "Red Hat Enterprise Linux OpenStack Platform 7.0 for RHEL 7 (Files)"
+        :repository_set_id: "4718"
+        :repository_set_name: "Red Hat OpenStack Platform 8 for RHEL 7 (Files)"
         :basearch: "x86_64"
         :releasever: "7Server"
 
