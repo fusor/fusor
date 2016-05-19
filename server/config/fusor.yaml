@@ -356,7 +356,7 @@
          :minor: "2"
          :activation_key:
            :name: "Cloudforms"
-           :content: :openstack
+           :content: :cloudforms
            :subscription_descriptions:
              - "Cloudforms"
 
