@@ -93,11 +93,15 @@ export default Ember.Route.extend(UsesOseDefaults, {
           }, 0),
           {output: 'object'}
         ).value;
+
         const humanDisk = Humanize.rawToHuman(hash.disk, {output: 'object'});
+        const displayVal = humanDisk.suffix === 'TB' ?
+          humanDisk.value * 1024 : humanDisk.value;
+
         return Ember.Object.create({
           vcpuAvailable: cpus,
           ramAvailable: ram,
-          diskAvailable: humanDisk.value
+          diskAvailable: displayVal
         });
       });
   },

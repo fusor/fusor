@@ -34,3 +34,9 @@ test('should convert raw TB to human', function (assert) {
 test('0 raw to human should return "0 B"', function (assert) {
   assert.equal(Humanize.rawToHuman(0), '0 B');
 });
+
+test('TB case from se', function (assert) {
+  const valFromServer = 2777456;
+  const finalVal = valFromServer * 1024 * 1024;
+  assert.equal(Humanize.rawToHuman(finalVal), '2.65 TB');
+});
