@@ -1,6 +1,5 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
-import ProgressBarMixin from "../../mixins/progress-bar-mixin";
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
 import {
@@ -11,7 +10,7 @@ import {
   PresenceValidator
 } from  "../../utils/validators";
 
-const RegisterNodesController = Ember.Controller.extend(ProgressBarMixin, NeedsDeploymentMixin, {
+const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
   deployment: Ember.computed.alias("deploymentController.model"),
   openstackDeployment: Ember.computed.alias("model"),
@@ -571,9 +570,7 @@ const RegisterNodesController = Ember.Controller.extend(ProgressBarMixin, NeedsD
     }).then((result) => {
       this.get('newIntrospectionTaskIds').pushObject(result.id);
       this.get('savedInfo').unshiftObject(nodeDriverInfo);
-      this.send('refreshModelOnOverviewRoute');
-      this.stopPolling();
-      this.startPolling();
+      this.send('restartPolling');
     }, (error) => {
       this.send('error', error, `Unable to register node. POST ${url} failed with status code ${error.jqXHR.status}.`);
     });

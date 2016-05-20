@@ -22,7 +22,7 @@ Fusor::Engine.routes.draw do
           get '/node_ports', to: 'nodes#list_ports'
           post '/node_mac_addresses', to: 'nodes#discover_macs' #POST so we don't expose password param
 
-          resources :stacks, :only => [:index, :show]
+          resources :stacks, :only => [:index, :show, :destroy]
           resources :underclouds, :only => [:show, :create]
         end
       end

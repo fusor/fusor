@@ -1,8 +1,10 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
+import PollingPromise from '../../mixins/polling-promise-mixin';
 import OspNodeManager from "../../utils/osp/osp-node-manager";
 
-export default Ember.Route.extend({
+export default Ember.Route.extend(PollingPromise, {
+  loadAllInterval: 10000,
 
   setupController(controller, model) {
     controller.set('model', model);
@@ -19,12 +21,12 @@ export default Ember.Route.extend({
 
     controller.set('showSpinner', true);
     this.loadAll().then(() => controller.set('showSpinner', false));
-    controller.stopPolling();
-    controller.startPolling();
+    this.stopPolling('loadAll');
+    this.startPolling('loadAll');
   },
 
   deactivate() {
-    this.get('controller').stopPolling();
+    this.stopPolling('loadAll');
     this.send('saveOpenstackDeployment');
   },
 
@@ -35,8 +37,11 @@ export default Ember.Route.extend({
       this.set('closeDeleteNodeConfirmation', false);
     },
 
-    refreshModelOnOverviewRoute() {
-      this.loadAll();
+    restartPolling() {
+      this.stopPolling('loadAll');
+      this.loadAll().then(() => {
+        this.startPolling('loadAll');
+      });
     },
 
     error(error, message) {

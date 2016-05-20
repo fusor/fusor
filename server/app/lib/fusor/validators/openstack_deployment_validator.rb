@@ -19,6 +19,10 @@ module Fusor
           openstack_deployment.errors[:undercloud_user_password] << _('Openstack deployments must specify an ssh password for the Undercloud')
         end
 
+        if openstack_deployment.overcloud_deployed?
+          openstack_deployment.errors[:overcloud_deployed] << _('Openstack deployments cannot be deployed to an Undercloud with an existing Overcloud')
+        end
+
         if openstack_deployment.overcloud_password.empty?
           openstack_deployment.errors[:overcloud_password] << _('Openstack deployments must specify an admin password for the Overcloud')
         end

@@ -39,6 +39,8 @@ export default DS.Model.extend(ValidatedModel, {
   undercloud_ssh_username: DS.attr('string'),
   undercloud_ssh_password: DS.attr('string'),
 
+  overcloud_deployed: DS.attr('boolean'),
+
   overcloud_address: DS.attr('string'),
   overcloud_ext_net_interface: DS.attr('string'),
   overcloud_private_net: DS.attr('string'),
@@ -67,6 +69,7 @@ export default DS.Model.extend(ValidatedModel, {
     undercloud_ip_address: PresentHostAddressValidator.create({}),
     undercloud_ssh_username: PresenceValidator.create({}),
     undercloud_ssh_password: PresenceValidator.create({}),
+    overcloud_deployed: EqualityValidator.create({equals: false}),
     overcloud_node_count: NumberValidator.create({min: 2}),
     overcloud_compute_flavor: FlavorValidator.create({}),
     overcloud_compute_count: NumberValidator.create({min: 1}),
@@ -82,7 +85,7 @@ export default DS.Model.extend(ValidatedModel, {
     this.set('validations.overcloud_float_gateway', IpSubnetValidator.create({subnet: this.get('overcloud_float_net')}));
   })),
 
-  isUndercloudDeployed: Ember.computed(
+  isUndercloudConnected: Ember.computed(
     'undercloud_admin_password',
     'undercloud_ip_address',
     'undercloud_ssh_username',
@@ -93,6 +96,14 @@ export default DS.Model.extend(ValidatedModel, {
         'undercloud_ip_address',
         'undercloud_ssh_username',
         'undercloud_ssh_password');
+    }),
+
+
+  isUndercloudReady: Ember.computed(
+    'isUndercloudConnected',
+    'overcloud_deployed',
+    function () {
+      return this.get('isUndercloudConnected') && this.validate('overcloud_deployed');
     }),
 
   areNodesRegistered: Ember.computed('overcloud_node_count', function () {
@@ -133,6 +144,7 @@ export default DS.Model.extend(ValidatedModel, {
     'undercloud_ip_address',
     'undercloud_ssh_username',
     'undercloud_ssh_password',
+    'overcloud_deployed',
     'overcloud_compute_flavor',
     'overcloud_compute_count',
     'overcloud_controller_flavor',

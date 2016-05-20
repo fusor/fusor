@@ -8,6 +8,8 @@ module Fusor
                :undercloud_ssh_username,
                :undercloud_ssh_password,
 
+               :overcloud_deployed,
+
                :overcloud_address,
                :overcloud_ext_net_interface,
                :overcloud_private_net,

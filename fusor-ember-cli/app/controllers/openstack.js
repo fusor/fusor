@@ -16,23 +16,23 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   disableAssignNodesNext: Ember.computed.alias('assignNodesController.disableAssignNodesNext'),
   disableNextOvercloud: Ember.computed.alias('overcloudController.disableNextOvercloud'),
 
-  disableTabRegisterNodes: Ember.computed.not('openstackDeployment.isUndercloudDeployed'),
+  disableTabRegisterNodes: Ember.computed.not('openstackDeployment.isUndercloudReady'),
 
   disableTabAssignNodes: Ember.computed(
-    'openstackDeployment.isUndercloudDeployed',
+    'openstackDeployment.isUndercloudReady',
     'openstackDeployment.areNodesRegistered',
     function () {
-      return !this.get('openstackDeployment.isUndercloudDeployed') ||
+      return !this.get('openstackDeployment.isUndercloudReady') ||
        !this.get('openstackDeployment.areNodesRegistered');
     }
   ),
 
   disableTabOvercloud: Ember.computed(
-    'openstackDeployment.isUndercloudDeployed',
+    'openstackDeployment.isUndercloudReady',
     'openstackDeployment.areNodesRegistered',
     'openstackDeployment.hasValidNodeAssignments',
     function () {
-      return !this.get('openstackDeployment.isUndercloudDeployed') ||
+      return !this.get('openstackDeployment.isUndercloudReady') ||
         !this.get('openstackDeployment.areNodesRegistered') ||
         !this.get('openstackDeployment.hasValidNodeAssignments');
     }

@@ -15,16 +15,22 @@ require 'egon'
 module Fusor
   module Api
     module Openstack
-      class OpenstackDeploymentsController < Api::Openstack::BaseController
+      class StacksController < Api::Openstack::BaseController
 
         def index
-          render :json => undercloud_handle.list_stacks, :serializer => RootArraySerializer
+          stacks = undercloud_handle.list_stacks
+          render :json => stacks, :serializer => RootArraySerializer
         end
 
         def show
-          render :json => {:openstack_deployment => undercloud_handle.get_stack_by_name(params[:id])}
+          render :json => {:stack => undercloud_handle.get_stack_by_name(params[:id])}
         end
 
+        def destroy
+          stack = undercloud_handle.get_stack_by_name(params[:id])
+          undercloud_handle.delete_stack(stack) if stack
+          render json: {}, status: 204
+        end
       end
     end
   end

@@ -3,6 +3,7 @@ osp:
   undercloud_ip_address: 192.168.150.254
   undercloud_ssh_username: undercloudSshUser
   undercloud_ssh_password: undercloudSshPassword1234
+  overcloud_deployed: false
   overcloud_password: overcloudAdminPassword
   overcloud_ext_net_interface: eth0
   overcloud_libvirt_type: kvm

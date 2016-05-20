@@ -54,6 +54,9 @@ module Fusor
     def sync_openstack
       @openstack_deployment = Fusor::OpenstackDeployment.find(params[:id])
 
+      @openstack_deployment.overcloud_deployed = undercloud_handle.list_stacks.present?
+      @openstack_deployment.save(:validate => false)
+
       return render json: {errors: @openstack_deployment.errors}, status: 422 unless @openstack_deployment.valid?
 
       undercloud_handle.edit_plan_parameters('overcloud', build_openstack_params)
@@ -89,12 +92,12 @@ module Fusor
     end
 
     def openstack_deployment_params
-      params[:openstack_deployment].delete :undercloud_admin_password
-      params[:openstack_deployment].delete :undercloud_ip_address
-      params[:openstack_deployment].delete :undercloud_ssh_username
-      params[:openstack_deployment].delete :undercloud_ssh_password
-
-      params.require(:openstack_deployment).permit(:overcloud_ext_net_interface,
+      params.require(:openstack_deployment).permit(:undercloud_admin_password,
+                                                   :undercloud_ip_address,
+                                                   :undercloud_ssh_username,
+                                                   :undercloud_ssh_password,
+                                                   :overcloud_deployed,
+                                                   :overcloud_ext_net_interface,
                                                    :overcloud_private_net,
                                                    :overcloud_float_net,
                                                    :overcloud_float_gateway,
