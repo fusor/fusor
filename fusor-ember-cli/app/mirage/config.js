@@ -12,6 +12,11 @@ export default function() {
   this.get('/fusor/api/v21/deployments/:id');
   this.put('/fusor/api/v21/deployments/:id');
   this.del('/fusor/api/v21/deployments/:id');
+  this.get('/fusor/api/v21/deployments/:id/openshift_disk_space',
+    function(db, request) {
+      return { openshift_disk_space: 1024 };
+    }
+  );
 
   this.get('/fusor/api/v21/openstack_deployments');
   this.post('/fusor/api/v21/openstack_deployments');
