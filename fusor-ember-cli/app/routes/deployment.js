@@ -19,7 +19,9 @@ export default Ember.Route.extend(DeploymentRouteMixin, UsesOseDefaults, {
     controller.set('confirmCfmeRootPassword', model.get('cfme_root_password'));
     controller.set('confirmCfmeAdminPassword', model.get('cfme_admin_password'));
     controller.set('confirmCfmeDbPassword', model.get('cfme_db_password'));
-    controller.set('confirmOvercloudPassword', model.get('openstack_deployment.overcloud_password'));
+    model.get('openstack_deployment').then(function(result) {
+      controller.set('confirmOvercloudPassword', result.get('overcloud_password'));
+    });
 
     this.loadOpenshiftDefaults(controller, model);
     this.loadCloudFormsDefaults(controller, model);
