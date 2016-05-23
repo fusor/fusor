@@ -159,10 +159,10 @@ const RegisterNodesController = Ember.Controller.extend(ProgressBarMixin, NeedsD
 
   nodeErrors: Ember.computed(
     'nodeManagers.[]',
-    'nodes.@each',
-    'introspectionTasks.@each',
+    'nodes.[]',
+    'introspectionTasks.[]',
     'foremanTasks.@each.humanized_errors',
-    'ports.@each',
+    'ports.[]',
     function () {
       let nodeManagers = this.get('nodeManagers') || [];
       let foremanTasks = this.get('foremanTasks') || [];
@@ -184,7 +184,7 @@ const RegisterNodesController = Ember.Controller.extend(ProgressBarMixin, NeedsD
   }),
 
   registrationErrors: Ember.computed(
-    'newIntrospectionTaskIds.@each',
+    'newIntrospectionTaskIds.[]',
     'foremanTasks.@each.humanized_errors',
     'introspectionTasks.[]',
     'nodes.[]',
