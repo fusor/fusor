@@ -29,7 +29,7 @@ export default Ember.Component.extend({
     return 'Free';
   }),
 
-  foremanTask: Ember.computed('node', 'introspectionTasks.@each', 'foremanTasks.@each', function() {
+  foremanTask: Ember.computed('node', 'introspectionTasks.[]', 'foremanTasks.[]', function() {
     return this.get('node').getForemanTask(this.get('introspectionTasks'), this.get('foremanTasks'));
   }),
 
