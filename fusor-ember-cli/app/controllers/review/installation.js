@@ -226,14 +226,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     }
   }),
 
-  qtyLabel: Ember.computed('isDisconnected', function() {
-    if (this.get('isDisconnected')) {
-      return 'Quantity';
-    } else {
-      return 'Quantity Added';
-    }
-  }),
-
   ramNeededGB: Ember.computed('ramNeeded', function() {
     return this.get('ramNeeded') + ' GB';
   }),
