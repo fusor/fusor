@@ -4,7 +4,10 @@ export default Ember.Component.extend({
 
   openCloseModal: Ember.observer('openModal', function() {
     if (this.get('openModal')) {
-      Ember.$('#'+this.get('idModal')).modal('show');
+      Ember.$('#'+this.get('idModal')).modal({
+          backdrop: 'static',
+          keyboard: false
+      });
     } else {
       Ember.$('#'+this.get('idModal')).modal('hide');
     }
