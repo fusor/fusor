@@ -11,7 +11,7 @@ export default Ember.Route.extend({
     var orgID = this.modelFor('deployment').get('organization.id');
     var url = '/katello/api/v2/organizations/' + orgID;
     Ember.$.getJSON(url).then(function(results) {
-      if (Ember.isPresent(results.owner_details.upstreamConsumer)) {
+      if (Ember.isPresent(results.owner_details) && Ember.isPresent(results.owner_details.upstreamConsumer)) {
         controller.set('organizationUpstreamConsumerUUID', results.owner_details.upstreamConsumer.uuid);
         controller.set('organizationUpstreamConsumerName', results.owner_details.upstreamConsumer.name);
         // if no UUID for deployment, assign it from org UUID

@@ -20,7 +20,9 @@ export default Ember.Route.extend(DeploymentRouteMixin, UsesOseDefaults, {
     controller.set('confirmCfmeAdminPassword', model.get('cfme_admin_password'));
     controller.set('confirmCfmeDbPassword', model.get('cfme_db_password'));
     model.get('openstack_deployment').then(function(result) {
-      controller.set('confirmOvercloudPassword', result.get('overcloud_password'));
+      if (Ember.isPresent(result)) {
+        controller.set('confirmOvercloudPassword', result.get('overcloud_password'));
+      }
     });
 
     this.loadOpenshiftDefaults(controller, model);
@@ -34,7 +36,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, UsesOseDefaults, {
     var orgID = model.get('organization.id');
     var url = '/katello/api/v2/organizations/' + orgID;
     Ember.$.getJSON(url).then(function(results) {
-      if (Ember.isPresent(results.owner_details.upstreamConsumer)) {
+      if (Ember.isPresent(results.owner_details) && Ember.isPresent(results.owner_details.upstreamConsumer)) {
         controller.set('organizationUpstreamConsumerUUID', results.owner_details.upstreamConsumer.uuid);
         controller.set('organizationUpstreamConsumerName', results.owner_details.upstreamConsumer.name);
         // if no UUID for deployment, assign it from org UUID
