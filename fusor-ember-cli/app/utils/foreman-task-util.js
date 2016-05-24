@@ -20,7 +20,7 @@ class ForemanTaskUtil {
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "X-CSRF-Token": this._csrfToken,
+        "X-CSRF-Token": this._csrfToken
       },
       data: JSON.stringify({ 'search': taskId })
     });

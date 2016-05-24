@@ -271,5 +271,5 @@ export default Ember.Mixin.create({
               this.get('isRam5OverCapacity') ||
               this.get('isDisk5OverCapacity'));
     }
-  ),
+  )
 });

@@ -16,7 +16,7 @@ export default Ember.Component.extend(ActiveLinkMixin, {
 
   completed: Ember.computed('isDisabled', 'active', function() {
     return (!this.get('isDisabled') && !this.get('active'));
-  }),
+  })
 
   // // code borrowed addon ember-cli-active-link-wrapper
   // // github.com/alexspeller/ember-cli-active-link-wrapper/blob/master/addon/components/active-link.js
