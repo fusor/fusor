@@ -26,6 +26,7 @@ export default Mirage.Factory.extend({
   cfme_install_loc: "RHEV",
   cfme_root_password: "12345678",
   cfme_admin_password: "12345678",
+  cfme_db_password: "12345678",
   host_naming_scheme: "Freeform",
   custom_preprend_name: null,
   enable_access_insights: true,
