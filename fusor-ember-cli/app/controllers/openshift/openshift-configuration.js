@@ -60,7 +60,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   }),
 
   isGluster: Ember.computed('model.openshift_storage_type', function() {
-    return (this.get('model.openshift_storage_type') === 'Gluster');
+    return (this.get('model.openshift_storage_type') === 'GFS');
   }),
 
   postTextDomainName: Ember.computed('domainName', function() {
