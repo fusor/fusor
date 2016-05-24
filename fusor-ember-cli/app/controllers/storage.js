@@ -123,8 +123,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     function () {
       return Ember.isBlank(this.get('deploymentController.model.rhev_share_path')) ||
         this.get('hasEndingSlashInSharePath') ||
-        (this.get('isNFS') && this.get('hasNoLeadingSlashInExportPath')) ||
-        (this.get('isGluster') && !this.get('hasNoLeadingSlashInExportPath'));
+        (this.get('isNFS') && this.get('hasNoLeadingSlashInSharePath')) ||
+        (this.get('isGluster') && !this.get('hasNoLeadingSlashInSharePath'));
     }),
 
   invalidExportDomainName: Ember.computed('deploymentController.model.rhev_export_domain_name', function() {
