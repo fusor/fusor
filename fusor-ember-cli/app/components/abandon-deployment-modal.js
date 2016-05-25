@@ -9,7 +9,7 @@ export default Ember.Component.extend({
     executeAbandonment() {
       this.set('openModal', false);
       this.get('targetObject').send('executeAbandonment');
-    },
+    }
   }
 
 });

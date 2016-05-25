@@ -1,3 +1,5 @@
+/* global Address4:false */
+
 import Ember from 'ember';
 
 const Validator = Ember.Object.extend({

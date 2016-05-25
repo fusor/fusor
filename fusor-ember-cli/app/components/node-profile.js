@@ -83,6 +83,7 @@ export default Ember.Component.extend({
         self.hideAssignMenu();
       }
       catch (error) {
+        // do nothing
       }
     });
   }

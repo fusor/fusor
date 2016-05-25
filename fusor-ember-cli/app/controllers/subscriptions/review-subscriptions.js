@@ -14,6 +14,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   }),
 
   sortProps: ['contract_number'],
-  sortedModel: Ember.computed.sort('model', 'sortProps'),
+  sortedModel: Ember.computed.sort('model', 'sortProps')
 
 });

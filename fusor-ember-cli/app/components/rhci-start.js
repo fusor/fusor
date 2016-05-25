@@ -26,6 +26,6 @@ export default Ember.Component.extend({
   descRhev: 'Complete enterprise virtualization management for servers and desktops on the same infrastructure',
   descOpenStack: 'Flexible, secure foundations to build a massively scalable private or public cloud',
   descCloudForms: 'Manage your virtual, private, and hybrid cloud infrastructures',
-  descOpenShift: 'Develop, host, and scale applications in a cloud environment',
+  descOpenShift: 'Develop, host, and scale applications in a cloud environment'
 
 });

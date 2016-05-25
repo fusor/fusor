@@ -65,7 +65,7 @@ export default Ember.Route.extend({
         headers: {
           "Accept": "application/json",
           "Content-Type": "application/json",
-          "X-CSRF-Token": token,
+          "X-CSRF-Token": token
         }
       }).then(function(response) {
         //show always be {} empty successful 200 response
@@ -89,8 +89,8 @@ export default Ember.Route.extend({
           headers: {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "X-CSRF-Token": token,
-          },
+            "X-CSRF-Token": token
+          }
         }).then(function(response) {
           //show always be {} empty successful 200 response
           self.modelFor('subscriptions').setProperties({
@@ -146,8 +146,8 @@ export default Ember.Route.extend({
           headers: {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "X-CSRF-Token": token,
-          },
+            "X-CSRF-Token": token
+          }
         }).then(function(response) {
           var ownerKey = response[0]['key'];
           console.log('owner key is ' + ownerKey);

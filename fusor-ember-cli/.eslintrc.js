@@ -53,6 +53,8 @@ const rulesOverrides = {
     "error",
     2
   ],
+  "no-unused-vars": "off",
+  "no-console": "off"
 };
 
 module.exports = {
@@ -60,6 +62,7 @@ module.exports = {
     "browser": true,
     "es6": true
   },
+  "extends": "eslint:recommended",
   "parserOptions": {
     "sourceType": "module"
   },

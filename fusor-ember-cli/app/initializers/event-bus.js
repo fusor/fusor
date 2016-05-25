@@ -1,3 +1,5 @@
+import Ember from 'ember';
+
 export function initialize(registry, application) {
   // NOTE: This interface can be confusing; be sure you are
   // operating on the object you expect to be. Newer versions of

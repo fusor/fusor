@@ -6,6 +6,8 @@
 // app.import(bower_componets/...
 // TODO: Shim filesize so we don't pollute the global space.
 
+/* global filesize:false */
+
 export default {
   rawToHuman: filesize,
   humanToRaw

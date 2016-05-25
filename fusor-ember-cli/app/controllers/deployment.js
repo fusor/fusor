@@ -183,5 +183,5 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   hasSubscriptions: Ember.computed('cntSubscriptions', function() {
     return (this.get('cntSubscriptions') > 0);
   }),
-  hasNoSubscriptions: Ember.computed.not('hasSubscriptions'),
+  hasNoSubscriptions: Ember.computed.not('hasSubscriptions')
 });
