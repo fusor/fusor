@@ -61,10 +61,11 @@ export default Ember.Route.extend({
     let roles = this.get('controller.roles');
     let plan = this.get('controller.plan');
     let params = this.get('controller.plan.parameters');
-    let globalParams = this.get('controller.globalPlanParameters');
+    let globalParams = [];
     let uneditableParams = {};
 
     roles.forEach(role => {
+      role.set('parameters', []);
       role.set('image', plan.getParamValue(role.get('imageParameterName')));
       uneditableParams[role.get('countParameterName')] = true;
       uneditableParams[role.get('flavorParameterName')] = true;
@@ -97,6 +98,8 @@ export default Ember.Route.extend({
         }
       }
     }
+
+    this.set('controller.globalPlanParameters', globalParams);
   },
 
   findRoleForParamKey(paramKey) {
