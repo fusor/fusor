@@ -15,6 +15,7 @@ export default Ember.Component.extend({
     },
     confirmDeleteNode() {
       this.sendAction('confirmDeleteNode');
+      this.set('openModal', false);
     }
   }
 

@@ -41,7 +41,7 @@
                     isRequired=true}}
 
           {{#each nodeInfo.macAddresses as |macAddress key| }}
-            {{new-node-registration-mac-address macAddress=macAddress macAddressValidator=macAddressValidator index=key}}
+            {{new-node-registration-mac-address macAddress=macAddress macAddressValidator=macAddressValidator prefix="addNode" index=key}}
           {{/each}}
         </form>
         <div class="row">

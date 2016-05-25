@@ -171,10 +171,6 @@ const AssignNodesController =  Ember.Controller.extend(DeploymentControllerMixin
     parameters.forEach(p => p.set('value', p.get('newValue')));
   },
 
-  handleOutsideClick(e) {
-    // do nothing, this overrides the closing of the dialog when clicked outside of it
-  },
-
   actions: {
     editRole(role) {
       this.set('selectedTab', 'settings');

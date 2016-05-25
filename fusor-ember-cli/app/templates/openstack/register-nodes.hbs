@@ -1,14 +1,14 @@
 {{#if showSpinner}}
   <div class="spinner spinner-md spinner-inline"></div>
-  <span class='spinner-text'>
+  <span class="spinner-text">
     Loading OSP Nodes
   </span>
 {{else}}
 
   {{#if errorMsg}}
     <div class="row register-nodes-errors">
-      <div class='col-md-9 col-lg-6'>
-        <div class='alert alert-danger rhci-alert'>
+      <div class="col-md-9 col-lg-6">
+        <div class="alert alert-danger rhci-alert">
           <i class="fa fa-2x fa-exclamation-triangle errorForValidation validation-alert-icon"></i>
           <p class="validation-alert-message">{{errorMsg}}</p>
         </div>
@@ -18,8 +18,8 @@
 
   {{#if showRegistrationErrors}}
     <div class="row register-nodes-errors">
-      <div class='col-md-9 col-lg-6'>
-        <div class='alert alert-danger rhci-alert'>
+      <div class="col-md-9 col-lg-6">
+        <div class="alert alert-danger rhci-alert">
           <i class="fa fa-2x fa-exclamation-triangle errorForValidation validation-alert-icon"></i>
           <p class="validation-alert-message">There were errors encountered while trying to register nodes:</p>
           <ul class="validation-alert-message">
@@ -34,8 +34,8 @@
 
   {{#if showNodeErrors}}
     <div class="row register-nodes-errors">
-      <div class='col-md-9 col-lg-6'>
-        <div class='alert alert-danger rhci-alert'>
+      <div class="col-md-9 col-lg-6">
+        <div class="alert alert-danger rhci-alert">
           <i class="fa fa-2x fa-exclamation-triangle errorForValidation validation-alert-icon"></i>
           <p class="validation-alert-message">The following nodes have errors:</p>
           <ul class="validation-alert-message">
@@ -49,14 +49,14 @@
   {{/if}}
 
   <div class="row">
-    <div class='col-md-9 col-lg-6'>
+    <div class="col-md-9 col-lg-6">
       <p>Register at least 2 nodes with the selected undercloud to build out your OpenStack environment.</p>
     </div>
   </div>
 
   {{#if hasNodes}}
     <div class="row">
-      <div class='col-md-9 col-lg-6'>
+      <div class="col-md-9 col-lg-6">
         <button id="register-nodes-button" class="btn btn-default register-more-nodes-button" {{action "showNodeRegistrationModal"}}>
           Register More Nodes
         </button>
@@ -64,7 +64,7 @@
     </div>
   {{else}}
     <div class="row">
-      <div class='col-md-9 col-lg-6'>
+      <div class="col-md-9 col-lg-6">
         <button id="register-nodes-button" class="btn btn-primary register-nodes-button" {{action "showNodeRegistrationModal"}}>
           Register Nodes
         </button>
@@ -72,7 +72,7 @@
     </div>
 
     <div class="row">
-      <div class='col-md-9 col-lg-6'>
+      <div class="col-md-9 col-lg-6">
         <p>
           No nodes have been registered yet. Discover nodes through auto-detection,
           mapping them in a CSV file, or entering node information manually.
@@ -93,52 +93,30 @@
   </div>
 {{/if}}
 
-{{cancel-back-next  backRouteName='openstack.undercloud-deploy'
+{{cancel-back-next  backRouteName="openstack.undercloud-deploy"
                     disableBack=false
-                    nextRouteName='openstack.assign-nodes'
+                    nextRouteName="openstack.assign-nodes"
                     disableNext=disableRegisterNodesNext
                     disableCancel=isStarted
                     deploymentName=deploymentName}}
 
 {{new-node-registration openModal=openModalNewNode
-                        isStep1=isStep1
-                        disableDetectNodesSubmit=disableDetectNodesSubmit
-                        disableNewNodesSubmit=disableNewNodesSubmit
-                        registerNodesMethod=registerNodesMethod
-                        nodeInfo=nodeInfo
-                        isDriverValid=isDriverValid
-                        showDriverValidationError=showDriverValidationError
-                        isIpmi=isIpmi
-                        drivers=drivers
-                        vendors=vendors
-                        ipmiVendor=ipmiVendor
-                        hostAddressValidator=hostAddressValidator
-                        newNodeVendorLabel=newNodeVendorLabel
-                        newNodeUsernameLabel=newNodeUsernameLabel
-                        newNodePasswordLabel=newNodePasswordLabel
-                        newNodeAddressLabel=newNodeAddressLabel
-                        newNodeUsernameLabel=newNodeUsernameLabel
-                        newNodePasswordLabel=newNodePasswordLabel
-                        hasCsvErrors=hasCsvErrors
-                        hasCsvInfo=hasCsvInfo
-                        csvInfo=csvInfo
-                        submitDetectNodes='submitDetectNodes'
-                        backStep='backStep'
-                        csvFileChosen='csvFileChosen'
-                        addMacAddress='addMacAddress'
-}}
+                        deployment=deployment
+                        openstackDeployment=openstackDeployment
+                        ports=ports
+                        introspectionTasks=introspectionTasks
+                        foremanTasks=foremanTasks
+                        submitRegisterNodes="submitRegisterNodes"}}
+
 {{add-node-registration openModal=openModalAddNode
-                        nodeInfo=nodeInfo
-                        nodeDriverHumanized=nodeDriverHumanized
-                        newNodeAddressLabel=newNodeAddressLabel
-                        manualPasswordInput=manualPasswordInput
-                        newNodePasswordLabel=newNodePasswordLabel
-                        macAddress=macAddress
-                        macAddressValidator=macAddressValidator
-                        newNodeUsernameLabel=newNodeUsernameLabel
-                        disableNewNodesSubmit=disableNewNodesSubmit
-                        addMacAddress='addMacAddress'
-                        submitAddNodes='submitAddNodes'}}
+                        nodeInfo=addNodeInfo
+                        deployment=deployment
+                        openstackDeployment=openstackDeployment
+                        ports=ports
+                        introspectionTasks=introspectionTasks
+                        foremanTasks=foremanTasks
+                        submitAddNodes="submitAddNodes"}}
+
 {{delete-node-confirmation openModal=openModalDeleteNode
                            nodeToDeleteLabel=nodeToDeleteLabel
-                           confirmDeleteNode='confirmDeleteNode'}}
+                           confirmDeleteNode="confirmDeleteNode"}}

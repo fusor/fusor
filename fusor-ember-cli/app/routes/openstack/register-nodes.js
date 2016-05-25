@@ -10,6 +10,7 @@ export default Ember.Route.extend(PollingPromise, {
     controller.set('model', model);
     controller.set('nodeManagers', []);
     controller.set('introspectionTasks', []);
+    controller.set('errorMsg', null);
 
     var deploymentId = this.modelFor('deployment').get('id');
     this.store.query('image', {deployment_id: deploymentId}).then(function(results) {
@@ -63,7 +64,7 @@ export default Ember.Route.extend(PollingPromise, {
 
   loadNodes() {
     let controller = this.get('controller');
-    return this.store.query('node', {deployment_id: controller.get('deploymentId')}).then(
+    return this.store.query('node', {deployment_id: controller.get('deployment.id')}).then(
       (result) => {
         controller.set('nodes', result);
       },
@@ -74,7 +75,7 @@ export default Ember.Route.extend(PollingPromise, {
 
   loadPorts() {
     let controller = this.get('controller');
-    let deploymentId = this.get('controller.deploymentId');
+    let deploymentId = this.get('controller.deployment.id');
     let token = Ember.$('meta[name="csrf-token"]').attr('content');
     let url = `/fusor/api/openstack/deployments/${deploymentId}/node_ports`;
 
@@ -96,7 +97,7 @@ export default Ember.Route.extend(PollingPromise, {
 
   loadIntrospectionTasks() {
     let controller = this.get('controller');
-    let deploymentId = this.get('controller.deploymentId');
+    let deploymentId = this.get('controller.deployment.id');
     return this.store.findRecord('deployment', deploymentId, {reload: true}).then(
       (deployment) => {
         controller.set('introspectionTasks', deployment.get('introspection_tasks'));
