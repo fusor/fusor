@@ -3,7 +3,7 @@ import Ember from 'ember';
 export default Ember.Component.extend({
 
   minHeightStyle: Ember.computed('minHeight', function() {
-    return new Ember.Handlebars.SafeString('min-height: ' + this.get('minHeight') + 'px;');
+    return Ember.String.htmlSafe('min-height: ' + this.get('minHeight') + 'px;');
   }),
 
   resizeWizard: Ember.on('didInsertElement', function() {

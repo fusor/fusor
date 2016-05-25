@@ -61,7 +61,7 @@ export default Ember.Component.extend({
 
   progressWidth: Ember.computed('foremanTask.progress', function() {
     let progressPercent = Math.floor((parseFloat(this.get('foremanTask.progress')) || 0) * 100);
-    return `${progressPercent}%`;
+    return Ember.String.htmlSafe(`width: ${progressPercent}%;`);
   }),
 
   progressBarClass: Ember.computed('isNodeError', function() {
