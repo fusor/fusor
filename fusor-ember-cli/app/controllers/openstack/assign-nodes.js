@@ -148,23 +148,19 @@ const AssignNodesController =  Ember.Controller.extend(DeploymentControllerMixin
   },
 
   openEditDialog() {
-    this.set('editRoleModalOpened', true);
-    this.set('editRoleModalClosed', false);
+    this.set('openModalEditRole', true);
   },
 
   closeEditDialog() {
-    this.set('editRoleModalOpened', false);
-    this.set('editRoleModalClosed', true);
+    this.set('openModalEditRole', false);
   },
 
   openGlobalServiceConfigDialog() {
-    this.set('editGlobalServiceConfigModalOpened', true);
-    this.set('editGlobalServiceConfigModalClosed', false);
+    this.set('openModalEditGlobal', true);
   },
 
   closeGlobalServiceConfigDialog() {
-    this.set('editGlobalServiceConfigModalOpened', false);
-    this.set('editGlobalServiceConfigModalClosed', true);
+    this.set('openModalEditGlobal', false);
   },
 
   resetEditedParameters(parameters) {
@@ -173,10 +169,6 @@ const AssignNodesController =  Ember.Controller.extend(DeploymentControllerMixin
 
   updateEditedParameters(parameters) {
     parameters.forEach(p => p.set('value', p.get('newValue')));
-  },
-
-  handleOutsideClick(e) {
-    // do nothing, this overrides the closing of the dialog when clicked outside of it
   },
 
   actions: {
@@ -201,10 +193,6 @@ const AssignNodesController =  Ember.Controller.extend(DeploymentControllerMixin
 
       this.doAssignRole(role, this.get('editedRoleProfile'));
       this.updateEditedParameters(this.get('editedRoleParameters'));
-      this.closeEditDialog();
-    },
-
-    cancelEditRole() {
       this.closeEditDialog();
     },
 

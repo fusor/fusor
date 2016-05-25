@@ -1,0 +1,63 @@
+{{#pf-modal-base idModal='editDeploymentRoleModal'
+                 openModal=openModal
+                 title=editRoleTitle}}
+
+  {{#pf-modal-body}}
+    <ul class="nav nav-tabs nav-tabs-pf" role="tablist">
+      <li role="presentation" class={{settingsActiveClass}}>
+        <a aria-controls="overall-settings" role="tab" data-toggle="tab" {{action "doShowSettings"}}>Overall Settings</a>
+      </li>
+      <li role="presentation" class={{configActiveClass}}>
+        <a  aria-controls="service-configuration" role="tab" data-toggle="tab" {{action "doShowConfig"}}>Service Configuration</a>
+      </li>
+    </ul>
+    <div class="tab-content" style="margin-top: 30px;">
+      <div role="tabpanel" class="tab-pane deployment-role-settings-content {{settingsActiveClass}}" id="overall-settings">
+        <div class="form-horizontal">
+          <fieldset>
+            <div class="form-group">
+              <label class="control-label col-sm-4 ">Name</label>
+              <div class="col-sm-8">
+                  <input class="form-control" type="text" value={{editedRole.name}} readOnly="true">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-4 ">Description</label>
+              <div class="col-sm-8">
+                  <textarea class="form-control" type="text" value={{editedRole.description}} readOnly="true"></textarea>
+              </div>
+            </div>
+            {{select-f label="Provisioning Image" labelSize='col-sm-4' inputSize='col-sm-8' content=images value=editedRoleImage isRequired=false optionLabelPath="content.name" optionValuePath="content.name"}}
+            {{select-f label="Flavor" labelSize='col-sm-4' inputSize='col-sm-8' content=profiles value=editedRoleProfile  isRequired=false optionLabelPath="content.name" optionValuePath="content.name"}}
+            {{text-f label="Number of Nodes" type='number' labelSize='col-sm-4' inputSize='col-sm-8' value=editedRoleNodeCount isRequired=false}}
+          </fieldset>
+        </div>
+      </div>
+      <div role="tabpanel" class="tab-pane deployment-role-settings-content {{configActiveClass}}" id="service-configuration">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-horizontal">
+              <fieldset>
+                <div class="required">
+                  {{#each editedRoleParameters as |roleParameter|}}
+                    {{#if roleParameter.isBoolean}}
+                      {{check-f label=roleParameter.label checked=roleParameter.newValue labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
+                    {{else}}
+                      {{text-f label=roleParameter.label value=roleParameter.newValue type=roleParameter.type labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
+                    {{/if}}
+                  {{/each}}
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {{/pf-modal-body}}
+
+  {{#pf-modal-footer}}
+    <button type="cancel" class="btn btn-default" {{action "cancelEditRole"}}>Cancel</button>
+    <button type="submit" class="btn btn-primary" {{action "saveRole"}}>Save</button>
+  {{/pf-modal-footer}}
+
+{{/pf-modal-base}}

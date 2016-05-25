@@ -6,6 +6,6 @@ export default Ember.Component.extend({
   }),
 
   cssId: Ember.computed('index', function() {
-    return `newNodeManualMacAddressAddInput${this.get('index')}`;
+    return `${this.get('prefix')}ManualMacInput${this.get('index')}`;
   })
 });

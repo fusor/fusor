@@ -1,0 +1,18 @@
+{{#pf-modal-base idModal='deleteNodeConfirmationModal'
+                 openModal=openModal
+                 title=deleteNodeTitle}}
+
+  {{#pf-modal-body}}
+    <div class="row">
+      <div class="col-xs-12">
+        <p>Are you sure you want to delete node {{nodeToDeleteLabel}}?</p>
+      </div>
+    </div>
+  {{/pf-modal-body}}
+
+  {{#pf-modal-footer}}
+    <button type="button" id="deleteNodeCancelButton" class="btn btn-default delete-node-cancel-button" {{action "cancelDeleteNode"}}>Cancel</button>
+    <button type="button" id="deleteNodeConfirmButton" class="btn btn-danger delete-node-confirm-button" {{action "confirmDeleteNode"}}>Delete</button>
+  {{/pf-modal-footer}}
+
+{{/pf-modal-base}}

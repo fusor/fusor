@@ -5,8 +5,6 @@
                   labelSize='col-xs-3'
                   inputSize='col-xs-4'
                   content=drivers
-                  optionLabelPath="content.label"
-                  optionValuePath="content.value"
                   value=nodeInfo.driver
                   isValid=isDriverValid
                   showValidationError=showDriverValidationError
@@ -21,7 +19,7 @@
             validator=hostAddressValidator
             isRequired=true}}
 
-  {{text-f  cssId="manualUsernameInput"
+  {{text-f  cssId="manualUsernameInput2"
             label=newNodeUsernameLabel
             type='text'
             labelSize='col-xs-3'
@@ -38,7 +36,7 @@
             isRequired=true}}
 
   {{#each nodeInfo.macAddresses as |macAddress key| }}
-    {{new-node-registration-mac-address macAddress=macAddress macAddressValidator=macAddressValidator index=key}}
+    {{new-node-registration-mac-address macAddress=macAddress macAddressValidator=macAddressValidator prefix="newNode" index=key}}
   {{/each}}
 </form>
 <div class="row">
