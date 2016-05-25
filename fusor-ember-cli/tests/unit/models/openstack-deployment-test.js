@@ -16,13 +16,13 @@ const validHostOrIp = ['192.168.2.0', '192.168.153.0', 'ValidHostName', 'Valid-H
 const validFlavor = validPresence;
 const validCount = [1, 999];
 const validCidr = ['192.168.153.0/1', '192.168.153.0/32', '0.0.0.0/1', '255.255.255.255/32'];
-const validIpAddress = ['192.168.2.0', '192.168.153.0'];
 
 const validFieldHash = {
   undercloud_admin_password: validPresence,
   undercloud_ip_address: validHostOrIp,
   undercloud_ssh_username: validPresence,
   undercloud_ssh_password: validPresence,
+  overcloud_deployed: [false],
   overcloud_node_count: [2, 999],
   overcloud_compute_flavor: validFlavor,
   overcloud_compute_count: validCount,
@@ -57,20 +57,13 @@ const invalidCidr = invalidPresence.concat([
   '8.8.8.8//24',
   '8.8.8.8.8/24'
 ]);
-const invalidIpAddress = invalidPresence.concat([
-  '192.168.2.2000',
-  '192.162.257',
-  'garbage192.168.1.2',
-  '192.168.1.2/24',
-  '192.168.1.2/',
-  '192.168.1.2postfix'
-]);
 
 const invalidFieldHash = {
   undercloud_admin_password: invalidPresence,
   undercloud_ip_address: invalidHostOrIp,
   undercloud_ssh_username: invalidPresence,
   undercloud_ssh_password: invalidPresence,
+  overcloud_deployed: [true, null, undefined],
   overcloud_node_count: invalidPresence.concat(1, 0, -1),
   overcloud_compute_flavor: invalidFlavor,
   overcloud_compute_count: invalidCount,
@@ -145,6 +138,7 @@ const validOpenstackDeploymentFields = {
   undercloud_ssh_username: 'root',
   undercloud_ssh_password: 'vagrant',
 
+  overcloud_deployed: false,
   overcloud_address: null,
   overcloud_ext_net_interface: 'nic2',
   overcloud_private_net: '192.168.254.0/24',
@@ -169,22 +163,23 @@ const validOpenstackDeploymentFields = {
   undercloud_hostname: null
 };
 
-test ('isUndercloudDeployed should be true when relevant fields are valid', function(assert){
+test ('isUndercloudReady should be true when relevant fields are valid', function(assert){
   const model = this.subject(validOpenstackDeploymentFields);
-  assert.ok(model.get('isUndercloudDeployed'));
+  assert.ok(model.get('isUndercloudReady'));
 });
 
-test ('isUndercloudDeployed should be false when relevant fields are invalid', function(assert){
+test ('isUndercloudReady should be false when relevant fields are invalid', function(assert){
   const model = this.subject(validOpenstackDeploymentFields);
   [
     'undercloud_admin_password',
     'undercloud_ip_address',
     'undercloud_ssh_username',
-    'undercloud_ssh_password'
+    'undercloud_ssh_password',
+    'overcloud_deployed'
   ].forEach(fieldName => {
     let originalValue = model.get(fieldName);
     Ember.run(() => model.set(fieldName, null));
-    assert.notOk(model.get('isUndercloudDeployed'), `isUndercloudDeployed was true when ${fieldName}: null`);
+    assert.notOk(model.get('isUndercloudReady'), `isUndercloudReady was true when ${fieldName}: null`);
     Ember.run(() => model.set(fieldName, originalValue));
   });
 });

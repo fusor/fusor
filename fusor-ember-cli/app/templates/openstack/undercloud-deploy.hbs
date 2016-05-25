@@ -1,63 +1,93 @@
-{{#unless isDeployed}}
-<div class="row">
-  <div class='col-md-9'>
-    <form class="form-horizontal" role="form">
-        {{text-f label="Undercloud IP"
-                 value=undercloudIP
-                 labelSize='deploy-undercloud-param-label'
-                 inputSize='deploy-undercloud-param-input'
-                 isRequired=true
-                 helpText=undercloudIPHelp
-                 validator=undercloudIpValidator}}
-        {{text-f label="SSH User"
-                 value=sshUser
-                 labelSize='deploy-undercloud-param-label'
-                 inputSize='deploy-undercloud-param-input'
-                 isRequired=true}}
-        {{text-f label="SSH Password"
-                 value=sshPassword
-                 labelSize='deploy-undercloud-param-label'
-                 inputSize='deploy-undercloud-param-input'
-                 type='password'
-                 isRequired=true}}
-
-        <button class="btn btn-primary pull-left"
-                {{action "deployUndercloud"}}
-                disabled={{deployDisabled}}>
-            Detect Undercloud
-        </button>
-    </form>
-  </div>
-</div>
-
-{{#if deploymentError}}
+{{#if errorMsg}}
   <div class="row">
-    <div class='col-md-9' style="padding-top: 10px;">
-        <div class="alert alert-danger" style="margin-bottom: 0px; max-width: 600px">
+    <div class='col-md-9'>
+      <div class='col-md-9'>
+        <div class="alert alert-danger">
           <span class="pficon pficon-error-circle-o"></span>
-          Undercloud detection failed: {{deploymentError}}
+          {{errorMsg}}
         </div>
+      </div>
     </div>
   </div>
+{{else if showLoadingSpinner}}
+  <div class="spinner spinner-md spinner-inline"></div>
+  <span class='spinner-text'>
+    {{loadingSpinnerText}}
+  </span>
+{{else if openstackDeployment.isUndercloudConnected}}
+  {{#if stack}}
+    <div class="row">
+      <div class='col-md-9'>
+        <div class='col-md-9'>
+          <div class="alert alert-danger">
+            <span class="pficon pficon-error-circle-o"></span>
+            {{#if stackDeleteFailed}}
+              Deleting the "{{stack.stack_name}}" stack failed.  You may try again.
+            {{else}}
+              The undercloud is already running the "{{stack.stack_name}}" stack.
+            {{/if}}
+            <a {{action 'deleteStack'}}> Delete {{stack.stack_name}}</a> to continue the current deployment or
+            <a {{action 'resetCredentials'}}>use a different undercloud</a>.
+          </div>
+        </div>
+      </div>
+    </div>
+  {{else}}
+    <div class="row">
+      <div class='col-md-9'>
+        <div class='col-md-9'>
+          <div class="alert alert-success" style="margin-bottom: 0px;">
+            <span class="pficon pficon-ok"></span>
+            Undercloud has been successfully detected. If you want to connect to a different undercloud
+            <a {{action 'resetCredentials'}}> click here to enter new credentials</a>.
+          </div>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+{{else}}
+  <div class="row">
+    <div class='col-md-9'>
+      <form class="form-horizontal" role="form">
+        {{text-f  label="Undercloud IP"
+                  value=undercloudIP
+                  labelSize='deploy-undercloud-param-label'
+                  inputSize='deploy-undercloud-param-input'
+                  isRequired=true
+                  helpText=undercloudIPHelp
+                  validator=undercloudIpValidator}}
+        {{text-f  label="SSH User"
+                  value=sshUser
+                  labelSize='deploy-undercloud-param-label'
+                  inputSize='deploy-undercloud-param-input'
+                  isRequired=true}}
+        {{text-f  label="SSH Password"
+                  value=sshPassword
+                  labelSize='deploy-undercloud-param-label'
+                  inputSize='deploy-undercloud-param-input'
+                  type='password'
+                  isRequired=true}}
+
+        <button class="btn btn-primary pull-left" {{action "deployUndercloud"}} disabled={{deployDisabled}}>
+          Detect Undercloud
+        </button>
+      </form>
+    </div>
+  </div>
+
+  {{#if deploymentError}}
+    <div class="row">
+      <div class='col-md-9' style="padding-top: 10px;">
+        <div class="alert alert-danger" style="margin-bottom: 0px; max-width: 600px">
+          <span class="pficon pficon-error-circle-o"></span> Undercloud detection failed: {{deploymentError}}
+        </div>
+      </div>
+    </div>
+  {{/if}}
 {{/if}}
 
-{{else}}
-<div class="row">
-  <div class='col-md-9'>
-    <div class='col-md-9' style="padding-top: 10px;">
-        <div class="alert alert-success" style="margin-bottom: 0px;">
-            <span class="pficon pficon-ok"></span>
-            Undercloud has been successfully detected. If you want to connect to a different undercloud <a {{action 'resetCredentials'}}> click here to enter new credentials</a>.
-        </div>
-    </div>
-  </div>
-</div>
-{{/unless}}
-
 {{cancel-back-next backRouteName=backRouteNameUndercloud
-                   disableBack=false
-                   nextRouteName='openstack.register-nodes'
-                   disableNext=disableDeployUndercloudNext
-                   deploymentName=deploymentName}}
-
-{{loading-spinner show=showLoadingSpinner text=loadingSpinnerText}}
+                    disableBack=false
+                    nextRouteName='openstack.register-nodes'
+                    disableNext=disableDeployUndercloudNext
+                    deploymentName=deploymentName}}

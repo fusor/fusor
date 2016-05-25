@@ -7,8 +7,8 @@
       {{hostNumber}}.
     </label>
     {{#if multipleMacAddresses}}
-      {{#x-select value=host.value id=selectId class="form-control new-node-detect-select"
-        prompt="Select an interface" disabled=deselected}}
+      {{#x-select value=host.value id=selectId class="form-control new-node-detect-select" disabled=deselected}}
+        <option>Select an interface</option>
         {{#each host.macAddresses as |opt| }}
           {{#x-option value=opt}}{{opt}}{{/x-option}}
         {{/each}}

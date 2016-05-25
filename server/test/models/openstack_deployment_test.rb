@@ -39,6 +39,12 @@ class OpenstackDeploymentTest < ActiveSupport::TestCase
       assert_not osp.save, "Saved openstack deployment that did not specify undercloud SSH password"
     end
 
+    test "openstack deployments overcloud_deployed must be false" do
+      osp = fusor_openstack_deployments(:osp)
+      osp.overcloud_deployed = true
+      assert_not osp.save, "Saved openstack deployment that already had a deployed overcloud"
+    end
+
     test "openstack deployments must specify overcloud admin password" do
       osp = fusor_openstack_deployments(:osp)
       osp.overcloud_password = ''
