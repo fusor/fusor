@@ -13,8 +13,8 @@
       </span>
     {{/radio-button}}
     &nbsp;&nbsp;&nbsp;&nbsp;
-    {{#radio-button value="Gluster" groupValue=model.openshift_storage_type id='gluster' disabled=true}}
-      <span class="disabled">
+    {{#radio-button value="GFS" groupValue=model.openshift_storage_type id='gluster'}}
+      <span class="{{if isStarted 'disabled'}}">
         Gluster
       </span>
     {{/radio-button}}
@@ -26,7 +26,7 @@
     {{/radio-button}}
   {{/base-f}}
 
-  {{#if isNFS}}
+  {{#unless isDoNotUse}}
 
     {{text-f label="Name"
       value=model.openshift_storage_name isRequired=true
@@ -70,12 +70,9 @@
       placeholder="Must match user password"
       validator=confirmUserPasswordValidator
     }}
-
-  {{else if isGluster}}
-    {{!-- TODO: Not implemented --}}
-  {{else if isDoNotUse}}
-    {{!-- TODO: Not implemented --}}
-  {{/if}}
+  {{else}}
+    {{!-- TODO: Implement DONOTUSE (probably doesn't need anything?) --}}
+  {{/unless}}
 
   <br />
   <p>
