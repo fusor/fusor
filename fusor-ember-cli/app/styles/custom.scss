@@ -8,9 +8,14 @@ $error-color: #cc0000;
 // ******************************
 // Foreman style overrides - begin
 
-// overriding foreman .spinner {float: left;}
+// overriding foreman patternfly_and_overrides.scss .spinner {float: left;}
 .spinner {
   float: none;
+}
+
+// overriding foreman patternfly_and_overrides.scss .form-control {padding-right: 30px;}
+.form-control {
+  padding-right: 6px;
 }
 
 //overriding foreman padding so gray goes to the left/right edges
@@ -26,6 +31,8 @@ $error-color: #cc0000;
 #content > .row:first-child {
   display: none;
 }
+
+
 
 // ******************************
 
