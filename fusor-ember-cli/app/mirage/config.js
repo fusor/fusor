@@ -108,6 +108,9 @@ export default function() {
       'failed': false
     };
   });
+  this.get('/fusor/api/openstack/deployments/:id/stacks', function(db, request) {
+    return {'stacks': []};
+  });
 
   this.get('/fusor/api/openstack/deployments/:id/nodes', function(db, request) {
     return {nodes: db.nodes};
