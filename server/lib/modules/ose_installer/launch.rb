@@ -88,6 +88,7 @@ module OSEInstaller
       template = template.gsub(/<docker_volume>/, opts[:docker_volume])
       template = template.gsub(/<docker_registry_host>/, opts[:docker_registry_host])
       template = template.gsub(/<docker_registry_path>/, opts[:docker_registry_path])
+      template = template.gsub(/<storage_type>/, opts[:storage_type])
 
       # ose post installation specifics
       template = template.gsub(/<ose_user>/, opts[:ose_user])
