@@ -130,8 +130,8 @@
     :openshift:
       - :product_name: "Red Hat OpenShift Enterprise"
         :product_id: "290"
-        :repository_set_id: "4658"
-        :repository_set_name: "Red Hat OpenShift Enterprise 3.1 (RPMs)"
+        :repository_set_id: "4889"
+        :repository_set_name: "Red Hat OpenShift Enterprise 3.2 (RPMs)"
         :basearch: "x86_64"
 
       - :product_name: "Red Hat Enterprise Linux Server"

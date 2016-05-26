@@ -28,13 +28,13 @@
         - rhscl/php-56-rhel7
         - rhscl/mysql-56-rhel7
         - rhscl/ruby-22-rhel7
-        - openshift3/ose-docker-registry:v3.1.0.4
-        - openshift3/ose-pod:v3.1.0.4
-        - openshift3/ose-sti-builder:v3.1.0.4
-        - openshift3/ose-deployer:v3.1.0.4
-        - openshift3/ose-haproxy-router:v3.1.0.4
-        - openshift3/ose-docker-builder:v3.1.0.4
-        - openshift3/ose-keepalived-ipfailover:v3.1.0.4
+        - openshift3/ose-docker-registry:v3.2
+        - openshift3/ose-pod:v3.2
+        - openshift3/ose-sti-builder:v3.2
+        - openshift3/ose-deployer:v3.2
+        - openshift3/ose-haproxy-router:v3.2
+        - openshift3/ose-docker-builder:v3.2
+        - openshift3/ose-keepalived-ipfailover:v3.2
 
 - name: Configure master node
   hosts: masters
