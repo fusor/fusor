@@ -134,6 +134,11 @@ cp -a %{buildroot}/%{gem_instdir}/config/fusor.yaml %{buildroot}%{foreman_plugin
 %files doc
 %{gem_dir}/doc/%{gem_name}-%{version}
 
+%post
+if [ "$1" = "2" ]; then
+ foreman-rake db:migrate
+fi
+
 %changelog
 * Wed Apr 15 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-19
 - fusor server: hard-code root_pass and set storage_path param on hostgroup
