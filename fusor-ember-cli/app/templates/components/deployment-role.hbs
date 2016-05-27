@@ -11,13 +11,13 @@
         {{role.label}}
     </div>
     {{#if roleAssigned}}
-      {{#x-select value=role.count }}
+      {{#x-select value=role.count disabled=disabled}}
         {{#each availableOptions as |opt| }}
           {{#x-option value=opt}}{{opt}}{{/x-option}}
         {{/each}}
       {{/x-select}}
     {{/if}}
-    {{#unless readOnly}}
+    {{#unless disabled}}
       <a class="role-option delete">
           <i class="fa fa-times" {{action "removeRole"}}></i>
       </a>

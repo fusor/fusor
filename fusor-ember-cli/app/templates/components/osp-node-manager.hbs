@@ -2,7 +2,9 @@
   <div class="col-md-9 col-lg-6">
     <div class="panel panel-default osp-node-manager-panel">
       <div class="panel-heading osp-node-manager-panel-heading">{{nodeManager.address}}
-        <button type="button" id="managerAddNodeButton{{safeLabel}}" class="btn btn-default pull-right"  {{action "onAddNode"}}>Add node to group</button>
+        <button type="button" id="managerAddNodeButton{{safeLabel}}" class="btn btn-default pull-right"
+          {{action "onAddNode"}} disabled={{disabled}}>
+          Add node to group</button>
       </div>
       <div class="panel-body osp-node-manager-panel-body">
         <div class="row">
@@ -33,7 +35,7 @@
             </div>
 
             {{#each nodeManager.nodes as |node|}}
-              {{osp-node node=node ports=ports introspectionTasks=introspectionTasks foremanTasks=foremanTasks deleteNode="deleteNode" editable=editable}}
+              {{osp-node node=node ports=ports introspectionTasks=introspectionTasks foremanTasks=foremanTasks deleteNode="deleteNode" disabled=disabled}}
             {{/each}}
 
           </div>

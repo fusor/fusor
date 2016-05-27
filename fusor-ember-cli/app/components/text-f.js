@@ -6,7 +6,7 @@ export default Ember.Component.extend({
     let resetErrorsMessageKey = this.get('resetErrorsMessageKey');
     if(resetErrorsMessageKey) {
       this.eventBus.on(resetErrorsMessageKey,
-                       () => this.send('showValidationErrors'));
+                       () => this.send('resetValidationErrors'));
     }
   },
   willClearRender: function () {
@@ -68,6 +68,10 @@ export default Ember.Component.extend({
   actions: {
     showValidationErrors() {
       this.set("showValidationError", true);
+    },
+
+    resetValidationErrors() {
+      this.set("showValidationError", false);
     },
 
     showPassword() {

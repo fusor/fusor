@@ -57,7 +57,8 @@
   {{#if hasNodes}}
     <div class="row">
       <div class="col-md-9 col-lg-6">
-        <button id="register-nodes-button" class="btn btn-default register-more-nodes-button" {{action "showNodeRegistrationModal"}}>
+        <button id="register-nodes-button" class="btn btn-default register-more-nodes-button"
+          {{action "showNodeRegistrationModal"}} disabled={{isStarted}}>
           Register More Nodes
         </button>
       </div>
@@ -65,7 +66,8 @@
   {{else}}
     <div class="row">
       <div class="col-md-9 col-lg-6">
-        <button id="register-nodes-button" class="btn btn-primary register-nodes-button" {{action "showNodeRegistrationModal"}}>
+        <button id="register-nodes-button" class="btn btn-primary register-nodes-button"
+          {{action "showNodeRegistrationModal"}} disabled={{isStarted}}>
           Register Nodes
         </button>
       </div>
@@ -87,6 +89,7 @@
                           ports=ports
                           introspectionTasks=introspectionTasks
                           foremanTasks=foremanTasks
+                          disabled=isStarted
                           addNodes="addNodesToManager"
                           deleteNode="deleteNode"}}
     {{/each}}

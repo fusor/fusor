@@ -36,9 +36,10 @@ export default Ember.Route.extend(PollingPromise, {
   },
 
   displayStackStatus() {
+    let deployment = this.modelFor('deployment');
     let openstackDeployment = this.get('controller.openstackDeployment');
 
-    if (!openstackDeployment.get('isUndercloudConnected')) {
+    if (deployment.get('isStarted') || !openstackDeployment.get('isUndercloudConnected')) {
       return Ember.RSVP.Promise.resolve(null);
     }
 
@@ -73,10 +74,10 @@ export default Ember.Route.extend(PollingPromise, {
       url: `/fusor/api/openstack/deployments/${deploymentId}/underclouds`,
       type: 'POST',
       data: JSON.stringify({
-        'underhost': this.get('controller.undercloudIP'),
-        'underuser': this.get('controller.sshUser'),
-        'underpass': this.get('controller.sshPassword'),
-        'deployment_id': this.get('controller.deploymentId')
+        'underhost': openstackDeployment.get('undercloud_ip_address'),
+        'underuser': openstackDeployment.get('undercloud_ssh_username'),
+        'underpass': openstackDeployment.get('undercloud_ssh_password'),
+        'deployment_id': deploymentId
       }),
       headers: {
         'Accept': 'application/json',
@@ -87,7 +88,7 @@ export default Ember.Route.extend(PollingPromise, {
       if (this.get('controller.applicationController.isEmberCliMode')) {
         // only used for development to enabled OSP tabs (disableOspTab: false)
         openstackDeployment.set('openstack_undercloud_password', 'this-passwd-is-populated by fusor/server');
-        openstackDeployment.save();
+        this.send('saveOpenstackDeployment', null);
       }
     });
   },
