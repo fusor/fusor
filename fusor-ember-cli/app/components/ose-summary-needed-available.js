@@ -15,7 +15,7 @@ export default Ember.Component.extend({
   }),
 
   styleWidth: Ember.computed('percentProgressMax', function () {
-    return new Ember.Handlebars.SafeString(this.get('percentProgressMax') + '%');
+    return Ember.String.htmlSafe('width: ' + this.get('percentProgressMax') + '%;');
   }),
 
   progressBarClass: Ember.computed('percentProgress', function() {
