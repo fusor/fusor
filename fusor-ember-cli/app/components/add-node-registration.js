@@ -2,8 +2,8 @@ import Ember from 'ember';
 import OspNodeForm from '../mixins/osp-node-form-mixin';
 
 export default Ember.Component.extend(OspNodeForm, {
-
   registerNodesMethod: 'manual',
+  resetErrorsMessageKey: 'add-node-registration.text-f:resetErrors',
 
   addNodeTitle: Ember.computed('nodeInfo.address', function() {
     return "Add Node(s) to " + this.get('nodeInfo.address');
@@ -18,6 +18,12 @@ export default Ember.Component.extend(OspNodeForm, {
 
   disableNewNodesSubmit: Ember.computed.not('isValidNewNodeManual'),
 
+  onOpenModal: Ember.observer('openModal', function() {
+    if (this.get('openModal')) {
+      Ember.run.once(this, 'initInfo');
+    }
+  }),
+
   actions: {
     addMacAddress() {
       this.get('nodeInfo.macAddresses').pushObject(Ember.Object.create({value: ''}));
@@ -29,5 +35,9 @@ export default Ember.Component.extend(OspNodeForm, {
       this.sendAction('submitAddNodes', this.get('nodeInfo'));
       this.set('openModal', false);
     }
+  },
+
+  initInfo() {
+    this.eventBus.trigger(this.get('resetErrorsMessageKey'));
   }
 });

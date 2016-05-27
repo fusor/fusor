@@ -17,6 +17,7 @@
             inputSize='col-xs-4'
             value=nodeInfo.address
             validator=hostAddressValidator
+            resetErrorsMessageKey=resetErrorsMessageKey
             isRequired=true}}
 
   {{text-f  cssId="manualUsernameInput2"
@@ -25,6 +26,7 @@
             labelSize='col-xs-3'
             inputSize='col-xs-4'
             value=nodeInfo.username
+            resetErrorsMessageKey=resetErrorsMessageKey
             isRequired=true}}
 
   {{text-f  cssId="manualPasswordInput"
@@ -33,6 +35,7 @@
             labelSize='form-label-nowrap col-xs-3'
             inputSize='col-xs-4'
             value=nodeInfo.password
+            resetErrorsMessageKey=resetErrorsMessageKey
             isRequired=true}}
 
   {{#each nodeInfo.macAddresses as |macAddress key| }}

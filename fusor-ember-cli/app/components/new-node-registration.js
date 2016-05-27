@@ -9,6 +9,7 @@ import {
 
 export default Ember.Component.extend(OspNodeForm, {
   presenceValidator: PresenceValidator.create({}),
+  resetErrorsMessageKey: 'new-node-registration.text-f:resetErrors',
 
   step: 1,
   detectNodesRequestNum: 0,
@@ -226,6 +227,7 @@ export default Ember.Component.extend(OspNodeForm, {
   },
 
   initInfo() {
+    this.eventBus.trigger(this.get('resetErrorsMessageKey'));
     this.set('registerNodesMethod', 'auto_detect');
     this.set('step', 1);
 
