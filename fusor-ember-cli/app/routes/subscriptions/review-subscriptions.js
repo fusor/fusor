@@ -16,11 +16,12 @@ export default Ember.Route.extend({
   //    hit Sat to retrieve what it knows about the existing manifest.
   ////////////////////////////////////////////////////////////
   model() {
-    const useExistingManifest =
-      this.modelFor('subscriptions').useExistingManifest;
+    const subModel = this.modelFor('subscriptions');
+    const useExistingManifest = subModel.useExistingManifest;
 
     if(useExistingManifest) { // Case 3)
-      return this.loadExistingManifest();
+      // Note: subscriptions will only be available if useExistingManifest is true
+      return subModel.subscriptions;
     }
 
     const deploymentId = this.modelFor('deployment').get('id');
@@ -72,23 +73,5 @@ export default Ember.Route.extend({
     controller.set(
       'useExistingManifest',
       this.modelFor('subscriptions').useExistingManifest);
-  },
-
-  loadExistingManifest() {
-    // TODO: DEBUG:
-    return new Ember.RSVP.Promise((res, rej) => {
-      const subs = Ember.A([]);
-
-      subs.push(Ember.Object.create({
-        product_name: 'MOCKED PRODUCT',
-        contract_number: '10670000',
-        start_date: '2015-03-31T04:00:00.000+0000',
-        end_date: '2016-03-31T03:59:59.000+0000',
-        quantity_attached: 10,
-        total_quantity: 400
-      }));
-
-      res(subs);
-    });
   }
 });
