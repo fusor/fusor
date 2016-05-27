@@ -15,16 +15,15 @@ export default Ember.Route.extend({
       controller.set('lifecycleEnvironments', results);
       // nullify environment if organization has no environments
       if (results.get('length') === 0) {
-        return controller.set('selectedEnvironment', null);
+        controller.set('selectedEnvironment', null);
       } else {
-        return controller.set('selectedEnvironment', model);
+        controller.set('selectedEnvironment', model);
       }
     });
   },
 
   deactivate() {
     this.get('controller').set('showAlertMessage', false);
-    return this.send('saveDeployment', null);
+    this.send('saveDeployment', null);
   }
-
 });
