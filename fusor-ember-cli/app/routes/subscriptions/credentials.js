@@ -5,7 +5,7 @@ export default Ember.Route.extend({
 
   beforeModel() {
     // Verify isAuthenticated: true is accurate, since Satellite session may have changed
-    const model =  this.modelFor('subscriptions');
+    const model =  this.modelFor('subscriptions').sessionPortal;
     if(model.get('isAuthenticated')) {
       const urlVerify =
         `/customer_portal/users/${model.get('identification')}/owners`;
@@ -79,14 +79,15 @@ export default Ember.Route.extend({
           }
         }).then(function(response) {
           //show always be {} empty successful 200 response
-          self.modelFor('subscriptions').setProperties({
+          const sessionPortal = self.modelFor('subscriptions').sessionPortal;
+          sessionPortal.setProperties({
             'isAuthenticated': false,
             'identification': null,
             'ownerKey': null,
             'consumerUUID': null
           });
 
-          self.modelFor('subscriptions').save();
+          sessionPortal.save();
         }, function(error) {
           console.log('error on loginPortal');
           return self.send('error');
@@ -99,7 +100,7 @@ export default Ember.Route.extend({
       var self = this;
       var controller = this.controllerFor('subscriptions/credentials');
       var identification = controller.get('model.identification');
-      var sessionPortal = this.modelFor('subscriptions');
+      var sessionPortal = this.modelFor('subscriptions').sessionPortal;
       if (sessionPortal) {
         sessionPortal.set('identification', identification);
       } else {
@@ -137,7 +138,7 @@ export default Ember.Route.extend({
         }).then(function(response) {
           var ownerKey = response[0]['key'];
           console.log('owner key is ' + ownerKey);
-          var sessionPortal = self.modelFor('subscriptions');
+          var sessionPortal = self.modelFor('subscriptions').sessionPortal;
           sessionPortal.set('ownerKey', ownerKey);
           sessionPortal.set('isAuthenticated', true);
           sessionPortal.save().then(function(result) {

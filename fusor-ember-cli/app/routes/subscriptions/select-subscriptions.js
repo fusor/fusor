@@ -14,6 +14,7 @@ export default Ember.Route.extend({
     var deployment = this.modelFor('deployment');
     var deploymentId = deployment.get('id');
     var isDisconnected = this.controllerFor('deployment').get('isDisconnected');
+    var sessionPortal = self.modelFor('subscriptions').sessionPortal;
 
     if (!(this.controllerFor('deployment').get('isStarted'))) {
       controller.set('isLoading', true);
@@ -35,7 +36,7 @@ export default Ember.Route.extend({
         var subscriptionResults     = results[2];
 
         // in case go to this route from URL
-        self.modelFor('subscriptions').set('isAuthenticated', true);
+        sessionPortal.set('isAuthenticated', true);
         allPoolsResults.forEach(function(pool){
           pool.set('qtyAttached', 0); //default for loop
 
@@ -72,7 +73,7 @@ export default Ember.Route.extend({
         controller.set('subscriptionPools', Ember.A(results[1]));
         return controller.set('isLoading', false);
       }, function(error) {
-        self.modelFor('subscriptions').save().then(function() {
+        sessionPortal.save().then(function() {
           controller.set('errorMsg', error.message);
           return controller.set('isLoading', false);
         });
@@ -80,13 +81,7 @@ export default Ember.Route.extend({
     }
   },
 
-  deactivate() {
-    // uncommeting causes inFlight issues
-    // return this.send('saveSubscriptions', null);
-  },
-
   actions: {
-
     saveSubscription(pool, qty) {
       // get saved subscriptions and update quantity
       var deployment = this.modelFor('deployment');

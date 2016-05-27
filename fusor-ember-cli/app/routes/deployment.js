@@ -174,7 +174,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, UsesOseDefaults, {
     attachSubscriptions() {
       var self = this;
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
-      var sessionPortal = this.modelFor('subscriptions');
+      var sessionPortal = this.modelFor('subscriptions').sessionPortal;
       var consumerUUID = sessionPortal.get('consumerUUID');
       var subscriptionPools = this.controllerFor('subscriptions/select-subscriptions').get('subscriptionPools');
 

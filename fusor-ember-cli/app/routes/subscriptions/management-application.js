@@ -5,7 +5,7 @@ export default Ember.Route.extend({
   model() {
     var self = this;
     var deployment = this.modelFor('deployment');
-    var sessionPortal = this.modelFor('subscriptions');
+    var sessionPortal = this.modelFor('subscriptions').sessionPortal;
     var ownerKey = sessionPortal.get('ownerKey');
 
     // Use owner key to get consumers (subscription application manangers)
@@ -46,7 +46,7 @@ export default Ember.Route.extend({
     controller.set('model', model);
     controller.set('showManagementApplications', true);
 
-    var sessionPortal = this.modelFor('subscriptions');
+    var sessionPortal = this.modelFor('subscriptions').sessionPortal;
     var deployment = this.modelFor('deployment');
     var upstream_consumer_uuid = deployment.get('upstream_consumer_uuid');
 

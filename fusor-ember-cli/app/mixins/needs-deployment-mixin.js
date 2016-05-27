@@ -15,6 +15,7 @@ export default Ember.Mixin.create({
   ////////////////////////////////////////////////////////////
   // ALIASES AND COMMONLY USED COMPUTED PROPS
   // Consolidates these and makes them available for free to any mixee
+  // Prevents littering leaf controllers with duplicated aliases
   ////////////////////////////////////////////////////////////
   upstreamConsumerUuid: Ember.computed.alias(
     'deploymentController.model.upstream_consumer_uuid'),

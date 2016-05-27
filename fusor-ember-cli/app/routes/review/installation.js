@@ -42,7 +42,7 @@ export default Ember.Route.extend({
       }, false); // initial val
       controller.set('reviewSubscriptions', reviewSubscriptions);
       controller.set('hasSubscriptionsToAttach', hasSubs);
-      controller.set('hasSessionPortal', Ember.isPresent(this.modelFor('subscriptions')));
+      controller.set('hasSessionPortal', Ember.isPresent(this.modelFor('subscriptions').sessionPortal));
       controller.set('hasSubscriptionPools', Ember.isPresent(this.controllerFor('subscriptions/select-subscriptions').get('subscriptionPools')));
     }
 
