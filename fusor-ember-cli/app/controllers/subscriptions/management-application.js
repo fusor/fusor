@@ -4,15 +4,10 @@ import request from 'ic-ajax';
 import ValidationUtil from '../../utils/validation-util';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
-
   subscriptionsController: Ember.inject.controller('subscriptions'),
 
   showManagementApplications: true,
-
   sessionPortal: Ember.computed.alias('subscriptionsController.model'),
-  upstreamConsumerUuid: Ember.computed.alias("deploymentController.model.upstream_consumer_uuid"),
-  upstreamConsumerName: Ember.computed.alias("deploymentController.model.upstream_consumer_name"),
-
   showAlertMessage: false,
   showWaitingMessage: false,
   showErrorMessage: false,

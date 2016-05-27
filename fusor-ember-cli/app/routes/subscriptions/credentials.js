@@ -3,39 +3,25 @@ import request from 'ic-ajax';
 
 export default Ember.Route.extend({
 
+  beforeModel() {
+    // Verify isAuthenticated: true is accurate, since Satellite session may have changed
+    const model =  this.modelFor('subscriptions');
+    if(model.get('isAuthenticated')) {
+      const urlVerify =
+        `/customer_portal/users/${model.get('identification')}/owners`;
+
+      const NOOP = Function.prototype;
+      return Ember.$.getJSON(urlVerify)
+        .then(NOOP, () => {
+          model.set('isAuthenticated', false);
+          return model.save();
+        });
+    }
+  },
+
   setupController(controller, model) {
     controller.set('model', model);
     controller.set('showErrorMessage', false);
-
-    // check if org has upstream UUID using Katello V2 API
-    var orgID = this.modelFor('deployment').get('organization.id');
-    var url = '/katello/api/v2/organizations/' + orgID;
-    Ember.$.getJSON(url).then(function(results) {
-      if (Ember.isPresent(results.owner_details) && Ember.isPresent(results.owner_details.upstreamConsumer)) {
-        controller.set('organizationUpstreamConsumerUUID', results.owner_details.upstreamConsumer.uuid);
-        controller.set('organizationUpstreamConsumerName', results.owner_details.upstreamConsumer.name);
-        // if no UUID for deployment, assign it from org UUID
-        if (Ember.isBlank(controller.get('model.upstream_consumer_uuid'))) {
-          controller.set('upstreamConsumerUuid', results.owner_details.upstreamConsumer.uuid);
-          controller.set('upstreamConsumerName', results.owner_details.upstreamConsumer.name);
-        }
-      } else {
-        controller.set('organizationUpstreamConsumerUUID', null);
-        controller.set('organizationUpstreamConsumerName', null);
-      }
-    });
-
-    if (model.get('isAuthenticated')) {
-      // verify isAuthenticated: true is accurate, since Satellite session may have changed.
-      var urlVerify = '/customer_portal/users/' + model.get('identification') + "/owners";
-      Ember.$.getJSON(urlVerify).then(function(results) {
-        //do nothing
-      }, function(results) {
-        model.set('isAuthenticated', false);
-        model.save();
-      });
-    }
-
   },
 
   deactivate() {
@@ -43,7 +29,7 @@ export default Ember.Route.extend({
   },
 
   actions: {
-    error(reason, transition) {
+    error() {
       // bubble up this error event:
       return true;
     },

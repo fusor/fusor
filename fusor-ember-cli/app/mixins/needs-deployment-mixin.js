@@ -10,5 +10,17 @@ export default Ember.Mixin.create({
 
   isNew: false,
 
-  deploymentName: Ember.computed.alias("deploymentController.model.name")
+  deploymentName: Ember.computed.alias("deploymentController.model.name"),
+
+  ////////////////////////////////////////////////////////////
+  // ALIASES AND COMMONLY USED COMPUTED PROPS
+  // Consolidates these and makes them available for free to any mixee
+  ////////////////////////////////////////////////////////////
+  upstreamConsumerUuid: Ember.computed.alias(
+    'deploymentController.model.upstream_consumer_uuid'),
+  hasUpstreamConsumerUuid: Ember.computed('upstreamConsumerUuid', function() {
+    return Ember.isPresent(this.get('upstreamConsumerUuid'));
+  }),
+  upstreamConsumerName: Ember.computed.alias(
+    'deploymentController.model.upstream_consumer_name')
 });

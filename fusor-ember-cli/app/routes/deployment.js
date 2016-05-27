@@ -28,28 +28,7 @@ export default Ember.Route.extend(DeploymentRouteMixin, UsesOseDefaults, {
     this.loadOpenshiftDefaults(controller, model);
     this.loadCloudFormsDefaults(controller, model);
     this.loadDefaultDomainName(controller);
-
-    // copied from setupController in app/routes/subscriptions/credentials.js
-    // to fix bug of Review Tab being disabled on refresh and needing to click
-    // on subscriptions to enable it
-    // check if org has upstream UUID using Katello V2 API
-    var orgID = model.get('organization.id');
-    var url = '/katello/api/v2/organizations/' + orgID;
-    Ember.$.getJSON(url).then(function(results) {
-      if (Ember.isPresent(results.owner_details) && Ember.isPresent(results.owner_details.upstreamConsumer)) {
-        controller.set('organizationUpstreamConsumerUUID', results.owner_details.upstreamConsumer.uuid);
-        controller.set('organizationUpstreamConsumerName', results.owner_details.upstreamConsumer.name);
-        // if no UUID for deployment, assign it from org UUID
-        if (Ember.isBlank(controller.get('model.upstream_consumer_uuid'))) {
-          controller.set('model.upstream_consumer_uuid', results.owner_details.upstreamConsumer.uuid);
-          controller.set('model.upstream_consumer_name', results.owner_details.upstreamConsumer.name);
-        }
-      } else {
-        controller.set('organizationUpstreamConsumerUUID', null);
-        controller.set('organizationUpstreamConsumerName', null);
-      }
-    });
-
+    this.loadUpstreamConsumer(controller, model);
   },
 
   loadDefaultDomainName(controller) {
@@ -57,6 +36,22 @@ export default Ember.Route.extend(DeploymentRouteMixin, UsesOseDefaults, {
       return hostgroups.filterBy('name', 'Fusor Base').get('firstObject')
       .get('domain.name');
     }).then(domainName => controller.set('defaultDomainName', domainName));
+  },
+
+  loadUpstreamConsumer(controller, model) {
+    // check if org has upstream UUID using Katello V2 API
+    const url = `/katello/api/v2/organizations/${model.get('organization.id')}`;
+    Ember.$.getJSON(url).then(results => {
+      const shouldSetUpstreamConsumer =
+        Ember.isPresent(results.owner_details) &&
+        Ember.isPresent(results.owner_details.upstreamConsumer) &&
+        Ember.isBlank(controller.get('model.upstream_consumer_uuid'));
+
+      if (shouldSetUpstreamConsumer) {
+        controller.set('model.upstream_consumer_uuid', results.owner_details.upstreamConsumer.uuid);
+        controller.set('model.upstream_consumer_name', results.owner_details.upstreamConsumer.name);
+      }
+    });
   },
 
   loadCloudFormsDefaults(controller, model) {

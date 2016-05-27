@@ -11,8 +11,6 @@ const MirrorStatus = {
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
-  upstreamConsumerUuid: Ember.computed.alias("deploymentController.model.upstream_consumer_uuid"),
-  upstreamConsumerName: Ember.computed.alias("deploymentController.model.upstream_consumer_name"),
   cdnUrl: Ember.computed.alias("deploymentController.model.cdn_url"),
   manifestFile: Ember.computed.alias("deploymentController.model.manifest_file"),
 
@@ -20,10 +18,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isOpenStack: Ember.computed.alias("deploymentController.model.deploy_openstack"),
   isCloudForms: Ember.computed.alias("deploymentController.model.deploy_cfme"),
   isOpenShift: Ember.computed.alias("deploymentController.model.deploy_openshift"),
-
-  //overwritten by setupController
-  organizationUpstreamConsumerUUID: null,
-  organizationUpstreamConsumerName: null,
 
   validCredentials: Ember.computed('model.identification', 'password', function() {
     // password is not saved in the model
@@ -34,14 +28,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return this.get('validCredentials') || this.get('model.isAuthenticated');
   }),
   disableCredentialsNext: Ember.computed.not('enableCredentialsNext'),
-
-  hasUpstreamConsumerUuid: Ember.computed('upstreamConsumerUuid', function() {
-    return Ember.isPresent(this.get('upstreamConsumerUuid'));
-  }),
-
-  hasOrganizationUpstreamConsumerUUID: Ember.computed('organizationUpstreamConsumerUUID', function() {
-    return Ember.isPresent(this.get('organizationUpstreamConsumerUUID'));
-  }),
 
   backRouteNameonCredentials: Ember.computed('isRhev', 'isOpenStack', 'isOpenShift', 'isCloudForms', function() {
     if (this.get('isCloudForms')) {

@@ -20,9 +20,8 @@ export default Ember.Route.extend({
   },
 
   actions: {
-    error(reason, transition) {
-      // bubble up this error event:
-      return true;
+    error() {
+      return true; // bubbles error event
     }
   }
 });
