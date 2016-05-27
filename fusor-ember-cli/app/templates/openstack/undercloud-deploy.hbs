@@ -14,7 +14,7 @@
   <span class='spinner-text'>
     {{loadingSpinnerText}}
   </span>
-{{else if openstackDeployment.isUndercloudConnected}}
+{{else if isConnected}}
   {{#if stack}}
     <div class="row">
       <div class='col-md-9'>
@@ -50,23 +50,26 @@
     <div class='col-md-9'>
       <form class="form-horizontal" role="form">
         {{text-f  label="Undercloud IP"
-                  value=undercloudIP
+                  value=openstackDeployment.undercloud_ip_address
                   labelSize='deploy-undercloud-param-label'
                   inputSize='deploy-undercloud-param-input'
                   isRequired=true
                   helpText=undercloudIPHelp
-                  validator=undercloudIpValidator}}
+                  validator=undercloudIpValidator
+                  disabled=isStarted}}
         {{text-f  label="SSH User"
-                  value=sshUser
+                  value=openstackDeployment.undercloud_ssh_username
                   labelSize='deploy-undercloud-param-label'
                   inputSize='deploy-undercloud-param-input'
-                  isRequired=true}}
+                  isRequired=true
+                  disabled=isStarted}}
         {{text-f  label="SSH Password"
-                  value=sshPassword
+                  value=openstackDeployment.undercloud_ssh_password
                   labelSize='deploy-undercloud-param-label'
                   inputSize='deploy-undercloud-param-input'
                   type='password'
-                  isRequired=true}}
+                  isRequired=true
+                  disabled=isStarted}}
 
         <button class="btn btn-primary pull-left" {{action "deployUndercloud"}} disabled={{deployDisabled}}>
           Detect Undercloud
@@ -90,4 +93,5 @@
                     disableBack=false
                     nextRouteName='openstack.register-nodes'
                     disableNext=disableDeployUndercloudNext
+                    disableCancel=isStarted
                     deploymentName=deploymentName}}

@@ -132,6 +132,9 @@ const AssignNodesController =  Ember.Controller.extend(DeploymentControllerMixin
   }),
 
   doAssignRole(role, profileName) {
+    if (this.get('isStarted')) {
+      return;
+    }
     role.set('isDraggingObject', false);
     role.set('flavor', profileName);
     this.set(`openstackDeployment.${role.get('flavorDeploymentAttributeName')}`, profileName);

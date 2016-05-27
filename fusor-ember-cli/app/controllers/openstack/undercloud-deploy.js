@@ -3,14 +3,9 @@ import NeedsDeploymentMixin from '../../mixins/needs-deployment-mixin';
 
 const UndercloudDeployController = Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  deploymentId: Ember.computed.alias('deploymentController.model.id'),
+  deployment: Ember.computed.alias('deploymentController.model'),
+  deploymentId: Ember.computed.alias('deployment.id'),
   openstackDeployment: Ember.computed.alias('model'),
-
-  // these 3 attributes are not persisted by UI.
-  // backend controller will persist these
-  undercloudIP: null,
-  sshUser: null,
-  sshPassword: null,
 
   isRhev: Ember.computed.alias('deploymentController.isRhev'),
   fullnameOpenStack: Ember.computed.alias('deploymentController.fullnameOpenStack'),
@@ -19,19 +14,29 @@ const UndercloudDeployController = Ember.Controller.extend(NeedsDeploymentMixin,
     return `The IP address that the already-installed ${this.get('fullnameOpenStack')} undercloud is running on.`;
   }),
 
-  //reusing the same validator from openstackDeployment object to make sure we're using the same validations
   undercloudIpValidator: Ember.computed.alias('openstackDeployment.validations.undercloud_ip_address'),
 
   stackDeleteFailed: Ember.computed('stack.stack_status', function() {
     return this.get('stack.stack_status') === 'DELETE_FAILED';
   }),
 
-  deployDisabled: Ember.computed('openstackDeployment.isUndercloudConnected', 'undercloudIP', 'sshUser', 'sshPassword', function () {
-    return this.get('openstackDeployment.isUndercloudConnected') ||
-      this.get('undercloudIpValidator').isInvalid(this.get('undercloudIP')) ||
-      Ember.isBlank(this.get('sshUser')) ||
-      Ember.isBlank(this.get('sshPassword'));
+  isConnected: Ember.computed('isStarted', 'openstackDeployment.isUndercloudConnected', function() {
+    return !this.get('isStarted') && this.get('openstackDeployment.isUndercloudConnected');
   }),
+
+  deployDisabled: Ember.computed(
+    'isStarted',
+    'openstackDeployment.undercloud_ip_address',
+    'openstackDeployment.undercloud_ssh_username',
+    'openstackDeployment.undercloud_ssh_password',
+    'openstackDeployment.isUndercloudConnected',
+    function () {
+      return this.get('isStarted') ||
+        this.get('openstackDeployment.isUndercloudConnected') ||
+        !this.get('openstackDeployment').validateField('undercloud_ip_address') ||
+        !this.get('openstackDeployment').validateField('undercloud_ssh_username') ||
+        !this.get('openstackDeployment').validateField('undercloud_ssh_password');
+    }),
 
   disableDeployUndercloudNext: Ember.computed.not('openstackDeployment.isUndercloudReady'),
 
@@ -52,7 +57,7 @@ const UndercloudDeployController = Ember.Controller.extend(NeedsDeploymentMixin,
       this.set('openstackDeployment.undercloud_ip_address', null);
       this.set('openstackDeployment.undercloud_ssh_username', null);
       this.set('openstackDeployment.undercloud_ssh_password', null);
-      this.get('openstackDeployment').save();
+      this.send('saveOpenstackDeployment', null);
     }
   }
 });

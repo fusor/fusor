@@ -17,12 +17,14 @@
   <div class="row">
     <div class="col-md-12" style="float: left;">
       <h2 style="vertical-align: bottom;display:inline-block;">Available Deployment Roles</h2>
-      <a class="edit-global-config" {{action "editGlobalServiceConfig"}}> Edit Global Configuration</a>
+      {{#unless isStarted}}
+        <a class="edit-global-config" {{action "editGlobalServiceConfig"}}> Edit Global Configuration</a>
+      {{/unless}}
       {{#draggable-object-target action="unassignRole"}}
         <div class="row col-md-12 deployment-roles deployment-roles-unassigned deployment-roles-assignable {{droppableClass}}">
           {{#each unassignedRoles as |role|}}
             {{#draggable-object content=role}}
-              {{deployment-role role=role edit="editRole"}}
+              {{deployment-role role=role edit="editRole" disabled=isStarted}}
             {{/draggable-object}}
           {{/each}}
           {{#if allRolesAssigned}}
@@ -45,6 +47,7 @@
                                      roles=roles
                                      allRolesAssigned=allRolesAssigned
                                      doAssign=true
+                                     disabled=isStarted
                                      assignRole="assignRole"
                                      unassignRole="unassignRole"
                                      editRole="editRole"
@@ -55,6 +58,7 @@
                                      roles=roles
                                      allRolesAssigned=allRolesAssigned
                                      doAssign=true
+                                     disabled=isStarted
                                      assignRole="assignRole"
                                      unassignRole="unassignRole"
                                      editRole="editRole"

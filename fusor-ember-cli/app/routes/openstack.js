@@ -8,8 +8,11 @@ export default Ember.Route.extend({
 
   actions: {
     saveOpenstackDeployment() {
-      var openstackDeployment = this.get('controller.model');
-      openstackDeployment.save();
+      let deployment = this.modelFor('deployment');
+      let openstackDeployment = this.get('controller.model');
+      if (!deployment.get('isStarted')) {
+        openstackDeployment.save();
+      }
     }
   }
 });
