@@ -7,6 +7,38 @@
 
       {{textarea-f label="Description (Optional)" value=model.description inputSize='col-md-5' cssId=idSatDesc disabled=isStarted }}
 
+      {{#base-f label="Universal Password" inputSize='col-md-5'}}
+        <p>
+          Optionally enter a password that the installer will use to pre-populate values for:<br />
+          <ul class='common-password'>
+            {{#if isRhev}}
+              <li>RHEV root and engine</li>
+            {{/if}}
+            {{#if isOpenStack}}
+              <li>RHELOSP overcloud admin</li>
+            {{/if}}
+            {{#if isOpenShift}}
+              <li>OpenShift admin</li>
+            {{/if}}
+            {{#if isCloudForms}}
+              <li>CloudForms root and admin and DB</li>
+            {{/if}}
+          </ul>
+        </p>
+      {{/base-f}}
+
+      {{text-f label="Password" type="password" value=commonPassword cssId="common-password"
+      disabled=isStarted validator=passwordValidator
+      labelSize='col-lg-offset-1 col-md-offset-2 col-lg-2 col-md-3 col-sm-5'
+      inputSize='col-lg-4 col-md-6 col-sm-7'
+      placeholder="Must be 8 or more characters"}}
+
+      {{text-f label="Confirm Password" type="password" value=confirmCommonPassword cssId="confirm-common-password"
+      disabled=isStarted validator=confirmCommonPasswordValidator
+      labelSize='col-lg-offset-1 col-md-offset-2 col-lg-2 col-md-3 col-sm-5'
+      inputSize='col-lg-4 col-md-6 col-sm-7'
+      placeholder="Must match universal password"}}
+
     </form>
   </div>
 </div>

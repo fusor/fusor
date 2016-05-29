@@ -20,18 +20,15 @@ export default Ember.Mixin.create(ValidatesDeploymentNameMixin, {
   isValidDeploymentName: Ember.computed('model.name', 'deploymentNameValidator', function() {
     return this.get('deploymentNameValidator').isValid(this.get('model.name'));
   }),
-
-  // disable Next on Deployment Name if there is no deployment name
-  disableNextOnDeploymentName: Ember.computed.not('isValidDeploymentName'),
+  hasInvalidDeploymentName: Ember.computed.not('isValidDeploymentName'),
 
   // disable Next on Lifecycle Environment if no lifecycle environment is selected
   // note: hasNoLifecycleEnvironment and hasNoLifecycleEnvironment is defined in /app/controllers/deployment.js
   //       and app/controllers/deployment-new.js rather than in this mixin
-  disableNextOnLifecycleEnvironment: Ember.computed.or('hasNoLifecycleEnvironment', 'disableAll', 'model.isSaving'),
+  disableNextOnLifecycleEnvironment: Ember.computed.or('hasNoLifecycleEnvironment', 'model.isSaving'),
 
   // Satellite Tabs Only
   disableTabDeploymentName: false, // always enable tab for entering deployment name
-  disableTabLifecycleEnvironment: Ember.computed.alias('disableNextOnDeploymentName'),
-  disableTabAccessInsights: Ember.computed.or("disableNextOnDeploymentName", 'hasNoOrganization', 'disableNextOnLifecycleEnvironment')
+  disableTabAccessInsights: Ember.computed.alias('satelliteInvalid')
 
 });
