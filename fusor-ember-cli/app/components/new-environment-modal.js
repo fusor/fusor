@@ -2,11 +2,6 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
-  didInsertElement() {
-    this.set('name', null);
-    this.set('description', null);
-  },
-
   envLabelName: Ember.computed('name', function() {
     if (this.get('name')) {
       var label = this.get('name').underscore();

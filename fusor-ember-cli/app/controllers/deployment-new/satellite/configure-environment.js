@@ -32,25 +32,16 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymen
       return this.get('deploymentNewController.model').set('lifecycle_environment', environment);
     },
 
-    newEnvironment() {
-      this.set('newEnvName', '');
-      this.set('description', '');
-      this.set('openNewEnvironmentModal', true);
-    },
-
-    createEnvironment() {
+    createEnvironment(fields_env) {
       var self = this;
 
-      var envName = this.get('newEnvName');
-      var nameAlreadyExists =  self.get('lifecycleEnvironments').findBy('name', envName);
+      var nameAlreadyExists =  self.get('lifecycleEnvironments').findBy('name', fields_env.name);
       if (nameAlreadyExists) {
-        return self.get('deploymentNewController').set('errorMsg', envName + ' is not a unique name. Environment not saved.');
+        return self.get('deploymentNewController').set('errorMsg', fields_env.name + ' is not a unique name. Environment not saved.');
       }
 
       var selectedOrganization = this.get('selectedOrganization');
-      this.set('fields_env.name', this.get('newEnvName'));
-      this.set('fields_env.label', this.get('envLabelName'));
-      this.set('fields_env.description', this.get('description'));
+      this.set('fields_env', fields_env);
       this.set('fields_env.organization', selectedOrganization);
 
       var library = this.get('libraryEnv');
