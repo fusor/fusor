@@ -1,33 +1,20 @@
 import Ember from 'ember';
-import { EqualityValidator, PasswordValidator, AnyValidator } from '../utils/validators';
+import { EqualityValidator, PasswordValidator } from '../utils/validators';
 
 export default Ember.Mixin.create({
 
-  passwordValidator: Ember.computed('commonPassword', function() {
-    if (Ember.isPresent(this.get('commonPassword'))) {
-      return PasswordValidator.create({});
-    } else {
-      return AnyValidator.create({});
-    }
-  }),
+  passwordValidator: PasswordValidator.create({}),
 
   confirmCommonPasswordValidator: Ember.computed('commonPassword', function() {
-    if (Ember.isPresent(this.get('commonPassword'))) {
-      return EqualityValidator.create({equals: this.get('commonPassword')});
-    } else {
-      return AnyValidator.create({});
-    }
+    return EqualityValidator.create({equals: this.get('commonPassword')});
   }),
 
-  isValidCommonPassword: Ember.computed('commonPassword', 'confirmCommonPassword', 'confirmCommonPasswordValidator',
+  isValidCommonPassword: Ember.computed(
+    'commonPassword',
+    'confirmCommonPassword',
+    'confirmCommonPasswordValidator',
     function () {
-      if (Ember.isBlank(this.get('commonPassword')) && Ember.isBlank(this.get('commonPassword'))) {
-        return true;
-      } else {
-        return this.get('passwordValidator').isValid(this.get('commonPassword')) &&
-               this.get('confirmCommonPasswordValidator').isValid(this.get('confirmCommonPassword'));
-      }
-    }
-  )
-
+      return this.get('passwordValidator').isValid(this.get('commonPassword')) &&
+             this.get('confirmCommonPasswordValidator').isValid(this.get('confirmCommonPassword'));
+    })
 });

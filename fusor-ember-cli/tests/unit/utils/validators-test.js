@@ -3,6 +3,7 @@ import {
   EqualityValidator,
   LengthValidator,
   PasswordValidator,
+  RequiredPasswordValidator,
   UniquenessValidator,
   RegExpValidator,
   AlphaNumericDashUnderscoreValidator,
@@ -73,6 +74,9 @@ test('EqualityValidator rejects invalid values', function (assert) {
 test('LengthValidator accepts valid minimum length', function (assert) {
   let lengthValidator = LengthValidator.create({min: 5});
   let validValues = [
+    null,
+    undefined,
+    '',
     'test5',
     'test 6',
     'test test test test test test test test test test test test test test'
@@ -92,22 +96,6 @@ test('LengthValidator rejects invalid minimum length', function (assert) {
   assert.notOk(lengthValidator.isValid(value), `"${value}" was accepted as valid`);
   assert.equal(lengthValidator.getMessages(value).length, 1);
   assert.equal(lengthValidator.getMessages(value)[0], 'must be 5 or more characters');
-});
-
-test('LengthValidator rejects blank values', function (assert) {
-  let lengthValidator = LengthValidator.create({});
-  let invalidValues = [
-    null,
-    undefined,
-    ''
-  ];
-
-  invalidValues.forEach((value) => {
-    assert.ok(lengthValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
-    assert.notOk(lengthValidator.isValid(value), `"${value}" was accepted as valid`);
-    assert.equal(lengthValidator.getMessages(value).length, 1);
-    assert.equal(lengthValidator.getMessages(value)[0], 'cannot be blank');
-  });
 });
 
 test('LengthValidator accepts valid maximum length', function (assert) {
@@ -136,6 +124,9 @@ test('LengthValidator rejects invalid maximum length', function (assert) {
 test('PasswordValidator accepts valid passwords', function (assert) {
   let passwordValidator = PasswordValidator.create({});
   let validValues = [
+    null,
+    undefined,
+    '',
     'minimum8',
     'specialchars@#$%specialchars'
   ];
@@ -156,8 +147,8 @@ test('PasswordValidator rejects invalid passwords', function (assert) {
   assert.equal(passwordValidator.getMessages(value)[0], 'must be 8 or more characters');
 });
 
-test('PasswordValidator rejects blank values', function (assert) {
-  let passwordValidator = PasswordValidator.create({});
+test('RequiredPasswordValidator rejects blank values', function (assert) {
+  let requiredPasswordValidator = RequiredPasswordValidator.create({});
   let invalidValues = [
     null,
     undefined,
@@ -165,10 +156,10 @@ test('PasswordValidator rejects blank values', function (assert) {
   ];
 
   invalidValues.forEach((value) => {
-    assert.ok(passwordValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
-    assert.notOk(passwordValidator.isValid(value), `"${value}" was accepted as valid`);
-    assert.equal(passwordValidator.getMessages(value).length, 1);
-    assert.equal(passwordValidator.getMessages(value)[0], 'cannot be blank');
+    assert.ok(requiredPasswordValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
+    assert.notOk(requiredPasswordValidator.isValid(value), `"${value}" was accepted as valid`);
+    assert.equal(requiredPasswordValidator.getMessages(value).length, 1);
+    assert.equal(requiredPasswordValidator.getMessages(value)[0], 'cannot be blank');
   });
 });
 

@@ -36,6 +36,17 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
       this.get('controller.model').rollbackAttributes();
       return this.transitionTo('deployments');
     }
-  }
+  },
 
+  updateOpenstackDefaults(deployment) {
+    let satelliteIndexController = this.controllerFor('deployment-new/satellite/index');
+    let commonPassword = satelliteIndexController.get('commonPassword');
+
+    if (commonPassword && !deployment.get('isStarted') && deployment.get('deploy_openstack')) {
+      deployment.get('openstack_deployment').then(openstackDeployment => {
+        openstackDeployment.set('overcloud_password', commonPassword);
+        openstackDeployment.save();
+      });
+    }
+  }
 });

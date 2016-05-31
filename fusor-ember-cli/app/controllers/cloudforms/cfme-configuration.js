@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
-import { EqualityValidator, PasswordValidator } from '../../utils/validators';
+import { EqualityValidator, RequiredPasswordValidator } from '../../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
@@ -21,7 +21,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   }),
 
-  passwordValidator: PasswordValidator.create({}),
+  passwordValidator: RequiredPasswordValidator.create({}),
 
   confirmCfmeRootPasswordValidator: Ember.computed('cfmeRootPassword', function() {
     return EqualityValidator.create({equals: this.get('cfmeRootPassword')});

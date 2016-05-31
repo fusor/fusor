@@ -4,10 +4,16 @@ export default Ember.Mixin.create({
 
   actions: {
     saveDeployment(routeNameForTransition) {
-      var deployment = this.get('controller.model');
-      var self = this;
+      let deployment = this.get('controller.model');
+      let self = this;
+      let isNew = Ember.isBlank(deployment.get('id'));
+
       deployment.save().then(
         function(result) {
+          if (isNew) {
+            self.updateOpenstackDefaults(result);
+          }
+
           if (routeNameForTransition) {
             if (routeNameForTransition === 'deployments') {
               return self.transitionTo('deployments');
@@ -21,8 +27,11 @@ export default Ember.Mixin.create({
         }
       );
     }
-  }
+  },
 
+  updateOpenstackDefaults(deployment) {
+    //override me
+  }
 });
 
 
