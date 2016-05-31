@@ -90,9 +90,11 @@
   color: #999999;
 }
 .rhci-steps-buttons {
-  margin-bottom: 20px;
-  margin-top: 20px;
+  margin: 0 20px ;
+  padding: 20px 40px 20px 20px;
   text-align: right;
+  background-color: #fafafa;
+  border-top: 1px solid #d0d0d0;
 }
 .rhci-steps-buttons .btn {
   margin-left: 5px;
