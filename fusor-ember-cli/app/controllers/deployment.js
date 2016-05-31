@@ -5,6 +5,7 @@ import DisableTabMixin from "../mixins/disable-tab-mixin";
 export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixin, {
 
   deploymentsController: Ember.inject.controller('deployments'),
+  deploymentSatelliteIndex: Ember.inject.controller('satellite/index'),
   configureEnvironmentController: Ember.inject.controller('configure-environment'),
   rhevController: Ember.inject.controller('rhev'),
   openstackController: Ember.inject.controller('openstack'),
@@ -111,7 +112,21 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   }),
   hasNoLifecycleEnvironment: Ember.computed.not('hasLifecycleEnvironment'),
 
-  satelliteInvalid: Ember.computed.or('hasNoName', 'hasNoOrganization', 'hasNoLifecycleEnvironment'),
+  isValidCommonPassword: Ember.computed.alias("deploymentSatelliteIndex.isValidCommonPassword"),
+
+  isValidNameAndPassword: Ember.computed('isValidDeploymentName', 'isValidCommonPassword',
+    function() {
+      return (this.get('isValidDeploymentName') && this.get('isValidCommonPassword'));
+    }
+  ),
+
+  hasInvalidNameOrPassword: Ember.computed.not('isValidNameAndPassword'),
+  disableTabLifecycleEnvironment: Ember.computed.not('isValidNameAndPassword'),
+
+  satelliteInvalid: Ember.computed.or('hasNoName',
+                                      'hasInvalidNameOrPassword',
+                                      'hasNoOrganization',
+                                      'hasNoLifecycleEnvironment'),
 
   skipContent: false,
 

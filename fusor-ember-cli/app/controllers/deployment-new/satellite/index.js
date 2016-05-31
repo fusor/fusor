@@ -1,8 +1,9 @@
 import Ember from 'ember';
 import NeedsDeploymentNewMixin from "../../../mixins/needs-deployment-new-mixin";
 import ValidatesDeploymentNameMixin from "../../../mixins/validates-deployment-name-mixin";
+import CommonPasswordMixin from "../../../mixins/common-password-mixin";
 
-export default Ember.Controller.extend(NeedsDeploymentNewMixin, ValidatesDeploymentNameMixin, {
+export default Ember.Controller.extend(NeedsDeploymentNewMixin, ValidatesDeploymentNameMixin, CommonPasswordMixin, {
 
   deploymentNewController: Ember.inject.controller('deployment-new'),
 
@@ -11,10 +12,20 @@ export default Ember.Controller.extend(NeedsDeploymentNewMixin, ValidatesDeploym
 
   lifecycleEnvironmentTabRouteName: Ember.computed.alias("deploymentNewController.lifecycleEnvironmentTabRouteName"),
 
-  disableNextOnDeploymentName: Ember.computed.alias("deploymentNewController.disableNextOnDeploymentName"),
-
   idSatName: 'deployment_new_sat_name',
   idSatDesc: 'deployment_new_sat_desc',
 
-  backRouteNameOnSatIndex: 'deployment-new.start'
+  backRouteNameOnSatIndex: 'deployment-new.start',
+
+  isRhev: Ember.computed.alias('deploymentNewController.isRhev'),
+  isOpenStack: Ember.computed.alias("deploymentNewController.isOpenStack"),
+  isCloudForms: Ember.computed.alias("deploymentNewController.isCloudForms"),
+  isOpenShift: Ember.computed.alias("deploymentNewController.isOpenShift"),
+
+  isValidDeploymentName: Ember.computed.alias("deploymentNewController.isValidDeploymentName"),
+  isValidNameAndPassword: Ember.computed('isValidDeploymentName', 'isValidCommonPassword', function() {
+    return (this.get('isValidDeploymentName') && this.get('isValidCommonPassword'));
+  }),
+  disableNextOnDeploymentName: Ember.computed.not('isValidNameAndPassword')
+
 });
