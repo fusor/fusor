@@ -44,6 +44,11 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
   actions: {
     envSetupChanged() {
       this.set('useDefaultOrgViewForEnv', this.get('isImmediate'));
+    },
+    newEnvironment() {
+      this.set('name', null);
+      this.set('description', null);
+      this.set('openModal', true);
     }
   }
 
