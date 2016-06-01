@@ -16,8 +16,8 @@
       Select how this deployment's instances should receive updates.
     </p>
     <div class='ident-radio'>
-      {{#radio-button value="immediately" groupValue=envSetup changed="envSetupChanged" id='immediately' disabled=deploymentController.isStarted}}
-        <span class="{{if deploymentController.isStarted 'disabled'}}">
+      {{#radio-button value="immediately" groupValue=envSetup changed="envSetupChanged" id='immediately' disabled=isStarted}}
+        <span class="{{if isStarted 'disabled'}}">
           Immediately {{tool-tip faIcon='fa-info-circle blue-active'
                                  title="Choosing to not use a lifecycle environment will result in a faster deployment time, but new content will become available to your deployment automatically.  If you use a lifecycle environment, then content needs to be manually published to that environment to be available."}}
         </span>
