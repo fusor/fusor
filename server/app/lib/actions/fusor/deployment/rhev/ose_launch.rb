@@ -159,7 +159,7 @@ module Actions
             end
 
             defaultptable = Ptable.find_by_name(default_name)
-            oseptable = defaultptable.clone
+            oseptable = defaultptable.dup
 
             layoutstring = oseptable.layout.clone
             layoutstring.sub! default_name, ptable_name
