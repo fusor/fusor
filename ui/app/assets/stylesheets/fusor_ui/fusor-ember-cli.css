@@ -181,6 +181,10 @@
 #content > .row:first-child {
   display: none; }
 
+.navbar.navbar-inner {
+  position: static;
+  top: 0; }
+
 .rhci-footer-box {
   height: 100px; }
 
@@ -820,10 +824,6 @@ h1.num-ose-node {
 .navbar-outer {
   z-index: 1200 !important; }
 
-.navbar-inner {
-  position: static;
-  top: 0; }
-
 .invalid-rhev-hostname {
   color: #fff; }
 
@@ -839,6 +839,18 @@ span.hanging-indent {
 
 .cfme-config-padding {
   padding-bottom: 16px; }
+
+.cancel-back-next {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%; }
+
+.cancel-button {
+  margin-right: 10px; }
+
+.next-button {
+  margin-left: -5px !important; }
 
 /* wizard.scss */
 .page-header-rhci {
@@ -928,9 +940,11 @@ span.hanging-indent {
   color: #999999; }
 
 .rhci-steps-buttons {
-  margin-bottom: 20px;
-  margin-top: 20px;
-  text-align: right; }
+  margin: 0 20px;
+  padding: 20px 40px 20px 20px;
+  text-align: right;
+  background-color: #fafafa;
+  border-top: 1px solid #d0d0d0; }
 
 .rhci-steps-buttons .btn {
   margin-left: 5px; }
