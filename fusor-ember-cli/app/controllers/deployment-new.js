@@ -28,11 +28,10 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
 
   isValidCommonPassword: Ember.computed.alias("deploymentNewSatelliteIndex.isValidCommonPassword"),
 
-  isValidNameAndPassword: Ember.computed('isValidDeploymentName', 'isValidCommonPassword',
-    function() {
-      return (this.get('isValidDeploymentName') && this.get('isValidCommonPassword'));
-    }
-  ),
+  isValidNameAndPassword: Ember.computed('isValidDeploymentName', 'isValidCommonPassword', function () {
+    return (this.get('isValidDeploymentName') && this.get('isValidCommonPassword'));
+  }),
+
   hasInvalidNameOrPassword: Ember.computed.not('isValidNameAndPassword'),
   disableTabLifecycleEnvironment: Ember.computed.not('isValidNameAndPassword')
 

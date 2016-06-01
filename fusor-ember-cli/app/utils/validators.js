@@ -119,17 +119,20 @@ const LengthValidator = Validator.extend({
   isValid(value) {
     let min = this.get('min'), max = this.get('max');
 
-    return Ember.isPresent(value) &&
-      (Ember.isBlank(min) || value.length >= min) &&
+    // Allow blanks for optional fields, must use PresenceValidator
+    if (Ember.isBlank(value)) {
+      return true;
+    }
+
+    return (Ember.isBlank(min) || value.length >= min) &&
       (Ember.isBlank(max) || value.length <= max);
   },
 
   getMessages(value) {
     let min = this.get('min'), max = this.get('max');
 
-    //Avoid double failing with presence validator
-    if (!Ember.isPresent(value)) {
-      return ['cannot be blank'];
+    if (Ember.isBlank(value)) {
+      return [];
     }
 
     if (Ember.isPresent(min) && value.length < min) {
@@ -144,8 +147,13 @@ const LengthValidator = Validator.extend({
   }
 });
 
-const PasswordValidator = LengthValidator.extend({
-  min: 8
+const PasswordValidator = LengthValidator.extend({min: 8});
+
+const RequiredPasswordValidator = AllValidator.extend({
+  validators: [
+    PresenceValidator.create({}),
+    PasswordValidator.create({})
+  ]
 });
 
 // expects values to be set during construction:
@@ -328,6 +336,7 @@ export {
   NumberValidator,
   LengthValidator,
   PasswordValidator,
+  RequiredPasswordValidator,
   UniquenessValidator,
   RegExpValidator,
   AlphaNumericDashUnderscoreValidator,

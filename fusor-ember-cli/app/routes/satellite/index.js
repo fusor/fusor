@@ -34,15 +34,14 @@ export default Ember.Route.extend({
       deploymentController.set('confirmCfmeAdminPassword', commonPassword);
       deploymentController.set('confirmCfmeDbPassword', commonPassword);
 
-      deployment.get('openstack_deployment').then(function(result) {
-        if (Ember.isPresent(result)) {
-          result.set('undercloud_admin_password', commonPassword);
-          result.set('undercloud_ssh_password', commonPassword);
-          result.set('overcloud_password', commonPassword);
+      if (!deployment.get('isStarted') && deployment.get('deploy_openstack')) {
+        deployment.get('openstack_deployment').then(openstackDeployment => {
+          openstackDeployment.set('overcloud_password', commonPassword);
           // confirmation fields on the deployment controller, not the openstack_deployment model
-          deploymentController.set('confirmOvercloudPassword', result.get('overcloud_password'));
-        }
-      });
+          deploymentController.set('confirmOvercloudPassword', commonPassword);
+          openstackDeployment.save();
+        });
+      }
     }
     return this.send('saveDeployment', null);
   },

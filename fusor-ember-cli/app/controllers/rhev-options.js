@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
-import { Validator, EqualityValidator, PasswordValidator, AlphaNumericDashUnderscoreValidator, AllValidator } from '../utils/validators';
+import { Validator, EqualityValidator, RequiredPasswordValidator, AlphaNumericDashUnderscoreValidator, AllValidator } from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
@@ -18,7 +18,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
              'AMD Opteron G1', 'AMD Opteron G2', 'AMD Opteron G3', 'AMD Opteron G4',
              'AMD Opteron G5', 'IBM POWER 8'],
 
-  passwordValidator: PasswordValidator.create({}),
+  passwordValidator: RequiredPasswordValidator.create({}),
 
   confirmRhevRootPasswordValidator: Ember.computed('rhevRootPassword', function() {
     return EqualityValidator.create({equals: this.get('rhevRootPassword')});

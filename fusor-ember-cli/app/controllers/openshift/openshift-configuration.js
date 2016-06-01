@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 import {
-  PasswordValidator,
+  RequiredPasswordValidator,
   EqualityValidator,
   validateZipper
 } from '../../utils/validators';
@@ -37,7 +37,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   subdomainValidator: Ember.computed.alias('openshiftController.subdomainValidator'),
 
   userpassword: Ember.computed.alias('model.openshift_user_password'),
-  passwordValidator: PasswordValidator.create({}),
+  passwordValidator: RequiredPasswordValidator.create({}),
 
   confirmUserPasswordValidator: Ember.computed('userpassword', function() {
     return EqualityValidator.create({equals: this.get('userpassword')});
