@@ -9,10 +9,7 @@ export default Ember.Component.extend({
     'subscription.quantity_attached',
     'subscription.qtySumAttached',
     function() {
-      if (this.get('isDisconnected')) {
-        return this.get('subscription.quantity_attached');
-
-      } else if (this.get('subscription.quantity_to_add') > 0) {
+      if (this.get('subscription.quantity_to_add') > 0) {
         return this.get('subscription.quantity_attached') + ' + ' +
           this.get('subscription.quantity_to_add') + ' = ' +
           this.get('subscription.qtySumAttached');

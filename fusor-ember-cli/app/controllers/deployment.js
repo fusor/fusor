@@ -88,12 +88,9 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   ),
 
   hasSubscriptionUUID: Ember.computed(
-    'organizationUpstreamConsumerUUID',
     'model.upstream_consumer_uuid',
     function() {
-      return (Ember.isPresent(this.get('organizationUpstreamConsumerUUID')) ||
-              Ember.isPresent(this.get('model.upstream_consumer_uuid'))
-             );
+      return Ember.isPresent(this.get('model.upstream_consumer_uuid'));
     }
   ),
 
@@ -103,7 +100,14 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
     'hasSubscriptionUUID',
     'disableNextOnSelectSubscriptions',
     function() {
-      return (!this.get('isDisconnected') && (this.get('isDisabledSubscriptions') || !this.get("hasSubscriptionUUID") || this.get('disableNextOnSelectSubscriptions')));
+      const isConnectedSync = !this.get('isDisconnected');
+      const subsNotReady =
+       this.get('isDisabledSubscriptions') ||
+       !this.get("hasSubscriptionUUID") ||
+       this.get('disableNextOnSelectSubscriptions');
+
+      // Disable review if this is a connected sync and subs are not ready
+      return isConnectedSync && subsNotReady;
     }
   ),
 

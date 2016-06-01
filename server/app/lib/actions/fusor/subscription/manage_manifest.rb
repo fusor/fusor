@@ -50,44 +50,18 @@ module Actions
                           nil)
             end
 
-          else
-            # If there is an upstream consumer, a manifest has been previously imported in to the org;
-            # therefore,if the user didn't associate a consumer with the deployment, use the existing upstream
-            # consumer from the organization; otherwise, either refresh it or delete it and import another
-
-            if deployment.upstream_consumer_uuid.nil?
-              deployment.update_attribute(:upstream_consumer_uuid, upstream_consumer['uui'])
-
-            elsif upstream_consumer['uuid'] == deployment.upstream_consumer_uuid
-              plan_action(::Actions::Katello::Provider::ManifestRefresh,
-                          deployment.organization.redhat_provider,
-                          upstream_consumer)
-
-            else
-              download_file_path = File.join("#{Rails.root}/tmp", "import_#{SecureRandom.hex(10)}.zip")
-              if deployment.cdn_url?
-                download_file_path = deployment.manifest_file
-              end
-
-              ::Fusor.log.debug("existing upstream_consumer: #{download_file_path}")
-
-              sequence do
-                if deployment.cdn_url.blank?
-                  plan_action(::Actions::Fusor::Subscription::DownloadManifest,
-                              deployment,
-                              customer_portal_credentials,
-                              download_file_path)
-                end
-
-                plan_action(::Actions::Katello::Provider::ManifestDelete,
-                            deployment.organization.redhat_provider)
-
-                plan_action(::Actions::Katello::Provider::ManifestImport,
-                            deployment.organization.redhat_provider,
-                            download_file_path,
-                            nil)
-              end
-            end
+            #
+            # 2016/05/27 zeus:
+            # we used to have an else condition that would refresh the manifest
+            # if the deployment had an upstream uuid that matched the
+            # organizations. If for some reason the uuid of the deployment did
+            # not match the one from the organization we would download, delete
+            # and import a new manifest.
+            #
+            # We no longer want to do any of this. Once a manifest has been
+            # imported we don't want to allow new imports. Therefore the entire
+            # else clause was wiped out.
+            #
           end
         end
       end

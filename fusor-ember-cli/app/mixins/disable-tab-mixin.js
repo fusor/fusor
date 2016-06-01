@@ -25,7 +25,7 @@ export default Ember.Mixin.create(ValidatesDeploymentNameMixin, {
   // disable Next on Lifecycle Environment if no lifecycle environment is selected
   // note: hasNoLifecycleEnvironment and hasNoLifecycleEnvironment is defined in /app/controllers/deployment.js
   //       and app/controllers/deployment-new.js rather than in this mixin
-  disableNextOnLifecycleEnvironment: Ember.computed.or('hasNoLifecycleEnvironment', 'model.isSaving'),
+  disableNextOnLifecycleEnvironment: Ember.computed.or('hasNoLifecycleEnvironment', 'disableAll'),
 
   // Satellite Tabs Only
   disableTabDeploymentName: false, // always enable tab for entering deployment name

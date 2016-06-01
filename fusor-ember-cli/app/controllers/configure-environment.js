@@ -30,7 +30,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymen
     selectEnvironment(environment) {
       this.set('showAlertMessage', false);
       this.set('selectedEnvironment', environment);
-      return this.get('deploymentController.model').set('lifecycle_environment', environment);
+      this.get('deploymentController.model').set('lifecycle_environment', environment);
     },
 
     createEnvironment(fields_env) {
@@ -38,7 +38,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymen
 
       var nameAlreadyExists =  self.get('lifecycleEnvironments').findBy('name', fields_env.name);
       if (nameAlreadyExists) {
-        return self.get('deploymentController').set('errorMsg', fields_env.name + ' is not a unique name. Environment not saved.');
+        self.get('deploymentController').set('errorMsg', fields_env.name + ' is not a unique name. Environment not saved.');
       }
 
       var selectedOrganization = this.get('selectedOrganization');
@@ -55,7 +55,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymen
         self.set('selectedEnvironment', environment);
         self.get('deploymentController.model').set('lifecycle_environment', environment);
         self.get('deploymentController').set('errorMsg', null);
-        return self.set('showAlertMessage', true);
+        self.set('showAlertMessage', true);
       }, function(error) {
         self.get('deploymentController').set('errorMsg', 'error saving environment' + error);
       });

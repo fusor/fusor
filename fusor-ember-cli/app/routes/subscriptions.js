@@ -1,28 +1,44 @@
 import Ember from 'ember';
+import NeedsExistingManifestHelpers from '../mixins/needs-existing-manifest-helpers';
 
-export default Ember.Route.extend({
+export default Ember.Route.extend(NeedsExistingManifestHelpers, {
 
   model() {
-    var self = this;
-    return this.store.findAll('session-portal').then(function(results) {
+    const sessionPortal = this.store.findAll('session-portal').then(results => {
       if (Ember.isBlank(results)) {
-        return self.store.createRecord('session-portal');
+        return this.store.createRecord('session-portal');
       } else {
         return results.get('firstObject');
       }
     });
+
+    return this.shouldUseExistingManifest().then(useExistingManifest => {
+      const modelHash = {sessionPortal, useExistingManifest};
+      if(useExistingManifest) {
+        modelHash.subscriptions = this.loadSubscriptions();
+      }
+      return Ember.RSVP.hash(modelHash);
+    });
   },
 
   setupController(controller, model) {
-    controller.set('model', model);
+    controller.set('model', model.sessionPortal);
+    // Check if there's an existing manifest in satellite that should be used
+    // If so, we want to streamline subscriptions and simply reuse that manifest
+    // Steps A-C in a brand new deployment are no longer needed, so simply display
+    // the review and continue.
+    controller.set('useExistingManifest', model.useExistingManifest);
+    if(model.useExistingManifest) {
+      this.transitionTo('subscriptions.review-subscriptions');
+    }
+
     var stepNumberSubscriptions = this.controllerFor('deployment').get('stepNumberSubscriptions');
     return this.controllerFor('deployment').set('currentStepNumber', stepNumberSubscriptions);
   },
 
   actions: {
-    error(reason, transition) {
-      // bubble up this error event:
-      return true;
+    error() {
+      return true; // bubbles error event
     }
   }
 });
