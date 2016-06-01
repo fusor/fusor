@@ -32,7 +32,11 @@ $error-color: #cc0000;
   display: none;
 }
 
-
+//foreman js would normally set this.
+.navbar.navbar-inner {
+  position: static;
+  top: 0;
+}
 
 // ******************************
 
@@ -835,11 +839,6 @@ h1.num-ose-node {
 
 .navbar-outer {
   z-index: 1200 !important;
-}
-
-.navbar-inner {
-  position: static;
-  top: 0;
 }
 
 .invalid-rhev-hostname {
