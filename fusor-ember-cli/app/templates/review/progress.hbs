@@ -37,11 +37,11 @@
                       disableBack=false
                       disableCancel=isStarted}}
     {{#if deployTaskIsFinished}}
-      {{#link-to 'review.summary' role="button" class='btn btn-primary'}}
+      {{#link-to 'review.summary' role="button" class='btn btn-primary next-button'}}
           Next <i class="fa fa-angle-right"></i>
       {{/link-to}}
     {{else}}
-      <button class='btn btn-primary' disabled=true>
+      <button class='btn btn-primary next-button' disabled=true>
           {{deployButtonTitle}} <i class="fa fa-angle-right"></i>
       </button>
     {{/if}}

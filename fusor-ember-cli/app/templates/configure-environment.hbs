@@ -120,7 +120,7 @@
     {{#if deployment.isNew}}
       <button {{action 'saveDeployment' step1DRouteName}}
               disabled={{disableNextOnLifecycleEnvironment}}
-              class='btn btn-primary'>
+              class='btn btn-primary next-button'>
           {{#if deployment.isSaving}}
             Loading ... <i class="fa fa-angle-right"></i>
           {{else}}
@@ -130,7 +130,7 @@
     {{else}}
       <button {{action 'saveDeployment' step1DRouteName}}
               disabled={{disableNextOnLifecycleEnvironment}}
-              class='btn btn-primary'>
+              class='btn btn-primary next-button'>
           Next <i class="fa fa-angle-right"></i>
       </button>
     {{/if}}

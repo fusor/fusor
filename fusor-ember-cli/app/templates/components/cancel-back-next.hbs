@@ -1,18 +1,19 @@
-<div class="col-md-9 rhci-steps-buttons">
+<div class="col-xs-8 col-sm-8 col-md-9 col-lg-10 col-xs-push-4 col-sm-push-4 col-md-push-3 col-lg-push-2 sidebar-pf-right rhci-steps-buttons cancel-back-next">
   {{#if isNew}}
-      <button class="btn btn-default" {{action 'cancelAndRollbackNewDeployment'}}>
+      <button class="btn btn-default cancel-button" {{action 'cancelAndRollbackNewDeployment'}}>
         Cancel
       </button>
    {{else}}
-      <button class="btn btn-default" {{action 'openCancelDeploymentModal'}} disabled={{disableCancel}}>
+      <button class="btn btn-default cancel-button" {{action 'openCancelDeploymentModal'}} disabled={{disableCancel}}>
         Cancel
       </button>
   {{/if}}
   {{#link-to backRouteName disabled=disableBack role="button" class='btn btn-default'}}
       <i class="fa fa-angle-left"></i> Back
   {{/link-to}}
+  &nbsp;
   {{#if nextRouteName}}
-      {{#link-to nextRouteName tagName='button' disabled=disableNext role="button" class='btn btn-primary'}}
+      {{#link-to nextRouteName tagName='button' disabled=disableNext role="button" class='btn btn-primary next-button'}}
           Next <i class="fa fa-angle-right"></i>
       {{/link-to}}
   {{else}}

@@ -865,3 +865,17 @@ span.hanging-indent{
   padding-bottom: 16px;
 }
 
+.cancel-back-next {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+.cancel-button {
+  margin-right: 10px;
+}
+
+.next-button {
+  margin-left: -5px !important;
+}
