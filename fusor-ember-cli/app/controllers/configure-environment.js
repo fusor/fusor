@@ -38,7 +38,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymen
 
       var nameAlreadyExists =  self.get('lifecycleEnvironments').findBy('name', fields_env.name);
       if (nameAlreadyExists) {
-        self.get('deploymentController').set('errorMsg', envName + ' is not a unique name. Environment not saved.');
+        self.get('deploymentController').set('errorMsg', fields_env.name + ' is not a unique name. Environment not saved.');
       }
 
       var selectedOrganization = this.get('selectedOrganization');
