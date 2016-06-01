@@ -39,13 +39,11 @@ module Actions
               # automagically.
               # only download it if we didn't supply our own cdn_url
               if deployment.cdn_url.blank?
-                ::Fusor.log.error("XXX DOWNLOAD manifest 1");
                 plan_action(::Actions::Fusor::Subscription::DownloadManifest,
                             deployment,
                             customer_portal_credentials,
                             download_file_path)
               end
-              ::Fusor.log.error("XXX IMPORT manifest 1");
               plan_action(::Actions::Katello::Provider::ManifestImport,
                           deployment.organization.redhat_provider,
                           download_file_path,
