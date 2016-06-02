@@ -75,6 +75,8 @@ module Fusor
         task = async_task(::Actions::Fusor::Deploy,
                           @deployment,
                           params[:skip_content])
+        @deployment.foreman_task_uuid = task.id
+        @deployment.save
       end
       respond_for_async :resource => task
     end

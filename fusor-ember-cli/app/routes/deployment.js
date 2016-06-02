@@ -133,20 +133,15 @@ export default Ember.Route.extend(DeploymentRouteMixin, UsesOseDefaults, {
           "Authorization": "Basic " + self.get('session.basicAuthToken')
         }
       }).then(
-        function (response) {
-          var uuid = response.id;
-          console.log('task uuid is ' + uuid);
-          deployment.set('foreman_task_uuid', uuid);
-          deployment.save().then(
-            function () {
-              controller.set('showSpinner', false);
-              return self.transitionTo('review.progress.overview');
-            },
-            function () {
-              controller.set('showSpinner', false);
-              controller.set('errorMsg', 'Error in saving UUID of deployment task.');
-              controller.set('showErrorMessage', true);
-            });
+        function (_) {
+          deployment.reload().then(() => {
+            controller.set('showSpinner', false);
+            self.transitionTo('review.progress.overview');
+          }).catch(() => {
+            controller.set('showSpinner', false);
+            controller.set('errorMsg', 'Error reloading deployment task');
+            controller.set('showErrorMessage', true);
+          });
         },
         function (response) {
           controller.set('showSpinner', false);
