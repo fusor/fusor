@@ -102,7 +102,6 @@ module Fusor
                                                    :overcloud_float_net,
                                                    :overcloud_float_gateway,
                                                    :overcloud_password,
-                                                   :overcloud_address,
                                                    :overcloud_libvirt_type,
                                                    :overcloud_node_count,
                                                    :overcloud_compute_flavor,

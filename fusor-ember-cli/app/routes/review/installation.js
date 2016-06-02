@@ -7,6 +7,11 @@ export default Ember.Route.extend(NeedsExistingManifestHelpers, {
   beforeModel() {
     // Ensure the models have been persisted so that we're validating/syncing up to date data.
     let deployment = this.modelFor('deployment');
+
+    if (deployment.get('isStarted')) {
+      return;
+    }
+
     let promises = {
       deployment: deployment.save()
     };
