@@ -47,14 +47,15 @@ module Utils
         default_template_name = 'Satellite Kickstart Default'
         default_template = ProvisioningTemplate.find_by_name(default_template_name)
         if default_template.nil?
-          ::Fusor.log.error "====== Template '#{default_template_name}' does not exist! Cannot clone from default! ======"
+          ::Fusor.log.error "====== Template '#{default_template_name}' does not exist! Cannot dup from default! ======"
           return nil
         end
-        new_template = default_template.clone
+        new_template = default_template.dup
         new_template.name = name
         str = new_template.template.clone
         str.sub! "name: #{default_template_name}", "name: #{name}"
         new_template.template = str
+        new_template.locked = false
         new_template.save!
       end
 
