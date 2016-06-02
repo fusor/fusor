@@ -20,6 +20,8 @@ openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 
 
 docker_storage=<docker_storage>
 docker_volume=<docker_volume>
+
+storage_type=<storage_type>
 docker_registry_host=<docker_registry_host>
 docker_registry_path=<docker_registry_path>
 

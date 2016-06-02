@@ -59,14 +59,37 @@
     - name: Replace default subdomain name for sample app
       replace: "dest=/home/{{ ose_user }}/pod_examples/hello_openshift.json regexp='cloudapps' replace={{ subdomain_name }}"
 
-    - name: Replace default persistent storage host for internal registry
-      replace: "dest=/home/{{ ose_user }}/pod_examples/registry-volume.json regexp='master.example.com' replace={{ docker_registry_host }}"
+    - name: Replace default persistent NFS storage host for internal registry
+      replace: "dest=/home/{{ ose_user }}/pod_examples/registry-volume-nfs.json regexp='master.example.com' replace={{ docker_registry_host }}"
+      when: storage_type == "NFS"
 
-    - name: Replace default persistent storage path for internal registry
-      replace: "dest=/home/{{ ose_user }}/pod_examples/registry-volume.json regexp='/var/export/registryvol' replace={{ docker_registry_path }}"
+    - name: Replace default persistent NFS storage path for internal registry
+      replace: "dest=/home/{{ ose_user }}/pod_examples/registry-volume-nfs.json regexp='/var/export/registryvol' replace={{ docker_registry_path }}"
+      when: storage_type == "NFS"
 
-    - name: Create persistent volume for internal registry
-      command: oc create -f /home/{{ ose_user }}/pod_examples/registry-volume.json
+    - name: Create persistent NFS volume for internal registry
+      command: oc create -f /home/{{ ose_user }}/pod_examples/registry-volume-nfs.json
+      when: storage_type == "NFS"
+
+    - name: Replace default GlusterFS path for internal registry
+      replace: "dest=/home/{{ ose_user }}/pod_examples/registry-volume-gfs.json regexp='gv0' replace={{ docker_registry_path }}"
+      when: storage_type == "GFS"
+
+    - name: Replace default GlusterFS endpoints for internal registry
+      replace: "dest=/home/{{ ose_user }}/pod_examples/glusterfs-endpoints.yaml regexp='192.168.236.15' replace={{ docker_registry_host}}"
+      when: storage_type == "GFS"
+
+    - name: Create GlusterFS service for internal registry
+      command: oc create -f /home/{{ ose_user }}/pod_examples/glusterfs-service.yaml
+      when: storage_type == "GFS"
+
+    - name: Create GlusterFS endpoints for internal registry
+      command: oc create -f /home/{{ ose_user }}/pod_examples/glusterfs-endpoints.yaml
+      when: storage_type == "GFS"
+
+    - name: Create GlusterFS persistent volume for internal registry
+      command: oc create -f /home/{{ ose_user }}/pod_examples/registry-volume-gfs.json
+      when: storage_type == "GFS"
 
     - name: Create persistent volume claim for internal registry
       command: oc create -f /home/{{ ose_user }}/pod_examples/registry-pvclaim.json

@@ -81,6 +81,7 @@ module Actions
 
             opts[:docker_storage] = "/dev/vdb"
             opts[:docker_volume] = "docker-vg"
+            opts[:storage_type] = deployment.openshift_storage_type
 
             opts[:ose_user] = deployment.openshift_username
             opts[:ose_password] = "deployment.openshift_user_password"
