@@ -9,12 +9,12 @@ $error-color: #cc0000;
 // Foreman style overrides - begin
 
 // overriding foreman patternfly_and_overrides.scss .spinner {float: left;}
-.spinner {
+.ember-application .spinner {
   float: none;
 }
 
 // overriding foreman patternfly_and_overrides.scss .form-control {padding-right: 30px;}
-.form-control {
+.ember-application .form-control {
   padding-right: 6px;
 }
 
