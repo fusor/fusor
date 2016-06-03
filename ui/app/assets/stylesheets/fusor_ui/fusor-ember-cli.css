@@ -166,10 +166,10 @@
   display: none; }
 
 /* custom.scss */
-.spinner {
+.ember-application .spinner {
   float: none; }
 
-.form-control {
+.ember-application .form-control {
   padding-right: 6px; }
 
 #main {
