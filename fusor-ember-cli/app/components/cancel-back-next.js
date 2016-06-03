@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
-  classNames: ['row'],
+  classNames: ['row cancel-back-next-row'],
 
   actions: {
     openCancelDeploymentModal() {
