@@ -88,6 +88,7 @@ module Fusor
       # include concerns
       ::Hostgroup.send :include, Fusor::Concerns::HostgroupExtensions
       ::Host::Managed.send :include, Fusor::Concerns::HostOrchestrationBuildHook
+      ::Host::Managed.send :include, Fusor::Concerns::HostExtensions
       # The following line disabled CSRF and should only be uncommented in development environments
       # ::ActionController::Base.send :include, Fusor::Concerns::ApplicationControllerExtension
 

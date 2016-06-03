@@ -49,7 +49,7 @@ module Actions::Fusor::Deployment::Rhev
                                   hypervisor)
         assert_action_planed_with(@deploy,
                                   WaitUntilProvisioned,
-                                  hypervisor.id)
+                                  hypervisor.id, true)
       end
     end
 
