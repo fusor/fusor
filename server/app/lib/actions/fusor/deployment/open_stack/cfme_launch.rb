@@ -36,7 +36,7 @@ module Actions
             deployment.cfme_address = host.ip
             deployment.cfme_hostname = host.name
             deployment.save!
-            ::Fusor.log.debug '====== Leaving Launc Upload run method ======'
+            ::Fusor.log.debug '====== Leaving CFME Launch run method ======'
           end
 
           def cfme_launch_completed
