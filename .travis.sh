@@ -50,27 +50,14 @@ if [ $1 == "install" ]; then
 
   bundle install --retry 3 --without development mysql2 libvirt
 
-  # hacky, find a better way to do this...
-  # rails only supports loading fixtures from one directory, so link the
-  # katello / fusor fixtures in to forman so they all will be loaded
-  # Now with an even uglier workaround for katello and fusor both having a hosts.yml
-
-  pushd test
-  sed -i 's/relative_url_root/relative_url_root rescue nil/g' test_helper.rb
-  popd
-
-  cd test/fixtures
-  ln -s ../../../fusor/server/test/fixtures/* .
-  rm -f hosts.yml
-  ln -s ../../../katello/test/fixtures/models/* .
-  echo "" >> hosts.yml
-  cat ../../../fusor/server/test/fixtures/hosts.yml >> hosts.yml
-  cat ../../../fusor/server/test/fixtures/operatingsystems.yml >> operatingsystems.yml
+  # Execute some test prep workarounds so we can run our tests from within foreman
+  pwd
+  cd ../fusor
+  ./scripts/prepare-tests.sh
 
   ############################################################
   # Front-end deps install
   ############################################################
-  cd ../../../fusor
   source $HOME/.nvm/nvm.sh
   nvm install v4.4 && nvm use v4.4
   npm install -g bower
