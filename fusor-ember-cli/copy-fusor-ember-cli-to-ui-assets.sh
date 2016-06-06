@@ -40,9 +40,6 @@ then
     cp ./dist/assets/fusor-ember-cli.map     ../ui/app/assets/javascripts/fusor_ui/;
 fi
 
-cp ./dist/assets/r/vm-icon-16.png           ../ui/app/assets/images/r/;
-cp ./dist/assets/r/vm-icon-inverted-16.png  ../ui/app/assets/images/r/;
-
 cp ./dist/fonts/*.*  ../ui/public/fonts/;
 
 cp ./dist/QCI_Requirements.txt               ../ui/public/;
