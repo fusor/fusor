@@ -7,7 +7,6 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
   openstackDeployment: Ember.computed.alias("model"),
   savedInfo: [],
   introspectionTasks: [],
-  newIntrospectionTaskIds: [],
 
   hasNodes: Ember.computed('openstackDeployment.overcloud_node_count', function() {
     return this.get('openstackDeployment.overcloud_node_count') > 0;
@@ -37,30 +36,6 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
 
   showNodeErrors: Ember.computed('nodeErrors', function() {
     return Ember.isPresent(this.get('nodeErrors'));
-  }),
-
-  registrationErrors: Ember.computed(
-    'newIntrospectionTaskIds.[]',
-    'foremanTasks.@each.humanized_errors',
-    'introspectionTasks.[]',
-    'nodes.[]',
-    function () {
-      let newIntrospectionTaskIds = this.get('newIntrospectionTaskIds') || [];
-      let foremanTasks = this.get('foremanTasks') || [];
-      let registrationErrors = [];
-
-      newIntrospectionTaskIds.forEach((taskId) => {
-        let registrationError = this.getRegistrationError(taskId);
-        if (registrationError) {
-          registrationErrors.pushObject(registrationError);
-        }
-      });
-
-      return registrationErrors;
-    }),
-
-  showRegistrationErrors: Ember.computed('registrationErrors', function() {
-    return Ember.isPresent(this.get('registrationErrors'));
   }),
 
   enableRegisterNodesNext: Ember.computed('openstackDeployment.areNodesRegistered', function() {
@@ -111,6 +86,7 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
   deleteNodeRequest() {
     let url = `/fusor/api/openstack/deployments/${this.get('deployment.id')}/nodes/${this.get('nodeToDelete.id')}`;
 
+    this.send('resetError');
     return request({
       url: url,
       type: 'DELETE',
@@ -119,10 +95,10 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
         "Content-Type": "application/json",
         "X-CSRF-Token": Ember.$('meta[name="csrf-token"]').attr('content')
       }
-    }).then((result) => {
+    }).then(result => {
       this.removeNode(this.get('nodeToDelete'));
-    }, (error) => {
-      this.send('error', error, `Unable to delete node. DELETE ${url} failed with status code ${error.jqXHR.status}.`);
+    }).catch(error => {
+      this.send('error', error, `Unable to delete node. DELETE ${url}.`);
     });
   },
 
@@ -152,6 +128,7 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
     let nodeParam = this.createNodeHash(nodeDriverInfo, macAddress);
     let url = `/fusor/api/openstack/deployments/${this.get('deployment.id')}/nodes`;
 
+    this.send('resetError');
     return request({
       url: url,
       type: 'POST',
@@ -161,12 +138,11 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
         "X-CSRF-Token": Ember.$('meta[name="csrf-token"]').attr('content')
       },
       data: JSON.stringify({node: nodeParam})
-    }).then((result) => {
-      this.get('newIntrospectionTaskIds').pushObject(result.id);
+    }).then(result => {
       this.get('savedInfo').unshiftObject(nodeDriverInfo);
       this.send('restartPolling');
-    }, (error) => {
-      this.send('error', error, `Unable to register node. POST ${url} failed with status code ${error.jqXHR.status}.`);
+    }).catch(error => {
+      this.send('error', error, `Unable to register node. POST ${url}.`);
     });
   },
 
@@ -225,37 +201,6 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
     return Ember.Object.create({
       taskUrl: foremanTask ? foremanTask.get('taskUrl') : '',
       message: `${nodeLabel} from ${nodeManager.get('address')} ${foremanErrors} ${lastError}`
-    });
-  },
-
-  getRegistrationError(taskId) {
-    let foremanTasks = this.get('foremanTasks');
-    let foremanTask = foremanTasks ? foremanTasks.findBy('id', taskId) : null;
-    let foremanErrors = foremanTask ? foremanTask.get('humanized_errors') : '';
-
-    if (foremanTask && foremanTask.get('state') === 'running') {
-      return null;
-    }
-
-    if (Ember.isBlank(foremanErrors)) {
-      return null;
-    }
-
-    foremanErrors = this.formatForemanTaskError(foremanErrors);
-
-    let introspectionTasks = this.get('introspectionTasks');
-    let introspectionTask = introspectionTasks ? introspectionTasks.findBy('task_id', taskId) : null;
-    let macAddress = introspectionTask ? introspectionTask.get('mac_address') : '??';
-
-    let node = this.get('nodes').findBy('id', introspectionTask.get('node_uuid')); //we'll already show this under node errors.
-
-    if (node || Ember.isBlank(foremanErrors)) {
-      return null;
-    }
-
-    return Ember.Object.create({
-      taskUrl: foremanTask ? foremanTask.get('taskUrl') : '',
-      message: `Introspection task for ${macAddress} error: ${foremanErrors}`
     });
   },
 

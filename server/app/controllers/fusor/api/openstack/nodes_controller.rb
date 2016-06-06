@@ -27,33 +27,25 @@ module Fusor
 
         def create
           handle = undercloud_handle
-          node_uuids = handle.list_nodes.map { |i| i.uuid }
+
           begin
             node = handle.create_node_only(params[:node])
-          rescue Excon::Errors::Conflict => e
-            if e.response[:body] =~ /A port with MAC address .* already exists/
-              # We've registered this node already, This request caused
-              # a bad node to get created in the director. Delete it to
-              # clean up after ourselves if we can figure out which one it is
-              # and then re-throw the error.
-              current_node_uuids = handle.list_nodes.map { |i| i.uuid }
-              new_nodes = current_node_uuids - node_uuids
-              if new_nodes.length == 1
-                handle.delete_node(new_nodes.first)
-              end
-            end
-            raise e
+          rescue Excon::Errors::Conflict => undercloud_error
+            body = JSON.parse(undercloud_error.response.try(:body))
+            error_message = JSON.parse(body.try(:[], 'error_message'))
+            fault_string = error_message.try(:[], 'faultstring')
+            status = undercloud_error.response.try(:status)
+            raise undercloud_error unless fault_string && status
+
+            Rails.logger.error undercloud_error
+            return render json: {displayMessage: fault_string, errors: [fault_string]}, status: status
           end
 
           task = async_task(::Actions::Fusor::Host::IntrospectOpenStackNode, @deployment, node.uuid)
-          it = Fusor::IntrospectionTask.new
-          it.deployment = @deployment
-          it.task_id = task.id
-          it.node_uuid = node.uuid
-          it.mac_address = params[:node][:address]
-          it.task_id = task.id
-          @deployment.introspection_tasks.push(it)
-          @deployment.save(:validate => false)
+          Fusor::IntrospectionTask.create({deployment: @deployment,
+                                           task_id: task.id,
+                                           node_uuid: node.uuid,
+                                           mac_address: params[:node][:address]})
           respond_for_async :resource => task
         end
 

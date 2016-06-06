@@ -48,6 +48,19 @@ export default Ember.Route.extend(PollingPromise, {
     error(error, message) {
       console.log(error, message);
       this.set('controller.errorMsg', this.formatError(error, message));
+    },
+
+    resetError() {
+      this.set('controller.errorMsg', null);
+    },
+    
+    loadError(error, message) {
+      console.log(error, message);
+      this.set('controller.loadErrorMsg', this.formatError(error, message));
+    },
+
+    resetLoadError() {
+      this.set('controller.loadErrorMsg', null);
     }
   },
 
@@ -59,18 +72,18 @@ export default Ember.Route.extend(PollingPromise, {
     ]).then(() => {
       this.organizeNodes();
       this.loadForemanTasks();
+    }).then(() => {
+      this.send('resetLoadError');
+    }).catch(error => {
+      this.send('loadError', error, 'Error retrieving OpenStack node data.');
     });
   },
 
   loadNodes() {
     let controller = this.get('controller');
-    return this.store.query('node', {deployment_id: controller.get('deployment.id')}).then(
-      (result) => {
-        controller.set('nodes', result);
-      },
-      (error) => {
-        this.send('error', error, 'Error retrieving OpenStack nodes.');
-      });
+    return this.store.query('node', {deployment_id: controller.get('deployment.id')}).then(result => {
+      controller.set('nodes', result);
+    });
   },
 
   loadPorts() {
@@ -88,23 +101,17 @@ export default Ember.Route.extend(PollingPromise, {
         "X-CSRF-Token": token
       },
       data: {}
-    }).then((result) => {
+    }).then(result => {
       controller.set('ports', result.ports);
-    }, (error) => {
-      this.send('error', error, `Unable to load node ports. GET "${url}" failed with status code ${error.jqXHR.status}.`);
     });
   },
 
   loadIntrospectionTasks() {
     let controller = this.get('controller');
     let deploymentId = this.get('controller.deployment.id');
-    return this.store.findRecord('deployment', deploymentId, {reload: true}).then(
-      (deployment) => {
-        controller.set('introspectionTasks', deployment.get('introspection_tasks'));
-      },
-      (error) => {
-        this.send('error', error, 'ERROR retrieving deployment introspection tasks.');
-      });
+    return this.store.findRecord('deployment', deploymentId, {reload: true}).then(deployment => {
+      controller.set('introspectionTasks', deployment.get('introspection_tasks'));
+    });
   },
 
   organizeNodes() {
@@ -146,7 +153,6 @@ export default Ember.Route.extend(PollingPromise, {
   loadForemanTasks() {
     let taskPromises = [];
     let introspectionTasks = this.get('controller.introspectionTasks') || [];
-    let newIntrospectionTaskIds = this.get('controller.newIntrospectionTaskIds') || [];
     let nodes = this.get('controller.nodes') || [];
 
     introspectionTasks.forEach((introspectionTask) => {
@@ -155,9 +161,7 @@ export default Ember.Route.extend(PollingPromise, {
       let node = nodes.findBy('id', introspectionTask.get('node_uuid'));
       let nodeNotReady = node && !node.get('ready');
 
-      let isNewIntrospectionTask = !!newIntrospectionTaskIds.contains(introspectionTask.get('task_id'));
-
-      if (foremanTaskId && (nodeNotReady || isNewIntrospectionTask)) {
+      if (foremanTaskId && nodeNotReady) {
         taskPromises.push(this.store.findRecord('foreman-task', foremanTaskId, {reload: true}));
       }
     });
@@ -186,6 +190,13 @@ export default Ember.Route.extend(PollingPromise, {
         });
       }
       break;
+    case 'object':
+      if (error.jqXHR) {
+        let status = error.jqXHR.status;
+        let statusText = error.jqXHR.statusText;
+        let msg = error.jqXHR.responseJSON ? error.jqXHR.responseJSON.displayMessage : '';
+        errorMessage = `${status} ${statusText}: ${msg}`;
+      }
     }
 
     return message ? message + ' ' + errorMessage : errorMessage;
