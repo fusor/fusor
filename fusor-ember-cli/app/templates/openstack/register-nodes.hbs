@@ -4,6 +4,16 @@
     Loading OSP Nodes
   </span>
 {{else}}
+  {{#if loadErrorMsg}}
+    <div class="row register-nodes-errors">
+      <div class="col-md-9 col-lg-6">
+        <div class="alert alert-danger rhci-alert">
+          <i class="fa fa-2x fa-exclamation-triangle errorForValidation validation-alert-icon"></i>
+          <p class="validation-alert-message">{{loadErrorMsg}}</p>
+        </div>
+      </div>
+    </div>
+  {{/if}}
 
   {{#if errorMsg}}
     <div class="row register-nodes-errors">
@@ -11,22 +21,6 @@
         <div class="alert alert-danger rhci-alert">
           <i class="fa fa-2x fa-exclamation-triangle errorForValidation validation-alert-icon"></i>
           <p class="validation-alert-message">{{errorMsg}}</p>
-        </div>
-      </div>
-    </div>
-  {{/if}}
-
-  {{#if showRegistrationErrors}}
-    <div class="row register-nodes-errors">
-      <div class="col-md-9 col-lg-6">
-        <div class="alert alert-danger rhci-alert">
-          <i class="fa fa-2x fa-exclamation-triangle errorForValidation validation-alert-icon"></i>
-          <p class="validation-alert-message">There were errors encountered while trying to register nodes:</p>
-          <ul class="validation-alert-message">
-            {{#each registrationErrors as |registrationError|}}
-              <li><a href="{{registrationError.taskUrl}}" target="_blank" class="foreman-task-error-link">{{registrationError.message}}</a></li>
-            {{/each}}
-          </ul>
         </div>
       </div>
     </div>
