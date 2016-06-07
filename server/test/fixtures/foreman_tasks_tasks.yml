@@ -1,0 +1,22 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+failed_manage_manifest:
+  id: ff3e6f05-c541-4981-907d-1d01b78b749f
+  type: ForemanTasks::Task::DynflowTask
+  label: Actions::Fusor::Subscription::ManageManifest
+  state: paused
+  result: error
+
+successful_manage_manifest:
+  id: 3f486234-d6e2-45a2-8403-e1920ba9cefa
+  type: ForemanTasks::Task::DynflowTask
+  label: Actions::Fusor::Subscription::ManageManifest
+  state: stopped
+  result: success
+
+running_deployment_task:
+  id: 9fd51c32-28f7-4379-b42e-362f6b2f4982
+  type: ForemanTasks::Task::DynflowTask
+  label: Actions::Fusor::Deploy
+  state: running
+  result: pending

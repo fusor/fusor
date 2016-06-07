@@ -78,7 +78,10 @@ module Fusor
         @deployment.foreman_task_uuid = task.id
         @deployment.save
       end
-      respond_for_async :resource => task
+
+      raise "ManageManifest task failed" unless task # Handled by v21
+
+      respond_for_show :resource => @deployment
     end
 
     private
