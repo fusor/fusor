@@ -26,10 +26,10 @@ const OvercloudController = Ember.Controller.extend(DeploymentControllerMixin, N
   }),
 
   nextStepRouteNameOvercloud: Ember.computed('isCloudForms', function() {
-    if (this.get('isCloudForms')) {
-      return 'cloudforms';
-    } else if (this.get('isOpenShift')) {
+    if (this.get('isOpenShift')) {
       return 'openshift';
+    } else if (this.get('isCloudForms')) {
+      return 'cloudforms';
     } else {
       return 'subscriptions';
     }
