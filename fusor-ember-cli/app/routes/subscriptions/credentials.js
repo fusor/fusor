@@ -3,19 +3,23 @@ import request from 'ic-ajax';
 
 export default Ember.Route.extend({
 
-  beforeModel() {
+  model() {
     // Verify isAuthenticated: true is accurate, since Satellite session may have changed
-    const model =  this.modelFor('subscriptions').sessionPortal;
-    if(model.get('isAuthenticated')) {
-      const urlVerify =
-        `/customer_portal/users/${model.get('identification')}/owners`;
+    const sessionPortal =  this.modelFor('subscriptions').sessionPortal;
+    const cachedIsAuthenticated = sessionPortal.get('isAuthenticated');
 
-      const NOOP = Function.prototype;
-      return Ember.$.getJSON(urlVerify)
-        .then(NOOP, () => {
-          model.set('isAuthenticated', false);
-          return model.save();
+    if (cachedIsAuthenticated) {
+      return this.confirmAuthenticated(sessionPortal)
+        .then((isAuthenticated) => {
+          if(isAuthenticated) {
+            return sessionPortal;
+          } else {
+            sessionPortal.set('isAuthenticated', false);
+            return sessionPortal.save();
+          }
         });
+    } else {
+      return Ember.RSVP.resolve(sessionPortal);
     }
   },
 
@@ -25,7 +29,7 @@ export default Ember.Route.extend({
   },
 
   deactivate() {
-    return this.send('saveDeployment', null);
+    this.send('saveDeployment', null);
   },
 
   actions: {
@@ -57,10 +61,9 @@ export default Ember.Route.extend({
         //show always be {} empty successful 200 response
         self.send('saveCredentials');
       }, function(error) {
-        console.log('error on loginPortal');
         controller.set('nextButtonTitle', "Next");
         controller.set('disableCredentialsNext', false);
-        return self.send('error');
+        self.send('error');
       });
     },
 
@@ -89,8 +92,7 @@ export default Ember.Route.extend({
 
           sessionPortal.save();
         }, function(error) {
-          console.log('error on loginPortal');
-          return self.send('error');
+          self.send('error');
         });
       });
 
@@ -107,19 +109,16 @@ export default Ember.Route.extend({
         sessionPortal = self.store.createRecord('session-portal', {identification: identification});
       }
       sessionPortal.save().then(function(result) {
-        console.log('saved session-portal');
         controller.set('showErrorMessage',false);
-        return self.send('authenticatePortal');
+        self.send('authenticatePortal');
       }, function(response) {
-        console.log('error saving session-portal');
         controller.set('nextButtonTitle', "Next");
         controller.set('disableCredentialsNext', false);
-        return self.send('error');
+        self.send('error');
       });
     },
 
     authenticatePortal() {
-
       var controller = this.controllerFor('subscriptions/credentials');
       var identification = controller.get('model.identification');
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
@@ -137,22 +136,18 @@ export default Ember.Route.extend({
           }
         }).then(function(response) {
           var ownerKey = response[0]['key'];
-          console.log('owner key is ' + ownerKey);
           var sessionPortal = self.modelFor('subscriptions').sessionPortal;
           sessionPortal.set('ownerKey', ownerKey);
           sessionPortal.set('isAuthenticated', true);
           sessionPortal.save().then(function(result) {
-            console.log('saved ownerKey in session-portal');
             controller.set('nextButtonTitle', "Next");
             controller.set('disableCredentialsNext', false);
-            return self.transitionTo('subscriptions.management-application');
+            self.transitionTo('subscriptions.management-application');
           }, function(response) {
             controller.set('nextButtonTitle', "Next");
             controller.set('disableCredentialsNext', false);
-            console.log('error saving ownerKey session-portal');
           });
         }, function(response) {
-          console.log('error on authenticatePortal');
           controller.set('nextButtonTitle', "Next");
           controller.set('disableCredentialsNext', false);
           controller.setProperties({
@@ -164,7 +159,17 @@ export default Ember.Route.extend({
     },
 
     redirectToManagementApplication() {
-      return this.transitionTo('subscriptions.management-application');
+      this.transitionTo('subscriptions.management-application');
     }
+  },
+
+  confirmAuthenticated(sessionPortal) {
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      const urlVerify =
+        `/customer_portal/users/${sessionPortal.get('identification')}/owners`;
+
+      Ember.$.getJSON(urlVerify).then(
+        () => resolve(true), () => resolve(false));
+    });
   }
 });
