@@ -558,10 +558,7 @@ table.fusor-table {
 .rhev-select-all {
   padding: 0px 20px; }
 
-.img-responsive.host-type-icon {
-  margin-top: 3px; }
-
-.pficon.pficon-screen.host-type-icon {
+.host-type-icon {
   font-size: 16px;
   margin-top: 3px; }
 
@@ -839,6 +836,9 @@ span.hanging-indent {
 
 .cfme-config-padding {
   padding-bottom: 16px; }
+
+.cancel-back-next-row {
+  margin-top: 67px; }
 
 .cancel-back-next {
   position: fixed;
