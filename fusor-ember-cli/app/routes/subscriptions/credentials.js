@@ -164,6 +164,10 @@ export default Ember.Route.extend({
   },
 
   confirmAuthenticated(sessionPortal) {
+    // If we've previously authenticated, we should find `isAuthenticated`
+    // to be true on the session portal that was saved to local storage on
+    // a previous login success. This method is called to confirm that our
+    // session is still valid, and if not, sets the local storage value to false
     return new Ember.RSVP.Promise((resolve, reject) => {
       const urlVerify =
         `/customer_portal/users/${sessionPortal.get('identification')}/owners`;
