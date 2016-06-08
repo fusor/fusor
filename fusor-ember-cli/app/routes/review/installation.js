@@ -28,12 +28,16 @@ export default Ember.Route.extend(NeedsExistingManifestHelpers, {
     const reviewModel = this.modelFor('review');
     const subModel = this.modelFor('subscriptions');
     let modelHash = {reviewModel};
+
     if(subModel) {
       // Use subscriptions model if the loading has already been done
       modelHash.useExistingManifest = subModel.useExistingManifest;
-      if(subModel.subscriptions) {
+      if(modelHash.useExistingManifest) {
         modelHash.subscriptions = subModel.subscriptions;
       }
+
+      // Does not need to be wrapped in an RSVP hash since the values have
+      // already been resolved by the subscriptions route
       return modelHash;
     } else {
       // subscriptions model isn't available, maybe because of a page refresh

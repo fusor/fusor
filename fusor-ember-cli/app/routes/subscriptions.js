@@ -4,21 +4,24 @@ import NeedsExistingManifestHelpers from '../mixins/needs-existing-manifest-help
 export default Ember.Route.extend(NeedsExistingManifestHelpers, {
 
   model() {
-    const sessionPortal = this.store.findAll('session-portal').then(results => {
-      if (Ember.isBlank(results)) {
-        return this.store.createRecord('session-portal');
-      } else {
-        return results.get('firstObject');
-      }
-    });
+    return this.shouldUseExistingManifest()
+      .then(useExistingManifest => {
+        const modelHash = {useExistingManifest};
 
-    return this.shouldUseExistingManifest().then(useExistingManifest => {
-      const modelHash = {sessionPortal, useExistingManifest};
-      if(useExistingManifest) {
-        modelHash.subscriptions = this.loadSubscriptions();
-      }
-      return Ember.RSVP.hash(modelHash);
-    });
+        modelHash.sessionPortal = this.store.findAll('session-portal').then(results => {
+          if (Ember.isBlank(results)) {
+            return this.store.createRecord('session-portal');
+          } else {
+            return results.get('firstObject');
+          }
+        });
+
+        if(useExistingManifest){
+          modelHash.subscriptions = this.loadSubscriptions();
+        }
+
+        return Ember.RSVP.hash(modelHash);
+      });
   },
 
   setupController(controller, model) {
