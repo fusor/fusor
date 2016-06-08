@@ -23,9 +23,14 @@ module Actions
         # the WaitUntilProvisioned because it's not a polling action.
         middleware.use Actions::Fusor::Middleware::Timeout
 
-        def plan(hostid)
+        def plan(hostid, wait_for_puppet = false)
           super()
-          plan_self host_id: hostid
+          sequence do
+            plan_self(host_id: hostid)
+            if wait_for_puppet
+              plan_action(::Actions::Fusor::Host::WaitForPuppet, hostid)
+            end
+          end
         end
 
         def run(event = nil)

@@ -6,8 +6,16 @@ module Actions::Fusor::Deployment::Rhev
     WaitUntilProvisioned = ::Actions::Fusor::Host::WaitUntilProvisioned
     CreateEngineHostRecord = ::Actions::Fusor::Deployment::Rhev::CreateEngineHostRecord
 
+    class ID
+      def id
+        return 1
+      end
+    end
+
     def setup
       @deploy = create_action ::Actions::Fusor::Deployment::Rhev::Deploy
+      ::Puppetclass.stubs(:where).returns([ID.new])
+      ::Puppetclass.stubs(:find).returns(ID.new)
     end
 
     test "plan call should schedule provision and wait actions for each host for hypervisor + engine" do
@@ -41,15 +49,34 @@ module Actions::Fusor::Deployment::Rhev
                                 @deployment,
                                 'RHEV-Self-hosted')
 
-      for hypervisor in @deployment.rhev_hypervisor_hosts
+      first_host = @deployment.rhev_hypervisor_hosts[0]
+      additional_hosts = @deployment.rhev_hypervisor_hosts[1..-1]
+      puppetclass_id = 1
+
+      assert_action_planed_with(@deploy,
+                                  TriggerProvisioning,
+                                @deployment,
+                                'RHEV-Self-hosted',
+                                first_host)
+      assert_action_planed_with(@deploy,
+                                WaitUntilProvisioned,
+                                first_host.id, true)
+
+      additional_hosts.each_with_index do |hypervisor, index|
+        override = {
+          puppetclass_id => {
+            :additional_host => true,
+            :host_id => index + 2
+          }
+        }
         assert_action_planed_with(@deploy,
                                   TriggerProvisioning,
                                   @deployment,
                                   'RHEV-Self-hosted',
-                                  hypervisor)
+                                  hypervisor, override)
         assert_action_planed_with(@deploy,
                                   WaitUntilProvisioned,
-                                  hypervisor.id)
+                                  hypervisor.id, true)
       end
     end
 

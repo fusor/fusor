@@ -18,9 +18,9 @@ module Actions
           _("Trigger Provisoning of Host")
         end
 
-        def plan(deployment, hostgroup_name, host)
+        def plan(deployment, hostgroup_name, host, puppet_overrides = nil)
           super(deployment)
-          plan_self(deployment_id: deployment.id, hostgroup_name: hostgroup_name, host_id: host.id)
+          plan_self(deployment_id: deployment.id, hostgroup_name: hostgroup_name, host_id: host.id, puppet_overrides: puppet_overrides)
         end
 
         def run
@@ -34,8 +34,23 @@ module Actions
           host = assign_host_to_hostgroup(host, hostgroup)
 
           ::Fusor.log.debug "assign_host_to_hostgroup returned id: #{host.id} type: #{host.type}"
+          unless input[:puppet_overrides].nil?
+            ::Fusor.log.debug "applying host specific puppet overrides"
+            apply_puppet_overrides(host, input[:puppet_overrides])
+          end
 
           ::Fusor.log.debug "========================= TriggerProvisioning.run EXIT ========================="
+        end
+
+        def apply_puppet_overrides(host, puppet_overrides)
+          # Puppet overrides should be in the form:
+          # { puppetclass_id => { key => value }, puppetclass2_id => { key2 => value2}}
+          puppet_overrides.each do |puppetclass_id, overrides|
+            puppetclass = Puppetclass.find puppetclass_id
+            overrides.each do |key, value|
+              host.set_param_value_if_changed(puppetclass, key, value)
+            end
+          end
         end
 
         #
