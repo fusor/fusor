@@ -14,7 +14,7 @@ export default Ember.Route.extend({
     },
 
     willTransition() {
-      this.controllerFor('deployment').set('isBackToDeployments', true);
+      this.controllerFor('deployment').set('backRouteNameOnSatIndex', 'deployments');
     }
   }
 

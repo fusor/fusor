@@ -15,7 +15,7 @@ export default Ember.Controller.extend(NeedsDeploymentNewMixin, ValidatesDeploym
   idSatName: 'deployment_new_sat_name',
   idSatDesc: 'deployment_new_sat_desc',
 
-  backRouteNameOnSatIndex: 'deployment-new.start',
+  backRouteNameOnSatIndex: Ember.computed.alias("deploymentNewController.backRouteNameOnSatIndex"),
 
   isRhev: Ember.computed.alias('deploymentNewController.isRhev'),
   isOpenStack: Ember.computed.alias("deploymentNewController.isOpenStack"),
