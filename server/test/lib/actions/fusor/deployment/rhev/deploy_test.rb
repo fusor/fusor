@@ -7,7 +7,7 @@ module Actions::Fusor::Deployment::Rhev
     CreateEngineHostRecord = ::Actions::Fusor::Deployment::Rhev::CreateEngineHostRecord
 
     def setup
-      @deploy = create_action Deploy
+      @deploy = create_action ::Actions::Fusor::Deployment::Rhev::Deploy
     end
 
     test "plan call should schedule provision and wait actions for each host for hypervisor + engine" do

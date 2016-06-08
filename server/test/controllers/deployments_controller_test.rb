@@ -58,11 +58,23 @@ module Fusor
       assert_nil Deployment.find_by_name @deployment.name
     end
 
-    test "deploy request should successfully deploy deployment" do
-      skip # this one does not work yet, investigate why "undefined method `owner_details' for nil:NilClass"
-      response = JSON.parse(put(:deploy, :id => @deployment.id).body)
+    test "deploy endpoint should set deployment object uuid if request is successful" do
+      successful_manage_manifest_id  = foreman_tasks_tasks(:successful_manage_manifest).id
+      running_deployment_task_id = foreman_tasks_tasks(:running_deployment_task).id
+
+      Fusor::Api::V2::DeploymentsController.any_instance.stubs(:sync_task).returns(
+        ::ForemanTasks::Task.find(successful_manage_manifest_id))
+
+      Fusor::Api::V2::DeploymentsController.any_instance.stubs(:async_task).returns(
+        ::ForemanTasks::Task.find(running_deployment_task_id))
+
+      Fusor::Validators::DeploymentValidator.any_instance.stubs(:validate_nfs_share)
+
+      assert_nil @deployment.foreman_task_uuid
+      put(:deploy, :id => @deployment.id)
       assert_response :success
-      assert_equal "Actions::Fusor::Deploy", response['label'], "The deploy request did not return the expected task"
+      @deployment.reload
+      assert_equal @deployment.foreman_task_uuid, running_deployment_task_id
     end
 
     context 'log' do
