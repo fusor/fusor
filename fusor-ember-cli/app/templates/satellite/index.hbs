@@ -2,12 +2,12 @@
   <div class='col-md-9'>
     <form class="form-horizontal" role="form">
 
-      {{text-f label="Name" value=model.name inputSize='col-sm-7 col-md-6 col-lg-5' errors=errors cssId=idSatName
+      {{text-f label="Name" value=model.name errors=errors cssId=idSatName
                isRequired=true disabled=isStarted validator=deploymentNameValidator}}
 
-      {{textarea-f label="Description (Optional)" value=model.description inputSize='col-sm-7 col-md-6 col-lg-5' cssId=idSatDesc disabled=isStarted }}
+      {{textarea-f label="Description (Optional)" value=model.description cssId=idSatDesc disabled=isStarted }}
 
-      {{#base-f label="Universal Password" inputSize='col-sm-7 col-md-6 col-lg-5'}}
+      {{#base-f label="Universal Password"}}
         <p>
           Optionally enter a password that the installer will use to pre-populate values for:<br />
           <ul class='common-password'>

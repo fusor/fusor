@@ -18,17 +18,17 @@
 
       <div class="{{inputClassSize}}">
         {{yield}}
+
+        {{#if showUnits}}
+          <div class="{{unitsClassSize}}">
+            {{unitsLabel}}
+          </div>
+        {{/if}}
+
+        <span class='help-block'>
+          {{help-inline}}
+        </span>
       </div>
-
-      {{#if showUnits}}
-         <div class="{{unitsClassSize}}">
-           {{unitsLabel}}
-         </div>
-      {{/if}}
-
-      <span class='help-block'>
-       {{help-inline}}
-      </span>
 
    </div>
 </div>
