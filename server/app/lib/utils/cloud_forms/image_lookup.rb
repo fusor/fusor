@@ -27,8 +27,9 @@ module Utils
           image_path = image_file[:metadata][:_storage_path]
         else
           images = images.find_all { |image| image[:metadata][:name].starts_with?(image_prefix) }
-          image_name = images.compact.sort_by { |k| k[:name] }.last[:metadata][:name]
-          image_path = images.compact.sort_by { |k| k[:name] }.last[:metadata][:_storage_path]
+          last_image = images.compact.sort_by { |k| k[:metadata][:name] }.last
+          image_name = last_image[:metadata][:name]
+          image_path = last_image[:metadata][:_storage_path]
         end
 
         return image_path, image_name
