@@ -30,7 +30,7 @@ module Actions
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             opts = parse_deployment(deployment)
             ::Fusor.log.info "Setting ansible log path to - #{::Fusor.log_file_dir(deployment.label, deployment.id)}"
-            launcher = OSEInstaller::Launch.new("#{Rails.root}/tmp/#{deployment.name}", ::Fusor.log_file_dir(deployment.label, deployment.id), ::Fusor.log)
+            launcher = OSEInstaller::Launch.new("#{Rails.root}/tmp/#{deployment.label}", ::Fusor.log_file_dir(deployment.label, deployment.id), ::Fusor.log)
             inventory = launcher.prepare(opts)
             exit_code = launcher.setup(inventory, true)
             if exit_code > 0
