@@ -17,7 +17,7 @@ require "uri"
 module Fusor
   class Api::V21::DeploymentsController < Api::V2::DeploymentsController
 
-    before_filter :find_deployment, :only => [:destroy, :show, :update,
+    before_filter :find_deployment, :only => [:destroy, :show, :update, :check_mount_point,
                                               :deploy, :redeploy, :validate, :log, :openshift_disk_space]
 
     rescue_from Encoding::UndefinedConversionError, :with => :ignore_it
@@ -115,6 +115,28 @@ module Fusor
         else
           raise 'cdn_url parameter missing'
         end
+      rescue => error
+        message = 'Malformed request'
+        message = error.message if error.respond_to?(:message)
+        render json: { :error => message }, status: 400
+      end
+    end
+
+    def check_mount_point
+      begin
+        mount_address = params['address']
+        mount_path = params['path']
+        mount_type = params['type']
+
+        deployment_id = @deployment.id
+
+        cmd = "sudo safe-mount.sh '#{deployment_id}' '#{mount_address}' '#{mount_path}'"
+        status, _output = Utils::Fusor::CommandUtils.run_command(cmd)
+
+        raise 'Unable to mount NFS share at specified mount point' unless status == 0
+
+        Utils::Fusor::CommandUtils.run_command("sudo safe-umount.sh #{deployment_id}")
+        render json: { :mounted => true }, status: 200
       rescue => error
         message = 'Malformed request'
         message = error.message if error.respond_to?(:message)

@@ -1,12 +1,64 @@
 import Ember from 'ember';
+import request from 'ic-ajax';
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 import { AllValidator, PresenceValidator, AlphaNumericDashUnderscoreValidator, HostnameValidator } from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
+  actions: {
+    testMountPoint() {
+      let checkExport = this.get('isCloudForms');
+      this.storageMountRequest(this.get('model.rhev_share_path'), this.get('model.rhev_storage_address'), this.get('model.rhev_storage_type')).then(result => {
+        this.set('errorMsg', null);
+        if (!checkExport) {
+          this.transitionTo(this.get('step3RouteName'));
+        }
+        this.set('showLoadingSpinner', false);
+      }).catch(error => {
+        this.set('errorMsg', "Error mounting data domain, please make sure it is a valid mount point");
+      }).then(response => {
+        if (checkExport && this.get('errorMsg') == null) {
+          this.storageMountRequest(this.get('model.rhev_export_domain_path'), this.get('model.rhev_export_domain_address'), this.get('model.rhev_storage_type')).then(result => {
+            this.set('errorMsg', null);
+            this.transitionTo(this.get('step3RouteName'));
+            this.set('showLoadingSpinner', false);
+          }).catch(error => {
+            this.set('errorMsg', "Error mounting export domain, please make sure it is a valid mount point");
+          });
+        }
+      });
+    }
+  },
 
+  storageMountRequest(path, address, type) {
+    let deploymentId = this.get('deploymentId');
+    this.set('loadingSpinnerText', `Trying to mount storage paths...`);
+    this.set('showLoadingSpinner', true);
+    return request({
+      url: `/fusor/api/v21/deployments/${deploymentId}/check_mount_point`,
+      type: 'GET',
+      data: {
+        path: path,
+        address: address,
+        type: type
+      },
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': Ember.$('meta[name="csrf-token"]').attr('content')
+      }
+    }).then(response => {
+      if(!response.mounted) {
+        throw 'There was an issue mounting the share... check the logs for errors';
+      }
+    });
+  },
+
+
+  deploymentId: Ember.computed.alias('deploymentController.model.id'),
   step3RouteName: Ember.computed.alias("deploymentController.step3RouteName"),
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
   rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
+  errorMsg: null,
 
   hasEndingSlashInSharePath: Ember.computed('deploymentController.model.rhev_share_path', function() {
     if (Ember.isPresent(this.get('deploymentController.model.rhev_share_path'))) {
