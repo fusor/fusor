@@ -55,10 +55,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return (this.get('model.openshift_storage_type') === 'NFS');
   }),
 
-  isDoNotUse: Ember.computed('model.openshift_storage_type', function() {
-    return (this.get('model.openshift_storage_type') === 'DoNotUse');
-  }),
-
   isGluster: Ember.computed('model.openshift_storage_type', function() {
     return (this.get('model.openshift_storage_type') === 'GFS');
   }),

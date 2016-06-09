@@ -18,61 +18,50 @@
         Gluster
       </span>
     {{/radio-button}}
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    {{#radio-button value="DoNotUse" groupValue=model.openshift_storage_type id='do_not_use' disabled=true}}
-      <span class="disabled">
-        Do not use
-      </span>
-    {{/radio-button}}
   {{/base-f}}
 
-  {{#unless isDoNotUse}}
+  {{text-f label="Name"
+    value=model.openshift_storage_name isRequired=true
+    cssId='openshift_storage_name' disabled=isStarted
+    validator=storageNameValidator
+  }}
 
-    {{text-f label="Name"
-      value=model.openshift_storage_name isRequired=true
-      cssId='openshift_storage_name' disabled=isStarted
-      validator=storageNameValidator
-    }}
+  {{text-f label="Host"
+    value=model.openshift_storage_host
+    isRequired=true cssId='openshift_storage_host'
+    disabled=isStarted
+    validator=storageHostValidator
+  }}
 
-    {{text-f label="Host"
-      value=model.openshift_storage_host
-      isRequired=true cssId='openshift_storage_host'
-      disabled=isStarted
-      validator=storageHostValidator
-    }}
+  {{text-f label="Export Path"
+    value=model.openshift_export_path
+    isRequired=true cssId='openshift_export_path'
+    disabled=isStarted
+    validator=exportPathValidator
+  }}
 
-    {{text-f label="Export Path"
-      value=model.openshift_export_path
-      isRequired=true cssId='openshift_export_path'
-      disabled=isStarted
-      validator=exportPathValidator
-    }}
+  <br />
 
-    <br />
+  <p>
+    Set the user account that will be created and used to configure all nodes.
+  </p>
 
-    <p>
-      Set the user account that will be created and used to configure all nodes.
-    </p>
+  {{text-f label="Username" value=model.openshift_username
+    isRequired=true cssId='openshift_username' disabled=isStarted
+    validator=usernameValidator
+  }}
 
-    {{text-f label="Username" value=model.openshift_username
-      isRequired=true cssId='openshift_username' disabled=isStarted
-      validator=usernameValidator
-    }}
+  {{text-f label="Password" type="password"
+    value=userpassword cssId="openshift_password" isRequired=true
+    placeholder="Must be 8 or more characters"
+    validator=passwordValidator
+  }}
 
-    {{text-f label="Password" type="password"
-      value=userpassword cssId="openshift_password" isRequired=true
-      placeholder="Must be 8 or more characters"
-      validator=passwordValidator
-    }}
-
-    {{text-f label="Confirm Password" type="password"
-      value=confirmUserPassword cssId="confirm_openshift_password" isRequired=true
-      placeholder="Must match user password"
-      validator=confirmUserPasswordValidator
-    }}
-  {{else}}
-    {{!-- TODO: Implement DONOTUSE (probably doesn't need anything?) --}}
-  {{/unless}}
+  {{text-f label="Confirm Password" type="password"
+    value=confirmUserPassword cssId="confirm_openshift_password" isRequired=true
+    placeholder="Must match user password"
+    validator=confirmUserPasswordValidator
+  }}
 
   <br />
   <p>
