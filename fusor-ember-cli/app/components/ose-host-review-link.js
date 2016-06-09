@@ -11,9 +11,6 @@ export default Ember.Component.extend({
   linkValue: Ember.computed('oseHost', function() {
     return `https://${this.get('oseHost.name')}:8443`;
   }),
-  linkIp: Ember.computed('oseHost', function() {
-    return `https://${this.get('oseHost.ip')}:8443`;
-  }),
   isWorkerNode: Ember.computed('_infoObj', function() {
     const info = this.get('_infoObj');
     return info.get('labelPrefix') === 'Node';
