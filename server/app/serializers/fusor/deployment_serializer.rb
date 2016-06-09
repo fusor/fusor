@@ -38,7 +38,6 @@ module Fusor
                :openshift_number_master_nodes,
                :openshift_number_worker_nodes,
                :openshift_storage_type,
-               :openshift_storage_name,
                :openshift_storage_host,
                :openshift_export_path,
                :openshift_username,

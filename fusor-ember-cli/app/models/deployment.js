@@ -83,7 +83,6 @@ export default DS.Model.extend({
   openshift_available_ram: DS.attr('number'),
   openshift_available_disk: DS.attr('number'),
   openshift_storage_type: DS.attr('string'),
-  openshift_storage_name: DS.attr('string'),
   openshift_storage_host: DS.attr('string'),
   openshift_export_path: DS.attr('string'),
   openshift_subdomain_name: DS.attr('string'),

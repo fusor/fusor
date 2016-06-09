@@ -20,12 +20,6 @@
     {{/radio-button}}
   {{/base-f}}
 
-  {{text-f label="Name"
-    value=model.openshift_storage_name isRequired=true
-    cssId='openshift_storage_name' disabled=isStarted
-    validator=storageNameValidator
-  }}
-
   {{text-f label="Host"
     value=model.openshift_storage_host
     isRequired=true cssId='openshift_storage_host'
