@@ -3,12 +3,14 @@ import Ember from 'ember';
 export default Ember.Component.extend({
 
   didInsertElement() {
-    return Ember.$('[data-toggle="popover"]').popover({html: false,
-                                                       trigger: 'focus hover',
-                                                       title: this.get('label'),
-                                                       placement: 'right',
-                                                       content: this.get('helpText')
-                                                      });
+    const $component = this.$();
+    return $component.find('[data-toggle="popover"]').popover({
+      html: false,
+      trigger: 'focus hover',
+      title: this.get('label'),
+      placement: 'right',
+      content: this.get('helpText')
+    });
   },
 
   willDestroyElement() {

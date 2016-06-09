@@ -58,13 +58,28 @@
   }}
 
   <br />
+
   <p>
     Set subdomain name for a wildcard entry to point to the OpenShift router.
   </p>
+
   {{text-f label="Subdomain"
   value=model.openshift_subdomain_name isRequired=true cssId='openshift_subdomain_name'
   disabled=isStarted validator=subdomainValidator
   preText="*." postText=postTextDomainName}}
+
+  <br />
+
+  <p>
+    Select OpenShift sample applications
+  </p>
+
+  <div class="ose-sample-apps">
+    {{check-f label='Hello World'
+      checked=model.openshift_sample_helloworld
+      isRequired=false
+      helpText='A Hello World sample HTML application'}}
+  </div>
 
 </form>
 
