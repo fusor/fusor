@@ -34,7 +34,6 @@ export default Mirage.Factory.extend({
   upstream_consumer_uuid: "7ffddefd-aacb-4192-a999-01beb7c2e473",
   upstream_consumer_name: "tsanders-rhci",
   openshift_storage_type: "NFS",
-  openshift_storage_name: "openshift-storage",
   openshift_export_path: "/share/openshift/path",
   cloudforms_vcpu: 4,
   cloudforms_ram: 6,

@@ -112,14 +112,12 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     'exportPathValidator',
     'usernameValidator',
     'subdomainValidator',
-    'model.openshift_storage_name',
     'model.openshift_storage_host',
     'model.openshift_export_path',
     'model.openshift_username',
     'model.openshift_subdomain_name',
     function() {
       return validateZipper([
-        [this.get('storageNameValidator'), this.get('model.openshift_storage_name')],
         [this.get('storageHostValidator'), this.get('model.openshift_storage_host')],
         [this.get('exportPathValidator'), this.get('model.openshift_export_path')],
         [this.get('usernameValidator'), this.get('model.openshift_username')],

@@ -188,7 +188,7 @@ module Fusor
                                          :openshift_root_password, :openshift_master_vcpu, :openshift_master_ram,
                                          :openshift_master_disk, :openshift_node_vcpu, :openshift_node_ram, :openshift_node_disk,
                                          :openshift_available_vcpu, :openshift_available_ram, :openshift_available_disk,
-                                         :openshift_storage_type, :openshift_storage_name, :openshift_storage_host,
+                                         :openshift_storage_type, :openshift_storage_host,
                                          :openshift_export_path, :openshift_subdomain_name, :cloudforms_vcpu,
                                          :cloudforms_ram, :cloudforms_vm_disk_size, :cloudforms_db_disk_size,
                                          :cdn_url, :manifest_file, :created_at, :updated_at, :rhev_engine_host_id,
