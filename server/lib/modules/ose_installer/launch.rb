@@ -21,12 +21,15 @@ module OSEInstaller
   class Launch
     attr_accessor :output_dir, :logger
 
-    def initialize(output_dir = nil, logger = nil)
+    def initialize(output_dir = nil, log_dir = nil, logger = nil)
       @output_dir = output_dir
       @output_dir ||= "/tmp/"
 
+      @log_dir = log_dir
+      @log_dir ||= "/tmp/"
+
       @logger = logger
-      @logger ||= Logger.new("#{@output_dir}/ose_installer.log", File::WRONLY | File::APPEND)
+      @logger ||= Logger.new("#{@log_dir}/ose_installer.log", File::WRONLY | File::APPEND)
     end
 
     # rubocop:disable Style/MethodCalledOnDoEndBlock
@@ -195,7 +198,8 @@ module OSEInstaller
     def prep_run_environment
       #ENV['ANSIBLE_CONFIG'] = "#{@output_dir}/ansible.cfg"
       ENV['ANSIBLE_HOST_KEY_CHECKING'] = "False"
-      ENV['ANSIBLE_LOG_PATH'] = "#{@output_dir}/ansible.log"
+      @logger.info "Setting ansible log to #{@log_dir}/ansible.log"
+      ENV['ANSIBLE_LOG_PATH'] = "#{@log_dir}/ansible.log"
       ENV['ANSIBLE_RETRY_FILES_ENABLED'] = "False"
       ENV['ANSIBLE_SSH_CONTROL_PATH'] = "/tmp/%%h-%%r"
       ENV['ANSIBLE_ASK_SUDO_PASS'] = "False"
