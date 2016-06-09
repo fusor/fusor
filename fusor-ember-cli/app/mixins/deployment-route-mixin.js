@@ -12,6 +12,9 @@ export default Ember.Mixin.create({
         function(result) {
           if (isNew) {
             self.updateOpenstackDefaults(result);
+            if (routeNameForTransition === 'satellite.access-insights') {
+              self.controllerFor('deployment').set('backRouteNameOnSatIndex', 'deployment.start');
+            }
           }
 
           if (routeNameForTransition) {

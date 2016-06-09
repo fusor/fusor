@@ -9,8 +9,6 @@ export default Ember.Controller.extend({
 
   disableTabDeploymentName: Ember.computed.alias("deploymentNewController.disableTabDeploymentName"),
   disableTabLifecycleEnvironment: Ember.computed.alias("deploymentNewController.disableTabLifecycleEnvironment"),
-  disableTabAccessInsights: true,
-
-  backRouteNameOnSatIndex: 'deployment-new.start'
+  disableTabAccessInsights: true
 
 });

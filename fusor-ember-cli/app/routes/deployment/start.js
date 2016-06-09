@@ -20,6 +20,7 @@ export default Ember.Route.extend({
 
   deactivate() {
     this.controllerFor('deployment').set('isHideWizard', false);
+    this.controllerFor('deployment').set('backRouteNameOnSatIndex', 'deployment.start');
     return this.send('saveDeployment', null);
   }
 

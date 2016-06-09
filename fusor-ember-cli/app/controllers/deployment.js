@@ -15,6 +15,8 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   selectSubscriptionsController: Ember.inject.controller('subscriptions/select-subscriptions'),
 
   routeNameSatellite: 'satellite',
+  routeNameStart: 'deployment.start',
+  backRouteNameOnSatIndex: 'deployment.start', //default, should be overwritten by route hooks
 
   useDefaultOrgViewForEnv: Ember.computed.alias("configureEnvironmentController.useDefaultOrgViewForEnv"),
 

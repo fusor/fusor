@@ -8,6 +8,8 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
   deploymentNewConfigureEnvironment: Ember.inject.controller('deployment-new/satellite/configure-environment'),
 
   routeNameSatellite: 'deployment-new.satellite',
+  routeNameStart: 'deployment-new.start',
+  backRouteNameOnSatIndex: 'deployments-new.start', //default, should be overwritten by route hooks
 
   useDefaultOrgViewForEnv: Ember.computed.alias("deploymentNewConfigureEnvironment.useDefaultOrgViewForEnv"),
   selectedEnvironmentDeploymentNew: Ember.computed.alias("deploymentNewConfigureEnvironment.selectedEnvironment"),
