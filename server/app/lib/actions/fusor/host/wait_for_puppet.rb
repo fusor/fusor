@@ -24,9 +24,9 @@ module Actions
           _("Wait for Puppet Run")
         end
 
-        def plan(host_id)
+        def plan(host_id, timeout = 3600)
           super()
-          plan_self(host_id: host_id)
+          plan_self(host_id: host_id, timeout: timeout)
         end
 
         def done?
@@ -39,11 +39,20 @@ module Actions
         end
 
         def invoke_external_task
+          schedule_timeout(input[:timeout])
+          output[:out_of_sync] = 0
           is_done? input[:host_id]
         end
 
         def poll_external_task
           is_done? input[:host_id]
+        end
+
+        def process_timeout
+          fail(::Foreman::Exception,
+                "You've reached the timeout set for this action. If the " +
+                "action is still ongoing, you can click on the " +
+                "\"Resume Deployment\" button to continue.")
         end
 
         private
@@ -56,8 +65,13 @@ module Actions
           ::Fusor.log.info "Waiting for host #{host.name}'s puppet run to complete"
           ::Fusor.log.debug("Current puppet run status is #{host.configuration_status_label}")
 
-          if ['Failed', 'Error', 'Out of Sync'].include?(host.configuration_status_label)
+          if ['Failed', 'Error'].include?(host.configuration_status_label)
             fail _("====== Puppet run for host #{host.name} status reported as #{host.configuration_status_label} ======")
+          elsif host.configuration_status_label == 'Out of sync'
+            output[:out_of_sync] += 1
+            if output[:out_of_sync] > 10
+              fail _("====== Puppet run for #{host.name} puppet run reported as out of sync for the last 10 polls - something may have gone wrong. ====== ")
+            end
           elsif host.configuration_status_label == 'Active'
             true
           else

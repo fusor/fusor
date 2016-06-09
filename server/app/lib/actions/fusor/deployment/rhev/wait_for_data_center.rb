@@ -17,6 +17,8 @@ module Actions
         class WaitForDataCenter < Actions::Fusor::FusorBaseAction
           include Actions::Base::Polling
 
+          TIMEOUT = 3600
+
           input_format do
             param :deployment_id
           end
@@ -51,11 +53,19 @@ module Actions
           end
 
           def invoke_external_task
+            schedule_timeout(TIMEOUT)
             is_up? get_status(input[:deployment_id])
           end
 
           def poll_external_task
             is_up? get_status(input[:deployment_id])
+          end
+
+          def process_timeout
+            fail(::Foreman::Exception,
+                 "You've reached the timeout set for this action. If the " +
+                 "action is still ongoing, you can click on the " +
+                 "\"Resume Deployment\" button to continue.")
           end
 
           private
