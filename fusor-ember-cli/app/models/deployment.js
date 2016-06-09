@@ -86,6 +86,7 @@ export default DS.Model.extend({
   openshift_storage_host: DS.attr('string'),
   openshift_export_path: DS.attr('string'),
   openshift_subdomain_name: DS.attr('string'),
+  openshift_sample_helloworld: DS.attr('boolean'),
 
   openshift_hosts: DS.hasMany('openshift-host', {async: true}),
   openshift_master_hosts: Ember.computed('openshift_hosts', function() {

@@ -42,6 +42,7 @@ module Fusor
                :openshift_export_path,
                :openshift_username,
                :openshift_subdomain_name,
+               :openshift_sample_helloworld,
                :cloudforms_vcpu,
                :cloudforms_ram,
                :cloudforms_vm_disk_size,
