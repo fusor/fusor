@@ -397,5 +397,52 @@ module Fusor
           'Unable to mount NFS share at specified mount point'
       end
     end
+
+    context 'check_mount_point' do
+      test 'check_mount_point should return a 200 and indicate a successful mount' do
+        mock_stats = Object.new
+
+        def mock_stats.block_size
+          1024
+        end
+
+        def mock_stats.blocks_available
+          1024 * 1024
+        end
+
+        Sys::Filesystem.stubs(:stat).returns(mock_stats)
+        Utils::Fusor::CommandUtils.stubs(:run_command).returns(0, :foo)
+
+        response = JSON.parse(get(
+          :check_mount_point,
+          :id => @deployment.id).body)
+
+        assert_response 200
+        assert_equal response['mounted'], true
+      end
+
+      test 'check_mount_point should return a 200 indicating mount failed' do
+        mock_stats = Object.new
+
+        def mock_stats.block_size
+          1024
+        end
+
+        def mock_stats.blocks_available
+          1024 * 1024
+        end
+
+        Sys::Filesystem.stubs(:stat).returns(mock_stats)
+        Utils::Fusor::CommandUtils.stubs(:run_command).returns(1, :foo)
+
+        response = JSON.parse(get(
+          :check_mount_point,
+          :id => @deployment.id).body)
+
+        assert_response 200
+        assert_equal response['mounted'], false
+      end
+    end
+
   end
 end

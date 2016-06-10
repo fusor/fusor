@@ -1,58 +1,79 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
-import { AllValidator, PresenceValidator, AlphaNumericDashUnderscoreValidator, HostnameValidator } from '../utils/validators';
+import {
+  AllValidator,
+  PresenceValidator,
+  AlphaNumericDashUnderscoreValidator,
+  HostnameValidator
+} from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
   actions: {
     testMountPoint() {
-      let checkExport = this.get('isCloudForms');
-      this.storageMountRequest(this.get('model.rhev_share_path'), this.get('model.rhev_storage_address'), this.get('model.rhev_storage_type')).then(result => {
-        this.set('errorMsg', null);
-        if (!checkExport) {
-          this.transitionTo(this.get('step3RouteName'));
-        }
+      this.set('errorMsg', null);
+      const checkExport = this.get('isCloudForms');
+
+      const storageParams = {
+        path: this.get('model.rhev_share_path'),
+        address: this.get('model.rhev_storage_address'),
+        type: this.get('model.rhev_storage_type')
+      };
+
+      const validationPromises = {
+        storage: this.storageMountRequest(storageParams)
+      };
+
+      if(checkExport) {
+        const exportParams = {
+          path: this.get('model.rhev_export_domain_path'),
+          address: this.get('model.rhev_export_domain_address'),
+          type: this.get('model.rhev_storage_type')
+        };
+
+        validationPromises.export = this.storageMountRequest(exportParams);
+      }
+
+      this.set('loadingSpinnerText', `Trying to mount storage paths...`);
+      this.set('showLoadingSpinner', true);
+
+      Ember.RSVP.hash(validationPromises).then((resultHash) => {
         this.set('showLoadingSpinner', false);
-      }).catch(error => {
-        this.set('errorMsg', "Error mounting data domain, please make sure it is a valid mount point");
-      }).then(response => {
-        if (checkExport && this.get('errorMsg') == null) {
-          this.storageMountRequest(this.get('model.rhev_export_domain_path'), this.get('model.rhev_export_domain_address'), this.get('model.rhev_storage_type')).then(result => {
-            this.set('errorMsg', null);
-            this.transitionTo(this.get('step3RouteName'));
-            this.set('showLoadingSpinner', false);
-          }).catch(error => {
-            this.set('errorMsg', "Error mounting export domain, please make sure it is a valid mount point");
-          });
+
+        const validMounts = checkExport ?
+          resultHash.storage.mounted && resultHash.export.mounted :
+          resultHash.storage.mounted;
+
+        if(validMounts) {
+          this.set('errorMsg', null);
+          this.transitionTo(this.get('step3RouteName'));
+        } else {
+          const failedDomain = resultHash.storage.mounted ? 'export' : 'storage';
+          this.set(
+            'errorMsg',
+            `Error mounting ${failedDomain} domain, please make sure it is a valid mount point`);
         }
+      }).catch(err => {
+        this.set(
+          'errorMsg',
+          'Error occurred while attempting to validate storage paths');
       });
     }
   },
 
-  storageMountRequest(path, address, type) {
-    let deploymentId = this.get('deploymentId');
-    this.set('loadingSpinnerText', `Trying to mount storage paths...`);
-    this.set('showLoadingSpinner', true);
+  storageMountRequest(params) {
+    const deploymentId = this.get('deploymentId');
     return request({
       url: `/fusor/api/v21/deployments/${deploymentId}/check_mount_point`,
       type: 'GET',
-      data: {
-        path: path,
-        address: address,
-        type: type
-      },
+      data: params,
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
         'X-CSRF-Token': Ember.$('meta[name="csrf-token"]').attr('content')
       }
-    }).then(response => {
-      if(!response.mounted) {
-        throw 'There was an issue mounting the share... check the logs for errors';
-      }
     });
   },
-
 
   deploymentId: Ember.computed.alias('deploymentController.model.id'),
   step3RouteName: Ember.computed.alias("deploymentController.step3RouteName"),
