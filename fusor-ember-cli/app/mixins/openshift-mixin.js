@@ -61,7 +61,8 @@ export default Ember.Mixin.create({
   ),
 
   ramAvailableMinusCfme: Ember.computed("model.openshift_available_ram", "model.cloudforms_ram", function() {
-    return this.get("model.openshift_available_ram") - this.get("model.cloudforms_ram");
+    const rawVal = this.get("model.openshift_available_ram") - this.get("model.cloudforms_ram");
+    return Math.round(rawVal * 100) / 100; // Make sure to truncate since we can get some weird fp nums
   }),
 
   ramAvailable: Ember.computed(
