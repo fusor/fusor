@@ -17,7 +17,7 @@ require "uri"
 module Fusor
   class Api::V21::DeploymentsController < Api::V2::DeploymentsController
 
-    before_filter :find_deployment, :only => [:destroy, :show, :update,
+    before_filter :find_deployment, :only => [:destroy, :show, :update, :check_mount_point,
                                               :deploy, :redeploy, :validate, :log, :openshift_disk_space]
 
     rescue_from Encoding::UndefinedConversionError, :with => :ignore_it
@@ -122,6 +122,40 @@ module Fusor
       end
     end
 
+    def check_mount_point
+      mount_address = params['address']
+      mount_path = params['path']
+      mount_type = params['type']
+
+      begin
+        mount_storage(mount_address, mount_path, mount_type)
+        render json: { :mounted => true }, status: 200
+      rescue
+        render json: { :mounted => false }, status: 200
+      end
+    end
+
+    # mount_storage will return in megabytes the amount of free space left on the storage mount
+    def mount_storage(address, path, type)
+      deployment_id = @deployment.id
+      if type == "GFS"
+        type = "glusterfs"
+      else
+        type = "nfs"
+      end
+
+      cmd = "sudo safe-mount.sh '#{deployment_id}' '#{address}' '#{path}' '#{type}'"
+      status, _output = Utils::Fusor::CommandUtils.run_command(cmd)
+
+      raise 'Unable to mount NFS share at specified mount point' unless status == 0
+
+      stats = Sys::Filesystem.stat("/tmp/fusor-test-mount-#{deployment_id}")
+      mb_available = stats.block_size * stats.blocks_available / 1024 / 1024
+
+      Utils::Fusor::CommandUtils.run_command("sudo safe-umount.sh #{deployment_id}")
+      return mb_available
+    end
+
     def log
       log_type_param = params[:log_type] || 'fusor_log'
       reader = create_log_reader(log_type_param)
@@ -139,20 +173,12 @@ module Fusor
     def openshift_disk_space
       # Openshift deployments need to know how much disk space is available on the NFS storage pool
       # This method mounts the specifed NFS share and gets the available disk space
+      address = @deployment.rhev_storage_address
+      path = @deployment.rhev_share_path
+      storage_type = @deployment.rhev_storage_type
+
       begin
-        nfs_address = @deployment.rhev_storage_address
-        nfs_path = @deployment.rhev_share_path
-        deployment_id = @deployment.id
-
-        cmd = "sudo safe-mount.sh '#{deployment_id}' '#{nfs_address}' '#{nfs_path}'"
-        status, _output = Utils::Fusor::CommandUtils.run_command(cmd)
-
-        raise 'Unable to mount NFS share at specified mount point' unless status == 0
-
-        stats = Sys::Filesystem.stat("/tmp/fusor-test-mount-#{deployment_id}")
-        mb_available = stats.block_size * stats.blocks_available / 1024 / 1024
-
-        Utils::Fusor::CommandUtils.run_command("sudo safe-umount.sh #{deployment_id}")
+        mb_available = mount_storage(address, path, storage_type)
         render json: { :openshift_disk_space => mb_available }, status: 200
       rescue Exception => error
         message = 'Unable to retrieve Openshift disk space'

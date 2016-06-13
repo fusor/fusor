@@ -1,3 +1,20 @@
+{{#if errorMsg}}
+  <div class="row">
+    <div class='col-md-9'>
+      <div class='alert alert-error rhci-alert'>
+        <i class="fa fa-2x fa-exclamation-triangle errorForValidation"></i>
+        &nbsp;
+        {{errorMsg}}
+      </div>
+    </div>
+  </div>
+{{else if showLoadingSpinner}}
+  <div class="spinner spinner-md spinner-inline"></div>
+  <span class='spinner-text'>
+    {{loadingSpinnerText}}
+  </span>
+{{/if}}
+
 {{#if isCloudForms}}
   <h4> Data Domain </h4>
 {{/if}}
@@ -69,9 +86,11 @@
 
 </form>
 
-{{cancel-back-next backRouteName='rhev-options'
+{{#cancel-back-next backRouteName='rhev-options'
                    disableBack=false
-                   nextRouteName=step3RouteName
-                   disableNext=disableNextStorage
                    disableCancel=isStarted
                    deploymentName=deploymentName}}
+   {{#button-f disabled=disableNextStorage action="testMountPoint"}}
+       Next <i class="fa fa-angle-right"></i>
+   {{/button-f}}
+{{/cancel-back-next}}

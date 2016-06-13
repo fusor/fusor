@@ -1,12 +1,85 @@
 import Ember from 'ember';
+import request from 'ic-ajax';
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
-import { AllValidator, PresenceValidator, AlphaNumericDashUnderscoreValidator, HostnameValidator } from '../utils/validators';
+import {
+  AllValidator,
+  PresenceValidator,
+  AlphaNumericDashUnderscoreValidator,
+  HostnameValidator
+} from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
+  actions: {
+    testMountPoint() {
+      this.set('errorMsg', null);
+      const checkExport = this.get('isCloudForms');
 
+      const storageParams = {
+        path: this.get('model.rhev_share_path'),
+        address: this.get('model.rhev_storage_address'),
+        type: this.get('model.rhev_storage_type')
+      };
+
+      const validationPromises = {
+        storage: this.storageMountRequest(storageParams)
+      };
+
+      if(checkExport) {
+        const exportParams = {
+          path: this.get('model.rhev_export_domain_path'),
+          address: this.get('model.rhev_export_domain_address'),
+          type: this.get('model.rhev_storage_type')
+        };
+
+        validationPromises.export = this.storageMountRequest(exportParams);
+      }
+
+      this.set('loadingSpinnerText', `Trying to mount storage paths...`);
+      this.set('showLoadingSpinner', true);
+
+      Ember.RSVP.hash(validationPromises).then((resultHash) => {
+        this.set('showLoadingSpinner', false);
+
+        const validMounts = checkExport ?
+          resultHash.storage.mounted && resultHash.export.mounted :
+          resultHash.storage.mounted;
+
+        if(validMounts) {
+          this.set('errorMsg', null);
+          this.transitionTo(this.get('step3RouteName'));
+        } else {
+          const failedDomain = resultHash.storage.mounted ? 'export' : 'storage';
+          this.set(
+            'errorMsg',
+            `Error mounting ${failedDomain} domain, please make sure it is a valid mount point`);
+        }
+      }).catch(err => {
+        this.set(
+          'errorMsg',
+          'Error occurred while attempting to validate storage paths');
+      });
+    }
+  },
+
+  storageMountRequest(params) {
+    const deploymentId = this.get('deploymentId');
+    return request({
+      url: `/fusor/api/v21/deployments/${deploymentId}/check_mount_point`,
+      type: 'GET',
+      data: params,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': Ember.$('meta[name="csrf-token"]').attr('content')
+      }
+    });
+  },
+
+  deploymentId: Ember.computed.alias('deploymentController.model.id'),
   step3RouteName: Ember.computed.alias("deploymentController.step3RouteName"),
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
   rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
+  errorMsg: null,
 
   hasEndingSlashInSharePath: Ember.computed('deploymentController.model.rhev_share_path', function() {
     if (Ember.isPresent(this.get('deploymentController.model.rhev_share_path'))) {

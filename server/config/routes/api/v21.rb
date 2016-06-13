@@ -10,6 +10,7 @@ Fusor::Engine.routes.draw do
             get :validate_cdn
             get :log
             get :openshift_disk_space
+            get :check_mount_point
           end
         end
         resources :openstack_deployments do
