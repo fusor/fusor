@@ -107,10 +107,14 @@
         :releasever: "7Server"
 
     :cloudforms:
-      - :product_name: "Red Hat CloudForms"
-        :product_id: "167"
-        :repository_set_id: "4631"
-        :repository_set_name: "Red Hat CloudForms Management Engine 5.5 (Files)"
+      #- :product_name: "Red Hat CloudForms"
+      #  :product_id: "167"
+      #  :repository_set_id: "4631"
+      #  :repository_set_name: "Red Hat CloudForms Management Engine 5.5 (Files)"
+      - :product_name: "Red Hat CloudForms Beta"
+        :product_id: "303"
+        :repository_set_id: "4635"
+        :repository_set_name: "Red Hat CloudForms Beta (Files)"
         :basearch: "x86_64"
         # Default behavior is to use the latest available image found
         # in the repository if either :rhos_image_file_name or :rhev_image_file_name
