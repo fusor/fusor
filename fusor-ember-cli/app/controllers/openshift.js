@@ -48,9 +48,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     'masterVcpu',
     'masterRam',
     'masterDisk',
-    'nodeVcpu',
-    'nodeRam',
-    'nodeDisk',
+    'workerVcpu',
+    'workerRam',
+    'workerDisk',
     'isUnderCapacity',
     function() {
       return (Ember.isPresent(this.get('openshiftInstallLoc')) &&
@@ -60,9 +60,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
               (this.get('masterVcpu') > 0) &&
               (this.get('masterRam') > 0) &&
               (this.get('masterDisk') > 0) &&
-              (this.get('nodeVcpu') > 0) &&
-              (this.get('nodeRam') > 0) &&
-              (this.get('nodeDisk') > 0) &&
+              (this.get('workerVcpu') > 0) &&
+              (this.get('workerRam') > 0) &&
+              (this.get('workerDisk') > 0) &&
               this.get('isUnderCapacity'));
     }
   ),

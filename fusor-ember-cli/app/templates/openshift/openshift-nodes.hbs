@@ -37,44 +37,90 @@
     <p>
       Select how many virtual machines should be created as nodes for the OpenShift environment.
       {{tool-tip faIcon='fa-info-circle'
-                 title="The environment consists of worker nodes and one master node, which orchestrates tasks across the other nodes. Master and worker nodes are provisioned with different specifications, as seen in Node Details."}}
+                 title="The environment consists of worker nodes and master nodes, which orchestrates tasks across the other nodes. Master and worker nodes are provisioned with different specifications, as seen in Node Details."}}
 
     </p>
 
-    {{button-selection label=1
-                       value=1
-                       groupValue=model.numNodes
-                       changed="numNodesChanged"
-                       disabled=isOver1Capacity}}
-    {{button-selection label=2
-                       value=2
-                       groupValue=model.numNodes
-                       changed="numNodesChanged"
-                       disabled=isOver2Capacity}}
-    {{button-selection label=3
-                       value=3
-                       groupValue=model.numNodes
-                       changed="numNodesChanged"
-                       disabled=isOver3Capacity}}
-    {{button-selection label=4
-                       value=4
-                       groupValue=model.numNodes
-                       changed="numNodesChanged"
-                       disabled=isOver4Capacity}}
-    {{button-selection label=5
-                       value=5
-                       groupValue=model.numNodes
-                       changed="numNodesChanged"
-                       disabled=isOver5Capacity}}
-    <!--<div style='color: #999; font-style: italic;'>
-      Not Highly Available
-    </div>-->
+<div class='row'>
+  <div class='col-xs-8 col-sm-8 col-md-7 col-lg-5 ose-number-node-buttons'>
+    <div class='ose-number-buttons-block'>
+      <span class='ose-node-label'>Master Nodes</span>
+      {{button-selection label=1
+                         value=1
+                         groupValue=numMasterNodes
+                         changed="numMasterNodesChanged"}}
+      {{button-selection label=2
+                         value=2
+                         groupValue=numMasterNodes
+                         changed="numMasterNodesChanged"
+                         disabled=is2MasterOverCapacity}}
+      {{button-selection label=3
+                         value=3
+                         groupValue=numMasterNodes
+                         changed="numMasterNodesChanged"
+                         disabled=is3MasterOverCapacity}}
+      {{button-selection label=4
+                         value=4
+                         groupValue=numMasterNodes
+                         changed="numMasterNodesChanged"
+                         disabled=is4MasterOverCapacity}}
+      {{button-selection label=5
+                         value=5
+                         groupValue=numMasterNodes
+                         changed="numMasterNodesChanged"
+                         disabled=is5MasterOverCapacity}}
+      {{#if isCustomNumMasterNodes}}
+        {{input value=numMasterNodes
+                class='ose-custom-input'
+                placeholder='Enter'}}
+      {{else}}
+        <a {{action 'showCustomNumMasterNodes'}}>advanced</a>
+      {{/if}}
+
+    </div>
+    <div class='ose-number-buttons-block'>
+      <span class='ose-node-label worker-nodes-label'>Worker Nodes</span>
+      {{button-selection label=1
+                         value=1
+                         groupValue=numWorkerNodes
+                         changed="numWorkerNodesChanged"}}
+      {{button-selection label=2
+                         value=2
+                         groupValue=numWorkerNodes
+                         changed="numWorkerNodesChanged"
+                         disabled=is2WorkerOverCapacity}}
+      {{button-selection label=3
+                         value=3
+                         groupValue=numWorkerNodes
+                         changed="numWorkerNodesChanged"
+                         disabled=is3WorkerOverCapacity}}
+      {{button-selection label=4
+                         value=4
+                         groupValue=numWorkerNodes
+                         changed="numWorkerNodesChanged"
+                         disabled=is4WorkerOverCapacity}}
+      {{button-selection label=5
+                         value=5
+                         groupValue=numWorkerNodes
+                         changed="numWorkerNodesChanged"
+                         disabled=is5WorkerOverCapacity}}
+      {{#if isCustomNumWorkerNodes}}
+        {{input value=numWorkerNodes
+                class='ose-custom-input'
+                placeholder='Enter'}}
+      {{else}}
+        <a {{action 'showCustomNumWorkerNodes'}}>advanced</a>
+      {{/if}}
+    </div>
+    </div>
+  </div>
 
     <br />
     <br />
     <p>
-    Select how much additional storage is needed for Docker containers on each worker node.
+      Select how much additional storage is needed for Docker containers on each worker node.
     </p>
+
     {{button-selection label='15 GB'
                        value=15
                        groupValue=model.openshift_storage_size
@@ -91,6 +137,13 @@
                        value=30
                        groupValue=model.openshift_storage_size
                        changed="storageSizeChanged"}}
+    {{#if isCustomStorageSize}}
+      {{input value=model.openshift_storage_size
+              class='ose-custom-input'
+              placeholder='Enter'}} GB
+    {{else}}
+      <a {{action 'showCustomStorageSize'}}>advanced</a>
+    {{/if}}
 
     {{#if showEnvironmentSummary}}
         {{ose-env-summary numNodes=numNodes
@@ -100,9 +153,9 @@
                           masterVcpu=masterVcpu
                           masterRam=masterRam
                           masterDisk=masterDisk
-                          nodeVcpu=nodeVcpu
-                          nodeRam=nodeRam
-                          nodeDisk=nodeDisk
+                          workerVcpu=workerVcpu
+                          workerRam=workerRam
+                          workerDisk=workerDisk
                           vcpuNeeded=vcpuNeeded
                           ramNeeded=ramNeeded
                           diskNeeded=diskNeeded
@@ -121,9 +174,9 @@
                        masterVcpu=masterVcpu
                        masterRam=masterRam
                        masterDisk=masterDisk
-                       nodeVcpu=nodeVcpu
-                       nodeRam=nodeRam
-                       nodeDisk=nodeDisk}}
+                       workerVcpu=workerVcpu
+                       workerRam=workerRam
+                       workerDisk=workerDisk}}
     {{/if}}
 
   </div>

@@ -15,15 +15,15 @@ export default Ember.Mixin.create({
   storageSize: Ember.computed.alias("model.openshift_storage_size"),
 
   masterVcpu: Ember.computed.alias("model.openshift_master_vcpu"),
-  nodeVcpu: Ember.computed.alias("model.openshift_node_vcpu"),
+  workerVcpu: Ember.computed.alias("model.openshift_node_vcpu"),
   cfmeVcpu: Ember.computed.alias("model.cloudforms_vcpu"),
 
   masterRam: Ember.computed.alias("model.openshift_master_ram"),
-  nodeRam: Ember.computed.alias("model.openshift_node_ram"),
+  workerRam: Ember.computed.alias("model.openshift_node_ram"),
   cfmeRam: Ember.computed.alias("model.cloudforms_ram"),
 
   masterDisk: Ember.computed.alias("model.openshift_master_disk"),
-  nodeDisk: Ember.computed.alias("model.openshift_node_disk"),
+  workerDisk: Ember.computed.alias("model.openshift_node_disk"),
   cfmeDisk: Ember.computed.alias("model.cfmeDisk"),
 
   ignoreCfme: Ember.computed(
@@ -95,182 +95,217 @@ export default Ember.Mixin.create({
     }
   ),
 
-  vcpuNeeded: Ember.computed('numMasterNodes', 'numWorkerNodes', 'masterVcpu', 'nodeVcpu', function() {
+  vcpuNeeded: Ember.computed('numMasterNodes', 'numWorkerNodes', 'masterVcpu', 'workerVcpu', function() {
     if ((this.get('numMasterNodes') > 0) && (this.get('masterVcpu') > 0) &&
-        (this.get('numWorkerNodes') >= 0) && (this.get('nodeVcpu') > 0) ) {
+        (this.get('numWorkerNodes') >= 0) && (this.get('workerVcpu') > 0) ) {
       return ((this.get('numMasterNodes') * this.get('masterVcpu')) +
-              (this.get('numWorkerNodes') * this.get('nodeVcpu')));
+              (this.get('numWorkerNodes') * this.get('workerVcpu')));
     } else {
       return 0;
     }
   }),
 
-  ramNeeded: Ember.computed('numMasterNodes', 'numWorkerNodes', 'masterRam', 'nodeRam', function() {
+  ramNeeded: Ember.computed('numMasterNodes', 'numWorkerNodes', 'masterRam', 'workerRam', function() {
     if ((this.get('numMasterNodes') > 0) && (this.get('masterRam') > 0) &&
-        (this.get('numWorkerNodes') >= 0) && (this.get('nodeRam') > 0) ) {
+        (this.get('numWorkerNodes') >= 0) && (this.get('workerRam') > 0) ) {
       return ((this.get('numMasterNodes') * this.get('masterRam')) +
-               (this.get('numWorkerNodes') * this.get('nodeRam')));
+               (this.get('numWorkerNodes') * this.get('workerRam')));
     } else {
       return 0;
     }
   }),
 
-  diskNeeded: Ember.computed('numMasterNodes', 'numWorkerNodes', 'masterDisk', 'nodeDisk', 'storageSize', function() {
+  diskNeeded: Ember.computed('numMasterNodes', 'numWorkerNodes', 'masterDisk', 'workerDisk', 'storageSize', function() {
     if ((this.get('numMasterNodes') > 0) && (this.get('masterDisk') > 0) &&
-        (this.get('numWorkerNodes') >= 0) && (this.get('nodeDisk') > 0) && (this.get('storageSize') > 0)) {
+        (this.get('numWorkerNodes') >= 0) && (this.get('workerDisk') > 0) && (this.get('storageSize') > 0)) {
       return ((this.get('numMasterNodes') * this.get('masterDisk')) +
-              (this.get('numWorkerNodes') * this.get('nodeDisk')) +
+              (this.get('numWorkerNodes') * this.get('workerDisk')) +
               (this.get('numWorkerNodes') * this.get('storageSize')));
     } else {
       return 0;
     }
   }),
 
-  vcpu1Needed: Ember.computed('masterVcpu', function() {
-    return parseInt(this.get('masterVcpu'));
+  vcpu2MasterNeeded: Ember.computed('numWorkerNodes', 'masterVcpu', 'workerVcpu', function() {
+    return ((2 * this.get('masterVcpu')) + (this.get('numWorkerNodes') * this.get('workerVcpu')));
   }),
-  vcpu2Needed: Ember.computed('vcpu1Needed', 'nodeVcpu', function() {
-    return this.get('vcpu1Needed') + parseInt(this.get('nodeVcpu'));
+  vcpu3MasterNeeded: Ember.computed('numWorkerNodes', 'masterVcpu', 'workerVcpu', function() {
+    return ((3 * this.get('masterVcpu')) + (this.get('numWorkerNodes') * this.get('workerVcpu')));
   }),
-  vcpu3Needed: Ember.computed('vcpu2Needed', 'nodeVcpu', function() {
-    return this.get('vcpu2Needed') + parseInt(this.get('nodeVcpu'));
+  vcpu4MasterNeeded: Ember.computed('numWorkerNodes', 'masterVcpu', 'workerVcpu', function() {
+    return ((4 * this.get('masterVcpu')) + (this.get('numWorkerNodes') * this.get('workerVcpu')));
   }),
-  vcpu4Needed: Ember.computed('vcpu3Needed', 'nodeVcpu', function() {
-    return this.get('vcpu3Needed') + parseInt(this.get('nodeVcpu'));
-  }),
-  vcpu5Needed: Ember.computed('vcpu4Needed', 'nodeVcpu', function() {
-    return this.get('vcpu4Needed') + parseInt(this.get('nodeVcpu'));
+  vcpu5MasterNeeded: Ember.computed('numWorkerNodes', 'masterVcpu', 'workerVcpu', function() {
+    return ((5 * this.get('masterVcpu')) + (this.get('numWorkerNodes') * this.get('workerVcpu')));
   }),
 
-  ram1Needed: Ember.computed('masterRam', function() {
-    return parseInt(this.get('masterRam'));
+  vcpu2WorkerNeeded: Ember.computed('numMasterNodes', 'masterVcpu', 'workerVcpu', function() {
+    return ((2 * this.get('workerVcpu')) + (this.get('numMasterNodes') * this.get('masterVcpu')));
   }),
-  ram2Needed: Ember.computed('ram1Needed', 'nodeRam', function() {
-    return this.get('ram1Needed') + parseInt(this.get('nodeRam'));
+  vcpu3WorkerNeeded: Ember.computed('numMasterNodes', 'masterVcpu', 'workerVcpu', function() {
+    return ((3 * this.get('workerVcpu')) + (this.get('numMasterNodes') * this.get('masterVcpu')));
   }),
-  ram3Needed: Ember.computed('ram2Needed', 'nodeRam', function() {
-    return this.get('ram2Needed') + parseInt(this.get('nodeRam'));
+  vcpu4WorkerNeeded: Ember.computed('numMasterNodes', 'masterVcpu', 'workerVcpu', function() {
+    return ((4 * this.get('workerVcpu')) + (this.get('numMasterNodes') * this.get('masterVcpu')));
   }),
-  ram4Needed: Ember.computed('ram3Needed', 'nodeRam', function() {
-    return this.get('ram3Needed') + parseInt(this.get('nodeRam'));
-  }),
-  ram5Needed: Ember.computed('ram4Needed', 'nodeRam', function() {
-    return this.get('ram4Needed') + parseInt(this.get('nodeRam'));
+  vcpu5WorkerNeeded: Ember.computed('numMasterNodes', 'masterVcpu', 'workerVcpu', function() {
+    return ((5 * this.get('workerVcpu')) + (this.get('numMasterNodes') * this.get('masterVcpu')));
   }),
 
-  disk1Needed: Ember.computed('masterDisk', function() {
-    return parseInt(this.get('masterDisk'));
+  ram2MasterNeeded: Ember.computed('numWorkerNodes', 'masterRam', 'workerRam', function() {
+    return ((2 * this.get('masterRam')) + (this.get('numWorkerNodes') * this.get('workerRam')));
   }),
-  disk2Needed: Ember.computed('disk1Needed', 'nodeDisk', function() {
-    return this.get('disk1Needed') + parseInt(this.get('nodeDisk'));
+  ram3MasterNeeded: Ember.computed('numWorkerNodes', 'masterRam', 'workerRam', function() {
+    return ((3 * this.get('masterRam')) + (this.get('numWorkerNodes') * this.get('workerRam')));
   }),
-  disk3Needed: Ember.computed('disk2Needed', 'nodeDisk', function() {
-    return this.get('disk2Needed') + parseInt(this.get('nodeDisk'));
+  ram4MasterNeeded: Ember.computed('numWorkerNodes', 'masterRam', 'workerRam', function() {
+    return ((4 * this.get('masterRam')) + (this.get('numWorkerNodes') * this.get('workerRam')));
   }),
-  disk4Needed: Ember.computed('disk3Needed', 'nodeDisk', function() {
-    return this.get('disk3Needed') + parseInt(this.get('nodeDisk'));
-  }),
-  disk5Needed: Ember.computed('disk4Needed', 'nodeDisk', function() {
-    return this.get('disk4Needed') + parseInt(this.get('nodeDisk'));
+  ram5MasterNeeded: Ember.computed('numWorkerNodes', 'masterRam', 'workerRam', function() {
+    return ((5 * this.get('masterRam')) + (this.get('numWorkerNodes') * this.get('workerRam')));
   }),
 
-  isVcpu1OverCapacity: Ember.computed('vcpu1Needed', 'vcpuAvailable', function() {
-    return (this.get('vcpu1Needed') > this.get('vcpuAvailable'));
+  ram2WorkerNeeded: Ember.computed('numMasterNodes', 'masterRam', 'workerRam', function() {
+    return ((2 * this.get('workerRam')) + (this.get('numMasterNodes') * this.get('masterRam')));
   }),
-  isVcpu2OverCapacity: Ember.computed('vcpu2Needed', 'vcpuAvailable', function() {
-    return (this.get('vcpu2Needed') > this.get('vcpuAvailable'));
+  ram3WorkerNeeded: Ember.computed('numMasterNodes', 'masterRam', 'workerRam', function() {
+    return ((3 * this.get('workerRam')) + (this.get('numMasterNodes') * this.get('masterRam')));
   }),
-  isVcpu3OverCapacity: Ember.computed('vcpu3Needed', 'vcpuAvailable', function() {
-    return (this.get('vcpu3Needed') > this.get('vcpuAvailable'));
+  ram4WorkerNeeded: Ember.computed('numMasterNodes', 'masterRam', 'workerRam', function() {
+    return ((4 * this.get('workerRam')) + (this.get('numMasterNodes') * this.get('masterRam')));
   }),
-  isVcpu4OverCapacity: Ember.computed('vcpu4Needed', 'vcpuAvailable', function() {
-    return (this.get('vcpu4Needed') > this.get('vcpuAvailable'));
-  }),
-  isVcpu5OverCapacity: Ember.computed('vcpu5Needed', 'vcpuAvailable', function() {
-    return (this.get('vcpu5Needed') > this.get('vcpuAvailable'));
+  ram5WorkerNeeded: Ember.computed('numMasterNodes', 'masterRam', 'workerRam', function() {
+    return ((5 * this.get('workerRam')) + (this.get('numMasterNodes') * this.get('masterRam')));
   }),
 
-  isRam1OverCapacity: Ember.computed('ram1Needed', 'ramAvailable', function() {
-    return (this.get('ram1Needed') > this.get('ramAvailable'));
+  disk2MasterNeeded: Ember.computed('numWorkerNodes', 'masterDisk', 'workerDisk', 'storageSize', function() {
+    return (2 * this.get('masterDisk')) +
+           (this.get('numWorkerNodes') * (this.get('workerDisk') + this.get('storageSize')));
   }),
-  isRam2OverCapacity: Ember.computed('ram2Needed', 'ramAvailable', function() {
-    return (this.get('ram2Needed') > this.get('ramAvailable'));
+  disk3MasterNeeded: Ember.computed('numWorkerNodes', 'masterDisk', 'workerDisk', 'storageSize', function() {
+    return (3 * this.get('masterDisk')) +
+           (this.get('numWorkerNodes') * (this.get('workerDisk') + this.get('storageSize')));
   }),
-  isRam3OverCapacity: Ember.computed('ram3Needed', 'ramAvailable', function() {
-    return (this.get('ram3Needed') > this.get('ramAvailable'));
+  disk4MasterNeeded: Ember.computed('numWorkerNodes', 'masterDisk', 'workerDisk', 'storageSize', function() {
+    return (4 * this.get('masterDisk')) +
+           (this.get('numWorkerNodes') * (this.get('workerDisk') + this.get('storageSize')));
   }),
-  isRam4OverCapacity: Ember.computed('ram4Needed', 'ramAvailable', function() {
-    return (this.get('ram4Needed') > this.get('ramAvailable'));
-  }),
-  isRam5OverCapacity: Ember.computed('ram5Needed', 'ramAvailable', function() {
-    return (this.get('ram5Needed') > this.get('ramAvailable'));
-  }),
-
-  isDisk1OverCapacity: Ember.computed('disk1Needed', 'diskAvailable', function() {
-    return (this.get('disk1Needed') > this.get('diskAvailable'));
-  }),
-  isDisk2OverCapacity: Ember.computed('disk2Needed', 'diskAvailable', function() {
-    return (this.get('disk2Needed') > this.get('diskAvailable'));
-  }),
-  isDisk3OverCapacity: Ember.computed('disk3Needed', 'diskAvailable', function() {
-    return (this.get('disk3Needed') > this.get('diskAvailable'));
-  }),
-  isDisk4OverCapacity: Ember.computed('disk4Needed', 'diskAvailable', function() {
-    return (this.get('disk4Needed') > this.get('diskAvailable'));
-  }),
-  isDisk5OverCapacity: Ember.computed('disk5Needed', 'diskAvailable', function() {
-    return (this.get('disk5Needed') > this.get('diskAvailable'));
+  disk5MasterNeeded: Ember.computed('numWorkerNodes', 'masterDisk', 'workerDisk', 'storageSize', function() {
+    return (5 * this.get('masterDisk')) +
+           (this.get('numWorkerNodes') * (this.get('workerDisk') + this.get('storageSize')));
   }),
 
-  isOver1Capacity: Ember.computed(
-    'isVcpu1OverCapacity',
-    'isRam1OverCapacity',
-    'isDisk1OverCapacity',
-    function() {
-      return (this.get('isVcpu1OverCapacity') ||
-              this.get('isRam1OverCapacity') ||
-              this.get('isDisk1OverCapacity'));
+  disk2WorkerNeeded: Ember.computed('numMasterNodes', 'masterDisk', 'workerDisk', 'storageSize', function() {
+    return (this.get('numMasterNodes') * this.get('masterDisk')) +
+           (2 * (this.get('workerDisk') + this.get('storageSize')));
+  }),
+  disk3WorkerNeeded: Ember.computed('numWorkerNodes', 'masterDisk', 'workerDisk', 'storageSize', function() {
+    return (this.get('numMasterNodes') * this.get('masterDisk')) +
+           (3 * (this.get('workerDisk') + this.get('storageSize')));
+  }),
+  disk4WorkerNeeded: Ember.computed('numWorkerNodes', 'masterDisk', 'workerDisk', 'storageSize', function() {
+    return (this.get('numMasterNodes') * this.get('masterDisk')) +
+           (4 * (this.get('workerDisk') + this.get('storageSize')));
+  }),
+  rdisk5WorkerNeeded: Ember.computed('numWorkerNodes', 'masterDisk', 'workerDisk', 'storageSize', function() {
+    return (this.get('numMasterNodes') * this.get('masterDisk')) +
+           (5 * (this.get('workerDisk') + this.get('storageSize')));
+  }),
+
+  is2MasterOverCapacity: Ember.computed(
+    'vcpu2MasterNeeded',
+    'vcpuAvailable',
+    'ram2MasterNeeded',
+    'ramAvailable',
+    'disk2MasterNeeded',
+    'diskAvailable', function() {
+      return (this.get('vcpu2MasterNeeded') > this.get('vcpuAvailable') ||
+              this.get('ram2MasterNeeded') > this.get('ramAvailable') ||
+              this.get('disk2MasterNeeded') > this.get('diskAvailable'));
     }
   ),
-
-  isOver2Capacity: Ember.computed(
-    'isVcpu2OverCapacity',
-    'isRam2OverCapacity',
-    'isDisk2OverCapacity',
-    function() {
-      return (this.get('isVcpu2OverCapacity') ||
-              this.get('isRam2OverCapacity') ||
-              this.get('isDisk2OverCapacity'));
+  is3MasterOverCapacity: Ember.computed(
+    'vcpu3MasterNeeded',
+    'vcpuAvailable',
+    'ram3MasterNeeded',
+    'ramAvailable',
+    'disk3MasterNeeded',
+    'diskAvailable', function() {
+      return (this.get('vcpu3MasterNeeded') > this.get('vcpuAvailable') ||
+              this.get('ram3MasterNeeded') > this.get('ramAvailable') ||
+              this.get('disk3MasterNeeded') > this.get('diskAvailable'));
     }
   ),
-  isOver3Capacity: Ember.computed(
-    'isVcpu3OverCapacity',
-    'isRam3OverCapacity',
-    'isDisk3OverCapacity',
-    function() {
-      return (this.get('isVcpu3OverCapacity') ||
-              this.get('isRam3OverCapacity') ||
-              this.get('isDisk3OverCapacity'));
+  is4MasterOverCapacity: Ember.computed(
+    'vcpu4MasterNeeded',
+    'vcpuAvailable',
+    'ram4MasterNeeded',
+    'ramAvailable',
+    'disk4MasterNeeded',
+    'diskAvailable', function() {
+      return (this.get('vcpu4MasterNeeded') > this.get('vcpuAvailable') ||
+              this.get('ram4MasterNeeded') > this.get('ramAvailable') ||
+              this.get('disk4MasterNeeded') > this.get('diskAvailable'));
     }
   ),
-  isOver4Capacity: Ember.computed(
-    'isVcpu4OverCapacity',
-    'isRam4OverCapacity',
-    'isDisk4OverCapacity',
-    function() {
-      return (this.get('isVcpu4OverCapacity') ||
-              this.get('isRam4OverCapacity') ||
-              this.get('isDisk4OverCapacity'));
+  is5MasterOverCapacity: Ember.computed(
+    'vcpu5MasterNeeded',
+    'vcpuAvailable',
+    'ram5MasterNeeded',
+    'ramAvailable',
+    'disk5MasterNeeded',
+    'diskAvailable', function() {
+      return (this.get('vcpu5MasterNeeded') > this.get('vcpuAvailable') ||
+              this.get('ram5MasterNeeded') > this.get('ramAvailable') ||
+              this.get('disk5MasterNeeded') > this.get('diskAvailable'));
     }
   ),
-  isOver5Capacity: Ember.computed(
-    'isVcpu5OverCapacity',
-    'isRam5OverCapacity',
-    'isDisk5OverCapacity',
-    function() {
-      return (this.get('isVcpu5OverCapacity') ||
-              this.get('isRam5OverCapacity') ||
-              this.get('isDisk5OverCapacity'));
+  is2WorkerOverCapacity: Ember.computed(
+    'vcpu2WorkerNeeded',
+    'vcpuAvailable',
+    'ram2WorkerNeeded',
+    'ramAvailable',
+    'disk2WorkerNeeded',
+    'diskAvailable', function() {
+      return (this.get('vcpu2WorkerNeeded') > this.get('vcpuAvailable') ||
+              this.get('ram2WorkerNeeded') > this.get('ramAvailable') ||
+              this.get('disk2WorkerNeeded') > this.get('diskAvailable'));
+    }
+  ),
+  is3WorkerOverCapacity: Ember.computed(
+    'vcpu3WorkerNeeded',
+    'vcpuAvailable',
+    'ram3WorkerNeeded',
+    'ramAvailable',
+    'disk3WorkerNeeded',
+    'diskAvailable', function() {
+      return (this.get('vcpu3WorkerNeeded') > this.get('vcpuAvailable') ||
+              this.get('ram3WorkerNeeded') > this.get('ramAvailable') ||
+              this.get('disk3WorkerNeeded') > this.get('diskAvailable'));
+    }
+  ),
+  is4WorkerOverCapacity: Ember.computed(
+    'vcpu4WorkerNeeded',
+    'vcpuAvailable',
+    'ram4WorkerNeeded',
+    'ramAvailable',
+    'disk4WorkerNeeded',
+    'diskAvailable', function() {
+      return (this.get('vcpu4WorkerNeeded') > this.get('vcpuAvailable') ||
+              this.get('ram4WorkerNeeded') > this.get('ramAvailable') ||
+              this.get('disk4WorkerNeeded') > this.get('diskAvailable'));
+    }
+  ),
+  is5WorkerOverCapacity: Ember.computed(
+    'vcpu5WorkerNeeded',
+    'vcpuAvailable',
+    'ram5WorkerNeeded',
+    'ramAvailable',
+    'disk5WorkerNeeded',
+    'diskAvailable', function() {
+      return (this.get('vcpu5WorkerNeeded') > this.get('vcpuAvailable') ||
+              this.get('ram5WorkerNeeded') > this.get('ramAvailable') ||
+              this.get('disk5WorkerNeeded') > this.get('diskAvailable'));
     }
   ),
 
