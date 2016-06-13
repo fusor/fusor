@@ -852,6 +852,16 @@ span.hanging-indent {
 .next-button {
   margin-left: -5px !important; }
 
+.edit-deployment {
+  font-size: 16px;
+  padding-left: 5px; }
+
+.ose-sample-apps .rhci-popover-button {
+  margin-left: 5px; }
+
+.ose-sample-apps .popover {
+  width: 200px; }
+
 /* wizard.scss */
 .page-header-rhci {
   background: #fafafa;
