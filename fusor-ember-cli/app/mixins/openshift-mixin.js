@@ -272,5 +272,40 @@ export default Ember.Mixin.create({
               this.get('isRam5OverCapacity') ||
               this.get('isDisk5OverCapacity'));
     }
-  )
+  ),
+
+  isOverCapacityVcpu: Ember.computed('vcpuNeeded','vcpuAvailable', function() {
+    return (this.get('vcpuNeeded') > this.get('vcpuAvailable'));
+  }),
+  isOverCapacityRam: Ember.computed('ramNeeded','ramAvailable', function() {
+    return (this.get('ramNeeded') > this.get('ramAvailable'));
+  }),
+  isOverCapacityDisk: Ember.computed('diskNeeded','diskAvailable', function() {
+    return (this.get('diskNeeded') > this.get('diskAvailable'));
+  }),
+
+  errorTypes: Ember.computed('isOverCapacityVcpu','isOverCapacityRam', 'isOverCapacityDisk', function() {
+    let errorTypes = [];
+    if (this.get('isOverCapacityVcpu')) {
+      errorTypes.push('vCPU');
+    }
+    if (this.get('isOverCapacityRam')) {
+      errorTypes.push('RAM');
+    }
+    if (this.get('isOverCapacityDisk')) {
+      errorTypes.push('Disk');
+    }
+    return errorTypes.join(', ');
+  }),
+
+  isError: Ember.computed('isOverCapacityVcpu','isOverCapacityRam', 'isOverCapacityDisk', function() {
+    return (this.get('isOverCapacityVcpu') || this.get('isOverCapacityRam') || this.get('isOverCapacityDisk'));
+  }),
+
+  errorMsg: Ember.computed('isError', 'errorTypes', function() {
+    if (this.get('isError')) {
+      return `${this.get('errorTypes')} is overcommitted. Consider lowering node counts or ${this.get('errorTypes')} sizes.`;
+    }
+  })
+
 });
