@@ -73,48 +73,49 @@
 {{/if}}
 
 <div class="row">
-  <div class="col-xs-offset-1 col-xs-10">
+  <div class="col-xs-12">
     <p>Choose a network interface for registration on any node with multiple detected.
       Unselected nodes will not be registered.</p>
   </div>
 </div>
 
+<div class="row node-auto-detect-status">
+  <div class="col-xs-2 new-node-auto-detect-label-section">
+    <span><strong>Node Status:</strong></span>
+  </div>
+  <div class="col-xs-2 new-node-auto-detect-count-section">
+    {{#if hasInvalidAutoDetectedNodes}}
+      <span class="new-node-detect-invalid-icon fa fa-times-circle-o"></span>
+    {{/if}}
+    <span class="new-node-auto-detect-count">{{numAutoDetectedNodesInvalidCount}}</span>
+  </div>
+  <div class="col-xs-2 new-node-auto-detect-text-section">
+    <div>unassigned</div>
+    <div>interfaces</div>
+  </div>
+  <div class="col-xs-1 new-node-auto-detect-count-section light-left-border">
+    <span class="new-node-auto-detect-count">{{numAutoDetectedNodesValidCount}}</span>
+  </div>
+  <div class="col-xs-3 new-node-auto-detect-text-section">
+    <div>nodes selected</div>
+    <div>to register</div>
+  </div>
+</div>
+
 <div class="row">
-  <div class="col-xs-offset-1 col-xs-11">
+  <div class="col-xs-12">
     {{#if autoDetectNodesInProgress}}
-      <p>No nodes detected yet...</p>
+      <p><strong>No nodes detected yet...</strong></p>
     {{else}}
       {{#if noNodesDetected}}
-        <p>No nodes detected. Double check your connection information.</p>
-      {{/if}}
-
-      {{#if hasInvalidAutoDetectedNodes}}
-        <p class="new-node-auto-detect-count">{{numAutoDetectedNodesInvalidCount}} nodes need attention</p>
-      {{/if}}
-
-      {{#if hasDeselectedAutoDetectedNodes}}
-        <p class="new-node-auto-detect-count">{{numAutoDetectedNodesDeselectedCount}} set to not register</p>
-      {{/if}}
-
-      {{#if hasValidAutoDetectedNodes}}
-        <p class="new-node-auto-detect-count">{{numAutoDetectedNodesValidCount}}  nodes ready to register</p>
+        <p><strong>No nodes detected.</strong> <span class="new-node-auto-detect-error">{{autoDetectedNodesErrorMsg}}</span></p>
       {{/if}}
 
       <div class="new-node-detect-hosts-container">
-        {{#if hasAutoDetectedNodesMultiMac}}
-          <div class="new-node-detect-list-multimac">
-            <p>Select between available interfaces for the following nodes</p>
-            {{#each autoDetectedNodesMultiMac as |host index| }}
+        {{#if hasAutoDetectedNodes}}
+          <div class="new-node-detect-list">
+            {{#each autoDetectedNodes as |host index| }}
               {{auto-node-registration-mac-address host=host index=index}}
-            {{/each}}
-          </div>
-        {{/if}}
-
-        {{#if hasAutoDetectedNodesSingleMac}}
-          <div class="new-node-detect-list-singlemac">
-            <p>Nodes ready to register</p>
-            {{#each autoDetectedNodesSingleMac as |host index| }}
-              {{auto-node-registration-mac-address host=host index=index indexOffset=autoDetectedNodesMultiMac.length}}
             {{/each}}
           </div>
         {{/if}}

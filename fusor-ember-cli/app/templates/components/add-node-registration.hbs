@@ -10,8 +10,13 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-xs-offset-1 col-xs-11">
+      <div class="col-xs-12">
         <form class="form-horizontal add-node-form">
+          {{#base-f label="IP Address"
+                    labelSize='col-xs-3'
+                    inputSize='col-xs-4'}}
+            <div class="add-node-uneditable-input-container"><span>{{nodeInfo.address}}</span></div>
+          {{/base-f}}
 
           {{#base-f label="Driver"
                     labelSize='col-xs-3'
@@ -19,20 +24,13 @@
             <div class="add-node-uneditable-input-container"><span>{{nodeDriverHumanized}}</span></div>
           {{/base-f}}
 
-          {{#base-f label=newNodeAddressLabel
-                    labelSize='col-xs-3'
-                    inputSize='col-xs-4'}}
-            <div class="add-node-uneditable-input-container"><span>{{nodeInfo.address}}</span></div>
-          {{/base-f}}
-
-
           {{#base-f label=newNodeUsernameLabel
                     labelSize='col-xs-3'
                     inputSize='col-xs-4'}}
             <div class="add-node-uneditable-input-container"><span>{{nodeInfo.username}}</span></div>
           {{/base-f}}
 
-          {{text-f  cssId="manualPasswordInput2"
+          {{text-f  cssId="addNodePasswordInput"
                     label=newNodePasswordLabel
                     type='password'
                     labelSize='form-label-nowrap col-xs-3'
@@ -41,17 +39,23 @@
                     resetErrorsMessageKey=resetErrorsMessageKey
                     isRequired=true}}
 
-          {{#each nodeInfo.macAddresses as |macAddress key| }}
-            {{new-node-registration-mac-address macAddress=macAddress macAddressValidator=macAddressValidator prefix="addNode" index=key}}
-          {{/each}}
-        </form>
-        <div class="row">
-          <div class="col-xs-offset-3 col-xs-9">
-            <button type="button" id="manualAddMacAddressButton" class="btn btn-primary" {{action "addMacAddress"}}><i
-                class="fa fa-plus"></i> Add Another Node
-            </button>
+          <div class="row">
+            <div class="col-xs-9 add-node-textarea-instruction">
+              <p>One or more nodes of the above IP address can be specified by supplying
+                their MAC address(es), <strong>one address per line</strong>.</p>
+            </div>
           </div>
-        </div>
+          {{textarea-f-alt2 cssId="addNodeMacAddressInput"
+                            label="MAC address(es)"
+                            value=manualMacAddresses
+                            validator=manualMacAddressesValidator
+                            resetErrorsMessageKey=resetErrorsMessageKey
+                            labelContainerClass="col-xs-3"
+                            inputContainerClass="col-xs-4"
+                            errorContainerClass="col-xs-5"
+                            rows=3
+                            spellcheck=false}}
+        </form>
       </div>
     </div>
   {{/pf-modal-body}}

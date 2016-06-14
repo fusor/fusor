@@ -115,8 +115,8 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
 
   registerNodes(nodeInfo) {
     nodeInfo.get('macAddresses').forEach((macAddress) => {
-      if (macAddress && Ember.isPresent(macAddress.value)) {
-        this.registerNode(nodeInfo, macAddress.value);
+      if (macAddress && Ember.isPresent(macAddress.get('value'))) {
+        this.registerNode(nodeInfo, macAddress.get('value'));
       }
     });
   },

@@ -1,0 +1,97 @@
+<form class="form-horizontal new-node-form-specify">
+
+  {{text-f  cssId="newNodeIpAddressInput"
+            label="IP Address"
+            type="text"
+            labelSize="col-xs-3"
+            inputSize="col-xs-4"
+            value=nodeInfo.address
+            validator=hostAddressValidator
+            resetErrorsMessageKey=resetErrorsMessageKey
+            isRequired=true}}
+
+  {{select-req-f  cssId="newNodeDriverInput"
+                  label="Driver"
+                  labelSize="col-xs-3"
+                  inputSize="col-xs-4"
+                  content=drivers
+                  value=nodeInfo.driver
+                  isValid=isDriverValid
+                  showValidationError=showDriverValidationError
+                  isRequired=true}}
+
+  {{text-f  cssId="newNodeIpmiUserInput"
+            label=newNodeUsernameLabel
+            type="text"
+            labelSize="col-xs-3"
+            inputSize="col-xs-4"
+            value=nodeInfo.username
+            resetErrorsMessageKey=resetErrorsMessageKey
+            isRequired=true}}
+
+  {{text-f  cssId="newNodePasswordInput"
+            label=newNodePasswordLabel
+            type="password"
+            labelSize="form-label-nowrap col-xs-3"
+            inputSize="col-xs-4"
+            value=nodeInfo.password
+            resetErrorsMessageKey=resetErrorsMessageKey
+            isRequired=true}}
+
+  <div class="form-group">
+    <label class="control-label col-xs-3" for="registerNodesAutoInput">Auto-Detect</label>
+    <div class="col-xs-4 bs-switch-register-nodes-auto">{{bs-switch checked=registerNodesAuto}}</div>
+  </div>
+</form>
+
+{{#if isNewNodeMethodManual}}
+  <form class="form-horizontal new-node-form-manual">
+    <div class="row">
+      <div class="col-xs-offset-3 col-xs-7">
+        <p>One or more nodes of the above IP address can be specified by supplying
+          their MAC address(es), <strong>one address per line</strong>.</p>
+      </div>
+    </div>
+    {{textarea-f-alt  cssId="newNodeMacAddressManualInput"
+                      label="MAC address(es)"
+                      value=manualMacAddresses
+                      validator=manualMacAddressesValidator
+                      resetErrorsMessageKey=resetErrorsMessageKey
+                      inputContainerClass="mac-address-manual-container col-xs-offset-3 col-xs-3"
+                      errorContainerClass="col-xs-5"
+                      rows=3
+                      spellcheck=false}}
+  </form>
+{{/if}}
+
+{{#if isNewNodeMethodAuto}}
+  <form class="form-horizontal new-node-form-auto">
+    <div class="row">
+      <div class="col-xs-offset-3 col-xs-7">
+        <p>Auto-detection works with a limited number of vendors, but will
+          attempt to find any nodes associated with the above IP address,
+          using the credentials supplied.</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-3"></div>
+      {{#if isIpmi}}
+        {{select-req-f  cssId="newNodeVendorInputIpmi"
+                        label=newNodeVendorLabel
+                        labelSize="left-aligned-label col-xs-2"
+                        inputSize="col-xs-3"
+                        content=vendors
+                        value=ipmiVendor
+                        isRequired=true}}
+      {{else}}
+        {{select-req-f  cssId="newNodeVendorInputSsh"
+                        label=newNodeVendorLabel
+                        labelSize="left-aligned-label col-xs-2"
+                        inputSize="col-xs-3"
+                        content=vendors
+                        value=virtVendor
+                        isRequired=true}}
+      {{/if}}
+    </div>
+  </form>
+{{/if}}

@@ -532,6 +532,14 @@ table.fusor-table {
   border:2px solid red;
 }
 
+.text-f-alt .text-area-validation-errors-right {
+  padding-top: 23px;
+}
+
+.text-f-alt2 .text-area-validation-errors-right {
+  padding-left: 0;
+}
+
 /* override alert padding in Sat6 that is 34px */
 .rhci-alert {
   padding-left: 15px !important;

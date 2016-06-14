@@ -1,6 +1,7 @@
 import Ember from 'ember';
+import TextareaF from "../mixins/textarea-f-mixin";
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(TextareaF, {
 
   rowsPassed: Ember.computed('rows', function() {
     if(this.get('rows')) {
@@ -8,14 +9,5 @@ export default Ember.Component.extend({
         return true;
       }
     }
-  }),
-
-  numRows: Ember.computed(function () {
-    return this.getWithDefault('rows', '');
-  }),
-
-  numCols: Ember.computed(function () {
-    return this.getWithDefault('cols', '');
   })
-
 });

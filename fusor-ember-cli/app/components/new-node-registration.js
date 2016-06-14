@@ -32,16 +32,20 @@ export default Ember.Component.extend(OspNodeForm, {
     return this.get('step') === 2;
   }),
 
-  isNewNodeMethodAuto: Ember.computed('registerNodesMethod', function () {
-    return this.get('registerNodesMethod') === 'auto_detect';
+  isNewNodeMethodSpecify: Ember.computed('registerNodesRadio', function () {
+    return this.get('registerNodesRadio') === 'specify';
   }),
 
-  isNewNodeMethodCSV: Ember.computed('registerNodesMethod', function () {
-    return this.get('registerNodesMethod') === 'csv_upload';
+  isNewNodeMethodAuto: Ember.computed('isNewNodeMethodSpecify', 'registerNodesAuto', function () {
+    return this.get('isNewNodeMethodSpecify') && this.get('registerNodesAuto');
   }),
 
-  isNewNodeMethodManual: Ember.computed('registerNodesMethod', function () {
-    return this.get('registerNodesMethod') === 'manual';
+  isNewNodeMethodManual: Ember.computed('isNewNodeMethodSpecify', 'registerNodesAuto', function () {
+    return this.get('isNewNodeMethodSpecify') && !this.get('registerNodesAuto');
+  }),
+
+  isNewNodeMethodCSV: Ember.computed('registerNodesRadio', function () {
+    return this.get('registerNodesRadio') === 'csv_upload';
   }),
 
   isPxeSsh: Ember.computed('nodeInfo.driver', function () {
@@ -60,16 +64,8 @@ export default Ember.Component.extend(OspNodeForm, {
     return Ember.isPresent(this.get('csvErrors'));
   }),
 
-  hasAutoDetectedNodesMultiMac: Ember.computed('autoDetectedNodesMultiMac.[]', function () {
-    return this.get('autoDetectedNodesMultiMac.length') > 0;
-  }),
-
-  hasAutoDetectedNodesSingleMac: Ember.computed('autoDetectedNodesSingleMac.[]', function () {
-    return this.get('autoDetectedNodesSingleMac.length') > 0;
-  }),
-
-  hasAutoDetectedNodes: Ember.computed('hasAutoDetectedNodesMultiMac', 'hasAutoDetectedNodesSingleMac', function () {
-    return this.get('hasAutoDetectedNodesMultiMac') && this.get('hasAutoDetectedNodesSingleMac');
+  hasAutoDetectedNodes: Ember.computed('autoDetectedNodes.[]', function () {
+    return this.get('autoDetectedNodes.length') > 0;
   }),
 
   noNodesDetected: Ember.computed('hasAutoDetectedNodes', 'detectNodesCanceled', function () {
@@ -77,12 +73,10 @@ export default Ember.Component.extend(OspNodeForm, {
   }),
 
   numAutoDetectedNodesInvalidCount: Ember.computed(
-    'autoDetectedNodesMultiMac.@each.value',
-    'autoDetectedNodesMultiMac.@each.selected',
-    'autoDetectedNodesSingleMac.@each.value',
-    'autoDetectedNodesSingleMac.@each.selected',
+    'autoDetectedNodes.@each.value',
+    'autoDetectedNodes.@each.selected',
     function () {
-      return this.countAutoDetectedNodes(node => node.get('selected') && !Ember.isPresent(node.get('value')));
+      return this.countAutoDetectedNodes(node => node.get('selected') && Ember.isBlank(node.get('value')));
     }
   ),
 
@@ -90,33 +84,16 @@ export default Ember.Component.extend(OspNodeForm, {
     return this.get('numAutoDetectedNodesInvalidCount') > 0;
   }),
 
-  numAutoDetectedNodesDeselectedCount: Ember.computed(
-    'autoDetectedNodesMultiMac.@each.selected',
-    'autoDetectedNodesSingleMac.@each.selected',
-    function () {
-      return this.countAutoDetectedNodes(node => !node.get('selected'));
-    }
-  ),
-
-  hasDeselectedAutoDetectedNodes: Ember.computed('numAutoDetectedNodesDeselectedCount', function () {
-    return this.get('numAutoDetectedNodesDeselectedCount') > 0;
-  }),
-
   numAutoDetectedNodesValidCount: Ember.computed(
-    'autoDetectedNodesMultiMac.@each.value',
-    'autoDetectedNodesMultiMac.@each.selected',
-    'autoDetectedNodesSingleMac.@each.value',
-    'autoDetectedNodesSingleMac.@each.selected',
+    'autoDetectedNodes.@each.value',
+    'autoDetectedNodes.@each.selected',
     function () {
       return this.countAutoDetectedNodes(node => node.get('selected') && Ember.isPresent(node.get('value')));
     }
   ),
 
   countAutoDetectedNodes(matchFn) {
-    let numMultiMacNodes = this.get('autoDetectedNodesMultiMac').reduce((prev, node) => prev + (matchFn(node) ? 1 : 0), 0);
-    let numSingleMacNodes = this.get('autoDetectedNodesSingleMac').reduce((prev, node) => prev + (matchFn(node) ? 1 : 0), 0);
-
-    return numMultiMacNodes + numSingleMacNodes;
+    return this.get('autoDetectedNodes').reduce((prev, node) => prev + (matchFn(node) ? 1 : 0), 0);
   },
 
   hasValidAutoDetectedNodes: Ember.computed('numAutoDetectedNodesValidCount', function () {
@@ -128,20 +105,13 @@ export default Ember.Component.extend(OspNodeForm, {
   }),
 
   isValidAutoDetectInfo: Ember.computed(
-    'registerNodesMethod',
-    'nodeInfo.driver',
-    'nodeInfo.vendor',
-    'nodeInfo.address',
-    'nodeInfo.username',
-    'nodeInfo.password',
+    'isNewNodeMethodAuto',
+    'isValidConnectionInfo',
+    'selectedVendor',
     function () {
-      return this.get('registerNodesMethod') === 'auto_detect' &&
-        Ember.isPresent(this.get('nodeInfo.driver')) &&
-        Ember.isPresent(this.get('selectedVendor')) &&
-        Ember.isPresent(this.get('nodeInfo.address')) &&
-        Ember.isPresent(this.get('nodeInfo.username')) &&
-        Ember.isPresent(this.get('nodeInfo.password')) &&
-        this.get('hostAddressValidator').isValid(this.get('nodeInfo.address'));
+      return this.get('isNewNodeMethodAuto') &&
+        this.get('isValidConnectionInfo') &&
+        Ember.isPresent(this.get('selectedVendor'));
     }),
 
   isValidNewNodeAuto: Ember.computed(
@@ -189,15 +159,12 @@ export default Ember.Component.extend(OspNodeForm, {
     },
 
     submitRegisterNodes() {
-      console.log('registerNodesMethod', this.get('registerNodesMethod'));
-
-      let method = this.get('registerNodesMethod');
-
-      if (method === 'manual') {
+      if (this.get('isNewNodeMethodManual')) {
+        this.prepManualNodeInfo();
         this.sendAction('submitRegisterNodes', this.get('nodeInfo'));
-      } else if (method === 'csv_upload') {
+      } else if (this.get('isNewNodeMethodCSV')) {
         this.get('csvInfo').forEach(nodeInfo => this.sendAction('submitRegisterNodes', nodeInfo));
-      } else if (method === 'auto_detect') {
+      } else if (this.get('isNewNodeMethodAuto')) {
         this.prepAutoDetectNodeInfo();
         this.sendAction('submitRegisterNodes', this.get('nodeInfo'));
       }
@@ -221,14 +188,15 @@ export default Ember.Component.extend(OspNodeForm, {
       this.set('detectNodesCanceled', true);
       this.set('autoDetectNodesInProgress', false);
       this.set('detectNodesRequestNum', this.get('detectNodesRequestNum') + 1);
-      this.set('autoDetectedNodesMultiMac', []);
-      this.set('autoDetectedNodesSingleMac', []);
+      this.set('autoDetectedNodes', []);
+      this.set('autoDetectedNodesErrorMsg', null);
     }
   },
 
   initInfo() {
     this.eventBus.trigger(this.get('resetErrorsMessageKey'));
-    this.set('registerNodesMethod', 'auto_detect');
+    this.set('registerNodesRadio', 'specify');
+    this.set('registerNodesAuto', false);
     this.set('step', 1);
 
     this.set('nodeInfo', Ember.Object.create({
@@ -237,13 +205,14 @@ export default Ember.Component.extend(OspNodeForm, {
       address: null,
       username: null,
       password: null,
-      macAddresses: [Ember.Object.create({value: ''})]
+      macAddresses: []
     }));
 
     this.set('csvInfo', []);
     this.set('csvErrors', []);
-    this.set('autoDetectedNodesMultiMac', []);
-    this.set('autoDetectedNodesSingleMac', []);
+    this.set('manualMacAddresses', '');
+    this.set('autoDetectedNodes', []);
+    this.set('autoDetectedNodesErrorMsg', []);
   },
 
   detectNodes() {
@@ -254,8 +223,8 @@ export default Ember.Component.extend(OspNodeForm, {
     nodeInfo.set('username', nodeInfo.get('username').trim());
     nodeInfo.set('vendor', this.get('selectedVendor'));
 
-    this.set('autoDetectedNodesMultiMac', []);
-    this.set('autoDetectedNodesSingleMac', []);
+    this.set('autoDetectedNodes', []);
+    this.set('autoDetectedNodesErrorMsg', []);
     this.set('detectNodesRequestNum', detectNodesRequestNum);
 
     let driverParams = {
@@ -280,12 +249,12 @@ export default Ember.Component.extend(OspNodeForm, {
         "X-CSRF-Token": Ember.$('meta[name="csrf-token"]').attr('content')
       },
       data: JSON.stringify(driverParams)
-    }).then((result) => {
+    }).then(result => {
       if (detectNodesRequestNum === this.get('detectNodesRequestNum')) {
         this.updateAutoDetectedNodes(result.nodes);
         this.set('autoDetectNodesInProgress', false);
       }
-    }, (error) => {
+    }).catch(error => {
       console.log(error);
       if (detectNodesRequestNum === this.get('detectNodesRequestNum')) {
         this.set('detectNodesErrorMsg', `Unable to detect nodes. Failed with status code ${error.jqXHR.status}.`);
@@ -295,15 +264,20 @@ export default Ember.Component.extend(OspNodeForm, {
   },
 
   updateAutoDetectedNodes(hostArray) {
+    let autoDetectedNodesErrorMsg = null;
     let autoDetectedNodesMultiMac = [];
     let autoDetectedNodesSingleMac = [];
     let usedMacs = this.getPortMacAddresses();
+
+    if (hostArray.length === 1 && Ember.isEmpty(hostArray[0].mac_addresses)) {
+      autoDetectedNodesErrorMsg = hostArray[0].hostname;
+    }
 
     hostArray.forEach(hostHash => {
       let host = Ember.Object.create({
         name: hostHash.hostname,
         macAddresses: hostHash.mac_addresses,
-        selected: true
+        selected: false
       });
 
       if (!this.autoDetectedNodeIsValid(host, usedMacs)) {
@@ -319,8 +293,8 @@ export default Ember.Component.extend(OspNodeForm, {
       }
     });
 
-    this.set('autoDetectedNodesMultiMac', autoDetectedNodesMultiMac);
-    this.set('autoDetectedNodesSingleMac', autoDetectedNodesSingleMac);
+    this.set('autoDetectedNodesErrorMsg', autoDetectedNodesErrorMsg);
+    this.set('autoDetectedNodes', autoDetectedNodesMultiMac.concat(autoDetectedNodesSingleMac));
   },
 
   autoDetectedNodeIsValid(host, usedMacs) {
@@ -341,13 +315,7 @@ export default Ember.Component.extend(OspNodeForm, {
 
   prepAutoDetectNodeInfo() {
     let nodeInfo = this.get('nodeInfo');
-    let macAddresses = this.get('autoDetectedNodesMultiMac').filter(node => node.get('selected'));
-
-    this.get('autoDetectedNodesSingleMac').forEach(node => {
-      if (node.get('selected')) {
-        macAddresses.pushObject(node);
-      }
-    });
+    let macAddresses = this.get('autoDetectedNodes').filter(node => node.get('selected'));
 
     nodeInfo.set('macAddresses', macAddresses);
     nodeInfo.set('vendor', this.get('selectedVendor'));

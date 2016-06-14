@@ -1,0 +1,36 @@
+<div class="form-group text-f-alt2 {{if hasError 'has-error'}}">
+
+  <label class="control-label {{labelContainerClass}}">
+    {{#if isRequired}}
+      <span class='errorForValidation'>*</span>
+    {{/if}}
+    {{label}}
+    {{#if showHelpPopover}}
+      <button {{action 'doNothing' bubbles=false}}
+          class="pficon fa fa-info-circle rhci-popover-button"
+          data-toggle="popover">
+      </button>
+    {{/if}}
+  </label>
+  <div class="{{inputContainerClass}}">
+
+    {{textarea  class='form-control'
+                value=value
+                placeholder=placeholder
+                rows=numRows
+                cols=numCols
+                spellcheck=spellcheckEnabled
+                id=cssId
+                focus-out="showValidationErrors"
+                disabled=disabled}}
+  </div>
+  {{#if showValidationError}}
+    <div class="text-area-validation-errors-right {{errorContainerClass}}">
+      {{#each validationMessages as |message|}}
+        <p class="error errorForValidation">{{message}}</p>
+      {{/each}}
+
+      <p class="error errorForValidation">{{errors.name}}</p>
+    </div>
+  {{/if}}
+</div>

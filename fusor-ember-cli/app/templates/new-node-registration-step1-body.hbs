@@ -3,26 +3,24 @@
     <p>Nodes are registered with OpenStack by connecting to their power management interfaces.
       In some environments, nodes can be auto-detected using those interfaces.
       Otherwise, you can upload a CSV file that includes node details, or manually provide those details for each node.</p>
-    <p>Determine how to register nodes.</p>
+    <h3>Determine how to register nodes.</h3>
   </div>
 </div>
 <div class="row">
-  <div class="col-xs-offset-1 col-xs-11">
-
     <div class='radio'>
       <label>
-        {{#radio-button value="auto_detect" groupValue=registerNodesMethod id="optionNewNodeMethodAuto"}}{{/radio-button}}
-        Auto-detection
+        {{#radio-button value="specify" groupValue=registerNodesRadio id="optionNewNodeMethodSpecify"}}{{/radio-button}}
+        Auto-Detect or Specify Nodes
       </label>
     </div>
 
-    {{#if isNewNodeMethodAuto}}
-      {{partial "new-node-registration-auto"}}
+    {{#if isNewNodeMethodSpecify}}
+      {{partial "new-node-registration-specify"}}
     {{/if}}
 
     <div class="radio">
       <label>
-        {{#radio-button value="csv_upload" groupValue=registerNodesMethod id="optionNewNodeMethodCSV"}}{{/radio-button}}
+        {{#radio-button value="csv_upload" groupValue=registerNodesRadio id="optionNewNodeMethodCSV"}}{{/radio-button}}
         Upload a CSV file
       </label>
     </div>
@@ -30,17 +28,4 @@
     {{#if isNewNodeMethodCSV}}
       {{partial "new-node-registration-csv"}}
     {{/if}}
-
-    <div class="radio">
-      <label>
-        {{#radio-button value="manual" groupValue=registerNodesMethod id="optionNewNodeMethodManual"}}{{/radio-button}}
-        Manual entry
-      </label>
-    </div>
-
-    {{#if isNewNodeMethodManual}}
-      {{partial "new-node-registration-manual"}}
-    {{/if}}
-
-  </div>
 </div>
