@@ -1,3 +1,5 @@
+load "#{Fusor::Engine.root}/lib/tasks/fusor_setup.rb"
+
 # Tasks
 namespace :fusor do
   namespace :example do
@@ -5,6 +7,13 @@ namespace :fusor do
     task :task => :environment do
       # Task goes here
     end
+  end
+end
+
+namespace :fusor do
+  desc 'Import Setup for Fusor'
+  task :setup => :environment do
+    FusorSetup.setup
   end
 end
 

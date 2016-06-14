@@ -1,0 +1,8 @@
+zerombr
+clearpart --all --initlabel
+part /boot --fstype ext3 --size=200 --asprimary
+part swap --recommended
+part pv.01 --size=1 --grow
+
+volgroup VolGroup01 pv.01
+logvol / --fstype ext4 --name=root --vgname=VolGroup01 --size=1 --grow
