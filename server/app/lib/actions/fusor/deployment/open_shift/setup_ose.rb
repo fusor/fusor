@@ -75,6 +75,7 @@ module Actions
             opts[:ose_password] = "deployment.openshift_user_password"
 
             opts[:subdomain_name] = deployment.openshift_subdomain_name
+            opts[:helloworld_sample_app] = deployment.openshift_sample_helloworld
 
             opts
           end

@@ -59,6 +59,7 @@ module OSEInstaller
         opts.on('-o', '--ose_user [STRING]', String, 'OSE login username') { |o| options[:ose_user] = o }
         opts.on('-w', '--ose_password [STRING]', String, 'OSE login password') { |w| options[:ose_password] = w }
         opts.on('-l', '--log [STRING]', String, 'log file path') { |l| options[:log] = l }
+        opts.on('-y', '--helloworld_sample_app', 'Deploy sample hello world application') { |y| options[:helloworld_sample_app] = y }
         opts.on('-v', '--verbose', 'Run verbosely') { |v| options[:verbose] = v }
       end.parse!
 
@@ -98,6 +99,7 @@ module OSEInstaller
       template = template.gsub(/<ose_password>/, opts[:ose_password])
 
       template = template.gsub(/<subdomain_name>/, opts[:subdomain_name])
+      template = template.gsub(/<helloworld_sample_app>/, opts[:helloworld_sample_app] ? "true" : "false")
 
       template = template.gsub(/<output_dir>/, @output_dir)
 
