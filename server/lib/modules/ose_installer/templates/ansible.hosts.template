@@ -32,6 +32,7 @@ http_pass_file=/etc/origin/openshift-passwd
 output_dir=<output_dir>
 
 subdomain_name=<subdomain_name>
+helloworld_sample_app=<helloworld_sample_app>
 
 # host group for masters
 [masters]

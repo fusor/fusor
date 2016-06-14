@@ -102,6 +102,8 @@
 
     - name: Create Hello World project
       command: oc new-project helloworld
+      when: helloworld_sample_app
 
     - name: Create hello world pod
       command: oc create -f /home/{{ ose_user }}/pod_examples/hello_openshift.json
+      when: helloworld_sample_app
