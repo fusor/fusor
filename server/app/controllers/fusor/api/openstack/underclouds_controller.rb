@@ -10,7 +10,7 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
-require 'egon/undercloud/ssh-connection'
+require 'net/ssh'
 require 'timeout'
 require 'socket'
 require 'ipaddr'
@@ -31,16 +31,15 @@ module Fusor
           underuser = params[:underuser]
           underpass = params[:underpass]
 
-          ssh = Egon::Undercloud::SSHConnection.new(underhost, underuser, underpass)
-          io = StringIO.new
-          ssh.execute("sudo hiera admin_password", io)
-          admin = io.string.strip
-          if admin.include?('failed') || admin.include?('error') || admin.include?('fingerprint')
-            render json: {errors: admin}, status: 422
-          else
-            io = StringIO.new
-            ssh.execute("sudo hiera controller_host", io)
-            ip_addr = io.string.strip
+          begin
+            ssh = Net::SSH.start(underhost, underuser, :password => underpass, :timeout => 2,
+                                 :auth_methods => ["password"], :number_of_password_prompts => 0,
+                                 :paranoid => false)
+            admin_raw = ssh.exec!('sudo hiera admin_password')
+            ip_addr_raw = ssh.exec!('sudo hiera controller_host')
+            ssh.close
+            admin = admin_raw.strip
+            ip_addr = ip_addr_raw.strip
 
             # This is deplorable, but the undercloud services only listen on the
             # provisioning network, which may or may not be accessible from here.
@@ -61,6 +60,8 @@ module Fusor
               @deployment.openstack_deployment.save(:validate => false)
               render :json => {:undercloud => @deployment.id}
             end
+          rescue Exception => e
+            render json: {errors: e.message}, status: 422
           end
         end
 
