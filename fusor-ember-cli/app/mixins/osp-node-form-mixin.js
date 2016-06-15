@@ -28,6 +28,13 @@ export default Ember.Mixin.create({
 
   virtVendor: 'kvm',
 
+  helpText: Ember.Object.create({
+    ipAddress: 'Address to the system that manages the nodes you want to register',
+    driver: 'Type of power management interface that manages the nodes you want to register',
+    username: 'Administrator username for the system that manages the nodes you want to register',
+    password: 'Password for the system that manages the nodes you want to register'
+  }),
+
   vendors: Ember.computed('nodeInfo.driver', function () {
     switch (this.get('nodeInfo.driver')) {
     case 'pxe_ssh':
