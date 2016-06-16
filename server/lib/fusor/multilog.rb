@@ -1,5 +1,6 @@
 require 'logger'
 
+# rubocop:disable Eval
 class MultiLogger
   attr_reader :logdev
 
@@ -37,18 +38,49 @@ class MultiLogger
   end
 
   def collect(base_path)
-    if check_nested_key(SETTINGS, [:fusor, :system, :logging, :watch])
-      SETTINGS[:fusor][:system][:logging][:watch].each do |entry|
-        file = entry[:file]
+    if "development".eql? Rails.env
+      self.info("in development fork")
+      if check_nested_key(SETTINGS, [:fusor, :system, :logging, :watch, :development])
+        SETTINGS[:fusor][:system][:logging][:watch][:development].each do |entry|
+          file_entry = entry[:file]
+          file = eval("\"" + file_entry + "\"") # this is to resolve #{} entries in yaml
 
-        if !@watchlist.key? file
-          # make containing folder
-          path = File.join(base_path, File.dirname(file))
-          FileUtils.mkdir_p(path) unless File.exist?(path)
+          # some extra logic for devel env logging only.
+          log_file ||= file
+          if file.include? "development.log"
+            log_file = "/var/log/foreman/development.log"
+          end
 
-          # spawn tail process and add to @watchlist
-          pid = Process.spawn("tail -f #{file} >> " + File.join(base_path, file))
-          @watchlist[file] = {:path => File.join(base_path, file), :pid => pid}
+          if !@watchlist.key? log_file
+            # make containing folder
+            path = File.join(base_path, File.dirname(log_file))
+            FileUtils.mkdir_p(path) unless File.exist?(path)
+
+            # spawn tail process and add to @watchlist
+            self.info("tail -f #{file} >> " + File.join(base_path, log_file))
+            pid = Process.spawn("tail -f #{file} >> " + File.join(base_path, log_file), :out => '/dev/null', :err => '/dev/null')
+            @watchlist[file] = {:path => File.join(base_path, log_file), :pid => pid}
+            Process.detach pid
+          end
+        end
+      end
+    elsif "production".eql? Rails.env
+      self.info("in production fork")
+      if check_nested_key(SETTINGS, [:fusor, :system, :logging, :watch, :production])
+        SETTINGS[:fusor][:system][:logging][:watch][:production].each do |entry|
+          file_entry = entry[:file]
+          file = eval("\"" + file_entry + "\"") # this is to resolve #{} entries in yaml
+
+          if !@watchlist.key? file
+            # make containing folder
+            path = File.join(base_path, File.dirname(file))
+            FileUtils.mkdir_p(path) unless File.exist?(path)
+
+            # spawn tail process and add to @watchlist
+            self.info("tail -f #{file} >> " + File.join(base_path, file))
+            pid = Process.spawn("tail -f #{file} >> " + File.join(base_path, file))
+            @watchlist[file] = {:path => File.join(base_path, file), :pid => pid}
+          end
         end
       end
     else
@@ -57,20 +89,40 @@ class MultiLogger
   end
 
   def stop_collect(base_path)
-    if check_nested_key(SETTINGS, [:fusor, :system, :logging, :watch])
-      SETTINGS[:fusor][:system][:logging][:watch].each do |entry|
-        file = File.join(base_path, entry[:file])
+    if "development".eql? Rails.env
+      if check_nested_key(SETTINGS, [:fusor, :system, :logging, :watch, :development])
+        SETTINGS[:fusor][:system][:logging][:watch][:development].each do |entry|
+          file = File.join(base_path, entry[:file])
 
-        procs = `ps -elf | grep "#{file}" | grep -v "grep"`
-        procs.split("\n").each do |p|
-          pid = p.split(" ")[3].to_i
-          terminate(pid)
+          procs = `ps -elf | grep "#{file}" | grep -v "grep"`
+          procs.split("\n").each do |p|
+            pid = p.split(" ")[3].to_i
+            terminate(pid)
+          end
+
+          procs = `ps -elf | grep "#{entry[:file]}" | grep -v "grep"`
+          procs.split("\n").each do |p|
+            pid = p.split(" ")[3].to_i
+            terminate(pid)
+          end
         end
+      end
+    elsif "production".eql? Rails.env
+      if check_nested_key(SETTINGS, [:fusor, :system, :logging, :watch, :production])
+        SETTINGS[:fusor][:system][:logging][:watch][:production].each do |entry|
+          file = File.join(base_path, entry[:file])
 
-        procs = `ps -elf | grep "#{entry[:file]}" | grep -v "grep"`
-        procs.split("\n").each do |p|
-          pid = p.split(" ")[3].to_i
-          terminate(pid)
+          procs = `ps -elf | grep "#{file}" | grep -v "grep"`
+          procs.split("\n").each do |p|
+            pid = p.split(" ")[3].to_i
+            terminate(pid)
+          end
+
+          procs = `ps -elf | grep "#{entry[:file]}" | grep -v "grep"`
+          procs.split("\n").each do |p|
+            pid = p.split(" ")[3].to_i
+            terminate(pid)
+          end
         end
       end
     end
