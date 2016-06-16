@@ -115,6 +115,15 @@ const NumberValidator = Validator.extend({
   }
 });
 
+const IntegerValidator = Validator.extend({
+  message: 'must be an integer',
+
+  isValid(value) {
+    //http://stackoverflow.com/questions/14636536/how-to-check-if-a-variable-is-an-integer-in-javascript
+    return !isNaN(value) && (function(x) { return (x | 0) === x; })(parseFloat(value));
+  }
+});
+
 const LengthValidator = Validator.extend({
   isValid(value) {
     let min = this.get('min'), max = this.get('max');
@@ -334,6 +343,7 @@ export {
   PresenceValidator,
   EqualityValidator,
   NumberValidator,
+  IntegerValidator,
   LengthValidator,
   PasswordValidator,
   RequiredPasswordValidator,

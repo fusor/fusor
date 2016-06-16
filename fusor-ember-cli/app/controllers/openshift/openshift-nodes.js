@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 import OpenshiftMixin from "../../mixins/openshift-mixin";
+import { AllValidator, PresenceValidator, NumberValidator, IntegerValidator } from '../../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
 
@@ -43,6 +44,13 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
 
   showEnvironmentSummary: Ember.computed('numNodes', 'storageSize', function() {
     return (Ember.isPresent(this.get('numNodes')) && Ember.isPresent(this.get('storageSize')));
+  }),
+
+  positiveIntegerValidator: AllValidator.create({
+    validators: [
+      IntegerValidator.create({}),
+      NumberValidator.create({min: 1})
+    ]
   }),
 
   actions: {

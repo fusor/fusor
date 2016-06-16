@@ -911,9 +911,11 @@ span.hanging-indent{
 .ose-custom-input {
   padding: 2px 0px;
   width: 45px;
+  height: 32px;
   text-align: center;
   color: #000;
-  border: solid 4px #0099d3;
+  border: solid 2px #0099d3;
+  display: inline-block;
 }
 
 .ose-node-label {
@@ -927,4 +929,14 @@ span.hanging-indent{
 
 .ose-number-buttons-block {
   padding: 8px 0px;
+}
+
+.ose-custom-field {
+  display: inline;
+}
+
+.simple-text-error {
+  display: inline-block;
+  vertical-align: top;
+  margin-bottom: 0px !important; /* overides form-group default */
 }

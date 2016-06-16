@@ -42,7 +42,7 @@
     </p>
 
 <div class='row'>
-  <div class='col-xs-8 col-sm-8 col-md-7 col-lg-5 ose-number-node-buttons'>
+  <div class='col-xs-12 col-sm-12 col-md-9 col-lg-7 ose-number-node-buttons'>
     <div class='ose-number-buttons-block'>
       <span class='ose-node-label'>Master Nodes</span>
       {{button-selection label=1
@@ -70,9 +70,11 @@
                          changed="numMasterNodesChanged"
                          disabled=is5MasterOverCapacity}}
       {{#if isCustomNumMasterNodes}}
-        {{input value=numMasterNodes
-                class='ose-custom-input'
-                placeholder='Enter'}}
+        {{simple-text-f value=numMasterNodes
+                        class='ose-custom-field'
+                        disabled=deploymentController.isStarted
+                        validator=positiveIntegerValidator
+                        placeholder='Enter'}}
       {{else}}
         <a {{action 'showCustomNumMasterNodes'}}>advanced</a>
       {{/if}}
@@ -105,9 +107,11 @@
                          changed="numWorkerNodesChanged"
                          disabled=is5WorkerOverCapacity}}
       {{#if isCustomNumWorkerNodes}}
-        {{input value=numWorkerNodes
-                class='ose-custom-input'
-                placeholder='Enter'}}
+        {{simple-text-f value=numWorkerNodes
+                        class='ose-custom-field'
+                        disabled=deploymentController.isStarted
+                        validator=positiveIntegerValidator
+                        placeholder='Enter'}}
       {{else}}
         <a {{action 'showCustomNumWorkerNodes'}}>advanced</a>
       {{/if}}
@@ -138,9 +142,12 @@
                        groupValue=model.openshift_storage_size
                        changed="storageSizeChanged"}}
     {{#if isCustomStorageSize}}
-      {{input value=model.openshift_storage_size
-              class='ose-custom-input'
-              placeholder='Enter'}} GB
+      {{simple-text-f value=model.openshift_storage_size
+                      class='ose-custom-field'
+                      disabled=deploymentController.isStarted
+                      validator=positiveIntegerValidator
+                      placeholder='Enter'
+                      suffix='GB'}}
     {{else}}
       <a {{action 'showCustomStorageSize'}}>advanced</a>
     {{/if}}
@@ -171,6 +178,7 @@
                        numMasterNodes=numMasterNodes
                        numWorkerNodes=numWorkerNodes
                        storageSize=storageSize
+                       validator=positiveIntegerValidator
                        masterVcpu=masterVcpu
                        masterRam=masterRam
                        masterDisk=masterDisk
