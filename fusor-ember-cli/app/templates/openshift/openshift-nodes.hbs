@@ -43,69 +43,44 @@
 
 <div class='row'>
   <div class='col-xs-12 col-sm-12 col-md-9 col-lg-7 ose-number-node-buttons'>
+
     <div class='ose-number-buttons-block'>
       <span class='ose-node-label'>Master Nodes</span>
-      {{button-selection label=1
-                         value=1
-                         groupValue=numMasterNodes
-                         changed="numMasterNodesChanged"}}
-      {{button-selection label=2
-                         value=2
-                         groupValue=numMasterNodes
-                         changed="numMasterNodesChanged"
-                         disabled=is2MasterOverCapacity}}
-      {{button-selection label=3
-                         value=3
-                         groupValue=numMasterNodes
-                         changed="numMasterNodesChanged"
-                         disabled=is3MasterOverCapacity}}
-      {{button-selection label=4
-                         value=4
-                         groupValue=numMasterNodes
-                         changed="numMasterNodesChanged"
-                         disabled=is4MasterOverCapacity}}
-      {{button-selection label=5
-                         value=5
-                         groupValue=numMasterNodes
-                         changed="numMasterNodesChanged"
-                         disabled=is5MasterOverCapacity}}
-      {{#if isCustomNumMasterNodes}}
-        {{simple-text-f value=numMasterNodes
-                        class='ose-custom-field'
-                        disabled=deploymentController.isStarted
-                        validator=positiveIntegerValidator
-                        placeholder='Enter'}}
-      {{else}}
-        <a {{action 'showCustomNumMasterNodes'}}>advanced</a>
-      {{/if}}
 
+      {{button-selection
+        label=1
+        value=1
+        groupValue=numMasterNodes
+        disabled=false}}
+
+      {{tool-tip faIcon='fa-info-circle'
+                 title="OpenShift deployments currently only support one Master Node"}}
     </div>
+
     <div class='ose-number-buttons-block'>
       <span class='ose-node-label worker-nodes-label'>Worker Nodes</span>
-      {{button-selection label=1
-                         value=1
-                         groupValue=numWorkerNodes
-                         changed="numWorkerNodesChanged"}}
-      {{button-selection label=2
-                         value=2
-                         groupValue=numWorkerNodes
-                         changed="numWorkerNodesChanged"
-                         disabled=is2WorkerOverCapacity}}
-      {{button-selection label=3
-                         value=3
-                         groupValue=numWorkerNodes
-                         changed="numWorkerNodesChanged"
-                         disabled=is3WorkerOverCapacity}}
-      {{button-selection label=4
-                         value=4
-                         groupValue=numWorkerNodes
-                         changed="numWorkerNodesChanged"
-                         disabled=is4WorkerOverCapacity}}
-      {{button-selection label=5
-                         value=5
-                         groupValue=numWorkerNodes
-                         changed="numWorkerNodesChanged"
-                         disabled=is5WorkerOverCapacity}}
+
+      {{
+        button-selection
+        label=_firstWorkerNode.ordinal
+        value=_firstWorkerNode.ordinal
+        groupValue=numWorkerNodes
+        customFocused=isCustomNumWorkerNodes
+        changed="numWorkerNodesChanged"
+      }}
+
+      {{#each _workerNodesMinusFirst as |_node|}}
+        {{
+          button-selection
+          label=_node.ordinal
+          value=_node.ordinal
+          groupValue=numWorkerNodes
+          changed="numWorkerNodesChanged"
+          customFocused=isCustomNumWorkerNodes
+          disabled=_node.isOverCapacity
+        }}
+      {{/each}}
+
       {{#if isCustomNumWorkerNodes}}
         {{simple-text-f value=numWorkerNodes
                         class='ose-custom-field'
@@ -113,13 +88,13 @@
                         validator=positiveIntegerValidator
                         placeholder='Enter'}}
       {{else}}
-        <a {{action 'showCustomNumWorkerNodes'}}>advanced</a>
+        <a {{action 'showCustomNumWorkerNodes'}}>custom</a>
       {{/if}}
+
     </div>
     </div>
   </div>
 
-    <br />
     <br />
     <p>
       Select how much additional storage is needed for Docker containers on each worker node.
@@ -128,18 +103,22 @@
     {{button-selection label='15 GB'
                        value=15
                        groupValue=model.openshift_storage_size
+                       customFocused=isCustomStorageSize
                        changed="storageSizeChanged"}}
     {{button-selection label='20 GB'
                        value=20
                        groupValue=model.openshift_storage_size
+                       customFocused=isCustomStorageSize
                        changed="storageSizeChanged"}}
     {{button-selection label='25 GB'
                        value=25
                        groupValue=model.openshift_storage_size
+                       customFocused=isCustomStorageSize
                        changed="storageSizeChanged"}}
     {{button-selection label='30 GB'
                        value=30
                        groupValue=model.openshift_storage_size
+                       customFocused=isCustomStorageSize
                        changed="storageSizeChanged"}}
     {{#if isCustomStorageSize}}
       {{simple-text-f value=model.openshift_storage_size
@@ -149,11 +128,12 @@
                       placeholder='Enter'
                       suffix='GB'}}
     {{else}}
-      <a {{action 'showCustomStorageSize'}}>advanced</a>
+      <a {{action 'showCustomStorageSize'}}>custom</a>
     {{/if}}
 
     {{#if showEnvironmentSummary}}
-        {{ose-env-summary numNodes=numNodes
+        {{ose-env-summary numNodesDisplay=numNodesDisplay
+                          positiveIntegerValidator=positiveIntegerValidator
                           numMasterNodes=numMasterNodes
                           numWorkerNodes=numWorkerNodes
                           storageSize=storageSize
@@ -174,7 +154,7 @@
                           cfmeRam=cfmeRam
                           cfmeVcpu=cfmeVcpu}}
 
-        {{node-details numNodes=model.numNodes
+        {{node-details numNodesDisplay=numNodesDisplay
                        numMasterNodes=numMasterNodes
                        numWorkerNodes=numWorkerNodes
                        storageSize=storageSize

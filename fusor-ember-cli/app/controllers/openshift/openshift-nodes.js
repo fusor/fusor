@@ -1,7 +1,6 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 import OpenshiftMixin from "../../mixins/openshift-mixin";
-import { AllValidator, PresenceValidator, NumberValidator, IntegerValidator } from '../../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
 
@@ -46,13 +45,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     return (Ember.isPresent(this.get('numNodes')) && Ember.isPresent(this.get('storageSize')));
   }),
 
-  positiveIntegerValidator: AllValidator.create({
-    validators: [
-      IntegerValidator.create({}),
-      NumberValidator.create({min: 1})
-    ]
-  }),
-
   actions: {
     openshiftLocationChanged() {},
 
@@ -71,10 +63,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
       this.set('model.openshift_storage_size', storageSize);
     },
 
-    showCustomNumMasterNodes() {
-      this.set('isCustomNumMasterNodes', true);
-    },
-
     showCustomNumWorkerNodes() {
       this.set('isCustomNumWorkerNodes', true);
     },
@@ -82,6 +70,97 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     showCustomStorageSize() {
       this.set('isCustomStorageSize', true);
     }
-  }
+  },
 
+  _initWorkerNodes(count) {
+    const _workerNodes = Ember.A([]);
+    const _workerNodesMinusFirst = Ember.A([]);
+
+    for(let nodeOrdinal = 1; nodeOrdinal <= count; ++nodeOrdinal) {
+      const _node = this._createWorkerNode(nodeOrdinal);
+      _workerNodes.push(_node);
+
+      if(nodeOrdinal === 1) {
+        this.set('_firstWorkerNode', _node);
+      } else {
+        _workerNodesMinusFirst.push(_node);
+      }
+    }
+
+    this.set('_workerNodes', _workerNodes);
+    this.set('_workerNodesMinusFirst', _workerNodesMinusFirst);
+  },
+
+  _createWorkerNode(ordinal) {
+    const WorkerNode = Ember.Object.extend({
+      numMasterNodes: Ember.computed.alias('controller.numMasterNodes'),
+
+      perMasterVcpu: Ember.computed.alias('controller.masterVcpu'),
+      perMasterRam: Ember.computed.alias('controller.masterRam'),
+      perMasterDisk: Ember.computed.alias('controller.masterDisk'),
+      perWorkerVcpu: Ember.computed.alias('controller.model.openshift_node_vcpu'),
+      perWorkerRam: Ember.computed.alias('controller.model.openshift_node_ram'),
+      perWorkerDisk: Ember.computed.alias('controller.storageSize'),
+
+      vcpuAvailable: Ember.computed.alias('controller.vcpuAvailable'),
+      ramAvailable: Ember.computed.alias('controller.ramAvailable'),
+      diskAvailable: Ember.computed.alias('controller.diskAvailable'),
+
+      vcpuNeeded: Ember.computed(
+        'ordinal',
+        'numMasterNodes',
+        'perMasterVcpu',
+        'perWorkerVcpu',
+        function() {
+          const totalWorkerCpu = this.get('ordinal') * this.get('perWorkerCpu');
+          const totalMasterCpu = this.get('numMasterNodes') * this.get('perMasterVcpu');
+          return totalWorkerCpu + totalMasterCpu;
+        }
+      ),
+
+      ramNeeded: Ember.computed(
+        'ordinal',
+        'numMasterNodes',
+        'perMasterRam',
+        'perWorkerRam',
+        function() {
+          const totalWorkerRam = this.get('ordinal') * this.get('perWorkerRam');
+          const totalMasterRam = this.get('numMasterNodes') * this.get('perMasterRam');
+          return totalWorkerRam + totalMasterRam;
+        }
+      ),
+
+      diskNeeded: Ember.computed(
+        'ordinal',
+        'numMasterNodes',
+        'perMasterDisk',
+        'perWorkerDisk',
+        function() {
+          const totalWorkerDisk = this.get('ordinal') * this.get('perWorkerDisk');
+          const totalMasterDisk = this.get('numMasterNodes') * this.get('perMasterDisk');
+          return totalWorkerDisk + totalMasterDisk;
+        }
+      ),
+
+      isOverCapacity: Ember.computed(
+        'vcpuNeeded',
+        'vcpuAvailable',
+        'ramNeeded',
+        'ramAvailable',
+        'diskNeeded',
+        'diskAvailable',
+        function() {
+          const vcpuOver = this.get('vcpuNeeded') > this.get('vcpuAvailable');
+          const ramOver = this.get('ramNeeded') > this.get('ramAvailable');
+          const diskOver = this.get('diskNeeded') > this.get('diskAvailable');
+          return vcpuOver || ramOver || diskOver;
+        }
+      )
+    });
+
+    return WorkerNode.create({
+      controller: this,
+      ordinal: ordinal
+    });
+  }
 });
