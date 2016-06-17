@@ -98,7 +98,112 @@ module Fusor
       render json: {manifest_file: temp_file.path}, status: 200
     end
 
+    def validate
+      valid = false
+      if params[:deployment_id]
+        ::Fusor.log.error "XXX We have a deployment id"
+        deployment = Deployment.find(params[:deployment_id])
+        # TODO: make sure deployment isn't nil
+
+        # Get all the products we plan on consuming with this deployment
+        pids = []
+
+        pids.concat get_product_ids(/rhev/) if deployment.deploy_rhev
+        pids.concat get_product_ids(/cloudforms/) if deployment.deploy_cfme
+        pids.concat get_product_ids(/openshift/) if deployment.deploy_openshift
+        pids.concat get_product_ids(/openstack/) if deployment.deploy_openstack
+
+        pids.uniq! # remove duplicates, the ! operates on the actual array
+
+        if !manifest_imported? && deployment.is_disconnected?
+          # new disconnected
+          ::Fusor.log.error "XXX DISCONNECTED! with no existing manifest"
+          # TODO: verify the manifest file exists
+          mi = Fusor::Manifest::ManifestImporter.new
+          manifest_prods = mi.get_product_ids(deployment.manifest_file, deployment.id)
+          valid = products_covered?(pids, manifest_prods)
+        elsif !manifest_imported? && !deployment.is_disconnected?
+          # new connected
+          ::Fusor.log.error "XXX CONNECTED! with no existing manifest"
+          ::Fusor.log.error session
+          portal_prods = get_product_ids_from_portal(deployment.upstream_consumer_uuid,
+                    { :username => session[:portal_username], :password => session[:portal_password] })
+          valid = products_covered?(pids, portal_prods)
+        elsif manifest_imported?
+          # new with existing manifest
+          ::Fusor.log.error "XXX EXISTING MANIFEST! Subsequent deployment"
+          satellite_prods = get_product_ids_from_satellite
+          valid = products_covered?(pids, satellite_prods)
+        else
+          ::Fusor.log.error "XXX DANGER WILL ROBINSON! We shouldn't be here!"
+        end
+
+      else
+        ::Fusor.log.error "XXX NO DEPLOYMENT ID"
+        valid = false
+      end
+
+      render json: {valid: valid}, status: 200
+    end
+
     private
+
+    # TODO: consider moving to SubscriptionValidator
+    def manifest_imported?
+      # if there are no subscriptions besides Fusor, we haven't
+      # imported a manifest yet
+      return !::Katello::Subscription.where.not(name: "Fusor").empty?
+    end
+
+    # TODO: consider moving to SubscriptionValidator
+    def get_product_ids(key)
+      # get product ids from configuration
+      return [] if key.nil?
+
+      # takes in a regexp and looks it up in the content settings
+      products_hash = SETTINGS[:fusor][:content].select { |k, v| k.to_s.match(key) }
+      pids = []
+      products_hash.values.each do |products|
+        pids.concat(products)
+      end
+      return pids.map { |p| p[:product_id] }.uniq
+    end
+
+    # TODO: consider moving to SubscriptionValidator
+    def get_product_ids_from_portal(uuid, auth)
+      # get the product ides from customer portal
+      #{ username: 'rhci-test', password: 'rhcirhci' }))
+      entitlements = JSON.parse(::Fusor::Resources::CustomerPortal::Proxy.get("/consumers/#{uuid}/entitlements", auth))
+
+      pids = []
+      entitlements.each do |e|
+        pids.concat(e["pool"]["providedProducts"].map { |p| p["productId"] })
+      end
+      return pids.uniq
+    end
+
+    # TODO: consider moving to SubscriptionValidator
+    def get_product_ids_from_satellite
+      subs = ::Katello::Subscription.where.not(name: "Fusor")
+      pids = []
+      subs.each do |sub|
+        pids.concat(sub.products.map { |p| p.cp_id })
+      end
+      return pids.uniq
+    end
+
+    # TODO: consider moving to SubscriptionValidator
+    def get_product_ids_from_manifest(manifest_file)
+    end
+
+    # TODO: consider moving to SubscriptionValidator
+    def products_covered?(dep_prods, man_prods)
+      if dep_prods.nil? || man_prods.nil?
+        return false
+      end
+
+      return (dep_prods - man_prods).empty?
+    end
 
     def subscription_params
       params.require(:subscription).permit(:contract_number, :product_name, :quantity_to_add, :quantity_attached,
