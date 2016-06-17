@@ -29,7 +29,7 @@ export default Ember.Component.extend({
     return !Ember.isBlank(this.get('unitsLabel'));
   }),
 
-  showHelpPopover: Ember.computed('showHelpIndicator', function() {
+  showHelpPopover: Ember.computed('helpText', function() {
     return !Ember.isBlank(this.get('helpText'));
   }),
 

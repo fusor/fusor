@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import {
+  Validator,
   AllValidator,
   UniquenessValidator,
   MacAddressValidator,
@@ -10,7 +11,7 @@ import {
 export default Ember.Mixin.create({
 
   drivers: [
-    {label: '', value: null},
+    {label: 'Select a driver', value: null},
     {label: 'IPMI Driver', value: 'pxe_ipmitool'},
     {label: 'PXE + SSH', value: 'pxe_ssh'}
   ],
@@ -27,6 +28,13 @@ export default Ember.Mixin.create({
 
   virtVendor: 'kvm',
 
+  helpText: Ember.Object.create({
+    ipAddress: 'Address to the system that manages the nodes you want to register',
+    driver: 'Type of power management interface that manages the nodes you want to register',
+    username: 'Administrator username for the system that manages the nodes you want to register',
+    password: 'Password for the system that manages the nodes you want to register'
+  }),
+
   vendors: Ember.computed('nodeInfo.driver', function () {
     switch (this.get('nodeInfo.driver')) {
     case 'pxe_ssh':
@@ -34,31 +42,65 @@ export default Ember.Mixin.create({
     case 'pxe_ipmitool':
       return this.get('ipmiVendors');
     default:
-      return [];
+      return [{label: 'Select a vendor', value: null}];
     }
   }),
 
-  unavailableMacs: Ember.computed('ports', 'nodeInfo.macAddresses.@each.value', function () {
-    let enteredMacs = this.get('nodeInfo.macAddresses');
-    let unavailableMacs = this.getPortMacAddresses();
+  manualMacAddressesValidator: Ember.computed('ports', function () {
+    let unavailableMacAddresses = this.getPortMacAddresses();
 
-    if (enteredMacs) {
-      enteredMacs.forEach(mac => {
-        if (Ember.isPresent(mac.value)) {
-          unavailableMacs.pushObject(mac.value);
+
+    return Validator.create({
+      isValid(value) {
+        if (Ember.isBlank(value)) {
+          return false;
         }
-      });
-    }
 
-    return unavailableMacs;
-  }),
+        let macArray = this.getMacAddressArray(value);
+        let singleValidator = this.createSingleMacValidators(macArray);
 
-  macAddressValidator: Ember.computed('unavailableMacs', function () {
-    return AllValidator.create({
-      validators: [
-        MacAddressValidator.create({}),
-        UniquenessValidator.create({selfIncluded: true, existingValues: this.get('unavailableMacs')})
-      ]
+        return macArray.every(macAddress => singleValidator.isValid(macAddress));
+      },
+
+      getMessages(value) {
+        if (Ember.isBlank(value)) {
+          return ['cannot be blank'];
+        }
+
+        let macArray = this.getMacAddressArray(value);
+        let singleValidator = this.createSingleMacValidators(macArray);
+        let messages = [];
+
+        macArray.forEach(macAddress => {
+          let messagesForSingleMac = singleValidator.getMessages(macAddress);
+          messagesForSingleMac.forEach(message => {
+            messages.push(`${macAddress}: ${message}`);
+          });
+        });
+
+        return messages.uniq();
+      },
+
+      createSingleMacValidators(macAddressArray) {
+        let existingValues = macAddressArray.concat(unavailableMacAddresses);
+
+        return AllValidator.create({
+          validators: [
+            MacAddressValidator.create({}),
+            UniquenessValidator.create({selfIncluded: true, existingValues: existingValues})
+          ]
+        });
+      },
+
+      getMacAddressArray(macAddressesString) {
+        if (Ember.isBlank(macAddressesString)) {
+          return [];
+        }
+
+        return macAddressesString.split('\n')
+          .filter(mac => Ember.isPresent(mac))
+          .map(mac => mac.trim());
+      }
     });
   }),
 
@@ -75,17 +117,6 @@ export default Ember.Mixin.create({
     }
 
     return 'Vendor';
-  }),
-
-  newNodeAddressLabel: Ember.computed('nodeInfo.driver', function () {
-    switch (this.get('nodeInfo.driver')) {
-    case 'pxe_ssh':
-      return 'SSH Address';
-    case 'pxe_ipmitool':
-      return 'IPMI Address';
-    default:
-      return 'Address';
-    }
   }),
 
   newNodeUsernameLabel: Ember.computed('nodeInfo.driver', function () {
@@ -110,48 +141,44 @@ export default Ember.Mixin.create({
     }
   }),
 
-  isValidNewNodeManual: Ember.computed(
-    'registerNodesMethod',
+  isValidConnectionInfo: Ember.computed(
     'nodeInfo.driver',
     'nodeInfo.address',
     'nodeInfo.username',
     'nodeInfo.password',
-    'nodeInfo.macAddresses.@each.value',
     function () {
-      let validConnection = this.get('registerNodesMethod') === 'manual' &&
-        Ember.isPresent(this.get('nodeInfo.driver')) &&
+      return Ember.isPresent(this.get('nodeInfo.driver')) &&
         Ember.isPresent(this.get('nodeInfo.address')) &&
         Ember.isPresent(this.get('nodeInfo.username')) &&
         Ember.isPresent(this.get('nodeInfo.password')) &&
         this.get('hostAddressValidator').isValid(this.get('nodeInfo.address'));
+    }),
 
-      if (!validConnection) {
+  isValidNewNodeManual: Ember.computed(
+    'isNewNodeMethodManual',
+    'isValidConnectionInfo',
+    'manualMacAddresses',
+    'manualMacAddressesValidator',
+    function () {
+      let manualMacAddressesValidator = this.get('manualMacAddressesValidator');
+
+      if (!manualMacAddressesValidator) {
         return false;
       }
 
-      let macAddresses = this.get('nodeInfo.macAddresses');
-      if (!macAddresses) {
-        return false;
-      }
-
-      let numberInvalidMacs = 0,
-        numberValidMacs = 0,
-        macAddressValidator = this.get('macAddressValidator');
-
-      macAddresses.forEach((macAddress) => {
-        if (Ember.isPresent(macAddress.value)) {
-          if (macAddressValidator.isValid(macAddress.value)) {
-            numberValidMacs++;
-          } else {
-            numberInvalidMacs++;
-          }
-        }
-      });
-
-      return numberInvalidMacs === 0 && numberValidMacs > 0;
+      return this.get('isNewNodeMethodManual') && this.get('isValidConnectionInfo') &&
+        manualMacAddressesValidator.isValid(this.get('manualMacAddresses'));
     }),
 
   getPortMacAddresses() {
     return this.get('ports') ? this.get('ports').map(port => port.address) : [];
+  },
+
+  prepManualNodeInfo() {
+    let macAddressesArray = this.get('manualMacAddresses').split('\n')
+      .filter(mac => Ember.isPresent(mac))
+      .map(mac => Ember.Object.create({value: mac.trim()}));
+
+    this.get('nodeInfo').set('macAddresses', macAddressesArray);
   }
 });

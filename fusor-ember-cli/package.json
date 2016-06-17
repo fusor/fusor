@@ -21,6 +21,7 @@
   "devDependencies": {
     "active-model-adapter": "2.1.1",
     "broccoli-asset-rev": "^2.1.2",
+    "ember-bootstrap-switch": "1.13.2",
     "ember-cli": "1.13.12",
     "ember-cli-active-link-wrapper": "0.2.0",
     "ember-cli-app-version": "0.5.0",

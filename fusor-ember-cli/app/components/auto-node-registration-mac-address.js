@@ -10,8 +10,20 @@ export default Ember.Component.extend({
 
   deselected: Ember.computed.not('host.selected'),
 
-  deselectedTextClass: Ember.computed('deselected', function() {
-    return this.get('deselected') ? 'new-node-deselected-text' : '';
+  readyStatusClass: Ember.computed('host.selected', 'host.value', function () {
+    if (!this.get('host.selected')) {
+      return 'new-node-detect-deselected';
+    }
+
+    if (Ember.isPresent(this.get('host.value'))) {
+      return 'new-node-detect-ready';
+    }
+
+    return 'new-node-detect-invalid';
+  }),
+
+  isInvalid: Ember.computed('host.selected', 'host.value', function() {
+    return this.get('host.selected') && !Ember.isPresent(this.get('host.value'));
   }),
 
   selectId: Ember.computed('hostNumber', function () {

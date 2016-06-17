@@ -284,7 +284,7 @@ const IpSubnetValidator = Validator.extend({
 
 const MacAddressValidator = RegExpValidator.extend({
   regExp: new RegExp(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/),
-  message: 'invalid mac address'
+  message: 'invalid MAC address'
 });
 
 const HostnameValidator = RegExpValidator.extend({

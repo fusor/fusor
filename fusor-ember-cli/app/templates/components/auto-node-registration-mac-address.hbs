@@ -1,22 +1,27 @@
-<form class="form-inline new-node-detect-form">
+<form class="form-inline new-node-detect-form {{readyStatusClass}}">
   <div class="checkbox new-node-detect-checkbox">
     <label>{{input type="checkbox" name="autoDetectedNodeSelected" checked=host.selected}}</label>
   </div>
-  <div class="form-group">
+  <div class="form-group new-node-detect-form-group light-left-border">
     <label class="control-label new-node-detect-hostnumber">
       {{hostNumber}}.
     </label>
     {{#if multipleMacAddresses}}
-      {{#x-select value=host.value id=selectId class="form-control new-node-detect-select" disabled=deselected}}
-        <option>Select an interface</option>
+      {{#x-select value=host.value id=selectId class="form-control new-node-detect-select"}}
+        <option>Assign interface</option>
         {{#each host.macAddresses as |opt| }}
           {{#x-option value=opt}}{{opt}}{{/x-option}}
         {{/each}}
       {{/x-select}}
 
     {{else}}
-      <span class="new-node-detect-mac-address new-node-form-span {{deselectedTextClass}}">{{host.value}}</span>
+      <span class="new-node-detect-mac-address new-node-form-span">{{host.value}}</span>
     {{/if}}
-    <span class="new-node-detect-hostname new-node-form-span {{deselectedTextClass}}">{{host.name}}</span>
+    {{#if isInvalid}}
+      <span class="new-node-form-span new-node-detect-invalid-icon fa fa-times-circle-o"></span>
+    {{else}}
+      <span class="new-node-form-span new-node-detect-invalid-icon"></span>
+    {{/if}}
+    <span class="new-node-detect-hostname new-node-form-span">{{host.name}}</span>
   </div>
 </form>

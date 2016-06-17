@@ -462,7 +462,7 @@ test('MacAddressValidator rejects invalid values', function (assert) {
     assert.ok(macAddressValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
     assert.notOk(macAddressValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(macAddressValidator.getMessages(value).length, 1);
-    assert.equal(macAddressValidator.getMessages(value)[0], 'invalid mac address');
+    assert.equal(macAddressValidator.getMessages(value)[0], 'invalid MAC address');
   });
 });
 

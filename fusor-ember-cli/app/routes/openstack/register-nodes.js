@@ -166,7 +166,7 @@ export default Ember.Route.extend(PollingPromise, {
       }
     });
 
-    return Ember.RSVP.all(taskPromises).then((resolvedTasks) => {
+    return Ember.RSVP.all(taskPromises).then(resolvedTasks => {
       this.get('controller').set('foremanTasks', resolvedTasks);
     });
   },
