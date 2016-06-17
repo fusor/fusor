@@ -57,6 +57,29 @@ module Fusor
 
         return subscriptions
       end
+
+      def get_product_ids(manifest, deployment_id)
+        tmp_dir = "#{Rails.root}/tmp/deployment-#{deployment_id}"
+        FileUtils.rmtree(tmp_dir) if File.exist?(tmp_dir)
+        FileUtils.mkdir_p tmp_dir
+
+        zip_file = Zip::File.open(manifest)
+        entry = zip_file.glob('*.zip').first
+        entry.extract(File.join(tmp_dir, "consumer.zip"))
+        zip_file.close
+
+        products = []
+        consumer_zip = Zip::File.open(File.join(tmp_dir, "consumer.zip"))
+        consumer_zip.glob("export/products/*.json") do |product|
+          # only put the number from the filename
+          # remove export/products and the trailing .json
+          products.push(product.name.gsub(/export\/products\//, '').gsub(/\.json/, ''))
+        end
+
+        consumer_zip.close
+
+        return products.uniq
+      end
     end
   end
 end
