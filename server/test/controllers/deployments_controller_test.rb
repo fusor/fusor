@@ -225,6 +225,35 @@ module Fusor
         assert_not_nil response['candlepin_log'], 'Response missing candlepin log'
       end
 
+      test 'get log with log_type ansible_log uses AnsibleLogReader to read the full ansible log' do
+        log_path = File.join(@deployment_log_dir, 'ansible.log')
+
+        Fusor::Logging::AnsibleLogReader.any_instance
+            .expects(:read_full_log)
+            .with(log_path)
+            .returns(Fusor::Logging::Log.new)
+            .once
+
+        response = JSON.parse(get(:log, :id => @deployment.id, :log_type => 'ansible_log').body)
+        assert_response :success
+        assert_not_nil response['ansible_log'], 'Response missing ansible log'
+      end
+
+      test 'get log with log_type ansible_log and line_number_gt uses AnsibleLogReader to tail the ansible log' do
+        log_path = File.join(@deployment_log_dir, 'ansible.log')
+        line_number = 5
+
+        Fusor::Logging::AnsibleLogReader.any_instance
+            .expects(:tail_log_since)
+            .with(log_path, line_number)
+            .returns(Fusor::Logging::Log.new)
+            .once
+
+        response = JSON.parse(get(:log, :id => @deployment.id, :log_type =>  'ansible_log', :line_number_gt => line_number).body)
+        assert_response :success
+        assert_not_nil response['ansible_log'], 'Response missing ansible log'
+      end
+
       test 'get log with log_type messages_log uses LogReader to read the full messages log' do
         log_path = File.join(@deployment_log_dir, 'var/log', 'messages')
 

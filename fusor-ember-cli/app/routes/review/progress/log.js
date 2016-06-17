@@ -8,6 +8,7 @@ export default Ember.Route.extend({
       foreman_log: {path: ''},
       foreman_proxy_log: {path: ''},
       candlepin_log: {path: ''},
+      ansible_log: {path: ''},
       messages_log: {path: ''}
     });
   },

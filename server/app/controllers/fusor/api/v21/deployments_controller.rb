@@ -242,6 +242,10 @@ module Fusor
           Fusor::Logging::JavaLogReader.new
         when 'foreman_proxy_log'
           Fusor::Logging::ProxyLogReader.new
+        when 'foreman_proxy_log'
+          Fusor::Logging::ProxyLogReader.new
+        when 'ansible_log'
+          Fusor::Logging::AnsibleLogReader.new
         else
           Fusor::Logging::LogReader.new
       end
@@ -258,6 +262,8 @@ module Fusor
           File.join(dir, 'var/log/foreman/production.log')
         when 'foreman_proxy_log'
           File.join(dir, 'var/log/foreman-proxy/proxy.log')
+        when 'ansible_log'
+          File.join(dir, 'ansible.log')
         else
           ::Fusor.log_file_path(@deployment.label, @deployment.id)
       end
