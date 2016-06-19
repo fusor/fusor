@@ -48,21 +48,21 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     'masterVcpu',
     'masterRam',
     'masterDisk',
-    'nodeVcpu',
-    'nodeRam',
-    'nodeDisk',
+    'workerVcpu',
+    'workerRam',
+    'workerDisk',
     'isUnderCapacity',
     function() {
       return (Ember.isPresent(this.get('openshiftInstallLoc')) &&
-              (this.get('numMasterNodes') > 0) &&
-              (this.get('numWorkerNodes') > 0) &&
-              (this.get('storageSize') > 0) &&
-              (this.get('masterVcpu') > 0) &&
-              (this.get('masterRam') > 0) &&
-              (this.get('masterDisk') > 0) &&
-              (this.get('nodeVcpu') > 0) &&
-              (this.get('nodeRam') > 0) &&
-              (this.get('nodeDisk') > 0) &&
+              isPositiveInteger(this.get('numMasterNodes')) &&
+              isPositiveInteger(this.get('numWorkerNodes')) &&
+              isPositiveInteger(this.get('storageSize')) &&
+              isPositiveInteger(this.get('masterVcpu')) &&
+              isPositiveInteger(this.get('masterRam')) &&
+              isPositiveInteger(this.get('masterDisk')) &&
+              isPositiveInteger(this.get('workerVcpu')) &&
+              isPositiveInteger(this.get('workerRam')) &&
+              isPositiveInteger(this.get('workerDisk')) &&
               this.get('isUnderCapacity'));
     }
   ),
@@ -131,3 +131,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     return this.get('isValidOpenshiftNodes') && this.get('isValidOpenshiftConfiguration');
   })
 });
+
+function isPositiveInteger(value) {
+  //http://stackoverflow.com/questions/14636536/how-to-check-if-a-variable-is-an-integer-in-javascript
+  return value > 0 && !isNaN(value) && (function(x) { return (x | 0) === x; })(parseFloat(value));
+}

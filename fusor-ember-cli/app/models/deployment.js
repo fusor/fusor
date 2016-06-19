@@ -65,7 +65,9 @@ export default DS.Model.extend({
     'openshift_number_master_nodes',
     'openshift_number_worker_nodes',
     function() {
-      return this.get('openshift_number_master_nodes') + this.get('openshift_number_worker_nodes');
+      const masterNodes = parseInt(this.get('openshift_number_master_nodes'));
+      const workerNodes = parseInt(this.get('openshift_number_worker_nodes'));
+      return masterNodes + workerNodes;
     }
   ),
 

@@ -4,8 +4,14 @@
 
 <div class='col-xs-4 col-sm-6 col-md-9'>
   {{#if isEditMode}}
-    {{input value=value class='input-ose'}} {{suffix}}
+    {{simple-text-f value=value
+                    class='ose-custom-field'
+                    disabled=deploymentController.isStarted
+                    validator=validator
+                    suffix=suffix
+                    placeholder='Enter'}}
   {{else}}
     {{value}} {{suffix}}
   {{/if}}
 </div>
+

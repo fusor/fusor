@@ -670,7 +670,7 @@ table.fusor-table {
 }
 
 .input-ose {
-  width: 20px;
+  width: 25px;
   text-align: center;
 }
 
@@ -900,4 +900,42 @@ span.hanging-indent{
   .popover {
     width: 200px;
   }
+}
+
+.ose-number-node-buttons {
+  padding: 10px;
+  margin-left: 20px;
+}
+
+.ose-custom-input {
+  padding: 2px 0px;
+  width: 45px;
+  height: 32px;
+  text-align: center;
+  color: #000;
+  border: solid 2px #0099d3;
+  display: inline-block;
+}
+
+.ose-node-label {
+  font-weight: bold;
+  padding-right: 8px;
+}
+
+.worker-nodes-label {
+  padding-right: 6px !important;
+}
+
+.ose-number-buttons-block {
+  padding: 8px 0px;
+}
+
+.ose-custom-field {
+  display: inline;
+}
+
+.simple-text-error {
+  display: inline-block;
+  vertical-align: top;
+  margin-bottom: 0px !important; /* overides form-group default */
 }

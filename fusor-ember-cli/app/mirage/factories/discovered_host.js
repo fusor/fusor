@@ -16,8 +16,8 @@ export default Mirage.Factory.extend({
   mac: function(i) {                  // and functions
     return i + '2:54:00:0f:65:68';
   },
-  cpus: 1,
-  memory_human_size: "1.96 GB",
+  cpus: 4,
+  memory_human_size: "7.8 GB",
   disks_human_size: "10 GB",
   disk_count: 1,
   subnet_to_s: "default (192.168.152.0/24)",

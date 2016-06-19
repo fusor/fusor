@@ -15,7 +15,7 @@ export default Ember.Component.extend({
   nodeMatchesProfile(node, profile) {
     let nodeMemory = node.get('properties.memory_mb');
     let nodeCPUs = node.get('properties.cpus');
-    let nodeDisk = node.get('properties.local_gb');
+    let workerDisk = node.get('properties.local_gb');
     let nodeCPUArch = node.get('properties.cpu_arch');
     let profileMemory = profile.get('ram');
     let profileCPUs = profile.get('vcpus');
@@ -24,7 +24,7 @@ export default Ember.Component.extend({
 
     return nodeMemory == profileMemory &&
       nodeCPUs == profileCPUs &&
-      nodeDisk == profileDisk &&
+      workerDisk == profileDisk &&
       nodeCPUArch == profileCPUArch;
   },
 

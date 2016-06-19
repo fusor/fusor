@@ -11,8 +11,8 @@ export default function(server) {
                                                     library: true});
 
   var engine = server.create('discovered_host', {is_virtual: true});
-  var hypervisor1 = server.create('discovered_host', {is_virtual: false, memory_human_size: '7.8 GB'});
-  var hypervisor2 = server.create('discovered_host', {is_virtual: true, memory_human_size: '7.8 GB'});
+  var hypervisor1 = server.create('discovered_host', {is_virtual: false, memory_human_size: '21.8 GB'});
+  var hypervisor2 = server.create('discovered_host', {is_virtual: true, memory_human_size: '21.8 GB'});
 
   server.createList('discovered_host', 2, {is_virtual: true});
   server.createList('discovered_host', 2, {is_virtual: false});

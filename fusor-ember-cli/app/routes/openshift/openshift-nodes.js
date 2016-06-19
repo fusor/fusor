@@ -26,6 +26,7 @@ export default Ember.Route.extend(UsesOseDefaults, {
     const deployment = model.deployment;
     const maxRes = model.maxResources;
     controller.set('model', model.deployment);
+    controller._initWorkerNodes(5);
 
     // Set max resources to smart values
     deployment.set('openshift_available_vcpu', maxRes.get('vcpuAvailable'));
