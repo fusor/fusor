@@ -1,21 +1,37 @@
 import Ember from 'ember';
+import SubscriptionUtil from '../../utils/subscription-util';
 
 export default Ember.Route.extend({
-  ////////////////////////////////////////////////////////////
-  // NOTE: Review data can comes from three different sources depending on scenario
-  // 1) Connected -> No existing manifest, uploading manifest as part of the deployment
-  //    by logging into the CDN as part of the deployment. Review info comes from
-  //    customer portal.
-  // 2) Disconnected -> No existing manifest, uploading manifest locally. Entitlement
-  //    data was previously stored in fusor_subscriptions table as part of that upload.
-  //    We ask fusor server for that data via subscription endpoint
-  // 3) useExistingManifest -> Manifest was *not* uploaded as part of current deployment,
-  //    instead we're using an existing manifest that's been uploaded to Sat previously.
-  //    In this case, might not be logged in, and fusor_subscriptions table probably does
-  //    not have the data we need, so neither 1) or 2) approaches can be used. Need to
-  //    hit Sat to retrieve what it knows about the existing manifest.
-  ////////////////////////////////////////////////////////////
   model() {
+    return Ember.RSVP.hash({
+      subscriptions: this.loadSubscriptions(),
+      sufficientEntitlements: this.loadSubscriptionsValidation()
+    });
+  },
+
+  setupController(controller, model) {
+    controller.set('model', model.subscriptions);
+    controller.set(
+      'useExistingManifest',
+      this.modelFor('subscriptions').useExistingManifest);
+    controller.set('sufficientEntitlements', model.sufficientEntitlements);
+  },
+
+  loadSubscriptions() {
+    ////////////////////////////////////////////////////////////
+    // NOTE: Review data can comes from three different sources depending on scenario
+    // 1) Connected -> No existing manifest, uploading manifest as part of the deployment
+    //    by logging into the CDN as part of the deployment. Review info comes from
+    //    customer portal.
+    // 2) Disconnected -> No existing manifest, uploading manifest locally. Entitlement
+    //    data was previously stored in fusor_subscriptions table as part of that upload.
+    //    We ask fusor server for that data via subscription endpoint
+    // 3) useExistingManifest -> Manifest was *not* uploaded as part of current deployment,
+    //    instead we're using an existing manifest that's been uploaded to Sat previously.
+    //    In this case, might not be logged in, and fusor_subscriptions table probably does
+    //    not have the data we need, so neither 1) or 2) approaches can be used. Need to
+    //    hit Sat to retrieve what it knows about the existing manifest.
+    ////////////////////////////////////////////////////////////
     const subModel = this.modelFor('subscriptions');
     const useExistingManifest = subModel.useExistingManifest;
 
@@ -68,10 +84,8 @@ export default Ember.Route.extend({
     }
   },
 
-  setupController(controller, model) {
-    controller.set('model', model);
-    controller.set(
-      'useExistingManifest',
-      this.modelFor('subscriptions').useExistingManifest);
+  loadSubscriptionsValidation() {
+    const deploymentId = this.modelFor('deployment').get('id');
+    return SubscriptionUtil.validate(deploymentId);
   }
 });
