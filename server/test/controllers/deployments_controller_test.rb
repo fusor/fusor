@@ -96,7 +96,7 @@ module Fusor
         log_path = File.join(@deployment_log_dir, 'deployment.log')
         ::Fusor.stubs(:log_file_path).returns(log_path)
 
-        Fusor::Logging::RailsLogReader.any_instance
+        Fusor::Logging::FusorLogReader.any_instance
             .expects(:read_full_log)
             .with(log_path)
             .returns(Fusor::Logging::Log.new)
@@ -107,11 +107,11 @@ module Fusor
         assert_not_nil response['fusor_log'], 'Response missing fusor log'
       end
 
-      test 'get log with log_type fusor_log uses RailsLogReader to read the full fusor log' do
+      test 'get log with log_type fusor_log uses FusorLogReader to read the full fusor log' do
         log_path = File.join(@deployment_log_dir, 'deployment.log')
         ::Fusor.stubs(:log_file_path).returns(log_path)
 
-        Fusor::Logging::RailsLogReader.any_instance
+        Fusor::Logging::FusorLogReader.any_instance
             .expects(:read_full_log)
             .with(log_path)
             .returns(Fusor::Logging::Log.new)
@@ -122,12 +122,12 @@ module Fusor
         assert_not_nil response['fusor_log'], 'Response missing fusor log'
       end
 
-      test 'get log with log_type fusor_log and line_number_gt uses RailsLogReader to tail the fusor log' do
+      test 'get log with log_type fusor_log and line_number_gt uses FusorLogReader to tail the fusor log' do
         log_path = File.join(@deployment_log_dir, 'deployment.log')
         line_number = 5
         ::Fusor.stubs(:log_file_path).returns(log_path)
 
-        Fusor::Logging::RailsLogReader.any_instance
+        Fusor::Logging::FusorLogReader.any_instance
             .expects(:tail_log_since)
             .with(log_path, line_number)
             .returns(Fusor::Logging::Log.new)
@@ -138,10 +138,10 @@ module Fusor
         assert_not_nil response['fusor_log'], 'Response missing fusor log'
       end
 
-      test 'get log with log_type foreman_log uses RailsLogReader to read the full foreman log' do
-        log_path = File.join(@deployment_log_dir, 'var/log/foreman', 'production.log')
+      test 'get log with log_type foreman_log uses ForemanLogReader to read the full foreman log' do
+        log_path = File.join(@deployment_log_dir, 'var/log/foreman', 'test.log')
 
-        Fusor::Logging::RailsLogReader.any_instance
+        Fusor::Logging::ForemanLogReader.any_instance
             .expects(:read_full_log)
             .with(log_path)
             .returns(Fusor::Logging::Log.new)
@@ -152,11 +152,11 @@ module Fusor
         assert_not_nil response['foreman_log'], 'Response missing foreman log'
       end
 
-      test 'get log with log_type foreman_log and line_number_gt uses RailsLogReader to tail the foreman log' do
-        log_path = File.join(@deployment_log_dir, 'var/log/foreman', 'production.log')
+      test 'get log with log_type foreman_log and line_number_gt uses ForemanLogReader to tail the foreman log' do
+        log_path = File.join(@deployment_log_dir, 'var/log/foreman', 'test.log')
         line_number = 5
 
-        Fusor::Logging::RailsLogReader.any_instance
+        Fusor::Logging::ForemanLogReader.any_instance
             .expects(:tail_log_since)
             .with(log_path, line_number)
             .returns(Fusor::Logging::Log.new)
