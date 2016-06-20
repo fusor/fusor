@@ -36,6 +36,7 @@ export default Ember.Route.extend(NeedsExistingManifestHelpers, {
         modelHash.subscriptions = subModel.subscriptions;
       }
 
+      modelHash.sessionPortal = subModel.sessionPortal;
       // Does not need to be wrapped in an RSVP hash since the values have
       // already been resolved by the subscriptions route
       return modelHash;
@@ -68,7 +69,6 @@ export default Ember.Route.extend(NeedsExistingManifestHelpers, {
       });
     }
 
-    const subModel = this.controllerFor('subscriptions');
     if(modelHash.useExistingManifest) {
       controller.set('useExistingManifest', true);
       controller.set('reviewSubscriptions', modelHash.subscriptions);
@@ -83,7 +83,7 @@ export default Ember.Route.extend(NeedsExistingManifestHelpers, {
       }, false); // initial val
       controller.set('reviewSubscriptions', reviewSubscriptions);
       controller.set('hasSubscriptionsToAttach', hasSubs);
-      controller.set('hasSessionPortal', subModel ? subModel.sessionPortal : null);
+      controller.set('hasSessionPortal', !!modelHash.sessionPortal);
       controller.set('hasSubscriptionPools', Ember.isPresent(this.controllerFor('subscriptions/select-subscriptions').get('subscriptionPools')));
     }
 
