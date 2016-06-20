@@ -76,4 +76,17 @@ export default function(server) {
                                       discovered_host_ids: [hypervisor1.id, hypervisor2.id]
                                      });
 
+  server.create('deployment', {name: 'all 4 products',
+                                      deploy_rhev: true,
+                                      deploy_openstack: true,
+                                      deploy_openshift: true,
+                                      deploy_cfme: true,
+                                      organization_id: org.id,
+                                      lifecycle_environment_id: env.id,
+                                      openstack_deployment_id: osp_d1.id,
+                                      openshift_install_loc: 'RHEV',
+                                      discovered_host_id: engine.id,
+                                      discovered_host_ids: [hypervisor1.id, hypervisor2.id]
+                                     });
+
 }

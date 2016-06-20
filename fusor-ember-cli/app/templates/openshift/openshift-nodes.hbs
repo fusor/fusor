@@ -33,6 +33,7 @@
       {{/radio-button}}
     </div>
 
+    {{#if openshiftInstallLoc}}
     <br />
     <p>
       Select how many virtual machines should be created as nodes for the OpenShift environment.
@@ -40,7 +41,9 @@
                  title="The environment consists of worker nodes and master nodes, which orchestrates tasks across the other nodes. Master and worker nodes are provisioned with different specifications, as seen in Node Details."}}
 
     </p>
+    {{/if}}
 
+{{#if openshiftInstallLoc}}
 <div class='row'>
   <div class='col-xs-12 col-sm-12 col-md-9 col-lg-7 ose-number-node-buttons'>
 
@@ -167,6 +170,7 @@
                        workerDisk=workerDisk}}
     {{/if}}
 
+{{/if}}
   </div>
 </div>
 
