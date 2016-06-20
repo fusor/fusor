@@ -105,7 +105,7 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
       const isConnectedSync = !this.get('isDisconnected');
       const subsNotReady =
        this.get('isDisabledSubscriptions') ||
-       !this.get("hasSubscriptionUUID") ||
+       !this.get('hasSubscriptionUUID') ||
        this.get('disableNextOnSelectSubscriptions');
 
       // Disable review if this is a connected sync and subs are not ready

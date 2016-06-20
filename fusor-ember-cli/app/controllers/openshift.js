@@ -1,5 +1,4 @@
 import Ember from 'ember';
-import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
 import OpenshiftMixin from "../mixins/openshift-mixin";
 
 import {
@@ -12,9 +11,8 @@ import {
   validateZipper
 } from '../utils/validators';
 
-export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
-
-  stepNumberOpenShift: Ember.computed.alias("deploymentController.stepNumberOpenShift"),
+export default Ember.Controller.extend(OpenshiftMixin, {
+  stepNumberOpenShift: Ember.computed.alias('deploymentController.stepNumberOpenShift'),
 
   isVcpuOverCapacity: Ember.computed('vcpuNeeded', 'vcpuAvailable', function() {
     return (this.get('vcpuNeeded') > this.get('vcpuAvailable'));
@@ -112,16 +110,16 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     'exportPathValidator',
     'usernameValidator',
     'subdomainValidator',
-    'model.openshift_storage_host',
-    'model.openshift_export_path',
-    'model.openshift_username',
-    'model.openshift_subdomain_name',
+    'deployment.openshift_storage_host',
+    'deployment.openshift_export_path',
+    'deployment.openshift_username',
+    'deployment.openshift_subdomain_name',
     function() {
       return validateZipper([
-        [this.get('storageHostValidator'), this.get('model.openshift_storage_host')],
-        [this.get('exportPathValidator'), this.get('model.openshift_export_path')],
-        [this.get('usernameValidator'), this.get('model.openshift_username')],
-        [this.get('subdomainValidator'), this.get('model.openshift_subdomain_name')]
+        [this.get('storageHostValidator'), this.get('deployment.openshift_storage_host')],
+        [this.get('exportPathValidator'), this.get('deployment.openshift_export_path')],
+        [this.get('usernameValidator'), this.get('deployment.openshift_username')],
+        [this.get('subdomainValidator'), this.get('deployment.openshift_subdomain_name')]
       ]);
     }
   ),

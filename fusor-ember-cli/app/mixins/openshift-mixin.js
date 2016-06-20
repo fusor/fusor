@@ -1,17 +1,19 @@
 import Ember from 'ember';
+import NeedsDeploymentMixin from "./needs-deployment-mixin";
 import {
   AllValidator,
   NumberValidator,
   IntegerValidator
 } from '../utils/validators';
 
-export default Ember.Mixin.create({
+export default Ember.Mixin.create(NeedsDeploymentMixin, {
 
-  openshiftInstallLoc: Ember.computed.alias("model.openshift_install_loc"),
-  cfmeInstallLoc: Ember.computed.alias("model.cfme_install_loc"),
-  isRhev: Ember.computed.alias("model.deploy_rhev"),
-  isOpenStack: Ember.computed.alias("model.deploy_openstack"),
-  isCloudForms: Ember.computed.alias("model.deploy_cfme"),
+  deployment: Ember.computed.alias('deploymentController.model'),
+  openshiftInstallLoc: Ember.computed.alias("deployment.openshift_install_loc"),
+  cfmeInstallLoc: Ember.computed.alias("deployment.cfme_install_loc"),
+  isRhev: Ember.computed.alias("deployment.deploy_rhev"),
+  isOpenStack: Ember.computed.alias("deployment.deploy_openstack"),
+  isCloudForms: Ember.computed.alias("deployment.deploy_cfme"),
 
   positiveIntegerValidator: AllValidator.create({
     validators: [
@@ -20,7 +22,7 @@ export default Ember.Mixin.create({
     ]
   }),
 
-  numNodes: Ember.computed.alias("model.numNodes"),
+  numNodes: Ember.computed.alias("deployment.numNodes"),
   numNodesDisplay: Ember.computed(
     'numNodes',
     'positiveIntegerValidator',
@@ -32,22 +34,22 @@ export default Ember.Mixin.create({
   ),
 
 
-  numMasterNodes: Ember.computed.alias("model.openshift_number_master_nodes"),
-  numWorkerNodes: Ember.computed.alias("model.openshift_number_worker_nodes"),
+  numMasterNodes: Ember.computed.alias("deployment.openshift_number_master_nodes"),
+  numWorkerNodes: Ember.computed.alias("deployment.openshift_number_worker_nodes"),
 
-  storageSize: Ember.computed.alias("model.openshift_storage_size"),
+  storageSize: Ember.computed.alias("deployment.openshift_storage_size"),
 
-  masterVcpu: Ember.computed.alias("model.openshift_master_vcpu"),
-  workerVcpu: Ember.computed.alias("model.openshift_node_vcpu"),
-  cfmeVcpu: Ember.computed.alias("model.cloudforms_vcpu"),
+  masterVcpu: Ember.computed.alias("deployment.openshift_master_vcpu"),
+  workerVcpu: Ember.computed.alias("deployment.openshift_node_vcpu"),
+  cfmeVcpu: Ember.computed.alias("deployment.cloudforms_vcpu"),
 
-  masterRam: Ember.computed.alias("model.openshift_master_ram"),
-  workerRam: Ember.computed.alias("model.openshift_node_ram"),
-  cfmeRam: Ember.computed.alias("model.cloudforms_ram"),
+  masterRam: Ember.computed.alias("deployment.openshift_master_ram"),
+  workerRam: Ember.computed.alias("deployment.openshift_node_ram"),
+  cfmeRam: Ember.computed.alias("deployment.cloudforms_ram"),
 
-  masterDisk: Ember.computed.alias("model.openshift_master_disk"),
-  workerDisk: Ember.computed.alias("model.openshift_node_disk"),
-  cfmeDisk: Ember.computed.alias("model.cfmeDisk"),
+  masterDisk: Ember.computed.alias("deployment.openshift_master_disk"),
+  workerDisk: Ember.computed.alias("deployment.openshift_node_disk"),
+  cfmeDisk: Ember.computed.alias("deployment.cfmeDisk"),
 
   ignoreCfme: Ember.computed(
     "isCloudForms",
@@ -66,52 +68,52 @@ export default Ember.Mixin.create({
   ),
   substractCfme: Ember.computed.not('ignoreCfme'),
 
-  diskAvailableMinusCfme: Ember.computed("model.openshift_available_disk", "cfmeDisk", function() {
-    return this.get("model.openshift_available_disk") - this.get("cfmeDisk");
+  diskAvailableMinusCfme: Ember.computed("deployment.openshift_available_disk", "cfmeDisk", function() {
+    return this.get("deployment.openshift_available_disk") - this.get("cfmeDisk");
   }),
 
   diskAvailable: Ember.computed(
-    "model.openshift_available_disk",
+    "deployment.openshift_available_disk",
     "ignoreCfme",
     "diskAvailableMinusCfme",
     function() {
       if (this.get('ignoreCfme')) {
-        return this.get('model.openshift_available_disk');
+        return this.get('deployment.openshift_available_disk');
       } else {
         return this.get('diskAvailableMinusCfme');
       }
     }
   ),
 
-  ramAvailableMinusCfme: Ember.computed("model.openshift_available_ram", "model.cloudforms_ram", function() {
-    const rawVal = this.get("model.openshift_available_ram") - this.get("model.cloudforms_ram");
+  ramAvailableMinusCfme: Ember.computed("deployment.openshift_available_ram", "deployment.cloudforms_ram", function() {
+    const rawVal = this.get("deployment.openshift_available_ram") - this.get("deployment.cloudforms_ram");
     return Math.round(rawVal * 100) / 100; // Make sure to truncate since we can get some weird fp nums
   }),
 
   ramAvailable: Ember.computed(
-    "model.openshift_available_ram",
+    "deployment.openshift_available_ram",
     "ignoreCfme",
     "ramAvailableMinusCfme",
     function() {
       if (this.get('ignoreCfme')) {
-        return this.get('model.openshift_available_ram');
+        return this.get('deployment.openshift_available_ram');
       } else {
         return this.get('ramAvailableMinusCfme');
       }
     }
   ),
 
-  vcpuAvailableMinusCfme: Ember.computed("model.openshift_available_vcpu", "model.cloudforms_vcpu", function() {
-    return this.get("model.openshift_available_vcpu") - this.get("model.cloudforms_vcpu");
+  vcpuAvailableMinusCfme: Ember.computed("deployment.openshift_available_vcpu", "deployment.cloudforms_vcpu", function() {
+    return this.get("deployment.openshift_available_vcpu") - this.get("deployment.cloudforms_vcpu");
   }),
 
   vcpuAvailable: Ember.computed(
-    "model.openshift_available_vcpu",
+    "deployment.openshift_available_vcpu",
     "ignoreCfme",
     "vcpuAvailableMinusCfme",
     function() {
       if (this.get('ignoreCfme')) {
-        return this.get('model.openshift_available_vcpu');
+        return this.get('deployment.openshift_available_vcpu');
       } else {
         return this.get('vcpuAvailableMinusCfme');
       }
