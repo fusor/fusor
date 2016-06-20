@@ -14,7 +14,12 @@ export default function() {
   this.del('/fusor/api/v21/deployments/:id');
   this.get('/fusor/api/v21/deployments/:id/openshift_disk_space',
     function(db, request) {
-      return { openshift_disk_space: 1024 };
+      return { openshift_disk_space: 1024 * 250 };
+    }
+  );
+  this.get('/fusor/api/v21/deployments/:id/check_mount_point',
+    function(db, request) {
+      return { mounted: true };
     }
   );
 
