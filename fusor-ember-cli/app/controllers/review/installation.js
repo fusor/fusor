@@ -46,11 +46,17 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     'showErrorMessage',
     'showValidationErrors',
     function () {
-      return this.get('deploymentController.isDisabledReview') ||
-        this.get('isMissingSubscriptions') ||
-        (this.get('isDisconnected') && this.get('hasNoManifestFile')) ||
-        this.get('showErrorMessage') ||
-        this.get('showValidationErrors') > 0;
+      const isReviewTabDisabled = this.get('deploymentController.isDisabledReview');
+      const isMissingSubscriptions = this.get('isMissingSubscriptions');
+      const disconnectedWithoutManifest =
+        this.get('isDisconnected') && this.get('hasNoManifestFile');
+      const hasErrors =
+        this.get('showErrorMessage') || this.get('showValidationErrors') > 0;
+
+      return isReviewTabDisabled ||
+        isMissingSubscriptions ||
+        disconnectedWithoutManifest ||
+        hasErrors;
     }
   ),
 
