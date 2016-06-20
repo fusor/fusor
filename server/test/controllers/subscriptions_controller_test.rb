@@ -45,18 +45,14 @@ module Fusor
     end
 
     test "update request should successfully update subscription source" do
-      #Broken on Satellite 6.2 - Needs investigation
-      skip
       new_source = "added"
       response = JSON.parse(put(:update, :id => @subscription.id, subscription: {source: new_source}).body)
       assert_response :success
       assert_equal new_source, response['subscription']['source'], "Response was not correct, source was not updated"
-      assert_not_nil Subscription.find_by_source new_source, "The subscription was not really updated in the database"
+      assert_not_nil Subscription.find_by_source(new_source), "The subscription was not really updated in the database"
     end
 
     test "update should return error message if save fails" do
-      #Broken on Satellite 6.2 - Needs investigation
-      skip
       new_source = "invalid"
       response = JSON.parse(put(:update, :id => @subscription.id, subscription: {source: new_source}).body)
       assert_response(422)

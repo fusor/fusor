@@ -47,8 +47,8 @@ module Fusor
     end
 
     def update
-      @subscription = Fusor::Subscription.find(subscription_params)
-      if @subscription.update_attributes(params[:subscription])
+      @subscription = Fusor::Subscription.find(params[:id])
+      if @subscription.update_attributes(subscription_params)
         render :json => @subscription, :serializer => Fusor::SubscriptionSerializer
       else
         render json: {errors: @subscription.errors}, status: 422
