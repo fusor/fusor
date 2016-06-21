@@ -11,6 +11,11 @@ export default Ember.Component.extend({
 
   fields_env: {},
 
+  isValidEnvName: Ember.computed('name', function() {
+    return this.get('envNameValidator') && this.get('envNameValidator').isValid(this.get('name'));
+  }),
+  invalidEnvName: Ember.computed.not('isValidEnvName'),
+
   actions: {
     createEnvironment() {
       this.set('openModal', false); //this closes it

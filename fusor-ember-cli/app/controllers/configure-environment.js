@@ -1,6 +1,11 @@
 import Ember from 'ember';
 import ConfigureEnvironmentMixin from "../mixins/configure-environment-mixin";
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
+import {
+  AllValidator,
+  PresenceValidator,
+  AlphaNumericDashUnderscoreValidator
+} from '../utils/validators';
 
 export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymentMixin, {
 
@@ -25,6 +30,13 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymen
   openModal: false,
 
   deployment: Ember.computed.alias("deploymentController.model"),
+
+  envNameValidator: AllValidator.create({
+    validators: [
+      PresenceValidator.create({}),
+      AlphaNumericDashUnderscoreValidator.create({})
+    ]
+  }),
 
   actions: {
     selectEnvironment(environment) {
