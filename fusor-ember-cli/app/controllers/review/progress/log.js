@@ -17,6 +17,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     {label: 'Ansible (ansible.log)', value: 'ansible_log'},
     {label: 'System Messages (messages)', value: 'messages_log'}
   ],
+  logType: 'fusor_log',
 
   showLogLoading: Ember.computed('errorMessage', 'isLoading', function() {
     return !this.get('errorMessage') && this.get('isLoading');
@@ -40,18 +41,18 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     Ember.run.once(this, () => this.send('updateDisplayedLog'));
   }),
 
-  isSearchActive:Ember.computed('searchLogString', function() {
+  isSearchActive: Ember.computed('searchLogString', function() {
     return !!this.get('searchLogString');
   }),
 
-  logTypeChanged: function() {
-    this.set('displayedLogHtml', '');
-    this.set('newEntries', []);
-    // run later to allow the dropdown to close and log to clear before doing the real work
-    Ember.run.later(this, () => { this.send('changeLogType'); });
-  }.observes('logType'),
-
   actions: {
+    logTypeChanged: function() {
+      this.set('displayedLogHtml', '');
+      this.set('newEntries', []);
+      // run later to allow the dropdown to close and log to clear before doing the real work
+      Ember.run.scheduleOnce('afterRender', this, () => { this.send('changeLogType'); });
+    },
+
     scrollToEnd() {
       if (this.get('deploymentInProgress') && this.get('scrollToEndChecked')) {
         var logOutput = Ember.$('.log-output')[0];
