@@ -56,7 +56,7 @@ const AnyValidator = Validator.extend({
 });
 
 const PresenceValidator = Validator.extend({
-  message: 'cannot be blank',
+  message: 'This field cannot be blank.',
 
   isValid(value) {
     return Ember.isPresent(value);
@@ -66,7 +66,7 @@ const PresenceValidator = Validator.extend({
 // expects values to be set during construction:
 // equals;
 const EqualityValidator = Validator.extend({
-  message: 'does not match',
+  message: 'This value does not match.',
 
   isValid(value) {
     let equals = this.get('equals');
@@ -81,7 +81,7 @@ const EqualityValidator = Validator.extend({
     let doesNotEqual = this.get('doesNotEqual');
 
     if (Ember.isPresent(equals) && value !== equals) {
-      return ['does not match'];
+      return ['This value does not match.'];
     }
 
     if (Ember.isPresent(doesNotEqual) && value === doesNotEqual) {
@@ -104,11 +104,11 @@ const NumberValidator = Validator.extend({
     let min = this.get('min'), max = this.get('max');
 
     if (Ember.isPresent(min) && value < min) {
-      return [`must be greater than or equal to ${min}`];
+      return [`This field must be greater than or equal to ${min}.`];
     }
 
     if (Ember.isPresent(max) && value > max) {
-      return [`must be less than or equal to ${max}`];
+      return [`This field must be less than or equal to ${max}.`];
     }
 
     return [];
@@ -116,7 +116,7 @@ const NumberValidator = Validator.extend({
 });
 
 const IntegerValidator = Validator.extend({
-  message: 'must be an integer',
+  message: 'This field must be an integer.',
 
   isValid(value) {
     //http://stackoverflow.com/questions/14636536/how-to-check-if-a-variable-is-an-integer-in-javascript
@@ -145,11 +145,11 @@ const LengthValidator = Validator.extend({
     }
 
     if (Ember.isPresent(min) && value.length < min) {
-      return [`must be ${min} or more characters`];
+      return [`This field must be ${min} or more characters.`];
     }
 
     if (Ember.isPresent(max) && value.length > max) {
-      return [`must be ${max} characters or less`];
+      return [`This field must be ${max} characters or less.`];
     }
 
     return [];
@@ -168,7 +168,7 @@ const RequiredPasswordValidator = AllValidator.extend({
 // expects values to be set during construction:
 // Array[String] values;
 const UniquenessValidator = Validator.extend({
-  message: 'must be unique',
+  message: 'This name is already in use.',
 
   isValid(value) {
     let existingValues = this.get('existingValues');
@@ -212,7 +212,7 @@ const RegExpValidator = Validator.extend({
 
 const AlphaNumericDashUnderscoreValidator = RegExpValidator.extend({
   regExp: new RegExp(/^[A-Za-z0-9_-]*$/),
-  message: "must contain only 'A-Z', 'a-z', '0-9', '_' or '-' characters"
+  message: "This field must contain only 'A-Z', 'a-z', '0-9', '_' or '-' characters."
 });
 
 const IpRangeValidator = RegExpValidator.extend({
@@ -222,7 +222,7 @@ const IpRangeValidator = RegExpValidator.extend({
     '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
     '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b'
   ].join(''), ''),
-  message: 'invalid network range'
+  message: 'This is an invalid network range.'
 });
 
 const IpAddressValidator = RegExpValidator.extend({
@@ -232,7 +232,7 @@ const IpAddressValidator = RegExpValidator.extend({
     '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
     '\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
   ].join(''), ''),
-  message: 'invalid ip address'
+  message: 'This is an invalid ip address.'
 });
 
 const CidrValidator = RegExpValidator.extend({
@@ -241,7 +241,7 @@ const CidrValidator = RegExpValidator.extend({
     '([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])',
     '(\/([0-9]|[1-2][0-9]|3[0-2]))$'
   ].join(''), ''),
-  message: 'invalid CIDR notation'
+  message: 'This is an invalid CIDR notation.'
 });
 
 // expects values to be set during construction:
@@ -276,11 +276,11 @@ const IpSubnetValidator = Validator.extend({
     let subnet = this.get('subnet');
 
     if (Ember.isEmpty(value) || !this.isValidIpAddress(value)) {
-      return ['invalid ip address'];
+      return ['This is an invalid ip address.'];
     }
 
     if (!this.isValidSubnet()) {
-      return ['invalid subnet'];
+      return ['This is an invalid subnet.'];
     }
 
     if (!this.isValid(value)) {
@@ -293,12 +293,12 @@ const IpSubnetValidator = Validator.extend({
 
 const MacAddressValidator = RegExpValidator.extend({
   regExp: new RegExp(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/),
-  message: 'invalid MAC address'
+  message: 'This is an invalid MAC address.'
 });
 
 const HostnameValidator = RegExpValidator.extend({
   regExp: new RegExp(/^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/),
-  message: 'invalid hostname'
+  message: 'This is an invalid hostname.'
 });
 
 const HostAddressValidator = AnyValidator.extend({
@@ -306,18 +306,18 @@ const HostAddressValidator = AnyValidator.extend({
     IpAddressValidator.create({}),
     HostnameValidator.create({})
   ],
-  message: 'invalid host or ip address'
+  message: 'This is an invalid host or ip address.'
 });
 
 const NoTrailingSlashValidator = Validator.extend({
-  message: 'You cannot have a trailing slash',
+  message: 'This field cannot have a trailing slash.',
   isValid(value) {
     return value.slice(-1) !== '/';
   }
 });
 
 const LeadingSlashValidator = Validator.extend({
-  message: 'You must have a leading slash',
+  message: 'This field must have a leading slash.',
   isValid(value) {
     return value.charAt(0) === '/';
   }

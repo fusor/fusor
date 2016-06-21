@@ -64,7 +64,7 @@ export default Ember.Mixin.create({
 
       getMessages(value) {
         if (Ember.isBlank(value)) {
-          return ['cannot be blank'];
+          return ['This field cannot be blank.'];
         }
 
         let macArray = this.getMacAddressArray(value);

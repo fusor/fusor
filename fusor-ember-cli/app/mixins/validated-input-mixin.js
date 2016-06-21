@@ -37,7 +37,7 @@ export default Ember.Mixin.create({
 
   validationMessages: Ember.computed('value', 'validator', 'validIsRequiredAndBlank', function () {
     if (this.get('validIsRequiredAndBlank')) {
-      return ['cannot be blank'];
+      return ['This field cannot be blank.'];
     }
 
     let validator = this.get('validator');
