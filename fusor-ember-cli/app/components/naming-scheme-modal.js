@@ -18,6 +18,14 @@ export default Ember.Component.extend({
     return (this.get('hostNamingScheme') === 'hypervisorN');
   }),
 
+  invalidCustomPrefix: Ember.computed('hostNamingScheme', 'customPreprendName', function() {
+    if (this.get('hostNamingScheme') !== 'Custom scheme') {
+      return false;
+    } else {
+      return !this.get('customPrefixValidator').isValid(this.get('customPreprendName'));
+    }
+  }),
+
   actions: {
     saveNamingScheme() {
       this.set('openModal', false);
