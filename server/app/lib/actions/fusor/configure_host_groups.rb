@@ -245,7 +245,8 @@ module Actions
                 { :name => "cpu_type", :value => deployment.rhev_cpu_type },
                 { :name => "export_name", :value => deployment.rhev_export_domain_name },
                 { :name => "export_address", :value => deployment.rhev_export_domain_address },
-                { :name => "export_path", :value => deployment.rhev_export_domain_path }
+                { :name => "export_path", :value => deployment.rhev_export_domain_path },
+                { :name => "mac_address_range", :value => get_mac_address_range(deployment.id)}
               ]
             },
             {
@@ -276,7 +277,8 @@ module Actions
               :name => "ovirt::self_hosted::config",
               :parameters =>
               [
-                { :name => "hosts_addresses", :value => host_addresses(deployment, hostgroup) }
+                { :name => "hosts_addresses", :value => host_addresses(deployment, hostgroup) },
+                { :name => "mac_address_range", :value => get_mac_address_range(deployment.id)}
               ]
             },
             {
@@ -388,6 +390,14 @@ module Actions
           # 'IBM POWER 8' => 'UNSUPPORTED',
         }
         return self_hosted_cpu_map[cpu_type]
+      end
+
+      def get_mac_address_range(deployment_id)
+        fail _('Too many deployments to generate a unique mac address pool') if deployment_id > 255
+        identifier = deployment_id.to_s(16).rjust(2, '0')
+        start = "00:1A:#{identifier}:00:00:00"
+        end_ = "00:1A:#{identifier}:FF:FF:FF"
+        "#{start},#{end_}"
       end
     end
   end
