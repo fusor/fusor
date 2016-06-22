@@ -1,13 +1,19 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
+import PollingPromise from '../../../mixins/polling-promise-mixin';
 
-export default Ember.Route.extend({
+export default Ember.Route.extend(PollingPromise, {
+
+  onPollInterval: 10000,
+  CHUNKSIZE: 200,
+
   model() {
     return Ember.Object.create({
       fusor_log: {path: ''},
       foreman_log: {path: ''},
       foreman_proxy_log: {path: ''},
       candlepin_log: {path: ''},
+      ansible_log: {path: ''},
       messages_log: {path: ''}
     });
   },
@@ -101,15 +107,14 @@ export default Ember.Route.extend({
   initLog() {
     var self = this, controller = self.get('controller');
 
-    self.set('pollingActive', true);
     return Ember.RSVP.Promise.all([
       self.updateForemanTask(),
       self.updateLog()
     ]).then(function () {
-      if (self.get('pollingActive') && controller.get('deploymentInProgress')) {
+      if (controller.get('deploymentInProgress')) {
         self.startPolling();
       } else {
-        self.set('pollingActive', false);
+        self.stopPolling();
       }
     });
   },
@@ -145,27 +150,14 @@ export default Ember.Route.extend({
       });
   },
 
-  scheduleAction(f) {
-    return Ember.run.later(this, function () {
-      f.apply(this);
-      if (this.get('controller').get('deploymentInProgress')) {
-        this.set('timer', this.scheduleAction(f));
-      }
-    }, 10000);
-  },
-
-  startPolling() {
-    this.set('pollingActive', true);
-    this.set('timer', this.scheduleAction(this.pollingAction));
-  },
-
-  stopPolling() {
-    this.set('pollingActive', false);
-    Ember.run.cancel(this.get('timer'));
-  },
-
-  pollingAction() {
-    this.updateLog().then(() => this.updateForemanTask());
+  onPoll() {
+    return this.updateLog()
+      .then(() => this.updateForemanTask())
+      .then(() => {
+        if (!this.get('controller.deploymentInProgress')) {
+          this.stopPolling();
+        }
+      });
   },
 
   getFullLog(params) {
@@ -182,8 +174,8 @@ export default Ember.Route.extend({
   },
 
   loadLog(logType, response) {
-    var promises = [], idx = 0, chunksize = 200, showLogTruncated,
-      responseLog = response[logType];
+    let promises = [], idx = 0, chunksize = 200, showLogTruncated;
+    let responseLog = response[logType] || {path: '', entries: []};
 
     this.set('controller.searchResultIdx', 0);
     this.set('controller.searchResults', []);

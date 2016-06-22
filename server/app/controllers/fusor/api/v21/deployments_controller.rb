@@ -236,14 +236,20 @@ module Fusor
 
     def create_log_reader(log_type_param)
       case log_type_param
-        when 'fusor_log', 'foreman_log'
-          Fusor::Logging::RailsLogReader.new
+        when 'fusor_log'
+          ::Fusor::Logging::FusorLogReader.new
+        when 'foreman_log'
+          ::Fusor::Logging::ForemanLogReader.new
         when 'candlepin_log'
-          Fusor::Logging::JavaLogReader.new
+          ::Fusor::Logging::JavaLogReader.new
         when 'foreman_proxy_log'
-          Fusor::Logging::ProxyLogReader.new
+          ::Fusor::Logging::ProxyLogReader.new
+        when 'foreman_proxy_log'
+          ::Fusor::Logging::ProxyLogReader.new
+        when 'ansible_log'
+          ::Fusor::Logging::AnsibleLogReader.new
         else
-          Fusor::Logging::LogReader.new
+          ::Fusor::Logging::LogReader.new
       end
     end
 
@@ -255,9 +261,11 @@ module Fusor
         when 'candlepin_log'
           File.join(dir, 'var/log/candlepin/candlepin.log')
         when 'foreman_log'
-          File.join(dir, 'var/log/foreman/production.log')
+          File.join(dir, "var/log/foreman/#{Rails.env}.log")
         when 'foreman_proxy_log'
           File.join(dir, 'var/log/foreman-proxy/proxy.log')
+        when 'ansible_log'
+          File.join(dir, 'ansible.log')
         else
           ::Fusor.log_file_path(@deployment.label, @deployment.id)
       end

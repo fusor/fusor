@@ -12,9 +12,9 @@
 
 require 'test_helper'
 
-class RailsLogReaderTest < ActiveSupport::TestCase
+class ForemanLogReaderTest < ActiveSupport::TestCase
   def setup
-    @reader = Fusor::Logging::RailsLogReader.new
+    @reader = Fusor::Logging::ForemanLogReader.new
   end
 
   # parse_log_level
@@ -52,5 +52,18 @@ class RailsLogReaderTest < ActiveSupport::TestCase
   test 'parse_entry should set the entry log_level' do
     entry = @reader.parse_entry('2015-01-02 03:04:05 [I] some log stuff', 123)
     assert_equal :info, entry.level
+  end
+
+  test 'ForemanLogReader should understand continuation log lines' do
+    @log_path = "#{Rails.root}/test/fixtures/logs/foreman_log_reader_test_file.log"
+    log = @reader.read_full_log @log_path
+    assert_nil log.entries[0].level
+    assert_equal :warn, log.entries[1].level
+    assert_equal :warn, log.entries[2].level
+    assert_equal :warn, log.entries[3].level
+    assert_nil log.entries[4].level
+    assert_equal :error, log.entries[5].level
+    assert_equal :error, log.entries[6].level
+    assert_equal :info, log.entries[7].level
   end
 end

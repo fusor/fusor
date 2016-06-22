@@ -9,6 +9,10 @@ export default Ember.Mixin.create({
     let f = this.get(names.pollingFunction);
     let interval = Ember.isPresent(this.get(names.interval)) ? this.get(names.interval) : this.get('onPollInterval');
 
+    if (!f) {
+      throw new Error(`Polling function "${names.pollingFunction}" not found.`);
+    }
+
     if (this.get(names.started)){
       Ember.run.later(this, function() {
         f.apply(this).then(() => {
