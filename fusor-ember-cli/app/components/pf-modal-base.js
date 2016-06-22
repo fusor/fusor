@@ -13,10 +13,19 @@ export default Ember.Component.extend({
     }
   }),
 
+  closeXActionName: Ember.computed('closeXAction', function () {
+    return this.getWithDefault('closeXAction', 'closeModal');
+  }),
+
   actions: {
-    closeModal: function() {
+    closeModal() {
       this.set('openModal', false);
+    },
+
+    cancelNamingScheme() {
+      this.sendAction('closeXAction');
     }
+
   }
 
 });
