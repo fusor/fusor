@@ -13,6 +13,9 @@ class FusorSetup
     #Increase token liftetime
     Setting[:token_duration] = 2880
 
+    #Change default download policy to on_demand
+    Setting[:default_download_policy] = 'on_demand'
+
     #Don't resict smart proxies in dev. It doesn't work using ProxyPass.
     Setting[:restrict_registered_smart_proxies] = false if Rails.env == "development"
 
