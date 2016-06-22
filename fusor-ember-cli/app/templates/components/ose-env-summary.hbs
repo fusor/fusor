@@ -12,9 +12,10 @@
     Resources needed:
     <div class='pull-right'>
       Resources available:
-      {{tool-tip faIcon='fa-info-circle'
-                  title=resourcesAvailableToolTip}}
-
+      {{#if isCloudForms}}
+        {{tool-tip faIcon='fa-info-circle'
+                    title=resourcesAvailableToolTip}}
+      {{/if}}
     </div>
   </div>
 </div>

@@ -10,6 +10,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
   isRhev: Ember.computed.alias("deploymentController.isRhev"),
   isNotRhev: Ember.computed.not("isRhev"),
   isOpenStack: Ember.computed.alias("deploymentController.isOpenStack"),
+  isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
   isNotOpenStack: Ember.computed.not("isOpenStack"),
 
   isOverCapacity: Ember.computed.alias("openshiftController.isOverCapacity"),
