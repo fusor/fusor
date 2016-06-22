@@ -44,11 +44,12 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       return this.transitionTo('subscriptions.management-application.consumer', managementApp.get('id'));
     },
 
-    createSatellite() {
+    createSatellite(newSatelliteName) {
       this.set('showErrorMessage', false);
       this.set('showWaitingMessage', true);
+      this.set('newSatelliteName', newSatelliteName);
+
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
-      var newSatelliteName = this.get('newSatelliteName');
       var errorMsg = this.get('errorMsg');
       var ownerKey = this.get('sessionPortal').get('ownerKey');
       var self = this;
@@ -71,7 +72,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
               name: newSatelliteName,
               type: "satellite",
               facts: {
-                "distributor_version": "sat-6.0",
+                "distributor_version": "sat-6.2",
                 "system.certificate_version": "3.2"
               }
             }),
@@ -97,10 +98,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
             self.set('upstreamConsumerName', response.name);
             self.set('showAlertMessage', true);
             self.set('showWaitingMessage', false);
-            console.log(response);
             resolve(response);
           }, function(error) {
-            console.log('error on createSatellite');
             self.set('showErrorMessage', true);
             self.set('errorMsg', newSatelliteName + ' failed to be added.');
             return self.send('error');
