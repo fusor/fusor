@@ -97,6 +97,40 @@
     - name: Create Docker Registry deployment config with persistent storage
       command: oc volume dc docker-registry --add --overwrite -t persistentVolumeClaim --claim-name=registry-pvclaim --name=registry-storage
 
+    - name: Add management-infra role to admin user
+      command: oadm policy add-role-to-user -n management-infra admin -z management-admin
+
+    - name: Add management-infra role to management-admin user
+      command: oadm policy add-role-to-user -n management-infra management-infra-admin -z management-admin
+
+    - name: Add cluster role to user
+      command: oadm policy add-cluster-role-to-user cluster-reader system:serviceaccount:management-infra:management-admin
+
+    - name: Add scc to management-admin user
+      command: oadm policy add-scc-to-user privileged system:serviceaccount:management-infra:management-admin
+
+    - name: Create router for CFME to access data
+      command: oadm router management-metrics -n default --credentials=/etc/origin/master/openshift-router.kubeconfig --service-account=router --ports='443:5000' --selector='kubernetes.io/hostname={{ inventory_hostname }}' --stats-port=1937 --host-network=false
+
+    - name: Retrieve service token name
+      shell: oc get -n management-infra sa/management-admin --template='{% raw %}{{range .secrets}}{{printf "%s\n" .name}}{{end}}{% endraw %}' | head -n 1 > ~/.key
+      become: yes
+      become_method: sudo
+
+    - name: Get service token name
+      shell: cat ~/.key
+      register: key
+
+    - name: Retrieve service token
+      shell: oc get -n management-infra secrets {{ key.stdout }} --template='{% raw %}{{.data.token}}{% endraw %}' | base64 -d > ~/.token
+
+    - name: Get service token
+      shell: cat ~/.token
+      register: token
+
+    - name: Save token to known deployment location
+      local_action: copy content={{ token.stdout }} dest={{ output_dir }}/{{ inventory_hostname }}.token
+
     - name: Login as specified OSE user
       command: oc login -u {{ ose_user }} -p {{ ose_password }}
 

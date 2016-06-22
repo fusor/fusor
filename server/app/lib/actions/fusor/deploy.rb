@@ -45,13 +45,13 @@ module Actions
             end
           end
 
-          if deployment.deploy_cfme
-            plan_action(::Actions::Fusor::Deployment::CloudForms::DeployAsSubPlan,
+          if deployment.deploy_openshift
+            plan_action(::Actions::Fusor::Deployment::OpenShift::DeployAsSubPlan,
                         deployment)
           end
 
-          if deployment.deploy_openshift
-            plan_action(::Actions::Fusor::Deployment::OpenShift::DeployAsSubPlan,
+          if deployment.deploy_cfme
+            plan_action(::Actions::Fusor::Deployment::CloudForms::DeployAsSubPlan,
                         deployment)
           end
         end

@@ -71,7 +71,7 @@ module Actions
             opts[:storage_type] = deployment.openshift_storage_type
 
             opts[:ose_user] = deployment.openshift_username
-            opts[:ose_password] = "deployment.openshift_user_password"
+            opts[:ose_password] = deployment.openshift_user_password
 
             opts[:subdomain_name] = deployment.openshift_subdomain_name
             opts[:helloworld_sample_app] = deployment.openshift_sample_helloworld
