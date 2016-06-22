@@ -1,5 +1,10 @@
 import Ember from 'ember';
-import { PresenceValidator, UniquenessValidator, AllValidator } from '../utils/validators';
+import {
+  PresenceValidator,
+  UniquenessValidator,
+  LengthValidator,
+  AllValidator
+} from '../utils/validators';
 
 export default Ember.Mixin.create({
   applicationController: Ember.inject.controller('application'),
@@ -38,6 +43,7 @@ export default Ember.Mixin.create({
       validators: [
         PresenceValidator.create({}),
         UniquenessValidator.create({existingValues: otherNames}),
+        LengthValidator.create({max: 64}),
         LabelValidator.create({existingValues: otherLabels})
       ]
     });
