@@ -1,5 +1,10 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
+import {
+  AllValidator,
+  PresenceValidator,
+  AlphaNumericDashUnderscoreValidator
+} from '../../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
@@ -119,6 +124,14 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
           .reduce((lhs, rhs) => lhs && rhs);
     }
   ),
+
+  customPrefixValidator: AllValidator.create({
+    validators: [
+      PresenceValidator.create({}),
+      AlphaNumericDashUnderscoreValidator.create({})
+    ]
+  }),
+
   actions: {
 
     setCheckAll() {

@@ -50,7 +50,7 @@ test('PresenceValidator rejects invalid values', function (assert) {
     assert.ok(presenceValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
     assert.notOk(presenceValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(presenceValidator.getMessages(value).length, 1);
-    assert.equal(presenceValidator.getMessages(value)[0], 'cannot be blank');
+    assert.equal(presenceValidator.getMessages(value)[0], 'This field cannot be blank.');
   });
 });
 
@@ -68,7 +68,7 @@ test('EqualityValidator rejects invalid values', function (assert) {
   assert.ok(equalityValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
   assert.notOk(equalityValidator.isValid(value), `"${value}" was accepted as valid`);
   assert.equal(equalityValidator.getMessages(value).length, 1);
-  assert.equal(equalityValidator.getMessages(value)[0], 'does not match');
+  assert.equal(equalityValidator.getMessages(value)[0], 'This value does not match.');
 });
 
 test('LengthValidator accepts valid minimum length', function (assert) {
@@ -95,7 +95,7 @@ test('LengthValidator rejects invalid minimum length', function (assert) {
   assert.ok(lengthValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
   assert.notOk(lengthValidator.isValid(value), `"${value}" was accepted as valid`);
   assert.equal(lengthValidator.getMessages(value).length, 1);
-  assert.equal(lengthValidator.getMessages(value)[0], 'must be 5 or more characters');
+  assert.equal(lengthValidator.getMessages(value)[0], 'This field must be 5 or more characters.');
 });
 
 test('LengthValidator accepts valid maximum length', function (assert) {
@@ -118,7 +118,7 @@ test('LengthValidator rejects invalid maximum length', function (assert) {
   assert.ok(lengthValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
   assert.notOk(lengthValidator.isValid(value), `"${value}" was accepted as valid`);
   assert.equal(lengthValidator.getMessages(value).length, 1);
-  assert.equal(lengthValidator.getMessages(value)[0], 'must be 5 characters or less');
+  assert.equal(lengthValidator.getMessages(value)[0], 'This field must be 5 characters or less.');
 });
 
 test('PasswordValidator accepts valid passwords', function (assert) {
@@ -144,7 +144,7 @@ test('PasswordValidator rejects invalid passwords', function (assert) {
   assert.ok(passwordValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
   assert.notOk(passwordValidator.isValid(value), `"${value}" was accepted as valid`);
   assert.equal(passwordValidator.getMessages(value).length, 1);
-  assert.equal(passwordValidator.getMessages(value)[0], 'must be 8 or more characters');
+  assert.equal(passwordValidator.getMessages(value)[0], 'This field must be 8 or more characters.');
 });
 
 test('RequiredPasswordValidator rejects blank values', function (assert) {
@@ -159,7 +159,7 @@ test('RequiredPasswordValidator rejects blank values', function (assert) {
     assert.ok(requiredPasswordValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
     assert.notOk(requiredPasswordValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(requiredPasswordValidator.getMessages(value).length, 1);
-    assert.equal(requiredPasswordValidator.getMessages(value)[0], 'cannot be blank');
+    assert.equal(requiredPasswordValidator.getMessages(value)[0], 'This field cannot be blank.');
   });
 });
 
@@ -184,7 +184,7 @@ test('UniquenessValidator rejects values already in existingValues', function (a
     assert.ok(uniquenessValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
     assert.notOk(uniquenessValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(uniquenessValidator.getMessages(value).length, 1);
-    assert.equal(uniquenessValidator.getMessages(value)[0], 'must be unique');
+    assert.equal(uniquenessValidator.getMessages(value)[0], 'This name is already in use.');
   });
 });
 
@@ -215,7 +215,7 @@ test('UniquenessValidator rejects values in list with multiples if selfIncluded'
     assert.ok(uniquenessValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
     assert.notOk(uniquenessValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(uniquenessValidator.getMessages(value).length, 1);
-    assert.equal(uniquenessValidator.getMessages(value)[0], 'must be unique');
+    assert.equal(uniquenessValidator.getMessages(value)[0], 'This name is already in use.');
   });
 });
 
@@ -270,7 +270,7 @@ test('AlphaNumericDashUnderscoreValidator rejects invalid values', function (ass
     assert.ok(anduValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
     assert.notOk(anduValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(anduValidator.getMessages(value).length, 1);
-    assert.equal(anduValidator.getMessages(value)[0], "must contain only 'A-Z', 'a-z', '0-9', '_' or '-' characters");
+    assert.equal(anduValidator.getMessages(value)[0], "This field must contain only 'A-Z', 'a-z', '0-9', '_' or '-' characters.");
   });
 });
 
@@ -304,7 +304,7 @@ test('IpAddressValidator rejects invalid values', function (assert) {
     assert.ok(ipAddressValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
     assert.notOk(ipAddressValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(ipAddressValidator.getMessages(value).length, 1);
-    assert.equal(ipAddressValidator.getMessages(value)[0], 'invalid ip address');
+    assert.equal(ipAddressValidator.getMessages(value)[0], 'This is an invalid ip address.');
   });
 });
 
@@ -339,7 +339,7 @@ test('IpRangeValidator rejects invalid values', function (assert) {
     assert.ok(ipRangeValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
     assert.notOk(ipRangeValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(ipRangeValidator.getMessages(value).length, 1);
-    assert.equal(ipRangeValidator.getMessages(value)[0], 'invalid network range');
+    assert.equal(ipRangeValidator.getMessages(value)[0], 'This is an invalid network range.');
   });
 });
 
@@ -382,7 +382,7 @@ test('CidrValidator rejects invalid values', function (assert) {
     assert.ok(cidrValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
     assert.notOk(cidrValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(cidrValidator.getMessages(value).length, 1);
-    assert.equal(cidrValidator.getMessages(value)[0], 'invalid CIDR notation');
+    assert.equal(cidrValidator.getMessages(value)[0], 'This is an invalid CIDR notation.');
   });
 });
 
@@ -422,7 +422,7 @@ test('IpSubnetValidator rejects invalid values', function (assert) {
     assert.ok(ipSubnetValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
     assert.notOk(ipSubnetValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(ipSubnetValidator.getMessages(value).length, 1);
-    assert.equal(ipSubnetValidator.getMessages(value)[0], 'invalid ip address');
+    assert.equal(ipSubnetValidator.getMessages(value)[0], 'This is an invalid ip address.');
   });
 
   invalidSubnetAddresses.forEach((value) => {
@@ -462,7 +462,7 @@ test('MacAddressValidator rejects invalid values', function (assert) {
     assert.ok(macAddressValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
     assert.notOk(macAddressValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(macAddressValidator.getMessages(value).length, 1);
-    assert.equal(macAddressValidator.getMessages(value)[0], 'invalid MAC address');
+    assert.equal(macAddressValidator.getMessages(value)[0], 'This is an invalid MAC address.');
   });
 });
 
@@ -493,7 +493,7 @@ test('HostnameValidator rejects invalid values', function (assert) {
     assert.ok(hostnameValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
     assert.notOk(hostnameValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(hostnameValidator.getMessages(value).length, 1);
-    assert.equal(hostnameValidator.getMessages(value)[0], 'invalid hostname');
+    assert.equal(hostnameValidator.getMessages(value)[0], 'This is an invalid hostname.');
   });
 });
 
@@ -529,6 +529,6 @@ test('HostAddressValidator rejects invalid values', function (assert) {
     assert.ok(hostAddressValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
     assert.notOk(hostAddressValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(hostAddressValidator.getMessages(value).length, 1);
-    assert.equal(hostAddressValidator.getMessages(value)[0], 'invalid host or ip address');
+    assert.equal(hostAddressValidator.getMessages(value)[0], 'This is an invalid host or ip address.');
   });
 });

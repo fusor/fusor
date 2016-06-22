@@ -13,8 +13,8 @@
                                   content=namingOptions
                                   value=hostNamingScheme
                                   disabled=isStarted
-                                  labelSize='col-lg-3 col-md-4 col-sm-4 col-xs-4 col-xs-offset-1'
-                                  inputSize='col-lg-3 col-md-5 col-sm-5 col-xs-4'
+                                  labelSize='col-lg-4 col-md-4 col-sm-4 col-xs-4 col-xs-offset-1'
+                                  inputSize='col-lg-4 col-md-5 col-sm-5 col-xs-4'
                                   disabled=isStarted
                                   renderInPlace=true
                                   action="setSelectValue"
@@ -25,11 +25,12 @@
                              value=customPreprendName
                              disabled=isStarted
                              placeholder='Enter custom prefix'
-                             labelSize='col-lg-3 col-md-4 col-sm-4 col-xs-4 col-xs-offset-1'
-                             inputSize='col-lg-3 col-md-5 col-sm-5 col-xs-4'}}
+                             validator=customPrefixValidator
+                             labelSize='col-lg-4 col-md-4 col-sm-4 col-xs-4 col-xs-offset-1'
+                             inputSize='col-lg-4 col-md-5 col-sm-5 col-xs-4'}}
 
                     {{#base-f label='Three host example'
-                              labelSize='col-lg-3 col-md-4 col-sm-4 col-xs-4 col-xs-offset-1'}}
+                              labelSize='col-lg-4 col-md-4 col-sm-4 col-xs-4 col-xs-offset-1'}}
                               {{customPreprendName}}1<br />
                               {{customPreprendName}}2<br />
                               {{customPreprendName}}3<br />
@@ -38,7 +39,7 @@
 
                 {{#if isHypervisorN}}
                     {{#base-f label='Three host example'
-                              labelSize='col-lg-3 col-md-4 col-sm-4 col-xs-4 col-xs-offset-1'}}
+                              labelSize='col-lg-4 col-md-4 col-sm-4 col-xs-4 col-xs-offset-1'}}
                         hypervisor1<br />
                         hypervisor2<br />
                         hypervisor3<br />
@@ -52,7 +53,8 @@
 
       {{#pf-modal-footer}}
         <button {{action 'cancelNamingScheme'}} class="btn btn-default">Cancel</button>
-        <button {{action 'saveNamingScheme'}} class="btn btn-primary">Edit</button>
+        <button {{action 'saveNamingScheme'}} class="btn btn-primary"
+                disabled={{invalidCustomPrefix}}>Edit</button>
       {{/pf-modal-footer}}
 
 {{/pf-modal-base}}
