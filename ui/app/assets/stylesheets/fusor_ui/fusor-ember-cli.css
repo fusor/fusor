@@ -574,6 +574,12 @@ table.fusor-table {
 .invalid-input {
   border: 2px solid red; }
 
+.text-f-alt .text-area-validation-errors-right {
+  padding-top: 23px; }
+
+.text-f-alt2 .text-area-validation-errors-right {
+  padding-left: 0; }
+
 /* override alert padding in Sat6 that is 34px */
 .rhci-alert {
   padding-left: 15px !important;
@@ -626,7 +632,9 @@ table.fusor-table {
   margin-left: -18px; }
 
 .help-block {
-  font-style: italic; }
+  font-style: italic;
+  display: inline-block;
+  margin-left: -20px; }
 
 .osp-autogeneric-label {
   font-weight: normal !important;
@@ -681,7 +689,7 @@ table.fusor-table {
   color: #fff; }
 
 .input-ose {
-  width: 20px;
+  width: 25px;
   text-align: center; }
 
 .ose-env-summary {
@@ -856,11 +864,43 @@ span.hanging-indent {
   font-size: 16px;
   padding-left: 5px; }
 
-.ose-sample-apps .rhci-popover-button {
+.ose-sample-apps .rhci-popover-button, .new-node-form-specify .rhci-popover-button {
   margin-left: 5px; }
 
-.ose-sample-apps .popover {
+.ose-sample-apps .popover, .new-node-form-specify .popover {
   width: 200px; }
+
+.ose-number-node-buttons {
+  padding: 10px;
+  margin-left: 20px; }
+
+.ose-custom-input {
+  padding: 2px 0px;
+  width: 45px;
+  height: 32px;
+  text-align: center;
+  color: #000;
+  border: solid 2px #0099d3;
+  display: inline-block; }
+
+.ose-node-label {
+  font-weight: bold;
+  padding-right: 8px; }
+
+.worker-nodes-label {
+  padding-right: 6px !important; }
+
+.ose-number-buttons-block {
+  padding: 8px 0px; }
+
+.ose-custom-field {
+  display: inline; }
+
+.simple-text-error {
+  display: inline-block;
+  vertical-align: top;
+  margin-bottom: 0px !important;
+  /* overides form-group default */ }
 
 /* wizard.scss */
 .page-header-rhci {
@@ -1586,7 +1626,20 @@ span.hanging-indent {
   padding: 6px 10px 6px 10px; }
 
 .node-registration-modal .modal-body {
-  min-height: 460px; }
+  min-height: 640px; }
+  .node-registration-modal .modal-body .ember-radio-button > input {
+    bottom: 3px; }
+  .node-registration-modal .modal-body .left-aligned-label {
+    text-align: left;
+    padding-left: 20px; }
+  .node-registration-modal .modal-body .light-left-border {
+    border-left: solid 1px lightgray; }
+
+.mac-address-manual-container .form-group {
+  margin-left: 0; }
+
+.mac-address-manual-container textarea {
+  resize: vertical; }
 
 .new-node-submit-button {
   min-width: 70px; }
@@ -1602,6 +1655,10 @@ span.hanging-indent {
 
 .add-node-uneditable-input-container {
   padding-top: 2px; }
+
+.add-node-textarea-instruction {
+  padding-left: 52px;
+  margin-bottom: 12px; }
 
 .new-node-registration-csv-errors {
   color: #cc0000; }
@@ -1643,23 +1700,58 @@ span.hanging-indent {
   margin-right: 20px;
   border-right: #333 solid 1px; }
 
-p.new-node-auto-detect-count {
-  margin-bottom: 0; }
+.node-auto-detect-status {
+  margin-top: 12px;
+  margin-bottom: 24px; }
+
+.new-node-auto-detect-label-section {
+  padding-right: 0; }
+
+.new-node-auto-detect-count-section {
+  line-height: 1;
+  font-size: 36px;
+  padding-left: 0;
+  padding-right: 2px;
+  text-align: right;
+  font-weight: lighter; }
+  .new-node-auto-detect-count-section .new-node-detect-invalid-icon {
+    color: #cc0000;
+    font-size: 24px;
+    vertical-align: middle; }
+
+.new-node-auto-detect-text-section {
+  padding-top: 2px;
+  line-height: 1.4;
+  padding-left: 2px; }
+
+.new-node-auto-detect-error {
+  color: #cc0000;
+  margin-left: 12px; }
 
 .new-node-detect-hosts-container {
   max-height: 450px;
-  overflow-y: auto;
-  margin-top: 18px; }
-
-.new-node-detect-list-singlemac {
-  margin-top: 18px; }
+  overflow-y: auto; }
 
 .new-node-detect-form {
-  margin-top: 4px;
-  margin-bottom: 4px; }
+  margin-top: 1px;
+  margin-bottom: 1px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden; }
+  .new-node-detect-form.new-node-detect-ready {
+    background-color: #def3ff; }
+  .new-node-detect-form.new-node-detect-invalid .new-node-detect-select {
+    border-color: #cc0000;
+    outline: 0;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 4px rgba(204, 0, 0, 0.4); }
 
 .new-node-detect-checkbox {
+  padding-left: 6px;
+  padding-right: 6px;
   margin-right: 4px; }
+
+.new-node-detect-form-group {
+  padding-left: 16px; }
 
 .new-node-deselected-text {
   text-decoration: line-through; }
@@ -1670,13 +1762,19 @@ p.new-node-auto-detect-count {
 .form-control.new-node-detect-select,
 .new-node-detect-mac-address {
   width: 140px;
-  margin-right: 15px;
+  margin-right: 2px;
   padding-right: 0; }
 
 .new-node-form-span {
   display: inline-block;
   vertical-align: middle;
   padding-bottom: 1px; }
+  .new-node-form-span.new-node-detect-invalid-icon {
+    font-size: 14px;
+    width: 12px;
+    margin-right: 6px;
+    color: #cc0000;
+    padding-bottom: 0; }
 
 .new-node-detect-hostname {
   font-style: italic; }
@@ -1697,7 +1795,7 @@ span.registered-node-count {
 
 .osp-node-manager-nodes-info-section {
   padding-top: 10px;
-  padding-left: 0px; }
+  padding-left: 0; }
 
 .node-info {
   margin-bottom: 0; }
