@@ -82,6 +82,9 @@ module Actions
 
               plan_action(::Actions::Fusor::Deployment::CloudForms::AddOspProvider,
                           deployment) if deployment.deploy_openstack
+
+              plan_action(::Actions::Fusor::Deployment::CloudForms::AddOseProvider,
+                          deployment) if deployment.deploy_openshift
             end
           end
 
