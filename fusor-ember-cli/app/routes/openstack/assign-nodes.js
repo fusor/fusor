@@ -86,7 +86,8 @@ export default Ember.Route.extend({
           isBoolean: param['Type'] === 'Boolean',
           default: param['Default'],
           value: param['Default'],
-          type: param['Type'] === 'Number' ? 'number' : 'text'
+          type: param['Type'] === 'Number' ? 'number' : 'text',
+          description: param['Description']
         });
 
         let role = this.findRoleForParamKey(paramKey);
