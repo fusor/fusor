@@ -33,6 +33,22 @@ export default DS.Model.extend({
 
     let introspectionTask = this.getIntrospectionTask(introspectionTasks);
     return introspectionTask ? foremanTasks.findBy('id', introspectionTask.get('task_id')) : null;
+  },
+
+  matchesProfile(profile) {
+    let nodeMemory = this.get('properties.memory_mb');
+    let nodeCPUs = this.get('properties.cpus');
+    let workerDisk = this.get('properties.local_gb');
+    let nodeCPUArch = this.get('properties.cpu_arch');
+    let profileMemory = profile.get('ram');
+    let profileCPUs = profile.get('vcpus');
+    let profileDisk = profile.get('disk');
+    let profileCPUArch = profile.get('extra_specs.cpu_arch');
+
+    return nodeMemory == profileMemory &&
+      nodeCPUs == profileCPUs &&
+      workerDisk == profileDisk &&
+      nodeCPUArch == profileCPUArch;
   }
 });
 

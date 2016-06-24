@@ -5,7 +5,11 @@ export default DS.Model.extend({
   ram: DS.attr('number'),
   vcpus: DS.attr('number'),
   disk: DS.attr('number'),
-  extra_specs: DS.attr()
+  extra_specs: DS.attr(),
+
+  matchingNodeCount(nodes) {
+    return nodes.reduce((nodeCount, node) => nodeCount + (node.matchesProfile(this) ? 1 : 0), 0);
+  }
 });
 
 
