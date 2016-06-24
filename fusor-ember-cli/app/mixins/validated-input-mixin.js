@@ -45,8 +45,17 @@ export default Ember.Mixin.create({
   }),
 
   actions: {
+    // this action is triggered on focus-out
     showValidationErrors() {
       this.set("showValidationError", true);
+    },
+
+    // this action is triggered on key-up. however, for password fields only, we don't want
+    // to show validation errors after every key stroke unless 8 characters have been entered
+    showValidationErrorsKeyUp() {
+      if (!(this.get('isPassword') && this.get('value.length') < 8)) {
+        this.set("showValidationError", true);
+      }
     },
 
     resetValidationErrors() {
