@@ -315,16 +315,21 @@
 
 .deployment-role-settings-content {
   height: 400px;
-  margin-bottom: -20px;
-  overflow-x: hidden;
-  overflow-y: auto;
 }
 
 .global-config-settings-content {
   height: 510px;
+}
+
+.deployment-role-settings-content ,
+.global-config-settings-content {
   margin-bottom: -20px;
   overflow-x: hidden;
   overflow-y: auto;
+  .popover {
+    width: 250px;
+    position: fixed;
+  }
 }
 
 .nav-node-registration {
