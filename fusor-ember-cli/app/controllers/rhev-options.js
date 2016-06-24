@@ -49,7 +49,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   ],
 
-  createComputerNameValidator(fieldName, otherFieldValue) {
+  createComputerNameValidator(fieldName, otherFieldName, otherFieldValue) {
     if (Ember.isBlank(otherFieldValue) || otherFieldValue === 'Default') {
       return AlphaNumericDashUnderscoreValidator.create({trim: false});
     }
@@ -57,7 +57,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return AllValidator.create({
       validators: [
         Validator.create({
-          message: `Note: You must change the ${fieldName} after changing the cluster name`,
+          message: `Note: You must change the ${fieldName} after changing the ${otherFieldName}`,
           isValid(value) {
             return Ember.isPresent(value) && value !== 'Default';
           }
@@ -68,11 +68,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   },
 
   dataCenterNameValidator: Ember.computed('rhevClusterName', function() {
-    return this.createComputerNameValidator('data center name', this.get('rhevClusterName'));
+    return this.createComputerNameValidator('data center name', 'cluster name', this.get('rhevClusterName'));
   }),
 
   clusterNameValidator: Ember.computed('rhevDataCenterName', function () {
-    return this.createComputerNameValidator('cluster name', this.get('rhevDataCenterName'));
+    return this.createComputerNameValidator('cluster name', 'data center name', this.get('rhevDataCenterName'));
   }),
 
   validRhevOptions: Ember.computed(
