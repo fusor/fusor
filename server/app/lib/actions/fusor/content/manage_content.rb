@@ -29,9 +29,7 @@ module Actions
 
           sequence do
             content = SETTINGS[:fusor][:content]
-            host_groups = SETTINGS[:fusor][:host_groups]
 
-            # TODO: Move to host groups?
             enable_smart_class_parameter_overrides
 
             product_content_details = PRODUCT_MAP.each_with_object([]) do |(deploy, product_types), details|

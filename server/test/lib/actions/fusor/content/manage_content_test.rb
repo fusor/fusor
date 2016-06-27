@@ -34,24 +34,6 @@ module Actions::Fusor::Content
                                 PublishContentView,
                                 @deployment,
                                 @repositories)
-
-      rhev = SETTINGS[:fusor][:host_groups][:rhev][:host_groups]
-      assert_action_planed_with(@deploy,
-                                ConfigureActivationKey,
-                                @deployment,
-                                rhev[1],
-                                @repositories)
-      assert_action_planed_with(@deploy,
-                                ConfigureActivationKey,
-                                @deployment,
-                                rhev.last,
-                                @repositories)
-
-      assert_action_planed_with(@deploy,
-                                ConfigureHostGroups,
-                                @deployment,
-                                :rhev,
-                                SETTINGS[:fusor][:host_groups][:rhev])
     end
 
     test "there is no run method for ManageContent Actions" do
