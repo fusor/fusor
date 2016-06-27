@@ -4,20 +4,18 @@ export default Ember.Component.extend({
 
   classNames: ['row osp-node-row'],
 
-  deleteEnabled: true,
-
-  label: Ember.computed('node', 'ports', function() {
+  label: Ember.computed('node', 'ports', function () {
     let node = this.get('node');
-    let macAddress = node ? node.getMacAddress(this.get('ports')): null;
+    let macAddress = node ? node.getMacAddress(this.get('ports')) : null;
     return macAddress || node.get('id');
   }),
 
-  safeLabel: Ember.computed('label', function() {
+  safeLabel: Ember.computed('label', function () {
     let label = this.get('label');
     return label ? label.replace(/[^A-Z0-9]/ig, '') : '';
   }),
 
-  status: Ember.computed('node', function() {
+  status: Ember.computed('node', function () {
     if (this.get('node.last_error')) {
       return 'Error';
     }
@@ -29,15 +27,17 @@ export default Ember.Component.extend({
     return 'Free';
   }),
 
-  foremanTask: Ember.computed('node', 'introspectionTasks.[]', 'foremanTasks.[]', function() {
+  foremanTask: Ember.computed('node', 'introspectionTasks.[]', 'foremanTasks.[]', function () {
     return this.get('node').getForemanTask(this.get('introspectionTasks'), this.get('foremanTasks'));
   }),
 
-  isNodeReady: Ember.computed('node.properties.cpu', 'node.properties.memory_mb', 'node.properties.local_gb', function() {
+  isNodeDeleting: Ember.computed.alias('node.deleteInProgress'),
+
+  isNodeReady: Ember.computed('node.properties.cpu', 'node.properties.memory_mb', 'node.properties.local_gb', function () {
     return this.get('node.ready');
   }),
 
-  isNodeInspecting: Ember.computed('node.ready', 'foremanTask', 'foremanTask.state', 'foremanTask.result', function() {
+  isNodeInspecting: Ember.computed('node.ready', 'foremanTask', 'foremanTask.state', 'foremanTask.result', function () {
     return !this.get('node.ready') &&
       this.get('foremanTask') &&
       this.get('foremanTask.state') === 'running' &&
@@ -50,8 +50,8 @@ export default Ember.Component.extend({
     'foremanTask',
     'foremanTask.result',
     'foremanTask.humanized_errors',
-    function() {
-      if(this.get('isNodeReady') || this.get('isNodeInspecting')) {
+    function () {
+      if (this.get('isNodeReady') || this.get('isNodeInspecting')) {
         return false;
       }
 
@@ -59,13 +59,30 @@ export default Ember.Component.extend({
     }
   ),
 
-  progressWidth: Ember.computed('foremanTask.progress', function() {
+  isDeleteDisabled: Ember.computed('disabled', 'isNodeDeleting', function () {
+    return this.get('disabled') || this.get('isNodeDeleting');
+  }),
+
+  extraInfo: Ember.computed('isNodeDeleting', function () {
+    if (this.get('isNodeDeleting')) {
+      return 'Deleting...';
+    }
+    return '';
+  }),
+
+  progressWidth: Ember.computed('foremanTask.progress', 'isNodeDeleting', function () {
+    if (this.get('isNodeDeleting')) {
+      return 'width: 100%;';
+    }
+
     let progressPercent = Math.floor((parseFloat(this.get('foremanTask.progress')) || 0) * 100);
     return Ember.String.htmlSafe(`width: ${progressPercent}%;`);
   }),
 
-  progressBarClass: Ember.computed('isNodeError', function() {
-    if (this.get('isNodeError')) {
+  progressBarClass: Ember.computed('isNodeError', 'isNodeDeleting', function () {
+    if (this.get('isNodeDeleting')) {
+      return 'progress-bar osp-node-progress-bar osp-node-progress-bar-deleting';
+    } else if (this.get('isNodeError')) {
       return 'progress-bar progress-bar-danger osp-node-progress-bar';
     }
     return 'progress-bar osp-node-progress-bar';

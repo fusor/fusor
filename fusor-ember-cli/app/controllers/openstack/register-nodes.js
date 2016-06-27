@@ -84,9 +84,12 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
   },
 
   deleteNodeRequest() {
-    let url = `/fusor/api/openstack/deployments/${this.get('deployment.id')}/nodes/${this.get('nodeToDelete.id')}`;
+    let nodeToDelete = this.get('nodeToDelete');
+    let url = `/fusor/api/openstack/deployments/${this.get('deployment.id')}/nodes/${nodeToDelete.get('id')}`;
 
     this.send('resetError');
+    nodeToDelete.set('deleteInProgress', true);
+
     return request({
       url: url,
       type: 'DELETE',
@@ -98,6 +101,7 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
     }).then(result => {
       this.removeNode(this.get('nodeToDelete'));
     }).catch(error => {
+      nodeToDelete.set('deleteInProgress', false);
       this.send('error', error, `Unable to delete node. DELETE ${url}.`);
     });
   },
