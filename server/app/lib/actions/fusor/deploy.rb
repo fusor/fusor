@@ -29,8 +29,13 @@ module Actions
           plan_action(::Actions::Fusor::Deployment::PrepareOrg::Prepare, deployment)
 
           unless skip_content
-            plan_action(::Actions::Fusor::Content::ManageContentAsSubPlan,
-                        deployment)
+            plan_action(
+              ::Actions::Fusor::Content::ManageContentAsSubPlan,
+              deployment)
+
+            plan_action(
+              ::Actions::Fusor::ConfigureHostGroupsAsSubPlan,
+              deployment)
           end
 
           concurrence do
