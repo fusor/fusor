@@ -35,8 +35,8 @@ module Fusor
             ssh = Net::SSH.start(underhost, underuser, :password => underpass, :timeout => 2,
                                  :auth_methods => ["password"], :number_of_password_prompts => 0,
                                  :paranoid => false)
-            admin_raw = ssh.exec!('sudo hiera admin_password')
-            ip_addr_raw = ssh.exec!('sudo hiera controller_host')
+            admin_raw = ssh.exec!('hiera admin_password')
+            ip_addr_raw = ssh.exec!('hiera controller_host')
             ssh.close
             admin = admin_raw.strip
             ip_addr = ip_addr_raw.strip
