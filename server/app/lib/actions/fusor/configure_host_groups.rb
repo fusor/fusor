@@ -254,7 +254,8 @@ module Actions
               :parameters =>
               [
                 { :name => "storage_type", :value => deployment.rhev_storage_type },
-                { :name => "admin_password", :value => deployment.rhev_engine_admin_password }
+                { :name => "admin_password", :value => deployment.rhev_engine_admin_password },
+                { :name => "db_password", :value => deployment.rhev_engine_admin_password }
               ]
             }
           ]
@@ -302,6 +303,7 @@ module Actions
                 { :name => "engine_mac_address", :value => Utils::Fusor::MacAddresses.generate_mac_address },
                 { :name => "engine_fqdn", :value => "#{deployment.label.tr('_', '-')}-rhev-engine.#{hostgroup.domain.name}" },
                 { :name => "engine_admin_password", :value => deployment.rhev_engine_admin_password },
+                { :name => "engine_db_password", :value => deployment.rhev_engine_admin_password },
                 { :name => "engine_activation_key", :value => hostgroup.group_parameters.where(:name => 'kt_activation_keys').try(:first).try(:value) },
                 { :name => "export_name", :value => deployment.rhev_export_domain_name },
                 { :name => "export_address", :value => deployment.rhev_export_domain_address },
