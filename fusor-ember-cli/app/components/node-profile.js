@@ -12,32 +12,8 @@ export default Ember.Component.extend({
     return this.get('roles').filter(role => !role.isAssigned());
   }),
 
-  nodeMatchesProfile(node, profile) {
-    let nodeMemory = node.get('properties.memory_mb');
-    let nodeCPUs = node.get('properties.cpus');
-    let workerDisk = node.get('properties.local_gb');
-    let nodeCPUArch = node.get('properties.cpu_arch');
-    let profileMemory = profile.get('ram');
-    let profileCPUs = profile.get('vcpus');
-    let profileDisk = profile.get('disk');
-    let profileCPUArch = profile.get('extra_specs.cpu_arch');
-
-    return nodeMemory == profileMemory &&
-      nodeCPUs == profileCPUs &&
-      workerDisk == profileDisk &&
-      nodeCPUArch == profileCPUArch;
-  },
-
   matchingNodeCount: Ember.computed('profile', 'nodes.[]', function () {
-    let nodeCount = 0;
-    let profile = this.get('profile');
-    let self = this;
-    this.get('nodes').forEach(function (node) {
-      if (self.nodeMatchesProfile(node, profile)) {
-        nodeCount++;
-      }
-    });
-    return nodeCount;
+    return this.get('profile').matchingNodeCount(this.get('nodes'));
   }),
 
   hideAssignMenu() {
