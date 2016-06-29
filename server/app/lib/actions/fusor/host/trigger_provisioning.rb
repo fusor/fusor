@@ -108,7 +108,7 @@ module Actions
             ::Fusor.log.debug "saving host of type: #{host.type}"
             ::Fusor.log.debug "calling save"
 
-            host.save
+            host.save!
 
             return host
           end
