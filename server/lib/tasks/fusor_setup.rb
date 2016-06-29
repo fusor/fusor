@@ -19,6 +19,9 @@ class FusorSetup
     #Don't resict smart proxies in dev. It doesn't work using ProxyPass.
     Setting[:restrict_registered_smart_proxies] = false if Rails.env == "development"
 
+    #Disable safemode in dev to prevent code reload issues breaking deployments
+    Setting[:safemode_render] = false if Rails.env == "development"
+
     # Add the Domain if it does not exist
     [{ :name => settings["fusor"]["domain"], :dns_id => proxy_id }].each do |input|
       next if Domain.find_by_name(input[:name])
