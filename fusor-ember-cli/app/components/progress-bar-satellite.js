@@ -8,6 +8,10 @@ const TASK_WEIGHT = {
 };
 
 export default ProgressBar.extend({
+  // Keeps external interface specfiic but aliases manageContentTask
+  // to task so inherited behavior expecting 'task' works unaltered
+  task: Ember.computed.alias('manageContentTask'),
+
   hasConfigureHostGroupsError: Ember.computed(
     'configureHostGroupsTask.result',
     function() {
@@ -16,9 +20,9 @@ export default ProgressBar.extend({
   ),
 
   hasManageContentError: Ember.computed(
-    'model.result',
+    'manageContentTask.result',
     function() {
-      return this.get('model.result') === 'error';
+      return this.get('manageContentTask.result') === 'error';
     }
   ),
 
@@ -30,15 +34,15 @@ export default ProgressBar.extend({
   ),
 
   hasManageContentWarning: Ember.computed(
-    'model.result',
+    'manageContentTask.result',
     function() {
-      return this.get('model.result') === 'warning';
+      return this.get('manageContentTask.result') === 'warning';
     }
   ),
 
   progressBarMsg: Ember.computed(
     'deploymentStatus',
-    'model.result',
+    'manageContentTask.result',
     'isFinished',
     'isStopped',
     'isSatelliteProgressBar',
@@ -50,7 +54,7 @@ export default ProgressBar.extend({
   ),
 
   isError: Ember.computed(
-    'model.result',
+    'manageContentTask.result',
     'hasConfigureHostGroupsError',
     function() {
       return this.get('hasConfigureHostGroupsError') || this._super();
@@ -63,12 +67,12 @@ export default ProgressBar.extend({
     'configureHostGroupsTask.state',
     'hasManageContentError',
     'hasManageContentWarning',
-    'model.state',
+    'manageContentTask.state',
     function() {
       const mcUnexpectedResult=
         this.get('hasManageContentError') ||
         this.get('hasManageContentWarning');
-      const mcState = this.get('model.state');
+      const mcState = this.get('manageContentTask.state');
       const mcStopped = mcState === 'stopped' || mcState === 'paused';
 
       const chgUnexpectedResult =
@@ -86,7 +90,7 @@ export default ProgressBar.extend({
   ),
 
   progressBarClass: Ember.computed(
-    'model.result',
+    'manageContentTask.result',
     'hasConfigureHostGroupsError',
     function() {
       let progressBarClass = 'progress-bar';
@@ -104,14 +108,14 @@ export default ProgressBar.extend({
   ),
 
   valueProgress: Ember.computed(
-    'model.progress',
+    'manageContentTask.progress',
     'configureHostGroupsTask.progress',
-    'model.state',
+    'manageContentTask.state',
     'configureHostGroupsTask.state',
     function() {
-      const mcProgress = this.get('model.progress') || 0;
+      const mcProgress = this.get('manageContentTask.progress') || 0;
       const chgProgress = this.get('configureHostGroupsTask.progress') || 0;
-      const mcState = this.get('model.state');
+      const mcState = this.get('manageContentTask.state');
       const chgState = this.get('configureHostGroupsTask.state');
 
       let retVal = 0;
