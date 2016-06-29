@@ -25,7 +25,13 @@
   </div>
 {{else}}
 
-  {{progress-bar model=manageContentTask name=nameSatellite isSatelliteProgressBar=true}}
+  {{
+    progress-bar-satellite
+    model=manageContentTask
+    name=nameSatellite
+    isSatelliteProgressBar=true
+    configureHostGroupsTask=configureHostGroupsTask
+  }}
 
   {{#if isRhev}}
     {{progress-bar model=rhevTask name=nameRhev isSatelliteProgressBar=false}}

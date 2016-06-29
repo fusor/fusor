@@ -1,32 +1,43 @@
-{{#unless isNodeProgressBar}}
- <div class='col-lg-2 col-md-2 col-sm-3 rhci-review-product-name'>
+<div class='col-lg-2 col-md-2 col-sm-3 rhci-review-product-name'>
   <h3>{{name}}</h3>
 </div>
-{{/unless}}
+
 <div class='col-lg-8 col-md-7 col-sm-6'>
   <div class='progress-bar-label'>
-    {{#if isFinished}}
-      <i class="fa fa-check-circle-o green-circle"></i>&nbsp;
-    {{else if isError}}
+    {{#if isError}}
       <i class="fa fa-exclamation-triangle errorForValidation"></i>&nbsp;
+    {{else if isFinished}}
+      <i class="fa fa-check-circle-o green-circle"></i>&nbsp;
     {{else if isStopped}}
       <i class="fa fa-exclamation-triangle warningForValidation"></i>&nbsp;
-    {{else if isStarted}}
+    {{else}}
       <div class="spinner spinner-xs spinner-inline"></div>
     {{/if}}
 
     {{progressBarMsg}}
 
-    {{#if hasHumanizedErrors}}
+    <span class='no-bold'>
+        <a href='/katello/sync_management' target='_blank'> View Content Sync Status</a>
+    </span>
+
+    {{#if hasConfigureHostGroupsError}}
+      <span class='errorForValidation'>
+        {{#link-to 'review.progress.details'}}
+          Failed to configure host groups: {{configureHostGroupsTask.humanized_errors}}
+        {{/link-to}}
+      </span>
+    {{else if hasError}}
       <span class='errorForValidation'>
           {{#link-to 'review.progress.details'}}{{model.humanized_errors}}{{/link-to}}
           {{{hostErrorInfo}}}
       </span>
     {{/if}}
 
-    <div class='pull-right'>
-      {{percentProgress}}%
-    </div>
+    {{#unless hasConfigureHostGroupsError}}
+      <div class='pull-right'>
+        {{percentProgress}}%
+      </div>
+    {{/unless}}
   </div>
 
   <div class="progress">
