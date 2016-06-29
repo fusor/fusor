@@ -79,9 +79,13 @@ module Actions
           puppet_environment = content_view_puppet_environment.puppet_environment
 
           if puppet_class_settings = hostgroup_settings[:puppet_classes]
-            puppet_classes = Puppetclass.where(:name => puppet_class_settings.map { |c| c[:name] }).
+            puppet_class_names = puppet_class_settings.map { |c| c[:name] }
+            puppet_classes = Puppetclass.where(:name => puppet_class_names).
                 joins(:environment_classes).
                 where("environment_classes.environment_id in (?)", puppet_environment.id).uniq
+            found_puppet_names = puppet_classes.map { |c| c.name }
+            missing_puppet_classes = puppet_class_names - found_puppet_names
+            fail _("Missing puppet classes: #{missing_puppet_classes}") unless missing_puppet_classes.empty?
             puppet_class_ids = puppet_classes.map(&:id)
           end
 
