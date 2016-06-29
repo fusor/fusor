@@ -11,23 +11,15 @@
       <i class="fa fa-exclamation-triangle errorForValidation"></i>&nbsp;
     {{else if isStopped}}
       <i class="fa fa-exclamation-triangle warningForValidation"></i>&nbsp;
-    {{else if isSatelliteProgressBar}}
-      <div class="spinner spinner-xs spinner-inline"></div>
     {{else if isStarted}}
       <div class="spinner spinner-xs spinner-inline"></div>
     {{/if}}
 
     {{progressBarMsg}}
 
-    {{#if isSatelliteProgressBar}}
-      <span class='no-bold'>
-          <a href='/katello/sync_management' target='_blank'> View Content Sync Status</a>
-      </span>
-    {{/if}}
-
     {{#if hasHumanizedErrors}}
       <span class='errorForValidation'>
-          {{#link-to 'review.progress.details'}}{{model.humanized_errors}}{{/link-to}}
+          {{#link-to 'review.progress.details'}}{{manageContentTask.humanized_errors}}{{/link-to}}
           {{{hostErrorInfo}}}
       </span>
     {{/if}}

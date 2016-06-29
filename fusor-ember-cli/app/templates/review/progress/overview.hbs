@@ -25,26 +25,32 @@
   </div>
 {{else}}
 
-  {{progress-bar model=manageContentTask name=nameSatellite isSatelliteProgressBar=true}}
+  {{
+    progress-bar-satellite
+    name=nameSatellite
+    isSatelliteProgressBar=true
+    manageContentTask=manageContentTask
+    configureHostGroupsTask=configureHostGroupsTask
+  }}
 
   {{#if isRhev}}
-    {{progress-bar model=rhevTask name=nameRhev isSatelliteProgressBar=false}}
+    {{progress-bar task=rhevTask name=nameRhev isSatelliteProgressBar=false}}
   {{/if}}
 
   {{#if isOpenStack}}
-    {{progress-bar model=openstackTask name=nameOpenStack isSatelliteProgressBar=false}}
+    {{progress-bar task=openstackTask name=nameOpenStack isSatelliteProgressBar=false}}
   {{/if}}
 
   {{#if isCloudForms}}
-    {{progress-bar model=cfmeTask name=nameCloudForms isSatelliteProgressBar=false}}
+    {{progress-bar task=cfmeTask name=nameCloudForms isSatelliteProgressBar=false}}
   {{/if}}
 
   {{#if isOpenShift}}
-    {{progress-bar model=openshiftTask name=nameOpenShift isSatelliteProgressBar=false}}
+    {{progress-bar task=openshiftTask name=nameOpenShift isSatelliteProgressBar=false}}
   {{/if}}
 
   {{#if showDeployTaskProgressBar}}
-    {{progress-bar model=deployTask name='Total Deployment' isSatelliteProgressBar=false}}
+    {{progress-bar task=deployTask name='Total Deployment' isSatelliteProgressBar=false}}
   {{/if}}
 
 {{/if}}

@@ -13,14 +13,16 @@ export default Ember.Route.extend({
       var deployTask = results[0];
       var subtasksOfDeploy = results[1];
       var manageContentTask = subtasksOfDeploy.findBy('label', 'Actions::Fusor::Content::ManageContent');
-      var rhevTask          = subtasksOfDeploy.findBy('label', 'Actions::Fusor::Deployment::Rhev::Deploy');
-      var openstackTask     = subtasksOfDeploy.findBy('label', 'Actions::Fusor::Deployment::OpenStack::Deploy');
-      var cfmeTask          = subtasksOfDeploy.findBy('label', 'Actions::Fusor::Deployment::CloudForms::Deploy');
-      var openshiftTask     = subtasksOfDeploy.findBy('label', 'Actions::Fusor::Deployment::OpenShift::Deploy');
+      var rhevTask = subtasksOfDeploy.findBy('label', 'Actions::Fusor::Deployment::Rhev::Deploy');
+      var configureHostGroupsTask = subtasksOfDeploy.findBy('label', 'Actions::Fusor::ConfigureHostGroupsForProducts');
+      var openstackTask = subtasksOfDeploy.findBy('label', 'Actions::Fusor::Deployment::OpenStack::Deploy');
+      var cfmeTask = subtasksOfDeploy.findBy('label', 'Actions::Fusor::Deployment::CloudForms::Deploy');
+      var openshiftTask = subtasksOfDeploy.findBy('label', 'Actions::Fusor::Deployment::OpenShift::Deploy');
 
       return Ember.RSVP.hash({
         deployTask: deployTask,
         manageContentTask: manageContentTask,
+        configureHostGroupsTask: configureHostGroupsTask,
         rhevTask: rhevTask,
         openstackTask: openstackTask,
         cfmeTask: cfmeTask,
@@ -34,6 +36,7 @@ export default Ember.Route.extend({
     controller.set('model', model);
     controller.set('deployTask', model.deployTask);
     controller.set('manageContentTask', model.manageContentTask);
+    controller.set('configureHostGroupsTask', model.configureHostGroupsTask);
     controller.set('rhevTask', model.rhevTask);
     controller.set('openstackTask', model.openstackTask);
     controller.set('cfmeTask', model.cfmeTask);

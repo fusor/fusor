@@ -5,11 +5,11 @@ export default Ember.Component.extend({
   tagName: 'div',
   classNames: ['row'],
 
-  valueProgress: Ember.computed('model.progress', function() {
-    if (this.get('model.state') === 'planning') {
+  valueProgress: Ember.computed('task.progress', function() {
+    if (this.get('task.state') === 'planning') {
       return 0.1;
-    } else if (this.get('model.state')) {
-      return (this.get('model.progress') * 100);
+    } else if (this.get('task.state')) {
+      return (this.get('task.progress') * 100);
     } else {
       return 0;
     }
@@ -27,8 +27,8 @@ export default Ember.Component.extend({
     return Ember.String.htmlSafe('width: ' + this.get('percentProgressInt') + '%;');
   }),
 
-  progressBarClass: Ember.computed('model.result', function() {
-    var result = this.get('model.result');
+  progressBarClass: Ember.computed('task.result', function() {
+    var result = this.get('task.result');
     if (result === 'success') {
       return 'progress-bar progress-bar-success';
     } else if (result === 'error') {
@@ -53,18 +53,18 @@ export default Ember.Component.extend({
     }
   }),
 
-  isSpin: Ember.computed('deploymentStatus', 'model.result', function() {
-    return ((this.get('deploymentStatus') === 'In Process') && (this.get('model.result') === 'pending'));
+  isSpin: Ember.computed('deploymentStatus', 'task.result', function() {
+    return ((this.get('deploymentStatus') === 'In Process') && (this.get('task.result') === 'pending'));
   }),
 
   progressBarMsg: Ember.computed(
     'deploymentStatus',
-    'model.result',
+    'task.result',
     'isFinished',
     'isStopped',
     'isSatelliteProgressBar',
     function() {
-      if ((this.get('deploymentStatus') === 'In Process') && (this.get('model.result') === 'pending')) {
+      if ((this.get('deploymentStatus') === 'In Process') && (this.get('task.result') === 'pending')) {
         if (this.get('isSatelliteProgressBar')) {
           return "Syncing content";
         } else if (this.get('isNodeProgressBar')) {
@@ -74,9 +74,9 @@ export default Ember.Component.extend({
         } else {
           return "Installing components";
         }
-      } else if (this.get('model.result') === 'error') {
+      } else if (this.get('task.result') === 'error') {
         return "Error";
-      } else if (this.get('model.result') === 'warning') {
+      } else if (this.get('task.result') === 'warning') {
         return "Warning";
       } else if (!this.get('isStarted')) {
         return "Waiting for content";
@@ -102,20 +102,20 @@ export default Ember.Component.extend({
     return(this.get('valueProgress') > 0);
   }),
 
-  isError: Ember.computed('model.result', function() {
-    return(this.get('model.result') === 'error');
+  isError: Ember.computed('task.result', function() {
+    return(this.get('task.result') === 'error');
   }),
 
-  isStopped: Ember.computed('model.state', function() {
-    return ((this.get('model.state') === 'stopped') || (this.get('model.state') === 'paused'));
+  isStopped: Ember.computed('task.state', function() {
+    return ((this.get('task.state') === 'stopped') || (this.get('task.state') === 'paused'));
   }),
 
-  hasHumanizedErrors: Ember.computed('model.humanized_errors', function() {
-    return (Ember.isPresent(this.get('model.humanized_errors')));
+  hasHumanizedErrors: Ember.computed('task.humanized_errors', function() {
+    return (Ember.isPresent(this.get('task.humanized_errors')));
   }),
 
-  hostErrorInfo: Ember.computed('model.humanized_errors', function() {
-    var error = this.get('model.humanized_errors'),
+  hostErrorInfo: Ember.computed('task.humanized_errors', function() {
+    var error = this.get('task.humanized_errors'),
       host = '';
 
     if (error.match(/Failed to provision/)) {
