@@ -20,7 +20,7 @@
     <div class='ident-radio'>
       {{#radio-button value="RHEV" groupValue=openshiftInstallLoc changed="openshiftLocationChanged" id="install_on_rhev" disabled=disableRHEVradio}}
         <span class="{{if disableRHEV 'disabled'}}">
-          Red Hat Enterprise Virtualization
+          {{fullnameRhev}}
         </span>
       {{/radio-button}}
     </div>
@@ -28,7 +28,7 @@
     <div class='ident-radio'>
       {{#radio-button value="OpenStack" groupValue=openshiftInstallLoc changed="openshiftLocationChanged" id="install_on_openstack" disabled=disableOpenstackradio}}
         <span class="inline-block {{if disableOpenStack 'disabled'}}">
-          Red Hat Enterprise Linux OpenStack Platform
+          {{fullnameOpenStack}}
         </span>
       {{/radio-button}}
     </div>

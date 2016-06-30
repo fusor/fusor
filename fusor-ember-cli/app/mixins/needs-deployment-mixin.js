@@ -23,5 +23,12 @@ export default Ember.Mixin.create({
     return Ember.isPresent(this.get('upstreamConsumerUuid'));
   }),
   upstreamConsumerName: Ember.computed.alias(
-    'deploymentController.model.upstream_consumer_name')
+    'deploymentController.model.upstream_consumer_name'),
+
+  // Product names
+  fullnameSatellite: Ember.computed.alias('deploymentController.fullnameSatellite'),
+  fullnameRhev: Ember.computed.alias('deploymentController.fullnameRhev'),
+  fullnameOpenStack: Ember.computed.alias('deploymentController.fullnameOpenStack'),
+  fullnameCloudForms: Ember.computed.alias('deploymentController.fullnameCloudForms'),
+  fullnameOpenShift: Ember.computed.alias('deploymentController.fullnameOpenShift')
 });

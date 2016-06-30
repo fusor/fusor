@@ -45,7 +45,7 @@
   <div class='row'>
     <div class='col-md-12'>
 
-      {{#accordion-item name="Red Hat Satellite" isOpen=true}}
+      {{#accordion-item name=fullnameSatellite isOpen=true}}
         {{review-link label='Name' routeName='satellite' isRequired=true
                       value=model.name}}
 
@@ -62,7 +62,7 @@
       {{/accordion-item}}
 
     {{#if isRhev}}
-      {{#accordion-item name="Red Hat Enterprise Virtualization" isOpen=isRhevOpen}}
+      {{#accordion-item name=fullnameRhev isOpen=isRhevOpen}}
 
         {{review-link label='Setup Type' routeName='rhev-setup' isRequired=true
                           value=rhevSetupController.rhevSetupTitle}}
@@ -141,7 +141,7 @@
     {{/if}}
 
     {{#if isOpenStack}}
-      {{#accordion-item name=deploymentController.nameOpenStack isOpen=isOpenStackOpen}}
+      {{#accordion-item name=fullnameOpenStack isOpen=isOpenStackOpen}}
             {{review-link label='Undercloud username' value='admin' isRequired=true}}
             {{review-link label='Undercloud password' value=model.openstack_deployment.undercloud_admin_password isPassword=true isRequired=true}}
             {{#review-link label='Assigned Nodes' routeName='openstack.assign-nodes' isRequired=true
@@ -178,7 +178,7 @@
     {{/if}}
 
     {{#if isOpenShift}}
-      {{#accordion-item name="Openshift Enterprise" isOpen=isOpenshiftOpen}}
+      {{#accordion-item name=fullnameOpenShift isOpen=isOpenshiftOpen}}
 
         {{review-link label='Nodes Location'
                       routeName='openshift.openshift-nodes'
@@ -240,7 +240,7 @@
     {{/if}}
 
     {{#if isCloudForms}}
-      {{#accordion-item name="Cloud Forms Management Engine" isOpen=isCloudFormsOpen}}
+      {{#accordion-item name=fullnameCloudForms isOpen=isCloudFormsOpen}}
           {{review-link label='Installation Location' routeName='where-install' isRequired=true
                         value=model.cfme_install_loc }}
           {{review-link label='CFME Root password' routeName='cloudforms.cfme-configuration' isRequired=true isPassword=true value=model.cfme_root_password }}

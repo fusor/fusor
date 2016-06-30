@@ -3,7 +3,7 @@
   <div class='col-md-12'>
 
     {{#if isRhev}}
-      {{#accordion-item name="Red Hat Enterprise Virtualization" isOpen=true}}
+      {{#accordion-item name=fullnameRhev isOpen=true}}
 
         {{review-link label='URL'
                       value=rhevEngineUrl
@@ -16,7 +16,7 @@
     {{/if}}
 
     {{#if isOpenStack}}
-        {{#accordion-item name="Red Hat Enterprise Linux - OpenStack Platform" isOpen=isOpenStackOpen}}
+        {{#accordion-item name=fullnameOpenStack isOpen=isOpenStackOpen}}
             {{review-link label='Undercloud username'
                           value=undercloudUsername}}
             {{review-link label='Undercloud password'
@@ -33,7 +33,7 @@
     {{/if}}
 
     {{#if isOpenShift}}
-      {{#accordion-item name="OpenShift Enterprise" isOpen=isOpenShiftOpen}}
+      {{#accordion-item name=fullnameOpenShift isOpen=isOpenShiftOpen}}
         {{#each model.openshift_master_hosts as |masterHost|}}
           {{ose-host-review-link oseHost=masterHost}}
         {{/each}}
@@ -58,7 +58,7 @@
     {{/if}}
 
     {{#if isCloudForms}}
-      {{#accordion-item name="Cloud Forms Management Engine" isOpen=true}}
+      {{#accordion-item name=fullnameCloudForms isOpen=true}}
 
         {{review-link label='Admin Console'
                       value=cfmeUrl
