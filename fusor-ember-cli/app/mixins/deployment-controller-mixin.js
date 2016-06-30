@@ -72,6 +72,8 @@ export default Ember.Mixin.create({
 
   fullnameOpenShift: "OpenShift Enterprise by Red Hat",
 
+  fullnameSatellite: "Red Hat Satellite",
+
   // logo
   logoPath: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "assets/foreman.png"; } else { return "assets/Header-logotype.png"; }
