@@ -34,6 +34,8 @@ output_dir=<output_dir>
 subdomain_name=<subdomain_name>
 helloworld_sample_app=<helloworld_sample_app>
 
+org_label=<org_label>
+
 # host group for masters
 [masters]
 <master_nodes>

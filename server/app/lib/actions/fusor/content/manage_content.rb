@@ -45,6 +45,12 @@ module Actions
             # retrieve the repos needed for the deployment and use them in actions that follow
             repositories = retrieve_deployment_repositories(deployment.organization, product_content_details)
 
+            if deployment.deploy_openshift
+              SETTINGS[:fusor][:docker_repos].each do |docker_repo|
+                repositories << ::Katello::Repository.find_by_name(docker_repo[:name])
+              end
+            end
+
             plan_action(::Actions::Fusor::Content::SyncRepositories, repositories)
 
             plan_action(::Actions::Fusor::Content::PublishContentView,

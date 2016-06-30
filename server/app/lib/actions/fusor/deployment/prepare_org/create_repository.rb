@@ -19,14 +19,18 @@ module Actions
             _("Create Repository")
           end
 
-          def plan
-            super
-            plan_self
+          def plan(name, type, label, url, upstream_name)
+            super()
+            plan_self(:name => name, :type => type, :label => label, :url => url, :upstream_name => upstream_name)
           end
 
           def create_sub_plans
             product = ::Katello::Product.find_by_name('Fusor')
-            repository = product.add_repo('Puppet1', 'Puppet', nil, 'puppet', 'unprotected')
+            repository = product.add_repo(input[:label], input[:name], input[:url], input[:type], true)
+            if input[:upstream_name]
+              repository[:docker_upstream_name] = input[:upstream_name]
+            end
+
             trigger(::Actions::Katello::Repository::Create, repository, false, true)
           end
         end

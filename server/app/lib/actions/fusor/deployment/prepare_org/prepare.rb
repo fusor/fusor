@@ -28,7 +28,13 @@ module Actions
               end
 
               unless ::Katello::Repository.find_by_name('Puppet')
-                plan_action(::Actions::Fusor::Deployment::PrepareOrg::CreateRepository)
+                plan_action(::Actions::Fusor::Deployment::PrepareOrg::CreateRepository, 'Puppet', 'puppet', 'Puppet1', nil, nil)
+              end
+
+              SETTINGS[:fusor][:docker_repos].each do |repo|
+                unless ::Katello::Repository.find_by_name(repo[:name])
+                  plan_action(::Actions::Fusor::Deployment::PrepareOrg::CreateRepository, repo[:name], 'docker', repo[:name], 'http://registry-1.docker.io/', repo[:upstream_name])
+                end
               end
 
               plan_action(::Actions::Fusor::Deployment::PrepareOrg::UploadModule)
