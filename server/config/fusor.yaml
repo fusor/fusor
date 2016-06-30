@@ -26,8 +26,8 @@
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
-        :repository_set_id: "4185"
-        :repository_set_name: "Red Hat Satellite Tools 6.1 (for RHEL 6 Server) (RPMs)"
+        :repository_set_id: "4362"
+        :repository_set_name: "Red Hat Satellite Tools 6 Beta (for RHEL 6 Server) (RPMs)"
         :basearch: "x86_64"
 
       - :product_name: "Red Hat Enterprise Linux Server"
@@ -67,8 +67,8 @@
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
-        :repository_set_id: "4188"
-        :repository_set_name: "Red Hat Satellite Tools 6.1 (for RHEL 7 Server) (RPMs)"
+        :repository_set_id: "4380"
+        :repository_set_name: "Red Hat Satellite Tools 6 Beta (for RHEL 7 Server) (RPMs)"
         :basearch: "x86_64"
 
       - :product_name: "Red Hat Enterprise Virtualization"
@@ -95,8 +95,8 @@
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
-        :repository_set_id: "4188"
-        :repository_set_name: "Red Hat Satellite Tools 6.1 (for RHEL 7 Server) (RPMs)"
+        :repository_set_id: "4380"
+        :repository_set_name: "Red Hat Satellite Tools 6 Beta (for RHEL 7 Server) (RPMs)"
         :basearch: "x86_64"
 
       - :product_name: "Red Hat Enterprise Virtualization"
@@ -107,14 +107,10 @@
         :releasever: "7Server"
 
     :cloudforms:
-      #- :product_name: "Red Hat CloudForms"
-      #  :product_id: "167"
-      #  :repository_set_id: "4631"
-      #  :repository_set_name: "Red Hat CloudForms Management Engine 5.5 (Files)"
-      - :product_name: "Red Hat CloudForms Beta"
-        :product_id: "303"
-        :repository_set_id: "4635"
-        :repository_set_name: "Red Hat CloudForms Beta (Files)"
+      - :product_name: "Red Hat CloudForms"
+        :product_id: "167"
+        :repository_set_id: "5233"
+        :repository_set_name: "Red Hat CloudForms Management Engine 5.6 (Files)"
         :basearch: "x86_64"
         # Default behavior is to use the latest available image found
         # in the repository if either :rhos_image_file_name or :rhev_image_file_name
@@ -129,7 +125,8 @@
         :repository_set_name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
         :basearch: "x86_64"
         :releasever: "7.2"
-        #Need Red Hat 7.2 Operating Sysetem setup including Media, architecture, and other associations.
+        # Need Red Hat 7.2 Operating Sysetem setup including Media,
+        # architecture, and other associations.
 
     :openshift:
       - :product_name: "Red Hat OpenShift Enterprise"
