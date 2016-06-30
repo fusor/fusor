@@ -72,10 +72,6 @@ module Actions
             opts[:username] = deployment.openshift_username
             opts[:ssh_key] = deployment.ose_private_key_path
 
-            # Workaround for https://trello.com/c/33ef176y
-            # // nothing
-
-
             opts[:docker_registry_host] = deployment.openshift_storage_host
             opts[:docker_registry_path] = deployment.openshift_export_path
 
@@ -88,6 +84,9 @@ module Actions
 
             opts[:subdomain_name] = deployment.openshift_subdomain_name
             opts[:helloworld_sample_app] = deployment.openshift_sample_helloworld
+
+            opts[:org_label] = Organization.find(deployment.organization_id).label.downcase
+            opts[:satellite_hostname] = `/usr/bin/hostname`.chomp
 
             opts
           end

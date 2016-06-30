@@ -250,6 +250,24 @@
     - :name: "ovirt::self_hosted::import_template"
     - :name: "ovirt::self_hosted::run_vm"
 
+  :docker_repos:
+    - :name: "hello-openshift"
+      :upstream_name: "openshift/hello-openshift"
+    - :name: "origin-docker-registry"
+      :upstream_name: "openshift/origin-docker-registry"
+    - :name: "origin-haproxy-router"
+      :upstream_name: "openshift/origin-haproxy-router"
+    - :name: "origin-deployer"
+      :upstream_name: "openshift/origin-deployer"
+    - :name: "origin-sti-builder"
+      :upstream_name: "openshift/origin-sti-builder"
+    - :name: "origin-pod"
+      :upstream_name: "openshift/origin-pod"
+    - :name: "origin-docker-builder"
+      :upstream_name: "openshift/origin-docker-builder"
+    - :name: "origin-keepalived-ipfailover"
+      :upstream_name: "openshift/origin-keepalived-ipfailover"
+
   :host_groups:
     :rhev:
      :root_name: "Fusor Base" # seeded by the fusor-installer

@@ -11,6 +11,9 @@
     - name: scp docker storage configuration
       action: copy src="{{ output_dir }}/docker-storage-setup" dest="/etc/sysconfig/docker-storage-setup" owner=root mode=0775
 
+    - name: scp docker configuration file
+      action: copy src="{{ output_dir }}/docker" dest="/etc/sysconfig/docker" owner=root mode=0775
+
     - name: check if docker volume already exists
       stat: path=/dev/{{docker_volume}}
       register: p
@@ -23,18 +26,18 @@
       service: name=docker state=started
 
     - name: Install docker containers
-      action: shell docker pull {{item}}
+      action: shell docker pull {{org_label}}-fusor-{{item}}
       with_items:
-        - rhscl/php-56-rhel7
-        - rhscl/mysql-56-rhel7
-        - rhscl/ruby-22-rhel7
-        - openshift3/ose-docker-registry:v3.2
-        - openshift3/ose-pod:v3.2
-        - openshift3/ose-sti-builder:v3.2
-        - openshift3/ose-deployer:v3.2
-        - openshift3/ose-haproxy-router:v3.2
-        - openshift3/ose-docker-builder:v3.2
-        - openshift3/ose-keepalived-ipfailover:v3.2
+#        - rhscl/php-56-rhel7
+#        - rhscl/mysql-56-rhel7
+#        - rhscl/ruby-22-rhel7
+        - origin-docker-registry
+        - origin-pod
+        - origin-sti-builder
+        - origin-deployer
+        - origin-haproxy-router
+        - origin-docker-builder
+        - origin-keepalived-ipfailover
 
 - name: Configure master node
   hosts: masters

@@ -60,6 +60,8 @@ module OSEInstaller
         opts.on('-w', '--ose_password [STRING]', String, 'OSE login password') { |w| options[:ose_password] = w }
         opts.on('-l', '--log [STRING]', String, 'log file path') { |l| options[:log] = l }
         opts.on('-y', '--helloworld_sample_app', 'Deploy sample hello world application') { |y| options[:helloworld_sample_app] = y }
+        opts.on('-h', '--satelite_hostname', 'Satellite Hostname') { |h| options[:satellite_hostname] = h }
+        opts.on('-b', '--org_label [STRING]', String, 'organization label') { |b| options[:org_label] = b }
         opts.on('-v', '--verbose', 'Run verbosely') { |v| options[:verbose] = v }
       end.parse!
 
@@ -100,6 +102,9 @@ module OSEInstaller
 
       template = template.gsub(/<subdomain_name>/, opts[:subdomain_name])
       template = template.gsub(/<helloworld_sample_app>/, opts[:helloworld_sample_app] ? "true" : "false")
+
+      template = template.gsub(/<org_label>/, opts[:org_label])
+      template = template.gsub(/<satellite_hostname>/, opts[:satellite_hostname])
 
       template = template.gsub(/<output_dir>/, @output_dir)
 
@@ -197,6 +202,17 @@ module OSEInstaller
       @logger.info "Docker storage setup file saved at: #{@output_dir}/#{docker_storage_setup_file}"
     end
 
+    def update_docker_config(opts)
+      @logger.info "Updating docker configuration file."
+      docker_config_file = "docker"
+      template = File.read("#{File.dirname(__FILE__)}/templates/docker.template")
+      if !opts[:satellite_hostname].nil?
+        template = template.gsub(/<satellite_hostname>/, opts[:satellite_hostname])
+      end
+      File.open("#{@output_dir}/#{docker_config_file}", 'w') { |file| file.puts template }
+      @logger.info "Docker configuration file saved at: #{@output_dir}/#{docker_config_file}"
+    end
+
     def prep_run_environment
       #ENV['ANSIBLE_CONFIG'] = "#{@output_dir}/ansible.cfg"
       ENV['ANSIBLE_HOST_KEY_CHECKING'] = "False"
@@ -246,6 +262,7 @@ module OSEInstaller
       write_atomic_installer_answer_file(opts)
       create_ansible_config
       update_docker_storage_setup(opts)
+      update_docker_config(opts)
       return inventory
     end
 
