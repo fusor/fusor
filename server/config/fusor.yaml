@@ -22,7 +22,7 @@
         :repository_set_id: "1952"
         :repository_set_name: "Red Hat Enterprise Linux 6 Server (Kickstart)"
         :basearch: "x86_64"
-        :releasever: "6.7"
+        :releasever: "6.8"
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
