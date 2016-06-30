@@ -393,3 +393,10 @@
           - :file: "/var/log/foreman-proxy/proxy.log"
           - :file: "/var/log/candlepin/candlepin.log"
           - :file: "/var/log/messages"
+
+  :puppet_module:
+    :ovirt:
+      :name: "ovirt"
+      :author: "jcannon"
+      :version: "1.0.0"
+      :filepath: "/usr/share/ovirt-puppet/pkg/jcannon-ovirt-1.0.0.tar.gz"

@@ -21,6 +21,8 @@ module Actions
 
           def plan(deployment)
             super(deployment)
+            fail _("Unable to locate fusor.yaml settings in config/settings.plugins.d") unless SETTINGS[:fusor]
+            fail _("Unable to locate puppet module settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:puppet_module]
 
             sequence do
               unless ::Katello::Product.find_by_name('Fusor')
@@ -44,7 +46,9 @@ module Actions
               end
 
               cv = ::Katello::ContentView.find_by_name('Fusor Puppet Content')
-              unless cv && ::Katello::ContentViewPuppetModule.where(name: 'ovirt', author: 'jcannon', content_view_id: cv.id)
+              puppet_module_name   = SETTINGS[:fusor][:puppet_module][:ovirt][:name]
+              puppet_module_author = SETTINGS[:fusor][:puppet_module][:ovirt][:author]
+              unless cv && ::Katello::ContentViewPuppetModule.where(name: puppet_module_name, author: puppet_module_author, content_view_id: cv.id)
                 plan_action(::Actions::Fusor::Deployment::PrepareOrg::CreateContentViewPuppetModule)
               end
 

@@ -21,12 +21,15 @@ module Actions
 
           def plan
             super
+            fail _("Unable to locate fusor.yaml settings in config/settings.plugins.d") unless SETTINGS[:fusor]
+            fail _("Unable to locate puppet module settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:puppet_module]
             plan_self
           end
 
           def create_sub_plans
             repository = ::Katello::Repository.find_by_name('Puppet')
-            file = File.new('/usr/share/ovirt-puppet/pkg/jcannon-ovirt-1.0.0.tar.gz')
+            modulepath = SETTINGS[:fusor][:puppet_module][:ovirt][:filepath]
+            file = File.new(modulepath)
             trigger(::Actions::Katello::Repository::UploadFiles, repository, [{:path => file.path}])
           end
         end
