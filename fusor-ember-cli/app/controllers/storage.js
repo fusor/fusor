@@ -5,7 +5,9 @@ import {
   AllValidator,
   PresenceValidator,
   AlphaNumericDashUnderscoreValidator,
-  HostnameValidator
+  HostnameValidator,
+  NfsPathValidator,
+  GlusterPathValidator
 } from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
@@ -13,6 +15,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     testMountPoint() {
       this.set('errorMsg', null);
       const checkExport = this.get('isCloudForms');
+      const checkHosted = this.get('rhevIsSelfHosted');
 
       const storageParams = {
         path: this.get('model.rhev_share_path'),
@@ -34,21 +37,32 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
         validationPromises.export = this.storageMountRequest(exportParams);
       }
 
+      if(checkHosted) {
+        const hostedParams = {
+          path: this.get('model.hosted_storage_path'),
+          address: this.get('model.hosted_storage_address'),
+          type: this.get('model.rhev_storage_type')
+        };
+
+        validationPromises.hosted = this.storageMountRequest(hostedParams);
+      }
+
       this.set('loadingSpinnerText', `Trying to mount storage paths...`);
       this.set('showLoadingSpinner', true);
 
       Ember.RSVP.hash(validationPromises).then((resultHash) => {
         this.set('showLoadingSpinner', false);
-
-        const validMounts = checkExport ?
-          resultHash.storage.mounted && resultHash.export.mounted :
-          resultHash.storage.mounted;
+        const validMounts = resultHash.storage.mounted &&
+                            (checkExport ? resultHash.export.mounted : true) &&
+                            (checkHosted ? resultHash.hosted.mounted : true);
 
         if(validMounts) {
           this.set('errorMsg', null);
           this.transitionTo(this.get('step3RouteName'));
         } else {
-          const failedDomain = resultHash.storage.mounted ? 'export' : 'storage';
+          const failedDomain = resultHash.storage.mounted ?
+                               (checkExport && resultHash.export.mounted ? 'self-hosted' :
+                               (checkHosted && resultHash.hosted.mounted ? 'export' : 'self-hosted')) : 'storage';
           this.set(
             'errorMsg',
             `Error mounting ${failedDomain} domain, please make sure it is a valid mount point`);
@@ -81,54 +95,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
   errorMsg: null,
 
-  hasEndingSlashInSharePath: Ember.computed('deploymentController.model.rhev_share_path', function() {
-    if (Ember.isPresent(this.get('deploymentController.model.rhev_share_path'))) {
-      return (this.get('deploymentController.model.rhev_share_path').slice('-1') === '/');
-    }
-  }),
-
-  hasEndingSlashInExportPath: Ember.computed('deploymentController.model.rhev_export_domain_path', function() {
-    if (Ember.isPresent(this.get('deploymentController.model.rhev_export_domain_path'))) {
-      return (this.get('deploymentController.model.rhev_export_domain_path').slice('-1') === '/');
-    }
-  }),
-
-  hasNoLeadingSlashInSharePath: Ember.computed('deploymentController.model.rhev_share_path', function() {
-    if (Ember.isPresent(this.get('deploymentController.model.rhev_share_path'))) {
-      return (this.get('deploymentController.model.rhev_share_path').charAt(0) !== '/');
-    }
-  }),
-
-  hasNoLeadingSlashInExportPath: Ember.computed('deploymentController.model.rhev_export_domain_path', function() {
-    if (Ember.isPresent(this.get('deploymentController.model.rhev_export_domain_path'))) {
-      return (this.get('deploymentController.model.rhev_export_domain_path').charAt(0) !== '/');
-    }
-  }),
-
-  errorsHashSharePath: Ember.computed('hasEndingSlashInSharePath', 'deploymentController.model.rhev_share_path', function() {
-    if (this.get('isNFS') && this.get('hasNoLeadingSlashInSharePath')) {
-      return {"name": 'You must have a leading slash'};
-    } else if (this.get('isGluster') && !this.get('hasNoLeadingSlashInSharePath')) {
-      return {"name": 'You cannot have a leading slash'};
-    } else if (this.get('hasEndingSlashInSharePath')) {
-      return {"name": 'You cannot have a trailing slash'};
-    } else {
-      return {};
-    }
-  }),
-
-  errorsHashExportPath: Ember.computed('hasEndingSlashInExportPath', 'deploymentController.model.rhev_export_domain_path', function() {
-    if (this.get('isNFS') && this.get('hasNoLeadingSlashInExportPath')) {
-      return {"name": 'You must have a leading slash'};
-    } else if (this.get('isGluster') && !this.get('hasNoLeadingSlashInExportPath')) {
-      return {"name": 'You cannot have a leading slash'};
-    } else if (this.get('hasEndingSlashInExportPath')) {
-      return {"name": 'You cannot have a trailing slash'};
-    } else {
-      return {};
-    }
-  }),
-
   isNFS: Ember.computed('deploymentController.model.rhev_storage_type', function() {
     return (this.get('deploymentController.model.rhev_storage_type') === 'NFS');
   }),
@@ -140,30 +106,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   isGluster: Ember.computed('deploymentController.model.rhev_storage_type', function() {
     return (this.get('deploymentController.model.rhev_storage_type') === 'glusterfs');
   }),
-
-  isInvalidStorageFields: Ember.computed(
-    'deploymentController.model.rhev_storage_type',
-    'invalidStorageName',
-    'invalidStorageAddress',
-    'invalidSharePath',
-    function() {
-      return  Ember.isBlank(this.get('deploymentController.model.rhev_storage_type')) ||
-              this.get('invalidStorageName') ||
-              this.get('invalidStorageAddress') ||
-              this.get('invalidSharePath');
-    }
-  ),
-
-  isInvalidExportDomainFields: Ember.computed(
-    'invalidExportDomainName',
-    'invalidExportAddress',
-    'invalidExportPath',
-    function() {
-      return this.get('invalidExportDomainName') ||
-        this.get('invalidExportAddress') ||
-        this.get('invalidExportPath');
-    }
-  ),
 
   computerNameValidator: AllValidator.create({
     validators: [
@@ -179,70 +121,88 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     ]
   }),
 
+  nfsPathValidator: AllValidator.create({
+    validators: [
+      PresenceValidator.create({}),
+      NfsPathValidator.create({})
+    ]
+  }),
+
+  glusterPathValidator: AllValidator.create({
+    validators: [
+      PresenceValidator.create({}),
+      GlusterPathValidator.create({})
+    ]
+  }),
+
+  sharePathValidator: Ember.computed('deploymentController.model.rhev_storage_type', function() {
+    if (this.get('deploymentController.model.rhev_storage_type') === 'NFS') {
+      return this.get('nfsPathValidator');
+    }
+
+    return this.get('glusterPathValidator');
+  }),
+
   invalidStorageName: Ember.computed('deploymentController.model.rhev_storage_name', function() {
-    return !this.get('computerNameValidator').isValid(this.get('deploymentController.model.rhev_storage_name'));
+    return this.get('computerNameValidator').isInvalid(this.get('deploymentController.model.rhev_storage_name'));
   }),
 
   invalidStorageAddress: Ember.computed('deploymentController.model.rhev_storage_address', function() {
-    return !this.get('hostnameValidator').isValid(this.get('deploymentController.model.rhev_storage_address'));
+    return this.get('hostnameValidator').isInvalid(this.get('deploymentController.model.rhev_storage_address'));
   }),
 
-  invalidSharePath: Ember.computed(
-    'deploymentController.model.rhev_share_path',
-    'hasEndingSlashInSharePath',
-    'hasNoLeadingSlashInSharePath',
-    'isNFS',
-    'isGluster',
-    function () {
-      return Ember.isBlank(this.get('deploymentController.model.rhev_share_path')) ||
-        this.get('hasEndingSlashInSharePath') ||
-        (this.get('isNFS') && this.get('hasNoLeadingSlashInSharePath')) ||
-        (this.get('isGluster') && !this.get('hasNoLeadingSlashInSharePath'));
-    }),
+  invalidSharePath: Ember.computed('deploymentController.model.rhev_share_path', 'sharePathValidator', function () {
+    return this.get('sharePathValidator').isInvalid(this.get('deploymentController.model.rhev_share_path'));
+  }),
 
   invalidExportDomainName: Ember.computed('deploymentController.model.rhev_export_domain_name', function() {
-    return !this.get('computerNameValidator').isValid(this.get('deploymentController.model.rhev_export_domain_name'));
+    return this.get('computerNameValidator').isInvalid(this.get('deploymentController.model.rhev_export_domain_name'));
   }),
 
   invalidExportAddress: Ember.computed('deploymentController.model.rhev_export_domain_address', function() {
-    return !this.get('hostnameValidator').isValid(this.get('deploymentController.model.rhev_export_domain_address'));
+    return this.get('hostnameValidator').isInvalid(this.get('deploymentController.model.rhev_export_domain_address'));
   }),
 
-  invalidExportPath: Ember.computed(
-    'deploymentController.model.rhev_export_domain_path',
-    'hasEndingSlashInExportPath',
-    'hasNoLeadingSlashInExportPath',
-    'isNFS',
-    'isGluster',
-    function () {
-      return Ember.isBlank(this.get('deploymentController.model.rhev_export_domain_path')) ||
-        this.get('hasEndingSlashInExportPath') ||
-        (this.get('isNFS') && this.get('hasNoLeadingSlashInExportPath')) ||
-        (this.get('isGluster') && !this.get('hasNoLeadingSlashInExportPath'));
-    }),
+  invalidExportPath: Ember.computed('deploymentController.model.rhev_export_domain_path', 'sharePathValidator', function () {
+    return this.get('sharePathValidator').isInvalid(this.get('deploymentController.model.rhev_export_domain_path'));
+  }),
 
+  invalidHostedName: Ember.computed('deploymentController.model.hosted_storage_name', function() {
+    return this.get('computerNameValidator').isInvalid(this.get('deploymentController.model.hosted_storage_name'));
+  }),
+
+  invalidHostedAddress: Ember.computed('deploymentController.model.hosted_storage_address', function() {
+    return this.get('hostnameValidator').isInvalid(this.get('deploymentController.model.hosted_storage_address'));
+  }),
+
+  invalidHostedPath: Ember.computed('deploymentController.model.hosted_storage_path', 'sharePathValidator', function () {
+    return this.get('sharePathValidator').isInvalid(this.get('deploymentController.model.hosted_storage_path'));
+  }),
 
   disableNextStorage: Ember.computed(
     'isCloudForms',
-    'isInvalidStorageFields',
-    'isInvalidExportDomainFields',
+    'rhevIsSelfHosted',
     'invalidStorageName',
     'invalidStorageAddress',
+    'invalidSharePath',
     'invalidExportDomainName',
     'invalidExportAddress',
+    'invalidExportPath',
+    'invalidHostedName',
+    'invalidHostedAddress',
+    'invalidHostedPath',
     function () {
-      if (this.get('isCloudForms')) {
-        return (this.get('isInvalidStorageFields') ||
-                this.get('isInvalidExportDomainFields') ||
-                this.get('invalidStorageName') ||
-                this.get('invalidStorageAddress') ||
-                this.get('invalidExportDomainName') ||
-                this.get('invalidExportAddress'));
-      } else {
-        return (this.get('isInvalidStorageFields') ||
-                this.get('invalidStorageName') ||
-                this.get('invalidStorageAddress'));
-      }
+      return ((this.get('invalidStorageName') ||
+               this.get('invalidStorageAddress') ||
+               this.get('invalidSharePath')) ||
+               (this.get('isCloudForms') &&
+                 (this.get('invalidExportDomainName') ||
+                  this.get('invalidExportAddress') ||
+                  this.get('invalidExportPath'))) ||
+               (this.get('rhevIsSelfHosted') &&
+                 (this.get('invalidHostedName') ||
+                  this.get('invalidHostedAddress') ||
+                  this.get('invalidHostedPath'))));
     }
   ),
 
