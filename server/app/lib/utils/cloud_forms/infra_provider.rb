@@ -29,10 +29,14 @@ module Utils
               :hostname => provider_params[:hostname],
               :port => "443",
               :zone_id => "1000000000001",
-              :credentials => {
+              :credentials => [{
                 :userid => provider_params[:username],
                 :password => provider_params[:password]
-              }
+              }, {
+                :userid => "engine",
+                :password => deployment.rhev_engine_admin_password,
+                :auth_type => 'metrics'
+              }]
             }
           ]
         }

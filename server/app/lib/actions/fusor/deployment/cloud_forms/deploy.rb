@@ -54,6 +54,9 @@ module Actions
                             deployment, upload_action.output[:template_name])
 
                 plan_action(::Actions::Fusor::Deployment::Rhev::CfmeLaunch, deployment)
+
+                plan_action(::Actions::Fusor::Deployment::Rhev::OpenPostgresToCFME, deployment)
+
               elsif deployment.cfme_install_loc == 'OpenStack'
                 plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeUpload, deployment,
                             file_repositories(repositories).first,
