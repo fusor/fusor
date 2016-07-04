@@ -940,3 +940,29 @@ span.hanging-indent{
   vertical-align: top;
   margin-bottom: 0px !important; /* overides form-group default */
 }
+
+.deployments-table {
+  table-layout:fixed;
+  width: 100%;
+}
+.deployments-table>thead:first-child>tr:first-child>th:first-child
+{
+    width: 40%;
+}
+.deployments-table> tbody > tr > td:first-child {
+    width: 40%;
+}
+
+.pagination {
+  display: table-cell;
+  vertical-align: bottom;
+  float: none;
+}
+
+.darkgrey, .darkgray {
+  color: #606060 !important;
+}
+
+.displaying-entries {
+  margin-left: -20px;
+}

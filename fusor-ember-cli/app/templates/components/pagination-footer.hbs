@@ -1,0 +1,23 @@
+<div class='displaying-entries col-md-5'>
+  <div class="pull-left pull-bottom darkgray pagination">
+    {{displayingEntries}}
+  </div>
+</div>
+
+{{#if showPagination}}
+  <div class="col-md-7">
+    <ul class="pagination pull-right">
+      <li class="prev previous_page {{if disablePrevPage 'disabled'}}">
+        {{#link-to routeName (query-params page=prevPage) disabled=disablePrevPage}}«{{/link-to}}
+      </li>
+      {{#each pageRange as |num|}}
+        <li>
+          {{#link-to routeName (query-params page=num)}}{{num}}{{/link-to}}
+        </li>
+      {{/each}}
+      <li class="next next_page {{if disableNextPage 'disabled'}}">
+        {{#link-to routeName (query-params page=nextPage) disabled=disableNextPage}}»{{/link-to}}
+      </li>
+    </ul>
+  </div>
+{{/if}}
