@@ -594,7 +594,7 @@ table.fusor-table {
 
 .new-deployment-button {
   float: right;
-  margin-top: -33px;
+  margin-top: 24px;
 }
 
 .filter-deployments {
@@ -965,4 +965,9 @@ span.hanging-indent{
 
 .displaying-entries {
   margin-left: -20px;
+}
+
+.rhci-title {
+  display: inline-block;
+  padding: 0px 8px 8px 0px;
 }

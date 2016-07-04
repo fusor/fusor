@@ -1,26 +1,21 @@
 import Ember from 'ember';
+import PaginationControllerMixin from "../mixins/pagination-controller-mixin";
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(PaginationControllerMixin, {
 
-  sortedDeployments: Ember.computed('model.[]', 'model.@each.name', function() {
-    return this.get('model').sortBy('name');
-  }),
+  filteredDeployments: Ember.computed('model', 'search', 'model.[]', function(){
+    var search = this.get('search');
+    var rx = new RegExp(search, 'gi');
+    var model = this.get('model');
 
-  searchDeploymentString: '',
-
-  filteredDeployments: Ember.computed('sortedDeployments', 'searchDeploymentString', 'model.[]', function(){
-    var searchDeploymentString = this.get('searchDeploymentString');
-    var rx = new RegExp(searchDeploymentString, 'gi');
-    var sortedDeployments = this.get('sortedDeployments');
-
-    if (sortedDeployments.get('length') > 1) {
-      return sortedDeployments.filter(function(record) {
+    if (model.get('length') > 1) {
+      return model.filter(function(record) {
         if (Ember.isPresent(record.get('name'))) {
           return record.get('name').match(rx);
         }
       });
     } else {
-      return sortedDeployments;
+      return model;
     }
   })
 

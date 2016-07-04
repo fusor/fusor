@@ -9,6 +9,9 @@ export default Ember.Route.extend({
   actions: {
     invalidateSession() {
       return this.transitionTo('login');
+    },
+    loading() {
+      this.controllerFor('deployments').set('isLoading', true);
     }
   }
 });
