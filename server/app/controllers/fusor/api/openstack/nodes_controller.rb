@@ -36,8 +36,6 @@ module Fusor
             fault_string = error_message.try(:[], 'faultstring')
             status = undercloud_error.response.try(:status)
             raise undercloud_error unless fault_string && status
-
-            Rails.logger.error undercloud_error
             return render json: {displayMessage: fault_string, errors: [fault_string]}, status: status
           end
 

@@ -3,6 +3,13 @@ module Fusor
     class OpenstackDeploymentValidator < ActiveModel::Validator
 
       def validate(openstack_deployment)
+        validate_overcloud openstack_deployment
+        validate_ceph openstack_deployment if openstack_deployment.external_ceph_storage
+      end
+
+      private
+
+      def validate_overcloud(openstack_deployment)
         if openstack_deployment.undercloud_admin_password.empty?
           openstack_deployment.errors[:undercloud_password] << _('Openstack deployments must specify an admin password for the Undercloud')
         end
@@ -81,6 +88,36 @@ module Fusor
 
         if openstack_deployment.overcloud_object_storage_count.nil?
           openstack_deployment.errors[:overcloud_object_storage_count] << _('Openstack deployments must specify Object Storage node count for the Overcloud')
+        end
+      end
+
+      def validate_ceph(openstack_deployment)
+        if openstack_deployment.ceph_ext_mon_host.empty?
+          openstack_deployment.errors[:ceph_ext_mon_host] << _('Openstack deployment is missing external host address for external Ceph Storage')
+        end
+
+        if openstack_deployment.ceph_cluster_fsid.empty?
+          openstack_deployment.errors[:ceph_cluster_fsid] << _('Openstack deployment is missing cluster fsid for external Ceph Storage')
+        end
+
+        if openstack_deployment.ceph_client_username.empty?
+          openstack_deployment.errors[:ceph_client_username] << _('Openstack deployment is missing client username for external Ceph Storage')
+        end
+
+        if openstack_deployment.ceph_client_key.empty?
+          openstack_deployment.errors[:ceph_client_key] << _('Openstack deployment is missing client key for external Ceph Storage')
+        end
+
+        if openstack_deployment.nova_rbd_pool_name.empty?
+          openstack_deployment.errors[:nova_rbd_pool_name] << _('Openstack deployment is missing the Nova RBD pool name for external Ceph Storage')
+        end
+
+        if openstack_deployment.cinder_rbd_pool_name.empty?
+          openstack_deployment.errors[:cinder_rbd_pool_name] << _('Openstack deployment is missing the Cinder RBD pool name for external Ceph Storage')
+        end
+
+        if openstack_deployment.glance_rbd_pool_name.empty?
+          openstack_deployment.errors[:glance_rbd_pool_name] << _('Openstack deployment is missing the Glance RBD pool name for external Ceph Storage')
         end
       end
     end

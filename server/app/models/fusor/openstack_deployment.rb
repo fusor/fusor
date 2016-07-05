@@ -12,7 +12,7 @@
 
 module Fusor
   class OpenstackDeployment < ActiveRecord::Base
-    ATTR_PARAM_HASH = {
+    OVERCLOUD_ATTR_PARAM_HASH = {
         overcloud_ext_net_interface: 'NeutronPublicInterface',
         overcloud_libvirt_type: 'NovaComputeLibvirtType',
         overcloud_password: 'AdminPassword',
@@ -26,6 +26,16 @@ module Fusor
         overcloud_block_storage_count: 'BlockStorageCount',
         overcloud_object_storage_flavor: 'OvercloudSwiftStorageFlavor',
         overcloud_object_storage_count: 'ObjectStorageCount'
+    }
+
+    CEPH_ATTR_PARAM_HASH = {
+        ceph_ext_mon_host: 'CephExternalMonHost',
+        ceph_cluster_fsid: 'CephClusterFSID',
+        ceph_client_username: 'CephClientUserName',
+        ceph_client_key: 'CephClientKey',
+        nova_rbd_pool_name: 'NovaRbdPoolName',
+        cinder_rbd_pool_name: 'CinderRbdPoolName',
+        glance_rbd_pool_name: 'GlanceRbdPoolName'
     }
 
     validates_with Fusor::Validators::OpenstackDeploymentValidator, on: :update

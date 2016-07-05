@@ -59,6 +59,7 @@ module Fusor
 
       return render json: {errors: @openstack_deployment.errors}, status: 422 unless @openstack_deployment.valid?
 
+      undercloud_handle.edit_plan_environments('overcloud', {'environments/puppet-ceph-external.yaml' => @openstack_deployment.external_ceph_storage })
       undercloud_handle.edit_plan_parameters('overcloud', build_openstack_params)
       sync_failures = get_sync_failures
       return render json: {errors: sync_failures}, status: 500 unless sync_failures.empty?
@@ -74,25 +75,47 @@ module Fusor
 
     def build_openstack_params
       osp_params = {}
-      Fusor::OpenstackDeployment::ATTR_PARAM_HASH.each { |attr_name, param_name| osp_params[param_name] = @openstack_deployment.send(attr_name) }
+      Fusor::OpenstackDeployment::OVERCLOUD_ATTR_PARAM_HASH.each { |attr_name, param_name| osp_params[param_name] = @openstack_deployment.send(attr_name) }
+      if @openstack_deployment.external_ceph_storage
+        Fusor::OpenstackDeployment::CEPH_ATTR_PARAM_HASH.each { |attr_name, param_name| osp_params[param_name] = @openstack_deployment.send(attr_name) }
+      end
       osp_params
     end
 
     def get_sync_failures
       plan = undercloud_handle.get_plan_parameters('overcloud')
       errors = {}
+      attr_param_hash = Fusor::OpenstackDeployment::OVERCLOUD_ATTR_PARAM_HASH
+      attr_param_hash = attr_param_hash.merge(Fusor::OpenstackDeployment::CEPH_ATTR_PARAM_HASH) if @openstack_deployment.external_ceph_storage
 
-      Fusor::OpenstackDeployment::ATTR_PARAM_HASH.each do |attr_name, param_name|
+      attr_param_hash.each do |attr_name, param_name|
         attr_value = @openstack_deployment.send(attr_name)
         param_value = plan[param_name].try(:[], 'Default')
         errors[attr_name] = [_("Openstack #{param_name} was not properly synchronized.  Expected: #{attr_value} but got #{param_value}")] unless attr_value == param_value
       end
 
+      env_ceph_external_setting = get_env_ceph_external_setting
+      unless env_ceph_external_setting == @openstack_deployment.external_ceph_storage
+        error_string = "Openstack environments/puppet-ceph-external.yaml was not properly synchronized.  "\
+                       "Expected: #{@openstack_deployment.external_ceph_storage} but got #{env_ceph_external_setting}"
+        errors['external_ceph_storage'] = [_(error_string)]
+      end
+
       errors
     end
 
+    def get_env_ceph_external_setting
+      envs = undercloud_handle.get_plan_environments('overcloud')
+      topics = envs['topics']
+      return nil unless topics
+      environment_groups = topics.find { |topic| topic['title'] == 'Storage' }.try(:[], 'environment_groups')
+      return nil unless environment_groups
+      environments = environment_groups.find { |g| g['title'] == 'Externally managed Ceph' }.try(:[], 'environments')
+      environments.try(:[], 0).try(:[], 'enabled')
+    end
+
     def openstack_deployment_params
-      params.require(:openstack_deployment).permit(:undercloud_admin_password,
+      params.fetch(:openstack_deployment, {}).permit(:undercloud_admin_password,
                                                    :undercloud_ip_address,
                                                    :undercloud_ssh_username,
                                                    :undercloud_ssh_password,
@@ -115,7 +138,15 @@ module Fusor
                                                    :overcloud_object_storage_flavor,
                                                    :overcloud_object_storage_count,
                                                    :undercloud_hostname,
-                                                   :overcloud_hostname)
+                                                   :overcloud_hostname,
+                                                   :external_ceph_storage,
+                                                   :ceph_ext_mon_host,
+                                                   :ceph_cluster_fsid,
+                                                   :ceph_client_username,
+                                                   :ceph_client_key,
+                                                   :nova_rdb_pool_name,
+                                                   :cinder_rdb_pool_name,
+                                                   :glance_rdb_pool_name)
     end
   end
 end

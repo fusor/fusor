@@ -45,19 +45,6 @@ const AssignNodesController =  Ember.Controller.extend(DeploymentControllerMixin
       advancedParameters: []
     }),
     Role.create({
-      name: 'CephStorage',
-      label: 'Ceph Storage',
-      parameterPrefixes: ['Ceph', 'OvercloudCeph'],
-      countParameterName: 'CephStorageCount',
-      flavorParameterName: 'OvercloudCephStorageFlavor',
-      imageParameterName: 'CephStorageImage',
-      flavorDeploymentAttributeName: 'overcloud_ceph_storage_flavor',
-      countDeploymentAttributeName: 'overcloud_ceph_storage_count',
-      roleType: 'ceph-storage',
-      parameters: [],
-      advancedParameters: []
-    }),
-    Role.create({
       name: 'BlockStorage',
       label: 'Block Storage',
       parameterPrefixes: ['Cinder', 'BlockStorage', 'OvercloudBlockStorage'],
