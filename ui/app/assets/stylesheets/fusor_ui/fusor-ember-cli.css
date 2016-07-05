@@ -1835,6 +1835,14 @@ span.registered-node-count {
 .osp-node-progress-bar-label {
   margin-left: 2px; }
 
+.osp-node-progress-bar-deleting {
+  background-color: transparent; }
+  .osp-node-progress-bar-deleting .osp-node-progress-bar-label {
+    text-decoration: line-through; }
+  .osp-node-progress-bar-deleting .osp-node-progress-bar-extra {
+    font-style: italic;
+    font-weight: lighter; }
+
 .osp-node-progress-bar.progress-bar-danger {
   background-color: #cc0000;
   color: white;
