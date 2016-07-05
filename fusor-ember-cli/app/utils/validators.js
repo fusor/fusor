@@ -291,6 +291,14 @@ const IpSubnetValidator = Validator.extend({
   }
 });
 
+const NoSpacesValidator = Validator.extend({
+  message: 'This field must not have spaces.',
+  isValid(value) {
+    let spaceRegex = /\s/;
+    return !spaceRegex.test(value);
+  }
+});
+
 const MacAddressValidator = RegExpValidator.extend({
   regExp: new RegExp(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/),
   message: 'This is an invalid MAC address.'
@@ -333,14 +341,16 @@ const NoLeadingSlashValidator = Validator.extend({
 const NfsPathValidator = AllValidator.extend({
   validators: [
     LeadingSlashValidator.create({}),
-    NoTrailingSlashValidator.create({})
+    NoTrailingSlashValidator.create({}),
+    NoSpacesValidator.create({})
   ]
 });
 
 const GlusterPathValidator = AllValidator.extend({
   validators: [
     NoLeadingSlashValidator.create({}),
-    NoTrailingSlashValidator.create({})
+    NoTrailingSlashValidator.create({}),
+    NoSpacesValidator.create({})
   ]
 });
 

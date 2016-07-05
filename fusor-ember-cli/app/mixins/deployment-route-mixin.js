@@ -5,6 +5,7 @@ export default Ember.Mixin.create({
   actions: {
     saveDeployment(routeNameForTransition) {
       let deployment = this.get('controller.model');
+      deployment.trimFieldsForSave();
       let self = this;
       let isNew = Ember.isBlank(deployment.get('id'));
 

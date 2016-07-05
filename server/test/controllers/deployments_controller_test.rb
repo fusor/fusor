@@ -68,7 +68,7 @@ module Fusor
       Fusor::Api::V2::DeploymentsController.any_instance.stubs(:async_task).returns(
         ::ForemanTasks::Task.find(running_deployment_task_id))
 
-      Fusor::Validators::DeploymentValidator.any_instance.stubs(:validate_nfs_share)
+      Fusor::Validators::DeploymentValidator.any_instance.stubs(:validate_storage_share)
 
       assert_nil @deployment.foreman_task_uuid
       put(:deploy, :id => @deployment.id)

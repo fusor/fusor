@@ -13,6 +13,8 @@ import {
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
   actions: {
     testMountPoint() {
+      var deployment = this.get('model');
+      deployment.trimFieldsForSave();
       this.set('errorMsg', null);
       const checkExport = this.get('isCloudForms');
       const checkHosted = this.get('rhevIsSelfHosted');
