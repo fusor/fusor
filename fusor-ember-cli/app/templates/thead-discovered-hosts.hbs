@@ -1,0 +1,45 @@
+<thead>
+  <tr>
+    <th class='rhev-checkbox'></th>
+    <th class='rhev-hostname'>
+      {{#link-to 'engine.discovered-host' (query-params sort_by="name" dir=sortByDirection)}}
+        {{column-name name='Host Name' col_name="name" sort_by=sort_by dir=dir}}
+      {{/link-to}}
+    </th>
+    <th class='rhev-mac-address'>
+      {{#link-to 'engine.discovered-host' (query-params sort_by="mac" dir=sortByDirection)}}
+        {{column-name name='MAC Address' col_name="mac" sort_by=sort_by dir=dir}}
+      {{/link-to}}
+    </th>
+    <th class='rhev-host-type text-center'>
+      {{#link-to 'engine.discovered-host' (query-params sort_by="is_virtual" dir=sortByDirection)}}
+        {{column-name name='Host Type' col_name="is_virtual" sort_by=sort_by dir=dir}}
+      {{/link-to}}
+    </th>
+    <th class='rhev-cpu text-center'>
+      {{#link-to 'engine.discovered-host' (query-params sort_by="cpus" dir=sortByDirection)}}
+        {{column-name name='CPU' col_name="cpus" sort_by=sort_by dir=dir}}
+      {{/link-to}}
+    </th>
+    <th class='rhev-memory text-center'>
+      {{#link-to 'engine.discovered-host' (query-params sort_by="memory_human_size" dir=sortByDirection)}}
+        {{column-name name='Memory' col_name="memory_human_size" sort_by=sort_by dir=dir}}
+      {{/link-to}}
+    </th>
+    <th class='rhev-disks text-center'>
+      {{#link-to 'engine.discovered-host' (query-params sort_by="disk_count" dir=sortByDirection)}}
+        {{column-name name='# Disks' col_name="disk_count" sort_by=sort_by dir=dir}}
+      {{/link-to}}
+    </th>
+    <th class='rhev-diskspace text-center'>
+      {{#link-to 'engine.discovered-host' (query-params sort_by="disks_human_size" dir=sortByDirection)}}
+        {{column-name name='Disk Space' col_name="disks_human_size" sort_by=sort_by dir=dir}}
+      {{/link-to}}
+    </th>
+    <th class='rhev-network'>
+      {{#link-to 'engine.discovered-host' (query-params sort_by="subnet_to_s" dir=sortByDirection)}}
+        {{column-name name='Network' col_name="subnet_to_s" sort_by=sort_by dir=dir}}
+      {{/link-to}}
+    </th>
+  </tr>
+</thead>

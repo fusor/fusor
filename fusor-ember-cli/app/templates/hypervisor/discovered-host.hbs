@@ -51,20 +51,7 @@
       </div>
 
       <table class="table table-bordered small fusor-table">
-        <thead>
-          <tr>
-            <th class='rhev-checkbox'> {{!input type="checkbox" checked=allChecked}}</th>
-            <th class='rhev-hostname'> Host Name </th>
-            <th class='rhev-mac-address'> MAC Address </th>
-            <th class='rhev-host-type text-center'> Host Type </th>
-            <th class='rhev-cpu text-center'> CPU </th>
-            <th class='rhev-memory text-center'> Memory </th>
-            <th class='rhev-disks text-center'> # Disks </th>
-            <th class='rhev-diskspace text-center'> Disk Space </th>
-            <th class='rhev-network'> Network </th>
-          </tr>
-        </thead>
-
+        {{partial 'thead-discovered-hosts'}}
         <tbody>
         {{#each filteredHosts as |host|}}
            {{tr-hypervisor host=host

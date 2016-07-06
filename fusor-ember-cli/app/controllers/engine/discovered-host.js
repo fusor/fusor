@@ -1,7 +1,8 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
+import PaginationControllerMixin from "../../mixins/pagination-controller-mixin";
 
-export default Ember.Controller.extend(NeedsDeploymentMixin, {
+export default Ember.Controller.extend(NeedsDeploymentMixin, PaginationControllerMixin, {
 
   rhevController: Ember.inject.controller('rhev'),
 
@@ -52,6 +53,13 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       return availableHosts;
     }
   }),
+
+  sortCriteria: Ember.computed('sort_by', 'dir', function () {
+    let sort_by = this.get('sort_by') || 'name';
+    let dir = this.get('dir') || 'asc';
+    return [sort_by+':'+dir];
+  }),
+  sortedHosts: Ember.computed.sort('filteredHosts', 'sortCriteria'),
 
   numSelected: Ember.computed('model.id', function() {
     return (this.get('model.id')) ? 1 : 0;
