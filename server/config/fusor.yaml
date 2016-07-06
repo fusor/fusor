@@ -274,7 +274,7 @@
        - :name: "RHEV-Engine"
          :os: "RedHat"
          :major: "6"
-         :minor: "7"
+         :minor: "8"
          :parent: :root_deployment
          :puppet_classes:
            - :name: "ovirt"
