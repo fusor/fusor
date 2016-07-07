@@ -108,7 +108,8 @@ module Actions
             ::Fusor.log.debug "saving host of type: #{host.type}"
             ::Fusor.log.debug "calling save"
 
-            host.save!
+            rc = host.save
+            ::Fusor.log.warning "Host save failed. #{host}" if !rc
 
             return host
           end
