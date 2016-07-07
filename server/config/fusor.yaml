@@ -12,17 +12,17 @@
     :rhevm:
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
-        :repository_set_id: "168"
-        :repository_set_name: "Red Hat Enterprise Linux 6 Server (RPMs)"
+        :repository_set_id: "2456"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server (RPMs)"
         :basearch: "x86_64"
-        :releasever: "6Server"
+        :releasever: "7Server"
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
-        :repository_set_id: "1952"
-        :repository_set_name: "Red Hat Enterprise Linux 6 Server (Kickstart)"
+        :repository_set_id: "2455"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
         :basearch: "x86_64"
-        :releasever: "6.8"
+        :releasever: "7.2"
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
@@ -32,23 +32,30 @@
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
-        :repository_set_id: "1673"
-        :repository_set_name: "Red Hat Enterprise Linux 6 Server - Supplementary (RPMs)"
+        :repository_set_id: "2476"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server - Supplementary (RPMs)"
         :basearch: "x86_64"
-        :releasever: "6Server"
+        :releasever: "7Server"
 
       - :product_name: "Red Hat Enterprise Virtualization"
         :product_id: "150"
-        :repository_set_id: "4425"
-        :repository_set_name: "Red Hat Enterprise Virtualization Manager 3.6 (RPMs)"
+        :repository_set_id: "5028"
+        :repository_set_name: "Red Hat Virtualization Manager 4 Beta (RPMs)"
         :basearch: "x86_64"
 
       - :product_name: "JBoss Enterprise Application Platform"
         :product_id: "183"
-        :repository_set_id: "1559"
-        :repository_set_name: "JBoss Enterprise Application Platform 6 (RHEL 6 Server) (RPMs)"
+        :repository_set_id: "4474"
+        :repository_set_name: "JBoss Enterprise Application Platform 7 (RHEL 7 Server) (RPMs)"
         :basearch: "x86_64"
-        :releasever: "6Server"
+        :releasever: "7Server"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :product_id: "69"
+        :repository_set_id: "2463"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server - Optional (RPMs)"
+        :basearch: "x86_64"
+        :releasever: "7Server"
 
     :rhevh:
       - :product_name: "Red Hat Enterprise Linux Server"
@@ -73,8 +80,21 @@
 
       - :product_name: "Red Hat Enterprise Virtualization"
         :product_id: "150"
-        :repository_set_id: "3109"
-        :repository_set_name: "Red Hat Enterprise Virtualization Management Agents for RHEL 7 (RPMs)"
+        :repository_set_id: "5149"
+        :repository_set_name: "Red Hat Virtualization 4 Management Agents for RHEL 7 Beta (RPMs)"
+        :basearch: "x86_64"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :product_id: "69"
+        :repository_set_id: "2476"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server - Supplementary (RPMs)"
+        :basearch: "x86_64"
+        :releasever: "7Server"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :product_id: "69"
+        :repository_set_id: "2463"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server - Optional (RPMs)"
         :basearch: "x86_64"
         :releasever: "7Server"
 
@@ -101,16 +121,29 @@
 
       - :product_name: "Red Hat Enterprise Virtualization"
         :product_id: "150"
-        :repository_set_id: "3109"
-        :repository_set_name: "Red Hat Enterprise Virtualization Management Agents for RHEL 7 (RPMs)"
+        :repository_set_id: "3112"
+        :repository_set_name: "Red Hat Enterprise Virtualization Management Agents Beta for RHEL 7 (RPMs)"
+        :basearch: "x86_64"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :product_id: "69"
+        :repository_set_id: "2476"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server - Supplementary (RPMs)"
+        :basearch: "x86_64"
+        :releasever: "7Server"
+
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :product_id: "69"
+        :repository_set_id: "2463"
+        :repository_set_name: "Red Hat Enterprise Linux 7 Server - Optional (RPMs)"
         :basearch: "x86_64"
         :releasever: "7Server"
 
     :cloudforms:
       - :product_name: "Red Hat CloudForms"
         :product_id: "167"
-        :repository_set_id: "5233"
-        :repository_set_name: "Red Hat CloudForms Management Engine 5.6 (Files)"
+        :repository_set_id: "4628"
+        :repository_set_name: "Red Hat CloudForms Management Engine 5.5 (RPMs)"
         :basearch: "x86_64"
         # Default behavior is to use the latest available image found
         # in the repository if either :rhos_image_file_name or :rhev_image_file_name
@@ -273,8 +306,8 @@
 
        - :name: "RHEV-Engine"
          :os: "RedHat"
-         :major: "6"
-         :minor: "8"
+         :major: "7"
+         :minor: "2"
          :parent: :root_deployment
          :puppet_classes:
            - :name: "ovirt"
@@ -409,5 +442,5 @@
     :ovirt:
       :name: "ovirt"
       :author: "jcannon"
-      :version: "1.0.0"
-      :filepath: "/usr/share/ovirt-puppet/pkg/jcannon-ovirt-1.0.0.tar.gz"
+      :version: "1.0.1"
+      :filepath: "/usr/share/ovirt-puppet/pkg/jcannon-ovirt-1.0.1.tar.gz"
