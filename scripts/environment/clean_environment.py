@@ -25,7 +25,7 @@ prompt = True
 # (Anything with an id < that number will not be deleted)
 resources = [
     ('fusor/api/v21/deployments',),
-    # ('api/hosts', 1),  # Doesn't work yet
+    ('api/hosts', 1),
     ('api/hostgroups', 1),
     ('api/puppetclasses', 1)
 ]
