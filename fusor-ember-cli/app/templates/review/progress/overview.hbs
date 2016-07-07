@@ -41,12 +41,12 @@
     {{progress-bar task=openstackTask name=nameOpenStack isSatelliteProgressBar=false}}
   {{/if}}
 
-  {{#if isCloudForms}}
-    {{progress-bar task=cfmeTask name=nameCloudForms isSatelliteProgressBar=false}}
-  {{/if}}
-
   {{#if isOpenShift}}
     {{progress-bar task=openshiftTask name=nameOpenShift isSatelliteProgressBar=false}}
+  {{/if}}
+
+  {{#if isCloudForms}}
+    {{progress-bar task=cfmeTask name=nameCloudForms isSatelliteProgressBar=false}}
   {{/if}}
 
   {{#if showDeployTaskProgressBar}}
