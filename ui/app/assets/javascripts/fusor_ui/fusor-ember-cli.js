@@ -5288,6 +5288,7 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember', 'ic-ajax', 'f
 
         this.set('errorMsg', null);
         var checkExport = this.get('isCloudForms');
+        var checkHosted = this.get('rhevIsSelfHosted');
 
         var storageParams = {
           path: this.get('model.rhev_share_path'),
@@ -5309,19 +5310,28 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember', 'ic-ajax', 'f
           validationPromises['export'] = this.storageMountRequest(exportParams);
         }
 
+        if (checkHosted) {
+          var hostedParams = {
+            path: this.get('model.hosted_storage_path'),
+            address: this.get('model.hosted_storage_address'),
+            type: this.get('model.rhev_storage_type')
+          };
+
+          validationPromises.hosted = this.storageMountRequest(hostedParams);
+        }
+
         this.set('loadingSpinnerText', 'Trying to mount storage paths...');
         this.set('showLoadingSpinner', true);
 
         _ember['default'].RSVP.hash(validationPromises).then(function (resultHash) {
           _this.set('showLoadingSpinner', false);
-
-          var validMounts = checkExport ? resultHash.storage.mounted && resultHash['export'].mounted : resultHash.storage.mounted;
+          var validMounts = resultHash.storage.mounted && (checkExport ? resultHash['export'].mounted : true) && (checkHosted ? resultHash.hosted.mounted : true);
 
           if (validMounts) {
             _this.set('errorMsg', null);
             _this.transitionTo(_this.get('step3RouteName'));
           } else {
-            var failedDomain = resultHash.storage.mounted ? 'export' : 'storage';
+            var failedDomain = resultHash.storage.mounted ? checkExport && resultHash['export'].mounted ? 'self-hosted' : checkHosted && resultHash.hosted.mounted ? 'export' : 'self-hosted' : 'storage';
             _this.set('errorMsg', 'Error mounting ' + failedDomain + ' domain, please make sure it is a valid mount point');
           }
         })['catch'](function (err) {
@@ -5350,54 +5360,6 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember', 'ic-ajax', 'f
     rhevIsSelfHosted: _ember['default'].computed.alias("deploymentController.model.rhev_is_self_hosted"),
     errorMsg: null,
 
-    hasEndingSlashInSharePath: _ember['default'].computed('deploymentController.model.rhev_share_path', function () {
-      if (_ember['default'].isPresent(this.get('deploymentController.model.rhev_share_path'))) {
-        return this.get('deploymentController.model.rhev_share_path').slice('-1') === '/';
-      }
-    }),
-
-    hasEndingSlashInExportPath: _ember['default'].computed('deploymentController.model.rhev_export_domain_path', function () {
-      if (_ember['default'].isPresent(this.get('deploymentController.model.rhev_export_domain_path'))) {
-        return this.get('deploymentController.model.rhev_export_domain_path').slice('-1') === '/';
-      }
-    }),
-
-    hasNoLeadingSlashInSharePath: _ember['default'].computed('deploymentController.model.rhev_share_path', function () {
-      if (_ember['default'].isPresent(this.get('deploymentController.model.rhev_share_path'))) {
-        return this.get('deploymentController.model.rhev_share_path').charAt(0) !== '/';
-      }
-    }),
-
-    hasNoLeadingSlashInExportPath: _ember['default'].computed('deploymentController.model.rhev_export_domain_path', function () {
-      if (_ember['default'].isPresent(this.get('deploymentController.model.rhev_export_domain_path'))) {
-        return this.get('deploymentController.model.rhev_export_domain_path').charAt(0) !== '/';
-      }
-    }),
-
-    errorsHashSharePath: _ember['default'].computed('hasEndingSlashInSharePath', 'deploymentController.model.rhev_share_path', function () {
-      if (this.get('isNFS') && this.get('hasNoLeadingSlashInSharePath')) {
-        return { "name": 'You must have a leading slash' };
-      } else if (this.get('isGluster') && !this.get('hasNoLeadingSlashInSharePath')) {
-        return { "name": 'You cannot have a leading slash' };
-      } else if (this.get('hasEndingSlashInSharePath')) {
-        return { "name": 'You cannot have a trailing slash' };
-      } else {
-        return {};
-      }
-    }),
-
-    errorsHashExportPath: _ember['default'].computed('hasEndingSlashInExportPath', 'deploymentController.model.rhev_export_domain_path', function () {
-      if (this.get('isNFS') && this.get('hasNoLeadingSlashInExportPath')) {
-        return { "name": 'You must have a leading slash' };
-      } else if (this.get('isGluster') && !this.get('hasNoLeadingSlashInExportPath')) {
-        return { "name": 'You cannot have a leading slash' };
-      } else if (this.get('hasEndingSlashInExportPath')) {
-        return { "name": 'You cannot have a trailing slash' };
-      } else {
-        return {};
-      }
-    }),
-
     isNFS: _ember['default'].computed('deploymentController.model.rhev_storage_type', function () {
       return this.get('deploymentController.model.rhev_storage_type') === 'NFS';
     }),
@@ -5410,14 +5372,6 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember', 'ic-ajax', 'f
       return this.get('deploymentController.model.rhev_storage_type') === 'glusterfs';
     }),
 
-    isInvalidStorageFields: _ember['default'].computed('deploymentController.model.rhev_storage_type', 'invalidStorageName', 'invalidStorageAddress', 'invalidSharePath', function () {
-      return _ember['default'].isBlank(this.get('deploymentController.model.rhev_storage_type')) || this.get('invalidStorageName') || this.get('invalidStorageAddress') || this.get('invalidSharePath');
-    }),
-
-    isInvalidExportDomainFields: _ember['default'].computed('invalidExportDomainName', 'invalidExportAddress', 'invalidExportPath', function () {
-      return this.get('invalidExportDomainName') || this.get('invalidExportAddress') || this.get('invalidExportPath');
-    }),
-
     computerNameValidator: _fusorEmberCliUtilsValidators.AllValidator.create({
       validators: [_fusorEmberCliUtilsValidators.PresenceValidator.create({}), _fusorEmberCliUtilsValidators.AlphaNumericDashUnderscoreValidator.create({})]
     }),
@@ -5426,36 +5380,60 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember', 'ic-ajax', 'f
       validators: [_fusorEmberCliUtilsValidators.PresenceValidator.create({}), _fusorEmberCliUtilsValidators.HostnameValidator.create({})]
     }),
 
+    nfsPathValidator: _fusorEmberCliUtilsValidators.AllValidator.create({
+      validators: [_fusorEmberCliUtilsValidators.PresenceValidator.create({}), _fusorEmberCliUtilsValidators.NfsPathValidator.create({})]
+    }),
+
+    glusterPathValidator: _fusorEmberCliUtilsValidators.AllValidator.create({
+      validators: [_fusorEmberCliUtilsValidators.PresenceValidator.create({}), _fusorEmberCliUtilsValidators.GlusterPathValidator.create({})]
+    }),
+
+    sharePathValidator: _ember['default'].computed('deploymentController.model.rhev_storage_type', function () {
+      if (this.get('deploymentController.model.rhev_storage_type') === 'NFS') {
+        return this.get('nfsPathValidator');
+      }
+
+      return this.get('glusterPathValidator');
+    }),
+
     invalidStorageName: _ember['default'].computed('deploymentController.model.rhev_storage_name', function () {
-      return !this.get('computerNameValidator').isValid(this.get('deploymentController.model.rhev_storage_name'));
+      return this.get('computerNameValidator').isInvalid(this.get('deploymentController.model.rhev_storage_name'));
     }),
 
     invalidStorageAddress: _ember['default'].computed('deploymentController.model.rhev_storage_address', function () {
-      return !this.get('hostnameValidator').isValid(this.get('deploymentController.model.rhev_storage_address'));
+      return this.get('hostnameValidator').isInvalid(this.get('deploymentController.model.rhev_storage_address'));
     }),
 
-    invalidSharePath: _ember['default'].computed('deploymentController.model.rhev_share_path', 'hasEndingSlashInSharePath', 'hasNoLeadingSlashInSharePath', 'isNFS', 'isGluster', function () {
-      return _ember['default'].isBlank(this.get('deploymentController.model.rhev_share_path')) || this.get('hasEndingSlashInSharePath') || this.get('isNFS') && this.get('hasNoLeadingSlashInSharePath') || this.get('isGluster') && !this.get('hasNoLeadingSlashInSharePath');
+    invalidSharePath: _ember['default'].computed('deploymentController.model.rhev_share_path', 'sharePathValidator', function () {
+      return this.get('sharePathValidator').isInvalid(this.get('deploymentController.model.rhev_share_path'));
     }),
 
     invalidExportDomainName: _ember['default'].computed('deploymentController.model.rhev_export_domain_name', function () {
-      return !this.get('computerNameValidator').isValid(this.get('deploymentController.model.rhev_export_domain_name'));
+      return this.get('computerNameValidator').isInvalid(this.get('deploymentController.model.rhev_export_domain_name'));
     }),
 
     invalidExportAddress: _ember['default'].computed('deploymentController.model.rhev_export_domain_address', function () {
-      return !this.get('hostnameValidator').isValid(this.get('deploymentController.model.rhev_export_domain_address'));
+      return this.get('hostnameValidator').isInvalid(this.get('deploymentController.model.rhev_export_domain_address'));
     }),
 
-    invalidExportPath: _ember['default'].computed('deploymentController.model.rhev_export_domain_path', 'hasEndingSlashInExportPath', 'hasNoLeadingSlashInExportPath', 'isNFS', 'isGluster', function () {
-      return _ember['default'].isBlank(this.get('deploymentController.model.rhev_export_domain_path')) || this.get('hasEndingSlashInExportPath') || this.get('isNFS') && this.get('hasNoLeadingSlashInExportPath') || this.get('isGluster') && !this.get('hasNoLeadingSlashInExportPath');
+    invalidExportPath: _ember['default'].computed('deploymentController.model.rhev_export_domain_path', 'sharePathValidator', function () {
+      return this.get('sharePathValidator').isInvalid(this.get('deploymentController.model.rhev_export_domain_path'));
     }),
 
-    disableNextStorage: _ember['default'].computed('isCloudForms', 'isInvalidStorageFields', 'isInvalidExportDomainFields', 'invalidStorageName', 'invalidStorageAddress', 'invalidExportDomainName', 'invalidExportAddress', function () {
-      if (this.get('isCloudForms')) {
-        return this.get('isInvalidStorageFields') || this.get('isInvalidExportDomainFields') || this.get('invalidStorageName') || this.get('invalidStorageAddress') || this.get('invalidExportDomainName') || this.get('invalidExportAddress');
-      } else {
-        return this.get('isInvalidStorageFields') || this.get('invalidStorageName') || this.get('invalidStorageAddress');
-      }
+    invalidHostedName: _ember['default'].computed('deploymentController.model.hosted_storage_name', function () {
+      return this.get('computerNameValidator').isInvalid(this.get('deploymentController.model.hosted_storage_name'));
+    }),
+
+    invalidHostedAddress: _ember['default'].computed('deploymentController.model.hosted_storage_address', function () {
+      return this.get('hostnameValidator').isInvalid(this.get('deploymentController.model.hosted_storage_address'));
+    }),
+
+    invalidHostedPath: _ember['default'].computed('deploymentController.model.hosted_storage_path', 'sharePathValidator', function () {
+      return this.get('sharePathValidator').isInvalid(this.get('deploymentController.model.hosted_storage_path'));
+    }),
+
+    disableNextStorage: _ember['default'].computed('isCloudForms', 'rhevIsSelfHosted', 'invalidStorageName', 'invalidStorageAddress', 'invalidSharePath', 'invalidExportDomainName', 'invalidExportAddress', 'invalidExportPath', 'invalidHostedName', 'invalidHostedAddress', 'invalidHostedPath', function () {
+      return this.get('invalidStorageName') || this.get('invalidStorageAddress') || this.get('invalidSharePath') || this.get('isCloudForms') && (this.get('invalidExportDomainName') || this.get('invalidExportAddress') || this.get('invalidExportPath')) || this.get('rhevIsSelfHosted') && (this.get('invalidHostedName') || this.get('invalidHostedAddress') || this.get('invalidHostedPath'));
     }),
 
     validRhevStorage: _ember['default'].computed.not('disableNextStorage')
@@ -11016,12 +10994,22 @@ define('fusor-ember-cli/mixins/validated-input-mixin', ['exports', 'ember'], fun
         this.set("showValidationError", true);
       },
 
-      // this action is triggered on key-up. however, for password fields only, we don't want
-      // to show validation errors after every key stroke unless 8 characters have been entered
-      showValidationErrorsKeyUp: function showValidationErrorsKeyUp() {
-        if (!(this.get('isPassword') && this.get('value.length') < 8)) {
-          this.set("showValidationError", true);
+      // this action is triggered on key-down. it cancels any existing time
+      // and sets new timer of 1 second until showing any validation errors
+      showValidationErrorsKeyDown: function showValidationErrorsKeyDown() {
+        var _this2 = this;
+
+        var showValidationTimer = this.get('showValidationTimer');
+
+        if (showValidationTimer) {
+          _ember['default'].run.cancel(showValidationTimer);
         }
+
+        this.set("showValidationError", false);
+        showValidationTimer = _ember['default'].run.later(function () {
+          return _this2.set("showValidationError", true);
+        }, 1000);
+        this.set('showValidationTimer', showValidationTimer);
       },
 
       resetValidationErrors: function resetValidationErrors() {
@@ -11792,7 +11780,7 @@ define('fusor-ember-cli/models/pool', ['exports', 'ember', 'ember-data'], functi
     }),
 
     qtyAvailableOfTotal: _ember['default'].computed('qtyAvailable', 'quantity', function () {
-      if (this.get('qtyAvailable') === -1) {
+      if (this.get('qtyAvailable') < 0) {
         return "Unlimited";
       } else {
         return this.get('qtyAvailable') + ' of ' + this.get('quantity');
@@ -29112,7 +29100,7 @@ define("fusor-ember-cli/templates/components/text-f", ["exports"], function (exp
           morphs[5] = dom.createMorphAt(fragment, 9, 9, contextualElement);
           return morphs;
         },
-        statements: [["content", "preText", ["loc", [null, [3, 2], [3, 13]]]], ["inline", "input", [], ["class", ["subexpr", "@mut", [["get", "cssFormClass", ["loc", [null, [3, 27], [3, 39]]]]], [], []], "value", ["subexpr", "@mut", [["get", "value", ["loc", [null, [4, 27], [4, 32]]]]], [], []], "placeholder", ["subexpr", "@mut", [["get", "placeholder", ["loc", [null, [5, 33], [5, 44]]]]], [], []], "type", ["subexpr", "@mut", [["get", "typeInput", ["loc", [null, [6, 26], [6, 35]]]]], [], []], "key-up", "showValidationErrorsKeyUp", "focus-out", "showValidationErrors", "id", ["subexpr", "@mut", [["get", "cssId", ["loc", [null, [9, 24], [9, 29]]]]], [], []], "disabled", ["subexpr", "@mut", [["get", "disabled", ["loc", [null, [10, 30], [10, 38]]]]], [], []], "autocomplete", "off", "maxlength", "250"], ["loc", [null, [3, 13], [12, 38]]]], ["content", "postText", ["loc", [null, [12, 38], [12, 50]]]], ["block", "if", [["get", "canShowPassword", ["loc", [null, [14, 8], [14, 23]]]]], [], 0, null, ["loc", [null, [14, 2], [16, 9]]]], ["block", "if", [["get", "showValidationError", ["loc", [null, [18, 8], [18, 27]]]]], [], 1, null, ["loc", [null, [18, 2], [24, 9]]]], ["content", "yield", ["loc", [null, [26, 2], [26, 11]]]]],
+        statements: [["content", "preText", ["loc", [null, [3, 2], [3, 13]]]], ["inline", "input", [], ["class", ["subexpr", "@mut", [["get", "cssFormClass", ["loc", [null, [3, 27], [3, 39]]]]], [], []], "value", ["subexpr", "@mut", [["get", "value", ["loc", [null, [4, 27], [4, 32]]]]], [], []], "placeholder", ["subexpr", "@mut", [["get", "placeholder", ["loc", [null, [5, 33], [5, 44]]]]], [], []], "type", ["subexpr", "@mut", [["get", "typeInput", ["loc", [null, [6, 26], [6, 35]]]]], [], []], "key-down", "showValidationErrorsKeyDown", "focus-out", "showValidationErrors", "id", ["subexpr", "@mut", [["get", "cssId", ["loc", [null, [9, 24], [9, 29]]]]], [], []], "disabled", ["subexpr", "@mut", [["get", "disabled", ["loc", [null, [10, 30], [10, 38]]]]], [], []], "autocomplete", "off", "maxlength", "250"], ["loc", [null, [3, 13], [12, 38]]]], ["content", "postText", ["loc", [null, [12, 38], [12, 50]]]], ["block", "if", [["get", "canShowPassword", ["loc", [null, [14, 8], [14, 23]]]]], [], 0, null, ["loc", [null, [14, 2], [16, 9]]]], ["block", "if", [["get", "showValidationError", ["loc", [null, [18, 8], [18, 27]]]]], [], 1, null, ["loc", [null, [18, 2], [24, 9]]]], ["content", "yield", ["loc", [null, [26, 2], [26, 11]]]]],
         locals: [],
         templates: [child0, child1]
       };
@@ -30273,14 +30261,20 @@ define("fusor-ember-cli/templates/components/tr-engine", ["exports"], function (
         hasRendered: false,
         buildFragment: function buildFragment(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("      Not Selected\n");
+          var el1 = dom.createTextNode("      ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
           dom.appendChild(el0, el1);
           return el0;
         },
-        buildRenderNodes: function buildRenderNodes() {
-          return [];
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+          return morphs;
         },
-        statements: [],
+        statements: [["content", "host.name", ["loc", [null, [8, 6], [8, 19]]]]],
         locals: [],
         templates: []
       };
@@ -30562,14 +30556,20 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
         hasRendered: false,
         buildFragment: function buildFragment(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("    Not Selected\n");
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
           dom.appendChild(el0, el1);
           return el0;
         },
-        buildRenderNodes: function buildRenderNodes() {
-          return [];
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+          return morphs;
         },
-        statements: [],
+        statements: [["content", "host.name", ["loc", [null, [13, 4], [13, 17]]]]],
         locals: [],
         templates: []
       };
@@ -44457,7 +44457,7 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
             morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
             return morphs;
           },
-          statements: [["inline", "progress-bar", [], ["task", ["subexpr", "@mut", [["get", "cfmeTask", ["loc", [null, [45, 24], [45, 32]]]]], [], []], "name", ["subexpr", "@mut", [["get", "nameCloudForms", ["loc", [null, [45, 38], [45, 52]]]]], [], []], "isSatelliteProgressBar", false], ["loc", [null, [45, 4], [45, 83]]]]],
+          statements: [["inline", "progress-bar", [], ["task", ["subexpr", "@mut", [["get", "openshiftTask", ["loc", [null, [45, 24], [45, 37]]]]], [], []], "name", ["subexpr", "@mut", [["get", "nameOpenShift", ["loc", [null, [45, 43], [45, 56]]]]], [], []], "isSatelliteProgressBar", false], ["loc", [null, [45, 4], [45, 87]]]]],
           locals: [],
           templates: []
         };
@@ -44497,7 +44497,7 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
             morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
             return morphs;
           },
-          statements: [["inline", "progress-bar", [], ["task", ["subexpr", "@mut", [["get", "openshiftTask", ["loc", [null, [49, 24], [49, 37]]]]], [], []], "name", ["subexpr", "@mut", [["get", "nameOpenShift", ["loc", [null, [49, 43], [49, 56]]]]], [], []], "isSatelliteProgressBar", false], ["loc", [null, [49, 4], [49, 87]]]]],
+          statements: [["inline", "progress-bar", [], ["task", ["subexpr", "@mut", [["get", "cfmeTask", ["loc", [null, [49, 24], [49, 32]]]]], [], []], "name", ["subexpr", "@mut", [["get", "nameCloudForms", ["loc", [null, [49, 38], [49, 52]]]]], [], []], "isSatelliteProgressBar", false], ["loc", [null, [49, 4], [49, 83]]]]],
           locals: [],
           templates: []
         };
@@ -44601,7 +44601,7 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
           morphs[5] = dom.createMorphAt(fragment, 11, 11, contextualElement);
           return morphs;
         },
-        statements: [["inline", "progress-bar-satellite", [], ["name", ["subexpr", "@mut", [["get", "nameSatellite", ["loc", [null, [30, 9], [30, 22]]]]], [], []], "isSatelliteProgressBar", true, "manageContentTask", ["subexpr", "@mut", [["get", "manageContentTask", ["loc", [null, [32, 22], [32, 39]]]]], [], []], "configureHostGroupsTask", ["subexpr", "@mut", [["get", "configureHostGroupsTask", ["loc", [null, [33, 28], [33, 51]]]]], [], []]], ["loc", [null, [28, 2], [34, 4]]]], ["block", "if", [["get", "isRhev", ["loc", [null, [36, 8], [36, 14]]]]], [], 0, null, ["loc", [null, [36, 2], [38, 9]]]], ["block", "if", [["get", "isOpenStack", ["loc", [null, [40, 8], [40, 19]]]]], [], 1, null, ["loc", [null, [40, 2], [42, 9]]]], ["block", "if", [["get", "isCloudForms", ["loc", [null, [44, 8], [44, 20]]]]], [], 2, null, ["loc", [null, [44, 2], [46, 9]]]], ["block", "if", [["get", "isOpenShift", ["loc", [null, [48, 8], [48, 19]]]]], [], 3, null, ["loc", [null, [48, 2], [50, 9]]]], ["block", "if", [["get", "showDeployTaskProgressBar", ["loc", [null, [52, 8], [52, 33]]]]], [], 4, null, ["loc", [null, [52, 2], [54, 9]]]]],
+        statements: [["inline", "progress-bar-satellite", [], ["name", ["subexpr", "@mut", [["get", "nameSatellite", ["loc", [null, [30, 9], [30, 22]]]]], [], []], "isSatelliteProgressBar", true, "manageContentTask", ["subexpr", "@mut", [["get", "manageContentTask", ["loc", [null, [32, 22], [32, 39]]]]], [], []], "configureHostGroupsTask", ["subexpr", "@mut", [["get", "configureHostGroupsTask", ["loc", [null, [33, 28], [33, 51]]]]], [], []]], ["loc", [null, [28, 2], [34, 4]]]], ["block", "if", [["get", "isRhev", ["loc", [null, [36, 8], [36, 14]]]]], [], 0, null, ["loc", [null, [36, 2], [38, 9]]]], ["block", "if", [["get", "isOpenStack", ["loc", [null, [40, 8], [40, 19]]]]], [], 1, null, ["loc", [null, [40, 2], [42, 9]]]], ["block", "if", [["get", "isOpenShift", ["loc", [null, [44, 8], [44, 19]]]]], [], 2, null, ["loc", [null, [44, 2], [46, 9]]]], ["block", "if", [["get", "isCloudForms", ["loc", [null, [48, 8], [48, 20]]]]], [], 3, null, ["loc", [null, [48, 2], [50, 9]]]], ["block", "if", [["get", "showDeployTaskProgressBar", ["loc", [null, [52, 8], [52, 33]]]]], [], 4, null, ["loc", [null, [52, 2], [54, 9]]]]],
         locals: [],
         templates: [child0, child1, child2, child3, child4]
       };
@@ -47931,129 +47931,17 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
       };
     })();
     var child4 = (function () {
-      var child0 = (function () {
-        return {
-          meta: {
-            "revision": "Ember@1.13.10",
-            "loc": {
-              "source": null,
-              "start": {
-                "line": 50,
-                "column": 6
-              },
-              "end": {
-                "line": 55,
-                "column": 6
-              }
-            },
-            "moduleName": "fusor-ember-cli/templates/storage.hbs"
-          },
-          arity: 0,
-          cachedFragment: null,
-          hasRendered: false,
-          buildFragment: function buildFragment(dom) {
-            var el0 = dom.createDocumentFragment();
-            var el1 = dom.createTextNode("        ");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createElement("h4");
-            var el2 = dom.createTextNode(" Export Domain ");
-            dom.appendChild(el1, el2);
-            dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("\n          ");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createComment("");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("\n          ");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createComment("");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("\n          ");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createComment("");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("\n");
-            dom.appendChild(el0, el1);
-            return el0;
-          },
-          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-            var morphs = new Array(3);
-            morphs[0] = dom.createMorphAt(fragment, 3, 3, contextualElement);
-            morphs[1] = dom.createMorphAt(fragment, 5, 5, contextualElement);
-            morphs[2] = dom.createMorphAt(fragment, 7, 7, contextualElement);
-            return morphs;
-          },
-          statements: [["inline", "text-f", [], ["label", "Export Domain Name", "value", ["subexpr", "@mut", [["get", "model.rhev_export_domain_name", ["loc", [null, [52, 52], [52, 81]]]]], [], []], "cssId", "rhev_export_domain_name", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [52, 139], [52, 169]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "computerNameValidator", ["loc", [null, [52, 180], [52, 201]]]]], [], []]], ["loc", [null, [52, 10], [52, 203]]]], ["inline", "text-f", [], ["label", "Storage Address", "value", ["subexpr", "@mut", [["get", "model.rhev_export_domain_address", ["loc", [null, [53, 49], [53, 81]]]]], [], []], "cssId", "rhev_export_domain_address", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [53, 142], [53, 172]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "hostnameValidator", ["loc", [null, [53, 183], [53, 200]]]]], [], []]], ["loc", [null, [53, 10], [53, 202]]]], ["inline", "text-f", [], ["label", "Share Path", "value", ["subexpr", "@mut", [["get", "model.rhev_export_domain_path", ["loc", [null, [54, 44], [54, 73]]]]], [], []], "cssId", "rhev_export_domain_path", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [54, 131], [54, 161]]]]], [], []], "errors", ["subexpr", "@mut", [["get", "errorsHashExportPath", ["loc", [null, [54, 169], [54, 189]]]]], [], []]], ["loc", [null, [54, 10], [54, 191]]]]],
-          locals: [],
-          templates: []
-        };
-      })();
-      var child1 = (function () {
-        return {
-          meta: {
-            "revision": "Ember@1.13.10",
-            "loc": {
-              "source": null,
-              "start": {
-                "line": 57,
-                "column": 6
-              },
-              "end": {
-                "line": 62,
-                "column": 6
-              }
-            },
-            "moduleName": "fusor-ember-cli/templates/storage.hbs"
-          },
-          arity: 0,
-          cachedFragment: null,
-          hasRendered: false,
-          buildFragment: function buildFragment(dom) {
-            var el0 = dom.createDocumentFragment();
-            var el1 = dom.createTextNode("        ");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createElement("h4");
-            var el2 = dom.createTextNode(" Self-hosted RHEV Engine Storage Domain ");
-            dom.appendChild(el1, el2);
-            dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("\n          ");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createComment("");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("\n          ");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createComment("");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("\n          ");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createComment("");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("\n");
-            dom.appendChild(el0, el1);
-            return el0;
-          },
-          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-            var morphs = new Array(3);
-            morphs[0] = dom.createMorphAt(fragment, 3, 3, contextualElement);
-            morphs[1] = dom.createMorphAt(fragment, 5, 5, contextualElement);
-            morphs[2] = dom.createMorphAt(fragment, 7, 7, contextualElement);
-            return morphs;
-          },
-          statements: [["inline", "text-f", [], ["label", "Hosted Engine Storage Domain Name", "value", ["subexpr", "@mut", [["get", "model.hosted_storage_name", ["loc", [null, [59, 67], [59, 92]]]]], [], []], "cssId", "hosted_storage_name", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [59, 146], [59, 176]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "computerNameValidator", ["loc", [null, [59, 187], [59, 208]]]]], [], []]], ["loc", [null, [59, 10], [59, 210]]]], ["inline", "text-f", [], ["label", "Storage Address", "value", ["subexpr", "@mut", [["get", "model.hosted_storage_address", ["loc", [null, [60, 49], [60, 77]]]]], [], []], "cssId", "hosted_storage_address", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [60, 134], [60, 164]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "hostnameValidator", ["loc", [null, [60, 175], [60, 192]]]]], [], []]], ["loc", [null, [60, 10], [60, 194]]]], ["inline", "text-f", [], ["label", "Share Path", "value", ["subexpr", "@mut", [["get", "model.hosted_storage_path", ["loc", [null, [61, 44], [61, 69]]]]], [], []], "cssId", "hosted_storage_path", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [61, 123], [61, 153]]]]], [], []], "errors", ["subexpr", "@mut", [["get", "errorsHashhosted_enginePath", ["loc", [null, [61, 161], [61, 188]]]]], [], []]], ["loc", [null, [61, 10], [61, 190]]]]],
-          locals: [],
-          templates: []
-        };
-      })();
       return {
         meta: {
           "revision": "Ember@1.13.10",
           "loc": {
             "source": null,
             "start": {
-              "line": 45,
+              "line": 46,
               "column": 2
             },
             "end": {
-              "line": 64,
+              "line": 48,
               "column": 2
             }
           },
@@ -48064,23 +47952,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
         hasRendered: false,
         buildFragment: function buildFragment(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("      ");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createComment("");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n      ");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createComment("");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n      ");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createComment("");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n\n");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createComment("");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n");
+          var el1 = dom.createTextNode("    ");
           dom.appendChild(el0, el1);
           var el1 = dom.createComment("");
           dom.appendChild(el0, el1);
@@ -48089,17 +47961,13 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
           return el0;
         },
         buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-          var morphs = new Array(5);
+          var morphs = new Array(1);
           morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
-          morphs[1] = dom.createMorphAt(fragment, 3, 3, contextualElement);
-          morphs[2] = dom.createMorphAt(fragment, 5, 5, contextualElement);
-          morphs[3] = dom.createMorphAt(fragment, 7, 7, contextualElement);
-          morphs[4] = dom.createMorphAt(fragment, 9, 9, contextualElement);
           return morphs;
         },
-        statements: [["inline", "text-f", [], ["label", "Data Domain Name", "value", ["subexpr", "@mut", [["get", "model.rhev_storage_name", ["loc", [null, [46, 46], [46, 69]]]]], [], []], "isRequired", true, "cssId", "rhev_storage_name", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [46, 121], [46, 130]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "computerNameValidator", ["loc", [null, [46, 141], [46, 162]]]]], [], []]], ["loc", [null, [46, 6], [46, 164]]]], ["inline", "text-f", [], ["label", "Storage Address", "value", ["subexpr", "@mut", [["get", "model.rhev_storage_address", ["loc", [null, [47, 45], [47, 71]]]]], [], []], "isRequired", true, "cssId", "rhev_storage_address", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [47, 126], [47, 135]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "hostnameValidator", ["loc", [null, [47, 146], [47, 163]]]]], [], []]], ["loc", [null, [47, 6], [47, 165]]]], ["inline", "text-f", [], ["label", "Share Path", "value", ["subexpr", "@mut", [["get", "model.rhev_share_path", ["loc", [null, [48, 40], [48, 61]]]]], [], []], "isRequired", true, "cssId", "rhev_share_path", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [48, 111], [48, 120]]]]], [], []], "errors", ["subexpr", "@mut", [["get", "errorsHashSharePath", ["loc", [null, [48, 128], [48, 147]]]]], [], []]], ["loc", [null, [48, 6], [48, 149]]]], ["block", "if", [["get", "isCloudForms", ["loc", [null, [50, 12], [50, 24]]]]], [], 0, null, ["loc", [null, [50, 6], [55, 13]]]], ["block", "if", [["get", "rhevIsSelfHosted", ["loc", [null, [57, 12], [57, 28]]]]], [], 1, null, ["loc", [null, [57, 6], [62, 13]]]]],
+        statements: [["inline", "text-f", [], ["label", "Storage Path", "value", ["subexpr", "@mut", [["get", "model.rhev_local_storage_path", ["loc", [null, [47, 40], [47, 69]]]]], [], []], "placeholder", "Ex. /rhev/data_storage", "isRequired", true, "cssId", "rhev_local_storage_path", "help-inline", "This path will be created and given appropriate permissions - chown 36:36; chmod 0755, etc", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [47, 269], [47, 278]]]]], [], []]], ["loc", [null, [47, 4], [47, 280]]]]],
         locals: [],
-        templates: [child0, child1]
+        templates: []
       };
     })();
     var child5 = (function () {
@@ -48110,12 +47978,12 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
             "loc": {
               "source": null,
               "start": {
-                "line": 64,
-                "column": 2
+                "line": 53,
+                "column": 4
               },
               "end": {
-                "line": 67,
-                "column": 2
+                "line": 58,
+                "column": 4
               }
             },
             "moduleName": "fusor-ember-cli/templates/storage.hbs"
@@ -48127,207 +47995,51 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
             var el0 = dom.createDocumentFragment();
             var el1 = dom.createTextNode("      ");
             dom.appendChild(el0, el1);
+            var el1 = dom.createElement("h4");
+            var el2 = dom.createTextNode(" Export Domain ");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n        ");
+            dom.appendChild(el0, el1);
             var el1 = dom.createComment("");
             dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("\n\n");
+            var el1 = dom.createTextNode("\n        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
             dom.appendChild(el0, el1);
             return el0;
           },
           buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-            var morphs = new Array(1);
-            morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+            var morphs = new Array(3);
+            morphs[0] = dom.createMorphAt(fragment, 3, 3, contextualElement);
+            morphs[1] = dom.createMorphAt(fragment, 5, 5, contextualElement);
+            morphs[2] = dom.createMorphAt(fragment, 7, 7, contextualElement);
             return morphs;
           },
-          statements: [["inline", "text-f", [], ["label", "Storage Path", "value", ["subexpr", "@mut", [["get", "model.rhev_local_storage_path", ["loc", [null, [65, 42], [65, 71]]]]], [], []], "placeholder", "Ex. /rhev/data_storage", "isRequired", true, "cssId", "rhev_local_storage_path", "help-inline", "This path will be created and given appropriate permissions - chown 36:36; chmod 0755, etc", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [65, 271], [65, 280]]]]], [], []]], ["loc", [null, [65, 6], [65, 282]]]]],
+          statements: [["inline", "text-f", [], ["label", "Export Domain Name", "value", ["subexpr", "@mut", [["get", "model.rhev_export_domain_name", ["loc", [null, [55, 50], [55, 79]]]]], [], []], "cssId", "rhev_export_domain_name", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [55, 137], [55, 167]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "computerNameValidator", ["loc", [null, [55, 178], [55, 199]]]]], [], []]], ["loc", [null, [55, 8], [55, 201]]]], ["inline", "text-f", [], ["label", "Storage Address", "value", ["subexpr", "@mut", [["get", "model.rhev_export_domain_address", ["loc", [null, [56, 47], [56, 79]]]]], [], []], "cssId", "rhev_export_domain_address", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [56, 140], [56, 170]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "hostnameValidator", ["loc", [null, [56, 181], [56, 198]]]]], [], []]], ["loc", [null, [56, 8], [56, 200]]]], ["inline", "text-f", [], ["label", "Share Path", "value", ["subexpr", "@mut", [["get", "model.rhev_export_domain_path", ["loc", [null, [57, 42], [57, 71]]]]], [], []], "cssId", "rhev_export_domain_path", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [57, 129], [57, 159]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "sharePathValidator", ["loc", [null, [57, 170], [57, 188]]]]], [], []]], ["loc", [null, [57, 8], [57, 190]]]]],
           locals: [],
           templates: []
         };
       })();
       var child1 = (function () {
-        var child0 = (function () {
-          var child0 = (function () {
-            return {
-              meta: {
-                "revision": "Ember@1.13.10",
-                "loc": {
-                  "source": null,
-                  "start": {
-                    "line": 71,
-                    "column": 6
-                  },
-                  "end": {
-                    "line": 76,
-                    "column": 6
-                  }
-                },
-                "moduleName": "fusor-ember-cli/templates/storage.hbs"
-              },
-              arity: 0,
-              cachedFragment: null,
-              hasRendered: false,
-              buildFragment: function buildFragment(dom) {
-                var el0 = dom.createDocumentFragment();
-                var el1 = dom.createTextNode("        ");
-                dom.appendChild(el0, el1);
-                var el1 = dom.createElement("h4");
-                var el2 = dom.createTextNode(" Export Domain ");
-                dom.appendChild(el1, el2);
-                dom.appendChild(el0, el1);
-                var el1 = dom.createTextNode("\n          ");
-                dom.appendChild(el0, el1);
-                var el1 = dom.createComment("");
-                dom.appendChild(el0, el1);
-                var el1 = dom.createTextNode("\n          ");
-                dom.appendChild(el0, el1);
-                var el1 = dom.createComment("");
-                dom.appendChild(el0, el1);
-                var el1 = dom.createTextNode("\n          ");
-                dom.appendChild(el0, el1);
-                var el1 = dom.createComment("");
-                dom.appendChild(el0, el1);
-                var el1 = dom.createTextNode("\n");
-                dom.appendChild(el0, el1);
-                return el0;
-              },
-              buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-                var morphs = new Array(3);
-                morphs[0] = dom.createMorphAt(fragment, 3, 3, contextualElement);
-                morphs[1] = dom.createMorphAt(fragment, 5, 5, contextualElement);
-                morphs[2] = dom.createMorphAt(fragment, 7, 7, contextualElement);
-                return morphs;
-              },
-              statements: [["inline", "text-f", [], ["label", "Export Domain Name", "value", ["subexpr", "@mut", [["get", "model.rhev_export_domain_name", ["loc", [null, [73, 52], [73, 81]]]]], [], []], "cssId", "rhev_export_domain_name", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [73, 139], [73, 169]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "computerNameValidator", ["loc", [null, [73, 180], [73, 201]]]]], [], []]], ["loc", [null, [73, 10], [73, 203]]]], ["inline", "text-f", [], ["label", "Storage Address", "value", ["subexpr", "@mut", [["get", "model.rhev_export_domain_address", ["loc", [null, [74, 49], [74, 81]]]]], [], []], "cssId", "rhev_export_domain_address", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [74, 142], [74, 172]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "hostnameValidator", ["loc", [null, [74, 183], [74, 200]]]]], [], []]], ["loc", [null, [74, 10], [74, 202]]]], ["inline", "text-f", [], ["label", "Share Path", "value", ["subexpr", "@mut", [["get", "model.rhev_export_domain_path", ["loc", [null, [75, 44], [75, 73]]]]], [], []], "cssId", "rhev_export_domain_path", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [75, 131], [75, 161]]]]], [], []], "errors", ["subexpr", "@mut", [["get", "errorsHashExportPath", ["loc", [null, [75, 169], [75, 189]]]]], [], []]], ["loc", [null, [75, 10], [75, 191]]]]],
-              locals: [],
-              templates: []
-            };
-          })();
-          var child1 = (function () {
-            return {
-              meta: {
-                "revision": "Ember@1.13.10",
-                "loc": {
-                  "source": null,
-                  "start": {
-                    "line": 78,
-                    "column": 6
-                  },
-                  "end": {
-                    "line": 83,
-                    "column": 6
-                  }
-                },
-                "moduleName": "fusor-ember-cli/templates/storage.hbs"
-              },
-              arity: 0,
-              cachedFragment: null,
-              hasRendered: false,
-              buildFragment: function buildFragment(dom) {
-                var el0 = dom.createDocumentFragment();
-                var el1 = dom.createTextNode("        ");
-                dom.appendChild(el0, el1);
-                var el1 = dom.createElement("h4");
-                var el2 = dom.createTextNode(" Self-hosted RHEV Engine Storage Domain ");
-                dom.appendChild(el1, el2);
-                dom.appendChild(el0, el1);
-                var el1 = dom.createTextNode("\n          ");
-                dom.appendChild(el0, el1);
-                var el1 = dom.createComment("");
-                dom.appendChild(el0, el1);
-                var el1 = dom.createTextNode("\n          ");
-                dom.appendChild(el0, el1);
-                var el1 = dom.createComment("");
-                dom.appendChild(el0, el1);
-                var el1 = dom.createTextNode("\n          ");
-                dom.appendChild(el0, el1);
-                var el1 = dom.createComment("");
-                dom.appendChild(el0, el1);
-                var el1 = dom.createTextNode("\n");
-                dom.appendChild(el0, el1);
-                return el0;
-              },
-              buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-                var morphs = new Array(3);
-                morphs[0] = dom.createMorphAt(fragment, 3, 3, contextualElement);
-                morphs[1] = dom.createMorphAt(fragment, 5, 5, contextualElement);
-                morphs[2] = dom.createMorphAt(fragment, 7, 7, contextualElement);
-                return morphs;
-              },
-              statements: [["inline", "text-f", [], ["label", "Hosted Engine Storage Domain Name", "value", ["subexpr", "@mut", [["get", "model.hosted_storage_name", ["loc", [null, [80, 67], [80, 92]]]]], [], []], "cssId", "hosted_storage_name", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [80, 146], [80, 176]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "computerNameValidator", ["loc", [null, [80, 187], [80, 208]]]]], [], []]], ["loc", [null, [80, 10], [80, 210]]]], ["inline", "text-f", [], ["label", "Storage Address", "value", ["subexpr", "@mut", [["get", "model.hosted_storage_address", ["loc", [null, [81, 49], [81, 77]]]]], [], []], "cssId", "hosted_storage_address", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [81, 134], [81, 164]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "hostnameValidator", ["loc", [null, [81, 175], [81, 192]]]]], [], []]], ["loc", [null, [81, 10], [81, 194]]]], ["inline", "text-f", [], ["label", "Share Path", "value", ["subexpr", "@mut", [["get", "model.hosted_storage_path", ["loc", [null, [82, 44], [82, 69]]]]], [], []], "cssId", "hosted_storage_path", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [82, 123], [82, 153]]]]], [], []], "errors", ["subexpr", "@mut", [["get", "errorsHashhosted_enginePath", ["loc", [null, [82, 161], [82, 188]]]]], [], []]], ["loc", [null, [82, 10], [82, 190]]]]],
-              locals: [],
-              templates: []
-            };
-          })();
-          return {
-            meta: {
-              "revision": "Ember@1.13.10",
-              "loc": {
-                "source": null,
-                "start": {
-                  "line": 67,
-                  "column": 2
-                },
-                "end": {
-                  "line": 85,
-                  "column": 2
-                }
-              },
-              "moduleName": "fusor-ember-cli/templates/storage.hbs"
-            },
-            arity: 0,
-            cachedFragment: null,
-            hasRendered: false,
-            buildFragment: function buildFragment(dom) {
-              var el0 = dom.createDocumentFragment();
-              var el1 = dom.createTextNode("      ");
-              dom.appendChild(el0, el1);
-              var el1 = dom.createComment("");
-              dom.appendChild(el0, el1);
-              var el1 = dom.createTextNode("\n      ");
-              dom.appendChild(el0, el1);
-              var el1 = dom.createComment("");
-              dom.appendChild(el0, el1);
-              var el1 = dom.createTextNode("\n      ");
-              dom.appendChild(el0, el1);
-              var el1 = dom.createComment("");
-              dom.appendChild(el0, el1);
-              var el1 = dom.createTextNode("\n");
-              dom.appendChild(el0, el1);
-              var el1 = dom.createComment("");
-              dom.appendChild(el0, el1);
-              var el1 = dom.createTextNode("\n");
-              dom.appendChild(el0, el1);
-              var el1 = dom.createComment("");
-              dom.appendChild(el0, el1);
-              var el1 = dom.createTextNode("\n  ");
-              dom.appendChild(el0, el1);
-              return el0;
-            },
-            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-              var morphs = new Array(5);
-              morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
-              morphs[1] = dom.createMorphAt(fragment, 3, 3, contextualElement);
-              morphs[2] = dom.createMorphAt(fragment, 5, 5, contextualElement);
-              morphs[3] = dom.createMorphAt(fragment, 7, 7, contextualElement);
-              morphs[4] = dom.createMorphAt(fragment, 9, 9, contextualElement);
-              return morphs;
-            },
-            statements: [["inline", "text-f", [], ["label", "Data Domain Name", "value", ["subexpr", "@mut", [["get", "model.rhev_storage_name", ["loc", [null, [68, 46], [68, 69]]]]], [], []], "isRequired", true, "cssId", "rhev_storage_name", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [68, 121], [68, 130]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "computerNameValidator", ["loc", [null, [68, 141], [68, 162]]]]], [], []]], ["loc", [null, [68, 6], [68, 164]]]], ["inline", "text-f", [], ["label", "Storage Address", "value", ["subexpr", "@mut", [["get", "model.rhev_storage_address", ["loc", [null, [69, 45], [69, 71]]]]], [], []], "isRequired", true, "cssId", "rhev_storage_address", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [69, 126], [69, 135]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "hostnameValidator", ["loc", [null, [69, 146], [69, 163]]]]], [], []]], ["loc", [null, [69, 6], [69, 165]]]], ["inline", "text-f", [], ["label", "Share Path", "value", ["subexpr", "@mut", [["get", "model.rhev_share_path", ["loc", [null, [70, 40], [70, 61]]]]], [], []], "isRequired", true, "cssId", "rhev_share_path", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [70, 111], [70, 120]]]]], [], []], "errors", ["subexpr", "@mut", [["get", "errorsHashSharePath", ["loc", [null, [70, 128], [70, 147]]]]], [], []]], ["loc", [null, [70, 6], [70, 149]]]], ["block", "if", [["get", "isCloudForms", ["loc", [null, [71, 12], [71, 24]]]]], [], 0, null, ["loc", [null, [71, 6], [76, 13]]]], ["block", "if", [["get", "rhevIsSelfHosted", ["loc", [null, [78, 12], [78, 28]]]]], [], 1, null, ["loc", [null, [78, 6], [83, 13]]]]],
-            locals: [],
-            templates: [child0, child1]
-          };
-        })();
         return {
           meta: {
             "revision": "Ember@1.13.10",
             "loc": {
               "source": null,
               "start": {
-                "line": 67,
-                "column": 2
+                "line": 60,
+                "column": 4
               },
               "end": {
-                "line": 85,
-                "column": 2
+                "line": 65,
+                "column": 4
               }
             },
             "moduleName": "fusor-ember-cli/templates/storage.hbs"
@@ -48337,20 +48049,38 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
           hasRendered: false,
           buildFragment: function buildFragment(dom) {
             var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("      ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("h4");
+            var el2 = dom.createTextNode(" Self-hosted RHEV Engine Storage Domain ");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n        ");
+            dom.appendChild(el0, el1);
             var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
             dom.appendChild(el0, el1);
             return el0;
           },
           buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-            var morphs = new Array(1);
-            morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
-            dom.insertBoundary(fragment, 0);
-            dom.insertBoundary(fragment, null);
+            var morphs = new Array(3);
+            morphs[0] = dom.createMorphAt(fragment, 3, 3, contextualElement);
+            morphs[1] = dom.createMorphAt(fragment, 5, 5, contextualElement);
+            morphs[2] = dom.createMorphAt(fragment, 7, 7, contextualElement);
             return morphs;
           },
-          statements: [["block", "if", [["get", "isGluster", ["loc", [null, [67, 12], [67, 21]]]]], [], 0, null, ["loc", [null, [67, 2], [85, 2]]]]],
+          statements: [["inline", "text-f", [], ["label", "Hosted Engine Storage Domain Name", "value", ["subexpr", "@mut", [["get", "model.hosted_storage_name", ["loc", [null, [62, 65], [62, 90]]]]], [], []], "cssId", "hosted_storage_name", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [62, 144], [62, 174]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "computerNameValidator", ["loc", [null, [62, 185], [62, 206]]]]], [], []]], ["loc", [null, [62, 8], [62, 208]]]], ["inline", "text-f", [], ["label", "Storage Address", "value", ["subexpr", "@mut", [["get", "model.hosted_storage_address", ["loc", [null, [63, 47], [63, 75]]]]], [], []], "cssId", "hosted_storage_address", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [63, 132], [63, 162]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "hostnameValidator", ["loc", [null, [63, 173], [63, 190]]]]], [], []]], ["loc", [null, [63, 8], [63, 192]]]], ["inline", "text-f", [], ["label", "Share Path", "value", ["subexpr", "@mut", [["get", "model.hosted_storage_path", ["loc", [null, [64, 42], [64, 67]]]]], [], []], "cssId", "hosted_storage_path", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "deploymentController.isStarted", ["loc", [null, [64, 121], [64, 151]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "sharePathValidator", ["loc", [null, [64, 162], [64, 180]]]]], [], []]], ["loc", [null, [64, 8], [64, 182]]]]],
           locals: [],
-          templates: [child0]
+          templates: []
         };
       })();
       return {
@@ -48359,11 +48089,11 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
           "loc": {
             "source": null,
             "start": {
-              "line": 64,
+              "line": 48,
               "column": 2
             },
             "end": {
-              "line": 85,
+              "line": 66,
               "column": 2
             }
           },
@@ -48374,18 +48104,39 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
         hasRendered: false,
         buildFragment: function buildFragment(dom) {
           var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n\n");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
           var el1 = dom.createComment("");
           dom.appendChild(el0, el1);
           return el0;
         },
         buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-          var morphs = new Array(1);
-          morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
-          dom.insertBoundary(fragment, 0);
+          var morphs = new Array(5);
+          morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+          morphs[1] = dom.createMorphAt(fragment, 3, 3, contextualElement);
+          morphs[2] = dom.createMorphAt(fragment, 5, 5, contextualElement);
+          morphs[3] = dom.createMorphAt(fragment, 7, 7, contextualElement);
+          morphs[4] = dom.createMorphAt(fragment, 9, 9, contextualElement);
           dom.insertBoundary(fragment, null);
           return morphs;
         },
-        statements: [["block", "if", [["get", "isLocal", ["loc", [null, [64, 12], [64, 19]]]]], [], 0, 1, ["loc", [null, [64, 2], [85, 2]]]]],
+        statements: [["inline", "text-f", [], ["label", "Data Domain Name", "value", ["subexpr", "@mut", [["get", "model.rhev_storage_name", ["loc", [null, [49, 44], [49, 67]]]]], [], []], "isRequired", true, "cssId", "rhev_storage_name", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [49, 119], [49, 128]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "computerNameValidator", ["loc", [null, [49, 139], [49, 160]]]]], [], []]], ["loc", [null, [49, 4], [49, 162]]]], ["inline", "text-f", [], ["label", "Storage Address", "value", ["subexpr", "@mut", [["get", "model.rhev_storage_address", ["loc", [null, [50, 43], [50, 69]]]]], [], []], "isRequired", true, "cssId", "rhev_storage_address", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [50, 124], [50, 133]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "hostnameValidator", ["loc", [null, [50, 144], [50, 161]]]]], [], []]], ["loc", [null, [50, 4], [50, 163]]]], ["inline", "text-f", [], ["label", "Share Path", "value", ["subexpr", "@mut", [["get", "model.rhev_share_path", ["loc", [null, [51, 38], [51, 59]]]]], [], []], "isRequired", true, "cssId", "rhev_share_path", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [51, 109], [51, 118]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "sharePathValidator", ["loc", [null, [51, 129], [51, 147]]]]], [], []]], ["loc", [null, [51, 4], [51, 149]]]], ["block", "if", [["get", "isCloudForms", ["loc", [null, [53, 10], [53, 22]]]]], [], 0, null, ["loc", [null, [53, 4], [58, 11]]]], ["block", "if", [["get", "rhevIsSelfHosted", ["loc", [null, [60, 10], [60, 26]]]]], [], 1, null, ["loc", [null, [60, 4], [65, 11]]]]],
         locals: [],
         templates: [child0, child1]
       };
@@ -48398,11 +48149,11 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
             "loc": {
               "source": null,
               "start": {
-                "line": 93,
+                "line": 75,
                 "column": 3
               },
               "end": {
-                "line": 95,
+                "line": 77,
                 "column": 3
               }
             },
@@ -48436,11 +48187,11 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
           "loc": {
             "source": null,
             "start": {
-              "line": 89,
+              "line": 71,
               "column": 0
             },
             "end": {
-              "line": 96,
+              "line": 78,
               "column": 0
             }
           },
@@ -48462,7 +48213,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
           dom.insertBoundary(fragment, null);
           return morphs;
         },
-        statements: [["block", "button-f", [], ["disabled", ["subexpr", "@mut", [["get", "disableNextStorage", ["loc", [null, [93, 24], [93, 42]]]]], [], []], "action", "testMountPoint"], 0, null, ["loc", [null, [93, 3], [95, 16]]]]],
+        statements: [["block", "button-f", [], ["disabled", ["subexpr", "@mut", [["get", "disableNextStorage", ["loc", [null, [75, 24], [75, 42]]]]], [], []], "action", "testMountPoint"], 0, null, ["loc", [null, [75, 3], [77, 16]]]]],
         locals: [],
         templates: [child0]
       };
@@ -48477,7 +48228,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
             "column": 0
           },
           "end": {
-            "line": 97,
+            "line": 79,
             "column": 0
           }
         },
@@ -48502,9 +48253,11 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
         dom.appendChild(el1, el2);
         var el2 = dom.createComment("");
         dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n");
+        dom.appendChild(el1, el2);
         var el2 = dom.createComment("");
         dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\n");
+        var el2 = dom.createTextNode("\n\n");
         dom.appendChild(el1, el2);
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n\n");
@@ -48519,13 +48272,13 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
         morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
         morphs[1] = dom.createMorphAt(fragment, 2, 2, contextualElement);
         morphs[2] = dom.createMorphAt(element2, 1, 1);
-        morphs[3] = dom.createMorphAt(element2, 2, 2);
+        morphs[3] = dom.createMorphAt(element2, 3, 3);
         morphs[4] = dom.createMorphAt(fragment, 6, 6, contextualElement);
         dom.insertBoundary(fragment, 0);
         dom.insertBoundary(fragment, null);
         return morphs;
       },
-      statements: [["block", "if", [["get", "errorMsg", ["loc", [null, [1, 6], [1, 14]]]]], [], 0, 1, ["loc", [null, [1, 0], [16, 7]]]], ["block", "if", [["get", "isCloudForms", ["loc", [null, [18, 6], [18, 18]]]]], [], 2, null, ["loc", [null, [18, 0], [20, 7]]]], ["block", "base-f", [], ["label", "Storage Type", "isRequired", true], 3, null, ["loc", [null, [24, 2], [44, 13]]]], ["block", "if", [["get", "isNFS", ["loc", [null, [45, 8], [45, 13]]]]], [], 4, 5, ["loc", [null, [45, 2], [85, 9]]]], ["block", "cancel-back-next", [], ["backRouteName", "rhev-options", "disableBack", false, "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [91, 33], [91, 42]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [92, 34], [92, 48]]]]], [], []]], 6, null, ["loc", [null, [89, 0], [96, 21]]]]],
+      statements: [["block", "if", [["get", "errorMsg", ["loc", [null, [1, 6], [1, 14]]]]], [], 0, 1, ["loc", [null, [1, 0], [16, 7]]]], ["block", "if", [["get", "isCloudForms", ["loc", [null, [18, 6], [18, 18]]]]], [], 2, null, ["loc", [null, [18, 0], [20, 7]]]], ["block", "base-f", [], ["label", "Storage Type", "isRequired", true], 3, null, ["loc", [null, [24, 2], [44, 13]]]], ["block", "if", [["get", "isLocal", ["loc", [null, [46, 8], [46, 15]]]]], [], 4, 5, ["loc", [null, [46, 2], [66, 9]]]], ["block", "cancel-back-next", [], ["backRouteName", "rhev-options", "disableBack", false, "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [73, 33], [73, 42]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [74, 34], [74, 48]]]]], [], []]], 6, null, ["loc", [null, [71, 0], [78, 21]]]]],
       locals: [],
       templates: [child0, child1, child2, child3, child4, child5, child6]
     };
@@ -52475,8 +52228,19 @@ define('fusor-ember-cli/utils/validators', ['exports', 'ember'], function (expor
     }
   });
 
+  var NoLeadingSlashValidator = Validator.extend({
+    message: 'This field must not have a leading slash.',
+    isValid: function isValid(value) {
+      return value.charAt(0) !== '/';
+    }
+  });
+
   var NfsPathValidator = AllValidator.extend({
     validators: [LeadingSlashValidator.create({}), NoTrailingSlashValidator.create({})]
+  });
+
+  var GlusterPathValidator = AllValidator.extend({
+    validators: [NoLeadingSlashValidator.create({}), NoTrailingSlashValidator.create({})]
   });
 
   function validateZipper(zipper) {
@@ -52508,6 +52272,7 @@ define('fusor-ember-cli/utils/validators', ['exports', 'ember'], function (expor
   exports.MacAddressValidator = MacAddressValidator;
   exports.HostnameValidator = HostnameValidator;
   exports.NfsPathValidator = NfsPathValidator;
+  exports.GlusterPathValidator = GlusterPathValidator;
   exports.validateZipper = validateZipper;
 });
 /* global Address4:false */
@@ -52518,11 +52283,11 @@ define('fusor-ember-cli/utils/validators', ['exports', 'ember'], function (expor
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+06c2b3e2"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+212460df"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+06c2b3e2"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+212460df"});
 }
 
 /* jshint ignore:end */
