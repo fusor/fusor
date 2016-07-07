@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "active_model_serializers", '~> 0.9.0'
   s.add_dependency "rubyipmi"
+  s.add_dependency "ruby-ip"
   s.add_dependency "rubyzip"
   s.add_dependency "net-ssh", '2.9.2' # last ruby 1.9 version
   s.add_dependency 'net-scp'
