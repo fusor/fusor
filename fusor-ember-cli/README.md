@@ -10,6 +10,16 @@ The fuser-ember-cli/dist directory is the [.gitignore](https://github.com/fusor/
 
 The fuser-ember-cli/dist distory is generated automatically by [ember-cli](http://www.ember-cli.com/) when you run `ember server` or `ember build` locally inside the this directory.
 
+Purely static files (those that are not part of the build) should be checked
+in under `../ui/public/fusor_ui`. They will be served in both the dev and iso
+environments at:
+
+`${HOSTNAME}/fusor_ui/`
+
+i.e.
+
+`https://sat61fusor.example.com/fusor_ui/files/QCI_Requirements.txt`
+
 ## Development Workflow
 
 1. Ensure that your [Foreman settings.yaml](https://github.com/theforeman/foreman/) has `login: false` and `require_ssl: false`. Otherwise, API calls will not authenticate properly.
