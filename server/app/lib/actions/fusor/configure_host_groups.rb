@@ -259,7 +259,8 @@ module Actions
               [
                 { :name => "storage_type", :value => deployment.rhev_storage_type },
                 { :name => "admin_password", :value => deployment.rhev_engine_admin_password },
-                { :name => "db_password", :value => deployment.rhev_engine_admin_password }
+                { :name => "db_password", :value => deployment.rhev_engine_admin_password },
+                { :name => "engine_fqdn", :value => "#{deployment.rhev_engine_host_name}.#{hostgroup.domain.name}" }
               ]
             }
           ]
