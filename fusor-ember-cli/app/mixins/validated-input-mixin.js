@@ -50,12 +50,18 @@ export default Ember.Mixin.create({
       this.set("showValidationError", true);
     },
 
-    // this action is triggered on key-up. however, for password fields only, we don't want
-    // to show validation errors after every key stroke unless 8 characters have been entered
-    showValidationErrorsKeyUp() {
-      if (!(this.get('isPassword') && this.get('value.length') < 8)) {
-        this.set("showValidationError", true);
+    // this action is triggered on key-down. it cancels any existing time
+    // and sets new timer of 1 second until showing any validation errors
+    showValidationErrorsKeyDown() {
+      let showValidationTimer = this.get('showValidationTimer');
+
+      if (showValidationTimer) {
+        Ember.run.cancel(showValidationTimer);
       }
+
+      this.set("showValidationError", false);
+      showValidationTimer = Ember.run.later(() => this.set("showValidationError", true), 1000);
+      this.set('showValidationTimer', showValidationTimer);
     },
 
     resetValidationErrors() {
