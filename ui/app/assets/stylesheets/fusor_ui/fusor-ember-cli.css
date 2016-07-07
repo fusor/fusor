@@ -994,7 +994,8 @@ span.hanging-indent {
   padding: 20px 40px 20px 20px;
   text-align: right;
   background-color: #fafafa;
-  border-top: 1px solid #d0d0d0; }
+  border-top: 1px solid #d0d0d0;
+  z-index: 1000; }
 
 .rhci-steps-buttons .btn {
   margin-left: 5px; }
