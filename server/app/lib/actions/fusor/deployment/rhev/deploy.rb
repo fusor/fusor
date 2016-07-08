@@ -35,6 +35,7 @@ module Actions
                             deployment,
                             "RHEV-Self-hosted",
                             first_host)
+
                 plan_action(::Actions::Fusor::Host::WaitUntilProvisioned,
                             first_host.id, true)
 
@@ -74,7 +75,7 @@ module Actions
                 concurrence do
                   deployment.discovered_hosts.each do |host|
                     plan_action(::Actions::Fusor::Host::WaitUntilProvisioned,
-                                host.id)
+                                host.id, true)
                   end
                 end
                 plan_action(::Actions::Fusor::Host::TriggerProvisioning,
@@ -82,8 +83,9 @@ module Actions
                             "RHEV-Engine",
                             deployment.rhev_engine_host)
 
+
                 plan_action(::Actions::Fusor::Host::WaitUntilProvisioned,
-                            deployment.rhev_engine_host.id)
+                            deployment.rhev_engine_host.id, true)
 
               end
               plan_action(::Actions::Fusor::Deployment::Rhev::WaitForDataCenter,
