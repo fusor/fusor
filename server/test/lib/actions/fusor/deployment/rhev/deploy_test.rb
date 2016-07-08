@@ -28,7 +28,7 @@ module Actions::Fusor::Deployment::Rhev
                                 @deployment.rhev_engine_host)
       assert_action_planed_with(@deploy,
                                 WaitUntilProvisioned,
-                                @deployment.rhev_engine_host.id)
+                                @deployment.rhev_engine_host.id, true)
 
       for hypervisor in @deployment.rhev_hypervisor_hosts
         assert_action_planed_with(@deploy,
@@ -38,7 +38,7 @@ module Actions::Fusor::Deployment::Rhev
                                   hypervisor)
         assert_action_planed_with(@deploy,
                                   WaitUntilProvisioned,
-                                  hypervisor.id)
+                                  hypervisor.id, true)
       end
     end
     test "plan call should schedule provision and wait actions for each host for self-hosted" do
