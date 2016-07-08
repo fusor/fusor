@@ -38,9 +38,19 @@ module Fusor
         glance_rbd_pool_name: 'GlanceRbdPoolName'
     }
 
+    attr_accessor :warnings
+
+    after_initialize :setup_warnings
     validates_with Fusor::Validators::OpenstackDeploymentValidator, on: :update
 
     has_one :deployment, :class_name => "Fusor::Deployment"
 
+    def setup_warnings
+      self.warnings = []
+    end
+
+    def deploy_cfme?
+      deployment && deployment.deploy_cfme && deployment.cfme_install_loc == 'OpenStack'
+    end
   end
 end
