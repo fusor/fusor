@@ -79,6 +79,7 @@ Requires: %{?scl_prefix}rubygem-active_model_serializers
 Requires: %{?scl_prefix}rubygem-net-ssh => 2.9.2
 Requires: %{?scl_prefix}rubygem-sys-filesystem
 Requires: %{?scl_prefix}rubygem-rubyipmi
+Requires: %{?scl_prefix}rubygem-ruby-ip
 Requires: %{?scl_prefix}rubygem-rubyzip
 Requires: fusor_ovirt
 Requires: fusor-utils
