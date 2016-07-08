@@ -174,6 +174,54 @@
                           isPassword=true
                           isRequired=true
                           routeName='openstack.overcloud'}}
+            {{review-link label='Ceph Storage'
+                          value=model.openstack_deployment.cephStorageStatus
+                          routeName='openstack.overcloud'}}
+
+
+        {{#if model.openstack_deployment.external_ceph_storage}}
+          {{review-link label="Ceph External Mon Host"
+                        value=model.openstack_deployment.ceph_ext_mon_host
+                        isRequired=true
+                        routeName='openstack.overcloud'}}
+
+
+          {{review-link label="Ceph Cluster FSID"
+                        value=model.openstack_deployment.ceph_cluster_fsid
+                        isRequired=true
+                        routeName='openstack.overcloud'}}
+
+
+          {{review-link label="Ceph Client Username"
+                        value=model.openstack_deployment.ceph_client_username
+                        isRequired=true
+                        routeName='openstack.overcloud'}}
+
+
+          {{review-link label="Ceph Client Key"
+                        value=model.openstack_deployment.ceph_client_key
+                        isRequired=true
+                        routeName='openstack.overcloud'}}
+
+
+          {{review-link label="Nova Rbd Pool Name"
+                        value=model.openstack_deployment.nova_rbd_pool_name
+                        isRequired=true
+                        routeName='openstack.overcloud'}}
+
+
+          {{review-link label="Cinder Rbd Pool Name"
+                        value=model.openstack_deployment.cinder_rbd_pool_name
+                        isRequired=true
+                        routeName='openstack.overcloud'}}
+
+
+          {{review-link label="Glance Rbd Pool Name"
+                        value=model.openstack_deployment.glance_rbd_pool_name
+                        isRequired=true
+                        routeName='openstack.overcloud'}}
+
+        {{/if}}
       {{/accordion-item}}
     {{/if}}
 

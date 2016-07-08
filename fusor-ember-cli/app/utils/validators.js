@@ -280,11 +280,11 @@ const IpSubnetValidator = Validator.extend({
     }
 
     if (!this.isValidSubnet()) {
-      return ['This is an invalid subnet.'];
+      return ['The associated subnet is invalid.'];
     }
 
     if (!this.isValid(value)) {
-      return [`must belong to subnet ${subnet}`];
+      return [`This must belong to subnet ${subnet}.`];
     }
 
     return [];

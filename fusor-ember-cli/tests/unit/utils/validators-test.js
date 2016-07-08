@@ -429,7 +429,7 @@ test('IpSubnetValidator rejects invalid values', function (assert) {
     assert.ok(ipSubnetValidator.isInvalid(value), `"${value}" was not rejected as invalid`);
     assert.notOk(ipSubnetValidator.isValid(value), `"${value}" was accepted as valid`);
     assert.equal(ipSubnetValidator.getMessages(value).length, 1);
-    assert.equal(ipSubnetValidator.getMessages(value)[0], 'must belong to subnet 8.8.8.0/23');
+    assert.equal(ipSubnetValidator.getMessages(value)[0], 'This must belong to subnet 8.8.8.0/23.');
   });
 });
 

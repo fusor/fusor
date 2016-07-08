@@ -33,6 +33,15 @@ module Fusor
                :overcloud_hostname,
                :undercloud_hostname,
 
+               :external_ceph_storage,
+               :ceph_ext_mon_host,
+               :ceph_cluster_fsid,
+               :ceph_client_username,
+               :ceph_client_key,
+               :nova_rbd_pool_name,
+               :cinder_rbd_pool_name,
+               :glance_rbd_pool_name,
+
                :created_at,
                :updated_at
 

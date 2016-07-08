@@ -8,12 +8,11 @@
       </p>
 
       {{text-f label="External Network Interface"
-               value=externalNetworkInterface
+               value=openstackDeployment.overcloud_ext_net_interface
                cssId="external-osp-interface"
                isRequired=true
                disabled=isStarted
-               placeholder="Enter External Network Interface"
-               }}
+               placeholder="Enter External Network Interface"}}
 
       <br />
       <p>
@@ -22,49 +21,103 @@
 
 
       {{text-f label="Private Network"
-               value=overcloudPrivateNet
+               value=openstackDeployment.overcloud_private_net
                cssId="osp-private-network"
                isRequired=true
                disabled=isStarted
                placeholder="192.168.254.0/24"
                help-inline="CIDR notation, 192.168.254.0/24"
-               validator=overcloudPrivateNetValidator
-               }}
+               validator=openstackDeployment.validations.overcloud_private_net}}
 
       {{text-f label="Floating IP Network"
-               value=overcloudFloatNet
+               value=openstackDeployment.overcloud_float_net
                cssId="osp-floating-network"
                isRequired=true
                disabled=isStarted
                placeholder="192.168.253.0/24"
                help-inline="CIDR notation, 192.168.253.0/24"
-               validator=overcloudFloatNetValidator
-               }}
+               validator=openstackDeployment.validations.overcloud_float_net}}
 
       {{text-f label="Floating IP Network Gateway"
-               value=overcloudFloatGateway
+               value=openstackDeployment.overcloud_float_gateway
                cssId="osp-float-gatewway"
                isRequired=true
                disabled=isStarted
-               validator=overcloudFloatGatewayValidator
-               }}
+               validator=openstackDeployment.validations.overcloud_float_gateway}}
 
       <br />
       <p>
       Create an administrative password for the overcloud.
       </p>
 
-      {{text-f label="Admin Password" type="password" value=overcloudPassword
-               cssId="osp_overcloud_password"
-               isRequired=true
-               disabled=isStarted}}
+      {{text-f  label="Admin Password" type="password"
+                value=openstackDeployment.overcloud_password
+                cssId="osp_overcloud_password"
+                isRequired=true
+                disabled=isStarted}}
 
-      {{text-f label="Confirm Password" type="password" value=confirmOvercloudPassword
-               cssId="confirm_osp_overcloud_password"
-               isRequired=true
-               validator=confirmOvercloudPasswordValidator
-               disabled=isStarted
-               placeholder="Must match admin password"}}
+      {{text-f  label="Confirm Password" type="password"
+                value=confirmOvercloudPassword
+                cssId="confirm_osp_overcloud_password"
+                isRequired=true
+                validator=confirmOvercloudPasswordValidator
+                disabled=isStarted
+                placeholder="Must match admin password"}}
+
+      <br />
+      <p>
+        Assign an existing Ceph Storage cluster to the overcloud.
+      </p>
+
+      {{check-f cssId="ospCephStorageCheckbox"
+                label='External Ceph Storage'
+                checked=openstackDeployment.external_ceph_storage
+                isRequired=false
+                disabled=isStarted}}
+
+      {{#if openstackDeployment.external_ceph_storage}}
+        {{text-f  label="Ceph External Mon Host"
+                  value=openstackDeployment.ceph_ext_mon_host
+                  cssId="cephExternalMonHostInput"
+                  validator=openstackDeployment.validations.ceph_ext_mon_host
+                  disabled=isStarted}}
+
+        {{text-f  label="Ceph Cluster FSID"
+                  value=openstackDeployment.ceph_cluster_fsid
+                  cssId="cephClusterFSIDInput"
+                  validator=openstackDeployment.validations.ceph_cluster_fsid
+                  disabled=isStarted}}
+
+        {{text-f  label="Ceph Client Username"
+                  value=openstackDeployment.ceph_client_username
+                  cssId="cephClientUsernameInput"
+                  validator=openstackDeployment.validations.ceph_client_username
+                  disabled=isStarted}}
+
+        {{text-f  label="Ceph Client Key"
+                  value=openstackDeployment.ceph_client_key
+                  cssId="cephClientKeyInput"
+                  validator=openstackDeployment.validations.ceph_client_key
+                  disabled=isStarted}}
+
+        {{text-f  label="Nova RBD Pool Name"
+                  value=openstackDeployment.nova_rbd_pool_name
+                  cssId="novarRbdPoolNameInput"
+                  validator=openstackDeployment.validations.nova_rbd_pool_name
+                  disabled=isStarted}}
+
+        {{text-f  label="Cinder RBD Pool Name"
+                  value=openstackDeployment.cinder_rbd_pool_name
+                  cssId="cinderRbdPoolNameInput"
+                  validator=openstackDeployment.validations.cinder_rbd_pool_name
+                  disabled=isStarted}}
+
+        {{text-f  label="Glance RBD Pool Name"
+                  value=openstackDeployment.glance_rbd_pool_name
+                  cssId="glanceRbdPoolNameInput"
+                  validator=openstackDeployment.validations.glance_rbd_pool_name
+                  disabled=isStarted}}
+      {{/if}}
     </form>
   </div>
 </div>

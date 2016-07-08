@@ -5,9 +5,13 @@ export default Ember.Component.extend({
   classNames: ['rhci-start-block'],
 
   setIsDisabledCfmeAndOpenshift: Ember.observer('isRhev', 'isOpenStack', function() {
-    if (this.get('isRhev') || this.get('isOpenStack')) {
+    if (this.get('isRhev')) {
       this.set('isDisabledOpenShift', false);
       this.set('isDisabledCfme', false);
+    } else if (this.get('isOpenStack')) {
+      this.set('isDisabledOpenShift', true);
+      this.set('isDisabledCfme', false);
+      this.set('isOpenShift', false);
     } else {
       this.set('isOpenShift', false);
       this.set('isCloudForms', false);

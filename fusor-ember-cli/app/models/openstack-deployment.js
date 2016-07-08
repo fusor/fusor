@@ -33,7 +33,7 @@ const PresentIpValidator = AllValidator.extend({
   ]
 });
 
-const PresentCidrValidator= AllValidator.extend({
+const PresentCidrValidator = AllValidator.extend({
   validators: [
     PresenceValidator.create({}),
     CidrValidator.create({})
@@ -72,6 +72,15 @@ export default DS.Model.extend(ValidatedModel, {
   overcloud_hostname: DS.attr('string'),
   undercloud_hostname: DS.attr('string'),
 
+  external_ceph_storage: DS.attr('boolean'),
+  ceph_ext_mon_host: DS.attr('string'),
+  ceph_cluster_fsid: DS.attr('string'),
+  ceph_client_username: DS.attr('string'),
+  ceph_client_key: DS.attr('string'),
+  nova_rbd_pool_name: DS.attr('string'),
+  cinder_rbd_pool_name: DS.attr('string'),
+  glance_rbd_pool_name: DS.attr('string'),
+
   validations: Ember.Object.create({
     undercloud_admin_password: PresenceValidator.create({}),
     undercloud_ip_address: PresentHostAddressValidator.create({}),
@@ -87,11 +96,39 @@ export default DS.Model.extend(ValidatedModel, {
     overcloud_private_net: PresentCidrValidator.create({}),
     overcloud_float_net: PresentCidrValidator.create({}),
     overcloud_float_gateway: PresentIpValidator.create({}),
-    overcloud_password: PresenceValidator.create({})
+    overcloud_password: PresenceValidator.create({}),
+    external_ceph_storage: null,
+    ceph_ext_mon_host: null,
+    ceph_cluster_fsid: null,
+    ceph_client_username: null,
+    ceph_client_key: null,
+    nova_rbd_pool_name: null,
+    cinder_rbd_pool_name: null,
+    glance_rbd_pool_name: null
   }),
 
-  onOvercloudFloatNetChanged: Ember.on('init', Ember.observer('overcloud_float_net', function() {
+  onOvercloudFloatNetChanged: Ember.on('init', Ember.observer('overcloud_float_net', function () {
     this.set('validations.overcloud_float_gateway', IpSubnetValidator.create({subnet: this.get('overcloud_float_net')}));
+  })),
+
+  onExternalCephStorageChanged: Ember.on('init', Ember.observer('external_ceph_storage', function () {
+    if (this.get('external_ceph_storage')) {
+      this.set('validations.ceph_ext_mon_host', PresentIpValidator.create({}));
+      this.set('validations.ceph_cluster_fsid', PresenceValidator.create({}));
+      this.set('validations.ceph_client_username', PresenceValidator.create({}));
+      this.set('validations.ceph_client_key', PresenceValidator.create({}));
+      this.set('validations.nova_rbd_pool_name', PresenceValidator.create({}));
+      this.set('validations.cinder_rbd_pool_name', PresenceValidator.create({}));
+      this.set('validations.glance_rbd_pool_name', PresenceValidator.create({}));
+    } else {
+      this.set('validations.ceph_ext_mon_host', null);
+      this.set('validations.ceph_cluster_fsid', null);
+      this.set('validations.ceph_client_username', null);
+      this.set('validations.ceph_client_key', null);
+      this.set('validations.nova_rbd_pool_name', null);
+      this.set('validations.cinder_rbd_pool_name', null);
+      this.set('validations.glance_rbd_pool_name', null);
+    }
   })),
 
   isUndercloudConnected: Ember.computed(
@@ -137,14 +174,37 @@ export default DS.Model.extend(ValidatedModel, {
     'overcloud_private_net',
     'overcloud_float_net',
     'overcloud_float_gateway',
+    'validations.overcloud_float_gateway',
     'overcloud_password',
+    'ceph_ext_mon_host',
+    'validations.ceph_ext_mon_host',
+    'ceph_cluster_fsid',
+    'validations.ceph_cluster_fsid',
+    'ceph_client_username',
+    'validations.ceph_client_username',
+    'ceph_client_key',
+    'validations.ceph_client_key',
+    'nova_rbd_pool_name',
+    'validations.nova_rbd_pool_name',
+    'cinder_rbd_pool_name',
+    'validations.cinder_rbd_pool_name',
+    'glance_rbd_pool_name',
+    'validations.glance_rbd_pool_name',
     function () {
       return this.validate(
         'overcloud_ext_net_interface',
         'overcloud_private_net',
         'overcloud_float_net',
         'overcloud_float_gateway',
-        'overcloud_password');
+        'overcloud_password',
+        'ceph_ext_mon_host',
+        'ceph_cluster_fsid',
+        'ceph_client_username',
+        'ceph_client_key',
+        'nova_rbd_pool_name',
+        'cinder_rbd_pool_name',
+        'glance_rbd_pool_name'
+      );
     }),
 
   //TODO investigate a cleaner way to watch all fields for changes
@@ -162,9 +222,31 @@ export default DS.Model.extend(ValidatedModel, {
     'overcloud_private_net',
     'overcloud_float_net',
     'overcloud_float_gateway',
+    'validations.overcloud_float_gateway',
     'overcloud_password',
-    function() {
+    'ceph_ext_mon_host',
+    'validations.ceph_ext_mon_host',
+    'ceph_cluster_fsid',
+    'validations.ceph_cluster_fsid',
+    'ceph_client_username',
+    'validations.ceph_client_username',
+    'ceph_client_key',
+    'validations.ceph_client_key',
+    'nova_rbd_pool_name',
+    'validations.nova_rbd_pool_name',
+    'cinder_rbd_pool_name',
+    'validations.cinder_rbd_pool_name',
+    'glance_rbd_pool_name',
+    'validations.glance_rbd_pool_name',
+    function () {
       return this.validateAll();
+    }),
+
+  cephStorageStatus: Ember.computed('external_ceph_storage', function() {
+    if (this.get('external_ceph_storage')) {
+      return 'External';
+    } else {
+      return 'None';
     }
-  )
+  })
 });

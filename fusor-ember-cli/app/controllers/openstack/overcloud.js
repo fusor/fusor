@@ -6,23 +6,13 @@ import { EqualityValidator} from '../../utils/validators';
 const OvercloudController = Ember.Controller.extend(DeploymentControllerMixin, NeedsDeploymentMixin, {
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
   isOpenShift: Ember.computed.alias("deploymentController.isOpenShift"),
+  openstackDeployment: Ember.computed.alias('model'),
 
   //TODO move password confirmations to transient data on the model
   confirmOvercloudPassword: Ember.computed.alias("deploymentController.confirmOvercloudPassword"),
 
-  openstackDeployment: Ember.computed.alias('model'),
-  externalNetworkInterface: Ember.computed.alias('openstackDeployment.overcloud_ext_net_interface'),
-  overcloudPrivateNet: Ember.computed.alias('openstackDeployment.overcloud_private_net'),
-  overcloudFloatNet: Ember.computed.alias('openstackDeployment.overcloud_float_net'),
-  overcloudFloatGateway: Ember.computed.alias('openstackDeployment.overcloud_float_gateway'),
-  overcloudPassword: Ember.computed.alias("openstackDeployment.overcloud_password"),
-  overcloudLibvirtType: Ember.computed.alias("openstackDeployment.overcloud_libvirt_type"),
-  overcloudPrivateNetValidator: Ember.computed.alias('openstackDeployment.validations.overcloud_private_net'),
-  overcloudFloatNetValidator: Ember.computed.alias('openstackDeployment.validations.overcloud_float_net'),
-  overcloudFloatGatewayValidator: Ember.computed.alias('openstackDeployment.validations.overcloud_float_gateway'),
-
-  confirmOvercloudPasswordValidator: Ember.computed('overcloudPassword', function() {
-    return EqualityValidator.create({equals: this.get('overcloudPassword')});
+  confirmOvercloudPasswordValidator: Ember.computed('openstackDeployment.overcloud_password', function() {
+    return EqualityValidator.create({equals: this.get('openstackDeployment.overcloud_password')});
   }),
 
   nextStepRouteNameOvercloud: Ember.computed('isCloudForms', function() {
@@ -35,14 +25,14 @@ const OvercloudController = Ember.Controller.extend(DeploymentControllerMixin, N
     }
   }),
 
-  isValidOvercloudPassword: Ember.computed('overcloudPassword', 'confirmOvercloudPassword', function () {
-    return Ember.isPresent(this.get('overcloudPassword')) &&
-      this.get('overcloudPassword') === this.get('confirmOvercloudPassword');
-  }),
-
-  validOvercloudNetworks: Ember.computed('openstackDeployment.isValidOvercloud', 'isValidOvercloudPassword', function () {
-    return this.get('openstackDeployment.isValidOvercloud') && this.get('isValidOvercloudPassword');
-  }),
+  validOvercloudNetworks: Ember.computed(
+    'openstackDeployment.isValidOvercloud',
+    'confirmOvercloudPassword',
+    'confirmOvercloudPasswordValidator',
+    function () {
+      return this.get('openstackDeployment.isValidOvercloud') &&
+        this.get('confirmOvercloudPasswordValidator').isValid(this.get('confirmOvercloudPassword'));
+    }),
 
   disableNextOvercloud: Ember.computed.not('validOvercloudNetworks')
 });
