@@ -43,7 +43,7 @@ module Actions
             }
 
             ::Fusor.log.info "Adding Director #{undercloud[:name]} to CFME."
-            Utils::CloudForms::AddProvider.add(cfme_address, undercloud, deployment)
+            uc = Utils::CloudForms::AddProvider.add(cfme_address, undercloud, deployment)
 
             overcloud = {
               :name => "#{deployment.label}-RHOS",
@@ -57,6 +57,9 @@ module Actions
                 :password => deployment.openstack_deployment.overcloud_password
               }
             }
+
+            #Prevent failed deployment if undercloud isn't created due to BZ#1351253
+            overcloud[:provider_id] = JSON.parse(uc.to_s)["results"].first["provider_id"] if uc
 
             ::Fusor.log.info "Adding OSP provider #{overcloud[:name]} to CFME."
             Utils::CloudForms::AddProvider.add(cfme_address, overcloud, deployment)
