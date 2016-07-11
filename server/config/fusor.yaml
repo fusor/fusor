@@ -6,7 +6,7 @@
       :puppet_component_view_name: "Fusor Puppet Content"
 
     # NOTE: product_name and repository_set_name are provided only for
-    # convencience / display purposes. All repository finding should be
+    # convenience / display purposes. All repository finding should be
     # driven off of product_id / repository_set_id, as those are the only
     # things guaranteed not to change.
     :rhevm:
@@ -125,7 +125,7 @@
         :repository_set_name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
         :basearch: "x86_64"
         :releasever: "7.2"
-        # Need Red Hat 7.2 Operating Sysetem setup including Media,
+        # Need Red Hat 7.2 Operating System setup including Media,
         # architecture, and other associations.
 
     :openshift:
