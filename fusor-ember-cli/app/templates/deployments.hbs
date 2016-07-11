@@ -1,4 +1,11 @@
-<h1>Deployments</h1>
+<h1 class='rhci-title'>Deployments</h1>
+
+{{#if isLoading}}
+  <div class="spinner spinner-md spinner-inline"></div>
+  <span class='spinner-text'>
+    Loading ....
+  </span>
+{{/if}}
 
 <div class='new-deployment-button'>
   {{#link-to 'deployment-new.start' class='btn btn-success'}}
@@ -13,21 +20,43 @@
      <div class='col-md-5'>
        {{input type='text' class='form-control filter-input'
                            placeholder='Filter ...'
-                           value=searchDeploymentString}}
+                           value=search}}
      </div>
      <button class='btn btn-default' style='margin-left:-20px'><i class="fa fa-search"></i> Search</button>
    </div>
 </div>
 </form>
-<br />
+
+<div class='table-responsive'>
 <table class="table table-bordered table-striped small deployments-table">
   <thead>
     <tr>
-      <th> Name </th>
-      <th> Environment </th>
-      <th> Organization </th>
-      <th> Status </th>
-      <th> </th>
+      <th>
+        {{#link-to 'deployments' (query-params sort_by="name" dir=sortByDirection)}}
+          {{column-name name='Name' col_name="name" sort_by=sort_by dir=dir}}
+        {{/link-to}}
+      </th>
+      <th>
+        {{#link-to 'deployments' (query-params sort_by="lifecycle_environment" dir=sortByDirection)}}
+          {{column-name name='Environment' col_name="lifecycle_environment" sort_by=sort_by dir=dir}}
+        {{/link-to}}
+      </th>
+      <th>
+        {{#link-to 'deployments' (query-params sort_by="organization" dir=sortByDirection)}}
+          {{column-name name='Organization' col_name="organization" sort_by=sort_by dir=dir}}
+        {{/link-to}}
+      </th>
+      <th>
+        {{#link-to 'deployments' (query-params sort_by="status" dir=sortByDirection)}}
+          {{column-name name='Status' col_name="status" sort_by=sort_by dir=dir}}
+        {{/link-to}}
+      </th>
+      <th>
+        {{#link-to 'deployments' (query-params sort_by="updated_at" dir=sortByDirection)}}
+          {{column-name name='Last Updated' col_name="updated_at" sort_by=sort_by dir=dir}}
+        {{/link-to}}
+      </th>
+      <th></th>
     </tr>
   </thead>
 
@@ -37,12 +66,13 @@
   {{/each}}
   </tbody>
 </table>
+</div>
 
-<p class='displaying-entries'>
-  Displaying <strong>{{filteredDeployments.length}} of {{model.length}}</strong> entries
-</p>
-
-{{outlet}}
+{{pagination-footer routeName='deployments'
+                    totalCnt=totalCnt
+                    pageNumber=pageNumber
+                    totalPages=totalPages
+                    pageRange=pageRange}}
 
 {{delete-deployment-modal openModal=openModal
                           deployment=deploymentInModal

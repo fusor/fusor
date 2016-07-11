@@ -47,7 +47,7 @@ test('user should see all elements on deployments page', function(assert) {
         assert.equal($.trim(find('table.deployments-table > thead > tr > th:nth-child(4)').text()),
                      'Status');
         assert.equal(find('tr.deployment-row').length, 10);
-        assert.equal($.trim(find('.displaying-entries').text()), 'Displaying 10 of 10 entries');
+        assert.equal($.trim(find('.displaying-entries').text()), 'Displaying entries 1 - 20 of 107 in total');
     });
 });
 

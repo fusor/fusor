@@ -2,6 +2,7 @@
 <td> {{deployment.lifecycle_environment.name}} </td>
 <td> {{deployment.organization.name}} </td>
 <td> {{foremanTask.state}} {{!deployment.progressPercent}}  </td>
+<td> {{moment deployment.created_at 'lll'}} </td>
 <td>
     {{#link-to 'deployment' deployment class='btn btn-sm btn-default'}} Edit {{/link-to}}
     {{#if canDelete}}

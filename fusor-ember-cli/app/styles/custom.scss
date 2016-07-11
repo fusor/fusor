@@ -594,7 +594,7 @@ table.fusor-table {
 
 .new-deployment-button {
   float: right;
-  margin-top: -33px;
+  margin-top: 24px;
 }
 
 .filter-deployments {
@@ -939,4 +939,35 @@ span.hanging-indent{
   display: inline-block;
   vertical-align: top;
   margin-bottom: 0px !important; /* overides form-group default */
+}
+
+.deployments-table {
+  table-layout:fixed;
+  width: 100%;
+}
+.deployments-table>thead:first-child>tr:first-child>th:first-child
+{
+    width: 40%;
+}
+.deployments-table> tbody > tr > td:first-child {
+    width: 40%;
+}
+
+.pagination {
+  display: table-cell;
+  vertical-align: bottom;
+  float: none;
+}
+
+.darkgrey, .darkgray {
+  color: #606060 !important;
+}
+
+.displaying-entries {
+  margin-left: -20px;
+}
+
+.rhci-title {
+  display: inline-block;
+  padding: 0px 8px 8px 0px;
 }
