@@ -1,5 +1,5 @@
 #
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 #
 # This software is licensed to you under the GNU General Public
 # License as published by the Free Software Foundation; either version
@@ -10,29 +10,19 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+require 'openssl'
 require 'json'
 require 'rest_client'
 
 module Utils
   module CloudForms
-    class ContainerProvider
+    class AddProvider
       def self.add(cfme_ip, provider_params, deployment)
-        Rails.logger.info "Adding the RH-OSE provider at #{provider_params[:ip]} to the CloudForms VM at #{cfme_ip}"
+        Rails.logger.debug "Adding the provider at #{provider_params[:ip]} to the CloudForms VM at #{cfme_ip}"
 
         data = {
           :action => "create",
-          :resources => [
-            {
-              :name => provider_params[:name],
-              :type => "ManageIQ::Providers::Openshift::ContainerManager",
-              :hostname => provider_params[:ip],
-              :port => "8443",
-              :credentials => {
-                :auth_type => "bearer",
-                :auth_key => provider_params[:auth_key]
-              }
-            }
-          ]
+          :resources => [provider_params]
         }
 
         request_url = "https://admin:#{deployment.cfme_admin_password}@#{cfme_ip}/api/providers"

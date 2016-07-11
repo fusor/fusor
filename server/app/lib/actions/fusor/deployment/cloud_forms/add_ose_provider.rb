@@ -31,14 +31,20 @@ module Actions
             cfme_address = deployment.cfme_address
             deployment.ose_master_hosts.each_with_index do |master, index|
               token = File.read("#{Rails.root}/tmp/#{deployment.label}/#{master}.token")
-              provider = { :name => "#{deployment.label}-OSE-#{index}",
-                           :ip => master.ip,
-                           :auth_key => token
+              provider = {
+                :name => "#{deployment.label}-OSE-#{index}",
+                :type => "ManageIQ::Providers::Openshift::ContainerManager",
+                :hostname => master.ip,
+                :port => "8443",
+                :credentials => {
+                  :auth_type => "bearer",
+                  :auth_key => token
+                }
               }
 
               ::Fusor.log.info "Adding OSE provider #{provider[:name]} to CFME."
 
-              Utils::CloudForms::ContainerProvider.add(cfme_address, provider, deployment)
+              Utils::CloudForms::AddProvider.add(cfme_address, provider, deployment)
             end
 
             Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)

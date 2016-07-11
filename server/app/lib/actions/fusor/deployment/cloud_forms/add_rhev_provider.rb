@@ -29,18 +29,26 @@ module Actions
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             cfme_address = deployment.cfme_address
-            provider = { :name => "#{deployment.label}-RHEV",
-                         :type => "rhevm",
-                         :hostname => deployment.rhev_engine_host.name,
-                         :ip => deployment.rhev_engine_host.ip,
-                         :username => "admin@internal", # TODO: perhaps make configurable, in future
-                         :password => deployment.rhev_engine_admin_password,
-                         :hypervisors => deployment.discovered_hosts
+
+            provider = {
+              :name => "#{deployment.label}-RHEV",
+              :type => "ManageIQ::Providers::Redhat::InfraManager",
+              :hostname => deployment.rhev_engine_host.name,
+              :port => "443",
+              :zone_id => "1000000000001",
+              :credentials => [{
+                :userid => "admin@internal",
+                :password => deployment.rhev_engine_admin_password
+              }, {
+                :userid => "ovirt_engine_history",
+                :password => deployment.rhev_engine_admin_password,
+                :auth_type => 'metrics'
+              }]
             }
 
             ::Fusor.log.info "Adding RHEV provider #{provider[:name]} to CFME."
 
-            Utils::CloudForms::InfraProvider.add(cfme_address, provider, deployment)
+            Utils::CloudForms::AddProvider.add(cfme_address, provider, deployment)
             Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)
 
             ::Fusor.log.debug "================ Leaving AddRhevProvider run method ===================="

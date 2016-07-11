@@ -26,18 +26,40 @@ module Actions
 
           def run
             ::Fusor.log.debug "================ AddOspProvider run method ===================="
-
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             cfme_address = deployment.cfme_address
-            provider = { :name => "#{deployment.label}-RHOS",
-                         :ip => deployment.openstack_deployment.overcloud_address,
-                         :username => "admin",
-                         :password => deployment.openstack_deployment.overcloud_password
+
+            undercloud = {
+              :name => "#{deployment.label}-RHOS-Director",
+              :type => "ManageIQ::Providers::Openstack::InfraManager",
+              :security_protocol => 'non-ssl',
+              :hostname => deployment.openstack_deployment.undercloud_ip_address,
+              :port => "5000",
+              :zone_id => "1000000000001",
+              :credentials => {
+                :userid => 'admin',
+                :password => deployment.openstack_deployment.undercloud_admin_password
+              }
             }
 
-            ::Fusor.log.info "Adding OSP provider #{provider[:name]} to CFME."
+            ::Fusor.log.info "Adding Director #{undercloud[:name]} to CFME."
+            Utils::CloudForms::AddProvider.add(cfme_address, undercloud, deployment)
 
-            Utils::CloudForms::CloudProvider.add(cfme_address, provider, deployment)
+            overcloud = {
+              :name => "#{deployment.label}-RHOS",
+              :type => "ManageIQ::Providers::Openstack::CloudManager",
+              :security_protocol => 'non-ssl',
+              :hostname => deployment.openstack_deployment.overcloud_address,
+              :port => "5000",
+              :zone_id => "1000000000001",
+              :credentials => {
+                :userid => 'admin',
+                :password => deployment.openstack_deployment.overcloud_password
+              }
+            }
+
+            ::Fusor.log.info "Adding OSP provider #{overcloud[:name]} to CFME."
+            Utils::CloudForms::AddProvider.add(cfme_address, overcloud, deployment)
             ::Fusor.log.debug "================ Leaving AddOspProvider run method ===================="
           end
         end
