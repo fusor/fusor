@@ -89,7 +89,6 @@ gem install --local --install-dir .%{gem_dir} --force %{SOURCE0}
 %build
 
 %install
-
 mkdir -p %{buildroot}%{gem_dir}
 cp -a .%{gem_dir}/* \
         %{buildroot}%{gem_dir}/
@@ -98,8 +97,7 @@ cp -a .%{gem_dir}/* \
 %foreman_precompile_plugin -s
 
 mkdir -p %{buildroot}%{foreman_dir}/public/assets
-ln -s %{foreman_assets_plugin} %{buildroot}%{foreman_dir}/public/assets/fusor_ui
-ln -s %{gem_instdir}/app/assets/images/r %{buildroot}%{foreman_dir}/public/assets/r
+
 %clean
 %{__rm} -rf %{buildroot}
 
@@ -109,8 +107,6 @@ ln -s %{gem_instdir}/app/assets/images/r %{buildroot}%{foreman_dir}/public/asset
 %exclude %{gem_cache}
 %{gem_spec}
 %{foreman_bundlerd_dir}/%{gem_name}.rb
-%{foreman_dir}/public/assets/fusor_ui
-%{foreman_dir}/public/assets/r
 %{foreman_assets_plugin}
 
 %files doc
