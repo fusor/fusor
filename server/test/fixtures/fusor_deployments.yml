@@ -81,6 +81,8 @@ osp:
   upstream_consumer_uuid: 1
   organization_id: 1
   deploy_openstack: true
-  deploy_cfme: false
+  deploy_cfme: true
   deploy_rhev: false
+  cfme_root_password: redhat1234
+  cfme_install_loc: OpenStack
   openstack_deployment: osp
