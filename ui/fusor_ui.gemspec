@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.summary     = "Plugin engine to enable the User Interface (UI) for RHCI"
   s.description = "Plugin engine to enable the User Interface (UI) for RHCI"
 
-  s.files = Dir["{app,config,db,lib}/**/*"] + ["LICENSE", "Rakefile", "README.md"]
+  s.files = Dir["{app,config,db,lib,public}/**/*"] + ["LICENSE", "Rakefile", "README.md"]
   s.test_files = Dir["test/**/*"]
 
 end
