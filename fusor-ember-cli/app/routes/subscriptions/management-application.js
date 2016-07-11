@@ -46,6 +46,10 @@ export default Ember.Route.extend({
     controller.set('model', model);
     controller.set('showManagementApplications', true);
     controller.set('newSatelliteName', null);
+    controller.set('showAlertMessage', false);
+    controller.set('showWaitingMessage', false);
+    controller.set('showErrorMessage', false);
+    controller.set('errorMsg', null);
 
     var sessionPortal = this.modelFor('subscriptions').sessionPortal;
     var deployment = this.modelFor('deployment');
