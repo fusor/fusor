@@ -8,10 +8,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   showManagementApplications: true,
   sessionPortal: Ember.computed.alias('subscriptionsController.model'),
-  showAlertMessage: false,
-  showWaitingMessage: false,
-  showErrorMessage: false,
-  errorMsg: null,
 
   msgWaiting: Ember.computed('newSatelliteName', function() {
     return ('Adding ' + this.get('newSatelliteName') + ' ....');
@@ -45,6 +41,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     },
 
     createSatellite(newSatelliteName) {
+      this.set('showAlertMessage', false);
       this.set('showErrorMessage', false);
       this.set('showWaitingMessage', true);
       this.set('newSatelliteName', newSatelliteName);
@@ -52,60 +49,60 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
       var errorMsg = this.get('errorMsg');
       var ownerKey = this.get('sessionPortal').get('ownerKey');
-      var self = this;
-
 
       //POST /customer_portal/consumers?owner=#{OWNER['key']}, {"name":"#{RHCI_DISTRIBUTOR_NAME}","type":"satellite","facts":{"distributor_version":"sat-6.0","system.certificate_version":"3.2"}}
       var url = ('/customer_portal/consumers?=' + ownerKey);
 
-      return new Ember.RSVP.Promise(function (resolve, reject) {
-        if (self.get('isInvalidMgmtAppName')) {
-          self.set('showWaitingMessage', false);
-          self.set('showErrorMessage', true);
-          self.set('errorMsg', newSatelliteName + ' failed to be added. Invalid application name.');
-          reject();
-        } else {
-          request({
-            url: url,
-            type: "POST",
-            data: JSON.stringify({
-              name: newSatelliteName,
-              type: "satellite",
-              facts: {
-                "distributor_version": "sat-6.2",
-                "system.certificate_version": "3.2"
-              }
-            }),
-            headers: {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-              "X-CSRF-Token": token
+      if (this.get('isInvalidMgmtAppName')) {
+        this.set('showWaitingMessage', false);
+        this.set('showErrorMessage', true);
+        this.set('errorMsg', newSatelliteName + ' failed to be added. Invalid application name.');
+      } else {
+        request({
+          url: url,
+          type: "POST",
+          data: JSON.stringify({
+            name: newSatelliteName,
+            type: "satellite",
+            facts: {
+              "distributor_version": "sat-6.2",
+              "system.certificate_version": "3.2"
             }
-          }).then(function(response) {
-            var newMgmtApp = self.store.createRecord(
-              'management-application',
-              {
-                name: response.name,
-                entitlementCount: 0,
-                id: response.uuid
-              }
-            );
+          }),
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "X-CSRF-Token": token
+          }
+        }).then(response => {
+          var newMgmtApp = this.store.createRecord(
+            'management-application',
+            {
+              name: response.name,
+              entitlementCount: 0,
+              id: response.uuid
+            }
+          );
 
-            self.get('model').addObject(newMgmtApp._internalModel);
-            self.get('sessionPortal').set('consumerUUID', response.uuid);
-            self.get('sessionPortal').save();
-            self.set('upstreamConsumerUuid', response.uuid);
-            self.set('upstreamConsumerName', response.name);
-            self.set('showAlertMessage', true);
-            self.set('showWaitingMessage', false);
-            resolve(response);
-          }, function(error) {
-            self.set('showErrorMessage', true);
-            self.set('errorMsg', newSatelliteName + ' failed to be added.');
-            return self.send('error');
-          });
-        }
-      });
+          this.get('model').addObject(newMgmtApp._internalModel);
+          this.get('sessionPortal').set('consumerUUID', response.uuid);
+          this.get('sessionPortal').save();
+          this.set('upstreamConsumerUuid', response.uuid);
+          this.set('upstreamConsumerName', response.name);
+          this.set('showAlertMessage', true);
+          this.set('showWaitingMessage', false);
+        }).catch(error => {
+          let errorMsg = newSatelliteName + ' failed to be added. ';
+          if (error && error.jqXHR && error.jqXHR.responseJSON && error.jqXHR.responseJSON.displayMessage) {
+            errorMsg += error.jqXHR.responseJSON.displayMessage;
+          }
+
+          this.set('showErrorMessage', true);
+          this.set('showWaitingMessage', false);
+          this.set('errorMsg', errorMsg);
+          this.send('error');
+        });
+      }
     }
   }
 });

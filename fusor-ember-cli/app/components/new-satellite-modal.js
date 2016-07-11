@@ -2,9 +2,11 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
-  didInsertElement() {
-    this.set('newSatelliteName', null);
-  },
+  onOpenModal: Ember.observer('openModal', function() {
+    if (this.get('openModal')) {
+      this.set('newSatelliteName', null);
+    }
+  }),
 
   actions: {
     createSatellite() {
