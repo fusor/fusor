@@ -571,6 +571,11 @@
   color: darkgreen;
 }
 
+.csv-mac-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
 .new-node-detect-infobar-col {
   padding-left: 0;
   padding-right: 0;

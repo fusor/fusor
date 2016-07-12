@@ -60,6 +60,16 @@ export default Ember.Component.extend(OspNodeForm, {
     return Ember.isPresent(this.get('csvInfo'));
   }),
 
+  csvMacList: Ember.computed('csvInfo.@each.ipAddress', 'csvInfo.@each.macAddresses', function() {
+    let csvInfo = this.get('csvInfo');
+
+    if (Ember.isEmpty(csvInfo)) {
+      return [];
+    }
+
+    return csvInfo.map(csvNode => csvNode.get('macAddresses')[0].get('value'));
+  }),
+
   hasCsvErrors: Ember.computed('csvErrors.[]', function () {
     return Ember.isPresent(this.get('csvErrors'));
   }),
