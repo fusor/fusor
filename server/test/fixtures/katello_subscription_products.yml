@@ -1,0 +1,12 @@
+
+deployment_os:
+    subscription_id: <%= ActiveRecord::FixtureSet.identify(:deployment_subscription) %>
+    product_id: <%= ActiveRecord::FixtureSet.identify(:awesome_os) %>
+
+deployment_product:
+    subscription_id: <%= ActiveRecord::FixtureSet.identify(:deployment_subscription) %>
+    product_id: <%= ActiveRecord::FixtureSet.identify(:awesome_product) %>
+
+deployment_product_2:
+    subscription_id: <%= ActiveRecord::FixtureSet.identify(:deployment_subscription) %>
+    product_id: <%= ActiveRecord::FixtureSet.identify(:awesome_product_2) %>

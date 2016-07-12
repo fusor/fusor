@@ -112,5 +112,43 @@ module Fusor
       assert_response :success
     end
 
+    test "validate should return false if no deployment is passed in" do
+      response = JSON.parse(get(:validate).body)
+      # validate returns 200 and a boolean
+      assert_response :success
+      assert_equal false, response['valid'], "validate returned true with no deployment id"
+    end
+
+    test "validate returns not found if deployment does not exist" do
+      # pass in deployment 100 which doesn't exist
+      JSON.parse(get(:validate, :deployment_id => '100').body)
+      assert_response :not_found
+    end
+
+    test "subsequent validate fails not enough subscriptions for products" do
+      deployment = fusor_deployments(:sub_val_subsequent_rhev_cfme)
+      # pass in deployment 100 which doesn't exist
+      response = JSON.parse(get(:validate, :deployment_id => deployment.id).body)
+      assert_response :success
+      assert_equal false, response['valid'], "passed with not enough subscriptions"
+    end
+
+    test "subsequent validate passes" do
+      deployment = fusor_deployments(:sub_val_subsequent_rhev)
+      # pass in deployment 100 which doesn't exist
+      response = JSON.parse(get(:validate, :deployment_id => deployment.id).body)
+      assert_response :success
+      assert_equal true, response['valid'], "validate failed when we had subs"
+    end
+
+    test "disconnected validate passes" do
+      # remove uploaded subscriptions
+      ::Katello::Subscription.destroy_all
+      deployment = fusor_deployments(:sub_val_disconnected_rhev)
+      # pass in deployment 100 which doesn't exist
+      response = JSON.parse(get(:validate, :deployment_id => deployment.id).body)
+      assert_response :success
+      assert_equal true, response['valid'], "validate failed when we had subs"
+    end
   end
 end

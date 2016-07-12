@@ -1,0 +1,24 @@
+
+awesome_os:
+  name:         awesome_os
+  description:  Awesome OS
+  cp_id:        69
+  label:        os_label
+  provider_id:  <%= ActiveRecord::FixtureSet.identify(:redhat) %>
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:empty_organization) %>
+
+awesome_product:
+  name:         awesome_product
+  description:  Awesome Product
+  cp_id:        150
+  label:        product_label
+  provider_id:  <%= ActiveRecord::FixtureSet.identify(:redhat) %>
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:empty_organization) %>
+
+awesome_product_2:
+  name:         awesome_product_2
+  description:  Awesome Product 2
+  cp_id:        183
+  label:        product_2_label
+  provider_id:  <%= ActiveRecord::FixtureSet.identify(:redhat) %>
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:empty_organization) %>
