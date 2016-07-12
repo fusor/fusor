@@ -29,21 +29,24 @@ export default Ember.Route.extend(NeedsExistingManifestHelpers, {
     const subModel = this.modelFor('subscriptions');
     let modelHash = {reviewModel};
 
+    modelHash.subscriptionPools = this.loadSubscriptionPools();
+
     if(subModel) {
       // Use subscriptions model if the loading has already been done
+      modelHash.sessionPortal = subModel.sessionPortal;
       modelHash.useExistingManifest = subModel.useExistingManifest;
       if(modelHash.useExistingManifest) {
         modelHash.subscriptions = subModel.subscriptions;
       }
 
-      modelHash.sessionPortal = subModel.sessionPortal;
-      // Does not need to be wrapped in an RSVP hash since the values have
-      // already been resolved by the subscriptions route
-      return modelHash;
+      return Ember.RSVP.hash(modelHash);
     } else {
+      modelHash.sessionPortal = this.loadSessionPortal();
+
       // subscriptions model isn't available, maybe because of a page refresh
       // Need to load this data independently
       return this.shouldUseExistingManifest().then(useExistingManifest => {
+
         modelHash.useExistingManifest = useExistingManifest;
 
         if(useExistingManifest) {
@@ -75,16 +78,18 @@ export default Ember.Route.extend(NeedsExistingManifestHelpers, {
     } else if (model.get('is_disconnected')) {
       controller.set('reviewSubscriptions', this.modelFor('subscriptions/review-subscriptions'));
     } else {
-      var reviewSubscriptions = model.get('subscriptions').filter(function(sub) {
+      const reviewSubscriptions = model.get('subscriptions').filter(function(sub) {
         return (sub.get('source') == 'added');
       });
-      var hasSubs = reviewSubscriptions.reduce((prev, sub) => {
+
+      const hasSubs = reviewSubscriptions.reduce((prev, sub) => {
         return prev || sub.get('quantity_to_add') > 0;
       }, false); // initial val
+
       controller.set('reviewSubscriptions', reviewSubscriptions);
       controller.set('hasSubscriptionsToAttach', hasSubs);
-      controller.set('hasSessionPortal', !!modelHash.sessionPortal);
-      controller.set('hasSubscriptionPools', Ember.isPresent(this.controllerFor('subscriptions/select-subscriptions').get('subscriptionPools')));
+      controller.set('hasSessionPortal', Ember.isPresent(modelHash.sessionPortal));
+      controller.set('hasSubscriptionPools', Ember.isPresent(modelHash.subscriptionPools));
     }
 
     controller.set('validationErrors', []);
@@ -150,6 +155,19 @@ export default Ember.Route.extend(NeedsExistingManifestHelpers, {
         "Content-Type": "application/json",
         "X-CSRF-Token": token
       }
+    });
+  },
+
+  loadSessionPortal() {
+    return this.store.findAll('session-portal')
+      .then(results => results.get('firstObject'));
+  },
+
+  loadSubscriptionPools(deployment_id) {
+    const deployment = this.modelFor('deployment');
+    return this.store.query('subscription', {
+      deployment_id: deployment.get('id'),
+      source: 'added'
     });
   }
 });
