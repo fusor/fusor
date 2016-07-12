@@ -20,8 +20,13 @@
   </div>
 {{else if hasCsvInfo}}
   <div class="row new-node-registration-csv-success">
-    <div class="col-xs-offset-1 col-xs-11">
-      <p class="csv-success-message">{{csvInfo.length}} nodes ready for registration.</p>
+    <div class="col-xs-offset-1 col-xs-10">
+      <p class="csv-success-message">{{csvInfo.length}} nodes ready for registration:</p>
+      <ul class="csv-mac-list">
+        {{#each csvMacList as |macAddress|}}
+          <li>{{macAddress}}</li>
+        {{/each}}
+      </ul>
     </div>
   </div>
 {{/if}}
