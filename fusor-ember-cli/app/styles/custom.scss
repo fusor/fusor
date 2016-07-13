@@ -220,6 +220,11 @@ p.error.errorForValidation {
   color: #a94442;
 }
 
+.alert {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
 .validation-alert-icon {
   float: left;
   margin-top: 5px;
