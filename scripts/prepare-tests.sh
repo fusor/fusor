@@ -24,7 +24,16 @@ fi
 pushd ${FOREMAN_DIR}/test > /dev/null
 sed -i 's/relative_url_root/relative_url_root rescue nil/g' test_helper.rb
 cd fixtures
-mv operatingsystems.yml os.yml.foreman
+# clean up before working
+FILES=`ls ../../../fusor/server/test/fixtures/ ../../../katello/test/fixtures/models/`
+for f in $FILES
+do
+    rm -f $f
+done
+mv -f os.yml.foreman operatingsystems.yml
+
+# proceed
+mv -f operatingsystems.yml os.yml.foreman
 ln -s ../../../fusor/server/test/fixtures/* .
 
 # Combine operatingsystems.yml
@@ -32,8 +41,41 @@ mv operatingsystems.yml os.yml.fusor
 touch operatingsystems.yml
 cat os.yml.foreman >> operatingsystems.yml
 cat os.yml.fusor >> operatingsystems.yml
-rm -f hosts.yml os.yml.foreman os.yml.fusor
+#rm -f hosts.yml os.yml.foreman os.yml.fusor
+rm -f hosts.yml os.yml.fusor
+
+# Combine katello_subscriptions.yml
+# MUST BE DONE BEFORE KATELLO FIXTURES
+mv katello_subscriptions.yml ksub.yml.fusor
+mv katello_subscription_products.yml ksubprods.yml.fusor
+mv katello_products.yml kprods.yml.fusor
+mv katello_pools.yml kpools.yml.fusor
+
+# bring over the katello fixtures
 ln -s ../../../katello/test/fixtures/models/* .
+
+# save off the katello ones
+mv katello_subscriptions.yml ksub.yml.katello
+mv katello_subscription_products.yml ksubprods.yml.katello
+mv katello_products.yml kprods.yml.katello
+mv katello_pools.yml kpools.yml.katello
+
+touch katello_subscriptions.yml
+touch katello_subscription_products.yml
+touch katello_products.yml
+touch katello_pools.yml
+
+# Create files using katello and fusor fixtures
+cat ksub.yml.katello >> katello_subscriptions.yml
+cat ksub.yml.fusor >> katello_subscriptions.yml
+cat ksubprods.yml.katello >> katello_subscription_products.yml
+cat ksubprods.yml.fusor >> katello_subscription_products.yml
+cat kprods.yml.katello >> katello_products.yml
+cat kprods.yml.fusor >> katello_products.yml
+cat kpools.yml.katello >> katello_pools.yml
+cat kpools.yml.fusor >> katello_pools.yml
+
+rm -f ksub.yml.* ksubprods.yml.* kprods.yml.* kpools.yml.*
 
 # Create hosts file
 echo "" >> hosts.yml

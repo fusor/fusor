@@ -80,7 +80,7 @@ module Fusor
       ::Fusor.log.info "Import the manifest into the DB"
 
       mi = Fusor::Manifest::ManifestImporter.new
-      entitlements = mi.prepare_manifest(temp_file.path, deployment.id)
+      entitlements = mi.get_subscriptions(temp_file.path, deployment.id)
 
       entitlements.each do |entitlement|
         @subscription = Fusor::Subscription.where(:deployment_id => deployment.id, :contract_number => entitlement['pool']['contractNumber']).first_or_initialize
@@ -98,7 +98,32 @@ module Fusor
       render json: {manifest_file: temp_file.path}, status: 200
     end
 
+    def validate
+      ::Fusor.log.debug "Enter SubscriptionController.validate"
+      valid = false
+      if params[:deployment_id]
+
+        ::Fusor.log.debug "SubscriptionController.validate: We have a deployment id"
+        deployment = Deployment.find(params[:deployment_id])
+        subvalidator = Fusor::Subscriptions::SubscriptionValidator.new
+        valid = subvalidator.validate(deployment, session, manifest_imported?, deployment.is_disconnected)
+
+      else
+        ::Fusor.log.error "SubscriptionController.validate: NO DEPLOYMENT ID"
+        valid = false
+      end
+
+      ::Fusor.log.debug "Leave SubscriptionController.validate, returning #{valid}"
+      render json: {valid: valid}, status: 200
+    end
+
     private
+
+    def manifest_imported?
+      # if there are no subscriptions besides Fusor, we haven't
+      # imported a manifest yet
+      return !::Katello::Subscription.where.not(name: "Fusor").empty?
+    end
 
     def subscription_params
       params.require(:subscription).permit(:contract_number, :product_name, :quantity_to_add, :quantity_attached,

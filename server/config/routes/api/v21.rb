@@ -21,6 +21,7 @@ Fusor::Engine.routes.draw do
         resources :subscriptions do
           collection do
             put :upload
+            get :validate
           end
         end
 

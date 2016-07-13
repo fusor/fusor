@@ -1,0 +1,11 @@
+pool_rhev:
+  cp_id: "abc321"
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
+  subscription_id: <%= ActiveRecord::FixtureSet.identify(:deployment_subscription) %>
+  account_number: "74380203"
+  contract_number: "28843840"
+  quantity: 1
+  start_date: "2011-10-11T04:00:00.000+0000"
+  end_date: "2022-01-01T04:59:59.000+0000"
+

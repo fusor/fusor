@@ -86,3 +86,61 @@ osp:
   cfme_root_password: redhat1234
   cfme_install_loc: OpenStack
   openstack_deployment: osp
+
+sub_val_subsequent_rhev_cfme:
+  rhev_root_password: redhat1234
+  rhev_engine_admin_password: redhat1234
+  rhev_is_self_hosted: false
+  rhev_share_path: /storage/rhev_storage
+  rhev_storage_address: 10.13.129.106
+  rhev_storage_type: NFS
+  rhev_engine_host: engine3
+  deploy_openstack: false
+  deploy_cfme: true
+  deploy_rhev: true
+  name: sub_val_subsequent_rhev_cfme
+  label: sub_val_subsequent_rhev_cfme
+  organization: empty_organization
+  cfme_root_password: redhat1234
+  cfme_install_loc: RHEV
+  lifecycle_environment: library
+  upstream_consumer_uuid: 1
+  organization_id: 1
+
+sub_val_subsequent_rhev:
+  rhev_root_password: redhat1234
+  rhev_engine_admin_password: redhat1234
+  rhev_is_self_hosted: false
+  rhev_share_path: /storage/rhev_storage
+  rhev_storage_address: 10.13.129.106
+  rhev_storage_type: NFS
+  rhev_engine_host: engine3
+  deploy_openstack: false
+  deploy_cfme: false
+  deploy_rhev: true
+  name: sub_val_subsequent_rhev
+  label: sub_val_subsequent_rhev
+  organization: empty_organization
+  lifecycle_environment: library
+  upstream_consumer_uuid: 1
+  organization_id: 1
+
+sub_val_disconnected_rhev:
+  rhev_root_password: redhat1234
+  rhev_engine_admin_password: redhat1234
+  rhev_is_self_hosted: false
+  rhev_share_path: /storage/rhev_storage
+  rhev_storage_address: 10.13.129.106
+  rhev_storage_type: NFS
+  rhev_engine_host: engine3
+  deploy_openstack: false
+  deploy_cfme: false
+  deploy_rhev: true
+  name: sub_val_disconnected_rhev
+  label: sub_val_disconnected_rhev
+  organization: empty_organization
+  lifecycle_environment: library
+  upstream_consumer_uuid: 1
+  organization_id: 1
+  is_disconnected: true
+  manifest_file: 'test/fixtures/fake_manifest.zip'

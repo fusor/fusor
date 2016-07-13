@@ -37,7 +37,7 @@ module Fusor
         return entitlement
       end
 
-      def prepare_manifest(manifest, deployment_id)
+      def get_subscriptions(manifest, deployment_id)
         tmp_dir = "#{Rails.root}/tmp/deployment-#{deployment_id}"
         FileUtils.rmtree(tmp_dir) if File.exist?(tmp_dir)
         FileUtils.mkdir_p tmp_dir
@@ -57,6 +57,7 @@ module Fusor
 
         return subscriptions
       end
+
     end
   end
 end

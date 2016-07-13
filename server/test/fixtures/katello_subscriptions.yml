@@ -1,0 +1,11 @@
+
+deployment_subscription:
+  name: "deployment subscription"
+  product_id: "RH012"
+  cp_id: "1234309beef50305ff"
+  support_level: "none"
+  sockets: 2
+  cores: 2
+  stacking_id: "stack123"
+  instance_multiplier: 1
+
