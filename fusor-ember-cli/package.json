@@ -51,7 +51,7 @@
     "ember-lodash": "0.0.9",
     "ember-moment": "1.1.1",
     "ember-power-select": "0.10.3",
-    "ember-radio-button": "~1.0.1",
+    "ember-radio-button": "~1.0.7",
     "ember-watson": "~0.7.0",
     "emberx-select": "2.1.2",
     "eslint": "^2.9.0",
