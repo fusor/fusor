@@ -32,6 +32,7 @@ module Utils
           response = client.post data.to_json
           puts "Status Code: #{response.code}"
           puts response
+          response
         rescue RestClient::Exception => e
           puts e
           puts e.response
