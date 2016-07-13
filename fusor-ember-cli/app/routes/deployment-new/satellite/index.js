@@ -18,17 +18,24 @@ export default Ember.Route.extend(DeploymentNewSatelliteRouteMixin, {
     if (Ember.isPresent(deploymentName)) {
       this.set('controller.model.name', deploymentName.trim());
     }
-    // pre-populate passwords
+    this.prePopulatePasswords();
+  },
+
+  prePopulatePasswords() {
     let commonPassword = this.get('controller.commonPassword');
     let deploymentNewController = this.controllerFor('deployment-new');
-    if (commonPassword && deploymentNewController.get('isValidCommonPassword')) {
-      deploymentNewController.set('model.rhev_engine_admin_password', commonPassword);
-      deploymentNewController.set('model.rhev_root_password', commonPassword);
-      deploymentNewController.set('model.cfme_root_password', commonPassword);
-      deploymentNewController.set('model.cfme_admin_password', commonPassword);
-      deploymentNewController.set('model.cfme_db_password', commonPassword);
-      deploymentNewController.set('model.openshift_user_password', commonPassword);
-      deploymentNewController.set('model.openshift_root_password', commonPassword);
+    let deployment = deploymentNewController.get('model');
+    let isValidDeployment =  deployment && !deployment.get('isDeleted');
+    let isValidCommonPassword = commonPassword && deploymentNewController.get('isValidCommonPassword');
+
+    if (isValidDeployment && isValidCommonPassword) {
+      deployment.set('rhev_engine_admin_password', commonPassword);
+      deployment.set('rhev_root_password', commonPassword);
+      deployment.set('cfme_root_password', commonPassword);
+      deployment.set('cfme_admin_password', commonPassword);
+      deployment.set('cfme_db_password', commonPassword);
+      deployment.set('openshift_user_password', commonPassword);
+      deployment.set('openshift_root_password', commonPassword);
 
       // confirmation fields on the deployment controller, not the model
       deploymentNewController.set('confirmRhevRootPassword', commonPassword);
