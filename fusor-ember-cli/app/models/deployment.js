@@ -176,6 +176,21 @@ export default DS.Model.extend({
     }
   }),
 
+  trimFieldsForSave() {
+    this.set('rhev_storage_name', this.get('rhev_storage_name') ? this.get('rhev_storage_name').trim() : null);
+    this.set('rhev_storage_address', this.get('rhev_storage_address') ? this.get('rhev_storage_address').trim() : null);
+    this.set('rhev_share_path', this.get('rhev_share_path') ? this.get('rhev_share_path').trim() : null);
+    this.set('rhev_export_domain_name', this.get('rhev_export_domain_name') ? this.get('rhev_export_domain_name').trim() : null);
+    this.set('rhev_export_domain_address', this.get('rhev_export_domain_address') ? this.get('rhev_export_domain_address').trim() : null);
+    this.set('rhev_export_domain_path', this.get('rhev_export_domain_path') ? this.get('rhev_export_domain_path').trim() : null);
+    this.set('hosted_storage_name', this.get('hosted_storage_name') ? this.get('hosted_storage_name').trim() : null);
+    this.set('hosted_storage_address', this.get('hosted_storage_address') ? this.get('hosted_storage_address').trim() : null);
+    this.set('hosted_storage_path', this.get('hosted_storage_path') ? this.get('hosted_storage_path').trim() : null);
+    this.set('openshift_storage_host', this.get('openshift_storage_host') ? this.get('openshift_storage_host').trim() : null);
+    this.set('openshift_export_path', this.get('openshift_export_path') ? this.get('openshift_export_path').trim() : null);
+    this.set('openshift_subdomain_name', this.get('openshift_subdomain_name') ? this.get('openshift_subdomain_name').trim() : null);
+  },
+
   progressPercent: Ember.computed('progress', function() {
     if (this.get('progress')) {
       return (this.get('progress') * 100).toFixed(1) + '%';
