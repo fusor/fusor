@@ -16,7 +16,7 @@ module Fusor
     # on update because we don't want to validate the empty object when
     # it is first created
     validates_with Fusor::Validators::DeploymentValidator, on: :update
-    validates_associated :openstack_deployment
+    validates_associated :openstack_deployment, on: :update
 
     belongs_to :organization
     belongs_to :lifecycle_environment, :class_name => "Katello::KTEnvironment"
@@ -90,7 +90,7 @@ module Fusor
 
     def ensure_openstack_deployment
       if deploy_openstack?
-        self.openstack_deployment ||= Fusor::OpenstackDeployment.new
+        self.openstack_deployment ||= Fusor::OpenstackDeployment.create
       else
         self.openstack_deployment.destroy if openstack_deployment
       end
