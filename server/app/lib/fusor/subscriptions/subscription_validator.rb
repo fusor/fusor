@@ -135,7 +135,7 @@ module Fusor
         added_subscriptions = Fusor::Subscription.where(:deployment_id => id).where(:source => 'added').where('quantity_to_add > 0')
         added_subscriptions.each do |s|
           # no need to add product ids, we're only interested in the additional counts
-          subinfo.update_counts(s.product_name, s.quantity_attached)
+          subinfo.update_counts(s.product_name, s.quantity_to_add)
         end
 
         ::Fusor.log.info "SUB-VAL.build-si-portal: built subscription info from portal. #{subinfo.inspect}"
