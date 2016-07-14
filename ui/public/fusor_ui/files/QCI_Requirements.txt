@@ -11,7 +11,7 @@ If you are deploying into an environment that does not have external network acc
 - URL to an alternate repository to download content from
 - Subscription manifest. For more information about obtaining a manifest, see https://access.redhat.com/solutions/118573
 
-Red Hat Enterprise Virtualization
+Red Hat Virtualization
 Engine + Hypervisor
 - 2 hosts (1 for engine, 1 for hypervisor). Engine host requires 10GB disk space, 2GB RAM, and 1 CPU. Hypervisor host requires 10GB disk space, 12GB RAM, and 4 CPUs
 - All host hardware clocks are synchronized with the hardware clock on the Satellite system

@@ -31,7 +31,7 @@ export default Ember.Mixin.create({
   }),
 
   nameRhev: Ember.computed('isUpstream', function() {
-    if (this.get('isUpstream')) { return "oVirt"; } else { return "RHEV"; }
+    if (this.get('isUpstream')) { return "oVirt"; } else { return "RHV"; }
   }),
 
   nameOpenStack: Ember.computed('isUpstream', function() {
@@ -46,7 +46,7 @@ export default Ember.Mixin.create({
 
   // TODO DRY names mixins
   fullnameRhev: Ember.computed('isUpstream', function() {
-    if (this.get('isUpstream')) { return "oVirt Project"; } else { return "Red Hat Enterprise Virtualization"; }
+    if (this.get('isUpstream')) { return "oVirt Project"; } else { return "Red Hat Virtualization"; }
   }),
 
   fullnameOpenStack: Ember.computed('isUpstream', function() {
