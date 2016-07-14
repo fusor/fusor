@@ -65,6 +65,10 @@ export default function() {
     return db.katello_organizations.find(id);
   });
 
+  this.get('/katello/api/v2/organizations/:id/subscriptions', function(db, request) {
+    return {"results": []};
+  });
+
   this.get('/customer_portal/owners/:owner_key/consumers', function(db, request) {
     return db.management_applications;
   });
