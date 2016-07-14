@@ -394,6 +394,7 @@
           - :file: "/var/log/candlepin/candlepin.log"
           - :file: "/var/log/messages"
     :silenced_logging:
+      :enable: false
       :paths:
         - "api/v21/foreman_tasks"
         - "fusor/api/v21/unlogged"

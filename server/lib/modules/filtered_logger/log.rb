@@ -41,6 +41,13 @@ module FilteredLogger
     end
 
     def add_config_paths
+      # First check if silenced_logging is enable or disabled
+      if check_nested_key(SETTINGS, [:fusor, :system, :silenced_logging, :enable])
+        if !SETTINGS[:fusor][:system][:silenced_logging][:enable]
+          # silenced_logging is disabled, exiting early
+          return
+        end
+      end
       if check_nested_key(SETTINGS, [:fusor, :system, :silenced_logging, :paths])
         if !SETTINGS[:fusor][:system][:silenced_logging][:paths].nil?
           SETTINGS[:fusor][:system][:silenced_logging][:paths].each do |entry|
