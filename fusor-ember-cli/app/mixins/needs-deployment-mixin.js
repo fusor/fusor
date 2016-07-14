@@ -10,13 +10,13 @@ export default Ember.Mixin.create({
 
   isNew: false,
 
-  deploymentName: Ember.computed.alias("deploymentController.model.name"),
-
   ////////////////////////////////////////////////////////////
   // ALIASES AND COMMONLY USED COMPUTED PROPS
   // Consolidates these and makes them available for free to any mixee
   // Prevents littering leaf controllers with duplicated aliases
   ////////////////////////////////////////////////////////////
+  deploymentId: Ember.computed.alias("deploymentController.model.id"),
+  deploymentName: Ember.computed.alias("deploymentController.model.name"),
   upstreamConsumerUuid: Ember.computed.alias(
     'deploymentController.model.upstream_consumer_uuid'),
   hasUpstreamConsumerUuid: Ember.computed('upstreamConsumerUuid', function() {
