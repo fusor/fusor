@@ -23,7 +23,7 @@
       {{#draggable-object-target action="unassignRole"}}
         <div class="row col-md-12 deployment-roles deployment-roles-unassigned deployment-roles-assignable {{droppableClass}}">
           {{#each unassignedRoles as |role|}}
-            {{#draggable-object content=role}}
+            {{#draggable-object content=role data-qci=role.roleType}}
               {{deployment-role role=role edit="editRole" disabled=isStarted}}
             {{/draggable-object}}
           {{/each}}

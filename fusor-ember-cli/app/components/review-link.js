@@ -29,6 +29,10 @@ export default Ember.Component.extend({
     }
   }),
 
+  dataQci: Ember.computed('label', function() {
+    return this.get('label').underscore();
+  }),
+
   isNotALink: Ember.computed('isExternalURL', 'routeName', function() {
     return (Ember.isBlank(this.get('routeName')) && !(this.get('isExternalURL')));
   }),

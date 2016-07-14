@@ -1,7 +1,7 @@
 {{#wizard-step outlet=outlet}}
 
       {{#link-to 'review.installation' tagName='li' disabled=disableTabInstallation}}
-        <a>
+        <a data-qci='installation-review'>
           <span class="hanging-indent">
             {{stepNumberReview}}A. Installation Review
           </span>
@@ -9,7 +9,7 @@
       {{/link-to}}
 
       {{#link-to 'review.progress.overview' tagName='li' disabled=disableTabProgress}}
-        <a>
+        <a data-qci='progress-overview'>
           <span class="hanging-indent">
             {{stepNumberReview}}B. Installation Progress
           </span>
@@ -17,7 +17,7 @@
       {{/link-to}}
 
       {{#link-to 'review.summary' tagName='li' disabled=disableTabSummary}}
-        <a>
+        <a data-qci='review-summary'>
           <span class="hanging-indent">
             {{stepNumberReview}}C. Installation Summary
           </span>

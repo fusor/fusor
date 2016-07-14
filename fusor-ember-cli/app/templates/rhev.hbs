@@ -1,7 +1,7 @@
 {{#wizard-step outlet=outlet}}
 
       {{#link-to 'rhev-setup' tagName='li' disabled=disableTabRhevSetupType}}
-        <a>
+        <a data-qci='rhev-setup-type'>
           <span class="hanging-indent">
             2A. Setup Type
           </span>
@@ -10,7 +10,7 @@
 
       {{#unless isSelfHost}}
       {{#link-to 'engine.discovered-host' tagName='li' disabled=disableTabRhevEngine}}
-        <a>
+        <a data-qci='rhev-engine'>
           <span class="hanging-indent">
             2B. {{engineTabName}}
           </span>
@@ -19,7 +19,7 @@
       {{/unless}}
 
       {{#link-to 'hypervisor.discovered-host' tagName='li' disabled=disableTabRhevHypervisors}}
-        <a>
+        <a data-qci='rhev-hypervisor'>
           <span class="hanging-indent">
             {{if isSelfHost '2B' '2C'}}. {{hypervisorTabName }}
           </span>
@@ -27,7 +27,7 @@
       {{/link-to}}
 
       {{#link-to 'rhev-options' tagName='li' disabled=disableTabRhevConfiguration}}
-        <a>
+        <a data-qci='rhev-configuration'>
           <span class="hanging-indent">
             {{if isSelfHost '2C' '2D'}}. Configuration
           </span>
@@ -35,7 +35,7 @@
       {{/link-to}}
 
       {{#link-to 'storage' tagName='li' disabled=disableTabRhevStorage}}
-        <a>
+        <a data-qci='rhev-storage'>
           <span class="hanging-indent">
             {{if isSelfHost '2D' '2E'}}. Storage
           </span>

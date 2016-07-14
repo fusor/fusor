@@ -18,7 +18,7 @@
     </p>
 
     <div class='ident-radio'>
-      {{#radio-button value="RHEV" groupValue=openshiftInstallLoc changed="openshiftLocationChanged" id="install_on_rhev" disabled=disableRHEVradio}}
+      {{#radio-button value="RHEV" groupValue=openshiftInstallLoc changed="openshiftLocationChanged" id="install_on_rhev" disabled=disableRHEVradio dataQci="rhevOspInstallLoc"}}
         <span class="{{if disableRHEV 'disabled'}}">
           {{fullnameRhev}}
         </span>
@@ -26,7 +26,7 @@
     </div>
 
     <div class='ident-radio'>
-      {{#radio-button value="OpenStack" groupValue=openshiftInstallLoc changed="openshiftLocationChanged" id="install_on_openstack" disabled=disableOpenstackradio}}
+      {{#radio-button value="OpenStack" groupValue=openshiftInstallLoc changed="openshiftLocationChanged" id="install_on_openstack" disabled=disableOpenstackradio dataQci="openstackOspInstallLoc"}}
         <span class="inline-block {{if disableOpenStack 'disabled'}}">
           {{fullnameOpenStack}}
         </span>
@@ -54,6 +54,7 @@
         label=1
         value=1
         groupValue=numMasterNodes
+        buttonType='master'
         disabled=false}}
 
       {{tool-tip faIcon='fa-info-circle'
@@ -68,6 +69,7 @@
         label=_firstWorkerNode.ordinal
         value=_firstWorkerNode.ordinal
         groupValue=numWorkerNodes
+        buttonType='worker'
         customFocused=isCustomNumWorkerNodes
         changed="numWorkerNodesChanged"
       }}
@@ -77,6 +79,7 @@
           button-selection
           label=_node.ordinal
           value=_node.ordinal
+          buttonType='worker'
           groupValue=numWorkerNodes
           changed="numWorkerNodesChanged"
           customFocused=isCustomNumWorkerNodes
@@ -89,9 +92,10 @@
                         class='ose-custom-field'
                         disabled=deploymentController.isStarted
                         validator=positiveIntegerValidator
+                        cssId='custom-worker-nodes'
                         placeholder='Enter'}}
       {{else}}
-        <a {{action 'showCustomNumWorkerNodes'}}>custom</a>
+        <a data-qci='show-custom-worker-nodes'{{action 'showCustomNumWorkerNodes'}}>custom</a>
       {{/if}}
 
     </div>
@@ -106,21 +110,25 @@
     {{button-selection label='15 GB'
                        value=15
                        groupValue=model.openshift_storage_size
+                       buttonType='storageSize'
                        customFocused=isCustomStorageSize
                        changed="storageSizeChanged"}}
     {{button-selection label='20 GB'
                        value=20
                        groupValue=model.openshift_storage_size
+                       buttonType='storageSize'
                        customFocused=isCustomStorageSize
                        changed="storageSizeChanged"}}
     {{button-selection label='25 GB'
                        value=25
                        groupValue=model.openshift_storage_size
+                       buttonType='storageSize'
                        customFocused=isCustomStorageSize
                        changed="storageSizeChanged"}}
     {{button-selection label='30 GB'
                        value=30
                        groupValue=model.openshift_storage_size
+                       buttonType='storageSize'
                        customFocused=isCustomStorageSize
                        changed="storageSizeChanged"}}
     {{#if isCustomStorageSize}}
@@ -128,10 +136,11 @@
                       class='ose-custom-field'
                       disabled=deploymentController.isStarted
                       validator=positiveIntegerValidator
+                      cssId='custom-storage-size'
                       placeholder='Enter'
                       suffix='GB'}}
     {{else}}
-      <a {{action 'showCustomStorageSize'}}>custom</a>
+      <a data-qci='show-custom-storage-size'{{action 'showCustomStorageSize'}}>custom</a>
     {{/if}}
 
     {{#if showEnvironmentSummary}}

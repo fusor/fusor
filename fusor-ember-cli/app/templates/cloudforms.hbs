@@ -1,7 +1,7 @@
 {{#wizard-step outlet=outlet}}
 
       {{#link-to 'where-install' tagName='li' disabled=disableTabCFWhere}}
-        <a>
+        <a data-qci='cfme-installation-location'>
           <span class="hanging-indent">
             {{stepNumberCloudForms}}A. Installation Location
           </span>
@@ -9,7 +9,7 @@
       {{/link-to}}
 
       {{#link-to 'cloudforms.cfme-configuration' tagName='li' disabled=disableTabCFConfiguration}}
-        <a>
+        <a data-qci='cfme-configuration'>
           <span class="hanging-indent">
             {{stepNumberCloudForms}}B. Configuration
           </span>

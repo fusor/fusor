@@ -1,7 +1,7 @@
 {{#wizard-step outlet=outlet}}
 
       {{#link-to satelliteTabRouteName tagName='li' disabled=disableTabDeploymentName}}
-        <a>
+        <a data-qci='deployment-name'>
           <span class="hanging-indent">
             1A. Deployment Name
           </span>
@@ -9,7 +9,7 @@
       {{/link-to}}
 
       {{#link-to lifecycleEnvironmentTabRouteName tagName='li' disabled=disableTabLifecycleEnvironment}}
-        <a>
+        <a data-qci='update-availability'>
           <span class="hanging-indent">
             1B. Update Availability
           </span>
@@ -17,7 +17,7 @@
       {{/link-to}}
 
       {{#link-to 'satellite.access-insights' tagName='li' disabled=disableTabAccessInsights}}
-        <a>
+        <a data-qci='red-hat-insights'>
           <span class="hanging-indent">
             1C. Red Hat Insights
           </span>

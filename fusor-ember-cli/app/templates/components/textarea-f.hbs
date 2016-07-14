@@ -2,9 +2,9 @@
 
   {{! DRY THIS UP. HOW TO DO CONDITIONAL WITHIN HANDLEBARS HELPER}}
   {{#if rowsPassed}}
-    {{textarea class='form-control' value=value placeholder=placeholder rows=numRows id=cssId disabled=disabled}}
+    {{textarea class='form-control' value=value placeholder=placeholder rows=numRows id=cssId data-qci=cssId disabled=disabled}}
   {{else}}
-    {{textarea class='form-control' value=value placeholder=placeholder id=cssId disabled=disabled}}
+    {{textarea class='form-control' value=value placeholder=placeholder id=cssId data-qci=cssId disabled=disabled}}
   {{/if}}
   {{yield}}
 

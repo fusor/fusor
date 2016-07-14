@@ -5,13 +5,13 @@
     </p>
 
     <div class='ident-radio'>
-      {{#radio-button value="selfhost" groupValue=rhevSetup changed="rhevSetupChanged" id='selfhost' disabled=isStarted}}
+      {{#radio-button value="selfhost" groupValue=rhevSetup changed="rhevSetupChanged" id='selfhost' disabled=isStarted dataQci="self-hosted"}}
           Self-hosted
       {{/radio-button}}
     </div>
 
     <div class='ident-radio'>
-      {{#radio-button value="rhevhost" groupValue=rhevSetup changed="rhevSetupChanged" id='rhevhost' disabled=isStarted}}
+      {{#radio-button value="rhevhost" groupValue=rhevSetup changed="rhevSetupChanged" id='rhevhost' disabled=isStarted dataQci="hypervisor_engine"}}
       <span class="{{if isStarted 'disabled'}}">
         Hypervisor + engine
       </span>

@@ -1,6 +1,6 @@
 {{#base-f label=label labelSize=labelSize inputSize=inputSize unitsSize=unitsSize unitsLabel=unitsLabel isRequired=isRequired helpText=helpText}}
 
-  {{#x-select value=value prompt=prompt class="form-control" id=cssId disabled=disabled}}
+  {{#x-select value=value prompt=prompt class="form-control" id=cssId data-qci=cssId disabled=disabled}}
     {{#each content as |opt| }}
       {{#x-option value=opt.name}}{{opt.name}}{{/x-option}}
     {{/each}}

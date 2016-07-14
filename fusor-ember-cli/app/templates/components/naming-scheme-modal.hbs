@@ -10,17 +10,18 @@
 
             <form class="form-horizontal">
               <div class="form-group">
-                {{select-simple-f label='Host naming scheme'
-                                  content=namingOptions
-                                  value=hostNamingScheme
-                                  disabled=isStarted
-                                  labelSize='col-lg-4 col-md-4 col-sm-4 col-xs-4 col-xs-offset-1'
-                                  inputSize='col-lg-4 col-md-5 col-sm-5 col-xs-4'
-                                  disabled=isStarted
-                                  renderInPlace=true
-                                  action="setSelectValue"
-                                  fieldName="hostNamingScheme"}}
-
+                <span data-qci="host-naming-scheme">
+                  {{select-simple-f label='Host naming scheme'
+                                    content=namingOptions
+                                    value=hostNamingScheme
+                                    disabled=isStarted
+                                    labelSize='col-lg-4 col-md-4 col-sm-4 col-xs-4 col-xs-offset-1'
+                                    inputSize='col-lg-4 col-md-5 col-sm-5 col-xs-4'
+                                    disabled=isStarted
+                                    renderInPlace=true
+                                    action="setSelectValue"
+                                    fieldName="hostNamingScheme"}}
+                </span>
                 {{#if isCustomScheme}}
                     {{text-f label='Prepend host names with'
                              value=customPreprendName

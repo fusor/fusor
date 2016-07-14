@@ -1,0 +1,31 @@
+{{! copy/paste from https://github.com/yapplabs/ember-radio-button/blob/v1.0.7/app/templates/components/radio-button.hbs}}
+
+{{! Need to overwrite component template in order to pass data attribute tag data-qci to component attribute radio-button-input}}
+
+{{#if hasBlock}}
+  <label class="ember-radio-button {{if checked 'checked'}} {{joinedClassNames}}" for={{radioId}}>
+    {{radio-button-input
+        class=radioClass
+        id=radioId
+        data-qci=dataQci
+        disabled=disabled
+        name=name
+        required=required
+        groupValue=groupValue
+        value=value
+        changed="changed"}}
+
+    {{yield}}
+  </label>
+{{else}}
+  {{radio-button-input
+      class=radioClass
+      id=radioId
+      data-qci=dataQci
+      disabled=disabled
+      name=name
+      required=required
+      groupValue=groupValue
+      value=value
+      changed="changed"}}
+{{/if}}

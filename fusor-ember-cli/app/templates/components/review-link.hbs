@@ -27,7 +27,7 @@
                 <i {{action 'showPassword'}} class="fa {{eyeIcon}}"></i>
             {{/if}}
         {{else}}
-            {{#link-to routeName}}
+            {{#link-to routeName data-qci=dataQci}}
                 {{#if useYieldInstead}}
                   {{yield}}
                 {{else}}
@@ -41,7 +41,7 @@
 
         {{#if showValidationMessage}}
           <span class='errorForValidation'>
-            {{#link-to routeName}}
+            {{#link-to routeName data-qci=dataQci}}
               {{validationMessage}}
             {{/link-to}}
           </span>
@@ -49,7 +49,7 @@
 
         {{#if showDefaultMessage}}
           <span class='defaultValue'>
-            {{#link-to routeName}}
+            {{#link-to routeName data-qci=dataQci}}
               {{defaultMessage}}
             {{/link-to}}
           </span>
