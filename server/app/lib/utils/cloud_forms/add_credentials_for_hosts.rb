@@ -30,10 +30,10 @@ module Utils
           # create the hosts csv file
           csv_file = open("#{csv_file_path}/#{csv_file_name}", 'a')
           csv_file.sync = true
-          csv_file.puts "ip, hostname"
+          csv_file.puts "ip,hostname"
           hypervisor_hosts = deployment.rhev_hypervisor_hosts
           hypervisor_hosts.each do |hhost|
-            csv_file.puts "#{hhost.ip}, #{hhost.name}"
+            csv_file.puts "#{hhost.ip},#{hhost.name}"
           end
           csv_file.close
 
