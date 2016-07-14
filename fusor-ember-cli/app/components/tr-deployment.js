@@ -28,12 +28,14 @@ export default Ember.Component.extend({
     return (this.get('foremanTask.result') === 'error');
   }),
 
-  canDelete: Ember.computed('isStarted', 'isError', function() {
-    if (!(this.get('isStarted'))) {
-      return true;
-    } else {
-      return this.get('isError');
-    }
+  isSuccessful: Ember.computed('foremanTask.result', function() {
+    return this.get('foremanTask.result') === 'success';
+  }),
+
+  canDelete: Ember.computed('isStarted', 'isError', 'isSuccessful', function() {
+    return !this.get('isStarted') ||
+      this.get('isSuccessful') ||
+      this.get('isError');
   }),
 
   routeNameForEdit: Ember.computed('isComplete', 'isStarted', function() {
