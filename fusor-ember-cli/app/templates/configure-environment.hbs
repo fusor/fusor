@@ -15,8 +15,8 @@
     <p>
       Select how this deployment's instances should receive updates.
     </p>
-    <div class='ident-radio'>
-      {{#radio-button value="immediately" groupValue=envSetup changed="envSetupChanged" id='immediately' disabled=isStarted}}
+    <div class='ident-radio' data-qci ='immediately'>
+      {{#radio-button value="immediately" groupValue=envSetup changed="envSetupChanged" id='immediately' disabled=isStarted dataQci ='immediately'}}
         <span class="{{if isStarted 'disabled'}}">
           Immediately {{tool-tip faIcon='fa-info-circle blue-active'
                                  title="Choosing to not use a lifecycle environment will result in a faster deployment time, but new content will become available to your deployment automatically.  If you use a lifecycle environment, then content needs to be manually published to that environment to be available."}}
@@ -27,8 +27,8 @@
       </p>
     </div>
 
-    <div class='ident-radio'>
-      {{#radio-button value="after_publishing" groupValue=envSetup changed="envSetupChanged" id='after_publishing' disabled=isStarted}}
+    <div class='ident-radio' data-qci ='after_publishing'>
+      {{#radio-button value="after_publishing" groupValue=envSetup changed="envSetupChanged" id='after_publishing' disabled=isStarted dataQci='after_publishing'}}
       <span class="{{if isStarted 'disabled'}}">
         After manually publishing them {{tool-tip faIcon='fa-info-circle blue-active'
                    title="For updates to be available within a deployment, they must be published to the lifecycle environment that is assigned to that deployment."}}
@@ -60,6 +60,7 @@
                                  selectedEnvironment=selectedEnvironment
                                  action="selectEnvironment"
                                  disabled=isStarted
+                                 dataQci=libraryEnv.name
                                  isSelectable=true}}
             <li class="path-list-item">
               <label class="path-list-item-label">
@@ -82,6 +83,7 @@
                                  selectedEnvironment=selectedEnvironment
                                  action="selectEnvironment"
                                  disabled=isStarted
+                                 dataQci=env.name
                                  isSelectable=true}}
             <li class="path-list-item">
               <label class="path-list-item-label">
@@ -121,7 +123,7 @@
     {{#if deployment.isNew}}
       <button {{action 'saveDeployment' step1DRouteName}}
               disabled={{disableNextOnLifecycleEnvironment}}
-              class='btn btn-primary next-button'>
+              class='btn btn-primary next-button' data-qci='next-deployment-new.satellite.access-insights'>
           {{#if deployment.isSaving}}
             Loading ... <i class="fa fa-angle-right"></i>
           {{else}}
@@ -131,7 +133,7 @@
     {{else}}
       <button {{action 'saveDeployment' step1DRouteName}}
               disabled={{disableNextOnLifecycleEnvironment}}
-              class='btn btn-primary next-button'>
+              class='btn btn-primary next-button' data-qci='next-satellite.access-insights'>
           Next <i class="fa fa-angle-right"></i>
       </button>
     {{/if}}

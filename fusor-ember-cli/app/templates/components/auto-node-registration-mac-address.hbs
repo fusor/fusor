@@ -7,7 +7,7 @@
       {{hostNumber}}.
     </label>
     {{#if multipleMacAddresses}}
-      {{#x-select value=host.value id=selectId class="form-control new-node-detect-select"}}
+      {{#x-select value=host.value id=selectId class="form-control new-node-detect-select" data-qci=selectId}}
         <option>Assign interface</option>
         {{#each host.macAddresses as |opt| }}
           {{#x-option value=opt}}{{opt}}{{/x-option}}

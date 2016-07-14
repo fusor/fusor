@@ -4,6 +4,18 @@ export default Ember.Component.extend({
 
   classNames: ['row cancel-back-next-row'],
 
+  dataQciBackButton: Ember.computed('backRouteName', function() {
+    return `back-${this.get('backRouteName')}`;
+  }),
+
+  dataQciNextButton: Ember.computed('nextRouteName', function() {
+    return `next-${this.get('nextRouteName')}`;
+  }),
+
+  dataQciCancelButton: Ember.computed('nextRouteName', function() {
+    return `cancel-${this.get('nextRouteName')}`;
+  }),
+
   actions: {
     openCancelDeploymentModal() {
       this.set('openModal', true);

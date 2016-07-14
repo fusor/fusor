@@ -9,9 +9,9 @@
           <div class="required">
             {{#each globalPlanParameters as |planParameter|}}
               {{#if planParameter.isBoolean}}
-                {{check-f label=planParameter.label checked=planParameter.newValue labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=planParameter.description}}
+                {{check-f label=planParameter.label checked=planParameter.newValue labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=planParameter.description cssId=planParameter.key}}
               {{else}}
-                {{text-f label=planParameter.label value=planParameter.newValue type=planParameter.type labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=planParameter.description}}
+                {{text-f label=planParameter.label value=planParameter.newValue type=planParameter.type labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=planParameter.description cssId=planParameter.key}}
               {{/if}}
             {{/each}}
           </div>
@@ -21,8 +21,8 @@
   {{/pf-modal-body}}
 
   {{#pf-modal-footer}}
-        <button type="cancel" class="btn btn-default" {{action "cancelGlobalServiceConfig"}}>Cancel</button>
-        <button type="submit" class="btn btn-primary" {{action "saveGlobalServiceConfig"}}>Save</button>
+        <button type="cancel" class="btn btn-default" {{action "cancelGlobalServiceConfig"}} data-qci='cancel-edit-global-config'>Cancel</button>
+        <button type="submit" class="btn btn-primary" {{action "saveGlobalServiceConfig"}} data-qci='save-edit-global-config'>Save</button>
   {{/pf-modal-footer}}
 
 {{/pf-modal-base}}

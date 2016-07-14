@@ -1,7 +1,7 @@
 {{#wizard-step outlet=outlet}}
 
       {{#link-to 'openshift.openshift-nodes' tagName='li'}}
-        <a>
+        <a data-qci='ose-master-nodes'>
           <span class="hanging-indent">
             {{stepNumberOpenShift}}A. Master/Nodes
           </span>
@@ -9,7 +9,7 @@
       {{/link-to}}
 
       {{#link-to 'openshift.openshift-configuration' tagName='li' disabled=isInvalidOpenshiftNodes}}
-        <a>
+        <a data-qci='ose-configuration'>
           <span class="hanging-indent">
             {{stepNumberOpenShift}}B. Configuration
           </span>

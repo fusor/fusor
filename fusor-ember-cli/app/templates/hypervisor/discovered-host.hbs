@@ -16,6 +16,7 @@
               <div class='rhev-search-box'>
                   {{input type='text' class='form-control rhev-search-input'
                                placeholder=' Search ...'
+                               data-qci='rhev-search-input'
                                value=searchString
                                disabled=isStarted}}
               </div>
@@ -29,20 +30,18 @@
             {{#if isNotStarted}}
               <span class='rhev-select-all'>
                 {{#if isAllChecked}}
-                  <a {{action 'setUncheckAll'}}>Deselect all ({{availableHosts.length}})</a>
+                  <a data-qci='deselect-all' {{action 'setUncheckAll'}}>Deselect all ({{availableHosts.length}})</a>
                 {{else}}
-                  <a {{action 'setCheckAll'}}>Select all ({{availableHosts.length}})</a>
+                  <a data-qci='deselect-all' {{action 'setCheckAll'}}>Select all ({{availableHosts.length}})</a>
                 {{/if}}
               </span>
             {{/if}}
 
-            <button class='btn btn-default btn-sm' {{action 'openNamingSchemeModal'}}
-                    disabled={{isStarted}}>
+            <button class='btn btn-default btn-sm' {{action 'openNamingSchemeModal'}} disabled={{isStarted}} data-qci='edit-naming-scheme'>
                 Edit Naming Scheme
             </button>
 
-            <button class='btn btn-default btn-sm' {{action 'refreshDiscoveredHosts'}}
-                    disabled={{isStarted}}>
+            <button class='btn btn-default btn-sm' {{action 'refreshDiscoveredHosts'}} disabled={{isStarted}} data-qci='refresh_hypervisors'>
                 Refresh Data
             </button>
           </div>
@@ -82,7 +81,7 @@
                     disableBack=false
                     disableCancel=isStarted
                     deploymentName=deploymentName}}
-  <button {{action 'saveHyperVisors' 'rhev-options'}} class='btn btn-primary next-button' disabled={{disableNextOnHypervisor}}>Next <i class="fa fa-angle-right"></i></button>
+  <button {{action 'saveHyperVisors' 'rhev-options'}} class='btn btn-primary next-button' disabled={{disableNextOnHypervisor}} data-qci='next-button'>Next <i class="fa fa-angle-right"></i></button>
 {{/cancel-back-next}}
 
 {{naming-scheme-modal openModal=openModalNamingScheme

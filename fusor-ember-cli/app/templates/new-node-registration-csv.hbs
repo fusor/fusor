@@ -3,7 +3,7 @@
     <p>Sample syntax for specifying nodes via CSV can be seen here:
       <a download href="/fusor_ui/files/sample-nodes.csv" target="_blank">sample-nodes.csv</a></p>
     <form class="form-horizontal new-node-form-csv">
-        <input id="csvUploadInput" class="csv-upload-input" value=selectedCSVFile type="file" accept=".csv" {{action "csvFileChosen" on="change"}}>
+        <input id="csvUploadInput" class="csv-upload-input" value=selectedCSVFile type="file" data-qci="csvUploadInput" accept=".csv" {{action "csvFileChosen" on="change"}}>
     </form>
   </div>
 </div>

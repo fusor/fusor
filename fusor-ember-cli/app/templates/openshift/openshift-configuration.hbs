@@ -7,13 +7,13 @@
   {{#base-f label="Storage Type" isRequired=true}}
 
     {{#radio-button value="NFS" groupValue=model.openshift_storage_type id='nfs'
-                    disabled=isStarted}}
+                    disabled=isStarted dataQci="nfs-storage-type"}}
       <span class="{{if isStarted 'disabled'}}">
         NFS
       </span>
     {{/radio-button}}
     &nbsp;&nbsp;&nbsp;&nbsp;
-    {{#radio-button value="GFS" groupValue=model.openshift_storage_type id='gluster'}}
+    {{#radio-button value="GFS" groupValue=model.openshift_storage_type id='gluster' dataQci="gluster-storage-type"}}
       <span class="{{if isStarted 'disabled'}}">
         Gluster
       </span>
@@ -77,6 +77,7 @@
   <div class="ose-sample-apps">
     {{check-f label='Hello World'
       checked=model.openshift_sample_helloworld
+      cssId='openshift_hello_world'
       isRequired=false
       helpText='A Hello World sample HTML application'}}
   </div>

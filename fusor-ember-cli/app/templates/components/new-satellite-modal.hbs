@@ -3,11 +3,11 @@
                  title="New Subscription Management Application"}}
 
       {{#pf-modal-body}}
-            {{text-f label="Name" value=newSatelliteName labelSize='col-md-4' inputSize='col-md-8'}}
+            {{text-f label="Name" value=newSatelliteName labelSize='col-md-4' inputSize='col-md-8' cssId='new-satellite-name'}}
       {{/pf-modal-body}}
 
       {{#pf-modal-footer}}
-          <button {{action 'createSatellite'}} class="btn btn-primary">
+          <button {{action 'createSatellite'}} class="btn btn-primary" data-qci='submit-new-satellite'>
               Submit
           </button>
       {{/pf-modal-footer}}

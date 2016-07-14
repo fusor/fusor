@@ -35,7 +35,7 @@
                   <h4 class="h5">Assigned Nodes</h4>
                   <ul class="deployment-roles deployment-roles-assigned">
                     {{#each assignedRoles as |role|}}
-                      {{#draggable-object content=role}}
+                      {{#draggable-object content=role data-qci=role.roleType}}
                         {{deployment-role role=role
                                           profile=profile
                                           nodeCount=matchingNodeCount

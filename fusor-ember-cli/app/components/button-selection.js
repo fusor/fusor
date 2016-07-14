@@ -20,6 +20,10 @@ export default Ember.Component.extend({
     return this.get('disabled');
   }),
 
+  cssId: Ember.computed('buttonType', 'value', function() {
+    return `${this.get('buttonType')}-${this.get('value')}`;
+  }),
+
   click() {
     if (!this.get('disabled')) {
       this.sendAction('changed', this.get('value'));

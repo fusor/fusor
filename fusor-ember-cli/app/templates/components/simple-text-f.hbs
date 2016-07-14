@@ -1,6 +1,6 @@
 <div class="form-group simple-text-error {{if hasError 'has-error'}}">
 
-  {{input class=cssFormClass value=value placeholder=placeholder type=typeInput focus-out="showValidationErrors" id=cssId disabled=disabled autocomplete='off'
+  {{input class=cssFormClass value=value placeholder=placeholder type=typeInput focus-out="showValidationErrors" id=cssId data-qci=cssId disabled=disabled autocomplete='off'
   maxlength="250" class='form-control ose-custom-input'}} {{suffix}}
 
   {{#if showValidationError}}

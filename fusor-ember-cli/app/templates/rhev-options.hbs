@@ -26,15 +26,16 @@
       {{text-f label="Cluster Name" value=rhevClusterName placeholder="Leave blank for default" cssId="rhev-cluster-name"
                disabled=isStarted validator=clusterNameValidator showValidationError=true}}
 
-      {{select-simple-f label="CPU Type"
-                        content=cpuTypes
-                        value=rhevCpuType
-                        prompt="Autodetect CPU family"
-                        renderInPlace=true
-                        cssId="rhev-cpu-type"
-                        disabled=isStarted
-                        action="setSelectValue"
-                        fieldName="rhevCpuType"}}
+      <span data-qci="rhev-cpu-type">
+        {{select-simple-f label="CPU Type"
+                          content=cpuTypes
+                          value=rhevCpuType
+                          prompt="Autodetect CPU family"
+                          renderInPlace=true
+                          disabled=isStarted
+                          action="setSelectValue"
+                          fieldName="rhevCpuType"}}
+      </span>
     </form>
   </div>
 </div>

@@ -2,7 +2,7 @@
 
   {{#if useExistingManifest}}
     {{#link-to 'subscriptions.review-subscriptions' tagName='li'}}
-      <a>
+      <a data-qci='review-subscriptions'>
         <span class="hanging-indent">
           {{stepNumberSubscriptions}}A. Review Subscriptions
         </span>
@@ -10,7 +10,7 @@
     {{/link-to}}
   {{else}}
     {{#link-to 'subscriptions.credentials' tagName='li' disabled=disableTabCredentials}}
-      <a>
+      <a data-qci='content-provider'>
         <span class="hanging-indent">
           {{stepNumberSubscriptions}}A. Content Provider
         </span>
@@ -19,7 +19,7 @@
 
     {{#if isDisconnected}}
         {{#link-to 'subscriptions.review-subscriptions' tagName='li' disabled=disableTabReviewSubsciptions}}
-          <a>
+          <a data-qci='review-subscriptions'>
             <span class="hanging-indent">
               {{stepNumberSubscriptions}}B. Review Subscriptions
             </span>
@@ -29,7 +29,7 @@
     {{else}}
 
         {{#link-to 'subscriptions.management-application' tagName='li' disabled=disableTabManagementApplication}}
-          <a>
+          <a data-qci='management-application'>
             <span class="hanging-indent">
               {{stepNumberSubscriptions}}B. Subscription Management Application
             </span>
@@ -37,7 +37,7 @@
         {{/link-to}}
 
         {{#link-to 'subscriptions.select-subscriptions' tagName='li' disabled=disableTabSelectSubsciptions}}
-          <a>
+          <a data-qci='select-subscriptions'>
             <span class="hanging-indent">
               {{stepNumberSubscriptions}}C. Add Subscriptions
             </span>
@@ -45,7 +45,7 @@
         {{/link-to}}
 
         {{#link-to 'subscriptions.review-subscriptions' tagName='li' disabled=disableTabSelectSubsciptions}}
-          <a>
+          <a data-qci='review-subscriptions'>
             <span class="hanging-indent">
               {{stepNumberSubscriptions}}D. Review Subscriptions
             </span>

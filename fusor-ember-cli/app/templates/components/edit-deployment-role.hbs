@@ -27,12 +27,13 @@
                   <textarea class="form-control" type="text" value={{editedRole.description}} readOnly="true"></textarea>
               </div>
             </div>
-            {{select-f label="Provisioning Image" labelSize='col-sm-4' inputSize='col-sm-8' content=images value=editedRoleImage isRequired=false optionLabelPath="content.name" optionValuePath="content.name"}}
-            {{select-f label="Flavor" labelSize='col-sm-4' inputSize='col-sm-8' content=profileOptions value=editedRoleProfile  isRequired=false optionLabelPath="content.name" optionValuePath="content.name"}}
+            {{select-f label="Provisioning Image" labelSize='col-sm-4' inputSize='col-sm-8' content=images value=editedRoleImage isRequired=false optionLabelPath="content.name" optionValuePath="content.name" cssId='provisioning-image'}}
+
+            {{select-f label="Flavor" labelSize='col-sm-4' inputSize='col-sm-8' content=profileOptions value=editedRoleProfile  isRequired=false optionLabelPath="content.name" optionValuePath="content.name" cssId='flavor'}}
             <div class="form-group">
               <label class="control-label col-sm-4 ">Number of Nodes</label>
               <div class="col-sm-8">
-                {{#x-select value=editedRoleNodeCount disabled=disabled}}
+                {{#x-select value=editedRoleNodeCount disabled=disabled data-qci='num_of_nodes'}}
                   {{#each roleNodeCountOptions as |opt| }}
                     {{#x-option value=opt}}{{opt}}{{/x-option}}
                   {{/each}}
@@ -50,9 +51,9 @@
                 <div class="required">
                   {{#each editedRoleParameters as |roleParameter|}}
                     {{#if roleParameter.isBoolean}}
-                      {{check-f label=roleParameter.label checked=roleParameter.newValue labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
+                      {{check-f label=roleParameter.label checked=roleParameter.newValue labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description cssId=roleParameter.key}}
                     {{else}}
-                      {{text-f label=roleParameter.label value=roleParameter.newValue type=roleParameter.type labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description}}
+                      {{text-f label=roleParameter.label value=roleParameter.newValue type=roleParameter.type labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description cssId=roleParameter.key}}
                     {{/if}}
                   {{/each}}
                 </div>
@@ -65,8 +66,8 @@
   {{/pf-modal-body}}
 
   {{#pf-modal-footer}}
-    <button type="cancel" class="btn btn-default" {{action "cancelEditRole"}}>Cancel</button>
-    <button type="submit" class="btn btn-primary" {{action "saveRole"}}>Save</button>
+    <button type="cancel" class="btn btn-default" {{action "cancelEditRole"}} data-qci='cancel-edit-deployment-role'>Cancel</button>
+    <button type="submit" class="btn btn-primary" {{action "saveRole"}} data-qci='save-edit-deployment-role'>Save</button>
   {{/pf-modal-footer}}
 
 {{/pf-modal-base}}

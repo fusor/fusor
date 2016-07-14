@@ -1,5 +1,5 @@
 <td>
-  {{input type="checkbox" name="isSelectedSubscription" checked=subscription.isSelectedSubscription id=subscription.id}}
+  {{input type="checkbox" name="isSelectedSubscription" checked=subscription.isSelectedSubscription data-qci=subCssId}}
 </td>
 <td> {{subscription.productName}} </td>
 <td> {{subscription.contractNumber}} </td>
@@ -15,6 +15,7 @@
                           size=5
                           maxlength=5
                           class="center {{if isQtyInValid 'invalid-input'}}"
+                          data-qci=attachCssId
                           disabled=disableQty
                           focus-out="setValidQty"
                           }}

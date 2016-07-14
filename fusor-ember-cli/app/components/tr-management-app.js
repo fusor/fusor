@@ -16,6 +16,10 @@ export default Ember.Component.extend({
     }
   }),
 
+  dataQci: Ember.computed('managementApp', function() {
+    return this.get('managementApp.name').underscore();
+  }),
+
   actions: {
     changeManagementApp() {
       this.sendAction('action', this.get('managementApp'));

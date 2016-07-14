@@ -18,7 +18,7 @@ export default Ember.Mixin.create({
   }),
 
   cssIdHostId: Ember.computed('host.id', function () {
-    return ('id_' + this.get('host.id'));
+    return ('select_rhev_id_' + this.get('host.id'));
   }),
 
   selectedIds: Ember.computed('model.[]', function () {
