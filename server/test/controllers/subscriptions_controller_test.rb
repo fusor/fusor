@@ -150,5 +150,14 @@ module Fusor
       assert_response :success
       assert_equal true, response['valid'], "validate failed when we had subs"
     end
+
+    test "connected with no credentials should return false" do
+      # remove uploaded subscriptions
+      ::Katello::Subscription.destroy_all
+      deployment = fusor_deployments(:sub_val_connected_rhev)
+      response = JSON.parse(get(:validate, :deployment_id => deployment.id).body)
+      assert_response :bad_request
+      assert_equal "Customer portal credentials are required.  Please provide them using login.", response["displayMessage"]
+    end
   end
 end
