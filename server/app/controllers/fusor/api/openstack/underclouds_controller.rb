@@ -27,9 +27,9 @@ module Fusor
         end
 
         def create
-          underhost = params[:underhost]
-          underuser = params[:underuser]
-          underpass = params[:underpass]
+          underhost = params[:undercloud_host]
+          underuser = params[:undercloud_user]
+          underpass = params[:undercloud_password]
 
           begin
             ssh = Net::SSH.start(underhost, underuser, :password => underpass, :timeout => 2,

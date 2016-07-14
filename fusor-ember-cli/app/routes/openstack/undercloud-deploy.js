@@ -74,9 +74,9 @@ export default Ember.Route.extend(PollingPromise, {
       url: `/fusor/api/openstack/deployments/${deploymentId}/underclouds`,
       type: 'POST',
       data: JSON.stringify({
-        'underhost': openstackDeployment.get('undercloud_ip_address'),
-        'underuser': openstackDeployment.get('undercloud_ssh_username'),
-        'underpass': openstackDeployment.get('undercloud_ssh_password'),
+        'undercloud_host': openstackDeployment.get('undercloud_ip_address'),
+        'undercloud_user': openstackDeployment.get('undercloud_ssh_username'),
+        'undercloud_password': openstackDeployment.get('undercloud_ssh_password'),
         'deployment_id': deploymentId
       }),
       headers: {
