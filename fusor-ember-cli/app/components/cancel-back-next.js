@@ -2,7 +2,8 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
-  classNames: ['row cancel-back-next-row'],
+  bottomBar: true,
+  classNameBindings: ['bottomBar:row', 'bottomBar:cancel-back-next-row:cancel-back-next-container'],
 
   dataQciBackButton: Ember.computed('backRouteName', function() {
     return `back-${this.get('backRouteName')}`;
