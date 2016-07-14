@@ -33,6 +33,10 @@ module Fusor
         elsif !manifest_imported && !disconnected
           # new connected
           ::Fusor.log.info "SUB-VAL.validate: CONNECTED! with no existing manifest"
+          unless (session[:portal_username] && session[:portal_password])
+            ::Fusor.log.error "SUB-VAL: missing portal credentials"
+            fail ::Katello::HttpErrors::BadRequest, _("Customer portal credentials are required.  Please provide them using login.")
+          end
           credentials = { :username => session[:portal_username], :password => session[:portal_password] }
           portal_subinfo = build_subinfo_from_portal(deployment.id, deployment.label, deployment.upstream_consumer_uuid, credentials)
 
@@ -131,7 +135,7 @@ module Fusor
         added_subscriptions = Fusor::Subscription.where(:deployment_id => id).where(:source => 'added').where('quantity_to_add > 0')
         added_subscriptions.each do |s|
           # no need to add product ids, we're only interested in the additional counts
-          subinfo.update_counts(s.product_name, s.quantity_attached)
+          subinfo.update_counts(s.product_name, s.quantity_to_add)
         end
 
         ::Fusor.log.info "SUB-VAL.build-si-portal: built subscription info from portal. #{subinfo.inspect}"
