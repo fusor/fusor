@@ -10,7 +10,6 @@ const MirrorStatus = {
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  deploymentId: Ember.computed.alias("deploymentController.model.id"),
   cdnUrl: Ember.computed.alias("deploymentController.model.cdn_url"),
   manifestFile: Ember.computed.alias("deploymentController.model.manifest_file"),
 

@@ -68,34 +68,25 @@ export default Ember.Route.extend({
     },
 
     logoutPortal() {
-      var self = this;
-      var token = Ember.$('meta[name="csrf-token"]').attr('content');
-
-      return new Ember.RSVP.Promise(function (resolve, reject) {
-        request({
-          url: '/customer_portal/logout/',
-          type: "POST",
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "X-CSRF-Token": token
-          }
-        }).then(function(response) {
-          //show always be {} empty successful 200 response
-          const sessionPortal = self.modelFor('subscriptions').sessionPortal;
-          sessionPortal.setProperties({
-            'isAuthenticated': false,
-            'identification': null,
-            'ownerKey': null,
-            'consumerUUID': null
-          });
-
-          sessionPortal.save();
-        }, function(error) {
-          self.send('error');
-        });
+      request({
+        url: '/customer_portal/logout/',
+        type: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "X-CSRF-Token": Ember.$('meta[name="csrf-token"]').attr('content')
+        }
+      }).then(response => {
+        //show always be {} empty successful 200 response
+        this.clearSessionPortal();
+        return this.clearDeploymentInfo();
+      }).then(deployment => {
+        return this.getSubscriptions(deployment);
+      }).then(subscriptions => {
+        return this.deleteSubscriptions(subscriptions);
+      }).catch(error => {
+        this.send('error');
       });
-
     },
 
     saveCredentials() {
@@ -161,6 +152,35 @@ export default Ember.Route.extend({
     redirectToManagementApplication() {
       this.transitionTo('subscriptions.management-application');
     }
+  },
+
+  clearSessionPortal() {
+    const sessionPortal = this.modelFor('subscriptions').sessionPortal;
+    sessionPortal.setProperties({
+      'isAuthenticated': false,
+      'identification': null,
+      'ownerKey': null,
+      'consumerUUID': null
+    });
+    this.set('controller.password', null);
+    sessionPortal.save();
+  },
+
+  clearDeploymentInfo() {
+    let deployment = this.modelFor('deployment');
+    this.set('controller.password', null);
+
+    deployment.set('upstream_consumer_uuid', null);
+    deployment.set('upstream_consumer_name', null);
+    return deployment.save();
+  },
+
+  getSubscriptions(deployment) {
+    return this.store.query('subscription', {deployment_id: deployment.get('id')});
+  },
+
+  deleteSubscriptions(subscriptions) {
+    return Ember.RSVP.all(subscriptions.map(subscription => subscription.destroyRecord()));
   },
 
   confirmAuthenticated(sessionPortal) {
