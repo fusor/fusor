@@ -59,6 +59,12 @@
     - name: Replace default subdomain name for sample app
       replace: "dest=/home/{{ ose_user }}/pod_examples/hello_openshift.json regexp='cloudapps' replace={{ subdomain_name }}"
 
+    - name: Replace default hostname for sample app
+      replace: "dest=/home/{{ ose_user }}/pod_examples/hello_openshift.json regexp='sat62devg.example.com' replace={{ satellite_hostname }}"
+
+    - name: Replace default image name for sample app
+      replace: "dest=/home/{{ ose_user }}/pod_examples/hello_openshift.json regexp='default_organization' replace={{ org_label }}"
+
     - name: Replace default persistent NFS storage host for internal registry
       replace: "dest=/home/{{ ose_user }}/pod_examples/registry-volume-nfs.json regexp='master.example.com' replace={{ docker_registry_host }}"
       when: storage_type == "NFS"
