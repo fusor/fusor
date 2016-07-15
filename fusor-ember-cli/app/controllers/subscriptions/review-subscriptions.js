@@ -5,8 +5,12 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   isDisconnected: Ember.computed.alias('deploymentController.isDisconnected'),
 
+  subscriptionsController: Ember.inject.controller('subscriptions'),
+
   backRouteNameReviewSubs: Ember.computed('isDisconnected', function() {
-    if (this.get('isDisconnected')) {
+    if(this.get('useExistingManifest')) {
+      return this.get('subscriptionsController.backRouteFromSubscriptions');
+    } else if (this.get('isDisconnected')) {
       return 'subscriptions.credentials';
     } else {
       return 'subscriptions.select-subscriptions';
