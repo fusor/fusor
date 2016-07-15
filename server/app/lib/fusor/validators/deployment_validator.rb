@@ -323,7 +323,7 @@ module Fusor
       def add_warning(deployment, warning, other_info = "")
         deployment.warnings << warning
         full_warning = other_info.blank? ? warning : "#{warning} #{other_info}"
-        Rails.logger.warn("#{full_warning}")
+        ::Fusor.log.warn("#{full_warning}")
       end
     end
   end

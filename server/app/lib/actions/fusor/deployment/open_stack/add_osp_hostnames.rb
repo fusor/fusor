@@ -25,7 +25,7 @@ module Actions
           end
 
           def run
-            Rails.logger.debug '====== AddOspHostnames run method ======'
+            ::Fusor.log.debug '====== AddOspHostnames run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             openstack_deployment = deployment.openstack_deployment
             hostname_prefix = deployment.label.tr('_', '-')
@@ -41,7 +41,7 @@ module Actions
                                                :hostname => openstack_deployment.undercloud_hostname,
                                                :proxy => domain.proxy)
             undercloud.create
-            Rails.logger.debug '=== Leaving AddOspHostnames run method ==='
+            ::Fusor.log.debug '=== Leaving AddOspHostnames run method ==='
           end
 
         end
