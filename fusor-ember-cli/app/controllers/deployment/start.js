@@ -4,6 +4,8 @@ import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(StartControllerMixin, NeedsDeploymentMixin, {
 
+  isNew: false,
+  deploymentName: Ember.computed.alias("deploymentController.model.name"),
   isRhev: Ember.computed.alias("deploymentController.model.deploy_rhev"),
   isOpenStack: Ember.computed.alias("deploymentController.model.deploy_openstack"),
   isCloudForms: Ember.computed.alias("deploymentController.model.deploy_cfme"),

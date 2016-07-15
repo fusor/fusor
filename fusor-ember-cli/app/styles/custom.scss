@@ -113,7 +113,7 @@ ul.req-list > li {
   font-size: 18px;
 }
 
-.next-start {
+.rhci-start-block .cancel-back-next-container {
   float: right;
   margin-top: 30px;
 }
@@ -886,12 +886,15 @@ span.hanging-indent{
   width: 100%;
 }
 
-.cancel-button {
-  margin-right: 10px;
-}
+.rhci-steps-buttons {
+  .btn.back-button {
+    margin-left: 15px;
+    margin-right: 0;
+  }
 
-.next-button {
-  margin-left: -5px !important;
+  .btn.next-button {
+    margin-left: 0;
+  }
 }
 
 .edit-deployment {
