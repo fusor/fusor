@@ -30,5 +30,11 @@ export default Ember.Mixin.create({
   fullnameRhev: Ember.computed.alias('deploymentController.fullnameRhev'),
   fullnameOpenStack: Ember.computed.alias('deploymentController.fullnameOpenStack'),
   fullnameCloudForms: Ember.computed.alias('deploymentController.fullnameCloudForms'),
-  fullnameOpenShift: Ember.computed.alias('deploymentController.fullnameOpenShift')
+  fullnameOpenShift: Ember.computed.alias('deploymentController.fullnameOpenShift'),
+
+  isRhev: Ember.computed.alias("deploymentController.model.deploy_rhev"),
+  isOpenStack: Ember.computed.alias("deploymentController.model.deploy_openstack"),
+  isCloudForms: Ember.computed.alias("deploymentController.model.deploy_cfme"),
+  isOpenShift: Ember.computed.alias("deploymentController.model.deploy_openshift"),
+  isSubscriptions: Ember.computed.alias("deploymentController.model.isSubscriptions")
 });
