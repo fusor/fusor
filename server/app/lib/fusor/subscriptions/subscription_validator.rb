@@ -117,6 +117,15 @@ module Fusor
       #   and subscription counts
       #
 
+      def get_all_subscriptions(uuid, auth)
+        lookup_map = {}
+        all_subs = JSON.parse(::Fusor::Resources::CustomerPortal::Proxy.get("/pools/?consumer=#{uuid}&listall=false", auth))
+        all_subs.each do |s|
+          lookup_map[s["productName"]] = s["providedProducts"].map { |p| p["productId"] }
+        end
+        return lookup_map
+      end
+
       def build_subinfo_from_portal(id, label, uuid, auth)
         subinfo = Fusor::Subscriptions::SubscriptionInfo.new("portal-" + label)
         # get the product ides from customer portal
@@ -133,9 +142,16 @@ module Fusor
         # We only want subscriptions for this deployment which were added
         # and have an actual quantity to add.
         added_subscriptions = Fusor::Subscription.where(:deployment_id => id).where(:source => 'added').where('quantity_to_add > 0')
+
+        # if we have added some subscriptions, let's see if we need to add
+        # their product ids as well
+        if !added_subscriptions.empty?
+          all_subs = get_all_subscriptions(uuid, auth)
+        end
+
         added_subscriptions.each do |s|
-          # no need to add product ids, we're only interested in the additional counts
           subinfo.update_counts(s.product_name, s.quantity_to_add)
+          subinfo.add_product_ids(s.product_name, all_subs[s.product_name])
         end
 
         ::Fusor.log.info "SUB-VAL.build-si-portal: built subscription info from portal. #{subinfo.inspect}"
