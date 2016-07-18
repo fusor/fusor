@@ -110,8 +110,8 @@ rhev_different_passwords:
   deploy_openstack: false
   deploy_cfme: false
   deploy_rhev: true
-  name: rhev
-  label: rhev
+  name: rhev_different_passwords
+  label: rhev_different_passwords
   organization: empty_organization
   lifecycle_environment: library
   upstream_consumer_uuid: 1
