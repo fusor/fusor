@@ -87,10 +87,16 @@ export default Ember.Route.extend(UsesOseDefaults, {
       .then(hash => {
         // Calculate aggregates
         const hvs = hash.hvs;
-        const cpus = hvs.reduce((accum, hv) => accum + hv.get('cpus'), 0);
+
+        const cpus = hvs.reduce((accum, hv) => {
+          const cpu = hv.get('cpus') || 0;
+          return accum + cpu;
+        }, 0);
+
         const ram = Humanize.rawToHuman(
           hvs.reduce((accum, hv) => {
-            return accum + Humanize.humanToRaw(hv.get('memory_human_size'));
+            const mem = hv.get('memory_human_size') || '0 B';
+            return accum + Humanize.humanToRaw(mem);
           }, 0),
           {output: 'object'}
         ).value;
