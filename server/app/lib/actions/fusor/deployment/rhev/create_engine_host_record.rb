@@ -70,7 +70,7 @@ module Actions
                      "enabled" => "1",
                      "managed" => "1",
                      "architecture_id" => Architecture.find_by_name('x86_64')['id'],
-                     "operatingsystem_id" => Operatingsystem.find_by_title('RedHat 6.8')['id'],
+                     "operatingsystem_id" => Operatingsystem.find_by_title('RedHat 7.2')['id'],
                      "ptable_id" => Ptable.find { |p| p["name"] == "Kickstart default" }.id,
                      "domain_id" => 1,
                      "root_pass" => deployment.rhev_root_password,
