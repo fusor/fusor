@@ -115,8 +115,6 @@ class PasswordFilterTest < ActiveSupport::TestCase
 
     assert !filtered_text.include?(custom_password_array[0])
     assert !filtered_text.include?(custom_password_array[1])
-
-    deployment_rhev = fusor_deployments(:rhev)
   end
 
 
@@ -125,14 +123,11 @@ class PasswordFilterTest < ActiveSupport::TestCase
 
     # stage 1: grab deployment record for a rhev deployment with a single password.
     deployment_rhev = fusor_deployments(:rhev)
-    expected_passwords = [
-      "redhat1234"
-    ]
     password_set = PasswordFilter.extract_deployment_passwords(deployment_rhev)
 
     if SETTINGS[:fusor][:system][:logging][:show_passwords]
       assert password_set.nil?
-    elsif
+    else
       assert password_set.size == 1
     end
   end

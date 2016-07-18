@@ -11,7 +11,7 @@ class PasswordFilter
 
   def self.extract_deployment_passwords(deployment)
     # act as passthrough (no filtering) if we're in dev/test AND show_passwords is enabled
-    if !Rails.env.production? and SETTINGS[:fusor][:system][:logging][:show_passwords]
+    if !Rails.env.production? && SETTINGS[:fusor][:system][:logging][:show_passwords]
       return nil
     end
 
@@ -23,17 +23,16 @@ class PasswordFilter
       :cfme_admin_password,
       :cfme_db_password,
       :openshift_user_password,
-      :openshift_root_password,
+      :openshift_root_password
     ]
     osp_deployment_passwords = [
       :undercloud_admin_password,
       :undercloud_ssh_password,
-      :overcloud_password,
+      :overcloud_password
     ]
 
     # get passwords from main deployment
-    extracted_passwords = Set.new
-    extracted_passwords += cautious_get_attrs(main_deployment_passwords, deployment)
+    extracted_passwords = cautious_get_attrs(main_deployment_passwords, deployment)
 
     # check if osp deployment exists, if so get passwords from it as well
     if deployment.respond_to? :openstack_deployment
@@ -41,7 +40,7 @@ class PasswordFilter
       extracted_passwords += cautious_get_attrs(osp_deployment_passwords, osp_deployment)
     end
 
-    if extracted_passwords.size > 0
+    if !extracted_passwords.empty?
       @password_cache = extracted_passwords.clone
     end
     return extracted_passwords
@@ -63,11 +62,11 @@ class PasswordFilter
 
   def self.filter_passwords(text_to_filter, passwords = nil, replacement_text = "[FILTERED]")
     # act as passthrough (no filtering) if we're in dev/test AND show_passwords is enabled
-    if !Rails.env.production? and SETTINGS[:fusor][:system][:logging][:show_passwords]
+    if !Rails.env.production? && SETTINGS[:fusor][:system][:logging][:show_passwords]
       return text_to_filter
     end
     # convert arrays etc. to strings so that gsub! is possible
-    if !text_to_filter.kind_of?(String)
+    if !text_to_filter.is_a?(String)
       text_to_filter = text_to_filter.to_s
     end
     # read from the password_cache if passwords aren't passed in
@@ -75,7 +74,7 @@ class PasswordFilter
       passwords = @password_cache
     end
     # ensure that we have a set of passwords to filter out
-    if !passwords.nil? and passwords.kind_of?(Set)
+    if !passwords.nil? and passwords.is_a?(Set)
       passwords.each do |password|
         text_to_filter.gsub!(password, replacement_text)
       end

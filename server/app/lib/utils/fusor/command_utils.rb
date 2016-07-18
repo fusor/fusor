@@ -34,7 +34,7 @@ module Utils
         output_filtered = output
 
         # run password filtering code if we're going to log something
-        if status > 0 or log_on_success
+        if status > 0 || log_on_success
           cmd_filtered = PasswordFilter.filter_passwords(cmd.clone)
           output_filtered = PasswordFilter.filter_passwords(output.clone)
         end

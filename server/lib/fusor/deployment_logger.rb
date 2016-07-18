@@ -12,7 +12,7 @@ class DeploymentLogger < Logger
   def initialize(*args, deployment)
     super(*args)
     if !deployment.nil?
-        PasswordFilter.extract_deployment_passwords(deployment)
+      PasswordFilter.extract_deployment_passwords(deployment)
     end
   end
 
