@@ -28,9 +28,15 @@ cd fixtures
 FILES=`ls ../../../fusor/server/test/fixtures/ ../../../katello/test/fixtures/models/`
 for f in $FILES
 do
-    rm -f $f
+    # skip operatingsystems.yml
+    if [ "$f" != "operatingsystems.yml" ]; then
+        rm -f $f
+    fi
 done
-mv -f os.yml.foreman operatingsystems.yml
+
+if [ -e 'os.yml.foreman' ]; then
+    mv -f os.yml.foreman operatingsystems.yml
+fi
 
 # proceed
 mv -f operatingsystems.yml os.yml.foreman
