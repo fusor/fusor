@@ -86,12 +86,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return (this.get('cntSelectedHypervisorHosts') === this.get('availableHosts.length'));
   }),
 
-  observeAllChecked: Ember.observer('allChecked', function(row) {
-    // TODO
-    if (this.get('allChecked')) {
-      this.send('setCheckAll');
-    } else {
-      this.send('setUncheckAll');
+  observeAllChecked: Ember.observer('isAllChecked', function(row) {
+    if (this.get('isAllChecked')) {
+      this.set('checkAll', true);
+      this.set('uncheckAll', false);
     }
   }),
 
