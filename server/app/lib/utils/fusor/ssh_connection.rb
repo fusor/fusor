@@ -105,7 +105,6 @@ module Utils
 
             channel.wait
           end
-          call_complete
         rescue Exception => e
           puts e.message
           puts e.backtrace.inspect
