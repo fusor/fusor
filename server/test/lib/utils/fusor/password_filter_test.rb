@@ -132,6 +132,45 @@ class PasswordFilterTest < ActiveSupport::TestCase
     end
   end
 
+  test "filter_passwords should catch all common layouts of passwords in logs" do
+    Rails.env = "production"
+
+    # stage 1: simulate common password contexts, ensure filtered result
+    password = "redhat1234"
+    text_to_filter = "'password': '#{password}'\n"
+    text_to_filter += "'password': '#{password}',\n"
+    text_to_filter += "'rhev_pw': '#{password}', 'cfme_pw': '#{password}', 'osp8_pw': '#{password}' \n"
+    text_to_filter += "\"rhev_pw': \"#{password}\", \"cfme_pw\": \"#{password}\", \"osp8_pw\": \"#{password}\" \n"
+    text_to_filter += "ssh --password= #{password} \n"
+    text_to_filter += "ssh --password = #{password}\n"
+    text_to_filter += "ssh --password=#{password},\n"
+    text_to_filter += " #{password},\n"
+    text_to_filter += "#{password},\n"
+
+    filtered_text = PasswordFilter.filter_passwords(text_to_filter.clone, Set.new([password]))
+    assert !filtered_text.include?(password), "filtered_text should not contain any passwords"
+
+    # stage 2: use password of 'password'
+    password = "password"
+    text_to_filter = '"rhev_engine_admin_password": "password",'
+    text_to_filter += '"rhev_root_password": "password",'
+    text_to_filter += '"cfme_root_password": "password",'
+    text_to_filter += '"cfme_admin_password": "password",'
+    text_to_filter += '"openshift_user_password": "password",'
+    text_to_filter += '"openshift_root_password": "password",'
+    text_to_filter += '"cfme_db_password": "password",'
+
+    filtered_text = PasswordFilter.filter_passwords(text_to_filter.clone, Set.new([password]))
+
+    assert !filtered_text.include?("\"#{password}\""), "PasswordFilter should filter passwords when isolated."
+
+    assert filtered_text.include?("rhev_root_password"), "PasswordFilter should not filter passwords in the context of a field label."
+    assert filtered_text.include?("cfme_root_password"), "PasswordFilter should not filter passwords in the context of a field label."
+    assert filtered_text.include?("cfme_admin_password"), "PasswordFilter should not filter passwords in the context of a field label."
+    assert filtered_text.include?("openshift_user_password"), "PasswordFilter should not filter passwords in the context of a field label."
+    assert filtered_text.include?("openshift_root_password"), "PasswordFilter should not filter passwords in the context of a field label."
+    assert filtered_text.include?("cfme_db_password"), "PasswordFilter should not filter passwords in the context of a field label."
+  end
 
   after do
     Rails.env = "test"

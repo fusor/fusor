@@ -76,7 +76,15 @@ class PasswordFilter
     # ensure that we have a set of passwords to filter out
     if !passwords.nil? and passwords.is_a?(Set)
       passwords.each do |password|
-        text_to_filter.gsub!(password, replacement_text)
+        # matches context in which passwords characteristically appear in logs
+        # e.g. passwords are normally surrounded by quotes, spaces, an equals
+        # sign on the left, a newline character on the right, etc. there are
+        # many possibilities, this regex should cover every case in fusor and
+        # avoid filtering non-password strings happening to contain the user's
+        # password as a substring. if the user selects 'password' as their
+        # master password, we don't want to filter the string "cfme_password"
+        # to become "cfme_[FILTERED]" and reveal the weak password via logs.
+        text_to_filter.gsub!(/([\W\=\"\'\ ])(#{password})(\z|[\"\'\ \n,;])/, "\\1#{replacement_text}\\3")
       end
     end
     return text_to_filter
