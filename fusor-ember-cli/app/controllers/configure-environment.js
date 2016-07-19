@@ -31,12 +31,7 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymen
 
   deployment: Ember.computed.alias("deploymentController.model"),
 
-  envNameValidator: AllValidator.create({
-    validators: [
-      PresenceValidator.create({}),
-      AlphaNumericDashUnderscoreValidator.create({})
-    ]
-  }),
+  envNameValidator: PresenceValidator.create({}),
 
   actions: {
     selectEnvironment(environment) {
