@@ -25,7 +25,7 @@ module Actions
           end
 
           def run
-            ::Fusor.log.debug "================ AddRhevProvider run method ===================="
+            ::Fusor.log.debug "================ AddRhvProvider run method ===================="
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             cfme_address = deployment.cfme_address
@@ -46,12 +46,12 @@ module Actions
               }]
             }
 
-            ::Fusor.log.info "Adding RHEV provider #{provider[:name]} to CFME."
+            ::Fusor.log.info "Adding RHV provider #{provider[:name]} to CFME."
 
             Utils::CloudForms::AddProvider.add(cfme_address, provider, deployment)
             Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)
 
-            ::Fusor.log.debug "================ Leaving AddRhevProvider run method ===================="
+            ::Fusor.log.debug "================ Leaving AddRhvProvider run method ===================="
           end
         end
       end

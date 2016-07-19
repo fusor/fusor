@@ -29,9 +29,9 @@ module Actions
                 fail _("Unable to locate CloudForms content settings in config/settings.plugins.d/fusor.yaml")
               end
               if deployment.cfme_install_loc == 'RHEV'
-                fail _("Unable to locate a RHEV export domain") unless deployment.rhev_export_domain_name
+                fail _("Unable to locate a RHV export domain") unless deployment.rhev_export_domain_name
                 fail _("Unable to locate a suitable host for CloudForms deployment") unless deployment.rhev_engine_host
-                fail _("RHEV engine admin password not configured properly") unless deployment.rhev_engine_admin_password
+                fail _("RHV engine admin password not configured properly") unless deployment.rhev_engine_admin_password
               end
             else
               ::Fusor.log.warn "Deploy CloudForms action scheduled but deploy_cfme was NOT selected. Please file a bug."

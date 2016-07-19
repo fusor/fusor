@@ -29,7 +29,7 @@ module Actions
           end
 
           def run
-            ::Fusor.log.debug '====== RHEV Compute Resource run method ======'
+            ::Fusor.log.debug '====== RHV Compute Resource run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             rhevm = ::Host.find(deployment.rhev_engine_host_id).name
             rhev = { "name" => "#{deployment.label}-RHEV",
@@ -42,7 +42,7 @@ module Actions
             cr = ::Foreman::Model::Ovirt.create(rhev)
             cr.uuid = cr.datacenters.find { |dc| dc[0] == deployment.rhev_data_center_name }[1]
             cr.save
-            ::Fusor.log.debug '=== Leaving RHEV Compute Resource run method ==='
+            ::Fusor.log.debug '=== Leaving RHV Compute Resource run method ==='
           end
 
           def create_cr_completed

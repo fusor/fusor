@@ -30,15 +30,15 @@ module Fusor
         # 5) must have at least one hypervisor
         # 6) must have valid mac address naming scheme
         if deployment.rhev_root_password.empty?
-          deployment.errors[:rhev_root_password] << _('RHEV deployments must specify a root password for the RHEV machines')
+          deployment.errors[:rhev_root_password] << _('RHV deployments must specify a root password for the RHV machines')
         end
 
         if deployment.rhev_engine_admin_password.empty?
-          deployment.errors[:rhev_engine_admin_password] << _('RHEV deployments must specify an admin password for the RHEV Engine')
+          deployment.errors[:rhev_engine_admin_password] << _('RHV deployments must specify an admin password for the RHV Engine')
         end
 
         if deployment.rhev_storage_type.empty? or !['NFS', 'Local', 'glusterfs'].include?(deployment.rhev_storage_type)
-          deployment.errors[:rhev_storage_type] << _('RHEV deployments must specify a valid storage type (NFS, Local, glusterfs)')
+          deployment.errors[:rhev_storage_type] << _('RHV deployments must specify a valid storage type (NFS, Local, glusterfs)')
         end
 
         if deployment.rhev_storage_type == 'Local'
@@ -47,13 +47,13 @@ module Fusor
           end
         else
           if deployment.rhev_share_path.empty?
-            deployment.errors[:rhev_share_path] << _('RHEV storage specified but missing path to the share')
+            deployment.errors[:rhev_share_path] << _('RHV storage specified but missing path to the share')
           else
             error = validate_storage_path(deployment, deployment.rhev_share_path)
             if error
               deployment.errors[:rhev_share_path] << _(error)
             elsif deployment.rhev_storage_address.empty?
-              deployment.errors[:rhev_storage_address] << _('RHEV storage specified but missing address to the share')
+              deployment.errors[:rhev_storage_address] << _('RHV storage specified but missing address to the share')
             else
               validate_storage_share(deployment, deployment.rhev_storage_address, deployment.rhev_share_path, 36, 36)
             end
@@ -62,13 +62,13 @@ module Fusor
 
         if deployment.rhev_is_self_hosted
           if deployment.hosted_storage_path.empty?
-            deployment.errors[:hosted_storage_path] << _('RHEV self hosted deployments must specify hosted storage path')
+            deployment.errors[:hosted_storage_path] << _('RHV self hosted deployments must specify hosted storage path')
           else
             error = validate_storage_path(deployment, deployment.hosted_storage_path)
             if error
               deployment.errors[:hosted_storage_path] << _(error)
             elsif deployment.hosted_storage_address.empty?
-              deployment.errors[:hosted_storage_address] << _('RHEV self hosted deployments must specify hosted storage address')
+              deployment.errors[:hosted_storage_address] << _('RHV self hosted deployments must specify hosted storage address')
             else
               validate_storage_share(deployment, deployment.hosted_storage_address, deployment.hosted_storage_path, 36, 36)
             end
@@ -76,11 +76,11 @@ module Fusor
         end
 
         if deployment.rhev_engine_host_id.nil? and !deployment.rhev_is_self_hosted
-          deployment.errors[:rhev_engine_host_id] << _('RHEV deployments must have a RHEV Engine Host')
+          deployment.errors[:rhev_engine_host_id] << _('RHV deployments must have a RHV Engine Host')
         end
 
         if deployment.rhev_hypervisor_hosts.count < 1
-          deployment.errors[:rhev_hypervisor_hosts] << _('RHEV deployments must have at least one Hypervisor')
+          deployment.errors[:rhev_hypervisor_hosts] << _('RHV deployments must have at least one Hypervisor')
         end
 
         validate_hostname(deployment)
@@ -92,7 +92,7 @@ module Fusor
         # 2) must have install location
         # 3) must have cfme root password
         if !(deployment.deploy_rhev or deployment.deploy_openstack)
-          deployment.errors[:deploy_cfme] << _("CloudForms deployments must also deploy either RHEV or OpenStack")
+          deployment.errors[:deploy_cfme] << _("CloudForms deployments must also deploy either RHV or OpenStack")
         end
 
         if deployment.cfme_install_loc.empty?
@@ -126,7 +126,7 @@ module Fusor
         # 5) must have a unique wildcard subdomain entry
 
         if !(deployment.deploy_rhev or deployment.deploy_openstack)
-          deployment.errors[:deploy_openshift] << _("OpenShift deployments must also deploy either RHEV or OpenStack")
+          deployment.errors[:deploy_openshift] << _("OpenShift deployments must also deploy either RHV or OpenStack")
         end
 
         if deployment.openshift_install_loc.empty?
@@ -287,13 +287,13 @@ module Fusor
 
         unless deployment.rhev_engine_host.nil?
           unless deployment.rhev_engine_host.name =~ regex
-            deployment.errors[:base] << _("RHEV engine host '%s' does not have proper mac naming scheme." % "#{deployment.rhev_engine_host.name}")
+            deployment.errors[:base] << _("RHV engine host '%s' does not have proper mac naming scheme." % "#{deployment.rhev_engine_host.name}")
           end
         end
 
         deployment.rhev_hypervisor_hosts.each do |host|
           unless host.name =~ regex
-            deployment.errors[:base] << _("RHEV hypervisor hosts '%s' does not have proper mac naming scheme." % "#{host.name}")
+            deployment.errors[:base] << _("RHV hypervisor hosts '%s' does not have proper mac naming scheme." % "#{host.name}")
           end
         end
       end
@@ -303,19 +303,19 @@ module Fusor
 
         unless deployment.rhev_storage_address.nil?
           unless deployment.rhev_storage_address =~ regex
-            deployment.errors[:base] << _("RHEV storage address '%s' is an invalid host or ip address." % "#{deployment.rhev_storage_address}")
+            deployment.errors[:base] << _("RHV storage address '%s' is an invalid host or ip address." % "#{deployment.rhev_storage_address}")
           end
         end
 
         unless deployment.rhev_export_domain_address.nil?
           unless deployment.rhev_export_domain_address =~ regex
-            deployment.errors[:base] << _("RHEV export domain address '%s' is an invalid host or ip address" % "#{deployment.rhev_export_domain_address}")
+            deployment.errors[:base] << _("RHV export domain address '%s' is an invalid host or ip address" % "#{deployment.rhev_export_domain_address}")
           end
         end
 
         unless deployment.hosted_storage_address.nil?
           unless deployment.hosted_storage_address =~ regex
-            deployment.errors[:base] << _("RHEV self hosted storage address '%s' is an invalid host or ip address" % "#{deployment.hosted_storage_address}")
+            deployment.errors[:base] << _("RHV self hosted storage address '%s' is an invalid host or ip address" % "#{deployment.hosted_storage_address}")
           end
         end
       end

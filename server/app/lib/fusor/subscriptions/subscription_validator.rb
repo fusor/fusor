@@ -192,7 +192,7 @@ module Fusor
           subinfo.update_counts(:openstack, openstack.overcloud_object_storage_count)
         end
 
-        ::Fusor.log.debug "SUB-VAL.build-si-dep: deploy_rhev: #{deployment.deploy_rhev}"
+        ::Fusor.log.debug "SUB-VAL.build-si-dep: deploy_rhv: #{deployment.deploy_rhev}"
         ::Fusor.log.debug "SUB-VAL.build-si-dep: deploy_cfme: #{deployment.deploy_cfme}"
         ::Fusor.log.debug "SUB-VAL.build-si-dep: deploy_openshift: #{deployment.deploy_openshift}"
         ::Fusor.log.debug "SUB-VAL.build-si-dep: deploy_openstack: #{deployment.deploy_openstack}"
