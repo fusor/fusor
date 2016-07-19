@@ -48,6 +48,7 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
     newEnvironment() {
       this.set('name', null);
       this.set('description', null);
+      this.set('showValidationError', false);
       this.set('openModal', true);
     }
   }

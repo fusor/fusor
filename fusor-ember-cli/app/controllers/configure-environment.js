@@ -38,10 +38,13 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymen
       this.set('showAlertMessage', false);
       this.set('selectedEnvironment', environment);
       this.get('deploymentController.model').set('lifecycle_environment', environment);
+      this.get('deploymentController').set('errorMsg', null);
+      this.set('errorMsg', null);
     },
 
     createEnvironment(fields_env) {
       var self = this;
+      this.set('showAlertMessage', false);
 
       var nameAlreadyExists =  self.get('lifecycleEnvironments').findBy('name', fields_env.name);
       if (nameAlreadyExists) {
@@ -64,7 +67,9 @@ export default Ember.Controller.extend(ConfigureEnvironmentMixin, NeedsDeploymen
         self.get('deploymentController').set('errorMsg', null);
         self.set('showAlertMessage', true);
       }, function(error) {
-        self.get('deploymentController').set('errorMsg', 'error saving environment' + error);
+        let errorMsg = 'error saving environment' + error;
+        self.get('deploymentController').set('errorMsg', errorMsg);
+        self.set('errorMsg', errorMsg);
       });
 
     }
