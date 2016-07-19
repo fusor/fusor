@@ -4,7 +4,7 @@ export default Ember.Component.extend({
 
   envLabelName: Ember.computed('name', function() {
     if (this.get('name')) {
-      var label = this.get('name').underscore();
+      var label = this.get('name').trim();
       return label.replace(/[^A-Z0-9]/ig, "_");
     }
   }),
