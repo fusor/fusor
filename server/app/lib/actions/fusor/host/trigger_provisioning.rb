@@ -108,8 +108,12 @@ module Actions
             ::Fusor.log.debug "saving host of type: #{host.type}"
             ::Fusor.log.debug "calling save"
 
+            # We have to do this manually instead of using host.save! because of a bug in Rails < 4.1.6
+            # https://engineering.redhat.com/trac/RHCI/wiki/Debugging/KnownIssues#host.saveisntpersistingmyrecordandnoerrorsarethrown
             rc = host.save
-            ::Fusor.log.warning "Host save failed. #{host}" if !rc
+            successful_save = rc && host.reload.type == 'Host::Managed'
+
+            fail _("Host with id #{host.id} was not converted to a managed host.") unless successful_save
 
             return host
           end
