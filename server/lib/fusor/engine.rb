@@ -18,9 +18,9 @@ module Fusor
         for sil_path in silenced_paths
           ::Katello.config.logging.ignored_paths.push(sil_path)
         end
-        Rails.logger.warn "fusor_server has added '#{silenced_paths}' to 'Katello.config.logging.ignored_paths': #{::Katello.config.logging.ignored_paths}"
+        Fusor.log.warn "fusor_server has added '#{silenced_paths}' to 'Katello.config.logging.ignored_paths': #{::Katello.config.logging.ignored_paths}"
       else
-        Rails.logger.warn "fusor_server did not find 'Katello.config.logging.ignored_paths' available, skipping silence of logs for '#{silenced_paths}'"
+        Fusor.log.warn "fusor_server did not find 'Katello.config.logging.ignored_paths' available, skipping silence of logs for '#{silenced_paths}'"
       end
     end
 

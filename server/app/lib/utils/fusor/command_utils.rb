@@ -10,6 +10,7 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 require 'open3'
+require 'fusor/password_filter'
 
 module Utils
   module Fusor
@@ -29,14 +30,23 @@ module Utils
         #
         output = stdout_err.readlines
 
+        cmd_filtered = cmd
+        output_filtered = output
+
+        # run password filtering code if we're going to log something
+        if status > 0 || log_on_success
+          cmd_filtered = PasswordFilter.filter_passwords(cmd.clone)
+          output_filtered = PasswordFilter.filter_passwords(output.clone)
+        end
+
         if status > 0
-          Rails.logger.error "Error running command: #{cmd}"
-          Rails.logger.error "Status code: #{status}"
-          Rails.logger.error "Command output: #{output}"
+          ::Fusor.log.error "Error running command: #{cmd_filtered}"
+          ::Fusor.log.error "Status code: #{status}"
+          ::Fusor.log.error "Command output: #{output_filtered}"
         elsif log_on_success
-          Rails.logger.info "Command: #{cmd}"
-          Rails.logger.info "Status code: #{status}"
-          Rails.logger.info "Command output: #{output}"
+          ::Fusor.log.info "Command: #{cmd_filtered}"
+          ::Fusor.log.info "Status code: #{status}"
+          ::Fusor.log.info "Command output: #{output_filtered}"
         end
 
         # need to close these explicitly as per the docs

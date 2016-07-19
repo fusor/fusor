@@ -10,6 +10,9 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+require 'fusor/password_filter'
+require 'fusor/deployment_logger'
+
 module Fusor
   class Api::V2::DeploymentsController < Api::V2::BaseController
 
@@ -113,6 +116,11 @@ module Fusor
     def write_file(path, filename, text)
       file = "#{path}/#{filename}"
       FileUtils.rmtree(file) if File.exist?(file)
+
+      # Remove sensitive data from text being written
+      PasswordFilter.extract_deployment_passwords(@deployment)
+      text = PasswordFilter.filter_passwords(text)
+
       Fusor.log.info "====== '#{file}' ====== \n #{text}"
       begin
         File.write(file, text)

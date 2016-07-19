@@ -382,6 +382,7 @@
   :system:
     :logging:
       :level: ":debug"
+      :show_passwords: false # show passwords in logs for non-prod environments
       :watch:
         :production:
           - :file: "/var/log/foreman/production.log"
