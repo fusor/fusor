@@ -26,6 +26,10 @@ export default Ember.Component.extend({
     }
   }),
 
+  customPreprendNameTrimmed: Ember.computed('customPreprendName', function() {
+    return this.get('customPreprendName').trim();
+  }),
+
   actions: {
     saveNamingScheme() {
       this.set('openModal', false);
