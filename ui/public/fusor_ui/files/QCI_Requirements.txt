@@ -1,7 +1,7 @@
 The following are prerequisites for each of the products you have selected to deploy:
 
 General
-- Red Hat Customer Portal username and password
+- Red Hat Customer Portal username and password. This account must be an Organization Administrator within the Portal.
 - Sufficient subscriptions. To check your subscriptions, log in to https://access.redhat.com/management/subscriptions
 - Host machines are started and discoverable
 - Networks and subnets are set up and available
