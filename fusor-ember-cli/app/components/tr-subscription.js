@@ -79,7 +79,6 @@ export default Ember.Component.extend({
       if (this.get('isQtyInValid')) {
         this.set('subscription.qtyToAttach', this.get('subscription.qtyAvailable') );
       }
-      // TODO - call saveSubscription action from within this action
       var pool = this.get('subscription');
       this.sendAction('saveSubscription', pool, this.get('subscription.qtyToAttach'));
     }
