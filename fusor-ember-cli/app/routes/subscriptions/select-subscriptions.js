@@ -84,16 +84,39 @@ export default Ember.Route.extend({
   actions: {
     saveSubscription(pool, qty) {
       // get saved subscriptions and update quantity
-      var deployment = this.modelFor('deployment');
-      var deploymentId = this.modelFor('deployment').get('id');
-      var self = this;
-      this.store.query('subscription', {deployment_id: deploymentId, source: 'added'}).then(function(subscriptionResults) {
-        var matchingSubscription = subscriptionResults.filterBy('contract_number', pool.get('contractNumber')).get('firstObject');
+      const deployment = this.modelFor('deployment');
+      const deploymentId = this.modelFor('deployment').get('id');
+
+      const subProm = this.store.query('subscription', {
+        deployment_id: deploymentId, source: 'added'
+      })
+      .then((subscriptionResults) => {
+        const matchingSubscription = subscriptionResults.filterBy(
+          'contract_number', pool.get('contractNumber')
+        ).get('firstObject');
+
         if (Ember.isPresent(matchingSubscription)) {
           matchingSubscription.set('quantity_to_add', qty);
-          matchingSubscription.save();
+          return matchingSubscription.save();
         }
       });
+
+      subProm.then(() => {
+        this.set('subProm', null);
+      });
+
+      this.set('subProm', subProm);
+    },
+
+    willTransition(transition) {
+      const subProm = this.get('subProm');
+      if(subProm) {
+        transition.abort();
+
+        subProm.then(() => {
+          this.transitionTo('subscriptions.review-subscriptions');
+        });
+      }
     },
 
     error(reason, transition) {
