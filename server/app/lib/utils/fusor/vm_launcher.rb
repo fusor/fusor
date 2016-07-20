@@ -140,7 +140,7 @@ module Utils
                          }.with_indifferent_access
                        }.with_indifferent_access
         rescue Exception => e
-          ::Fusor.log.error "Failed to set RHEV attributes!"
+          ::Fusor.log.error "Failed to set RHV attributes!"
           ::Fusor.log.error "#{e.message} \n #{e.backtrace}"
           return nil
         end
@@ -252,7 +252,7 @@ module Utils
 
       def set_rhev_host_attrs(attrs)
         set_common_host_attrs
-        ::Fusor.log.debug "====== setting RHEV specific host attributes ======"
+        ::Fusor.log.debug "====== setting RHV specific host attributes ======"
         cl_id  = @cr.clusters.find { |c| c.name == @deployment.rhev_cluster_name }.id
         net_id = @cr.available_networks(cl_id).first.id
         @host_attrs["ptable_id"] = Ptable.find { |p| p["name"] == @ptable_name }.id

@@ -79,10 +79,10 @@ module Actions
             host = ::Host.create(rhevm)
 
             if host.errors.empty?
-              ::Fusor.log.info 'RHEV Engine Host Record Created'
+              ::Fusor.log.info 'RHV Engine Host Record Created'
               return host
             else
-              fail _("RHEV Engine Host Record creation with mac #{mac_addr} failed with errors: #{host.errors.messages}")
+              fail _("RHV Engine Host Record creation with mac #{mac_addr} failed with errors: #{host.errors.messages}")
             end
           end
 
