@@ -1000,6 +1000,13 @@ define('fusor-ember-cli/components/markdown-to-html', ['exports', 'ember-cli-sho
 define('fusor-ember-cli/components/naming-scheme-modal', ['exports', 'ember'], function (exports, _ember) {
   exports['default'] = _ember['default'].Component.extend({
 
+    onOpenModal: _ember['default'].observer('openModal', function () {
+      if (this.get('openModal')) {
+        var customPreprendName = this.get('customPreprendName');
+        this.set('origCustomPreprendName', customPreprendName);
+      }
+    }),
+
     isFreeform: _ember['default'].computed('hostNamingScheme', function () {
       return this.get('hostNamingScheme') === 'Freeform';
     }),
@@ -1024,6 +1031,10 @@ define('fusor-ember-cli/components/naming-scheme-modal', ['exports', 'ember'], f
       }
     }),
 
+    customPreprendNameTrimmed: _ember['default'].computed('customPreprendName', function () {
+      return this.get('customPreprendName').trim();
+    }),
+
     actions: {
       saveNamingScheme: function saveNamingScheme() {
         this.set('openModal', false);
@@ -1032,6 +1043,8 @@ define('fusor-ember-cli/components/naming-scheme-modal', ['exports', 'ember'], f
 
       cancelNamingScheme: function cancelNamingScheme() {
         this.set('openModal', false);
+        this.set('customPreprendName', this.get('origCustomPreprendName'));
+        this.set('origCustomPreprendName', null);
         this.sendAction('cancelNamingScheme');
       },
       setSelectValue: function setSelectValue(fieldName, selectionValue) {
@@ -1049,7 +1062,7 @@ define('fusor-ember-cli/components/new-environment-modal', ['exports', 'ember'],
 
     envLabelName: _ember['default'].computed('name', function () {
       if (this.get('name')) {
-        var label = this.get('name').underscore();
+        var label = this.get('name').trim();
         return label.replace(/[^A-Z0-9]/ig, "_");
       }
     }),
@@ -2699,7 +2712,7 @@ define('fusor-ember-cli/components/tr-hypervisor', ['exports', 'ember', 'fusor-e
     observeHostName: _ember['default'].observer('isSelectedAsHypervisor', 'customPreprendName', 'isCustomScheme', 'isHypervisorN', 'isFreeform', 'isMac', function () {
       if (this.get('isSelectedAsHypervisor')) {
         if (this.get('isCustomScheme') && this.get('customPreprendName')) {
-          this.get('host').set('name', this.get('customPreprendName') + this.get('num'));
+          this.get('host').set('name', this.get('customPreprendName').trim() + this.get('num'));
         } else if (this.get('isHypervisorN')) {
           this.get('host').set('name', 'hypervisor' + this.get('num'));
         } else if (this.get('isMac')) {
@@ -2865,7 +2878,6 @@ define('fusor-ember-cli/components/tr-subscription', ['exports', 'ember'], funct
         if (this.get('isQtyInValid')) {
           this.set('subscription.qtyToAttach', this.get('subscription.qtyAvailable'));
         }
-        // TODO - call saveSubscription action from within this action
         var pool = this.get('subscription');
         this.sendAction('saveSubscription', pool, this.get('subscription.qtyToAttach'));
       }
@@ -3128,19 +3140,20 @@ define("fusor-ember-cli/controllers/configure-environment", ["exports", "ember",
 
     deployment: _ember["default"].computed.alias("deploymentController.model"),
 
-    envNameValidator: _fusorEmberCliUtilsValidators.AllValidator.create({
-      validators: [_fusorEmberCliUtilsValidators.PresenceValidator.create({}), _fusorEmberCliUtilsValidators.AlphaNumericDashUnderscoreValidator.create({})]
-    }),
+    envNameValidator: _fusorEmberCliUtilsValidators.PresenceValidator.create({}),
 
     actions: {
       selectEnvironment: function selectEnvironment(environment) {
         this.set('showAlertMessage', false);
         this.set('selectedEnvironment', environment);
         this.get('deploymentController.model').set('lifecycle_environment', environment);
+        this.get('deploymentController').set('errorMsg', null);
+        this.set('errorMsg', null);
       },
 
       createEnvironment: function createEnvironment(fields_env) {
         var self = this;
+        this.set('showAlertMessage', false);
 
         var nameAlreadyExists = self.get('lifecycleEnvironments').findBy('name', fields_env.name);
         if (nameAlreadyExists) {
@@ -3163,7 +3176,9 @@ define("fusor-ember-cli/controllers/configure-environment", ["exports", "ember",
           self.get('deploymentController').set('errorMsg', null);
           self.set('showAlertMessage', true);
         }, function (error) {
-          self.get('deploymentController').set('errorMsg', 'error saving environment' + error);
+          var errorMsg = 'error saving environment' + error;
+          self.get('deploymentController').set('errorMsg', errorMsg);
+          self.set('errorMsg', errorMsg);
         });
       }
     }
@@ -3199,9 +3214,7 @@ define("fusor-ember-cli/controllers/deployment-new/satellite/configure-environme
 
     deployment: _ember["default"].computed.alias("deploymentNewController"),
 
-    envNameValidator: _fusorEmberCliUtilsValidators.AllValidator.create({
-      validators: [_fusorEmberCliUtilsValidators.PresenceValidator.create({}), _fusorEmberCliUtilsValidators.AlphaNumericDashUnderscoreValidator.create({})]
-    }),
+    envNameValidator: _fusorEmberCliUtilsValidators.PresenceValidator.create({}),
 
     actions: {
       selectEnvironment: function selectEnvironment(environment) {
@@ -3675,12 +3688,10 @@ define('fusor-ember-cli/controllers/hypervisor/discovered-host', ['exports', 'em
       return this.get('cntSelectedHypervisorHosts') === this.get('availableHosts.length');
     }),
 
-    observeAllChecked: _ember['default'].observer('allChecked', function (row) {
-      // TODO
-      if (this.get('allChecked')) {
-        this.send('setCheckAll');
-      } else {
-        this.send('setUncheckAll');
+    observeAllChecked: _ember['default'].observer('isAllChecked', function (row) {
+      if (this.get('isAllChecked')) {
+        this.set('checkAll', true);
+        this.set('uncheckAll', false);
       }
     }),
 
@@ -5431,14 +5442,44 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember', 'ic-ajax', 'f
 
         _ember['default'].RSVP.hash(validationPromises).then(function (resultHash) {
           _this.set('showLoadingSpinner', false);
-          var validMounts = resultHash.storage.mounted && (checkExport ? resultHash['export'].mounted : true) && (checkHosted ? resultHash.hosted.mounted : true);
+          var validMounts = resultHash.storage.mounted && checkExport && resultHash['export'].mounted && checkHosted && resultHash.hosted.mounted;
 
           if (validMounts) {
             _this.set('errorMsg', null);
             _this.transitionTo(_this.get('step3RouteName'));
           } else {
-            var failedDomain = resultHash.storage.mounted ? checkExport && resultHash['export'].mounted ? 'self-hosted' : checkHosted && resultHash.hosted.mounted ? 'export' : 'self-hosted' : 'storage';
-            _this.set('errorMsg', 'Error mounting ' + failedDomain + ' domain, please make sure it is a valid mount point');
+            var failedDomain = undefined;
+            if (!resultHash.storage.mounted) {
+              failedDomain = 'storage';
+            } else if (checkHosted && !resultHash.hosted.mounted) {
+              failedDomain = 'self-hosted';
+            } else if (checkExport && !resultHash['export'].mounted) {
+              failedDomain = 'export';
+            }
+
+            if (!failedDomain) {
+              // Catch handler manages this
+              throw 'Could not detect failed domain...';
+            }
+
+            var failedDomainName = undefined;
+            switch (failedDomain) {
+              case 'storage':
+                failedDomainName = _this.get('deploymentController.model.rhev_storage_name');
+                break;
+              case 'self-hosted':
+                failedDomainName = _this.get('deploymentController.model.hosted_storage_name');
+                break;
+              case 'export':
+                failedDomainName = _this.get('deploymentController.model.rhev_export_domain_name');
+                break;
+              default:
+                failedDomainName = '';
+            }
+
+            var errorMsg = 'Error mounting ' + failedDomain + ' domain ' + failedDomainName + ', ' + 'please make sure it is a valid mount point';
+
+            _this.set('errorMsg', errorMsg);
           }
         })['catch'](function (err) {
           _this.set('errorMsg', 'Error occurred while attempting to validate storage paths');
@@ -10065,6 +10106,7 @@ define("fusor-ember-cli/mixins/configure-environment-mixin", ["exports", "ember"
       newEnvironment: function newEnvironment() {
         this.set('name', null);
         this.set('description', null);
+        this.set('showValidationError', false);
         this.set('openModal', true);
       }
     }
@@ -10132,7 +10174,7 @@ define('fusor-ember-cli/mixins/deployment-controller-mixin', ['exports', 'ember'
       if (this.get('isUpstream')) {
         return "oVirt";
       } else {
-        return "RHEV";
+        return "RHV";
       }
     }),
 
@@ -10158,7 +10200,7 @@ define('fusor-ember-cli/mixins/deployment-controller-mixin', ['exports', 'ember'
       if (this.get('isUpstream')) {
         return "oVirt Project";
       } else {
-        return "Red Hat Enterprise Virtualization";
+        return "Red Hat Virtualization";
       }
     }),
 
@@ -10984,7 +11026,7 @@ define('fusor-ember-cli/mixins/start-controller-mixin', ['exports', 'ember'], fu
       if (this.get('isUpstream')) {
         return "oVirt";
       } else {
-        return "RHEV";
+        return "RHV";
       }
     }),
 
@@ -11011,7 +11053,7 @@ define('fusor-ember-cli/mixins/start-controller-mixin', ['exports', 'ember'], fu
       if (this.get('isUpstream')) {
         return "oVirt Project";
       } else {
-        return "Red Hat Enterprise Virtualization";
+        return "Red Hat Virtualization";
       }
     }),
 
@@ -12905,11 +12947,15 @@ define('fusor-ember-cli/routes/openshift/openshift-nodes', ['exports', 'ember', 
       }).then(function (hash) {
         // Calculate aggregates
         var hvs = hash.hvs;
+
         var cpus = hvs.reduce(function (accum, hv) {
-          return accum + hv.get('cpus');
+          var cpu = hv.get('cpus') || 0;
+          return accum + cpu;
         }, 0);
+
         var ram = _fusorEmberCliUtilsHumanize['default'].rawToHuman(hvs.reduce(function (accum, hv) {
-          return accum + _fusorEmberCliUtilsHumanize['default'].humanToRaw(hv.get('memory_human_size'));
+          var mem = hv.get('memory_human_size') || '0 B';
+          return accum + _fusorEmberCliUtilsHumanize['default'].humanToRaw(mem);
         }, 0), { output: 'object' }).value;
 
         var humanDisk = _fusorEmberCliUtilsHumanize['default'].rawToHuman(hash.disk, { output: 'object' });
@@ -14538,6 +14584,11 @@ define('fusor-ember-cli/routes/satellite', ['exports', 'ember'], function (expor
 });
 define('fusor-ember-cli/routes/storage', ['exports', 'ember'], function (exports, _ember) {
   exports['default'] = _ember['default'].Route.extend({
+    setupController: function setupController(controller, model) {
+      controller.set('model', model);
+      // Reset error msg if this has been displayed previously
+      controller.set('errorMsg', null);
+    },
     deactivate: function deactivate() {
       return this.send('saveDeployment', null);
     }
@@ -15029,17 +15080,41 @@ define('fusor-ember-cli/routes/subscriptions/select-subscriptions', ['exports', 
 
     actions: {
       saveSubscription: function saveSubscription(pool, qty) {
+        var _this = this;
+
         // get saved subscriptions and update quantity
         var deployment = this.modelFor('deployment');
         var deploymentId = this.modelFor('deployment').get('id');
-        var self = this;
-        this.store.query('subscription', { deployment_id: deploymentId, source: 'added' }).then(function (subscriptionResults) {
+
+        var subProm = this.store.query('subscription', {
+          deployment_id: deploymentId, source: 'added'
+        }).then(function (subscriptionResults) {
           var matchingSubscription = subscriptionResults.filterBy('contract_number', pool.get('contractNumber')).get('firstObject');
+
           if (_ember['default'].isPresent(matchingSubscription)) {
             matchingSubscription.set('quantity_to_add', qty);
-            matchingSubscription.save();
+            return matchingSubscription.save();
           }
         });
+
+        subProm.then(function () {
+          _this.set('subProm', null);
+        });
+
+        this.set('subProm', subProm);
+      },
+
+      willTransition: function willTransition(transition) {
+        var _this2 = this;
+
+        var subProm = this.get('subProm');
+        if (subProm) {
+          transition.abort();
+
+          subProm.then(function () {
+            _this2.transitionTo('subscriptions.review-subscriptions');
+          });
+        }
       },
 
       error: function error(reason, transition) {
@@ -21784,7 +21859,7 @@ define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], 
                 morphs[2] = dom.createMorphAt(fragment, 9, 9, contextualElement);
                 return morphs;
               },
-              statements: [["content", "customPreprendName", ["loc", [null, [36, 30], [36, 52]]]], ["content", "customPreprendName", ["loc", [null, [37, 30], [37, 52]]]], ["content", "customPreprendName", ["loc", [null, [38, 30], [38, 52]]]]],
+              statements: [["content", "customPreprendNameTrimmed", ["loc", [null, [36, 30], [36, 59]]]], ["content", "customPreprendNameTrimmed", ["loc", [null, [37, 30], [37, 59]]]], ["content", "customPreprendNameTrimmed", ["loc", [null, [38, 30], [38, 59]]]]],
               locals: [],
               templates: []
             };
@@ -22143,7 +22218,7 @@ define("fusor-ember-cli/templates/components/new-environment-modal", ["exports"]
                 "column": 6
               },
               "end": {
-                "line": 13,
+                "line": 14,
                 "column": 6
               }
             },
@@ -22177,7 +22252,7 @@ define("fusor-ember-cli/templates/components/new-environment-modal", ["exports"]
             morphs[2] = dom.createMorphAt(fragment, 5, 5, contextualElement);
             return morphs;
           },
-          statements: [["inline", "text-f", [], ["label", "Environment Name", "value", ["subexpr", "@mut", [["get", "name", ["loc", [null, [7, 27], [7, 31]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "envNameValidator", ["loc", [null, [8, 31], [8, 47]]]]], [], []], "labelSize", "col-md-4", "inputSize", "col-md-8"], ["loc", [null, [6, 12], [10, 43]]]], ["inline", "text-f", [], ["label", "Label", "value", ["subexpr", "@mut", [["get", "envLabelName", ["loc", [null, [11, 41], [11, 53]]]]], [], []], "labelSize", "col-md-4", "inputSize", "col-md-8", "disabled", true], ["loc", [null, [11, 12], [11, 111]]]], ["inline", "textarea-f", [], ["label", "Description (Optional)", "value", ["subexpr", "@mut", [["get", "description", ["loc", [null, [12, 62], [12, 73]]]]], [], []], "labelSize", "col-md-4", "inputSize", "col-md-8"], ["loc", [null, [12, 12], [12, 117]]]]],
+          statements: [["inline", "text-f", [], ["label", "Environment Name", "value", ["subexpr", "@mut", [["get", "name", ["loc", [null, [7, 27], [7, 31]]]]], [], []], "showValidationError", ["subexpr", "@mut", [["get", "showValidationError", ["loc", [null, [8, 41], [8, 60]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "envNameValidator", ["loc", [null, [9, 31], [9, 47]]]]], [], []], "labelSize", "col-md-4", "inputSize", "col-md-8"], ["loc", [null, [6, 12], [11, 43]]]], ["inline", "text-f", [], ["label", "Label", "value", ["subexpr", "@mut", [["get", "envLabelName", ["loc", [null, [12, 41], [12, 53]]]]], [], []], "labelSize", "col-md-4", "inputSize", "col-md-8", "disabled", true], ["loc", [null, [12, 12], [12, 111]]]], ["inline", "textarea-f", [], ["label", "Description (Optional)", "value", ["subexpr", "@mut", [["get", "description", ["loc", [null, [13, 62], [13, 73]]]]], [], []], "labelSize", "col-md-4", "inputSize", "col-md-8"], ["loc", [null, [13, 12], [13, 117]]]]],
           locals: [],
           templates: []
         };
@@ -22189,11 +22264,11 @@ define("fusor-ember-cli/templates/components/new-environment-modal", ["exports"]
             "loc": {
               "source": null,
               "start": {
-                "line": 15,
+                "line": 16,
                 "column": 6
               },
               "end": {
-                "line": 19,
+                "line": 20,
                 "column": 6
               }
             },
@@ -22222,7 +22297,7 @@ define("fusor-ember-cli/templates/components/new-environment-modal", ["exports"]
             morphs[1] = dom.createElementMorph(element0);
             return morphs;
           },
-          statements: [["attribute", "disabled", ["get", "invalidEnvName", ["loc", [null, [16, 84], [16, 98]]]]], ["element", "action", ["createEnvironment"], [], ["loc", [null, [16, 18], [16, 48]]]]],
+          statements: [["attribute", "disabled", ["get", "invalidEnvName", ["loc", [null, [17, 84], [17, 98]]]]], ["element", "action", ["createEnvironment"], [], ["loc", [null, [17, 18], [17, 48]]]]],
           locals: [],
           templates: []
         };
@@ -22237,7 +22312,7 @@ define("fusor-ember-cli/templates/components/new-environment-modal", ["exports"]
               "column": 0
             },
             "end": {
-              "line": 21,
+              "line": 22,
               "column": 0
             }
           },
@@ -22266,7 +22341,7 @@ define("fusor-ember-cli/templates/components/new-environment-modal", ["exports"]
           morphs[1] = dom.createMorphAt(fragment, 3, 3, contextualElement);
           return morphs;
         },
-        statements: [["block", "pf-modal-body", [], [], 0, null, ["loc", [null, [5, 6], [13, 24]]]], ["block", "pf-modal-footer", [], [], 1, null, ["loc", [null, [15, 6], [19, 26]]]]],
+        statements: [["block", "pf-modal-body", [], [], 0, null, ["loc", [null, [5, 6], [14, 24]]]], ["block", "pf-modal-footer", [], [], 1, null, ["loc", [null, [16, 6], [20, 26]]]]],
         locals: [],
         templates: [child0, child1]
       };
@@ -22281,7 +22356,7 @@ define("fusor-ember-cli/templates/components/new-environment-modal", ["exports"]
             "column": 0
           },
           "end": {
-            "line": 22,
+            "line": 23,
             "column": 0
           }
         },
@@ -22303,7 +22378,7 @@ define("fusor-ember-cli/templates/components/new-environment-modal", ["exports"]
         dom.insertBoundary(fragment, null);
         return morphs;
       },
-      statements: [["block", "pf-modal-base", [], ["idModal", "newLifecycleEnvironmentModal", "openModal", ["subexpr", "@mut", [["get", "openModal", ["loc", [null, [2, 27], [2, 36]]]]], [], []], "title", "Enter New Environment"], 0, null, ["loc", [null, [1, 0], [21, 18]]]]],
+      statements: [["block", "pf-modal-base", [], ["idModal", "newLifecycleEnvironmentModal", "openModal", ["subexpr", "@mut", [["get", "openModal", ["loc", [null, [2, 27], [2, 36]]]]], [], []], "title", "Enter New Environment"], 0, null, ["loc", [null, [1, 0], [22, 18]]]]],
       locals: [],
       templates: [child0]
     };
@@ -32902,7 +32977,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
               "column": 0
             },
             "end": {
-              "line": 106,
+              "line": 108,
               "column": 0
             }
           },
@@ -32926,7 +33001,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
           var el3 = dom.createTextNode("\n    ");
           dom.appendChild(el2, el3);
           var el3 = dom.createElement("div");
-          dom.setAttribute(el3, "style", "margin-top:15px;");
+          dom.setAttribute(el3, "style", "margin:15px 0px;");
           var el4 = dom.createTextNode("\n      ");
           dom.appendChild(el3, el4);
           var el4 = dom.createElement("button");
@@ -32936,6 +33011,10 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
           dom.appendChild(el3, el4);
           var el4 = dom.createTextNode("\n    ");
           dom.appendChild(el3, el4);
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n\n    ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createComment("");
           dom.appendChild(el2, el3);
           var el3 = dom.createTextNode("\n\n  ");
           dom.appendChild(el2, el3);
@@ -32950,13 +33029,14 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
         buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
           var element3 = dom.childAt(fragment, [0, 1]);
           var element4 = dom.childAt(element3, [3, 1]);
-          var morphs = new Array(3);
+          var morphs = new Array(4);
           morphs[0] = dom.createMorphAt(element3, 1, 1);
           morphs[1] = dom.createAttrMorph(element4, 'disabled');
           morphs[2] = dom.createElementMorph(element4);
+          morphs[3] = dom.createMorphAt(element3, 5, 5);
           return morphs;
         },
-        statements: [["block", "if", [["get", "hasNoEnvironments", ["loc", [null, [51, 10], [51, 27]]]]], [], 0, 1, ["loc", [null, [51, 4], [96, 11]]]], ["attribute", "disabled", ["get", "isStarted", ["loc", [null, [99, 77], [99, 86]]]]], ["element", "action", ["newEnvironment"], [], ["loc", [null, [99, 38], [99, 65]]]]],
+        statements: [["block", "if", [["get", "hasNoEnvironments", ["loc", [null, [51, 10], [51, 27]]]]], [], 0, 1, ["loc", [null, [51, 4], [96, 11]]]], ["attribute", "disabled", ["get", "isStarted", ["loc", [null, [99, 77], [99, 86]]]]], ["element", "action", ["newEnvironment"], [], ["loc", [null, [99, 38], [99, 65]]]], ["inline", "error-message", [], ["errorMsg", ["subexpr", "@mut", [["get", "errorMsg", ["loc", [null, [104, 29], [104, 37]]]]], [], []]], ["loc", [null, [104, 4], [104, 39]]]]],
         locals: [],
         templates: [child0, child1]
       };
@@ -32970,11 +33050,11 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
               "loc": {
                 "source": null,
                 "start": {
-                  "line": 127,
+                  "line": 130,
                   "column": 10
                 },
                 "end": {
-                  "line": 129,
+                  "line": 132,
                   "column": 10
                 }
               },
@@ -33009,11 +33089,11 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
               "loc": {
                 "source": null,
                 "start": {
-                  "line": 129,
+                  "line": 132,
                   "column": 10
                 },
                 "end": {
-                  "line": 131,
+                  "line": 134,
                   "column": 10
                 }
               },
@@ -33047,11 +33127,11 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
             "loc": {
               "source": null,
               "start": {
-                "line": 123,
+                "line": 126,
                 "column": 4
               },
               "end": {
-                "line": 133,
+                "line": 136,
                 "column": 4
               }
             },
@@ -33086,7 +33166,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
             morphs[2] = dom.createMorphAt(element1, 1, 1);
             return morphs;
           },
-          statements: [["attribute", "disabled", ["get", "disableNextOnLifecycleEnvironment", ["loc", [null, [125, 25], [125, 58]]]]], ["element", "action", ["saveDeployment", ["get", "step1DRouteName", ["loc", [null, [124, 40], [124, 55]]]]], [], ["loc", [null, [124, 14], [124, 57]]]], ["block", "if", [["get", "deployment.isSaving", ["loc", [null, [127, 16], [127, 35]]]]], [], 0, 1, ["loc", [null, [127, 10], [131, 17]]]]],
+          statements: [["attribute", "disabled", ["get", "disableNextOnLifecycleEnvironment", ["loc", [null, [128, 25], [128, 58]]]]], ["element", "action", ["saveDeployment", ["get", "step1DRouteName", ["loc", [null, [127, 40], [127, 55]]]]], [], ["loc", [null, [127, 14], [127, 57]]]], ["block", "if", [["get", "deployment.isSaving", ["loc", [null, [130, 16], [130, 35]]]]], [], 0, 1, ["loc", [null, [130, 10], [134, 17]]]]],
           locals: [],
           templates: [child0, child1]
         };
@@ -33098,11 +33178,11 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
             "loc": {
               "source": null,
               "start": {
-                "line": 133,
+                "line": 136,
                 "column": 4
               },
               "end": {
-                "line": 139,
+                "line": 142,
                 "column": 4
               }
             },
@@ -33137,7 +33217,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
             morphs[1] = dom.createElementMorph(element0);
             return morphs;
           },
-          statements: [["attribute", "disabled", ["get", "disableNextOnLifecycleEnvironment", ["loc", [null, [135, 25], [135, 58]]]]], ["element", "action", ["saveDeployment", ["get", "step1DRouteName", ["loc", [null, [134, 40], [134, 55]]]]], [], ["loc", [null, [134, 14], [134, 57]]]]],
+          statements: [["attribute", "disabled", ["get", "disableNextOnLifecycleEnvironment", ["loc", [null, [138, 25], [138, 58]]]]], ["element", "action", ["saveDeployment", ["get", "step1DRouteName", ["loc", [null, [137, 40], [137, 55]]]]], [], ["loc", [null, [137, 14], [137, 57]]]]],
           locals: [],
           templates: []
         };
@@ -33148,11 +33228,11 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
           "loc": {
             "source": null,
             "start": {
-              "line": 118,
+              "line": 121,
               "column": 0
             },
             "end": {
-              "line": 140,
+              "line": 143,
               "column": 0
             }
           },
@@ -33174,7 +33254,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
           dom.insertBoundary(fragment, null);
           return morphs;
         },
-        statements: [["block", "if", [["get", "deployment.isNew", ["loc", [null, [123, 10], [123, 26]]]]], [], 0, 1, ["loc", [null, [123, 4], [139, 11]]]]],
+        statements: [["block", "if", [["get", "deployment.isNew", ["loc", [null, [126, 10], [126, 26]]]]], [], 0, 1, ["loc", [null, [126, 4], [142, 11]]]]],
         locals: [],
         templates: [child0, child1]
       };
@@ -33189,7 +33269,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
             "column": 0
           },
           "end": {
-            "line": 141,
+            "line": 144,
             "column": 0
           }
         },
@@ -33299,7 +33379,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
         dom.insertBoundary(fragment, null);
         return morphs;
       },
-      statements: [["block", "if", [["get", "showAlertMessage", ["loc", [null, [1, 6], [1, 22]]]]], [], 0, null, ["loc", [null, [1, 0], [11, 7]]]], ["block", "radio-button", [], ["value", "immediately", "groupValue", ["subexpr", "@mut", [["get", "envSetup", ["loc", [null, [19, 53], [19, 61]]]]], [], []], "changed", "envSetupChanged", "id", "immediately", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [19, 114], [19, 123]]]]], [], []], "dataQci", "immediately"], 1, null, ["loc", [null, [19, 6], [24, 23]]]], ["block", "radio-button", [], ["value", "after_publishing", "groupValue", ["subexpr", "@mut", [["get", "envSetup", ["loc", [null, [31, 58], [31, 66]]]]], [], []], "changed", "envSetupChanged", "id", "after_publishing", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [31, 124], [31, 133]]]]], [], []], "dataQci", "after_publishing"], 2, null, ["loc", [null, [31, 6], [36, 23]]]], ["block", "unless", [["get", "useDefaultOrgViewForEnv", ["loc", [null, [47, 10], [47, 33]]]]], [], 3, null, ["loc", [null, [47, 0], [106, 11]]]], ["inline", "new-environment-modal", [], ["openModal", ["subexpr", "@mut", [["get", "openModal", ["loc", [null, [112, 34], [112, 43]]]]], [], []], "createEnvironment", "createEnvironment", "name", ["subexpr", "@mut", [["get", "name", ["loc", [null, [114, 29], [114, 33]]]]], [], []], "envNameValidator", ["subexpr", "@mut", [["get", "envNameValidator", ["loc", [null, [115, 41], [115, 57]]]]], [], []], "description", ["subexpr", "@mut", [["get", "description", ["loc", [null, [116, 36], [116, 47]]]]], [], []]], ["loc", [null, [112, 0], [116, 49]]]], ["block", "cancel-back-next", [], ["backRouteName", ["subexpr", "@mut", [["get", "satelliteTabRouteName", ["loc", [null, [118, 34], [118, 55]]]]], [], []], "disableBack", false, "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [120, 34], [120, 43]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [121, 35], [121, 49]]]]], [], []], "isNew", ["subexpr", "@mut", [["get", "isNew", ["loc", [null, [122, 26], [122, 31]]]]], [], []]], 4, null, ["loc", [null, [118, 0], [140, 21]]]]],
+      statements: [["block", "if", [["get", "showAlertMessage", ["loc", [null, [1, 6], [1, 22]]]]], [], 0, null, ["loc", [null, [1, 0], [11, 7]]]], ["block", "radio-button", [], ["value", "immediately", "groupValue", ["subexpr", "@mut", [["get", "envSetup", ["loc", [null, [19, 53], [19, 61]]]]], [], []], "changed", "envSetupChanged", "id", "immediately", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [19, 114], [19, 123]]]]], [], []], "dataQci", "immediately"], 1, null, ["loc", [null, [19, 6], [24, 23]]]], ["block", "radio-button", [], ["value", "after_publishing", "groupValue", ["subexpr", "@mut", [["get", "envSetup", ["loc", [null, [31, 58], [31, 66]]]]], [], []], "changed", "envSetupChanged", "id", "after_publishing", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [31, 124], [31, 133]]]]], [], []], "dataQci", "after_publishing"], 2, null, ["loc", [null, [31, 6], [36, 23]]]], ["block", "unless", [["get", "useDefaultOrgViewForEnv", ["loc", [null, [47, 10], [47, 33]]]]], [], 3, null, ["loc", [null, [47, 0], [108, 11]]]], ["inline", "new-environment-modal", [], ["openModal", ["subexpr", "@mut", [["get", "openModal", ["loc", [null, [114, 34], [114, 43]]]]], [], []], "showValidationError", ["subexpr", "@mut", [["get", "showValidationError", ["loc", [null, [115, 44], [115, 63]]]]], [], []], "createEnvironment", "createEnvironment", "name", ["subexpr", "@mut", [["get", "name", ["loc", [null, [117, 29], [117, 33]]]]], [], []], "envNameValidator", ["subexpr", "@mut", [["get", "envNameValidator", ["loc", [null, [118, 41], [118, 57]]]]], [], []], "description", ["subexpr", "@mut", [["get", "description", ["loc", [null, [119, 36], [119, 47]]]]], [], []]], ["loc", [null, [114, 0], [119, 49]]]], ["block", "cancel-back-next", [], ["backRouteName", ["subexpr", "@mut", [["get", "satelliteTabRouteName", ["loc", [null, [121, 34], [121, 55]]]]], [], []], "disableBack", false, "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [123, 34], [123, 43]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [124, 35], [124, 49]]]]], [], []], "isNew", ["subexpr", "@mut", [["get", "isNew", ["loc", [null, [125, 26], [125, 31]]]]], [], []]], 4, null, ["loc", [null, [121, 0], [143, 21]]]]],
       locals: [],
       templates: [child0, child1, child2, child3, child4]
     };
@@ -41726,7 +41806,7 @@ define("fusor-ember-cli/templates/req-general", ["exports"], function (exports) 
         var el3 = dom.createTextNode("\n    ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("li");
-        var el4 = dom.createTextNode("Red Hat Customer Portal username and password");
+        var el4 = dom.createTextNode("Red Hat Customer Portal username and password. This account must be an Organization Administrator within the Portal");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n    ");
@@ -41784,7 +41864,7 @@ define("fusor-ember-cli/templates/req-openshift", ["exports"], function (exports
             "column": 0
           },
           "end": {
-            "line": 10,
+            "line": 15,
             "column": 0
           }
         },
@@ -41811,7 +41891,37 @@ define("fusor-ember-cli/templates/req-openshift", ["exports"], function (exports
         var el3 = dom.createTextNode("\n    ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("li");
-        var el4 = dom.createTextNode("No specific requirements");
+        var el4 = dom.createTextNode("Requires RHEV to be selected to deploy OpenShift");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n    ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("li");
+        var el4 = dom.createTextNode("NFS/GlusterFS share for persistent storage to be used with internal OpenShift registry");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n    ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("li");
+        var el4 = dom.createTextNode("All host hardware clocks are synchronized with the hardware clock on the Satellite system");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n    ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("li");
+        var el4 = dom.createTextNode("Hypervisor host minimum requirements: 18 GB RAM, 4 CPU");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n    ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("li");
+        var el4 = dom.createTextNode("Data domain NFS/GlusterFS share must have at least 60 GB free space");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n    ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("li");
+        var el4 = dom.createTextNode("Note: Requirements will change depending upon OpenShift configuration of master and worker nodes");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n  ");
@@ -41935,7 +42045,7 @@ define("fusor-ember-cli/templates/req-rhev", ["exports"], function (exports) {
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("p");
         dom.setAttribute(el2, "class", "req-title");
-        var el3 = dom.createTextNode("Red Hat Enterprise Virtualization");
+        var el3 = dom.createTextNode("Red Hat Virtualization");
         dom.appendChild(el2, el3);
         dom.appendChild(el1, el2);
         var el2 = dom.createTextNode("\n\n  Engine + Hypervisor\n  ");
@@ -41957,7 +42067,7 @@ define("fusor-ember-cli/templates/req-rhev", ["exports"], function (exports) {
         var el3 = dom.createTextNode("\n    ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("li");
-        var el4 = dom.createTextNode("NFS share. For both data domain and export domain: IP address and shared path");
+        var el4 = dom.createTextNode("NFS/GlusterFS share. For both data domain and export domain: IP address and shared path");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n  ");
@@ -41982,7 +42092,7 @@ define("fusor-ember-cli/templates/req-rhev", ["exports"], function (exports) {
         var el3 = dom.createTextNode("\n    ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("li");
-        var el4 = dom.createTextNode("NFS share. For data domain, export domain, and self-hosted domain: IP address and shared path");
+        var el4 = dom.createTextNode("NFS/GlusterFS share. For data domain, export domain, and self-hosted domain: IP address and shared path");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n  ");
@@ -48144,7 +48254,7 @@ define("fusor-ember-cli/templates/satellite/index", ["exports"], function (expor
             var el1 = dom.createTextNode("              ");
             dom.appendChild(el0, el1);
             var el1 = dom.createElement("li");
-            var el2 = dom.createTextNode("RHEV root and engine");
+            var el2 = dom.createTextNode("RHV root and engine");
             dom.appendChild(el1, el2);
             dom.appendChild(el0, el1);
             var el1 = dom.createTextNode("\n");
@@ -48355,8 +48465,8 @@ define("fusor-ember-cli/templates/satellite/index", ["exports"], function (expor
             "column": 0
           },
           "end": {
-            "line": 51,
-            "column": 32
+            "line": 52,
+            "column": 0
           }
         },
         "moduleName": "fusor-ember-cli/templates/satellite/index.hbs"
@@ -48410,6 +48520,8 @@ define("fusor-ember-cli/templates/satellite/index", ["exports"], function (expor
         dom.appendChild(el0, el1);
         var el1 = dom.createComment("");
         dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
         return el0;
       },
       buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
@@ -48421,7 +48533,6 @@ define("fusor-ember-cli/templates/satellite/index", ["exports"], function (expor
         morphs[3] = dom.createMorphAt(element1, 7, 7);
         morphs[4] = dom.createMorphAt(element1, 9, 9);
         morphs[5] = dom.createMorphAt(fragment, 2, 2, contextualElement);
-        dom.insertBoundary(fragment, null);
         return morphs;
       },
       statements: [["inline", "text-f", [], ["label", "Name", "value", ["subexpr", "@mut", [["get", "model.name", ["loc", [null, [5, 34], [5, 44]]]]], [], []], "errors", ["subexpr", "@mut", [["get", "errors", ["loc", [null, [5, 52], [5, 58]]]]], [], []], "cssId", ["subexpr", "@mut", [["get", "idSatName", ["loc", [null, [5, 65], [5, 74]]]]], [], []], "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [6, 40], [6, 49]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "deploymentNameValidator", ["loc", [null, [6, 60], [6, 83]]]]], [], []]], ["loc", [null, [5, 6], [6, 85]]]], ["inline", "textarea-f", [], ["label", "Description (Optional)", "value", ["subexpr", "@mut", [["get", "model.description", ["loc", [null, [8, 56], [8, 73]]]]], [], []], "cssId", ["subexpr", "@mut", [["get", "idSatDesc", ["loc", [null, [8, 80], [8, 89]]]]], [], []], "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [8, 99], [8, 108]]]]], [], []]], ["loc", [null, [8, 6], [8, 111]]]], ["block", "base-f", [], ["label", "Universal Password"], 0, null, ["loc", [null, [10, 6], [28, 17]]]], ["inline", "text-f", [], ["label", "Password", "type", "password", "value", ["subexpr", "@mut", [["get", "commonPassword", ["loc", [null, [30, 54], [30, 68]]]]], [], []], "cssId", "common-password", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [31, 15], [31, 24]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "passwordValidator", ["loc", [null, [31, 35], [31, 52]]]]], [], []], "labelSize", "col-lg-offset-1 col-md-offset-2 col-lg-2 col-md-3 col-sm-5", "inputSize", "col-lg-4 col-md-4 col-sm-7", "placeholder", "Must be 8 or more characters"], ["loc", [null, [30, 6], [34, 50]]]], ["inline", "text-f", [], ["label", "Confirm Password", "type", "password", "value", ["subexpr", "@mut", [["get", "confirmCommonPassword", ["loc", [null, [36, 62], [36, 83]]]]], [], []], "cssId", "confirm-common-password", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [37, 15], [37, 24]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "confirmCommonPasswordValidator", ["loc", [null, [37, 35], [37, 65]]]]], [], []], "labelSize", "col-lg-offset-1 col-md-offset-2 col-lg-2 col-md-3 col-sm-5", "inputSize", "col-lg-4 col-md-4 col-sm-7", "placeholder", "Must match universal password"], ["loc", [null, [36, 6], [40, 51]]]], ["inline", "cancel-back-next", [], ["backRouteName", ["subexpr", "@mut", [["get", "backRouteNameOnSatIndex", ["loc", [null, [45, 33], [45, 56]]]]], [], []], "disableBack", false, "nextRouteName", ["subexpr", "@mut", [["get", "lifecycleEnvironmentTabRouteName", ["loc", [null, [47, 33], [47, 65]]]]], [], []], "disableNext", ["subexpr", "@mut", [["get", "disableNextOnDeploymentName", ["loc", [null, [48, 31], [48, 58]]]]], [], []], "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [49, 33], [49, 42]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [50, 34], [50, 48]]]]], [], []], "isNew", ["subexpr", "@mut", [["get", "isNew", ["loc", [null, [51, 25], [51, 30]]]]], [], []]], ["loc", [null, [45, 0], [51, 32]]]]],
@@ -53285,7 +53396,7 @@ define("fusor-ember-cli/templates/where-install", ["exports"], function (exports
           var el1 = dom.createTextNode("        ");
           dom.appendChild(el0, el1);
           var el1 = dom.createElement("span");
-          var el2 = dom.createTextNode("\n          Install CloudForms on Red Hat Enterprise Virtualization\n        ");
+          var el2 = dom.createTextNode("\n          Install CloudForms on Red Hat Virtualization\n        ");
           dom.appendChild(el1, el2);
           dom.appendChild(el0, el1);
           var el1 = dom.createTextNode("\n");
@@ -54024,11 +54135,11 @@ define('fusor-ember-cli/views/application', ['exports', 'ember'], function (expo
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+28e40bcc"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+75d68bac"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+28e40bcc"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+75d68bac"});
 }
 
 /* jshint ignore:end */
