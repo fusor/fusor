@@ -17,7 +17,7 @@ export default Ember.Component.extend(TrEngineHypervisorMixin, {
     function() {
       if (this.get('isSelectedAsHypervisor')) {
         if (this.get('isCustomScheme') && (this.get('customPreprendName'))) {
-          this.get('host').set('name', (this.get('customPreprendName') + this.get('num')));
+          this.get('host').set('name', (this.get('customPreprendName').trim() + this.get('num')));
         } else if (this.get('isHypervisorN')) {
           this.get('host').set('name', ('hypervisor' + this.get('num')));
         } else if (this.get('isMac')) {
