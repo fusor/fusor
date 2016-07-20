@@ -62,7 +62,7 @@ module Actions
                                        "cluster" => cl_id,
                                        "template" => template_id,
                                        "cores" => 4,
-                                       "memory" => 6_442_450_944,
+                                       "memory" => 8_589_934_592,
                                        "interfaces_attributes" => {
                                          "new_interfaces" => {
                                            "name" => "",
