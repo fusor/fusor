@@ -38,6 +38,7 @@
         - origin-haproxy-router
         - origin-docker-builder
         - origin-keepalived-ipfailover
+        - hello-openshift
 
 - name: Configure master node
   hosts: masters

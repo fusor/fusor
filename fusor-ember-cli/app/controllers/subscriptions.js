@@ -14,5 +14,25 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   disableTabSelectSubsciptions: Ember.computed('model.isAuthenticated', 'upstreamConsumerUuid', function() {
     return (Ember.isBlank(this.get('upstreamConsumerUuid')) || !this.get('model.isAuthenticated'));
-  })
+  }),
+
+  backRouteFromSubscriptions: Ember.computed(
+    'isRhev',
+    'isOpenStack',
+    'isOpenShift',
+    'isCloudForms',
+    function() {
+      if (this.get('isCloudForms')) {
+        return 'cloudforms.cfme-configuration';
+      } else if (this.get('isOpenShift')) {
+        return 'openshift.openshift-configuration';
+      } else if (this.get('isOpenStack')) {
+        return 'openstack.overcloud';
+      } else if (this.get('isRhev')) {
+        return 'storage';
+      } else {
+        return 'configure-environment';
+      }
+    }
+  )
 });

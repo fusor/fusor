@@ -1,0 +1,8 @@
+<!-- copied from https://github.com/theforeman/foreman/blob/develop/app/views/layouts/application.html.erb and modified -->
+
+<%= content_for(:content) do %>
+  <%= render :partial => 'layouts/application_content' %>
+<% end %>
+
+<!-- using our modified base template instead of foreman's so we can reference our application_no_tl.js without turbolinks -->
+<%= render :template => 'fusor_ui/layouts/placeholder_base' %>

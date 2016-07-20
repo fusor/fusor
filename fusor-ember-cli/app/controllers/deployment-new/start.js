@@ -3,6 +3,7 @@ import StartControllerMixin from "../../mixins/start-controller-mixin";
 
 export default Ember.Controller.extend(StartControllerMixin, {
 
+  isNew: true,
   deploymentNewController: Ember.inject.controller('deployment-new'),
 
   isRhev: Ember.computed.alias("deploymentNewController.model.deploy_rhev"),

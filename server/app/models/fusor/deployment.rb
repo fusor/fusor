@@ -48,7 +48,7 @@ module Fusor
     alias_attribute :discovered_host_id, :rhev_engine_host_id
     attr_accessor :foreman_task_id
 
-    has_many :subscriptions, :class_name => "Fusor::Subscription", :foreign_key => :deployment_id
+    has_many :subscriptions, :class_name => "Fusor::Subscription", :foreign_key => :deployment_id, dependent: :destroy
     has_many :introspection_tasks, :class_name => 'Fusor::IntrospectionTask'
 
     belongs_to :foreman_task, :class_name => "::ForemanTasks::Task", :foreign_key => :foreman_task_uuid

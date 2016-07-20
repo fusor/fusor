@@ -49,11 +49,10 @@
     </a>
   </div>
 
-  <div class='next-start'>
-    {{#link-to 'deployments' class="btn btn-default" data-qci='start-cancel-button'}}Cancel{{/link-to}}
-    {{#link-to satelliteTabRouteName class="btn btn-primary" disabled=disableNextOnStart data-qci='start-next-button'}}
-      Next &nbsp; <i class="fa fa-angle-right"></i> &nbsp;
-    {{/link-to}}
-  </div>
-
+  {{cancel-back-next  nextRouteName=satelliteTabRouteName
+                      disableNext=disableNextOnStart
+                      disableCancel=isStarted
+                      deploymentName=deploymentName
+                      isNew=isNew
+                      bottomBar=false}}
 </div>

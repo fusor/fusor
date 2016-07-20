@@ -16,7 +16,7 @@ module Fusor
       log.attach(@default_log_file)
     else
       FileUtils.mkdir_p(self.log_file_dir(deployment.label, deployment.id)) unless File.exist?(self.log_file_dir(deployment.label, deployment.id))
-      log.attach(self.log_file_path(deployment.label, deployment.id))
+      log.attach(self.log_file_path(deployment.label, deployment.id), deployment)
     end
   end
 

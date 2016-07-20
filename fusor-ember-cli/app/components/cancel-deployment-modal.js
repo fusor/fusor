@@ -2,6 +2,16 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
+  title: Ember.computed('deploymentName', function() {
+    const deploymentName = this.get('deploymentName');
+
+    if (Ember.isPresent(deploymentName)) {
+      return `Cancel QCI Deployment - ${deploymentName}`;
+    }
+
+    return 'Cancel QCI Deployment';
+  }),
+
   actions: {
 
     saveAndCancelDeployment() {

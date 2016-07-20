@@ -1,0 +1,23 @@
+{{#if isNew}}
+    <button class="btn btn-default cancel-button" {{action 'cancelAndRollbackNewDeployment'}} data-qci={{dataQciCancelButton}}>
+      Cancel
+    </button>
+ {{else}}
+    <button class="btn btn-default cancel-button" {{action 'openCancelDeploymentModal'}} disabled={{disableCancel}} data-qci={{dataQciCancelButton}}>
+      Cancel
+    </button>
+{{/if}}
+
+{{#if backRouteName}}
+  {{#link-to backRouteName disabled=disableBack role="button" class='btn btn-default back-button' data-qci=dataQciBackButton}}
+    <i class="fa fa-angle-left"></i> Back
+  {{/link-to}}
+{{/if}}
+
+{{#if nextRouteName}}
+  {{#link-to nextRouteName tagName='button' disabled=disableNext role="button" class='btn btn-primary next-button' data-qci=dataQciNextButton}}
+    Next <i class="fa fa-angle-right"></i>
+  {{/link-to}}
+{{else}}
+  {{yield}}
+{{/if}}

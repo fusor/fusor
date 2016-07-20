@@ -55,19 +55,47 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       Ember.RSVP.hash(validationPromises).then((resultHash) => {
         this.set('showLoadingSpinner', false);
         const validMounts = resultHash.storage.mounted &&
-                            (checkExport ? resultHash.export.mounted : true) &&
-                            (checkHosted ? resultHash.hosted.mounted : true);
+                            (checkExport && resultHash.export.mounted) &&
+                            (checkHosted && resultHash.hosted.mounted);
 
         if(validMounts) {
           this.set('errorMsg', null);
           this.transitionTo(this.get('step3RouteName'));
         } else {
-          const failedDomain = resultHash.storage.mounted ?
-                               (checkExport && resultHash.export.mounted ? 'self-hosted' :
-                               (checkHosted && resultHash.hosted.mounted ? 'export' : 'self-hosted')) : 'storage';
-          this.set(
-            'errorMsg',
-            `Error mounting ${failedDomain} domain, please make sure it is a valid mount point`);
+          let failedDomain;
+          if(!resultHash.storage.mounted) {
+            failedDomain = 'storage';
+          } else if(checkHosted && !resultHash.hosted.mounted) {
+            failedDomain = 'self-hosted';
+          } else if(checkExport && !resultHash.export.mounted) {
+            failedDomain = 'export';
+          }
+
+          if(!failedDomain) {
+            // Catch handler manages this
+            throw 'Could not detect failed domain...';
+          }
+
+          let failedDomainName;
+          switch(failedDomain) {
+          case 'storage':
+            failedDomainName = this.get('deploymentController.model.rhev_storage_name');
+            break;
+          case 'self-hosted':
+            failedDomainName = this.get('deploymentController.model.hosted_storage_name');
+            break;
+          case 'export':
+            failedDomainName = this.get('deploymentController.model.rhev_export_domain_name');
+            break;
+          default:
+            failedDomainName = '';
+          }
+
+          const errorMsg =
+            `Error mounting ${failedDomain} domain ${failedDomainName}, ` +
+            'please make sure it is a valid mount point';
+
+          this.set('errorMsg', errorMsg);
         }
       }).catch(err => {
         this.set(

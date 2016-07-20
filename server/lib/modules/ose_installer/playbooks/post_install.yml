@@ -11,7 +11,7 @@
 - name: Configure OSE on master
   hosts: masters
   user: ansible_ssh_user
-  tasks: 
+  tasks:
     - name: Create OSE user
       command: htpasswd -cb {{ http_pass_file }} {{ ose_user }} {{ ose_password }}
     
@@ -42,14 +42,14 @@
       command: "oadm router --create=true \
         --service-account=router \
         --credentials='/etc/origin/master/openshift-router.kubeconfig' \
-        --images='openshift3/ose-haproxy-router:${version}' \
+        --images='{{satellite_hostname}}:5000/{{org_label}}-fusor-origin-haproxy-router' \
         --selector='region=infra'"
 
     - name: Create default registry
       command: "oadm registry --create=true \
         --service-account=registry \
         --credentials='/etc/origin/master/openshift-registry.kubeconfig' \
-        --images='openshift3/ose-docker-registry:${version}' \
+        --images='{{satellite_hostname}}:5000/{{org_label}}-fusor-origin-docker-registry' \
         --selector='region=infra'
         --mount-host='{{ docker_registry_host }}:/{{ docker_registry_path }}'"
 
@@ -58,6 +58,12 @@
 
     - name: Replace default subdomain name for sample app
       replace: "dest=/home/{{ ose_user }}/pod_examples/hello_openshift.json regexp='cloudapps' replace={{ subdomain_name }}"
+
+    - name: Replace default hostname for sample app
+      replace: "dest=/home/{{ ose_user }}/pod_examples/hello_openshift.json regexp='sat62devg.example.com' replace={{ satellite_hostname }}"
+
+    - name: Replace default image name for sample app
+      replace: "dest=/home/{{ ose_user }}/pod_examples/hello_openshift.json regexp='default_organization' replace={{ org_label }}"
 
     - name: Replace default persistent NFS storage host for internal registry
       replace: "dest=/home/{{ ose_user }}/pod_examples/registry-volume-nfs.json regexp='master.example.com' replace={{ docker_registry_host }}"
@@ -110,7 +116,7 @@
       command: oadm policy add-scc-to-user privileged system:serviceaccount:management-infra:management-admin
 
     - name: Create router for CFME to access data
-      command: oadm router management-metrics -n default --credentials=/etc/origin/master/openshift-router.kubeconfig --service-account=router --ports='443:5000' --selector='kubernetes.io/hostname={{ inventory_hostname }}' --stats-port=1937 --host-network=false
+      command: oadm router management-metrics -n default --credentials=/etc/origin/master/openshift-router.kubeconfig --service-account=router --ports='443:5000' --selector='kubernetes.io/hostname={{ inventory_hostname }}' --stats-port=1937 --host-network=false --images='{{satellite_hostname}}:5000/{{org_label}}-fusor-origin-haproxy-router' 
 
     - name: Retrieve service token name
       shell: oc get -n management-infra sa/management-admin --template='{% raw %}{{range .secrets}}{{printf "%s\n" .name}}{{end}}{% endraw %}' | head -n 1 > ~/.key

@@ -10,13 +10,13 @@ export default Ember.Mixin.create({
 
   isNew: false,
 
-  deploymentName: Ember.computed.alias("deploymentController.model.name"),
-
   ////////////////////////////////////////////////////////////
   // ALIASES AND COMMONLY USED COMPUTED PROPS
   // Consolidates these and makes them available for free to any mixee
   // Prevents littering leaf controllers with duplicated aliases
   ////////////////////////////////////////////////////////////
+  deploymentId: Ember.computed.alias("deploymentController.model.id"),
+  deploymentName: Ember.computed.alias("deploymentController.model.name"),
   upstreamConsumerUuid: Ember.computed.alias(
     'deploymentController.model.upstream_consumer_uuid'),
   hasUpstreamConsumerUuid: Ember.computed('upstreamConsumerUuid', function() {
@@ -30,5 +30,11 @@ export default Ember.Mixin.create({
   fullnameRhev: Ember.computed.alias('deploymentController.fullnameRhev'),
   fullnameOpenStack: Ember.computed.alias('deploymentController.fullnameOpenStack'),
   fullnameCloudForms: Ember.computed.alias('deploymentController.fullnameCloudForms'),
-  fullnameOpenShift: Ember.computed.alias('deploymentController.fullnameOpenShift')
+  fullnameOpenShift: Ember.computed.alias('deploymentController.fullnameOpenShift'),
+
+  isRhev: Ember.computed.alias("deploymentController.model.deploy_rhev"),
+  isOpenStack: Ember.computed.alias("deploymentController.model.deploy_openstack"),
+  isCloudForms: Ember.computed.alias("deploymentController.model.deploy_cfme"),
+  isOpenShift: Ember.computed.alias("deploymentController.model.deploy_openshift"),
+  isSubscriptions: Ember.computed.alias("deploymentController.model.isSubscriptions")
 });

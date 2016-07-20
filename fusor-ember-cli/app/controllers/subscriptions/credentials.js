@@ -10,14 +10,10 @@ const MirrorStatus = {
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
-  deploymentId: Ember.computed.alias("deploymentController.model.id"),
   cdnUrl: Ember.computed.alias("deploymentController.model.cdn_url"),
   manifestFile: Ember.computed.alias("deploymentController.model.manifest_file"),
 
-  isRhev: Ember.computed.alias("deploymentController.model.deploy_rhev"),
-  isOpenStack: Ember.computed.alias("deploymentController.model.deploy_openstack"),
-  isCloudForms: Ember.computed.alias("deploymentController.model.deploy_cfme"),
-  isOpenShift: Ember.computed.alias("deploymentController.model.deploy_openshift"),
+  subscriptionsController: Ember.inject.controller('subscriptions'),
 
   validCredentials: Ember.computed('model.identification', 'password', function() {
     // password is not saved in the model
@@ -29,19 +25,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   }),
   disableCredentialsNext: Ember.computed.not('enableCredentialsNext'),
 
-  backRouteNameonCredentials: Ember.computed('isRhev', 'isOpenStack', 'isOpenShift', 'isCloudForms', function() {
-    if (this.get('isCloudForms')) {
-      return 'cloudforms.cfme-configuration';
-    } else if (this.get('isOpenShift')) {
-      return 'openshift.openshift-configuration';
-    } else if (this.get('isOpenStack')) {
-      return 'openstack.overcloud';
-    } else if (this.get('isRhev')) {
-      return 'storage';
-    } else {
-      return 'configure-environment';
-    }
-  }),
+  backRouteFromCredentials: Ember.computed.alias('subscriptionsController.backRouteFromSubscriptions'),
 
   nextButtonTitle: 'Next',
 

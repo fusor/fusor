@@ -21,12 +21,14 @@ module FusorUi
                :url      => '/r/#/deployments',
                :url_hash => { :controller => 'fusor_ui/placeholders', :action => :index },
                :caption  => N_('Deployments'),
-               :engine   => FusorUi::Engine
+               :engine   => FusorUi::Engine,
+               :turbolinks => false
           menu :top_menu, :new_fusor_deployment,
                :url      => '/r/#/deployments/new/start',
                :url_hash => { :controller => 'fusor_ui/placeholders', :action => :new },
                :caption  => N_('New Deployment'),
-               :engine   => FusorUi::Engine
+               :engine   => FusorUi::Engine,
+               :turbolinks => false
         end
 
       end

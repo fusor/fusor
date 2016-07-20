@@ -95,11 +95,13 @@
       {{/each}}
     {{/if}}
 
-    <div style='margin-top:15px;'>
+    <div style='margin:15px 0px;'>
       <button class="btn btn-default" {{action 'newEnvironment'}} disabled={{isStarted}}>
         New Environment Path
       </button>
     </div>
+
+    {{error-message errorMsg=errorMsg}}
 
   </div>
 </div>
@@ -110,6 +112,7 @@
 
 
 {{new-environment-modal openModal=openModal
+                        showValidationError=showValidationError
                         createEnvironment='createEnvironment'
                         name=name
                         envNameValidator=envNameValidator

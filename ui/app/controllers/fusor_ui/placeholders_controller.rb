@@ -2,6 +2,9 @@ module FusorUi
 
   class PlaceholdersController < ApplicationController
 
+    # using modified layout to omit turbolinks js files
+    layout "fusor_ui/layouts/placeholder"
+
     # redirect /r/deployments to /r/#/deployments
     # since Sat6 would strip after # if referral link is a Katello/AngularJS page
     # redirect from "no hash" /r/ to "with hash" /r/# fixes this bug
