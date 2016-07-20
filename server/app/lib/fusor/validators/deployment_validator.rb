@@ -103,17 +103,19 @@ module Fusor
           deployment.errors[:cfme_root_password] << _('CloudForms deployments must specify a root password for the CloudForms machines')
         end
 
-        if deployment.rhev_export_domain_address.empty?
-          deployment.errors[:rhev_export_domain_address] << _('NFS share specified but missing address of NFS server')
-        else
-          if deployment.rhev_export_domain_path.empty?
-            deployment.errors[:rhev_export_domain_path] << _('NFS share specified but missing path to the share')
+        if deployment.cfme_install_loc == 'RHEV'
+          if deployment.rhev_export_domain_address.empty?
+            deployment.errors[:rhev_export_domain_address] << _('NFS share specified but missing address of NFS server')
           else
-            error = validate_storage_path(deployment, deployment.rhev_export_domain_path)
-            if error
-              deployment.errors[:rhev_export_domain_path] << _(error)
+            if deployment.rhev_export_domain_path.empty?
+              deployment.errors[:rhev_export_domain_path] << _('NFS share specified but missing path to the share')
+            else
+              error = validate_storage_path(deployment, deployment.rhev_export_domain_path)
+              if error
+                deployment.errors[:rhev_export_domain_path] << _(error)
+              end
+              validate_storage_share(deployment, deployment.rhev_export_domain_address, deployment.rhev_export_domain_path, 36, 36)
             end
-            validate_storage_share(deployment, deployment.rhev_export_domain_address, deployment.rhev_export_domain_path, 36, 36)
           end
         end
       end
