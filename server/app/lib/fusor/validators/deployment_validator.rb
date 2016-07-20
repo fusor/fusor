@@ -76,7 +76,7 @@ module Fusor
         end
 
         if deployment.rhev_engine_host_id.nil? and !deployment.rhev_is_self_hosted
-          deployment.errors[:rhev_engine_host_id] << _('RHV deployments must have a RHV Engine Host')
+          deployment.errors[:rhev_engine_host_id] << _('RHV deployments must have an RHV Engine Host')
         end
 
         if deployment.rhev_hypervisor_hosts.count < 1

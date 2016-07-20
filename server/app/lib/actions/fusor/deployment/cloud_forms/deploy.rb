@@ -29,7 +29,7 @@ module Actions
                 fail _("Unable to locate CloudForms content settings in config/settings.plugins.d/fusor.yaml")
               end
               if deployment.cfme_install_loc == 'RHEV'
-                fail _("Unable to locate a RHV export domain") unless deployment.rhev_export_domain_name
+                fail _("Unable to locate an RHV export domain") unless deployment.rhev_export_domain_name
                 fail _("Unable to locate a suitable host for CloudForms deployment") unless deployment.rhev_engine_host
                 fail _("RHV engine admin password not configured properly") unless deployment.rhev_engine_admin_password
               end
