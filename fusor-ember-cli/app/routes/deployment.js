@@ -1,9 +1,8 @@
 import Ember from 'ember';
 import DeploymentRouteMixin from '../mixins/deployment-route-mixin';
-import UsesOseDefaults from '../mixins/uses-ose-defaults';
 import request from 'ic-ajax';
 
-export default Ember.Route.extend(DeploymentRouteMixin, UsesOseDefaults, {
+export default Ember.Route.extend(DeploymentRouteMixin, {
 
   model(params) {
     return this.store.findRecord('deployment', params.deployment_id);
@@ -25,10 +24,10 @@ export default Ember.Route.extend(DeploymentRouteMixin, UsesOseDefaults, {
       }
     });
 
-    this.loadOpenshiftDefaults(controller, model);
-    this.loadCloudFormsDefaults(controller, model);
     this.loadDefaultDomainName(controller);
     this.loadUpstreamConsumer(controller, model);
+
+    this.loadDefaultData(model);
   },
 
   loadDefaultDomainName(controller) {
@@ -54,58 +53,15 @@ export default Ember.Route.extend(DeploymentRouteMixin, UsesOseDefaults, {
     });
   },
 
-  loadCloudFormsDefaults(controller, model) {
-    // GET from API v2 CFME settings for Foreman/Sat6 - if CFME is selected
-    if (model.get('deploy_cfme')) {
-      request('/api/v2/settings?search=cloudforms').then(function(settings) {
-        var results = settings['results'];
-        // overwrite values for deployment since Sat6 settings is only place to change CFME VM requirements
-        model.set('cloudforms_vcpu', results.findBy('name', 'cloudforms_vcpu').value);
-        model.set('cloudforms_ram', results.findBy('name', 'cloudforms_ram').value);
-        model.set('cloudforms_vm_disk_size', results.findBy('name', 'cloudforms_vm_disk_size').value);
-        model.set('cloudforms_db_disk_size', results.findBy('name', 'cloudforms_db_disk_size').value);
-      });
-    }
-  },
-
-  loadOpenshiftDefaults(controller, model) {
-    // GET from API v2 OSE settings for Foreman/Sat6
-
-    if (model.get('deploy_openshift')) {
+  loadDefaultData(model, opt) {
+    Ember.RSVP.all([
       request('/api/v2/settings?search=openshift').then(settings => {
-        var results = settings['results'];
-        if (this.shouldUseOseDefault(model.get('openshift_master_vcpu'))) {
-          model.set('openshift_master_vcpu', results.findBy('name', 'openshift_master_vcpu').value);
-        }
-        if (this.shouldUseOseDefault(model.get('openshift_master_ram'))) {
-          model.set('openshift_master_ram', results.findBy('name', 'openshift_master_ram').value);
-        }
-        if (this.shouldUseOseDefault(model.get('openshift_master_disk'))) {
-          model.set('openshift_master_disk', results.findBy('name', 'openshift_master_disk').value);
-        }
-        if (this.shouldUseOseDefault(model.get('openshift_node_vcpu'))) {
-          model.set('openshift_node_vcpu', results.findBy('name', 'openshift_node_vcpu').value);
-        }
-        if (this.shouldUseOseDefault(model.get('openshift_node_ram'))) {
-          model.set('openshift_node_ram', results.findBy('name', 'openshift_node_ram').value);
-        }
-        if (this.shouldUseOseDefault(model.get('openshift_node_disk'))) {
-          model.set('openshift_node_disk', results.findBy('name', 'openshift_node_disk').value);
-        }
-      });
-
-      // set default values 1 Master, 1 Worker, 30GB storage for OSE
-      if (this.shouldUseOseDefault(model.get('openshift_number_master_nodes'))) {
-        model.set('openshift_number_master_nodes', 1);
-      }
-      if (this.shouldUseOseDefault(model.get('openshift_number_worker_nodes'))) {
-        model.set('openshift_number_worker_nodes', 1);
-      }
-      if (this.shouldUseOseDefault(model.get('openshift_storage_size'))) {
-        model.set('openshift_storage_size', 30);
-      }
-
-    }
+        model.loadOpenshiftDefaults(settings['results'], opt);
+      }),
+      request('/api/v2/settings?search=cloudforms').then(settings => {
+        model.loadCloudformsDefaults(settings['results'], opt);
+      })
+    ]);
   },
 
   actions: {
@@ -243,6 +199,10 @@ export default Ember.Route.extend(DeploymentRouteMixin, UsesOseDefaults, {
     refreshModel() {
       console.log('refreshModelOnDeploymentRoute');
       return this.refresh();
+    },
+
+    loadDefaultData(model, opt) {
+      this.loadDefaultData(model, opt);
     }
   }
 });

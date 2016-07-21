@@ -1,7 +1,8 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
+import NeedsDiscoveredHostsAjax from '../mixins/needs-discovered-hosts-ajax';
 
-export default Ember.Controller.extend(NeedsDeploymentMixin, {
+export default Ember.Controller.extend(NeedsDeploymentMixin, NeedsDiscoveredHostsAjax, {
 
   rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
 
@@ -27,8 +28,27 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   actions: {
     rhevSetupChanged() {
-      this.get('deploymentController').set('model.rhev_is_self_hosted', this.get('isSelfHosted'));
-    }
-  }
+      this.get('deploymentController').set(
+        'model.rhev_is_self_hosted',
+        this.get('isSelfHosted')
+      );
 
+      // Changing from self-hosted to hv+engine setup needs to reset
+      // host associations to a clean slate.
+      this.resetEngineAndHypervisors().catch(err => {
+        console.log('Error occurred while resetting engine and hypervisors');
+        console.log(err);
+      });
+    }
+  },
+
+  resetEngineAndHypervisors() {
+    const deployment = this.get('deploymentController.model');
+
+    deployment.set('discovered_host', null); // Engine reset
+    return deployment
+      .save()
+      .then(() => this.postDiscoveredHostIds(deployment, []))
+      .then(() => this.send('loadDefaultData', deployment, {reset: true}));
+  }
 });

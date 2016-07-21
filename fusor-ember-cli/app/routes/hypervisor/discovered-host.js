@@ -1,8 +1,8 @@
 import Ember from 'ember';
-import DiscoveredHostRouteMixin from "../../mixins/discovered-host-route-mixin";
-import request from 'ic-ajax';
+import DiscoveredHostRouteMixin from '../../mixins/discovered-host-route-mixin';
+import NeedsDiscoveredHostsAjax from '../../mixins/needs-discovered-hosts-ajax';
 
-export default Ember.Route.extend(DiscoveredHostRouteMixin, {
+export default Ember.Route.extend(DiscoveredHostRouteMixin, NeedsDiscoveredHostsAjax, {
   model() {
     return this.modelFor('deployment').get('discovered_hosts');
   },
@@ -13,29 +13,17 @@ export default Ember.Route.extend(DiscoveredHostRouteMixin, {
 
   actions: {
     saveHyperVisors(redirectPath) {
-      var self = this;
       var deployment = this.modelFor('deployment');
-      var hypervisorModelIds = this.controllerFor('hypervisor/discovered-host').get('hypervisorModelIds');
-      var token = Ember.$('meta[name="csrf-token"]').attr('content');
+      var hypervisorModelIds = this.controllerFor('hypervisor/discovered-host')
+        .get('hypervisorModelIds');
 
-      request({
-        url: '/fusor/api/v21/deployments/' + deployment.get('id'),
-        type: "PUT",
-        data: JSON.stringify({'deployment': { 'discovered_host_ids': hypervisorModelIds } }),
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-          "X-CSRF-Token": token,
-          "Authorization": "Basic " + self.get('session.basicAuthToken')
-        }
-      }).then(function(response) {
+      this.postDiscoveredHostIds(deployment, hypervisorModelIds).then(() => {
         if (redirectPath) {
-          self.transitionTo('rhev-options');
+          this.transitionTo('rhev-options');
         }
-      }, function(error) {
-        console.log(error);
+      }).catch(err => {
+        console.log(err);
       });
     }
   }
-
 });
