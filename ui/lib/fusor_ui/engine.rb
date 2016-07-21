@@ -21,14 +21,12 @@ module FusorUi
                :url      => '/r/#/deployments',
                :url_hash => { :controller => 'fusor_ui/placeholders', :action => :index },
                :caption  => N_('Deployments'),
-               :engine   => FusorUi::Engine,
-               :turbolinks => false
+               :engine   => FusorUi::Engine
           menu :top_menu, :new_fusor_deployment,
                :url      => '/r/#/deployments/new/start',
                :url_hash => { :controller => 'fusor_ui/placeholders', :action => :new },
                :caption  => N_('New Deployment'),
-               :engine   => FusorUi::Engine,
-               :turbolinks => false
+               :engine   => FusorUi::Engine
         end
 
       end
@@ -40,8 +38,7 @@ module FusorUi
       SETTINGS[:fusor_ui][:assets][:precompile] = [
         'fusor_ui/fusor-ember-cli.css',
         'fusor_ui/fusor-ember-cli.js',
-        'fusor_ui/vendor.js',
-        'fusor_ui/application_no_tl.js'
+        'fusor_ui/vendor.js'
       ]
     end
 
