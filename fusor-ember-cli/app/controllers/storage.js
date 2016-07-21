@@ -54,9 +54,14 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
       Ember.RSVP.hash(validationPromises).then((resultHash) => {
         this.set('showLoadingSpinner', false);
-        const validMounts = resultHash.storage.mounted &&
-                            (checkExport && resultHash.export.mounted) &&
-                            (checkHosted && resultHash.hosted.mounted);
+        let validMounts = resultHash.storage.mounted;
+
+        if(checkExport) {
+          validMounts = validMounts && resultHash.export.mounted;
+        }
+        if(checkHosted) {
+          validMounts = validMounts && resultHash.hosted.mounted;
+        }
 
         if(validMounts) {
           this.set('errorMsg', null);
@@ -98,6 +103,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
           this.set('errorMsg', errorMsg);
         }
       }).catch(err => {
+        console.error(err);
         this.set(
           'errorMsg',
           'Error occurred while attempting to validate storage paths');
