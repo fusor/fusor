@@ -40,7 +40,8 @@ module FusorUi
       SETTINGS[:fusor_ui][:assets][:precompile] = [
         'fusor_ui/fusor-ember-cli.css',
         'fusor_ui/fusor-ember-cli.js',
-        'fusor_ui/vendor.js'
+        'fusor_ui/vendor.js',
+        'fusor_ui/application_no_tl.js'
       ]
     end
 
