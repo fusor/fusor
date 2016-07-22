@@ -3534,17 +3534,25 @@ define("fusor-ember-cli/controllers/engine/discovered-host", ["exports", "ember"
     }),
 
     // Filter out hosts selected as Hypervisor
-    availableHosts: _ember["default"].computed('allDiscoveredHosts.[]', 'hypervisorModelIds.[]', function () {
-      // TODO: Ember.computed.filter() caused problems. error item.get is not a function
-      var self = this;
+    availableHosts: _ember["default"].computed('deployingHosts', 'allDiscoveredHosts.[]', 'hypervisorModelIds.[]', function () {
       var allDiscoveredHosts = this.get('allDiscoveredHosts');
-      if (this.get('allDiscoveredHosts')) {
-        return allDiscoveredHosts.filter(function (item) {
-          if (self.get('hypervisorModelIds')) {
-            return !self.get('hypervisorModelIds').contains(item.get('id'));
-          }
-        });
+
+      if (_ember["default"].isEmpty(allDiscoveredHosts)) {
+        return [];
       }
+
+      var deployingHosts = this.get('deployingHosts');
+      var hypervisorIds = this.get('hypervisorModelIds');
+
+      return allDiscoveredHosts.filter(function (host) {
+        var hostId = host.get('id');
+        var isHypervisor = hypervisorIds && hypervisorIds.contains(host.get('id'));
+        var isDeploying = deployingHosts.any(function (deployingHost) {
+          return deployingHost.get('id') === hostId;
+        });
+
+        return !isHypervisor && !isDeploying;
+      });
     }),
 
     filteredHosts: _ember["default"].computed('availableHosts.[]', 'searchString', 'isStarted', function () {
@@ -3614,6 +3622,7 @@ define('fusor-ember-cli/controllers/host', ['exports', 'ember'], function (expor
 define('fusor-ember-cli/controllers/hypervisor/discovered-host', ['exports', 'ember', 'fusor-ember-cli/mixins/needs-deployment-mixin', 'fusor-ember-cli/utils/validators'], function (exports, _ember, _fusorEmberCliMixinsNeedsDeploymentMixin, _fusorEmberCliUtilsValidators) {
   exports['default'] = _ember['default'].Controller.extend(_fusorEmberCliMixinsNeedsDeploymentMixin['default'], {
 
+    deployments: _ember['default'].computed.alias('applicationController.model'),
     selectedRhevEngine: _ember['default'].computed.alias("deploymentController.model.discovered_host"),
     rhevIsSelfHosted: _ember['default'].computed.alias("deploymentController.model.rhev_is_self_hosted"),
 
@@ -3638,18 +3647,26 @@ define('fusor-ember-cli/controllers/hypervisor/discovered-host', ['exports', 'em
       return this.get('hostNamingScheme') === 'hypervisorN';
     }),
 
-    // Filter out hosts selected as Engine
-    availableHosts: _ember['default'].computed('allDiscoveredHosts.[]', 'hypervisorModelIds.[]', function () {
-      // TODO: Ember.computed.filter() caused problems. error item.get is not a function
-      var self = this;
+    availableHosts: _ember['default'].computed('deployingHosts', 'allDiscoveredHosts.[]', 'hypervisorModelIds.[]', function () {
+      var _this = this;
+
       var allDiscoveredHosts = this.get('allDiscoveredHosts');
-      if (this.get('allDiscoveredHosts')) {
-        return allDiscoveredHosts.filter(function (item) {
-          if (self.get('hypervisorModelIds')) {
-            return item.get('id') !== self.get('selectedRhevEngine.id');
-          }
-        });
+
+      if (_ember['default'].isEmpty(allDiscoveredHosts)) {
+        return [];
       }
+
+      var deployingHosts = this.get('deployingHosts');
+
+      return allDiscoveredHosts.filter(function (host) {
+        var hostId = host.get('id');
+        var isEngine = hostId === _this.get('selectedRhevEngine.id');
+        var isDeploying = deployingHosts.any(function (deployingHost) {
+          return deployingHost.get('id') === hostId;
+        });
+
+        return !isEngine && !isDeploying;
+      });
     }),
 
     // same as Engine. TODO. put it mixin
@@ -3708,7 +3725,7 @@ define('fusor-ember-cli/controllers/hypervisor/discovered-host', ['exports', 'em
       state: _ember['default'].Object.create()
     }),
     disableNextOnHypervisor: _ember['default'].computed('hypervisorModelIds', 'hostnameValidity.updated', function () {
-      var _this = this;
+      var _this2 = this;
 
       if (this.get('hypervisorModelIds').get('length') === 0) {
         return true;
@@ -3717,12 +3734,12 @@ define('fusor-ember-cli/controllers/hypervisor/discovered-host', ['exports', 'em
       var vState = this.get('hostnameValidity').get('state');
       var trackedHostIds = Object.keys(vState);
       return trackedHostIds.length === 0 || !trackedHostIds.filter(function (hostId) {
-        return _this.get('hypervisorModelIds').contains(hostId);
+        return _this2.get('hypervisorModelIds').contains(hostId);
       }).map(function (k) {
         return vState.get(k);
-      }).reduce(function (lhs, rhs) {
-        return lhs && rhs;
-      });
+      }).reduce(function (previousAreTrue, currentValue) {
+        return previousAreTrue && currentValue;
+      }, true);
     }),
 
     customPrefixValidator: _fusorEmberCliUtilsValidators.AllValidator.create({
@@ -5237,37 +5254,44 @@ define('fusor-ember-cli/controllers/rhev-options', ['exports', 'ember', 'fusor-e
     }
   });
 });
-define("fusor-ember-cli/controllers/rhev-setup", ["exports", "ember", "fusor-ember-cli/mixins/needs-deployment-mixin"], function (exports, _ember, _fusorEmberCliMixinsNeedsDeploymentMixin) {
-  exports["default"] = _ember["default"].Controller.extend(_fusorEmberCliMixinsNeedsDeploymentMixin["default"], {
+define('fusor-ember-cli/controllers/rhev-setup', ['exports', 'ember', 'fusor-ember-cli/mixins/needs-deployment-mixin', 'fusor-ember-cli/mixins/needs-discovered-hosts-ajax'], function (exports, _ember, _fusorEmberCliMixinsNeedsDeploymentMixin, _fusorEmberCliMixinsNeedsDiscoveredHostsAjax) {
+  exports['default'] = _ember['default'].Controller.extend(_fusorEmberCliMixinsNeedsDeploymentMixin['default'], _fusorEmberCliMixinsNeedsDiscoveredHostsAjax['default'], {
 
-    rhevIsSelfHosted: _ember["default"].computed.alias("deploymentController.model.rhev_is_self_hosted"),
+    rhevIsSelfHosted: _ember['default'].computed.alias("deploymentController.model.rhev_is_self_hosted"),
 
-    setupNextRouteName: _ember["default"].computed('rhevIsSelfHosted', function () {
-      if (this.get('rhevIsSelfHosted')) {
-        return 'hypervisor.discovered-host';
-      } else {
-        return 'engine.discovered-host';
-      }
+    setupNextRouteName: _ember['default'].computed('rhevIsSelfHosted', function () {
+      return this.get('rhevIsSelfHosted') ? 'hypervisor.discovered-host' : 'engine.discovered-host';
     }),
 
-    rhevSetup: _ember["default"].computed('rhevIsSelfHosted', function () {
-      return this.get('rhevIsSelfHosted') ? "selfhost" : "rhevhost";
-    }),
-
-    rhevSetupTitle: _ember["default"].computed('rhevIsSelfHosted', function () {
+    rhevSetupTitle: _ember['default'].computed('rhevIsSelfHosted', function () {
       return this.get('rhevIsSelfHosted') ? "Self Hosted" : "Host + Engine";
     }),
 
-    isSelfHosted: _ember["default"].computed('rhevSetup', function () {
-      return this.get('rhevSetup') === 'selfhost';
-    }),
-
     actions: {
-      rhevSetupChanged: function rhevSetupChanged() {
-        this.get('deploymentController').set('model.rhev_is_self_hosted', this.get('isSelfHosted'));
-      }
-    }
+      rhevSetupChanged: function rhevSetupChanged(newSelection) {
+        this.get('deploymentController').set('model.rhev_is_self_hosted', newSelection === 'selfhost');
 
+        // Changing from self-hosted to hv+engine setup needs to reset
+        // host associations to a clean slate.
+        this.resetEngineAndHypervisors()['catch'](function (err) {
+          console.log('Error occurred while resetting engine and hypervisors');
+          console.log(err);
+        });
+      }
+    },
+
+    resetEngineAndHypervisors: function resetEngineAndHypervisors() {
+      var _this = this;
+
+      var deployment = this.get('deploymentController.model');
+
+      deployment.set('discovered_host', null); // Engine reset
+      return deployment.save().then(function () {
+        return _this.postDiscoveredHostIds(deployment, []);
+      }).then(function () {
+        return _this.send('loadDefaultData', deployment, { reset: true });
+      });
+    }
   });
 });
 define('fusor-ember-cli/controllers/rhev', ['exports', 'ember', 'fusor-ember-cli/mixins/needs-deployment-mixin'], function (exports, _ember, _fusorEmberCliMixinsNeedsDeploymentMixin) {
@@ -5442,7 +5466,14 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember', 'ic-ajax', 'f
 
         _ember['default'].RSVP.hash(validationPromises).then(function (resultHash) {
           _this.set('showLoadingSpinner', false);
-          var validMounts = resultHash.storage.mounted && checkExport && resultHash['export'].mounted && checkHosted && resultHash.hosted.mounted;
+          var validMounts = resultHash.storage.mounted;
+
+          if (checkExport) {
+            validMounts = validMounts && resultHash['export'].mounted;
+          }
+          if (checkHosted) {
+            validMounts = validMounts && resultHash.hosted.mounted;
+          }
 
           if (validMounts) {
             _this.set('errorMsg', null);
@@ -5482,6 +5513,7 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember', 'ic-ajax', 'f
             _this.set('errorMsg', errorMsg);
           }
         })['catch'](function (err) {
+          console.error(err);
           _this.set('errorMsg', 'Error occurred while attempting to validate storage paths');
         });
       }
@@ -10442,24 +10474,80 @@ define('fusor-ember-cli/mixins/discovered-host-route-mixin', ['exports', 'ember'
     setupController: function setupController(controller, model) {
       controller.set('model', model);
       if (this.modelFor('deployment').get('isNotStarted')) {
-        controller.set('isLoadingHosts', true);
-        this.store.query('discovered-host', { per_page: 1000 }).then(function (results) {
-          controller.set('allDiscoveredHosts', results.filterBy('is_discovered', true));
-          controller.set('isLoadingHosts', false);
-        });
+        this.loadDiscoveredHosts();
       }
     },
 
     actions: {
       refreshDiscoveredHosts: function refreshDiscoveredHosts() {
         console.log('refresh allDiscoveredHosts');
-        var controller = this.get('controller');
-        controller.set('isLoadingHosts', true);
-        this.store.query('discovered-host', { per_page: 1000 }).then(function (results) {
-          controller.set('allDiscoveredHosts', results.filterBy('is_discovered', true));
-          controller.set('isLoadingHosts', false);
-        });
+        this.loadDiscoveredHosts();
       }
+    },
+
+    loadDiscoveredHosts: function loadDiscoveredHosts() {
+      var _this = this;
+
+      var controller = this.get('controller');
+      controller.set('isLoadingHosts', true);
+      return _ember['default'].RSVP.hash({
+        deployingHosts: this.getDeployingHosts(),
+        discoveredHosts: this.store.query('discovered-host', { per_page: 1000 })
+      }).then(function (hash) {
+        _this.set('controller.deployingHosts', hash.deployingHosts);
+        _this.set('controller.allDiscoveredHosts', hash.discoveredHosts.filterBy('is_discovered', true));
+      })['finally'](function () {
+        return controller.set('isLoadingHosts', false);
+      });
+    },
+
+    getDeployingHosts: function getDeployingHosts() {
+      var currentDeployment = this.modelFor('deployment');
+      var discoveredHostRequests = [];
+
+      return this.getRunningDeployments().then(function (deployments) {
+        deployments.forEach(function (deployment) {
+          if (deployment.get('id') !== currentDeployment.get('id')) {
+            discoveredHostRequests.push(deployment.get('discovered_host'));
+            discoveredHostRequests.push(deployment.get('discovered_hosts'));
+          }
+        });
+
+        return _ember['default'].RSVP.all(discoveredHostRequests);
+      }).then(function (results) {
+        var flattenedHosts = [];
+        results.forEach(function (result) {
+          if (_ember['default'].isArray(result)) {
+            result.forEach(function (host) {
+              return flattenedHosts.push(host);
+            });
+          } else {
+            flattenedHosts.push(result);
+          }
+        });
+        return flattenedHosts.uniq();
+      });
+    },
+
+    getRunningDeployments: function getRunningDeployments() {
+      var deployments = this.modelFor('application');
+      return this.getDeploymentTasks(deployments).then(function (tasks) {
+        var runningDeploymentTasks = tasks.filterBy('state', 'running');
+        return deployments.filter(function (deployment) {
+          return runningDeploymentTasks.any(function (task) {
+            return task.get('id') === deployment.get('foreman_task_uuid');
+          });
+        });
+      });
+    },
+
+    getDeploymentTasks: function getDeploymentTasks(deployments) {
+      var _this2 = this;
+
+      var deploymentTaskRequests = deployments.mapBy('foreman_task_uuid').compact().map(function (foremanTaskUuid) {
+        return _this2.get('store').findRecord('foreman-task', foremanTaskUuid);
+      });
+      return _ember['default'].RSVP.all(deploymentTaskRequests);
     }
 
   });
@@ -10515,6 +10603,25 @@ define('fusor-ember-cli/mixins/needs-deployment-new-mixin', ['exports', 'ember']
 
     deploymentName: _ember['default'].computed.alias("deploymentNewController.model.name")
 
+  });
+});
+define('fusor-ember-cli/mixins/needs-discovered-hosts-ajax', ['exports', 'ember', 'ic-ajax'], function (exports, _ember, _icAjax) {
+  exports['default'] = _ember['default'].Mixin.create({
+    postDiscoveredHostIds: function postDiscoveredHostIds(deployment, hypervisorIds) {
+      var token = _ember['default'].$('meta[name="csrf-token"]').attr('content');
+      return (0, _icAjax['default'])({
+        url: '/fusor/api/v21/deployments/' + deployment.get('id'),
+        type: 'PUT',
+        data: JSON.stringify({ 'deployment': { 'discovered_host_ids': hypervisorIds } }),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': token
+        }
+      }).then(function () {
+        return deployment.reload();
+      }); // Reload to update models
+    }
   });
 });
 define('fusor-ember-cli/mixins/needs-existing-manifest-helpers', ['exports', 'ember'], function (exports, _ember) {
@@ -11406,8 +11513,8 @@ define('fusor-ember-cli/models/deployment-plan', ['exports', 'ember', 'ember-dat
     }
   });
 });
-define('fusor-ember-cli/models/deployment', ['exports', 'ember-data', 'ember'], function (exports, _emberData, _ember) {
-  exports['default'] = _emberData['default'].Model.extend({
+define('fusor-ember-cli/models/deployment', ['exports', 'ember-data', 'ember', 'fusor-ember-cli/mixins/uses-ose-defaults', 'ic-ajax'], function (exports, _emberData, _ember, _fusorEmberCliMixinsUsesOseDefaults, _icAjax) {
+  exports['default'] = _emberData['default'].Model.extend(_fusorEmberCliMixinsUsesOseDefaults['default'], {
     name: _emberData['default'].attr('string'),
     label: _emberData['default'].attr('string'),
     description: _emberData['default'].attr('string'),
@@ -11595,8 +11702,54 @@ define('fusor-ember-cli/models/deployment', ['exports', 'ember-data', 'ember'], 
       if (this.get('progress')) {
         return (this.get('progress') * 100).toFixed(1) + '%';
       }
-    })
+    }),
 
+    handleReset: function handleReset(shouldReset, prop) {
+      if (shouldReset) {
+        this.set(prop, null);
+      }
+    },
+
+    setOpenshiftDefault: function setOpenshiftDefault(prop, value) {
+      if (this.shouldUseOseDefault(this.get(prop))) {
+        this.set(prop, value);
+      }
+    },
+
+    loadOpenshiftDefaults: function loadOpenshiftDefaults(settings, opt) {
+      var _this = this;
+
+      if (this.get('deploy_openshift')) {
+        (function () {
+          var shouldReset = opt && (opt.reset || false);
+
+          ['openshift_master_vcpu', 'openshift_master_ram', 'openshift_master_disk', 'openshift_node_vcpu', 'openshift_node_ram', 'openshift_node_disk'].forEach(function (prop) {
+            _this.handleReset(shouldReset, prop);
+            _this.setOpenshiftDefault(prop, settings.findBy('name', prop).value);
+          });
+
+          _this.handleReset(shouldReset, 'openshift_number_master_nodes');
+          _this.handleReset(shouldReset, 'openshift_number_worker_nodes');
+          _this.handleReset(shouldReset, 'openshift_storage_size');
+
+          _this.setOpenshiftDefault('openshift_number_master_nodes', 1);
+          _this.setOpenshiftDefault('openshift_number_worker_nodes', 1);
+          _this.setOpenshiftDefault('openshift_storage_size', 30);
+        })();
+      }
+    },
+
+    loadCloudformsDefaults: function loadCloudformsDefaults(settings, opt) {
+      var _this2 = this;
+
+      if (this.get('deploy_cfme')) {
+        var shouldReset = opt && (opt.reset || false);
+
+        ['cloudforms_vcpu', 'cloudforms_ram', 'cloudforms_vm_disk_size', 'cloudforms_db_disk_size'].forEach(function (prop) {
+          _this2.set(prop, settings.findBy('name', prop).value);
+        });
+      }
+    }
   });
 });
 define('fusor-ember-cli/models/discovered-host', ['exports', 'fusor-ember-cli/models/base/base-discovered-host'], function (exports, _fusorEmberCliModelsBaseBaseDiscoveredHost) {
@@ -12475,8 +12628,8 @@ define('fusor-ember-cli/routes/deployment-new', ['exports', 'ember', 'fusor-embe
     }
   });
 });
-define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cli/mixins/deployment-route-mixin', 'fusor-ember-cli/mixins/uses-ose-defaults', 'ic-ajax'], function (exports, _ember, _fusorEmberCliMixinsDeploymentRouteMixin, _fusorEmberCliMixinsUsesOseDefaults, _icAjax) {
-  exports['default'] = _ember['default'].Route.extend(_fusorEmberCliMixinsDeploymentRouteMixin['default'], _fusorEmberCliMixinsUsesOseDefaults['default'], {
+define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cli/mixins/deployment-route-mixin', 'ic-ajax'], function (exports, _ember, _fusorEmberCliMixinsDeploymentRouteMixin, _icAjax) {
+  exports['default'] = _ember['default'].Route.extend(_fusorEmberCliMixinsDeploymentRouteMixin['default'], {
 
     model: function model(params) {
       return this.store.findRecord('deployment', params.deployment_id);
@@ -12498,10 +12651,10 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cl
         }
       });
 
-      this.loadOpenshiftDefaults(controller, model);
-      this.loadCloudFormsDefaults(controller, model);
       this.loadDefaultDomainName(controller);
       this.loadUpstreamConsumer(controller, model);
+
+      this.loadDefaultData(model);
     },
 
     loadDefaultDomainName: function loadDefaultDomainName(controller) {
@@ -12525,59 +12678,12 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cl
       });
     },
 
-    loadCloudFormsDefaults: function loadCloudFormsDefaults(controller, model) {
-      // GET from API v2 CFME settings for Foreman/Sat6 - if CFME is selected
-      if (model.get('deploy_cfme')) {
-        (0, _icAjax['default'])('/api/v2/settings?search=cloudforms').then(function (settings) {
-          var results = settings['results'];
-          // overwrite values for deployment since Sat6 settings is only place to change CFME VM requirements
-          model.set('cloudforms_vcpu', results.findBy('name', 'cloudforms_vcpu').value);
-          model.set('cloudforms_ram', results.findBy('name', 'cloudforms_ram').value);
-          model.set('cloudforms_vm_disk_size', results.findBy('name', 'cloudforms_vm_disk_size').value);
-          model.set('cloudforms_db_disk_size', results.findBy('name', 'cloudforms_db_disk_size').value);
-        });
-      }
-    },
-
-    loadOpenshiftDefaults: function loadOpenshiftDefaults(controller, model) {
-      var _this = this;
-
-      // GET from API v2 OSE settings for Foreman/Sat6
-
-      if (model.get('deploy_openshift')) {
-        (0, _icAjax['default'])('/api/v2/settings?search=openshift').then(function (settings) {
-          var results = settings['results'];
-          if (_this.shouldUseOseDefault(model.get('openshift_master_vcpu'))) {
-            model.set('openshift_master_vcpu', results.findBy('name', 'openshift_master_vcpu').value);
-          }
-          if (_this.shouldUseOseDefault(model.get('openshift_master_ram'))) {
-            model.set('openshift_master_ram', results.findBy('name', 'openshift_master_ram').value);
-          }
-          if (_this.shouldUseOseDefault(model.get('openshift_master_disk'))) {
-            model.set('openshift_master_disk', results.findBy('name', 'openshift_master_disk').value);
-          }
-          if (_this.shouldUseOseDefault(model.get('openshift_node_vcpu'))) {
-            model.set('openshift_node_vcpu', results.findBy('name', 'openshift_node_vcpu').value);
-          }
-          if (_this.shouldUseOseDefault(model.get('openshift_node_ram'))) {
-            model.set('openshift_node_ram', results.findBy('name', 'openshift_node_ram').value);
-          }
-          if (_this.shouldUseOseDefault(model.get('openshift_node_disk'))) {
-            model.set('openshift_node_disk', results.findBy('name', 'openshift_node_disk').value);
-          }
-        });
-
-        // set default values 1 Master, 1 Worker, 30GB storage for OSE
-        if (this.shouldUseOseDefault(model.get('openshift_number_master_nodes'))) {
-          model.set('openshift_number_master_nodes', 1);
-        }
-        if (this.shouldUseOseDefault(model.get('openshift_number_worker_nodes'))) {
-          model.set('openshift_number_worker_nodes', 1);
-        }
-        if (this.shouldUseOseDefault(model.get('openshift_storage_size'))) {
-          model.set('openshift_storage_size', 30);
-        }
-      }
+    loadDefaultData: function loadDefaultData(model, opt) {
+      _ember['default'].RSVP.all([(0, _icAjax['default'])('/api/v2/settings?search=openshift').then(function (settings) {
+        model.loadOpenshiftDefaults(settings['results'], opt);
+      }), (0, _icAjax['default'])('/api/v2/settings?search=cloudforms').then(function (settings) {
+        model.loadCloudformsDefaults(settings['results'], opt);
+      })]);
     },
 
     actions: {
@@ -12719,6 +12825,10 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cl
       refreshModel: function refreshModel() {
         console.log('refreshModelOnDeploymentRoute');
         return this.refresh();
+      },
+
+      loadDefaultData: function loadDefaultData(model, opt) {
+        this.loadDefaultData(model, opt);
       }
     }
   });
@@ -12779,8 +12889,8 @@ define('fusor-ember-cli/routes/engine', ['exports', 'ember'], function (exports,
     }
   });
 });
-define('fusor-ember-cli/routes/hypervisor/discovered-host', ['exports', 'ember', 'fusor-ember-cli/mixins/discovered-host-route-mixin', 'ic-ajax'], function (exports, _ember, _fusorEmberCliMixinsDiscoveredHostRouteMixin, _icAjax) {
-  exports['default'] = _ember['default'].Route.extend(_fusorEmberCliMixinsDiscoveredHostRouteMixin['default'], {
+define('fusor-ember-cli/routes/hypervisor/discovered-host', ['exports', 'ember', 'fusor-ember-cli/mixins/discovered-host-route-mixin', 'fusor-ember-cli/mixins/needs-discovered-hosts-ajax'], function (exports, _ember, _fusorEmberCliMixinsDiscoveredHostRouteMixin, _fusorEmberCliMixinsNeedsDiscoveredHostsAjax) {
+  exports['default'] = _ember['default'].Route.extend(_fusorEmberCliMixinsDiscoveredHostRouteMixin['default'], _fusorEmberCliMixinsNeedsDiscoveredHostsAjax['default'], {
     model: function model() {
       return this.modelFor('deployment').get('discovered_hosts');
     },
@@ -12791,31 +12901,20 @@ define('fusor-ember-cli/routes/hypervisor/discovered-host', ['exports', 'ember',
 
     actions: {
       saveHyperVisors: function saveHyperVisors(redirectPath) {
-        var self = this;
+        var _this = this;
+
         var deployment = this.modelFor('deployment');
         var hypervisorModelIds = this.controllerFor('hypervisor/discovered-host').get('hypervisorModelIds');
-        var token = _ember['default'].$('meta[name="csrf-token"]').attr('content');
 
-        (0, _icAjax['default'])({
-          url: '/fusor/api/v21/deployments/' + deployment.get('id'),
-          type: "PUT",
-          data: JSON.stringify({ 'deployment': { 'discovered_host_ids': hypervisorModelIds } }),
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "X-CSRF-Token": token,
-            "Authorization": "Basic " + self.get('session.basicAuthToken')
-          }
-        }).then(function (response) {
+        this.postDiscoveredHostIds(deployment, hypervisorModelIds).then(function () {
           if (redirectPath) {
-            self.transitionTo('rhev-options');
+            _this.transitionTo('rhev-options');
           }
-        }, function (error) {
-          console.log(error);
+        })['catch'](function (err) {
+          console.log(err);
         });
       }
     }
-
   });
 });
 define('fusor-ember-cli/routes/hypervisor', ['exports', 'ember'], function (exports, _ember) {
@@ -14488,6 +14587,12 @@ define('fusor-ember-cli/routes/rhev-options', ['exports', 'ember'], function (ex
 });
 define('fusor-ember-cli/routes/rhev-setup', ['exports', 'ember'], function (exports, _ember) {
   exports['default'] = _ember['default'].Route.extend({
+    setupController: function setupController(controller, model) {
+      controller.set('model', model);
+      var rhevSetup = model.get('rhev_is_self_hosted') ? 'selfhost' : 'rhevhost';
+      controller.set('rhevSetup', rhevSetup);
+    },
+
     deactivate: function deactivate() {
       return this.send('saveDeployment', null);
     }
@@ -15012,12 +15117,13 @@ define('fusor-ember-cli/routes/subscriptions/select-subscriptions', ['exports', 
     },
 
     setupController: function setupController(controller, model) {
+      var _this = this;
+
       controller.set('model', model);
-      var self = this;
       var deployment = this.modelFor('deployment');
       var deploymentId = deployment.get('id');
       var isDisconnected = this.controllerFor('deployment').get('isDisconnected');
-      var sessionPortal = self.modelFor('subscriptions').sessionPortal;
+      var sessionPortal = this.modelFor('subscriptions').sessionPortal;
 
       if (!this.controllerFor('deployment').get('isStarted')) {
         controller.set('isLoading', true);
@@ -15048,7 +15154,7 @@ define('fusor-ember-cli/routes/subscriptions/select-subscriptions', ['exports', 
             //create Fusor::Subscription records if they don't exist
             var matchingSubscription = subscriptionResults.filterBy('contract_number', pool.get('contractNumber')).get('firstObject');
             if (_ember['default'].isBlank(matchingSubscription)) {
-              var sub = self.store.createRecord('subscription', {
+              var sub = _this.store.createRecord('subscription', {
                 'contract_number': pool.get('contractNumber'),
                 'product_name': pool.get('productName'),
                 'quantity_to_add': 0,
@@ -15068,19 +15174,32 @@ define('fusor-ember-cli/routes/subscriptions/select-subscriptions', ['exports', 
           });
           controller.set('subscriptionEntitlements', _ember['default'].A(results[0]));
           controller.set('subscriptionPools', _ember['default'].A(results[1]));
-          return controller.set('isLoading', false);
-        }, function (error) {
-          sessionPortal.save().then(function () {
-            controller.set('errorMsg', error.message);
-            return controller.set('isLoading', false);
+        })['catch'](function (error) {
+          console.debug('route::select-subscriptions::setupController: Main RSVP catch block');
+          console.debug(error);
+          console.debug('route::select-subscriptions::setupController: Saving session portal...');
+          console.debug(sessionPortal);
+          return sessionPortal.save().then(function () {
+            console.debug('route::select-subscriptions::setupController: Session portal successfully saved');
+            console.debug(error);
+            controller.set('errorMsg', 'An error occurred while loading subscription data');
+            controller.set('showErrorMessage', true);
+          })['catch'](function (error) {
+            console.debug('route::select-subscriptions::setupController: Session portal save catch');
+            console.debug(error);
+            controller.set('errorMsg', 'An error occurred while persisting login credentials');
+            controller.set('showErrorMessage', true);
           });
+        })['finally'](function () {
+          console.debug('route::select-subscriptions::setupController: finally bringing down spinner');
+          controller.set('isLoading', false);
         });
       }
     },
 
     actions: {
       saveSubscription: function saveSubscription(pool, qty) {
-        var _this = this;
+        var _this2 = this;
 
         // get saved subscriptions and update quantity
         var deployment = this.modelFor('deployment');
@@ -15098,21 +15217,21 @@ define('fusor-ember-cli/routes/subscriptions/select-subscriptions', ['exports', 
         });
 
         subProm.then(function () {
-          _this.set('subProm', null);
+          _this2.set('subProm', null);
         });
 
         this.set('subProm', subProm);
       },
 
       willTransition: function willTransition(transition) {
-        var _this2 = this;
+        var _this3 = this;
 
         var subProm = this.get('subProm');
         if (subProm) {
           transition.abort();
 
           subProm.then(function () {
-            _this2.transitionTo('subscriptions.review-subscriptions');
+            _this3.transitionTo('subscriptions.review-subscriptions');
           });
         }
       },
@@ -54135,11 +54254,11 @@ define('fusor-ember-cli/views/application', ['exports', 'ember'], function (expo
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+75d68bac"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+59c9253a"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+75d68bac"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+59c9253a"});
 }
 
 /* jshint ignore:end */
