@@ -10,11 +10,10 @@ export default Ember.Route.extend({
 
   setupController(controller, model) {
     controller.set('model', model);
-    var self = this;
     var deployment = this.modelFor('deployment');
     var deploymentId = deployment.get('id');
     var isDisconnected = this.controllerFor('deployment').get('isDisconnected');
-    var sessionPortal = self.modelFor('subscriptions').sessionPortal;
+    var sessionPortal = this.modelFor('subscriptions').sessionPortal;
 
     if (!(this.controllerFor('deployment').get('isStarted'))) {
       controller.set('isLoading', true);
@@ -30,17 +29,17 @@ export default Ember.Route.extend({
         entitlements,
         pools,
         subscriptions
-      ]).then(function(results) {
+      ]).then(results => {
         var entitlementsResults = results[0];
         var allPoolsResults     = results[1];
         var subscriptionResults     = results[2];
 
         // in case go to this route from URL
         sessionPortal.set('isAuthenticated', true);
-        allPoolsResults.forEach(function(pool){
+        allPoolsResults.forEach(pool => {
           pool.set('qtyAttached', 0); //default for loop
 
-          entitlementsResults.forEach(function(entitlement) {
+          entitlementsResults.forEach(entitlement => {
             if (entitlement.get('poolId') === pool.get('id')) {
               pool.incrementProperty('qtyAttached', entitlement.get('quantity'));
             }
@@ -50,7 +49,7 @@ export default Ember.Route.extend({
           var matchingSubscription = subscriptionResults.filterBy(
             'contract_number', pool.get('contractNumber')).get('firstObject');
           if (Ember.isBlank(matchingSubscription)) {
-            var sub = self.store.createRecord('subscription', {
+            var sub = this.store.createRecord('subscription', {
               'contract_number': pool.get('contractNumber'),
               'product_name': pool.get('productName'),
               'quantity_to_add': 0,
@@ -71,12 +70,25 @@ export default Ember.Route.extend({
         });
         controller.set('subscriptionEntitlements', Ember.A(results[0]));
         controller.set('subscriptionPools', Ember.A(results[1]));
-        return controller.set('isLoading', false);
-      }, function(error) {
-        sessionPortal.save().then(function() {
-          controller.set('errorMsg', error.message);
-          return controller.set('isLoading', false);
+      }).catch(error => {
+        console.debug('route::select-subscriptions::setupController: Main RSVP catch block');
+        console.debug(error);
+        console.debug('route::select-subscriptions::setupController: Saving session portal...');
+        console.debug(sessionPortal);
+        return sessionPortal.save().then(() => {
+          console.debug('route::select-subscriptions::setupController: Session portal successfully saved');
+          console.debug(error);
+          controller.set('errorMsg', 'An error occurred while loading subscription data');
+          controller.set('showErrorMessage', true);
+        }).catch(error => {
+          console.debug('route::select-subscriptions::setupController: Session portal save catch');
+          console.debug(error);
+          controller.set('errorMsg', 'An error occurred while persisting login credentials');
+          controller.set('showErrorMessage', true);
         });
+      }).finally(() => {
+        console.debug('route::select-subscriptions::setupController: finally bringing down spinner');
+        controller.set('isLoading', false);
       });
     }
   },
