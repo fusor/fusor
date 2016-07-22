@@ -7,30 +7,19 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, NeedsDiscoveredHost
   rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
 
   setupNextRouteName: Ember.computed('rhevIsSelfHosted', function(){
-    if (this.get('rhevIsSelfHosted')) {
-      return 'hypervisor.discovered-host';
-    } else {
-      return 'engine.discovered-host';
-    }
-  }),
-
-  rhevSetup: Ember.computed('rhevIsSelfHosted', function() {
-    return (this.get('rhevIsSelfHosted') ? "selfhost" : "rhevhost");
+    return this.get('rhevIsSelfHosted') ?
+      'hypervisor.discovered-host' : 'engine.discovered-host';
   }),
 
   rhevSetupTitle: Ember.computed('rhevIsSelfHosted', function() {
     return (this.get('rhevIsSelfHosted') ? "Self Hosted" : "Host + Engine");
   }),
 
-  isSelfHosted: Ember.computed('rhevSetup', function() {
-    return (this.get('rhevSetup') === 'selfhost');
-  }),
-
   actions: {
-    rhevSetupChanged() {
+    rhevSetupChanged(newSelection) {
       this.get('deploymentController').set(
         'model.rhev_is_self_hosted',
-        this.get('isSelfHosted')
+        newSelection === 'selfhost'
       );
 
       // Changing from self-hosted to hv+engine setup needs to reset
