@@ -83,6 +83,7 @@ module Fusor
             options[:headers] = self.default_headers
             options[:user] = credentials[:username]
             options[:password] = credentials[:password]
+            options[:verify_ssl] = OpenSSL::SSL::VERIFY_NONE
           else
             options[:ssl_client_cert] = OpenSSL::X509::Certificate.new(credentials[:client_cert])
             options[:ssl_client_key] = OpenSSL::PKey::RSA.new(credentials[:client_key])
