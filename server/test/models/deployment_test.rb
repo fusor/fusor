@@ -49,6 +49,31 @@ class DeploymentTest < ActiveSupport::TestCase
       assert_not rhev_d.save, "Saved with no organization"
     end
 
+    describe "single deployment" do
+      test "should validate deployment when no other deployment is running" do
+        deployment = fusor_deployments(:rhev)
+        assert deployment.valid?, 'Validation error for single deployment'
+        assert_empty deployment.errors[:foreman_task_uuid]
+      end
+
+      test "should validate deployment when other deployments are complete" do
+        deployment = fusor_deployments(:rhev)
+        another_deployment = fusor_deployments(:another_rhev)
+        another_deployment.foreman_task = foreman_tasks_tasks(:successful_deployment_task)
+        assert deployment.valid?, 'Validation error for subsequent deployments'
+        assert_empty deployment.errors[:foreman_task_uuid]
+      end
+
+      test "should not validate deployment when another deployment is running" do
+        deployment = fusor_deployments(:rhev)
+        another_deployment = fusor_deployments(:another_rhev)
+        another_deployment.foreman_task = foreman_tasks_tasks(:running_deployment_task)
+        another_deployment.save
+        assert_not deployment.valid?, 'Validated deployment when another running deployment exists'
+        assert_not_empty deployment.errors[:foreman_task_uuid]
+      end
+    end
+
     describe "rhev deployment" do
       test "should not save rhev deployment with empty password" do
         rhev_d = fusor_deployments(:rhev)
@@ -88,11 +113,25 @@ class DeploymentTest < ActiveSupport::TestCase
         assert_not rhev_d.save, "Saved rhev deployment with no rhev engine"
       end
 
+      test "should not validate rhev deployment with a managed rhev engine host" do
+        rhev_d = fusor_deployments(:rhev)
+        rhev_d.rhev_engine_host.update_attribute(:managed, true)
+        assert_not rhev_d.valid?, 'Validated rhev deployment using a managed host as an engine'
+        assert_not_empty rhev_d.errors[:rhev_engine_host_id]
+      end
+
       test "should not save rhev deployment with no rhev hypervisors" do
         rhev_d = fusor_deployments(:rhev)
         rhev_d.rhev_hypervisor_hosts.clear
         assert rhev_d.deploy_rhev, "Is not a rhev deployment"
         assert_not rhev_d.save, "Saved rhev deployment with no rhev hypervisors"
+      end
+
+      test "should not validate rhev deployment with a managed rhev engine host" do
+        rhev_d = fusor_deployments(:rhev)
+        rhev_d.discovered_hosts[0].update_attribute(:managed, true)
+        assert_not rhev_d.valid?, 'Validated rhev deployment using a managed host as a hypervisor'
+        assert_not_empty rhev_d.errors[:rhev_hypervisor_hosts]
       end
 
       test "should not save rhev deployment if hypervisor is used as rhev engine somewhere else" do

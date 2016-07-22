@@ -4,6 +4,8 @@ module Fusor
     class DeploymentValidator < ActiveModel::Validator
 
       def validate(deployment)
+        validate_only_one_deployment(deployment)
+
         unless deployment.deploy_rhev || deployment.deploy_cfme || deployment.deploy_openstack
           deployment.errors[:base] << _('You must deploy something...')
         end
@@ -18,6 +20,17 @@ module Fusor
 
         if deployment.deploy_openshift
           validate_openshift_parameters(deployment)
+        end
+      end
+
+      def validate_only_one_deployment(deployment)
+        other_running_deployments = ::Fusor::Deployment.joins(:foreman_task)
+                                      .where.not(id: deployment.id)
+                                      .where(foreman_tasks_tasks: {state: 'running'})
+
+        unless other_running_deployments.empty?
+          other = other_running_deployments.first
+          deployment.errors[:foreman_task_uuid] << _("Deployment #{other.id}: #{other.name} is already running")
         end
       end
 
@@ -79,8 +92,16 @@ module Fusor
           deployment.errors[:rhev_engine_host_id] << _('RHV deployments must have an RHV Engine Host')
         end
 
+        if deployment.rhev_engine_host.try(:managed?)
+          deployment.errors[:rhev_engine_host_id] << _('RHEV Engine Host is already managed')
+        end
+
         if deployment.rhev_hypervisor_hosts.count < 1
           deployment.errors[:rhev_hypervisor_hosts] << _('RHV deployments must have at least one Hypervisor')
+        end
+
+        if deployment.rhev_hypervisor_hosts.any? { |host| host.managed? }
+          deployment.errors[:rhev_hypervisor_hosts] << _('RHEV hypervisor host is already managed')
         end
 
         validate_hostname(deployment)

@@ -20,3 +20,10 @@ running_deployment_task:
   label: Actions::Fusor::Deploy
   state: running
   result: pending
+
+successful_deployment_task:
+  id: 986c9213-0596-48d3-8383-7543701e5dfc
+  type: ForemanTasks::Task::DynflowTask
+  label: Actions::Fusor::Deploy
+  state: stopped
+  result: success
