@@ -49,19 +49,17 @@ export default Ember.Controller.extend(OpenshiftMixin, {
     'workerVcpu',
     'workerRam',
     'workerDisk',
-    'isUnderCapacity',
     function() {
-      return (Ember.isPresent(this.get('openshiftInstallLoc')) &&
-              isPositiveInteger(this.get('numMasterNodes')) &&
-              isPositiveInteger(this.get('numWorkerNodes')) &&
-              isPositiveInteger(this.get('storageSize')) &&
-              isPositiveInteger(this.get('masterVcpu')) &&
-              isPositiveInteger(this.get('masterRam')) &&
-              isPositiveInteger(this.get('masterDisk')) &&
-              isPositiveInteger(this.get('workerVcpu')) &&
-              isPositiveInteger(this.get('workerRam')) &&
-              isPositiveInteger(this.get('workerDisk')) &&
-              this.get('isUnderCapacity'));
+      return Ember.isPresent(this.get('openshiftInstallLoc')) &&
+             isPositiveInteger(this.get('numMasterNodes')) &&
+             isPositiveInteger(this.get('numWorkerNodes')) &&
+             isPositiveInteger(this.get('storageSize')) &&
+             isPositiveInteger(this.get('masterVcpu')) &&
+             isPositiveInteger(this.get('masterRam')) &&
+             isPositiveInteger(this.get('masterDisk')) &&
+             isPositiveInteger(this.get('workerVcpu')) &&
+             isPositiveInteger(this.get('workerRam')) &&
+             isPositiveInteger(this.get('workerDisk'));
     }
   ),
   isInvalidOpenshiftNodes: Ember.computed.not("isValidOpenshiftNodes"),
