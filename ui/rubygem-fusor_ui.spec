@@ -29,7 +29,7 @@ Summary: Fusor Plugin
 Name: %{?scl_prefix}rubygem-%{gem_name}
 
 Version: 1.0.0
-Release: 0%{dist}
+Release: 0%{?dist}
 Group: Development/Ruby
 License: Distributable
 URL: https://github.com/fusor/fusor
