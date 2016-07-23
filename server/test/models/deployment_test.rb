@@ -113,25 +113,11 @@ class DeploymentTest < ActiveSupport::TestCase
         assert_not rhev_d.save, "Saved rhev deployment with no rhev engine"
       end
 
-      test "should not validate rhev deployment with a managed rhev engine host" do
-        rhev_d = fusor_deployments(:rhev)
-        rhev_d.rhev_engine_host.update_attribute(:managed, true)
-        assert_not rhev_d.valid?, 'Validated rhev deployment using a managed host as an engine'
-        assert_not_empty rhev_d.errors[:rhev_engine_host_id]
-      end
-
       test "should not save rhev deployment with no rhev hypervisors" do
         rhev_d = fusor_deployments(:rhev)
         rhev_d.rhev_hypervisor_hosts.clear
         assert rhev_d.deploy_rhev, "Is not a rhev deployment"
         assert_not rhev_d.save, "Saved rhev deployment with no rhev hypervisors"
-      end
-
-      test "should not validate rhev deployment with a managed rhev engine host" do
-        rhev_d = fusor_deployments(:rhev)
-        rhev_d.discovered_hosts[0].update_attribute(:managed, true)
-        assert_not rhev_d.valid?, 'Validated rhev deployment using a managed host as a hypervisor'
-        assert_not_empty rhev_d.errors[:rhev_hypervisor_hosts]
       end
 
       test "should not save rhev deployment if hypervisor is used as rhev engine somewhere else" do

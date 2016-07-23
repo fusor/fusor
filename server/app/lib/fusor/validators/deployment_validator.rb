@@ -92,16 +92,8 @@ module Fusor
           deployment.errors[:rhev_engine_host_id] << _('RHV deployments must have an RHV Engine Host')
         end
 
-        if deployment.rhev_engine_host.try(:managed?)
-          deployment.errors[:rhev_engine_host_id] << _('RHEV Engine Host is already managed')
-        end
-
         if deployment.rhev_hypervisor_hosts.count < 1
           deployment.errors[:rhev_hypervisor_hosts] << _('RHV deployments must have at least one Hypervisor')
-        end
-
-        if deployment.rhev_hypervisor_hosts.any? { |host| host.managed? }
-          deployment.errors[:rhev_hypervisor_hosts] << _('RHEV hypervisor host is already managed')
         end
 
         validate_hostname(deployment)
