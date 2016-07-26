@@ -1,9 +1,9 @@
 <%= stylesheet('fusor_ui/fusor-ember-cli') %>
 
 <%= javascript('fusor_ui/vendor') %>
-<%= javascript('fusor_ui/fusor-ember-cli') %>
+<%= javascript_include_tag 'fusor_ui/fusor-ember-cli', 'data-turbolinks-eval'=>'always' %>
 
 <%= content_for(:title, _("QuickStart Cloud Installer")) %>
 
-<div id='ember-app'>
+<div id='ember-app' data-no-turbolink>
 </div>
