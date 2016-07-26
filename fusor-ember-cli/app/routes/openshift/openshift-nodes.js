@@ -47,12 +47,14 @@ export default Ember.Route.extend(UsesOseDefaults, {
       deployment.set('openshift_install_loc', 'OpenStack');
     }
 
-    var result = { vcpuAvailabe: 8,
-                   ramAvailable: 32,
-                   diskAvailable: 250 };
+    var result = {
+      vcpuAvailable: 8,
+      ramAvailable: 32,
+      diskAvailable: 250
+    };
 
     if (this.shouldUseOseDefault(deployment.get('openshift_available_vcpu'))) {
-      deployment.set('openshift_available_vcpu', result['vcpuAvailabe']);
+      deployment.set('openshift_available_vcpu', result['vcpuAvailable']);
     }
     if (this.shouldUseOseDefault(deployment.get('openshift_available_ram'))) {
       deployment.set('openshift_available_ram', result['ramAvailable']);
