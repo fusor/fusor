@@ -41,6 +41,13 @@ export default TextFComponent.extend({
   onValidate: function() {
     const cdnUrl = this.get('cdnUrl');
     const protocolCheckRx = /^https?:\/\//;
+    const whitespaceCheckRx = /\s/;
+
+    if(whitespaceCheckRx.test(cdnUrl)) {
+      this.setIsVerifyingContentMirror(false);
+      this.setContentMirrorValidation(false, 'URL contains whitespace');
+      return;
+    }
 
     if(!protocolCheckRx.test(cdnUrl)) {
       this.setIsVerifyingContentMirror(false);
