@@ -27,7 +27,8 @@ i.e.
 3. `cd fusor-ember-cli`
 4. In [controllers/application.js](https://github.com/fusor/fusor-ember-cli/blob/master/app/controllers/application.js#L8), change `deployAsPlugin` from `true` to `false`. If `false`, it shows a menu bar for development which is not needed when running inside Foreman/Katello.
 5. [Update your ember-cli-build.js to include these lines](https://github.com/isratrade/fusor/blob/devpick/fusor-ember-cli/ember-cli-build.js#L30-#L68)
-6. Run $ ember server --proxy http://sat61dev.example.com/ or whatever URL of your Foreman/Katello instance. This tells the ember server to proxy API calls to Foreman/Katello:
+6. Run ```ember server --proxy http://sat61dev.example.com/``` or whatever URL of your Foreman/Katello instance. This tells the ember server to proxy API calls to Foreman/Katello.  
+Alternatively, run ```ember server --environment=mocks-enabled``` to use the mirage mocks.
 7. HAPPY HACKING!
 8. BEFORE running next step, in [controllers/application.js](https://github.com/fusor/fusor-ember-cli/blob/master/app/controllers/application.js#L8), change `deployAsPlugin` back to `true` and remove the app.import() lines you added to the Brocfile.js in step 4
 9. Run bash script [`./copy-fusor-ember-cli-to-ui-assets`](https://github.com/fusor/fusor-ember-cli/blob/master/copy-fusor-ember-cli-to-ui-assets) which copies files from `fusor/fusor-ember-cli/dist` to the `fusor/ui` repo
