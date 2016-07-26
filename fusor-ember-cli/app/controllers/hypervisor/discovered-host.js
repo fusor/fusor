@@ -91,13 +91,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return (this.get('cntSelectedHypervisorHosts') === this.get('availableHosts.length'));
   }),
 
-  observeAllChecked: Ember.observer('isAllChecked', function(row) {
-    if (this.get('isAllChecked')) {
-      this.set('checkAll', true);
-      this.set('uncheckAll', false);
-    }
-  }),
-
   hypervisorBackRouteName: Ember.computed('rhevIsSelfHosted', function() {
     if (this.get('rhevIsSelfHosted')) {
       return 'rhev-setup';
@@ -139,14 +132,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
     setCheckAll() {
       this.get('model').setObjects([]);
-      this.set('checkAll', true);
-      this.set('uncheckAll', false);
       this.get('model').addObjects(this.get('availableHosts'));
     },
 
     setUncheckAll() {
-      this.set('uncheckAll', true);
-      this.set('checkAll', false);
       this.get('model').setObjects([]);
     },
 
