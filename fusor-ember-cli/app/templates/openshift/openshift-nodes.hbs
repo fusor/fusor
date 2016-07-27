@@ -1,13 +1,73 @@
-{{#if errorMsg}}
+{{#if isError}}
   <div class="row">
     <div class='col-md-9'>
       <div class='alert alert-warning rhci-alert'>
         <i class="fa fa-2x fa-exclamation-triangle errorForValidation"></i>
         &nbsp;
-        {{errorMsg}}
+        {{errorTypes}} is overcommitted. Consider lowering node counts or {{errorTypes}} sizes.
       </div>
     </div>
   </div>
+
+  {{#if isOverCapacityVcpu}}
+    <div class="row">
+      <div class='col-md-9'>
+        <div class='alert alert-warning rhci-alert'>
+          <p>
+            Current Configuration Requirements
+            {{#if isCloudForms}}
+              {{tool-tip faIcon='fa-info-circle'
+              title=cfmeTooltipError.cpu}}
+            {{/if}}
+          </p>
+          <p>Master CPUs: {{totalMasterCpus}}</p>
+          <p>Worker CPUs: {{totalWorkerCpus}}</p>
+          <p><strong>Total CPUs required: {{vcpuNeeded}}</strong></p>
+          <p><strong>Total CPUs available: {{vcpuAvailable}}</strong></p>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+  {{#if isOverCapacityRam}}
+    <div class="row">
+      <div class='col-md-9'>
+        <div class='alert alert-warning rhci-alert'>
+          <p>
+            Current Configuration Requirements
+            {{#if isCloudForms}}
+              {{tool-tip faIcon='fa-info-circle'
+              title=cfmeTooltipError.ram}}
+            {{/if}}
+          </p>
+          <p>Master RAM: {{totalMasterRam}} GB</p>
+          <p>Worker RAM: {{totalWorkerRam}} GB</p>
+          <p><strong>Total RAM required: {{ramNeeded}} GB</strong></p>
+          <p><strong>Total RAM available: {{ramAvailable}} GB</strong></p>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+  {{#if isOverCapacityDisk}}
+    <div class="row">
+      <div class='col-md-9'>
+        <div class='alert alert-warning rhci-alert'>
+          <p>
+            Current Configuration Requirements
+            {{#if isCloudForms}}
+              {{tool-tip faIcon='fa-info-circle'
+              title=cfmeTooltipError.disk}}
+            {{/if}}
+          </p>
+          <p>Master Disk: {{totalMasterDisk}} GB</p>
+          <p>Worker Disk + Storage: {{totalWorkerDiskPlusStorage}} GB</p>
+          <p><strong>Total Disk required: {{diskNeeded}} GB</strong></p>
+          <p><strong>Total Disk available: {{diskAvailable}} GB</strong></p>
+        </div>
+      </div>
+    </div>
+  {{/if}}
 {{/if}}
 
 <div class='row'>
