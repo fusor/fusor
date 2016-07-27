@@ -56,6 +56,8 @@ BuildRequires: ruby(abi) = 1.8
 %endif
 %endif
 
+Requires: %{?scl_prefix}rubygem-fusor_server
+
 # Hack so we may try to work with a stable katello 2.0 which requires foreman 1.6
 Requires: foreman >= 1.6.0
 BuildRequires: foreman >= 1.6.0
@@ -125,7 +127,7 @@ mkdir -p %{buildroot}%{foreman_dir}/public/assets
   changed (jmagen@redhat.com)
 
 * Thu Apr 09 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-20
-- 
+-
 
 * Mon Apr 06 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-19
 - update FusorUI assets (jmagen@redhat.com)
@@ -209,10 +211,10 @@ mkdir -p %{buildroot}%{foreman_dir}/public/assets
   Foreman 1.6 (jwmatthews@gmail.com)
 
 * Mon Feb 02 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-5
-- 
+-
 
 * Tue Jan 27 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-4
-- 
+-
 
 * Tue Jan 27 2015 John Matthews <jwmatthews@gmail.com> 0.0.1-3
 - new package built with tito

@@ -13,4 +13,5 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib,public}/**/*"] + ["LICENSE", "Rakefile", "README.md"]
   s.test_files = Dir["test/**/*"]
 
+  s.add_dependency "fusor_server"
 end
