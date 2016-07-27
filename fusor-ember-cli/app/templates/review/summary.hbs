@@ -20,7 +20,8 @@
             {{review-link label='Undercloud username'
                           value=undercloudUsername}}
             {{review-link label='Undercloud password'
-                          value=undercloudPassword}}
+                          value=undercloudPassword
+                          isPassword=true}}
 
             {{review-link label='Overcloud URL'
                           value=overcloudUrlIP
@@ -28,7 +29,8 @@
             {{review-link label='Overcloud username'
                           value=overcloudUsername}}
             {{review-link label='Overcloud password'
-                          value=overcloudPassword}}
+                          value=overcloudPassword
+                          isPassword=true}}
         {{/accordion-item}}
     {{/if}}
 
@@ -53,7 +55,8 @@
           value=model.openshift_username}}
         {{review-link
           label='WebUI Password'
-          value=model.openshift_user_password}}
+          value=model.openshift_user_password
+          isPassword=true}}
       {{/accordion-item}}
     {{/if}}
 
