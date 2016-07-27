@@ -69,7 +69,8 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
   substractCfme: Ember.computed.not('ignoreCfme'),
 
   diskAvailableMinusCfme: Ember.computed("deployment.openshift_available_disk", "cfmeDisk", function() {
-    return this.get("deployment.openshift_available_disk") - this.get("cfmeDisk");
+    const rawDisk = this.get("deployment.openshift_available_disk") - this.get("cfmeDisk");
+    return Math.floor(rawDisk * 100) / 100;
   }),
 
   diskAvailable: Ember.computed(
@@ -87,7 +88,7 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
 
   ramAvailableMinusCfme: Ember.computed("deployment.openshift_available_ram", "deployment.cloudforms_ram", function() {
     const rawVal = this.get("deployment.openshift_available_ram") - this.get("deployment.cloudforms_ram");
-    return Math.round(rawVal * 100) / 100; // Make sure to truncate since we can get some weird fp nums
+    return Math.floor(rawVal * 100) / 100; // Make sure to truncate since we can get some weird fp nums
   }),
 
   ramAvailable: Ember.computed(
