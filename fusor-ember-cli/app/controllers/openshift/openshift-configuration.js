@@ -36,16 +36,16 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   usernameValidator: Ember.computed.alias('openshiftController.usernameValidator'),
   subdomainValidator: Ember.computed.alias('openshiftController.subdomainValidator'),
 
-  userpassword: Ember.computed.alias('model.openshift_user_password'),
+  userPassword: Ember.computed.alias('model.openshift_user_password'),
   passwordValidator: RequiredPasswordValidator.create({}),
 
-  confirmUserPasswordValidator: Ember.computed('userpassword', function() {
-    return EqualityValidator.create({equals: this.get('userpassword')});
+  confirmUserPasswordValidator: Ember.computed('userPassword', function() {
+    return EqualityValidator.create({equals: this.get('userPassword')});
   }),
 
-  isPasswordValid: Ember.computed('userpassword', 'confirmUserPassword', function() {
+  isPasswordValid: Ember.computed('userPassword', 'confirmUserPassword', function() {
     return validateZipper([
-      [this.get('passwordValidator'), this.get('userpassword')],
+      [this.get('passwordValidator'), this.get('userPassword')],
       [this.get('confirmUserPasswordValidator'), this.get('confirmUserPassword')]
     ]);
   }),
