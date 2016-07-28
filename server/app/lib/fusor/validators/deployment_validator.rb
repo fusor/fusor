@@ -169,7 +169,7 @@ module Fusor
         else
           subdomain = Net::DNS::ARecord.new({:ip => "0.0.0.0",
                                              :hostname => "*.#{deployment.openshift_subdomain_name}.#{Domain.find(Hostgroup.find_by_name('Fusor Base').domain_id)}",
-                                             :proxy => Domain.find(1).proxy
+                                             :proxy => Domain.find(Hostgroup.find_by_name('Fusor Base').domain_id).proxy
                                            })
 
           validate_openshift_subdomain(deployment, subdomain)

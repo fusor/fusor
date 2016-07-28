@@ -78,7 +78,7 @@ module Actions
             end
             subdomain = Net::DNS::ARecord.new({:ip => host.ip,
                                                :hostname => "*.#{deployment.openshift_subdomain_name}.#{Domain.find(host.domain_id)}",
-                                               :proxy => Domain.find(1).proxy})
+                                               :proxy => Domain.find(host.domain_id).proxy})
             if subdomain.valid?
               ::Fusor.log.debug "====== OSE wildcard subdomain is not valid, it might conflict with a previous entry. Skipping. ======"
             else
