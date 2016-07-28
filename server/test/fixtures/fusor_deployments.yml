@@ -80,6 +80,53 @@ rhev_and_cfme_different_passwords:
   upstream_consumer_uuid: 1
   organization_id: 1
 
+rhev_and_ose:
+  name: rhev_and_ose
+  label: rhev_and_ose
+  lifecycle_environment_id: 
+  organization_id: 1
+  deploy_rhev: true
+  deploy_cfme: false
+  deploy_openstack: false
+  rhev_engine_host_id: 16
+  rhev_data_center_name: Default
+  rhev_cluster_name: Default
+  rhev_storage_name: my_storage
+  rhev_storage_type: NFS
+  rhev_storage_address: 10.13.129.106
+  rhev_share_path: "/storage/rhev_storage"
+  description: 
+  rhev_is_self_hosted: false
+  rhev_engine_admin_password: redhat1234
+  rhev_root_password: redhat1234
+  enable_access_insights: false
+  deploy_openshift: true
+  openshift_install_loc: RHEV
+  openshift_storage_size: 30
+  openshift_username: cloudsuite-install
+  openshift_master_vcpu: 2
+  openshift_master_ram: 8
+  openshift_master_disk: 30
+  openshift_node_vcpu: 1
+  openshift_node_ram: 8
+  openshift_node_disk: 15
+  openshift_available_vcpu: 24
+  openshift_available_ram: 31
+  openshift_available_disk: 2344
+  openshift_number_master_nodes: 1
+  openshift_number_worker_nodes: 1
+  openshift_storage_type: NFS
+  openshift_export_path: "/storage/rhev_export"
+  cloudforms_vcpu: 
+  cloudforms_ram: 
+  cloudforms_vm_disk_size: 
+  cloudforms_db_disk_size: 
+  has_content_error: false
+  openshift_subdomain_name: ose
+  openshift_user_password: redhat1234
+  openshift_storage_host: 10.13.129.106
+  openshift_sample_helloworld: true
+
 rhev_self_hosted:
   rhev_root_password: redhat1234
   rhev_engine_admin_password: redhat1234

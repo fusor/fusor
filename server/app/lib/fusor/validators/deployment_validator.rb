@@ -139,6 +139,7 @@ module Fusor
         # 3) must have at least one master node with valid resource requirements
         # 4) must have an OSE username
         # 5) must have a unique wildcard subdomain entry
+        # 6) must have storage size > 0
 
         if !(deployment.deploy_rhev or deployment.deploy_openstack)
           deployment.errors[:deploy_openshift] << _("OpenShift deployments must also deploy either RHV or OpenStack")
@@ -173,6 +174,10 @@ module Fusor
                                            })
 
           validate_openshift_subdomain(deployment, subdomain)
+        end
+
+        if deployment.openshift_storage_size <= 0
+          deployment.errors[:openshift_storage_size] << _("OpenShift deployments must have a storage size greater than zero")
         end
 
         validate_storage_share(deployment, deployment.openshift_storage_host, deployment.openshift_export_path, -1, -1)
