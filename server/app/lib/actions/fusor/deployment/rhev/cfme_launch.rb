@@ -42,8 +42,9 @@ module Actions
             ::Fusor.log.info 'CFME Launch Completed'
           end
 
-          def cfme_launch_failed
-            fail _('CFME Launch failed')
+          def cfme_launch_failed(errors)
+            ::Fusor.log.info errors.full_messages.to_s
+            fail _("CFME Launch failed with error #{errors.full_messages.to_s}")
           end
 
           private
@@ -162,7 +163,7 @@ module Actions
               cfme_launch_completed
               return host
             else
-              cfme_launch_failed
+              cfme_launch_failed host.errors
             end
           end
 
