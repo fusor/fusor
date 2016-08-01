@@ -238,6 +238,12 @@
         :basearch: "x86_64"
         :releasever: "7Server"
 
+      - :product_name: "Red Hat Enterprise Linux Server"
+        :product_id: "69"
+        :repository_set_id: "4831"
+        :repository_set_name: "Red Hat Satellite Tools 6.2 (for RHEL 7 Server) (RPMs)"
+        :basearch: "x86_64"
+
       - :product_name: "Red Hat OpenStack"
         :product_id: "191"
         :repository_set_id: "4713"
