@@ -3174,10 +3174,15 @@ define("fusor-ember-cli/controllers/configure-environment", ["exports", "ember",
       createEnvironment: function createEnvironment(fields_env) {
         var self = this;
         this.set('showAlertMessage', false);
+        this.set('errorMsg', null);
+        this.get('deploymentController').set('errorMsg', null);
 
-        var nameAlreadyExists = self.get('lifecycleEnvironments').findBy('name', fields_env.name);
+        var nameAlreadyExists = this.get('lifecycleEnvironments').findBy('name', fields_env.name);
         if (nameAlreadyExists) {
-          self.get('deploymentController').set('errorMsg', fields_env.name + ' is not a unique name. Environment not saved.');
+          var errorMsg = fields_env.name + ' is not a unique name. Environment not saved.';
+          this.get('deploymentController').set('errorMsg', errorMsg);
+          this.set('errorMsg', errorMsg);
+          return false; // return and don't continue
         }
 
         var selectedOrganization = this.get('selectedOrganization');
@@ -3194,6 +3199,7 @@ define("fusor-ember-cli/controllers/configure-environment", ["exports", "ember",
           self.set('selectedEnvironment', environment);
           self.get('deploymentController.model').set('lifecycle_environment', environment);
           self.get('deploymentController').set('errorMsg', null);
+          self.set('errorMsg', null);
           self.set('showAlertMessage', true);
         }, function (error) {
           var errorMsg = 'error saving environment' + error;
@@ -3240,15 +3246,23 @@ define("fusor-ember-cli/controllers/deployment-new/satellite/configure-environme
       selectEnvironment: function selectEnvironment(environment) {
         this.set('showAlertMessage', false);
         this.set('selectedEnvironment', environment);
-        return this.get('deploymentNewController.model').set('lifecycle_environment', environment);
+        this.get('deploymentNewController.model').set('lifecycle_environment', environment);
+        this.get('deploymentNewController').set('errorMsg', null);
+        this.set('errorMsg', null);
       },
 
       createEnvironment: function createEnvironment(fields_env) {
         var self = this;
+        this.set('showAlertMessage', false);
+        this.set('errorMsg', null);
+        this.get('deploymentNewController').set('errorMsg', null);
 
         var nameAlreadyExists = self.get('lifecycleEnvironments').findBy('name', fields_env.name);
         if (nameAlreadyExists) {
-          return self.get('deploymentNewController').set('errorMsg', fields_env.name + ' is not a unique name. Environment not saved.');
+          var errorMsg = fields_env.name + ' is not a unique name. Environment not saved.';
+          this.get('deploymentNewController').set('errorMsg', errorMsg);
+          this.set('errorMsg', errorMsg);
+          return false; // return and don't continue
         }
 
         var selectedOrganization = this.get('selectedOrganization');
@@ -3265,9 +3279,12 @@ define("fusor-ember-cli/controllers/deployment-new/satellite/configure-environme
           self.set('selectedEnvironment', environment);
           self.get('deploymentNewController.model').set('lifecycle_environment', environment);
           self.get('deploymentNewController').set('errorMsg', null);
-          return self.set('showAlertMessage', true);
+          self.set('errorMsg', null);
+          self.set('showAlertMessage', true);
         }, function (error) {
-          self.get('deploymentNewController').set('errorMsg', 'error saving environment' + error);
+          var errorMsg = 'error saving environment' + error;
+          self.get('deploymentNewController').set('errorMsg', errorMsg);
+          self.set('errorMsg', errorMsg);
         });
       }
     }
@@ -54812,11 +54829,11 @@ define('fusor-ember-cli/views/application', ['exports', 'ember'], function (expo
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+71b9fc22"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+acca3849"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+71b9fc22"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+acca3849"});
 }
 
 /* jshint ignore:end */
