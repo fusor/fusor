@@ -4,7 +4,7 @@
     <form class="form form-horizontal">
       {{text-f label="Root Password" type="password" value=rhevRootPassword cssId="rhev-root-password"
       isRequired=true disabled=isStarted validator=passwordValidator
-      help-inline="Applies to root user accounts for deployed RHEV hosts"
+      help-inline="Applies to root user accounts for deployed RHV hosts"
       placeholder="Must be 8 or more characters"}}
 
       {{text-f label="Confirm Root Password" type="password" value=confirmRhevRootPassword cssId="confirm-rhev-root-password"
@@ -13,7 +13,7 @@
 
       {{text-f label="Engine Admin Password" type="password" value=rhevEngineAdminPassword cssId="rhev-engine-admin-password"
       isRequired=true disabled=isStarted validator=passwordValidator
-      help-inline="Applies to admin user account for RHEV web UI"
+      help-inline="Applies to admin user account for RHV web UI"
       placeholder="Must be 8 or more characters"}}
 
       {{text-f label="Confirm Engine Admin Password" type="password" value=confirmRhevEngineAdminPassword cssId="confirm-rhev-engine-pdmin-password"
