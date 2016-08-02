@@ -102,7 +102,7 @@ module Utils
 
         # add snippets just before the 'sync' in the post section of ks
         search_text = "\nsync\n"
-        snippet_include_line = "\n\n<%= snippet '#{snippet_name}' %>\n\n"
+        snippet_include_line = "\n\n<%= snippet('#{snippet_name}') %>\n\n"
 
         ks = ProvisioningTemplate.find_by_name(ks_name)
         if ks.template.include?(snippet_include_line)
