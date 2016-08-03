@@ -6,7 +6,10 @@ export default Ember.Component.extend({
   classNames: ['row env-summary-needed-available'],
 
   percentProgress: Ember.computed('needed', 'available', function() {
-    return parseInt(parseInt(this.get('needed')) / parseInt(this.get('available')) * 100);
+    const needed = parseInt(this.get('needed'));
+    const avail = parseInt(this.get('available'));
+    // Force over capacity if avail <= 0
+    return avail <= 0 ? 101 : parseInt(needed / avail * 100);
   }),
 
   percentProgressMax: Ember.computed('percentProgress', function () {
