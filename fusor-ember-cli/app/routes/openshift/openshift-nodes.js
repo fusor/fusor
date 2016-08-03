@@ -28,6 +28,9 @@ export default Ember.Route.extend(UsesOseDefaults, {
     controller.set('model', model.deployment);
     controller._initWorkerNodes(5);
 
+    // TODO: Disabling provider selection until OpenStack is supported post-GA
+    deployment.set('openshift_install_loc', 'RHEV');
+
     // Set max resources to smart values
     deployment.set('openshift_available_vcpu', maxRes.get('vcpuAvailable'));
     deployment.set('openshift_available_ram', maxRes.get('ramAvailable'));
