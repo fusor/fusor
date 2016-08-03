@@ -108,7 +108,77 @@ const AssignNodesController =  Ember.Controller.extend(DeploymentControllerMixin
 
   hasValidNodeAssignments: Ember.computed.alias('openstackDeployment.hasValidNodeAssignments'),
 
-  disableAssignNodesNext: Ember.computed.not('hasValidNodeAssignments'),
+  disableAssignNodesNext: Ember.computed(
+    'hasValidNodeAssignments',
+    'hasValidRoleCountsPerFlavor',
+    function() {
+      return !this.get('hasValidNodeAssignments') || !this.get('hasValidRoleCountsPerFlavor');
+    }
+  ),
+
+  availableNodesPerFlavor: Ember.computed('nodes.[]', 'profiles.@each.name', function() {
+    const profiles = this.get('profiles');
+
+    const nodesPerFlavor = profiles.reduce((hash, profile) => {
+      hash.set(profile.get('name'), profile.matchingNodeCount(this.get('nodes')));
+      return hash;
+    }, Ember.Object.create({}));
+
+    return nodesPerFlavor;
+  }),
+
+  configuredNodesPerFlavor: Ember.computed(
+    'openstackDeployment.overcloud_compute_flavor',
+    'openstackDeployment.overcloud_compute_count',
+    'openstackDeployment.overcloud_controller_flavor',
+    'openstackDeployment.overcloud_controller_count',
+    'openstackDeployment.overcloud_block_storage_flavor',
+    'openstackDeployment.overcloud_block_storage_count',
+    'openstackDeployment.overcloud_object_storage_flavor',
+    'openstackDeployment.overcloud_object_storage_count',
+    function() {
+      return [
+        ['overcloud_compute_flavor', 'overcloud_compute_count'],
+        ['overcloud_controller_flavor', 'overcloud_controller_count'],
+        ['overcloud_block_storage_flavor', 'overcloud_block_storage_count'],
+        ['overcloud_object_storage_flavor', 'overcloud_object_storage_count']
+      ].reduce((hash, roleProp) => {
+        const flavorProp = roleProp[0];
+        const flavor = this.get(`openstackDeployment.${flavorProp}`);
+        const countProp = roleProp[1];
+        const count = this.get(`openstackDeployment.${countProp}`);
+
+        const totalFlavorCount = hash.get(flavor);
+        hash.set(
+          flavor,
+          totalFlavorCount ? totalFlavorCount + count : count
+        );
+        return hash;
+      }, Ember.Object.create({}));
+    }
+  ),
+
+  hasValidRoleCountsPerFlavor: Ember.computed(
+    'availableNodesPerFlavor',
+    'configuredNodesPerFlavor',
+    function() {
+      const availableNodes = this.get('availableNodesPerFlavor');
+      const configuredNodes = this.get('configuredNodesPerFlavor');
+      const flavors = Ember.keys(availableNodes);
+
+      const hasValidRoleCounts = flavors.reduce((isValid, flavor) => {
+        const configuredCount = configuredNodes.get(flavor);
+
+        if(configuredCount == null) {
+          return isValid && true;
+        } else {
+          return isValid && (availableNodes.get(flavor) >= configuredCount);
+        }
+      }, true);
+
+      return hasValidRoleCounts;
+    }
+  ),
 
   settingsActiveClass: Ember.computed('selectedTab', function () {
     return this.get('selectedTab') == 'settings' ? 'active' : 'inactive';

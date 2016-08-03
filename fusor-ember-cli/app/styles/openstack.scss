@@ -378,6 +378,12 @@
 .node-profile .panel-heading .h5 {
   margin-bottom: 0;
 }
+
+.node-profile .node-profile-free-nodes.node-count-error {
+  color: red;
+  font-weight: bold;
+}
+
 .node-specs {
   width: auto;
 }

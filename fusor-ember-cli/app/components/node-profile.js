@@ -24,6 +24,17 @@ export default Ember.Component.extend({
     return this.doAssign ? '' : 'nodes-coalescing';
   }),
 
+  hasOvercommittedNodeCount: Ember.computed(
+    'assignedRoles.@each.count',
+    'matchingNodeCount',
+    function() {
+      const assignedNodes = this.get('assignedRoles').reduce((totalNodes, role) => {
+        return totalNodes += role.get('count');
+      }, 0);
+
+      return assignedNodes > this.get('matchingNodeCount');
+    }
+  ),
   actions: {
     showAssignMenu() {
       if (!this.get('allRolesAssigned')) {

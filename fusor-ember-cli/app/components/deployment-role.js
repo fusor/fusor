@@ -17,16 +17,32 @@ export default Ember.Component.extend({
     return this.get('role.count') >= 2;
   }),
 
-  availableOptions: Ember.computed('role.count', function() {
-    let avail = [];
-    let maxNodes = Math.max(this.get('nodeCount'), this.get('role.count'));
+  availableOptions: Ember.computed(
+    'role.count',
+    'role.name',
+    'nodeCount',
+    function() {
+      let avail = [];
+      const nodeCount = this.get('nodeCount');
 
-    for (let i = 0; i <= maxNodes; i++) {
-      avail.pushObject(i);
+      let maxNodes = Math.max(this.get('nodeCount'), this.get('role.count'));
+
+      if(this.get('role.name') === 'Controller') {
+        // Require at least one Controller, allow for 3 (HA) if > 3 available
+        avail.push(1);
+        if(nodeCount >= 3) {
+          avail.push(3);
+        }
+        return avail;
+      }
+
+      for (let i = 0; i <= maxNodes; i++) {
+        avail.pushObject(i);
+      }
+
+      return avail;
     }
-
-    return avail;
-  }),
+  ),
 
   actions: {
     editRole() {
