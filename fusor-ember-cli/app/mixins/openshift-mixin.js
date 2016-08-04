@@ -141,7 +141,9 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
   ),
 
   vcpuAvailableMinusCfme: Ember.computed("deployment.openshift_available_vcpu", "deployment.cloudforms_vcpu", function() {
-    return this.get("deployment.openshift_available_vcpu") - this.get("deployment.cloudforms_vcpu");
+    const cpuLessCfme = this.get("deployment.openshift_available_vcpu") - this.get("deployment.cloudforms_vcpu");
+    // Clamp to zero
+    return Math.max(cpuLessCfme, 0);
   }),
 
   vcpuAvailable: Ember.computed(
