@@ -4,10 +4,10 @@ import OpenshiftMixin from "../mixins/openshift-mixin";
 import {
   AllValidator,
   PresenceValidator,
-  IpAddressValidator,
   NfsPathValidator,
   AlphaNumericDashUnderscoreValidator,
   HostnameValidator,
+  HostAddressValidator,
   validateZipper
 } from '../utils/validators';
 
@@ -84,7 +84,7 @@ export default Ember.Controller.extend(OpenshiftMixin, {
   storageHostValidator: AllValidator.create({
     validators: [
       PresenceValidator.create({}),
-      IpAddressValidator.create({})
+      HostAddressValidator.create({})
     ]
   }),
 
