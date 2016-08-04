@@ -57,7 +57,8 @@ module Actions::Fusor::Deployment::Rhev
                                   TriggerProvisioning,
                                 @deployment,
                                 'RHEV-Self-hosted',
-                                first_host)
+                                first_host,
+                                {puppetclass_id => {:provisioning_interface => nil}})
       assert_action_planed_with(@deploy,
                                 WaitUntilProvisioned,
                                 first_host.id, true)
@@ -66,7 +67,8 @@ module Actions::Fusor::Deployment::Rhev
         override = {
           puppetclass_id => {
             :additional_host => true,
-            :host_id => index + 2
+            :host_id => index + 2,
+            :provisioning_interface => nil
           }
         }
         assert_action_planed_with(@deploy,

@@ -29,23 +29,29 @@ module Actions
 
                 first_host = deployment.discovered_hosts[0]
                 additional_hosts = deployment.discovered_hosts[1..-1]
+                puppetclass_id = Puppetclass.where(:name => 'ovirt::self_hosted::setup').first.id
 
                 plan_action(::Actions::Fusor::Deployment::Rhev::CreateEngineHostRecord, deployment, 'RHEV-Self-hosted')
+
+                first_host_overrides = {
+                  puppetclass_id => {
+                    :provisioning_interface => first_host.interfaces.where(:provision => true).try(:first).try(:identifier)
+                  }
+                }
                 plan_action(::Actions::Fusor::Host::TriggerProvisioning,
                             deployment,
                             "RHEV-Self-hosted",
-                            first_host)
+                            first_host, first_host_overrides)
 
                 plan_action(::Actions::Fusor::Host::WaitUntilProvisioned,
                             first_host.id, true)
 
                 additional_hosts.each_with_index do |host, index|
-                  # Override puppet class for host_id and is additional host
-                  puppetclass_id = Puppetclass.where(:name => 'ovirt::self_hosted::setup').first.id
                   overrides = {
                     puppetclass_id => {
                      :host_id => (index + 2),
-                     :additional_host => true
+                     :additional_host => true,
+                     :provisioning_interface => host.interfaces.where(:provision => true).try(:first).try(:identifier)
                     }
                   }
                   plan_action(::Actions::Fusor::Host::TriggerProvisioning,
