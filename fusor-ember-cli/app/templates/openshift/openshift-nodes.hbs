@@ -73,6 +73,7 @@
 <div class='row'>
   <div class='col-md-9'>
 
+
     <p>
       Select where to provision the OpenShift Enterprise nodes.
     </p>
@@ -85,6 +86,11 @@
       {{/radio-button}}
     </div>
 
+    {{!--
+    ------------------------------------------------------------
+    TODO: Should allow for more product selection when more than one provider is
+    supported post GA
+    ------------------------------------------------------------
     <div class='ident-radio'>
       {{#radio-button value="OpenStack" groupValue=openshiftInstallLoc changed="openshiftLocationChanged" id="install_on_openstack" disabled=disableOpenstackradio dataQci="openstackOspInstallLoc"}}
         <span class="inline-block {{if disableOpenStack 'disabled'}}">
@@ -92,9 +98,9 @@
         </span>
       {{/radio-button}}
     </div>
+    --}}
 
     {{#if openshiftInstallLoc}}
-    <br />
     <p>
       Select how many virtual machines should be created as nodes for the OpenShift environment.
       {{tool-tip faIcon='fa-info-circle'
