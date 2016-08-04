@@ -260,7 +260,9 @@ module Actions
                 { :name => "storage_type", :value => deployment.rhev_storage_type },
                 { :name => "admin_password", :value => deployment.rhev_engine_admin_password },
                 { :name => "db_password", :value => deployment.rhev_engine_admin_password },
-                { :name => "engine_fqdn", :value => "#{deployment.rhev_engine_host_name}.#{hostgroup.domain.name}" }
+                { :name => "engine_fqdn", :value => "#{deployment.rhev_engine_host_name}.#{hostgroup.domain.name}" },
+                # Disable automatic setup of a local nfs share for the ISO domain
+                { :name => "nfs_config_enabled", :value => false }
               ]
             }
           ]
