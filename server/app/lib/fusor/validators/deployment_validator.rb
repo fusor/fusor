@@ -168,6 +168,8 @@ module Fusor
         if deployment.openshift_subdomain_name.empty?
           deployment.errors[:openshift_subdomain_name] << _("Openshift deployments must specify a wildcard subdomain region")
         else
+          deployment.openshift_subdomain_name = deployment.openshift_subdomain_name.downcase
+
           subdomain = Net::DNS::ARecord.new({:ip => "0.0.0.0",
                                              :hostname => "*.#{deployment.openshift_subdomain_name}.#{Domain.find(Hostgroup.find_by_name('Fusor Base').domain_id)}",
                                              :proxy => Domain.find(Hostgroup.find_by_name('Fusor Base').domain_id).proxy
