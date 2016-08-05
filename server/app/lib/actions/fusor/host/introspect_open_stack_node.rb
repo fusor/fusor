@@ -37,16 +37,7 @@ module Actions::Fusor::Host
     def invoke_external_task
       deployment = ::Fusor::Deployment.find(input[:deployment_id])
       handle = undercloud_handle(deployment)
-      begin
-        handle.introspect_node(input[:node_id])
-      rescue Excon::Errors::BadRequest => e
-        if e.response[:body] =~ /Failed validation of power interface for node/
-          # We gave it bad data for the ipmi server. Delete node so user
-          # can re-try and then re-throw the error.
-          handle.delete_node(input[:node_id])
-        end
-        raise e
-      end
+      handle.introspect_node(input[:node_id])
       false # just starting, return false so we'll start polling
     end
 
