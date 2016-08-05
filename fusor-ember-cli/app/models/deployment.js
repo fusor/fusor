@@ -190,7 +190,7 @@ export default DS.Model.extend(UsesOseDefaults, {
     this.set('hosted_storage_path', this.get('hosted_storage_path') ? this.get('hosted_storage_path').trim() : null);
     this.set('openshift_storage_host', this.get('openshift_storage_host') ? this.get('openshift_storage_host').trim() : null);
     this.set('openshift_export_path', this.get('openshift_export_path') ? this.get('openshift_export_path').trim() : null);
-    this.set('openshift_subdomain_name', this.get('openshift_subdomain_name') ? this.get('openshift_subdomain_name').trim() : null);
+    this.set('openshift_subdomain_name', this.get('openshift_subdomain_name') ? this.get('openshift_subdomain_name').trim().toLowerCase() : null);
   },
 
   progressPercent: Ember.computed('progress', function() {
