@@ -39,7 +39,7 @@ export default Mirage.Factory.extend({
   openshift_user_password: 'openshiftPassword',
   openshift_subdomain_name: 'app123',
   cloudforms_vcpu: 4,
-  cloudforms_ram: 6,
+  cloudforms_ram: 8,
   cloudforms_vm_disk_size: 40,
   cloudforms_db_disk_size: 40
 

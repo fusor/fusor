@@ -33,6 +33,7 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
     }
   ),
 
+  hypervisorReservedRam: 4,
 
   numMasterNodes: Ember.computed.alias("deployment.openshift_number_master_nodes"),
   numWorkerNodes: Ember.computed.alias("deployment.openshift_number_worker_nodes"),
@@ -132,11 +133,14 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
     "ignoreCfme",
     "ramAvailableMinusCfme",
     function() {
+      let rawRam;
       if (this.get('ignoreCfme')) {
-        return this.get('deployment.openshift_available_ram');
+        rawRam = this.get('deployment.openshift_available_ram');
       } else {
-        return this.get('ramAvailableMinusCfme');
+        rawRam = this.get('ramAvailableMinusCfme');
       }
+      const availableRam = rawRam - this.get('hypervisorReservedRam');
+      return availableRam;
     }
   ),
 
@@ -247,9 +251,12 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
     'cfmeRam',
     'cfmeDisk',
     function() {
+      const ramErrorMsg =
+        `CloudForms has reserved ${this.get('cfmeRam')}GB. The hypervisor requires 4GB of overhead.`;
+
       return Ember.Object.create({
         cpu: `CloudForms has ${this.get('cfmeVcpu')} reserved cpus`,
-        ram: `CloudForms has reserved ${this.get('cfmeRam')} GB of RAM`,
+        ram: ramErrorMsg,
         disk: `CloudForms has reserved ${this.get('cfmeDisk')} GB of disk`
       });
     }
