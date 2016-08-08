@@ -4945,6 +4945,18 @@ define("fusor-ember-cli/controllers/review/installation", ["exports", "ember", "
       return this.get('storageSize') + ' GB';
     }),
 
+    openshiftInstallLoc: _ember["default"].computed('model.openshift_install_loc', function () {
+      return this.humanizedLocation(this.get('model.openshift_install_loc'));
+    }),
+
+    cfmeInstallLoc: _ember["default"].computed('model.cfme_install_loc', function () {
+      return this.humanizedLocation(this.get('model.cfme_install_loc'));
+    }),
+
+    humanizedLocation: function humanizedLocation(location) {
+      return location === 'RHEV' ? 'RHV' : location;
+    },
+
     closeContinueDeployModal: function closeContinueDeployModal() {
       this.set('openModal', false);
     },
@@ -5972,7 +5984,7 @@ define('fusor-ember-cli/controllers/subscriptions/review-subscriptions', ['expor
 
     subscriptionsController: _ember['default'].inject.controller('subscriptions'),
 
-    backRouteNameReviewSubs: _ember['default'].computed('isDisconnected', function () {
+    backRouteNameReviewSubs: _ember['default'].computed('isDisconnected', 'useExistingManifest', 'subscriptionsController.backRouteFromSubscriptions', function () {
       if (this.get('useExistingManifest')) {
         return this.get('subscriptionsController.backRouteFromSubscriptions');
       } else if (this.get('isDisconnected')) {
@@ -6904,7 +6916,7 @@ define('fusor-ember-cli/mirage/factories/deployment', ['exports', 'ember-cli-mir
     openshift_user_password: 'openshiftPassword',
     openshift_subdomain_name: 'app123',
     cloudforms_vcpu: 4,
-    cloudforms_ram: 6,
+    cloudforms_ram: 8,
     cloudforms_vm_disk_size: 40,
     cloudforms_db_disk_size: 40
 
@@ -10794,6 +10806,8 @@ define('fusor-ember-cli/mixins/openshift-mixin', ['exports', 'ember', 'fusor-emb
       return validator.isValid(numNodes) ? numNodes : '?';
     }),
 
+    hypervisorReservedRam: 4,
+
     numMasterNodes: _ember['default'].computed.alias("deployment.openshift_number_master_nodes"),
     numWorkerNodes: _ember['default'].computed.alias("deployment.openshift_number_worker_nodes"),
 
@@ -10869,11 +10883,14 @@ define('fusor-ember-cli/mixins/openshift-mixin', ['exports', 'ember', 'fusor-emb
     }),
 
     ramAvailable: _ember['default'].computed("deployment.openshift_available_ram", "ignoreCfme", "ramAvailableMinusCfme", function () {
+      var rawRam = undefined;
       if (this.get('ignoreCfme')) {
-        return this.get('deployment.openshift_available_ram');
+        rawRam = this.get('deployment.openshift_available_ram');
       } else {
-        return this.get('ramAvailableMinusCfme');
+        rawRam = this.get('ramAvailableMinusCfme');
       }
+      var availableRam = rawRam - this.get('hypervisorReservedRam');
+      return availableRam;
     }),
 
     vcpuAvailableMinusCfme: _ember['default'].computed("deployment.openshift_available_vcpu", "deployment.cloudforms_vcpu", function () {
@@ -10943,9 +10960,11 @@ define('fusor-ember-cli/mixins/openshift-mixin', ['exports', 'ember', 'fusor-emb
     }),
 
     cfmeTooltipError: _ember['default'].computed('cfmeVcpu', 'cfmeRam', 'cfmeDisk', function () {
+      var ramErrorMsg = 'CloudForms has reserved ' + this.get('cfmeRam') + 'GB. The hypervisor requires 4GB of overhead.';
+
       return _ember['default'].Object.create({
         cpu: 'CloudForms has ' + this.get('cfmeVcpu') + ' reserved cpus',
-        ram: 'CloudForms has reserved ' + this.get('cfmeRam') + ' GB of RAM',
+        ram: ramErrorMsg,
         disk: 'CloudForms has reserved ' + this.get('cfmeDisk') + ' GB of disk'
       });
     })
@@ -11531,10 +11550,11 @@ define('fusor-ember-cli/mixins/validates-deployment-name-mixin', ['exports', 'em
     applicationController: _ember['default'].inject.controller('application'),
     deployments: _ember['default'].computed.alias('applicationController.model'),
 
-    deploymentNameValidator: _ember['default'].computed('deployments', 'model.id', function () {
+    deploymentNameValidator: _ember['default'].computed('deployments', 'model.id', 'model.deploy_openstack', function () {
       var otherNames = [],
-          otherLabels = [],
-          deploymentId = this.get('model.id');
+          otherLabels = [];
+      var deploymentId = this.get('model.id');
+      var deployOpenStack = this.get('model.deploy_openstack');
 
       this.get('deployments').forEach(function (otherDeployment) {
         var otherDeploymentId = otherDeployment.get('id');
@@ -11542,6 +11562,29 @@ define('fusor-ember-cli/mixins/validates-deployment-name-mixin', ['exports', 'em
         if (otherDeploymentId && deploymentId !== otherDeploymentId) {
           otherNames.pushObject(otherDeployment.get('name'));
           otherLabels.pushObject(otherDeployment.get('label'));
+        }
+      });
+
+      var illegalDeploymentNames = deployOpenStack ? ['admin', 'openstack'] : [];
+
+      var LegalValuesValidator = _fusorEmberCliUtilsValidators.Validator.extend({
+        isValid: function isValid(value) {
+          var illegalValues = this.get('illegalValues');
+
+          if (_ember['default'].isEmpty(value) || _ember['default'].isEmpty(illegalValues)) {
+            return true;
+          }
+
+          return !illegalValues.any(function (illegalValue) {
+            return illegalValue === value.trim().toLowerCase();
+          });
+        },
+
+        getMessages: function getMessages(value) {
+          if (this.isValid(value)) {
+            return [];
+          }
+          return ['The name "' + value + '" is not allowed'];
         }
       });
 
@@ -11563,7 +11606,7 @@ define('fusor-ember-cli/mixins/validates-deployment-name-mixin', ['exports', 'em
       });
 
       return _fusorEmberCliUtilsValidators.AllValidator.create({
-        validators: [_fusorEmberCliUtilsValidators.PresenceValidator.create({}), _fusorEmberCliUtilsValidators.UniquenessValidator.create({ existingValues: otherNames }), _fusorEmberCliUtilsValidators.LengthValidator.create({ max: 64 }), LabelValidator.create({ existingValues: otherLabels })]
+        validators: [_fusorEmberCliUtilsValidators.PresenceValidator.create({}), LegalValuesValidator.create({ illegalValues: illegalDeploymentNames }), _fusorEmberCliUtilsValidators.UniquenessValidator.create({ existingValues: otherNames }), _fusorEmberCliUtilsValidators.LengthValidator.create({ max: 64 }), LabelValidator.create({ existingValues: otherLabels })]
       });
     })
   });
@@ -11830,7 +11873,7 @@ define('fusor-ember-cli/models/deployment', ['exports', 'ember-data', 'ember', '
       this.set('hosted_storage_path', this.get('hosted_storage_path') ? this.get('hosted_storage_path').trim() : null);
       this.set('openshift_storage_host', this.get('openshift_storage_host') ? this.get('openshift_storage_host').trim() : null);
       this.set('openshift_export_path', this.get('openshift_export_path') ? this.get('openshift_export_path').trim() : null);
-      this.set('openshift_subdomain_name', this.get('openshift_subdomain_name') ? this.get('openshift_subdomain_name').trim() : null);
+      this.set('openshift_subdomain_name', this.get('openshift_subdomain_name') ? this.get('openshift_subdomain_name').trim().toLowerCase() : null);
     },
 
     progressPercent: _ember['default'].computed('progress', function () {
@@ -44370,7 +44413,7 @@ define("fusor-ember-cli/templates/review/installation", ["exports"], function (e
               morphs[11] = dom.createMorphAt(fragment, 23, 23, contextualElement);
               return morphs;
             },
-            statements: [["inline", "review-link", [], ["label", "Nodes Location", "routeName", "openshift.openshift-nodes", "isRequired", true, "value", ["subexpr", "@mut", [["get", "model.openshift_install_loc", ["loc", [null, [234, 28], [234, 55]]]]], [], []]], ["loc", [null, [231, 8], [234, 57]]]], ["inline", "review-link", [], ["label", "# of Master Nodes", "routeName", "openshift.openshift-nodes", "isRequired", true, "value", ["subexpr", "@mut", [["get", "model.openshift_number_master_nodes", ["loc", [null, [239, 28], [239, 63]]]]], [], []]], ["loc", [null, [236, 8], [239, 65]]]], ["inline", "review-link", [], ["label", "# of Worker Nodes", "routeName", "openshift.openshift-nodes", "isRequired", true, "value", ["subexpr", "@mut", [["get", "model.openshift_number_worker_nodes", ["loc", [null, [244, 28], [244, 63]]]]], [], []]], ["loc", [null, [241, 8], [244, 65]]]], ["inline", "review-link", [], ["label", "Docker Storage per Worker", "routeName", "openshift.openshift-nodes", "isRequired", true, "value", ["subexpr", "@mut", [["get", "storageSizeGB", ["loc", [null, [249, 28], [249, 41]]]]], [], []]], ["loc", [null, [246, 8], [249, 43]]]], ["inline", "review-link", [], ["label", "vCPU Needed", "routeName", "openshift.openshift-nodes", "isRequired", true, "value", ["subexpr", "@mut", [["get", "vcpuNeeded", ["loc", [null, [254, 28], [254, 38]]]]], [], []]], ["loc", [null, [251, 8], [254, 40]]]], ["inline", "review-link", [], ["label", "RAM Needed", "routeName", "openshift.openshift-nodes", "isRequired", true, "value", ["subexpr", "@mut", [["get", "ramNeededGB", ["loc", [null, [259, 28], [259, 39]]]]], [], []]], ["loc", [null, [256, 8], [259, 41]]]], ["inline", "review-link", [], ["label", "Disk Needed", "routeName", "openshift.openshift-nodes", "isRequired", true, "value", ["subexpr", "@mut", [["get", "diskNeededGB", ["loc", [null, [264, 28], [264, 40]]]]], [], []]], ["loc", [null, [261, 8], [264, 42]]]], ["inline", "review-link", [], ["label", "Storage Type", "routeName", "openshift.openshift-configuration", "isRequired", true, "value", ["subexpr", "@mut", [["get", "model.openshift_storage_type", ["loc", [null, [269, 28], [269, 56]]]]], [], []]], ["loc", [null, [266, 8], [269, 58]]]], ["inline", "review-link", [], ["label", "Storage Host", "routeName", "openshift.openshift-configuration", "value", ["subexpr", "@mut", [["get", "model.openshift_storage_host", ["loc", [null, [273, 28], [273, 56]]]]], [], []]], ["loc", [null, [271, 8], [273, 58]]]], ["inline", "review-link", [], ["label", "Export Path", "routeName", "openshift.openshift-configuration", "value", ["subexpr", "@mut", [["get", "model.openshift_export_path", ["loc", [null, [277, 28], [277, 55]]]]], [], []]], ["loc", [null, [275, 8], [277, 57]]]], ["inline", "review-link", [], ["label", "Username", "routeName", "openshift.openshift-configuration", "value", ["subexpr", "@mut", [["get", "model.openshift_username", ["loc", [null, [281, 28], [281, 52]]]]], [], []]], ["loc", [null, [279, 8], [281, 54]]]], ["inline", "review-link", [], ["label", "Subdomain", "routeName", "openshift.openshift-configuration", "value", ["subexpr", "@mut", [["get", "fullOpenshiftSubdomain", ["loc", [null, [285, 28], [285, 50]]]]], [], []]], ["loc", [null, [283, 8], [285, 52]]]]],
+            statements: [["inline", "review-link", [], ["label", "Nodes Location", "routeName", "openshift.openshift-nodes", "isRequired", true, "value", ["subexpr", "@mut", [["get", "openshiftInstallLoc", ["loc", [null, [234, 28], [234, 47]]]]], [], []]], ["loc", [null, [231, 8], [234, 49]]]], ["inline", "review-link", [], ["label", "# of Master Nodes", "routeName", "openshift.openshift-nodes", "isRequired", true, "value", ["subexpr", "@mut", [["get", "model.openshift_number_master_nodes", ["loc", [null, [239, 28], [239, 63]]]]], [], []]], ["loc", [null, [236, 8], [239, 65]]]], ["inline", "review-link", [], ["label", "# of Worker Nodes", "routeName", "openshift.openshift-nodes", "isRequired", true, "value", ["subexpr", "@mut", [["get", "model.openshift_number_worker_nodes", ["loc", [null, [244, 28], [244, 63]]]]], [], []]], ["loc", [null, [241, 8], [244, 65]]]], ["inline", "review-link", [], ["label", "Docker Storage per Worker", "routeName", "openshift.openshift-nodes", "isRequired", true, "value", ["subexpr", "@mut", [["get", "storageSizeGB", ["loc", [null, [249, 28], [249, 41]]]]], [], []]], ["loc", [null, [246, 8], [249, 43]]]], ["inline", "review-link", [], ["label", "vCPU Needed", "routeName", "openshift.openshift-nodes", "isRequired", true, "value", ["subexpr", "@mut", [["get", "vcpuNeeded", ["loc", [null, [254, 28], [254, 38]]]]], [], []]], ["loc", [null, [251, 8], [254, 40]]]], ["inline", "review-link", [], ["label", "RAM Needed", "routeName", "openshift.openshift-nodes", "isRequired", true, "value", ["subexpr", "@mut", [["get", "ramNeededGB", ["loc", [null, [259, 28], [259, 39]]]]], [], []]], ["loc", [null, [256, 8], [259, 41]]]], ["inline", "review-link", [], ["label", "Disk Needed", "routeName", "openshift.openshift-nodes", "isRequired", true, "value", ["subexpr", "@mut", [["get", "diskNeededGB", ["loc", [null, [264, 28], [264, 40]]]]], [], []]], ["loc", [null, [261, 8], [264, 42]]]], ["inline", "review-link", [], ["label", "Storage Type", "routeName", "openshift.openshift-configuration", "isRequired", true, "value", ["subexpr", "@mut", [["get", "model.openshift_storage_type", ["loc", [null, [269, 28], [269, 56]]]]], [], []]], ["loc", [null, [266, 8], [269, 58]]]], ["inline", "review-link", [], ["label", "Storage Host", "routeName", "openshift.openshift-configuration", "value", ["subexpr", "@mut", [["get", "model.openshift_storage_host", ["loc", [null, [273, 28], [273, 56]]]]], [], []]], ["loc", [null, [271, 8], [273, 58]]]], ["inline", "review-link", [], ["label", "Export Path", "routeName", "openshift.openshift-configuration", "value", ["subexpr", "@mut", [["get", "model.openshift_export_path", ["loc", [null, [277, 28], [277, 55]]]]], [], []]], ["loc", [null, [275, 8], [277, 57]]]], ["inline", "review-link", [], ["label", "Username", "routeName", "openshift.openshift-configuration", "value", ["subexpr", "@mut", [["get", "model.openshift_username", ["loc", [null, [281, 28], [281, 52]]]]], [], []]], ["loc", [null, [279, 8], [281, 54]]]], ["inline", "review-link", [], ["label", "Subdomain", "routeName", "openshift.openshift-configuration", "value", ["subexpr", "@mut", [["get", "fullOpenshiftSubdomain", ["loc", [null, [285, 28], [285, 50]]]]], [], []]], ["loc", [null, [283, 8], [285, 52]]]]],
             locals: [],
             templates: []
           };
@@ -44463,7 +44506,7 @@ define("fusor-ember-cli/templates/review/installation", ["exports"], function (e
               morphs[3] = dom.createMorphAt(fragment, 7, 7, contextualElement);
               return morphs;
             },
-            statements: [["inline", "review-link", [], ["label", "Installation Location", "routeName", "where-install", "isRequired", true, "value", ["subexpr", "@mut", [["get", "model.cfme_install_loc", ["loc", [null, [293, 30], [293, 52]]]]], [], []]], ["loc", [null, [292, 10], [293, 55]]]], ["inline", "review-link", [], ["label", "CFME Root password", "routeName", "cloudforms.cfme-configuration", "isRequired", true, "isPassword", true, "value", ["subexpr", "@mut", [["get", "model.cfme_root_password", ["loc", [null, [294, 131], [294, 155]]]]], [], []]], ["loc", [null, [294, 10], [294, 158]]]], ["inline", "review-link", [], ["label", "CFME Admin password", "routeName", "cloudforms.cfme-configuration", "isRequired", true, "isPassword", true, "value", ["subexpr", "@mut", [["get", "model.cfme_admin_password", ["loc", [null, [295, 132], [295, 157]]]]], [], []]], ["loc", [null, [295, 10], [295, 160]]]], ["inline", "review-link", [], ["label", "CFME Database password", "routeName", "cloudforms.cfme-configuration", "isRequired", true, "isPassword", true, "value", ["subexpr", "@mut", [["get", "model.cfme_db_password", ["loc", [null, [296, 135], [296, 157]]]]], [], []]], ["loc", [null, [296, 10], [296, 160]]]]],
+            statements: [["inline", "review-link", [], ["label", "Installation Location", "routeName", "where-install", "isRequired", true, "value", ["subexpr", "@mut", [["get", "cfmeInstallLoc", ["loc", [null, [293, 30], [293, 44]]]]], [], []]], ["loc", [null, [292, 10], [293, 47]]]], ["inline", "review-link", [], ["label", "CFME Root password", "routeName", "cloudforms.cfme-configuration", "isRequired", true, "isPassword", true, "value", ["subexpr", "@mut", [["get", "model.cfme_root_password", ["loc", [null, [294, 131], [294, 155]]]]], [], []]], ["loc", [null, [294, 10], [294, 158]]]], ["inline", "review-link", [], ["label", "CFME Admin password", "routeName", "cloudforms.cfme-configuration", "isRequired", true, "isPassword", true, "value", ["subexpr", "@mut", [["get", "model.cfme_admin_password", ["loc", [null, [295, 132], [295, 157]]]]], [], []]], ["loc", [null, [295, 10], [295, 160]]]], ["inline", "review-link", [], ["label", "CFME Database password", "routeName", "cloudforms.cfme-configuration", "isRequired", true, "isPassword", true, "value", ["subexpr", "@mut", [["get", "model.cfme_db_password", ["loc", [null, [296, 135], [296, 157]]]]], [], []]], ["loc", [null, [296, 10], [296, 160]]]]],
             locals: [],
             templates: []
           };
@@ -54799,11 +54842,11 @@ define('fusor-ember-cli/views/application', ['exports', 'ember'], function (expo
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+30d5839e"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+14cb0e6b"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+30d5839e"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+14cb0e6b"});
 }
 
 /* jshint ignore:end */
