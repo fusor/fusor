@@ -231,7 +231,7 @@
         {{review-link label='Nodes Location'
                       routeName='openshift.openshift-nodes'
                       isRequired=true
-                      value=model.openshift_install_loc}}
+                      value=openshiftInstallLoc}}
 
         {{review-link label='# of Master Nodes'
                       routeName='openshift.openshift-nodes'
@@ -290,7 +290,7 @@
     {{#if isCloudForms}}
       {{#accordion-item name=fullnameCloudForms isOpen=isCloudFormsOpen}}
           {{review-link label='Installation Location' routeName='where-install' isRequired=true
-                        value=model.cfme_install_loc }}
+                        value=cfmeInstallLoc }}
           {{review-link label='CFME Root password' routeName='cloudforms.cfme-configuration' isRequired=true isPassword=true value=model.cfme_root_password }}
           {{review-link label='CFME Admin password' routeName='cloudforms.cfme-configuration' isRequired=true isPassword=true value=model.cfme_admin_password }}
           {{review-link label='CFME Database password' routeName='cloudforms.cfme-configuration' isRequired=true isPassword=true value=model.cfme_db_password }}

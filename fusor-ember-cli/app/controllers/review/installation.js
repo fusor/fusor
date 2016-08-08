@@ -244,6 +244,18 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     return this.get('storageSize') + ' GB';
   }),
 
+  openshiftInstallLoc: Ember.computed('model.openshift_install_loc', function() {
+    return this.humanizedLocation(this.get('model.openshift_install_loc'));
+  }),
+
+  cfmeInstallLoc: Ember.computed('model.cfme_install_loc', function() {
+    return this.humanizedLocation(this.get('model.cfme_install_loc'));
+  }),
+
+  humanizedLocation(location) {
+    return location === 'RHEV' ? 'RHV' : location;
+  },
+
   closeContinueDeployModal() {
     this.set('openModal', false);
   },
