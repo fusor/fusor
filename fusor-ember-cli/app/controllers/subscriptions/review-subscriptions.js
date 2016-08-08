@@ -7,15 +7,20 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   subscriptionsController: Ember.inject.controller('subscriptions'),
 
-  backRouteNameReviewSubs: Ember.computed('isDisconnected', function() {
-    if(this.get('useExistingManifest')) {
-      return this.get('subscriptionsController.backRouteFromSubscriptions');
-    } else if (this.get('isDisconnected')) {
-      return 'subscriptions.credentials';
-    } else {
-      return 'subscriptions.select-subscriptions';
+  backRouteNameReviewSubs: Ember.computed(
+    'isDisconnected',
+    'useExistingManifest',
+    'subscriptionsController.backRouteFromSubscriptions',
+    function() {
+      if(this.get('useExistingManifest')) {
+        return this.get('subscriptionsController.backRouteFromSubscriptions');
+      } else if (this.get('isDisconnected')) {
+        return 'subscriptions.credentials';
+      } else {
+        return 'subscriptions.select-subscriptions';
+      }
     }
-  }),
+  ),
 
   sortProps: ['contract_number'],
   sortedModel: Ember.computed.sort('model', 'sortProps')
