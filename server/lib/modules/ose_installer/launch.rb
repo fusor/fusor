@@ -137,7 +137,7 @@ module OSEInstaller
           ip = stdout.split("\n").first.split("  ").first
         end
 
-        entry = "- connect_to: #{n}\n    hostname: #{n}\n    ip: #{ip}\n    node: true\n    public_hostname: #{n}\n    public_ip: #{ip}"
+        entry = "- connect_to: #{n}\n    hostname: #{n}\n    ip: #{ip}\n    node: true\n    public_hostname: #{n}\n    public_ip: #{ip}\n    roles:\n    - node\n  "
         if node_entries.nil?
           node_entries = entry
         else
