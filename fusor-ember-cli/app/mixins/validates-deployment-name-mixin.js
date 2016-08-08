@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import {
+  Validator,
   PresenceValidator,
   UniquenessValidator,
   LengthValidator,
@@ -10,8 +11,10 @@ export default Ember.Mixin.create({
   applicationController: Ember.inject.controller('application'),
   deployments: Ember.computed.alias('applicationController.model'),
 
-  deploymentNameValidator: Ember.computed('deployments', 'model.id', function () {
-    let otherNames = [], otherLabels = [], deploymentId = this.get('model.id');
+  deploymentNameValidator: Ember.computed('deployments', 'model.id', 'model.deploy_openstack', function () {
+    let otherNames = [], otherLabels = [];
+    let deploymentId = this.get('model.id');
+    let deployOpenStack = this.get('model.deploy_openstack');
 
     this.get('deployments').forEach((otherDeployment) => {
       let otherDeploymentId = otherDeployment.get('id');
@@ -19,6 +22,27 @@ export default Ember.Mixin.create({
       if (otherDeploymentId && deploymentId !== otherDeploymentId) {
         otherNames.pushObject(otherDeployment.get('name'));
         otherLabels.pushObject(otherDeployment.get('label'));
+      }
+    });
+
+    let illegalDeploymentNames = deployOpenStack ? ['admin', 'openstack'] : [];
+
+    let LegalValuesValidator = Validator.extend({
+      isValid(value) {
+        let illegalValues = this.get('illegalValues');
+
+        if (Ember.isEmpty(value) || Ember.isEmpty(illegalValues)) {
+          return true;
+        }
+
+        return !illegalValues.any(illegalValue => illegalValue === value.trim().toLowerCase());
+      },
+
+      getMessages(value) {
+        if (this.isValid(value)) {
+          return [];
+        }
+        return [`The name "${(value)}" is not allowed`];
       }
     });
 
@@ -42,6 +66,7 @@ export default Ember.Mixin.create({
     return AllValidator.create({
       validators: [
         PresenceValidator.create({}),
+        LegalValuesValidator.create({illegalValues: illegalDeploymentNames}),
         UniquenessValidator.create({existingValues: otherNames}),
         LengthValidator.create({max: 64}),
         LabelValidator.create({existingValues: otherLabels})
