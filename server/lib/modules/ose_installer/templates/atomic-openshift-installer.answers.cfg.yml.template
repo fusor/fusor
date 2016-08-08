@@ -4,8 +4,6 @@ ansible_ssh_user: root
 deployment:
   hosts:
   <node_entries>
-    roles:
-    - node
   <master_entries>
     roles:
     - master
