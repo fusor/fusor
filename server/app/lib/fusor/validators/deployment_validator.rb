@@ -10,6 +10,8 @@ module Fusor
           deployment.errors[:base] << _('You must deploy something...')
         end
 
+        validate_base_parameters(deployment)
+
         if deployment.deploy_rhev
           validate_rhev_parameters(deployment)
         end
@@ -31,6 +33,12 @@ module Fusor
         unless other_running_deployments.empty?
           other = other_running_deployments.first
           deployment.errors[:foreman_task_uuid] << _("Deployment #{other.id}: #{other.name} is already running")
+        end
+      end
+
+      def validate_base_parameters(deployment)
+        if deployment.deploy_openstack? && %w(admin openstack).any? { |illegal_name| illegal_name == deployment.name.try(:downcase) }
+          deployment.errors[:name] << 'Openstack deployments cannot be named "admin" or "openstack"'
         end
       end
 

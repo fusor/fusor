@@ -22,6 +22,18 @@ class DeploymentTest < ActiveSupport::TestCase
       assert_not rhev_d2.save, "Saved deployment with a duplicate name"
     end
 
+    test "should not allow name admin if deploying OpenStack" do
+      osp = fusor_deployments(:osp)
+      osp.name = 'Admin'
+      assert_not osp.save, "Saved OpenStack deployment with the name \"admin\""
+    end
+
+    test "should not allow name openstack if deploying OpenStack" do
+      osp = fusor_deployments(:osp)
+      osp.name = 'OpenStack'
+      assert_not osp.save, "Saved OpenStack deployment with the name \"openstack\""
+    end
+
     test "should generate a label on create" do
       new_rhev = fusor_deployments(:rhev).dup
       new_rhev.name = "Name with space"
