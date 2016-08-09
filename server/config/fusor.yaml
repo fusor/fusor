@@ -26,8 +26,8 @@
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
-        :repository_set_id: "4792"
-        :repository_set_name: "Red Hat Satellite Tools 6.2 (for RHEL 6 Server) (RPMs)"
+        :repository_set_id: "4831"
+        :repository_set_name: "Red Hat Satellite Tools 6.2 (for RHEL 7 Server) (RPMs)"
         :basearch: "x86_64"
 
       - :product_name: "Red Hat Enterprise Linux Server"
