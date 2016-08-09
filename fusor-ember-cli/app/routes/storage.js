@@ -5,6 +5,8 @@ export default Ember.Route.extend({
     controller.set('model', model);
     // Reset error msg if this has been displayed previously
     controller.set('errorMsg', null);
+    controller.set('storageNotEmptyError', null);
+    controller.set('showLoadingSpinner', false);
   },
   deactivate() {
     return this.send('saveDeployment', null);

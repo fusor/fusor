@@ -1,12 +1,15 @@
 import Ember from 'ember';
-import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
+import NeedsDeploymentMixin from '../../mixins/needs-deployment-mixin';
+import ValidatesMounts from '../../mixins/validates-mounts';
 import {
   RequiredPasswordValidator,
   EqualityValidator,
   validateZipper
 } from '../../utils/validators';
 
-export default Ember.Controller.extend(NeedsDeploymentMixin, {
+export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
+
+  loadingSpinnerText: 'Trying to mount registry...',
 
   openshiftController: Ember.inject.controller('openshift'),
 
@@ -69,5 +72,40 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     function () {
       return this.get('isInvalidOpenshiftConfiguration') || this.get('isInvalidPassword');
     }
-  )
+  ),
+
+  actions: {
+    testStorageMount() {
+      const deployment = this.get('deploymentController.model');
+      deployment.trimFieldsForSave();
+      this.set('errorMsg', null);
+
+      const params = {
+        path: deployment.get('openshift_export_path'),
+        address: deployment.get('openshift_storage_host'),
+        type: deployment.get('openshift_storage_type')
+      };
+
+      this.set('showLoadingSpinner', true);
+      this.fetchMountValidation(this.get('deploymentId'), params).then(result => {
+        this.set('showLoadingSpinner', false);
+        const { mounted } = result;
+        if(mounted) {
+          this.set('errorMsg', null);
+          this.transitionTo(this.get('nextRouteNameAfterOpenshift'));
+        } else {
+          this.set(
+            'errorMsg',
+            'Failed to mount specified registry'
+          );
+        }
+      }).catch(err => {
+        this.set('showLoadingSpinner', false);
+        this.set(
+          'errorMsg',
+          'Error occurred while attempting to validate registry mount'
+        );
+      });
+    }
+  }
 });

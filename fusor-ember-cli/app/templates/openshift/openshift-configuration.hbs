@@ -1,3 +1,20 @@
+{{#if errorMsg}}
+  <div class="row">
+    <div class='col-md-9'>
+      <div class='alert alert-danger rhci-alert'>
+        <i class="fa fa-2x fa-exclamation-triangle errorForValidation"></i>
+        &nbsp;
+        {{errorMsg}}
+      </div>
+    </div>
+  </div>
+{{else if showLoadingSpinner}}
+  <div class="spinner spinner-md spinner-inline"></div>
+  <span class='spinner-text'>
+    {{loadingSpinnerText}}
+  </span>
+{{/if}}
+
 <p>
   Configure persistent storage for OpenShift internal Docker registry
 </p>
@@ -84,9 +101,11 @@
 
 </form>
 
-{{cancel-back-next backRouteName='openshift.openshift-nodes'
+{{#cancel-back-next backRouteName='openshift.openshift-nodes'
                    disableBack=false
-                   nextRouteName=nextRouteNameAfterOpenshift
-                   disableNext=disableNextOpenshiftConfig
                    disableCancel=isStarted
                    deploymentName=deploymentName}}
+  {{#button-f disabled=disableNextOpenshiftConfig action="testStorageMount"}}
+     Next <i class="fa fa-angle-right"></i>
+  {{/button-f}}
+{{/cancel-back-next}}

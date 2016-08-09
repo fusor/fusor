@@ -5,6 +5,9 @@ export default Ember.Route.extend({
   setupController(controller, model) {
     controller.set('model', model);
 
+    controller.set('errorMsg', null);
+    controller.set('showLoadingSpinner', false);
+
     controller.set('confirmUserPassword', model.get('openshift_user_password'));
 
     if (Ember.isEmpty(model.get('openshift_storage_type'))) {

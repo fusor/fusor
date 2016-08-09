@@ -139,10 +139,10 @@ module Fusor
       mount_type = params['type']
 
       begin
-        mount_storage(mount_address, mount_path, mount_type)
-        render json: { :mounted => true }, status: 200
+        mount_result = mount_storage(mount_address, mount_path, mount_type)
+        render json: { :mounted => true, :is_empty => mount_result[:is_empty] }, status: 200
       rescue
-        render json: { :mounted => false }, status: 200
+        render json: { :mounted => false, :is_empty => false }, status: 200
       end
     end
 
@@ -160,11 +160,16 @@ module Fusor
 
       raise 'Unable to mount NFS share at specified mount point' unless status == 0
 
+      files = Dir["/tmp/fusor-test-mount-#{deployment_id}/*"]
+
       stats = Sys::Filesystem.stat("/tmp/fusor-test-mount-#{deployment_id}")
       mb_available = stats.block_size * stats.blocks_available / 1024 / 1024
 
       Utils::Fusor::CommandUtils.run_command("sudo safe-umount.sh #{deployment_id}")
-      return mb_available
+      return {
+        :mb_available => mb_available,
+        :is_empty => files.size == 0
+      }
     end
 
     def log
@@ -189,8 +194,8 @@ module Fusor
       storage_type = @deployment.rhev_storage_type
 
       begin
-        mb_available = mount_storage(address, path, storage_type)
-        render json: { :openshift_disk_space => mb_available }, status: 200
+        mount_response = mount_storage(address, path, storage_type)
+        render json: { :openshift_disk_space => mount_response[:mb_available]}, status: 200
       rescue Exception => error
         message = 'Unable to retrieve Openshift disk space'
         message = error.message if error.respond_to?(:message)

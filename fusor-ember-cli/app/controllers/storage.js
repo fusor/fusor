@@ -1,6 +1,6 @@
 import Ember from 'ember';
-import request from 'ic-ajax';
-import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
+import NeedsDeploymentMixin from '../mixins/needs-deployment-mixin';
+import ValidatesMounts from '../mixins/validates-mounts';
 import {
   AllValidator,
   PresenceValidator,
@@ -10,12 +10,13 @@ import {
   GlusterPathValidator
 } from '../utils/validators';
 
-export default Ember.Controller.extend(NeedsDeploymentMixin, {
+export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
   actions: {
     testMountPoint() {
       var deployment = this.get('model');
       deployment.trimFieldsForSave();
       this.set('errorMsg', null);
+      this.set('storageNotEmptyError', null);
       const checkExport = this.get('isCloudForms');
       const checkHosted = this.get('rhevIsSelfHosted');
 
@@ -26,7 +27,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       };
 
       const validationPromises = {
-        storage: this.storageMountRequest(storageParams)
+        storage: this.fetchMountValidation(this.get('deploymentId'), storageParams)
       };
 
       if(checkExport) {
@@ -36,7 +37,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
           type: this.get('model.rhev_storage_type')
         };
 
-        validationPromises.export = this.storageMountRequest(exportParams);
+        validationPromises.export = this.fetchMountValidation(
+          this.get('deploymentId'),
+          exportParams
+        );
       }
 
       if(checkHosted) {
@@ -46,7 +50,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
           type: this.get('model.rhev_storage_type')
         };
 
-        validationPromises.hosted = this.storageMountRequest(hostedParams);
+        validationPromises.hosted = this.fetchMountValidation(
+          this.get('deploymentId'),
+          hostedParams
+        );
       }
 
       this.set('loadingSpinnerText', `Trying to mount storage paths...`);
@@ -55,24 +62,24 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       Ember.RSVP.hash(validationPromises).then((resultHash) => {
         this.set('showLoadingSpinner', false);
         let validMounts = resultHash.storage.mounted;
+        let isStorageEmpty = resultHash.storage.is_empty;
 
         if(checkExport) {
           validMounts = validMounts && resultHash.export.mounted;
+          isStorageEmpty = isStorageEmpty && resultHash.export.is_empty;
         }
         if(checkHosted) {
           validMounts = validMounts && resultHash.hosted.mounted;
+          isStorageEmpty = isStorageEmpty && resultHash.hosted.is_empty;
         }
 
-        if(validMounts) {
-          this.set('errorMsg', null);
-          this.transitionTo(this.get('step3RouteName'));
-        } else {
+        const handleMountError = (checkProp, errorProp, errorMsg) => {
           let failedDomain;
-          if(!resultHash.storage.mounted) {
+          if(!resultHash.storage[checkProp]) {
             failedDomain = 'storage';
-          } else if(checkHosted && !resultHash.hosted.mounted) {
+          } else if(checkHosted && !resultHash.hosted[checkProp]) {
             failedDomain = 'self-hosted';
-          } else if(checkExport && !resultHash.export.mounted) {
+          } else if(checkExport && !resultHash.export[checkProp]) {
             failedDomain = 'export';
           }
 
@@ -96,11 +103,25 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
             failedDomainName = '';
           }
 
-          const errorMsg =
-            `Error mounting ${failedDomain} domain ${failedDomainName}, ` +
-            'please make sure it is a valid mount point';
+          this.set(errorProp, errorMsg({failedDomain, failedDomainName}));
+        };
 
-          this.set('errorMsg', errorMsg);
+        if(validMounts && isStorageEmpty) {
+          this.set('errorMsg', null);
+          this.set('storageNotEmptyError', null);
+          this.transitionTo(this.get('step3RouteName'));
+        } else if(!validMounts){
+          const errorMsg = err => {
+            return `Error mounting ${err.failedDomain} domain ${err.failedDomainName}, ` +
+              'please make sure it is a valid mount point';
+          };
+          handleMountError('mounted', 'errorMsg', errorMsg);
+        } else {
+          const errorMsg = err => {
+            return `Storage domain ${err.failedDomainName} is not empty. ` +
+              `This could cause deployment problems.`;
+          };
+          handleMountError('is_empty', 'storageNotEmptyError', errorMsg);
         }
       }).catch(err => {
         console.error(err);
@@ -111,25 +132,12 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     }
   },
 
-  storageMountRequest(params) {
-    const deploymentId = this.get('deploymentId');
-    return request({
-      url: `/fusor/api/v21/deployments/${deploymentId}/check_mount_point`,
-      type: 'GET',
-      data: params,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': Ember.$('meta[name="csrf-token"]').attr('content')
-      }
-    });
-  },
-
   deploymentId: Ember.computed.alias('deploymentController.model.id'),
   step3RouteName: Ember.computed.alias("deploymentController.step3RouteName"),
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
   rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
   errorMsg: null,
+  storageNotEmptyError: null,
 
   isNFS: Ember.computed('deploymentController.model.rhev_storage_type', function() {
     return (this.get('deploymentController.model.rhev_storage_type') === 'NFS');
