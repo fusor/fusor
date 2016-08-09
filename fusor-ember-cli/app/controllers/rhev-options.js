@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import NeedsDeploymentMixin from "../mixins/needs-deployment-mixin";
-import { Validator, EqualityValidator, RequiredPasswordValidator, AlphaNumericDashUnderscoreValidator, AllValidator } from '../utils/validators';
+import { Validator, EqualityValidator, LengthValidator, RequiredPasswordValidator, AlphaNumericDashUnderscoreValidator, AllValidator } from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
@@ -51,7 +51,12 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   createComputerNameValidator(fieldName, otherFieldName, otherFieldValue) {
     if (Ember.isBlank(otherFieldValue) || otherFieldValue === 'Default') {
-      return AlphaNumericDashUnderscoreValidator.create({trim: false});
+      return AllValidator.create({
+        validators: [
+          AlphaNumericDashUnderscoreValidator.create({trim: false}),
+          LengthValidator.create({max: 40})
+        ]
+      });
     }
 
     return AllValidator.create({
@@ -62,7 +67,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
             return Ember.isPresent(value) && value !== 'Default';
           }
         }),
-        AlphaNumericDashUnderscoreValidator.create({trim: false})
+        AlphaNumericDashUnderscoreValidator.create({trim: false}),
+        LengthValidator.create({max: 40})
       ]
     });
   },
