@@ -30,8 +30,11 @@ export default Ember.Mixin.create({
   isInvalidHostname: Ember.computed('host.name', function() {
     // HOST_REGEXP taken from Foreman code HOST_REGEXP in file /lib/net/validations.rb
     // But replaced /A with ^ and /z with $
+    var hostname = this.get('host.name');
     var hostnameRegex = new RegExp(/^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])$/);
-    var invalidHostname = Ember.isEmpty(this.get('host.name').match(hostnameRegex));
+    var invalidHostname = Ember.isEmpty(hostname) ||
+      hostname.length > 55 ||
+      Ember.isEmpty(hostname.match(hostnameRegex));
 
     this.sendAction('setIfHostnameInvalid', invalidHostname, this.get('host.id'));
 

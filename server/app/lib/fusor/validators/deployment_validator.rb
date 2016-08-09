@@ -313,17 +313,17 @@ module Fusor
       end
 
       def validate_hostname(deployment)
-        regex = /^[A-z0-9\.\_\-]+$/
+        regex = /^[A-z0-9\.\_\-]{1,55}$/
 
         unless deployment.rhev_engine_host.nil?
           unless deployment.rhev_engine_host.name =~ regex
-            deployment.errors[:base] << _("RHV engine host '%s' does not have proper mac naming scheme." % "#{deployment.rhev_engine_host.name}")
+            deployment.errors[:base] << _("RHV engine host '%s' does not have a valid name." % "#{deployment.rhev_engine_host.name}")
           end
         end
 
         deployment.rhev_hypervisor_hosts.each do |host|
           unless host.name =~ regex
-            deployment.errors[:base] << _("RHV hypervisor hosts '%s' does not have proper mac naming scheme." % "#{host.name}")
+            deployment.errors[:base] << _("RHV hypervisor hosts '%s' does not have a valid name." % "#{host.name}")
           end
         end
       end
