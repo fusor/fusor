@@ -979,3 +979,35 @@ span.hanging-indent{
   display: inline-block;
   padding: 0px 8px 8px 0px;
 }
+
+/* import patterfly v2.10 icons that are not in Sat 6.2
+   pficon-virtual-machine is needed
+*/
+
+@font-face {
+  font-family: 'PatternFlyIcons-webfont';
+  src: url('/fusor_ui/fonts/PatternFlyIcons-webfont.eot');
+  src: url('/fusor_ui/fonts/PatternFlyIcons-webfont.eot?#iefix') format('embedded-opentype'),
+       url('/fusor_ui/fonts/PatternFlyIcons-webfont.ttf') format('truetype'),
+       url('/fusor_ui/fonts/PatternFlyIcons-webfont.woff') format('woff'),
+       url('/fusor_ui/fonts/PatternFlyIcons-webfont.svg#PatternFlyIcons-webfont') format('svg');
+}
+
+[class^="pficon-"],
+[class*=" pficon-"] {
+  display: inline-block;
+  font-family: 'PatternFlyIcons-webfont';
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  line-height: 1;
+  speak: none;
+  text-transform: none;
+  /* Better Font Rendering =========== */
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+}
+
+.pficon-virtual-machine:before {
+  content: "\e90f";
+}
