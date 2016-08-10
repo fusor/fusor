@@ -40,10 +40,6 @@ then
     cp ./dist/assets/fusor-ember-cli.map     ../ui/app/assets/javascripts/fusor_ui/;
 fi
 
-cp ./dist/fonts/*.*  ../ui/public/fonts/;
-
-cp ./dist/QCI_Requirements.txt               ../ui/public/;
-
 if [ "${COMMIT_ASSETS}" -eq "1" ]
 then
     cd ..
