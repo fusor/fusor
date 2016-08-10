@@ -82,7 +82,7 @@ module Actions
             opts[:ose_user] = deployment.openshift_username
             opts[:ose_password] = deployment.openshift_user_password
 
-            opts[:subdomain_name] = deployment.openshift_subdomain_name
+            opts[:subdomain_name] = deployment.openshift_subdomain_name + '.' + Domain.find(Hostgroup.find_by_name('Fusor Base').domain_id).name
             opts[:helloworld_sample_app] = deployment.openshift_sample_helloworld
 
             opts[:org_label] = Organization.find(deployment.organization_id).label.downcase
