@@ -9,11 +9,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   engineDiscoveredHostController: Ember.inject.controller('engine/discovered-host'),
   hypervisorDiscoveredHostController: Ember.inject.controller('hypervisor/discovered-host'),
 
-  rhevSetup: Ember.computed.alias("rhevSetupController.rhevSetup"),
-
-  isSelfHost: Ember.computed('rhevSetup', function() {
-    return (this.get('rhevSetup') === 'selfhost');
-  }),
+  isSelfHost: Ember.computed.alias("rhevSetupController.rhevIsSelfHosted"),
 
   hypervisorTabName: Ember.computed('isSelfHost', function() {
     if (this.get('isSelfHost')) {
