@@ -1,0 +1,3 @@
+[version_template]
+template_file = ./ui/version.rb.tmpl
+destination_file = ./lib/fusor_ui/version.rb

@@ -1,6 +1,6 @@
 [buildconfig]
 builder = tito.builder.GemBuilder
-tagger = tito.tagger.ReleaseTagger
+tagger = tito.tagger.VersionTagger
 changelog_do_not_remove_cherrypick = 0
 changelog_format = %s (%ae)
 
@@ -16,4 +16,3 @@ scl = ruby193
 
 [requirements]
 tito=0.4.12
-
