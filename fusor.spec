@@ -2,7 +2,7 @@
 %{!?scl:%global pkg_name %{name}}
 
 Name:           fusor
-Version:        1.0 
+Version:        1.0
 Release:        0%{?dist}
 Summary:        fusor meta package
 
@@ -14,13 +14,14 @@ Requires:       fusor-installer
 Requires:       fusor-release
 Requires:       rubygem-smart_proxy_pulp
 Requires:       satellite
+Requires:       redhat-access-insights
 
 BuildArch:      noarch
 
 Provides:       qci
 
 %description
-Meta-package to install all requirements for Fusor/QCI. 
+Meta-package to install all requirements for Fusor/QCI.
 
 %prep
 
@@ -32,4 +33,4 @@ Meta-package to install all requirements for Fusor/QCI.
 
 %changelog
 * Thu Aug  4 2016 jmontleo@redhat.com
-- 
+-
