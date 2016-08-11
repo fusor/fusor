@@ -10,11 +10,24 @@ License:        GPL
 
 Requires:       %{?scl_prefix}rubygem-fusor_ui
 Requires:       foreman-discovery-image
+Requires:       fusor-initial-setup
 Requires:       fusor-installer
 Requires:       fusor-release
 Requires:       rubygem-smart_proxy_pulp
 Requires:       satellite
 Requires:       redhat-access-insights
+Requires:       bind-utils
+Requires:       bind
+Requires:       dhcp
+Requires:       katello-client-bootstrap
+Requires:       python-qpid-qmf
+Requires:       puppet-server
+Requires:       qpid-qmf
+Requires:       qpid-tools
+Requires:       tftp-server
+Requires:       xinetd
+Requires:       qci-sos-plugin
+
 
 BuildArch:      noarch
 
@@ -32,5 +45,3 @@ Meta-package to install all requirements for Fusor/QCI.
 %files
 
 %changelog
-* Thu Aug  4 2016 jmontleo@redhat.com
--
