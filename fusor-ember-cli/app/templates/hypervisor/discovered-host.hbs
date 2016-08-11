@@ -75,12 +75,12 @@
   </div>
 </div>
 
-{{#cancel-back-next backRouteName=hypervisorBackRouteName
+{{cancel-back-next backRouteName=hypervisorBackRouteName
                     disableBack=false
+                    nextRouteName='rhev-options'
+                    disableNext=disableNextOnHypervisor
                     disableCancel=isStarted
                     deploymentName=deploymentName}}
-  <button {{action 'saveHyperVisors' 'rhev-options'}} class='btn btn-primary next-button' disabled={{disableNextOnHypervisor}} data-qci='next-button'>Next <i class="fa fa-angle-right"></i></button>
-{{/cancel-back-next}}
 
 {{naming-scheme-modal openModal=openModalNamingScheme
                       namingOptions=namingOptions

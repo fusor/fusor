@@ -7,22 +7,26 @@ export default Ember.Route.extend(DiscoveredHostRouteMixin, NeedsDiscoveredHosts
     return this.modelFor('deployment').get('discovered_hosts');
   },
 
-  deactivate() {
-    return this.send('saveHyperVisors', null);
+  setupController(controller, model) {
+    this._super(controller, model);
+    this.set('saveOnTransition', true);
   },
 
   actions: {
-    saveHyperVisors(redirectPath) {
-      var deployment = this.modelFor('deployment');
-      var hypervisorModelIds = this.controllerFor('hypervisor/discovered-host')
-        .get('hypervisorModelIds');
+    willTransition(transition) {
+      if (!this.get('saveOnTransition')) {
+        return true;
+      }
 
-      this.postDiscoveredHostIds(deployment, hypervisorModelIds).then(() => {
-        if (redirectPath) {
-          this.transitionTo('rhev-options');
-        }
-      }).catch(err => {
+      let deployment = this.modelFor('deployment');
+      let hypervisorModelIds = this.controllerFor('hypervisor/discovered-host').get('hypervisorModelIds');
+
+      this.set('saveOnTransition', false);
+      transition.abort();
+      this.postDiscoveredHostIds(deployment, hypervisorModelIds).catch(err => {
         console.log(err);
+      }).finally(() => {
+        transition.retry();
       });
     }
   }
