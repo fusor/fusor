@@ -33,7 +33,7 @@ export default Ember.Mixin.create({
     var hostname = this.get('host.name');
     var hostnameRegex = new RegExp(/^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])$/);
     var invalidHostname = Ember.isEmpty(hostname) ||
-      hostname.length > 55 ||
+      hostname.length > 45 ||
       Ember.isEmpty(hostname.match(hostnameRegex));
 
     this.sendAction('setIfHostnameInvalid', invalidHostname, this.get('host.id'));
