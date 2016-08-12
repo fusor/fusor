@@ -56,6 +56,14 @@ module Utils
         str.sub! "name: #{default_template_name}", "name: #{name}"
         new_template.template = str
         new_template.locked = false
+
+        # Add OS to template
+        os_ids = []
+        Operatingsystem.all.each do |os|
+          os_ids << os.id
+        end
+        new_template.operatingsystem_ids = os_ids
+
         new_template.save!
       end
 
