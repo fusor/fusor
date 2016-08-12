@@ -56,7 +56,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       if (this.get('isInvalidMgmtAppName')) {
         this.set('showWaitingMessage', false);
         this.set('showErrorMessage', true);
-        this.set('errorMsg', newSatelliteName + ' failed to be added. Invalid application name.');
+        this.set('errorMsg', 'Invalid application name, should contain alphanumeric characters with no whitespace.');
       } else {
         request({
           url: url,

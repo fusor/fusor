@@ -27,7 +27,7 @@ let ValidationUtil = {
       this.validateCIDRFormat(testString);
   },
   validateMgmtAppName(testString) {
-    return !!testString && mgmtAppNameRegex.test(testString.trim());
+    return !!testString && mgmtAppNameRegex.test(testString);
   }
 };
 
