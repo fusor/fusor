@@ -35,7 +35,7 @@ module Actions
 
                 first_host_overrides = {
                   puppetclass_id => {
-                    :provisioning_interface => first_host.interfaces.where(:provision => true).try(:first).try(:identifier)
+                    :mac_address => first_host.interfaces.where(:provision => true).try(:first).try(:mac)
                   }
                 }
                 plan_action(::Actions::Fusor::Host::TriggerProvisioning,
@@ -51,7 +51,7 @@ module Actions
                     puppetclass_id => {
                      :host_id => (index + 2),
                      :additional_host => true,
-                     :provisioning_interface => host.interfaces.where(:provision => true).try(:first).try(:identifier)
+                     :mac_address => host.interfaces.where(:provision => true).try(:first).try(:mac)
                     }
                   }
                   plan_action(::Actions::Fusor::Host::TriggerProvisioning,
