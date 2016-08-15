@@ -313,7 +313,7 @@ module Fusor
       end
 
       def validate_hostname(deployment)
-        regex = /^[A-z0-9\.\_\-]{1,55}$/
+        regex = /^[A-z0-9\.\_\-]+$/
 
         unless deployment.rhev_engine_host.nil?
           unless deployment.rhev_engine_host.name =~ regex
