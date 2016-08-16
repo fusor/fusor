@@ -21,7 +21,13 @@ export default Ember.Route.extend(PollingPromise, {
       this.deployUndercloudRequest()
         .then(() => this.displayDeployUndercloudStatus())
         .then(() => this.refreshDeployedUndercloudModel())
-        .catch(error =>  this.displayDeploymentError(error))
+        .catch(error => {
+          if (error.jqXHR && error.jqXHR.status === 401) {
+            this.send('userTimeout');
+          } else {
+            this.displayDeploymentError(error);
+          }
+        })
         .finally(() => this.set('controller.showLoadingSpinner', false));
     },
 
@@ -182,7 +188,7 @@ export default Ember.Route.extend(PollingPromise, {
     console.log(error);
     if (Ember.typeOf(error) === 'string') {
       this.set('controller.deploymentError', error);
-    } else if (Ember.typeOf(error) === 'object' && error.jqXHR && error.jqXHR.responseJSON) {
+    } else if (Ember.typeOf(error) === 'object' && error.jqXHR && error.jqXHR.responseJSON && error.jqXHR.responseJSON.errors) {
       this.set('controller.deploymentError', error.jqXHR.responseJSON.errors);
     } else {
       this.set('controller.deploymentError', JSON.stringify(error));
