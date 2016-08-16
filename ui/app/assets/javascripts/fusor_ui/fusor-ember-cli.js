@@ -5446,11 +5446,7 @@ define('fusor-ember-cli/controllers/rhev', ['exports', 'ember', 'fusor-ember-cli
     engineDiscoveredHostController: _ember['default'].inject.controller('engine/discovered-host'),
     hypervisorDiscoveredHostController: _ember['default'].inject.controller('hypervisor/discovered-host'),
 
-    rhevSetup: _ember['default'].computed.alias("rhevSetupController.rhevSetup"),
-
-    isSelfHost: _ember['default'].computed('rhevSetup', function () {
-      return this.get('rhevSetup') === 'selfhost';
-    }),
+    isSelfHost: _ember['default'].computed.alias("rhevSetupController.rhevIsSelfHosted"),
 
     hypervisorTabName: _ember['default'].computed('isSelfHost', function () {
       if (this.get('isSelfHost')) {
@@ -5936,7 +5932,7 @@ define('fusor-ember-cli/controllers/subscriptions/management-application', ['exp
         if (this.get('isInvalidMgmtAppName')) {
           this.set('showWaitingMessage', false);
           this.set('showErrorMessage', true);
-          this.set('errorMsg', newSatelliteName + ' failed to be added. Invalid application name.');
+          this.set('errorMsg', 'Invalid application name, should contain alphanumeric characters with no whitespace.');
         } else {
           (0, _icAjax['default'])({
             url: url,
@@ -11424,7 +11420,7 @@ define('fusor-ember-cli/mixins/tr-engine-hypervisor-mixin', ['exports', 'ember',
       // But replaced /A with ^ and /z with $
       var hostname = this.get('host.name');
       var hostnameRegex = new RegExp(/^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])$/);
-      var invalidHostname = _ember['default'].isEmpty(hostname) || hostname.length > 55 || _ember['default'].isEmpty(hostname.match(hostnameRegex));
+      var invalidHostname = _ember['default'].isEmpty(hostname) || hostname.length > 45 || _ember['default'].isEmpty(hostname.match(hostnameRegex));
 
       this.sendAction('setIfHostnameInvalid', invalidHostname, this.get('host.id'));
 
@@ -13131,23 +13127,26 @@ define('fusor-ember-cli/routes/hypervisor/discovered-host', ['exports', 'ember',
       return this.modelFor('deployment').get('discovered_hosts');
     },
 
-    deactivate: function deactivate() {
-      return this.send('saveHyperVisors', null);
+    setupController: function setupController(controller, model) {
+      this._super(controller, model);
+      this.set('saveOnTransition', true);
     },
 
     actions: {
-      saveHyperVisors: function saveHyperVisors(redirectPath) {
-        var _this = this;
+      willTransition: function willTransition(transition) {
+        if (!this.get('saveOnTransition')) {
+          return true;
+        }
 
         var deployment = this.modelFor('deployment');
         var hypervisorModelIds = this.controllerFor('hypervisor/discovered-host').get('hypervisorModelIds');
 
-        this.postDiscoveredHostIds(deployment, hypervisorModelIds).then(function () {
-          if (redirectPath) {
-            _this.transitionTo('rhev-options');
-          }
-        })['catch'](function (err) {
+        this.set('saveOnTransition', false);
+        transition.abort();
+        this.postDiscoveredHostIds(deployment, hypervisorModelIds)['catch'](function (err) {
           console.log(err);
+        })['finally'](function () {
+          transition.retry();
         });
       }
     }
@@ -35536,10 +35535,10 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
               return el0;
             },
             buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-              var element2 = dom.childAt(fragment, [1]);
+              var element1 = dom.childAt(fragment, [1]);
               var morphs = new Array(2);
-              morphs[0] = dom.createElementMorph(element2);
-              morphs[1] = dom.createMorphAt(element2, 1, 1);
+              morphs[0] = dom.createElementMorph(element1);
+              morphs[1] = dom.createMorphAt(element1, 1, 1);
               return morphs;
             },
             statements: [["element", "action", ["setUncheckAll"], [], ["loc", [null, [33, 45], [33, 71]]]], ["content", "availableHosts.length", ["loc", [null, [33, 86], [33, 111]]]]],
@@ -35585,10 +35584,10 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
               return el0;
             },
             buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-              var element1 = dom.childAt(fragment, [1]);
+              var element0 = dom.childAt(fragment, [1]);
               var morphs = new Array(2);
-              morphs[0] = dom.createElementMorph(element1);
-              morphs[1] = dom.createMorphAt(element1, 1, 1);
+              morphs[0] = dom.createElementMorph(element0);
+              morphs[1] = dom.createMorphAt(element0, 1, 1);
               return morphs;
             },
             statements: [["element", "action", ["setCheckAll"], [], ["loc", [null, [35, 45], [35, 69]]]], ["content", "availableHosts.length", ["loc", [null, [35, 82], [35, 107]]]]],
@@ -35799,75 +35798,26 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
           return el0;
         },
         buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-          var element3 = dom.childAt(fragment, [1, 1]);
-          var element4 = dom.childAt(element3, [3]);
-          var element5 = dom.childAt(element4, [5]);
-          var element6 = dom.childAt(element4, [7]);
-          var element7 = dom.childAt(fragment, [3]);
+          var element2 = dom.childAt(fragment, [1, 1]);
+          var element3 = dom.childAt(element2, [3]);
+          var element4 = dom.childAt(element3, [5]);
+          var element5 = dom.childAt(element3, [7]);
+          var element6 = dom.childAt(fragment, [3]);
           var morphs = new Array(9);
-          morphs[0] = dom.createMorphAt(dom.childAt(element3, [1, 1, 1]), 1, 1);
-          morphs[1] = dom.createMorphAt(element4, 1, 1);
-          morphs[2] = dom.createMorphAt(element4, 3, 3);
-          morphs[3] = dom.createAttrMorph(element5, 'disabled');
-          morphs[4] = dom.createElementMorph(element5);
-          morphs[5] = dom.createAttrMorph(element6, 'disabled');
-          morphs[6] = dom.createElementMorph(element6);
-          morphs[7] = dom.createMorphAt(element7, 1, 1);
-          morphs[8] = dom.createMorphAt(dom.childAt(element7, [3]), 1, 1);
+          morphs[0] = dom.createMorphAt(dom.childAt(element2, [1, 1, 1]), 1, 1);
+          morphs[1] = dom.createMorphAt(element3, 1, 1);
+          morphs[2] = dom.createMorphAt(element3, 3, 3);
+          morphs[3] = dom.createAttrMorph(element4, 'disabled');
+          morphs[4] = dom.createElementMorph(element4);
+          morphs[5] = dom.createAttrMorph(element5, 'disabled');
+          morphs[6] = dom.createElementMorph(element5);
+          morphs[7] = dom.createMorphAt(element6, 1, 1);
+          morphs[8] = dom.createMorphAt(dom.childAt(element6, [3]), 1, 1);
           return morphs;
         },
         statements: [["inline", "input", [], ["type", "text", "class", "form-control rhev-search-input", "placeholder", " Search ...", "data-qci", "rhev-search-input", "value", ["subexpr", "@mut", [["get", "searchString", ["loc", [null, [20, 37], [20, 49]]]]], [], []], "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [21, 40], [21, 49]]]]], [], []]], ["loc", [null, [17, 18], [21, 51]]]], ["content", "model.length", ["loc", [null, [28, 12], [28, 28]]]], ["block", "if", [["get", "isNotStarted", ["loc", [null, [30, 18], [30, 30]]]]], [], 0, null, ["loc", [null, [30, 12], [38, 19]]]], ["attribute", "disabled", ["get", "isStarted", ["loc", [null, [40, 97], [40, 106]]]]], ["element", "action", ["openNamingSchemeModal"], [], ["loc", [null, [40, 51], [40, 85]]]], ["attribute", "disabled", ["get", "isStarted", ["loc", [null, [44, 98], [44, 107]]]]], ["element", "action", ["refreshDiscoveredHosts"], [], ["loc", [null, [44, 51], [44, 86]]]], ["inline", "partial", ["thead-discovered-hosts"], [], ["loc", [null, [53, 8], [53, 44]]]], ["block", "each", [["get", "filteredHosts", ["loc", [null, [55, 16], [55, 29]]]]], [], 1, null, ["loc", [null, [55, 8], [69, 17]]]]],
         locals: [],
         templates: [child0, child1]
-      };
-    })();
-    var child2 = (function () {
-      return {
-        meta: {
-          "revision": "Ember@1.13.10",
-          "loc": {
-            "source": null,
-            "start": {
-              "line": 78,
-              "column": 0
-            },
-            "end": {
-              "line": 83,
-              "column": 0
-            }
-          },
-          "moduleName": "fusor-ember-cli/templates/hypervisor/discovered-host.hbs"
-        },
-        arity: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        buildFragment: function buildFragment(dom) {
-          var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("  ");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createElement("button");
-          dom.setAttribute(el1, "class", "btn btn-primary next-button");
-          dom.setAttribute(el1, "data-qci", "next-button");
-          var el2 = dom.createTextNode("Next ");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createElement("i");
-          dom.setAttribute(el2, "class", "fa fa-angle-right");
-          dom.appendChild(el1, el2);
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-          var element0 = dom.childAt(fragment, [1]);
-          var morphs = new Array(2);
-          morphs[0] = dom.createAttrMorph(element0, 'disabled');
-          morphs[1] = dom.createElementMorph(element0);
-          return morphs;
-        },
-        statements: [["attribute", "disabled", ["get", "disableNextOnHypervisor", ["loc", [null, [82, 101], [82, 124]]]]], ["element", "action", ["saveHyperVisors", "rhev-options"], [], ["loc", [null, [82, 10], [82, 53]]]]],
-        locals: [],
-        templates: []
       };
     })();
     return {
@@ -35911,7 +35861,7 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
         dom.appendChild(el0, el1);
         var el1 = dom.createComment("");
         dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
+        var el1 = dom.createTextNode("\n\n");
         dom.appendChild(el0, el1);
         var el1 = dom.createComment("");
         dom.appendChild(el0, el1);
@@ -35926,9 +35876,9 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
         morphs[2] = dom.createMorphAt(fragment, 4, 4, contextualElement);
         return morphs;
       },
-      statements: [["block", "if", [["get", "isLoadingHosts", ["loc", [null, [4, 10], [4, 24]]]]], [], 0, 1, ["loc", [null, [4, 4], [73, 11]]]], ["block", "cancel-back-next", [], ["backRouteName", ["subexpr", "@mut", [["get", "hypervisorBackRouteName", ["loc", [null, [78, 34], [78, 57]]]]], [], []], "disableBack", false, "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [80, 34], [80, 43]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [81, 35], [81, 49]]]]], [], []]], 2, null, ["loc", [null, [78, 0], [83, 21]]]], ["inline", "naming-scheme-modal", [], ["openModal", ["subexpr", "@mut", [["get", "openModalNamingScheme", ["loc", [null, [85, 32], [85, 53]]]]], [], []], "namingOptions", ["subexpr", "@mut", [["get", "namingOptions", ["loc", [null, [86, 36], [86, 49]]]]], [], []], "hostNamingScheme", ["subexpr", "@mut", [["get", "hostNamingScheme", ["loc", [null, [87, 39], [87, 55]]]]], [], []], "isStarted", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [88, 32], [88, 41]]]]], [], []], "customPreprendName", ["subexpr", "@mut", [["get", "customPreprendName", ["loc", [null, [89, 41], [89, 59]]]]], [], []], "saveNamingScheme", "saveNamingScheme", "cancelNamingScheme", "cancelNamingScheme", "setSelectValue", "setSelectValue", "customPrefixValidator", ["subexpr", "@mut", [["get", "customPrefixValidator", ["loc", [null, [93, 44], [93, 65]]]]], [], []]], ["loc", [null, [85, 0], [94, 24]]]]],
+      statements: [["block", "if", [["get", "isLoadingHosts", ["loc", [null, [4, 10], [4, 24]]]]], [], 0, 1, ["loc", [null, [4, 4], [73, 11]]]], ["inline", "cancel-back-next", [], ["backRouteName", ["subexpr", "@mut", [["get", "hypervisorBackRouteName", ["loc", [null, [78, 33], [78, 56]]]]], [], []], "disableBack", false, "nextRouteName", "rhev-options", "disableNext", ["subexpr", "@mut", [["get", "disableNextOnHypervisor", ["loc", [null, [81, 32], [81, 55]]]]], [], []], "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [82, 34], [82, 43]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [83, 35], [83, 49]]]]], [], []]], ["loc", [null, [78, 0], [83, 51]]]], ["inline", "naming-scheme-modal", [], ["openModal", ["subexpr", "@mut", [["get", "openModalNamingScheme", ["loc", [null, [85, 32], [85, 53]]]]], [], []], "namingOptions", ["subexpr", "@mut", [["get", "namingOptions", ["loc", [null, [86, 36], [86, 49]]]]], [], []], "hostNamingScheme", ["subexpr", "@mut", [["get", "hostNamingScheme", ["loc", [null, [87, 39], [87, 55]]]]], [], []], "isStarted", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [88, 32], [88, 41]]]]], [], []], "customPreprendName", ["subexpr", "@mut", [["get", "customPreprendName", ["loc", [null, [89, 41], [89, 59]]]]], [], []], "saveNamingScheme", "saveNamingScheme", "cancelNamingScheme", "cancelNamingScheme", "setSelectValue", "setSelectValue", "customPrefixValidator", ["subexpr", "@mut", [["get", "customPrefixValidator", ["loc", [null, [93, 44], [93, 65]]]]], [], []]], ["loc", [null, [85, 0], [94, 24]]]]],
       locals: [],
-      templates: [child0, child1, child2]
+      templates: [child0, child1]
     };
   })());
 });
@@ -48452,7 +48402,7 @@ define("fusor-ember-cli/templates/rhev-hostname-input", ["exports"], function (e
           morphs[2] = dom.createMorphAt(element0, 3, 3);
           return morphs;
         },
-        statements: [["attribute", "class", ["concat", [["subexpr", "if", [["get", "isInvalidHostname", ["loc", [null, [4, 20], [4, 37]]]], "has-error"], [], ["loc", [null, [4, 15], [4, 51]]]]]]], ["inline", "input", [], ["type", "text", "maxlength", "55", "value", ["subexpr", "@mut", [["get", "host.name", ["loc", [null, [5, 47], [5, 56]]]]], [], []], "class", "form-control", "key-up", "saveHostname", "id", ["subexpr", "@mut", [["get", "cssHostHostId", ["loc", [null, [5, 103], [5, 116]]]]], [], []], "data-qci", ["subexpr", "@mut", [["get", "cssHostHostId", ["loc", [null, [5, 126], [5, 139]]]]], [], []]], ["loc", [null, [5, 6], [5, 141]]]], ["block", "if", [["get", "isInvalidHostname", ["loc", [null, [6, 12], [6, 29]]]]], [], 0, null, ["loc", [null, [6, 6], [10, 13]]]]],
+        statements: [["attribute", "class", ["concat", [["subexpr", "if", [["get", "isInvalidHostname", ["loc", [null, [4, 20], [4, 37]]]], "has-error"], [], ["loc", [null, [4, 15], [4, 51]]]]]]], ["inline", "input", [], ["type", "text", "maxlength", "45", "value", ["subexpr", "@mut", [["get", "host.name", ["loc", [null, [5, 47], [5, 56]]]]], [], []], "class", "form-control", "key-up", "saveHostname", "id", ["subexpr", "@mut", [["get", "cssHostHostId", ["loc", [null, [5, 103], [5, 116]]]]], [], []], "data-qci", ["subexpr", "@mut", [["get", "cssHostHostId", ["loc", [null, [5, 126], [5, 139]]]]], [], []]], ["loc", [null, [5, 6], [5, 141]]]], ["block", "if", [["get", "isInvalidHostname", ["loc", [null, [6, 12], [6, 29]]]]], [], 0, null, ["loc", [null, [6, 6], [10, 13]]]]],
         locals: [],
         templates: [child0]
       };
@@ -54846,7 +54796,7 @@ define('fusor-ember-cli/utils/validation-util', ['exports'], function (exports) 
       return this.validateIpRange(testString) && this.validateCIDRFormat(testString);
     },
     validateMgmtAppName: function validateMgmtAppName(testString) {
-      return !!testString && mgmtAppNameRegex.test(testString.trim());
+      return !!testString && mgmtAppNameRegex.test(testString);
     }
   };
 
@@ -55244,11 +55194,11 @@ define('fusor-ember-cli/views/application', ['exports', 'ember'], function (expo
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+465eef6c"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+c733b8ac"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+465eef6c"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+c733b8ac"});
 }
 
 /* jshint ignore:end */
