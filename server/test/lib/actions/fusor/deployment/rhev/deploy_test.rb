@@ -58,7 +58,7 @@ module Actions::Fusor::Deployment::Rhev
                                 @deployment,
                                 'RHEV-Self-hosted',
                                 first_host,
-                                {puppetclass_id => {:provisioning_interface => nil}})
+                                {puppetclass_id => {:mac_address => nil}})
       assert_action_planed_with(@deploy,
                                 WaitUntilProvisioned,
                                 first_host.id, true)
@@ -68,7 +68,7 @@ module Actions::Fusor::Deployment::Rhev
           puppetclass_id => {
             :additional_host => true,
             :host_id => index + 2,
-            :provisioning_interface => nil
+            :mac_address => nil
           }
         }
         assert_action_planed_with(@deploy,
