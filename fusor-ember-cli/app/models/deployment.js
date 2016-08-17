@@ -212,48 +212,44 @@ export default DS.Model.extend(UsesOseDefaults, {
   },
 
   loadOpenshiftDefaults(settings, opt) {
-    if (this.get('deploy_openshift')) {
-      const shouldReset = opt && (opt.reset || false);
+    const shouldReset = opt && (opt.reset || false);
 
-      [
-        'openshift_master_vcpu',
-        'openshift_master_ram',
-        'openshift_master_disk',
-        'openshift_node_vcpu',
-        'openshift_node_ram',
-        'openshift_node_disk'
-      ].forEach(prop => {
-        this.handleReset(shouldReset, prop);
-        this.setOpenshiftDefault(
-          prop, settings.findBy('name', prop).value);
-      });
+    [
+      'openshift_master_vcpu',
+      'openshift_master_ram',
+      'openshift_master_disk',
+      'openshift_node_vcpu',
+      'openshift_node_ram',
+      'openshift_node_disk'
+    ].forEach(prop => {
+      this.handleReset(shouldReset, prop);
+      this.setOpenshiftDefault(
+        prop, settings.findBy('name', prop).value);
+    });
 
-      this.handleReset(shouldReset, 'openshift_number_master_nodes');
-      this.handleReset(shouldReset, 'openshift_number_worker_nodes');
-      this.handleReset(shouldReset, 'openshift_storage_size');
+    this.handleReset(shouldReset, 'openshift_number_master_nodes');
+    this.handleReset(shouldReset, 'openshift_number_worker_nodes');
+    this.handleReset(shouldReset, 'openshift_storage_size');
 
-      this.setOpenshiftDefault(
-        'openshift_number_master_nodes', 1);
-      this.setOpenshiftDefault(
-        'openshift_number_worker_nodes', 1);
-      this.setOpenshiftDefault(
-        'openshift_storage_size', 30);
-    }
+    this.setOpenshiftDefault(
+      'openshift_number_master_nodes', 1);
+    this.setOpenshiftDefault(
+      'openshift_number_worker_nodes', 1);
+    this.setOpenshiftDefault(
+      'openshift_storage_size', 30);
   },
 
   loadCloudformsDefaults(settings, opt) {
-    if (this.get('deploy_cfme')) {
-      const shouldReset = opt && (opt.reset || false);
+    const shouldReset = opt && (opt.reset || false);
 
-      [
-        'cloudforms_vcpu',
-        'cloudforms_ram',
-        'cloudforms_vm_disk_size',
-        'cloudforms_db_disk_size'
-      ].forEach(prop => {
-        this.set(prop, settings.findBy('name', prop).value);
-      });
-    }
+    [
+      'cloudforms_vcpu',
+      'cloudforms_ram',
+      'cloudforms_vm_disk_size',
+      'cloudforms_db_disk_size'
+    ].forEach(prop => {
+      this.set(prop, settings.findBy('name', prop).value);
+    });
   }
 });
 
