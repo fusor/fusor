@@ -14,6 +14,19 @@ export default Ember.Component.extend({
     return this.get('foremanTask.progress') === '1';
   }),
 
+  statusDisplay: Ember.computed('foremanTask.result', function() {
+    let statusDisplay = 'not yet started';
+    const result = this.get('foremanTask.result');
+
+    if(result === 'pending') {
+      return 'running';
+    } else if(result){
+      statusDisplay = result;
+    }
+
+    return statusDisplay;
+  }),
+
   foremanTask: Ember.computed('deployment.foreman_task_uuid', function() {
     let foremanTaskUuid = this.get('deployment.foreman_task_uuid');
 
