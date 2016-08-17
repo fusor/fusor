@@ -1,7 +1,6 @@
 import Ember from 'ember';
-import DeploymentNewSatelliteRouteMixin from "../../../mixins/deployment-new-satellite-route-mixin";
 
-export default Ember.Route.extend(DeploymentNewSatelliteRouteMixin, {
+export default Ember.Route.extend({
 
   setupController(controller, model) {
     controller.set('model', model);

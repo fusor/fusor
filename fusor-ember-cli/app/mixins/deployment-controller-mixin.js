@@ -22,15 +22,6 @@ export default Ember.Mixin.create({
   // will be overwritten be routes
   isHideWizard: null,
 
-  // declared in controllers, and not in mixin
-  // isRhev
-  // isOpenStack
-  // isCloudForms
-
-  disableNextOnStart: Ember.computed('isRhev', 'isOpenStack', 'isCloudForms', 'isOpenShift', function () {
-    return (!(this.get('isRhev') || this.get('isOpenStack') || this.get('isCloudForms') || this.get('isOpenShift')));
-  }),
-
   // names
   nameRHCI: Ember.computed('isUpstream', function() {
     if (this.get('isUpstream')) { return "Fusor"; } else { return "QCI"; }

@@ -15,6 +15,13 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
     });
   },
 
+  afterModel(model, transition) {
+    if (!model.get('isProductSelected')) {
+      // ignored if already transitioning to deployment-new.start
+      this.transitionTo('deployment-new.start');
+    }
+  },
+
   setupController(controller, model) {
     controller.set('model', model);
     controller.set('satelliteTabRouteName', 'deployment-new.satellite.index');

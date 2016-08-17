@@ -1,7 +1,6 @@
 import DS from 'ember-data';
 import Ember from 'ember';
 import UsesOseDefaults from '../mixins/uses-ose-defaults';
-import request from 'ic-ajax';
 
 export default DS.Model.extend(UsesOseDefaults, {
   name: DS.attr('string'),
@@ -145,6 +144,10 @@ export default DS.Model.extend(UsesOseDefaults, {
     } else {
       return [];
     }
+  }),
+
+  isProductSelected: Ember.computed('deploy_rhev', 'deploy_cfme', 'deploy_openstack', 'deploy_openshift', function() {
+    return this.get('deploy_rhev') || this.get('deploy_cfme') || this.get('deploy_openstack') || this.get('deploy_openshift');
   }),
 
   // controller.deployment.isStarted returns false if refreshing child route,
