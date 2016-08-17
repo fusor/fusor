@@ -12,6 +12,14 @@ export default Ember.Route.extend({
     },
     loading() {
       this.controllerFor('deployments').set('isLoading', true);
+    },
+    userTimeout() {
+      this.eventBus.trigger('displayErrorModal', {
+        errorMessage: 'It looks like your session has timed out. Try logging back in again to continue.',
+        okayCallback: () => {
+          document.location.pathname = '/';
+        }
+      });
     }
   }
 });
