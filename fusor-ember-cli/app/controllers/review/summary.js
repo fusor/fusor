@@ -23,7 +23,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return ('http://' + this.get('model.openstack_deployment.overcloud_address') + '/dashboard/admin');
   }),
 
-  selectedRhevEngine: Ember.computed.alias("deploymentController.model.discovered_host"),
+  selectedRhevEngine: Ember.computed.alias('model.discovered_host'),
   deploymentLabel: Ember.computed.alias('deploymentController.model.label'),
 
   exampleAppUrl: Ember.computed('deploymentController.defaultDomainName', function() {
@@ -33,10 +33,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return `http://hello-openshift.${subdomainName}.${domainName}`;
   }),
 
-  rhevEngineUrl: Ember.computed('selectedRhevEngine', function() {
+  rhevEngineUrl: Ember.computed('selectedRhevEngine.name', function() {
     return ('https://' + this.get('selectedRhevEngine.name') + '/ovirt-engine/');
   }),
-  rhevEngineUrlIP: Ember.computed('selectedRhevEngine', function() {
+  rhevEngineUrlIP: Ember.computed('selectedRhevEngine.ip', function() {
     return ('https://' + this.get('selectedRhevEngine.ip') + '/ovirt-engine/');
   }),
 
