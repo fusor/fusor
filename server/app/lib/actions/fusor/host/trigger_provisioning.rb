@@ -113,7 +113,7 @@ module Actions
             rc = host.save
             successful_save = rc && host.reload.type == 'Host::Managed'
 
-            fail _("Host with id #{host.id} was not converted to a managed host.") unless successful_save
+            fail _("Host with id #{host.id} was not converted to a managed host: #{host.errors.full_messages}") unless successful_save
 
             return host
           end
