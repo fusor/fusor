@@ -384,13 +384,15 @@ module Actions
 
       def get_cpu_model(cpu_type)
         self_hosted_cpu_map = {
-          'Intel Broadwell Family' => 'model_Broadwell',
           'Intel Conroe Family' => 'model_Conroe',
           'Intel Penryn Family' => 'model_Penryn',
           'Intel Nehalem Family' => 'model_Nehalem',
           'Intel Westmere Family' => 'model_Westmere',
           'Intel SandyBridge Family' => 'model_SandyBridge',
-          'Intel Haswell' => 'model_Haswell',
+          'Intel Haswell Family' => 'model_Haswell',
+          'Intel Haswell-noTSX Family' => 'model_Haswell-noTSX',
+          'Intel Broadwell Family' => 'model_Broadwell',
+          'Intel Broadwell-noTSX Family' => 'model_Broadwell-noTSX',
           'AMD Opteron G1' => 'model_Opteron_G1',
           'AMD Opteron G2' => 'model_Opteron_G2',
           'AMD Opteron G3' => 'model_Opteron_G3',
