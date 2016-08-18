@@ -2670,6 +2670,19 @@ define('fusor-ember-cli/components/tr-deployment', ['exports', 'ember'], functio
       return this.get('foremanTask.progress') === '1';
     }),
 
+    statusDisplay: _ember['default'].computed('foremanTask.result', function () {
+      var statusDisplay = 'not yet started';
+      var result = this.get('foremanTask.result');
+
+      if (result === 'pending') {
+        return 'running';
+      } else if (result) {
+        statusDisplay = result;
+      }
+
+      return statusDisplay;
+    }),
+
     foremanTask: _ember['default'].computed('deployment.foreman_task_uuid', function () {
       var foremanTaskUuid = this.get('deployment.foreman_task_uuid');
 
@@ -5260,7 +5273,7 @@ define('fusor-ember-cli/controllers/review/summary', ['exports', 'ember', 'fusor
       return 'http://' + this.get('model.openstack_deployment.overcloud_address') + '/dashboard/admin';
     }),
 
-    selectedRhevEngine: _ember['default'].computed.alias("deploymentController.model.discovered_host"),
+    selectedRhevEngine: _ember['default'].computed.alias('model.discovered_host'),
     deploymentLabel: _ember['default'].computed.alias('deploymentController.model.label'),
 
     exampleAppUrl: _ember['default'].computed('deploymentController.defaultDomainName', function () {
@@ -5270,10 +5283,10 @@ define('fusor-ember-cli/controllers/review/summary', ['exports', 'ember', 'fusor
       return 'http://hello-openshift.' + subdomainName + '.' + domainName;
     }),
 
-    rhevEngineUrl: _ember['default'].computed('selectedRhevEngine', function () {
+    rhevEngineUrl: _ember['default'].computed('selectedRhevEngine.name', function () {
       return 'https://' + this.get('selectedRhevEngine.name') + '/ovirt-engine/';
     }),
-    rhevEngineUrlIP: _ember['default'].computed('selectedRhevEngine', function () {
+    rhevEngineUrlIP: _ember['default'].computed('selectedRhevEngine.ip', function () {
       return 'https://' + this.get('selectedRhevEngine.ip') + '/ovirt-engine/';
     }),
 
@@ -5330,7 +5343,7 @@ define('fusor-ember-cli/controllers/rhev-options', ['exports', 'ember', 'fusor-e
     confirmRhevRootPassword: _ember['default'].computed.alias("deploymentController.confirmRhevRootPassword"),
     confirmRhevEngineAdminPassword: _ember['default'].computed.alias("deploymentController.confirmRhevEngineAdminPassword"),
 
-    cpuTypes: ['Intel Conroe Family', 'Intel Penryn Family', 'Intel Nehalem Family', 'Intel Westmere Family', 'Intel SandyBridge Family', 'Intel Haswell', 'AMD Opteron G1', 'AMD Opteron G2', 'AMD Opteron G3', 'AMD Opteron G4', 'AMD Opteron G5', 'IBM POWER 8'],
+    cpuTypes: ['Intel Conroe Family', 'Intel Penryn Family', 'Intel Nehalem Family', 'Intel Westmere Family', 'Intel SandyBridge Family', 'Intel Haswell Family', 'Intel Haswell-noTSX Family', 'Intel Broadwell Family', 'Intel Broadwell-noTSX Family', 'AMD Opteron G1', 'AMD Opteron G2', 'AMD Opteron G3', 'AMD Opteron G4', 'AMD Opteron G5', 'IBM POWER 8'],
 
     passwordValidator: _fusorEmberCliUtilsValidators.RequiredPasswordValidator.create({}),
 
@@ -5390,6 +5403,10 @@ define('fusor-ember-cli/controllers/rhev-options', ['exports', 'ember', 'fusor-e
 
     disableNextRhevOptions: _ember['default'].computed.not('validRhevOptions'),
 
+    isDCConfigDisabled: _ember['default'].computed('rhevIsSelfHosted', 'isStarted', function () {
+      return this.get('isStarted') || this.get('rhevIsSelfHosted');
+    }),
+
     actions: {
       setSelectValue: function setSelectValue(fieldName, selectionValue) {
         this.set(fieldName, selectionValue);
@@ -5429,6 +5446,9 @@ define('fusor-ember-cli/controllers/rhev-setup', ['exports', 'ember', 'fusor-emb
       var deployment = this.get('deploymentController.model');
 
       deployment.set('discovered_host', null); // Engine reset
+      // Datacenter and cluster can only be Default/Default for self-hosted
+      deployment.set('rhev_data_center_name', 'Default');
+      deployment.set('rhev_cluster_name', 'Default');
       return deployment.save().then(function () {
         return _this.postDiscoveredHostIds(deployment, []);
       }).then(function () {
@@ -9000,24 +9020,24 @@ define("fusor-ember-cli/mirage/fixtures/katello_organizations", ["exports"], fun
       "title": "Fusor Base/aaaaa"
     }, {
       "id": 6,
-      "name": "RHEV-Engine",
-      "title": "Fusor Base/aaaaa/RHEV-Engine"
+      "name": "RHV-Engine",
+      "title": "Fusor Base/aaaaa/RHV-Engine"
     }, {
       "id": 7,
-      "name": "RHEV-Hypervisor",
-      "title": "Fusor Base/aaaaa/RHEV-Hypervisor"
+      "name": "RHV-Hypervisor",
+      "title": "Fusor Base/aaaaa/RHV-Hypervisor"
     }, {
       "id": 2,
       "name": "rhev only222",
       "title": "Fusor Base/rhev only222"
     }, {
       "id": 3,
-      "name": "RHEV-Engine",
-      "title": "Fusor Base/rhev only222/RHEV-Engine"
+      "name": "RHV-Engine",
+      "title": "Fusor Base/rhev only222/RHV-Engine"
     }, {
       "id": 4,
-      "name": "RHEV-Hypervisor",
-      "title": "Fusor Base/rhev only222/RHEV-Hypervisor"
+      "name": "RHV-Hypervisor",
+      "title": "Fusor Base/rhev only222/RHV-Hypervisor"
     }, {
       "id": 8,
       "name": "testnew",
@@ -10312,15 +10332,6 @@ define('fusor-ember-cli/mixins/deployment-controller-mixin', ['exports', 'ember'
     // will be overwritten be routes
     isHideWizard: null,
 
-    // declared in controllers, and not in mixin
-    // isRhev
-    // isOpenStack
-    // isCloudForms
-
-    disableNextOnStart: _ember['default'].computed('isRhev', 'isOpenStack', 'isCloudForms', 'isOpenShift', function () {
-      return !(this.get('isRhev') || this.get('isOpenStack') || this.get('isCloudForms') || this.get('isOpenShift'));
-    }),
-
     // names
     nameRHCI: _ember['default'].computed('isUpstream', function () {
       if (this.get('isUpstream')) {
@@ -10518,28 +10529,6 @@ define('fusor-ember-cli/mixins/deployment-controller-mixin', ['exports', 'ember'
         }
       }
     })
-
-  });
-});
-define('fusor-ember-cli/mixins/deployment-new-controller-mixin', ['exports', 'ember'], function (exports, _ember) {
-  exports['default'] = _ember['default'].Mixin.create({
-
-    beforeModel: function beforeModel() {
-      if (this.controllerFor('deployment-new').get('disableNextOnStart')) {
-        return this.transitionTo('deployment-new.start');
-      }
-    }
-
-  });
-});
-define('fusor-ember-cli/mixins/deployment-new-satellite-route-mixin', ['exports', 'ember'], function (exports, _ember) {
-  exports['default'] = _ember['default'].Mixin.create({
-
-    beforeModel: function beforeModel() {
-      if (this.controllerFor('deployment-new').get('disableNextOnStart')) {
-        return this.transitionTo('deployment-new.start');
-      }
-    }
 
   });
 });
@@ -11742,7 +11731,7 @@ define('fusor-ember-cli/models/deployment-plan', ['exports', 'ember', 'ember-dat
     }
   });
 });
-define('fusor-ember-cli/models/deployment', ['exports', 'ember-data', 'ember', 'fusor-ember-cli/mixins/uses-ose-defaults', 'ic-ajax'], function (exports, _emberData, _ember, _fusorEmberCliMixinsUsesOseDefaults, _icAjax) {
+define('fusor-ember-cli/models/deployment', ['exports', 'ember-data', 'ember', 'fusor-ember-cli/mixins/uses-ose-defaults'], function (exports, _emberData, _ember, _fusorEmberCliMixinsUsesOseDefaults) {
   exports['default'] = _emberData['default'].Model.extend(_fusorEmberCliMixinsUsesOseDefaults['default'], {
     name: _emberData['default'].attr('string'),
     label: _emberData['default'].attr('string'),
@@ -11881,6 +11870,10 @@ define('fusor-ember-cli/models/deployment', ['exports', 'ember-data', 'ember', '
       }
     }),
 
+    isProductSelected: _ember['default'].computed('deploy_rhev', 'deploy_cfme', 'deploy_openstack', 'deploy_openshift', function () {
+      return this.get('deploy_rhev') || this.get('deploy_cfme') || this.get('deploy_openstack') || this.get('deploy_openshift');
+    }),
+
     // controller.deployment.isStarted returns false if refreshing child route,
     // so best to have it on model as well
     isStarted: _ember['default'].computed('foreman_task_uuid', function () {
@@ -11948,36 +11941,30 @@ define('fusor-ember-cli/models/deployment', ['exports', 'ember-data', 'ember', '
     loadOpenshiftDefaults: function loadOpenshiftDefaults(settings, opt) {
       var _this = this;
 
-      if (this.get('deploy_openshift')) {
-        (function () {
-          var shouldReset = opt && (opt.reset || false);
+      var shouldReset = opt && (opt.reset || false);
 
-          ['openshift_master_vcpu', 'openshift_master_ram', 'openshift_master_disk', 'openshift_node_vcpu', 'openshift_node_ram', 'openshift_node_disk'].forEach(function (prop) {
-            _this.handleReset(shouldReset, prop);
-            _this.setOpenshiftDefault(prop, settings.findBy('name', prop).value);
-          });
+      ['openshift_master_vcpu', 'openshift_master_ram', 'openshift_master_disk', 'openshift_node_vcpu', 'openshift_node_ram', 'openshift_node_disk'].forEach(function (prop) {
+        _this.handleReset(shouldReset, prop);
+        _this.setOpenshiftDefault(prop, settings.findBy('name', prop).value);
+      });
 
-          _this.handleReset(shouldReset, 'openshift_number_master_nodes');
-          _this.handleReset(shouldReset, 'openshift_number_worker_nodes');
-          _this.handleReset(shouldReset, 'openshift_storage_size');
+      this.handleReset(shouldReset, 'openshift_number_master_nodes');
+      this.handleReset(shouldReset, 'openshift_number_worker_nodes');
+      this.handleReset(shouldReset, 'openshift_storage_size');
 
-          _this.setOpenshiftDefault('openshift_number_master_nodes', 1);
-          _this.setOpenshiftDefault('openshift_number_worker_nodes', 1);
-          _this.setOpenshiftDefault('openshift_storage_size', 30);
-        })();
-      }
+      this.setOpenshiftDefault('openshift_number_master_nodes', 1);
+      this.setOpenshiftDefault('openshift_number_worker_nodes', 1);
+      this.setOpenshiftDefault('openshift_storage_size', 30);
     },
 
     loadCloudformsDefaults: function loadCloudformsDefaults(settings, opt) {
       var _this2 = this;
 
-      if (this.get('deploy_cfme')) {
-        var shouldReset = opt && (opt.reset || false);
+      var shouldReset = opt && (opt.reset || false);
 
-        ['cloudforms_vcpu', 'cloudforms_ram', 'cloudforms_vm_disk_size', 'cloudforms_db_disk_size'].forEach(function (prop) {
-          _this2.set(prop, settings.findBy('name', prop).value);
-        });
-      }
+      ['cloudforms_vcpu', 'cloudforms_ram', 'cloudforms_vm_disk_size', 'cloudforms_db_disk_size'].forEach(function (prop) {
+        _this2.set(prop, settings.findBy('name', prop).value);
+      });
     }
   });
 });
@@ -12602,6 +12589,14 @@ define('fusor-ember-cli/routes/application', ['exports', 'ember'], function (exp
       },
       loading: function loading() {
         this.controllerFor('deployments').set('isLoading', true);
+      },
+      userTimeout: function userTimeout() {
+        this.eventBus.trigger('displayErrorModal', {
+          errorMessage: 'It looks like your session has timed out. Try logging back in again to continue.',
+          okayCallback: function okayCallback() {
+            document.location.pathname = '/';
+          }
+        });
       }
     }
   });
@@ -12708,8 +12703,8 @@ define('fusor-ember-cli/routes/deployment-new/index', ['exports', 'ember'], func
 
   });
 });
-define('fusor-ember-cli/routes/deployment-new/satellite/configure-environment', ['exports', 'ember', 'fusor-ember-cli/mixins/deployment-new-satellite-route-mixin'], function (exports, _ember, _fusorEmberCliMixinsDeploymentNewSatelliteRouteMixin) {
-  exports['default'] = _ember['default'].Route.extend(_fusorEmberCliMixinsDeploymentNewSatelliteRouteMixin['default'], {
+define('fusor-ember-cli/routes/deployment-new/satellite/configure-environment', ['exports', 'ember'], function (exports, _ember) {
+  exports['default'] = _ember['default'].Route.extend({
 
     model: function model() {
       return this.modelFor('deployment-new').get('lifecycle_environment');
@@ -12729,8 +12724,8 @@ define('fusor-ember-cli/routes/deployment-new/satellite/configure-environment', 
 
   });
 });
-define('fusor-ember-cli/routes/deployment-new/satellite/index', ['exports', 'ember', 'fusor-ember-cli/mixins/deployment-new-satellite-route-mixin'], function (exports, _ember, _fusorEmberCliMixinsDeploymentNewSatelliteRouteMixin) {
-  exports['default'] = _ember['default'].Route.extend(_fusorEmberCliMixinsDeploymentNewSatelliteRouteMixin['default'], {
+define('fusor-ember-cli/routes/deployment-new/satellite/index', ['exports', 'ember'], function (exports, _ember) {
+  exports['default'] = _ember['default'].Route.extend({
 
     setupController: function setupController(controller, model) {
       controller.set('model', model);
@@ -12822,6 +12817,13 @@ define('fusor-ember-cli/routes/deployment-new', ['exports', 'ember', 'fusor-embe
         rhev_data_center_name: 'Default',
         rhev_storage_type: 'NFS'
       });
+    },
+
+    afterModel: function afterModel(model, transition) {
+      if (!model.get('isProductSelected')) {
+        // ignored if already transitioning to deployment-new.start
+        this.transitionTo('deployment-new.start');
+      }
     },
 
     setupController: function setupController(controller, model) {
@@ -13855,7 +13857,11 @@ define('fusor-ember-cli/routes/openstack/undercloud-deploy', ['exports', 'ember'
         }).then(function () {
           return _this2.refreshDeployedUndercloudModel();
         })['catch'](function (error) {
-          return _this2.displayDeploymentError(error);
+          if (error.jqXHR && error.jqXHR.status === 401) {
+            _this2.send('userTimeout');
+          } else {
+            _this2.displayDeploymentError(error);
+          }
         })['finally'](function () {
           return _this2.set('controller.showLoadingSpinner', false);
         });
@@ -14034,7 +14040,7 @@ define('fusor-ember-cli/routes/openstack/undercloud-deploy', ['exports', 'ember'
       console.log(error);
       if (_ember['default'].typeOf(error) === 'string') {
         this.set('controller.deploymentError', error);
-      } else if (_ember['default'].typeOf(error) === 'object' && error.jqXHR && error.jqXHR.responseJSON) {
+      } else if (_ember['default'].typeOf(error) === 'object' && error.jqXHR && error.jqXHR.responseJSON && error.jqXHR.responseJSON.errors) {
         this.set('controller.deploymentError', error.jqXHR.responseJSON.errors);
       } else {
         this.set('controller.deploymentError', JSON.stringify(error));
@@ -31355,8 +31361,6 @@ define("fusor-ember-cli/templates/components/tr-deployment", ["exports"], functi
         dom.appendChild(el1, el2);
         var el2 = dom.createTextNode(" ");
         dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("  ");
-        dom.appendChild(el1, el2);
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
@@ -31396,7 +31400,7 @@ define("fusor-ember-cli/templates/components/tr-deployment", ["exports"], functi
         morphs[6] = dom.createMorphAt(element0, 3, 3);
         return morphs;
       },
-      statements: [["block", "link-to", [["get", "routeNameForEdit", ["loc", [null, [1, 16], [1, 32]]]], ["get", "deployment", ["loc", [null, [1, 33], [1, 43]]]]], [], 0, null, ["loc", [null, [1, 5], [1, 79]]]], ["content", "deployment.lifecycle_environment.name", ["loc", [null, [2, 5], [2, 46]]]], ["content", "deployment.organization.name", ["loc", [null, [3, 5], [3, 37]]]], ["content", "foremanTask.state", ["loc", [null, [4, 5], [4, 26]]]], ["inline", "moment", [["get", "deployment.created_at", ["loc", [null, [5, 14], [5, 35]]]], "lll"], [], ["loc", [null, [5, 5], [5, 43]]]], ["block", "link-to", ["deployment", ["get", "deployment", ["loc", [null, [7, 28], [7, 38]]]]], ["class", "btn btn-sm btn-default"], 1, null, ["loc", [null, [7, 4], [7, 89]]]], ["block", "if", [["get", "canDelete", ["loc", [null, [8, 10], [8, 19]]]]], [], 2, null, ["loc", [null, [8, 4], [10, 11]]]]],
+      statements: [["block", "link-to", [["get", "routeNameForEdit", ["loc", [null, [1, 16], [1, 32]]]], ["get", "deployment", ["loc", [null, [1, 33], [1, 43]]]]], [], 0, null, ["loc", [null, [1, 5], [1, 79]]]], ["content", "deployment.lifecycle_environment.name", ["loc", [null, [2, 5], [2, 46]]]], ["content", "deployment.organization.name", ["loc", [null, [3, 5], [3, 37]]]], ["content", "statusDisplay", ["loc", [null, [4, 5], [4, 22]]]], ["inline", "moment", [["get", "deployment.created_at", ["loc", [null, [5, 14], [5, 35]]]], "lll"], [], ["loc", [null, [5, 5], [5, 43]]]], ["block", "link-to", ["deployment", ["get", "deployment", ["loc", [null, [7, 28], [7, 38]]]]], ["class", "btn btn-sm btn-default"], 1, null, ["loc", [null, [7, 4], [7, 89]]]], ["block", "if", [["get", "canDelete", ["loc", [null, [8, 10], [8, 19]]]]], [], 2, null, ["loc", [null, [8, 4], [10, 11]]]]],
       locals: [],
       templates: [child0, child1, child2]
     };
@@ -41989,11 +41993,11 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
                 "loc": {
                   "source": null,
                   "start": {
-                    "line": 84,
+                    "line": 78,
                     "column": 2
                   },
                   "end": {
-                    "line": 92,
+                    "line": 86,
                     "column": 2
                   }
                 },
@@ -42045,7 +42049,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
                 morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1, 1, 1]), 3, 3);
                 return morphs;
               },
-              statements: [["content", "deploymentError", ["loc", [null, [88, 90], [88, 109]]]]],
+              statements: [["content", "deploymentError", ["loc", [null, [82, 90], [82, 109]]]]],
               locals: [],
               templates: []
             };
@@ -42060,7 +42064,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
                   "column": 0
                 },
                 "end": {
-                  "line": 93,
+                  "line": 87,
                   "column": 0
                 }
               },
@@ -42133,7 +42137,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
               dom.insertBoundary(fragment, null);
               return morphs;
             },
-            statements: [["inline", "text-f", [], ["cssId", "undercloudIpInput", "label", "Undercloud IP", "value", ["subexpr", "@mut", [["get", "openstackDeployment.undercloud_ip_address", ["loc", [null, [54, 24], [54, 65]]]]], [], []], "labelSize", "deploy-undercloud-param-label", "inputSize", "deploy-undercloud-param-input", "isRequired", true, "helpText", ["subexpr", "@mut", [["get", "undercloudIPHelp", ["loc", [null, [58, 27], [58, 43]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "undercloudIpValidator", ["loc", [null, [59, 28], [59, 49]]]]], [], []], "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [60, 27], [60, 36]]]]], [], []]], ["loc", [null, [52, 8], [60, 38]]]], ["inline", "text-f", [], ["cssId", "undercloudSshUserInput", "label", "SSH User", "value", ["subexpr", "@mut", [["get", "openstackDeployment.undercloud_ssh_username", ["loc", [null, [63, 24], [63, 67]]]]], [], []], "labelSize", "deploy-undercloud-param-label", "inputSize", "deploy-undercloud-param-input", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [67, 27], [67, 36]]]]], [], []]], ["loc", [null, [61, 8], [67, 38]]]], ["inline", "text-f", [], ["cssId", "undercloudSshPasswordInput", "label", "SSH Password", "value", ["subexpr", "@mut", [["get", "openstackDeployment.undercloud_ssh_password", ["loc", [null, [70, 24], [70, 67]]]]], [], []], "labelSize", "deploy-undercloud-param-label", "inputSize", "deploy-undercloud-param-input", "type", "password", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [75, 27], [75, 36]]]]], [], []]], ["loc", [null, [68, 8], [75, 38]]]], ["attribute", "disabled", ["get", "deployDisabled", ["loc", [null, [77, 119], [77, 133]]]]], ["element", "action", ["deployUndercloud"], [], ["loc", [null, [77, 78], [77, 107]]]], ["block", "if", [["get", "deploymentError", ["loc", [null, [84, 8], [84, 23]]]]], [], 0, null, ["loc", [null, [84, 2], [92, 9]]]]],
+            statements: [["inline", "text-f", [], ["cssId", "undercloudIpInput", "label", "Undercloud IP", "value", ["subexpr", "@mut", [["get", "openstackDeployment.undercloud_ip_address", ["loc", [null, [54, 24], [54, 65]]]]], [], []], "isRequired", true, "helpText", ["subexpr", "@mut", [["get", "undercloudIPHelp", ["loc", [null, [56, 27], [56, 43]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "undercloudIpValidator", ["loc", [null, [57, 28], [57, 49]]]]], [], []], "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [58, 27], [58, 36]]]]], [], []]], ["loc", [null, [52, 8], [58, 38]]]], ["inline", "text-f", [], ["cssId", "undercloudSshUserInput", "label", "SSH User", "value", ["subexpr", "@mut", [["get", "openstackDeployment.undercloud_ssh_username", ["loc", [null, [61, 24], [61, 67]]]]], [], []], "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [63, 27], [63, 36]]]]], [], []]], ["loc", [null, [59, 8], [63, 38]]]], ["inline", "text-f", [], ["cssId", "undercloudSshPasswordInput", "label", "SSH Password", "value", ["subexpr", "@mut", [["get", "openstackDeployment.undercloud_ssh_password", ["loc", [null, [66, 24], [66, 67]]]]], [], []], "type", "password", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [69, 27], [69, 36]]]]], [], []]], ["loc", [null, [64, 8], [69, 38]]]], ["attribute", "disabled", ["get", "deployDisabled", ["loc", [null, [71, 119], [71, 133]]]]], ["element", "action", ["deployUndercloud"], [], ["loc", [null, [71, 78], [71, 107]]]], ["block", "if", [["get", "deploymentError", ["loc", [null, [78, 8], [78, 23]]]]], [], 0, null, ["loc", [null, [78, 2], [86, 9]]]]],
             locals: [],
             templates: [child0]
           };
@@ -42148,7 +42152,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
                 "column": 0
               },
               "end": {
-                "line": 93,
+                "line": 87,
                 "column": 0
               }
             },
@@ -42170,7 +42174,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
             dom.insertBoundary(fragment, null);
             return morphs;
           },
-          statements: [["block", "if", [["get", "isConnected", ["loc", [null, [17, 10], [17, 21]]]]], [], 0, 1, ["loc", [null, [17, 0], [93, 0]]]]],
+          statements: [["block", "if", [["get", "isConnected", ["loc", [null, [17, 10], [17, 21]]]]], [], 0, 1, ["loc", [null, [17, 0], [87, 0]]]]],
           locals: [],
           templates: [child0, child1]
         };
@@ -42185,7 +42189,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
               "column": 0
             },
             "end": {
-              "line": 93,
+              "line": 87,
               "column": 0
             }
           },
@@ -42207,7 +42211,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
           dom.insertBoundary(fragment, null);
           return morphs;
         },
-        statements: [["block", "if", [["get", "showLoadingSpinner", ["loc", [null, [12, 10], [12, 28]]]]], [], 0, 1, ["loc", [null, [12, 0], [93, 0]]]]],
+        statements: [["block", "if", [["get", "showLoadingSpinner", ["loc", [null, [12, 10], [12, 28]]]]], [], 0, 1, ["loc", [null, [12, 0], [87, 0]]]]],
         locals: [],
         templates: [child0, child1]
       };
@@ -42222,7 +42226,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
             "column": 0
           },
           "end": {
-            "line": 101,
+            "line": 95,
             "column": 0
           }
         },
@@ -42250,7 +42254,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
         dom.insertBoundary(fragment, 0);
         return morphs;
       },
-      statements: [["block", "if", [["get", "errorMsg", ["loc", [null, [1, 6], [1, 14]]]]], [], 0, 1, ["loc", [null, [1, 0], [93, 7]]]], ["inline", "cancel-back-next", [], ["backRouteName", ["subexpr", "@mut", [["get", "backRouteNameUndercloud", ["loc", [null, [95, 33], [95, 56]]]]], [], []], "disableBack", false, "nextRouteName", "openstack.register-nodes", "disableNext", ["subexpr", "@mut", [["get", "disableDeployUndercloudNext", ["loc", [null, [98, 32], [98, 59]]]]], [], []], "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [99, 34], [99, 43]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [100, 35], [100, 49]]]]], [], []]], ["loc", [null, [95, 0], [100, 51]]]]],
+      statements: [["block", "if", [["get", "errorMsg", ["loc", [null, [1, 6], [1, 14]]]]], [], 0, 1, ["loc", [null, [1, 0], [87, 7]]]], ["inline", "cancel-back-next", [], ["backRouteName", ["subexpr", "@mut", [["get", "backRouteNameUndercloud", ["loc", [null, [89, 33], [89, 56]]]]], [], []], "disableBack", false, "nextRouteName", "openstack.register-nodes", "disableNext", ["subexpr", "@mut", [["get", "disableDeployUndercloudNext", ["loc", [null, [92, 32], [92, 59]]]]], [], []], "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [93, 34], [93, 43]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [94, 35], [94, 49]]]]], [], []]], ["loc", [null, [89, 0], [94, 51]]]]],
       locals: [],
       templates: [child0, child1]
     };
@@ -48547,7 +48551,7 @@ define("fusor-ember-cli/templates/rhev-options", ["exports"], function (exports)
         morphs[7] = dom.createMorphAt(fragment, 2, 2, contextualElement);
         return morphs;
       },
-      statements: [["inline", "text-f", [], ["label", "Root Password", "type", "password", "value", ["subexpr", "@mut", [["get", "rhevRootPassword", ["loc", [null, [5, 59], [5, 75]]]]], [], []], "cssId", "rhev-root-password", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [6, 31], [6, 40]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "passwordValidator", ["loc", [null, [6, 51], [6, 68]]]]], [], []], "help-inline", "Applies to root user accounts for deployed RHV hosts", "placeholder", "Must be 8 or more characters"], ["loc", [null, [5, 6], [8, 50]]]], ["inline", "text-f", [], ["label", "Confirm Root Password", "type", "password", "value", ["subexpr", "@mut", [["get", "confirmRhevRootPassword", ["loc", [null, [10, 67], [10, 90]]]]], [], []], "cssId", "confirm-rhev-root-password", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [11, 31], [11, 40]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "confirmRhevRootPasswordValidator", ["loc", [null, [11, 51], [11, 83]]]]], [], []], "placeholder", "Must match root password"], ["loc", [null, [10, 6], [12, 46]]]], ["inline", "text-f", [], ["label", "Engine Admin Password", "type", "password", "value", ["subexpr", "@mut", [["get", "rhevEngineAdminPassword", ["loc", [null, [14, 67], [14, 90]]]]], [], []], "cssId", "rhev-engine-admin-password", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [15, 31], [15, 40]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "passwordValidator", ["loc", [null, [15, 51], [15, 68]]]]], [], []], "help-inline", "Applies to admin user account for RHV web UI", "placeholder", "Must be 8 or more characters"], ["loc", [null, [14, 6], [17, 50]]]], ["inline", "text-f", [], ["label", "Confirm Engine Admin Password", "type", "password", "value", ["subexpr", "@mut", [["get", "confirmRhevEngineAdminPassword", ["loc", [null, [19, 75], [19, 105]]]]], [], []], "cssId", "confirm-rhev-engine-pdmin-password", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [20, 31], [20, 40]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "confirmRhevEngineAdminPasswordValidator", ["loc", [null, [20, 51], [20, 90]]]]], [], []], "placeholder", "Must match engine admin password"], ["loc", [null, [19, 6], [21, 54]]]], ["inline", "text-f", [], ["label", "Data Center Name", "value", ["subexpr", "@mut", [["get", "rhevDataCenterName", ["loc", [null, [23, 46], [23, 64]]]]], [], []], "placeholder", "Leave blank for default", "cssId", "rhev-data-center-name", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [24, 24], [24, 33]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "dataCenterNameValidator", ["loc", [null, [24, 44], [24, 67]]]]], [], []], "showValidationError", true], ["loc", [null, [23, 6], [24, 94]]]], ["inline", "text-f", [], ["label", "Cluster Name", "value", ["subexpr", "@mut", [["get", "rhevClusterName", ["loc", [null, [26, 42], [26, 57]]]]], [], []], "placeholder", "Leave blank for default", "cssId", "rhev-cluster-name", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [27, 24], [27, 33]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "clusterNameValidator", ["loc", [null, [27, 44], [27, 64]]]]], [], []], "showValidationError", true], ["loc", [null, [26, 6], [27, 91]]]], ["inline", "select-simple-f", [], ["label", "CPU Type", "content", ["subexpr", "@mut", [["get", "cpuTypes", ["loc", [null, [31, 34], [31, 42]]]]], [], []], "value", ["subexpr", "@mut", [["get", "rhevCpuType", ["loc", [null, [32, 32], [32, 43]]]]], [], []], "prompt", "Intel Nehalem Family", "renderInPlace", true, "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [35, 35], [35, 44]]]]], [], []], "action", "setSelectValue", "fieldName", "rhevCpuType"], ["loc", [null, [30, 8], [37, 51]]]], ["inline", "cancel-back-next", [], ["backRouteName", ["subexpr", "@mut", [["get", "optionsBackRouteName", ["loc", [null, [43, 33], [43, 53]]]]], [], []], "disableBack", false, "nextRouteName", "storage", "disableNext", ["subexpr", "@mut", [["get", "disableNextRhevOptions", ["loc", [null, [46, 31], [46, 53]]]]], [], []], "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [47, 33], [47, 42]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [48, 34], [48, 48]]]]], [], []]], ["loc", [null, [43, 0], [48, 50]]]]],
+      statements: [["inline", "text-f", [], ["label", "Root Password", "type", "password", "value", ["subexpr", "@mut", [["get", "rhevRootPassword", ["loc", [null, [5, 59], [5, 75]]]]], [], []], "cssId", "rhev-root-password", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [6, 31], [6, 40]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "passwordValidator", ["loc", [null, [6, 51], [6, 68]]]]], [], []], "help-inline", "Applies to root user accounts for deployed RHV hosts", "placeholder", "Must be 8 or more characters"], ["loc", [null, [5, 6], [8, 50]]]], ["inline", "text-f", [], ["label", "Confirm Root Password", "type", "password", "value", ["subexpr", "@mut", [["get", "confirmRhevRootPassword", ["loc", [null, [10, 67], [10, 90]]]]], [], []], "cssId", "confirm-rhev-root-password", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [11, 31], [11, 40]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "confirmRhevRootPasswordValidator", ["loc", [null, [11, 51], [11, 83]]]]], [], []], "placeholder", "Must match root password"], ["loc", [null, [10, 6], [12, 46]]]], ["inline", "text-f", [], ["label", "Engine Admin Password", "type", "password", "value", ["subexpr", "@mut", [["get", "rhevEngineAdminPassword", ["loc", [null, [14, 67], [14, 90]]]]], [], []], "cssId", "rhev-engine-admin-password", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [15, 31], [15, 40]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "passwordValidator", ["loc", [null, [15, 51], [15, 68]]]]], [], []], "help-inline", "Applies to admin user account for RHV web UI", "placeholder", "Must be 8 or more characters"], ["loc", [null, [14, 6], [17, 50]]]], ["inline", "text-f", [], ["label", "Confirm Engine Admin Password", "type", "password", "value", ["subexpr", "@mut", [["get", "confirmRhevEngineAdminPassword", ["loc", [null, [19, 75], [19, 105]]]]], [], []], "cssId", "confirm-rhev-engine-pdmin-password", "isRequired", true, "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [20, 31], [20, 40]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "confirmRhevEngineAdminPasswordValidator", ["loc", [null, [20, 51], [20, 90]]]]], [], []], "placeholder", "Must match engine admin password"], ["loc", [null, [19, 6], [21, 54]]]], ["inline", "text-f", [], ["label", "Data Center Name", "value", ["subexpr", "@mut", [["get", "rhevDataCenterName", ["loc", [null, [23, 46], [23, 64]]]]], [], []], "placeholder", "Leave blank for default", "cssId", "rhev-data-center-name", "disabled", ["subexpr", "@mut", [["get", "isDCConfigDisabled", ["loc", [null, [24, 24], [24, 42]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "dataCenterNameValidator", ["loc", [null, [24, 53], [24, 76]]]]], [], []], "showValidationError", true], ["loc", [null, [23, 6], [24, 103]]]], ["inline", "text-f", [], ["label", "Cluster Name", "value", ["subexpr", "@mut", [["get", "rhevClusterName", ["loc", [null, [26, 42], [26, 57]]]]], [], []], "placeholder", "Leave blank for default", "cssId", "rhev-cluster-name", "disabled", ["subexpr", "@mut", [["get", "isDCConfigDisabled", ["loc", [null, [27, 24], [27, 42]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "clusterNameValidator", ["loc", [null, [27, 53], [27, 73]]]]], [], []], "showValidationError", true], ["loc", [null, [26, 6], [27, 100]]]], ["inline", "select-simple-f", [], ["label", "CPU Type", "content", ["subexpr", "@mut", [["get", "cpuTypes", ["loc", [null, [31, 34], [31, 42]]]]], [], []], "value", ["subexpr", "@mut", [["get", "rhevCpuType", ["loc", [null, [32, 32], [32, 43]]]]], [], []], "prompt", "Intel Nehalem Family", "renderInPlace", true, "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [35, 35], [35, 44]]]]], [], []], "action", "setSelectValue", "fieldName", "rhevCpuType"], ["loc", [null, [30, 8], [37, 51]]]], ["inline", "cancel-back-next", [], ["backRouteName", ["subexpr", "@mut", [["get", "optionsBackRouteName", ["loc", [null, [43, 33], [43, 53]]]]], [], []], "disableBack", false, "nextRouteName", "storage", "disableNext", ["subexpr", "@mut", [["get", "disableNextRhevOptions", ["loc", [null, [46, 31], [46, 53]]]]], [], []], "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [47, 33], [47, 42]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [48, 34], [48, 48]]]]], [], []]], ["loc", [null, [43, 0], [48, 50]]]]],
       locals: [],
       templates: []
     };
@@ -55194,11 +55198,11 @@ define('fusor-ember-cli/views/application', ['exports', 'ember'], function (expo
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+c733b8ac"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+44121bc5"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+c733b8ac"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+44121bc5"});
 }
 
 /* jshint ignore:end */

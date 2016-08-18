@@ -1267,15 +1267,6 @@ span.hanging-indent {
   margin-left: 4px;
   margin-right: 7px; }
 
-.deploy-undercloud-param-label {
-  width: 165px;
-  float: left; }
-
-.deploy-undercloud-param-input {
-  width: 110px;
-  float: left;
-  margin-left: 20px; }
-
 .deploy-undercloud-param-range {
   width: 320px;
   float: left;
