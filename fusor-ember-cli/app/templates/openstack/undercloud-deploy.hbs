@@ -52,8 +52,6 @@
         {{text-f  cssId="undercloudIpInput"
                   label="Undercloud IP"
                   value=openstackDeployment.undercloud_ip_address
-                  labelSize='deploy-undercloud-param-label'
-                  inputSize='deploy-undercloud-param-input'
                   isRequired=true
                   helpText=undercloudIPHelp
                   validator=undercloudIpValidator
@@ -61,15 +59,11 @@
         {{text-f  cssId="undercloudSshUserInput"
                   label="SSH User"
                   value=openstackDeployment.undercloud_ssh_username
-                  labelSize='deploy-undercloud-param-label'
-                  inputSize='deploy-undercloud-param-input'
                   isRequired=true
                   disabled=isStarted}}
         {{text-f  cssId="undercloudSshPasswordInput"
                   label="SSH Password"
                   value=openstackDeployment.undercloud_ssh_password
-                  labelSize='deploy-undercloud-param-label'
-                  inputSize='deploy-undercloud-param-input'
                   type='password'
                   isRequired=true
                   disabled=isStarted}}
