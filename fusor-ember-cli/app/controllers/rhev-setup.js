@@ -35,6 +35,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, NeedsDiscoveredHost
     const deployment = this.get('deploymentController.model');
 
     deployment.set('discovered_host', null); // Engine reset
+    // Datacenter and cluster can only be Default/Default for self-hosted
+    deployment.set('rhev_data_center_name', 'Default');
+    deployment.set('rhev_cluster_name', 'Default');
     return deployment
       .save()
       .then(() => this.postDiscoveredHostIds(deployment, []))

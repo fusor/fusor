@@ -21,10 +21,10 @@
       placeholder="Must match engine admin password"}}
 
       {{text-f label="Data Center Name" value=rhevDataCenterName placeholder="Leave blank for default" cssId="rhev-data-center-name"
-               disabled=isStarted validator=dataCenterNameValidator showValidationError=true}}
+               disabled=isDCConfigDisabled validator=dataCenterNameValidator showValidationError=true}}
 
       {{text-f label="Cluster Name" value=rhevClusterName placeholder="Leave blank for default" cssId="rhev-cluster-name"
-               disabled=isStarted validator=clusterNameValidator showValidationError=true}}
+               disabled=isDCConfigDisabled validator=clusterNameValidator showValidationError=true}}
 
       <span data-qci="rhev-cpu-type">
         {{select-simple-f label="CPU Type"

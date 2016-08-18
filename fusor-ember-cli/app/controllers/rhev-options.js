@@ -103,6 +103,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   disableNextRhevOptions: Ember.computed.not('validRhevOptions'),
 
+  isDCConfigDisabled: Ember.computed('rhevIsSelfHosted', 'isStarted', function(){
+    return this.get('isStarted') || this.get('rhevIsSelfHosted');
+  }),
+
   actions: {
     setSelectValue(fieldName, selectionValue) {
       this.set(fieldName, selectionValue);

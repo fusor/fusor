@@ -82,6 +82,12 @@ module Fusor
         end
 
         if deployment.rhev_is_self_hosted
+          if deployment.rhev_data_center_name != 'Default'
+            deployment.errors[:rhev_data_center_name] << _('RHV self hosted deployments must use the Default datacenter')
+          end
+          if  deployment.rhev_cluster_name != 'Default'
+            deployment.errors[:rhev_cluster_name] << _('RHV self hosted deployments must use the Default cluster')
+          end
           if deployment.hosted_storage_path.empty?
             deployment.errors[:hosted_storage_path] << _('RHV self hosted deployments must specify hosted storage path')
           else
