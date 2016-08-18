@@ -30,14 +30,13 @@ module Actions
           plan_self(:activation_key_id => activation_key_id,
                     :subscription_descriptions => subscription_descriptions,
                     :user_id => ::User.current.id,
-                    :repository_names => repositories.map(&:name), 
                     :repository_cp_labels => repositories.map(&:cp_label))
         end
 
         def run
           ::User.current = ::User.find(input[:user_id])
           key = ::Katello::ActivationKey.find(input[:activation_key_id])
-          associate_subscriptions(key, input[:subscription_descriptions], input[:repository_names])
+          associate_subscriptions(key, input[:subscription_descriptions])
           enable_repositories(key, input[:repository_cp_labels])
         ensure
           ::User.current = nil
@@ -45,12 +44,10 @@ module Actions
 
         private
 
-        def associate_subscriptions(key, subscription_descriptions, repository_names)
-          key.available_subscriptions.find_all do |sub|
-            if !sub.products.nil?
-              ::Fusor.log.info "Adding subscription #{sub.id} to activation key #{key.id}"
-              key.subscribe(sub.id, 0)
-            end
+        def associate_subscriptions(key, subscription_descriptions)
+          subscription_descriptions.each do |description|
+            subscriptions = key.available_subscriptions.find_all { |sub| sub.description == description }
+            subscriptions.each { |subscription| key.subscribe(subscription.id, 0) } if subscriptions
           end
         end
 
