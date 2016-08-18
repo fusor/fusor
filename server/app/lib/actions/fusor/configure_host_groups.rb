@@ -221,7 +221,7 @@ module Actions
 
       def get_rhev_engine_deployment_overrides(deployment, hostgroup, product_type)
         return {
-          :hostgroup_name => "RHEV-Engine",
+          :hostgroup_name => "RHV-Engine",
           :puppet_classes =>
           [
             {
@@ -271,7 +271,7 @@ module Actions
 
       def get_rhev_self_hosted_deployment_overrides(deployment, hostgroup, product_type)
         return {
-          :hostgroup_name => "RHEV-Self-hosted",
+          :hostgroup_name => "RHV-Self-hosted",
           :puppet_classes =>
           [
             {

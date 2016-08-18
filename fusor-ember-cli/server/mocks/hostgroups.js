@@ -40,8 +40,8 @@ module.exports = function(app) {
     },
     {
       "id": 6,
-      "name": "RHEV-Engine",
-      "title": "Fusor Base/aaaaa/RHEV-Engine",
+      "name": "RHV-Engine",
+      "title": "Fusor Base/aaaaa/RHV-Engine",
       "parent_id": 5,
       "created_at": "2015-11-10T15:16:46Z",
       "updated_at": "2015-11-10T15:16:46Z",
@@ -61,8 +61,8 @@ module.exports = function(app) {
     },
     {
       "id": 7,
-      "name": "RHEV-Hypervisor",
-      "title": "Fusor Base/aaaaa/RHEV-Hypervisor",
+      "name": "RHV-Hypervisor",
+      "title": "Fusor Base/aaaaa/RHV-Hypervisor",
       "parent_id": 5,
       "created_at": "2015-11-10T15:16:49Z",
       "updated_at": "2015-11-10T15:16:50Z",
@@ -98,8 +98,8 @@ module.exports = function(app) {
     },
     {
       "id": 3,
-      "name": "RHEV-Engine",
-      "title": "Fusor Base/rhev only222/RHEV-Engine",
+      "name": "RHV-Engine",
+      "title": "Fusor Base/rhev only222/RHV-Engine",
       "parent_id": 2,
       "created_at": "2015-11-08T23:27:50Z",
       "updated_at": "2015-11-08T23:27:50Z",
@@ -119,8 +119,8 @@ module.exports = function(app) {
     },
     {
       "id": 4,
-      "name": "RHEV-Hypervisor",
-      "title": "Fusor Base/rhev only222/RHEV-Hypervisor",
+      "name": "RHV-Hypervisor",
+      "title": "Fusor Base/rhev only222/RHV-Hypervisor",
       "parent_id": 2,
       "created_at": "2015-11-08T23:27:56Z",
       "updated_at": "2015-11-08T23:27:56Z",

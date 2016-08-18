@@ -310,7 +310,7 @@
      :host_groups:
        - :parent: "Fusor Base"
 
-       - :name: "RHEV-Engine"
+       - :name: "RHV-Engine"
          :os: "RedHat"
          :major: "7"
          :minor: "2"
@@ -327,12 +327,12 @@
              - :name: "firewall_manager"
                :override: "iptables"
          :activation_key:
-           :name: "RHEV-Engine"
+           :name: "RHV-Engine"
            :content: :rhevm
            :subscription_descriptions:
              - "Red Hat Cloud Infrastructure"
 
-       - :name: "RHEV-Hypervisor"
+       - :name: "RHV-Hypervisor"
          :os: "RedHat"
          :major: "7"
          :minor: "2"
@@ -344,12 +344,12 @@
                :override: "RHEV"
            - :name: "ovirt::hypervisor::packages"
          :activation_key:
-           :name: "RHEV-Hypervisor"
+           :name: "RHV-Hypervisor"
            :content: :rhevh
            :subscription_descriptions:
              - "Red Hat Cloud Infrastructure"
 
-       - :name: "RHEV-Self-hosted"
+       - :name: "RHV-Self-hosted"
          :os: "RedHat"
          :major: "7"
          :minor: "2"
@@ -364,7 +364,7 @@
            - :name: "ovirt::self_hosted::packages"
            - :name: "ovirt::self_hosted::setup"
          :activation_key:
-           :name: "RHEV-Self-hosted"
+           :name: "RHV-Self-hosted"
            :content: :rhevsh
            :subscription_descriptions:
              - "Red Hat Cloud Infrastructure"

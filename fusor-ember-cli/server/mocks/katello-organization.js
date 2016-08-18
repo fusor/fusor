@@ -215,13 +215,13 @@ module.exports = function(app) {
     },
     {
       "id": 6,
-      "name": "RHEV-Engine",
-      "title": "Fusor Base/aaaaa/RHEV-Engine"
+      "name": "RHV-Engine",
+      "title": "Fusor Base/aaaaa/RHV-Engine"
     },
     {
       "id": 7,
-      "name": "RHEV-Hypervisor",
-      "title": "Fusor Base/aaaaa/RHEV-Hypervisor"
+      "name": "RHV-Hypervisor",
+      "title": "Fusor Base/aaaaa/RHV-Hypervisor"
     },
     {
       "id": 2,
@@ -230,13 +230,13 @@ module.exports = function(app) {
     },
     {
       "id": 3,
-      "name": "RHEV-Engine",
-      "title": "Fusor Base/rhev only222/RHEV-Engine"
+      "name": "RHV-Engine",
+      "title": "Fusor Base/rhev only222/RHV-Engine"
     },
     {
       "id": 4,
-      "name": "RHEV-Hypervisor",
-      "title": "Fusor Base/rhev only222/RHEV-Hypervisor"
+      "name": "RHV-Hypervisor",
+      "title": "Fusor Base/rhev only222/RHV-Hypervisor"
     },
     {
       "id": 8,

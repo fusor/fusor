@@ -24,7 +24,7 @@ module Actions::Fusor::Deployment::Rhev
       assert_action_planed_with(@deploy,
                                 TriggerProvisioning,
                                 @deployment,
-                                'RHEV-Engine',
+                                'RHV-Engine',
                                 @deployment.rhev_engine_host)
       assert_action_planed_with(@deploy,
                                 WaitUntilProvisioned,
@@ -34,7 +34,7 @@ module Actions::Fusor::Deployment::Rhev
         assert_action_planed_with(@deploy,
                                   TriggerProvisioning,
                                   @deployment,
-                                  'RHEV-Hypervisor',
+                                  'RHV-Hypervisor',
                                   hypervisor)
         assert_action_planed_with(@deploy,
                                   WaitUntilProvisioned,
@@ -47,7 +47,7 @@ module Actions::Fusor::Deployment::Rhev
       assert_action_planed_with(@deploy,
                                 CreateEngineHostRecord,
                                 @deployment,
-                                'RHEV-Self-hosted')
+                                'RHV-Self-hosted')
 
       first_host = @deployment.rhev_hypervisor_hosts[0]
       additional_hosts = @deployment.rhev_hypervisor_hosts[1..-1]
@@ -56,7 +56,7 @@ module Actions::Fusor::Deployment::Rhev
       assert_action_planed_with(@deploy,
                                   TriggerProvisioning,
                                 @deployment,
-                                'RHEV-Self-hosted',
+                                'RHV-Self-hosted',
                                 first_host,
                                 {puppetclass_id => {:mac_address => nil}})
       assert_action_planed_with(@deploy,
@@ -74,7 +74,7 @@ module Actions::Fusor::Deployment::Rhev
         assert_action_planed_with(@deploy,
                                   TriggerProvisioning,
                                   @deployment,
-                                  'RHEV-Self-hosted',
+                                  'RHV-Self-hosted',
                                   hypervisor, override)
         assert_action_planed_with(@deploy,
                                   WaitUntilProvisioned,
