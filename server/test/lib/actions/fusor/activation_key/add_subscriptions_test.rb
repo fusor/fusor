@@ -22,7 +22,7 @@ module Actions::Fusor::ActivationKey
 
     test "run should add subscriptions to the key" do
       ::Katello::ActivationKey.stubs(:find).returns(@activation_key)
-      @activation_key.stubs(:available_subscriptions).returns(stub(:find_all => [stub('subscription', :id => 1)]))
+      @activation_key.stubs(:available_subscriptions).returns(stub(:find_all => [stub('subscription', :id => 1, :products => [])]))
       @activation_key.expects(:subscribe).once.returns(1)
       @activation_key.expects(:set_content_override).once
       plan = plan_action @action, @activation_key.id, @descriptions, @repositories
