@@ -43,6 +43,8 @@ if [ $1 == "install" ]; then
   echo "gem 'webmock'" >> bundler.d/local.rb
   echo "gem 'vcr', '< 3.0.0'" >> bundler.d/local.rb
   echo "gem 'rake', '< 11'" >> bundler.d/local.rb
+  # fix weird travis weird gem deps
+  echo "gem 'polyglot', '0.3.5'" >> bundler.d/local.rb
 
   # TODO: use the latest version of foreman once this PR is merged
   # https://github.com/theforeman/foreman/pull/3034
