@@ -1,6 +1,7 @@
 import Ember from 'ember';
+import ResetsVerticalScroll from '../../mixins/resets-vertical-scroll';
 
-export default Ember.Route.extend({
+export default Ember.Route.extend(ResetsVerticalScroll, {
 
   model() {
     // GET /fusor/subscriptions?source=added&deployment_id=ID_OF_DEPLOYMENT
