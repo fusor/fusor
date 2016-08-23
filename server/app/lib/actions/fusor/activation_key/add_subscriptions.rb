@@ -18,7 +18,7 @@ module Actions
           _("Activation Key - Add Subscriptions")
         end
 
-        def plan(activation_key_id, subscription_descriptions, repositories)
+        def plan(activation_key_id, hostgroup, subscription_descriptions, repositories)
           super()
           key = ::Katello::ActivationKey.find_by_id(activation_key_id)
 
@@ -28,6 +28,7 @@ module Actions
           end
 
           plan_self(:activation_key_id => activation_key_id,
+                    :hostgroup => hostgroup,
                     :subscription_descriptions => subscription_descriptions,
                     :user_id => ::User.current.id,
                     :repository_cp_labels => repositories.map(&:cp_label))
@@ -36,7 +37,7 @@ module Actions
         def run
           ::User.current = ::User.find(input[:user_id])
           key = ::Katello::ActivationKey.find(input[:activation_key_id])
-          associate_subscriptions(key, input[:subscription_descriptions])
+          associate_subscriptions(key, input[:hostgroup])
           enable_repositories(key, input[:repository_cp_labels])
         ensure
           ::User.current = nil
@@ -44,10 +45,22 @@ module Actions
 
         private
 
-        def associate_subscriptions(key, subscription_descriptions)
-          subscription_descriptions.each do |description|
-            subscriptions = key.available_subscriptions.find_all { |sub| sub.description == description }
-            subscriptions.each { |subscription| key.subscribe(subscription.id, 0) } if subscriptions
+        def associate_subscriptions(key, hostgroup)
+          product_name = hostgroup[:activation_key][:content].parameterize.underscore.to_sym
+          products = SETTINGS[:fusor][:content][product_name].map { |p| p[:product_id] }.uniq
+          key.available_subscriptions.find_all.each do |sub|
+            if !sub.products.nil?
+              add = false
+              products.each do |p|
+                if sub.products.find_all { |product| product.cp_id == p }.length > 0
+                  add = true
+                end
+              end
+              if add
+                ::Fusor.log.info "Adding subscription #{sub.id} to activation key #{key.id}"
+                key.subscribe(sub.id, 0)
+              end
+            end
           end
         end
 
