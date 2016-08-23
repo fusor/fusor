@@ -9,6 +9,12 @@ module Actions::Fusor::ActivationKey
       @activation_key = katello_activation_keys(:simple_key)
       @action = create_action AddSubscriptions
       @descriptions = ["Red Hat Cloud Infrastructure"]
+      @hostgroup = {
+        :name => "testhg",
+        :activation_key => {:name => "test-key",
+                            :content => "rhevm",
+                            :subscription_descriptions => ["Test"]
+      }}
       # use one of the keys already defined by katllo, we won't have
       # created our own in this unit test
       ::Katello::ActivationKey.stubs(:find_by_id).returns(@activation_key)
@@ -17,15 +23,15 @@ module Actions::Fusor::ActivationKey
 
     test "plan call should call plan_self" do
       Dynflow::Action.any_instance.expects(:plan_self).once
-      plan_action @action, @activation_key.id, @descriptions, @repositories
+      plan_action @action, @activation_key.id, @hostgroup, @descriptions, @repositories
     end
 
     test "run should add subscriptions to the key" do
       ::Katello::ActivationKey.stubs(:find).returns(@activation_key)
-      @activation_key.stubs(:available_subscriptions).returns(stub(:find_all => [stub('subscription', :id => 1)]))
+      @activation_key.stubs(:available_subscriptions).returns(stub(:find_all => [stub('subscription', :id => 1, :products => (stub(:find_all => [stub('product', :cp_id => 69)])))]))
       @activation_key.expects(:subscribe).once.returns(1)
       @activation_key.expects(:set_content_override).once
-      plan = plan_action @action, @activation_key.id, @descriptions, @repositories
+      plan = plan_action @action, @activation_key.id, @hostgroup, @descriptions, @repositories
       run_action plan
     end
 
