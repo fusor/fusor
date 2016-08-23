@@ -66,7 +66,10 @@ module Actions
           ::Fusor.log.debug("Current puppet run status is #{host.configuration_status_label}")
 
           if ['Failed', 'Error'].include?(host.configuration_status_label)
-            fail _("====== Puppet run for host #{host.name} status reported as #{host.configuration_status_label} ======")
+            logs = host.reports.map { |x| x.logs }.flatten
+            error_message_ids = logs.select { |x| x.level == :err }.map { |x| x.message_id }.uniq
+            messages = ::Message.where(:id => error_message_ids).map { |x| x.value }
+            fail _("====== Puppet run for host #{host.name} status reported as #{host.configuration_status_label} ====== \n\n#{messages.uniq.join("\n")}")
           elsif host.configuration_status_label == 'Out of sync'
             output[:out_of_sync] += 1
             if output[:out_of_sync] > 10
