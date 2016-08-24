@@ -83,6 +83,7 @@
         :repository_set_id: "5132"
         :repository_set_name: "Red Hat Virtualization 4 Management Agents for RHEL 7 (RPMs)"
         :basearch: "x86_64"
+        :releasever: "7Server"
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
@@ -124,6 +125,7 @@
         :repository_set_id: "5132"
         :repository_set_name: "Red Hat Virtualization 4 Management Agents for RHEL 7 (RPMs)"
         :basearch: "x86_64"
+        :releasever: "7Server"
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
