@@ -1,24 +1,6 @@
 ---
 # This playbook configures post-installation steps for OSE
 
-- name: Applying temporary fix until https://github.com/openshift/openshift-ansible/pull/2224 is merged in
-  hosts: masters
-  user: ansible_ssh_user
-  tasks:
-    - name: Delete router pod
-      command: oc delete pods router-1-deploy
-    - name: Delete registry pod
-      command: oc delete pods docker-registry-1-deploy
-    - name: Delete registry svc
-      command: oc delete svc docker-registry
-    - name: Delete router svc
-      command: oc delete svc router
-    - name: Delete router dc
-      command: oc delete dc router
-    - name: Delete registry dc
-      command: oc delete dc docker-registry
- 
-
 - name: Apply common configuration to all nodes
   hosts: nodes
   user: ansible_ssh_user
