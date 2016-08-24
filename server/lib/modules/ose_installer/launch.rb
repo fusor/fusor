@@ -154,7 +154,7 @@ module OSEInstaller
           @logger.info "Cannot resolve ip for #{m}, skipping"
           next
         else
-          ip = stdout.split("\n").first.split("  ").first
+          ip = stdout.split("\n").first.split(" ").first
         end
 
         entry = "- connect_to: #{m}\n    hostname: #{m}\n    ip: #{ip}\n    master: true\n    node: true\n    public_hostname: #{m}\n    public_ip: #{ip}"
