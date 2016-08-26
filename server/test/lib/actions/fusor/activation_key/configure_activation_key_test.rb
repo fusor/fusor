@@ -29,6 +29,7 @@ module Actions::Fusor::ActivationKey
       assert_action_planed_with(@action,
                                 AddSubscriptions,
                                 100,
+                                hostgroup_params,
                                 ["Test"],
                                 @repositories)
     end
@@ -44,6 +45,7 @@ module Actions::Fusor::ActivationKey
       assert_action_planed_with(@action,
                                 AddSubscriptions,
                                 key.id,
+                                hostgroup_params,
                                 ["Test"],
                                 @repositories)
     end

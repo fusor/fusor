@@ -48,19 +48,9 @@ module Actions
         def associate_subscriptions(key, hostgroup)
           product_name = hostgroup[:activation_key][:content].parameterize.underscore.to_sym
           products = SETTINGS[:fusor][:content][product_name].map { |p| p[:product_id] }.uniq
-          key.available_subscriptions.find_all.each do |sub|
-            if !sub.products.nil?
-              add = false
-              products.each do |p|
-                if sub.products.find_all { |product| product.cp_id == p }.length > 0
-                  add = true
-                end
-              end
-              if add
-                ::Fusor.log.info "Adding subscription #{sub.id} to activation key #{key.id}"
-                key.subscribe(sub.id, 0)
-              end
-            end
+          products.each do |p|
+            ::Fusor.log.info "Adding product id #{p.to_i} as custom product to key #{key.id}"
+            key.send(:add_custom_product, p.to_i)
           end
         end
 
