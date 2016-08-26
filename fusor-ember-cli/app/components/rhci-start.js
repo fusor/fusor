@@ -20,6 +20,28 @@ export default Ember.Component.extend({
     }
   }),
 
+  reqDownloadLink: Ember.computed('isRhev', 'isOpenStack', 'isCloudForms', 'isOpenShift', function() {
+    //TODO - (tech debt) Could be handled server-side. Rails could generate a text file using a template.
+    //       This is the least impactful approach since we can just refer to different static files and
+    //       and not require new routes and templates this close to release.
+    let filenameArray = ['QCI_Requirements'];
+    if (this.get('isRhev')) {
+      filenameArray.push('rhv');
+    }
+    if (this.get('isOpenStack')) {
+      filenameArray.push('osp');
+    }
+    if (this.get('isCloudForms')) {
+      filenameArray.push('cfme');
+    }
+    if (this.get('isOpenShift')) {
+      filenameArray.push('ose');
+    }
+
+    let filename = filenameArray.join('_');
+    return `/fusor_ui/files/${filename}.txt`;
+  }),
+
   // tagline names
   taglineRhev: "for Traditional Workloads",
   taglineOpenStack: "for Cloud Workloads",
