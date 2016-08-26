@@ -1,1 +1,26 @@
-OSP
+The following are prerequisites for each of the products you have selected to deploy:
+
+=======
+General
+=======
+- Red Hat Customer Portal username and password. This account must be an Organization Administrator within the Portal.
+- Sufficient subscriptions. To check your subscriptions, log in to https://access.redhat.com/management/subscriptions
+- Host machines are started and discoverable
+- Networks and subnets are set up and available
+
+=============================
+Disconnected network scenario
+=============================
+If you are deploying into an environment that does not have external network access, these are additional requirements:
+- URL to an alternate repository to download content from
+- Subscription manifest. For more information about obtaining a manifest, see https://access.redhat.com/solutions/118573
+
+==========================
+Red Hat OpenStack Platform
+==========================
+- IP address to the undercloud that was set up according to the instructions found in QuickStart Cloud Installer Installation Guide
+- 2 Overcloud nodes (
+  -- 1 controller : 40 GB disk space, 32 GB RAM, and 4 CPUs
+  -- 1 compute    : 40 GB disk space, 6  GB RAM, and 4 CPUs
+- All node hardware clocks are synchronized with the hardware clock on the Satellite system
+- Refer to the "Power Management Drivers" appendix in the "Director Installation and Usage" manual for the current list of supported power management interfaces.
