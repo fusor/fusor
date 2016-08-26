@@ -8,12 +8,7 @@ nodes
 # SSH user, this user should allow ssh based auth without requiring a password
 ansible_ssh_user=<ssh_user>
 ansible_ssh_private_key_file=<ssh_private_key>
-
-# If ansible_ssh_user is not root, ansible_sudo must be set to true
 #ansible_sudo=true
-
-product_type=openshift
-deployment_type=enterprise
 
 # uncomment the following to enable htpasswd authentication; defaults to DenyAllPasswordIdentityProvider
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/openshift/openshift-passwd'}]
@@ -26,13 +21,6 @@ docker_registry_host=<docker_registry_host>
 docker_registry_path=<docker_registry_path>
 
 satellite_hostname=<satellite_hostname>
-
-openshift_docker_additional_registries=<satellite_hostname>:5000
-openshift_docker_insecure_registries=<satellite_hostname>:5000
-openshift_docker_blocked_registries=docker.io
-
-oreg_url=<satellite_hostname>:5000/<org_label>-fusor-${component}
-openshift_examples_modify_imagestreams=True
 
 ose_user=<ose_user>
 ose_password=<ose_password>

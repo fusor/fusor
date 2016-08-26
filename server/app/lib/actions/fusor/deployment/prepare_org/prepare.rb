@@ -35,7 +35,7 @@ module Actions
 
               SETTINGS[:fusor][:docker_repos].each do |repo|
                 unless ::Katello::Repository.find_by_name(repo[:name])
-                  plan_action(::Actions::Fusor::Deployment::PrepareOrg::CreateRepository, repo[:name], 'docker', repo[:name], 'http://registry-1.docker.io/', repo[:upstream_name])
+                  plan_action(::Actions::Fusor::Deployment::PrepareOrg::CreateRepository, repo[:name], 'docker', repo[:name], 'https://registry.access.redhat.com/', repo[:upstream_name])
                 end
               end
 

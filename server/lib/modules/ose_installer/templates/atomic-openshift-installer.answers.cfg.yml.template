@@ -1,7 +1,12 @@
-ansible_config: /usr/share/atomic-openshift-utils/ansible.cfg
-ansible_log_path: /tmp/ansible.log
 deployment:
-  ansible_ssh_user: root
+  ansible_ssh_user: <ssh_user>
+  #ansible_sudo: true
+
+  openshift_master_identity_providers: [{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/openshift-passwd'}]
+
+  openshift_docker_additional_registries: <satellite_hostname>:5000
+  openshift_docker_insecure_registries: <satellite_hostname>:5000
+
   hosts:
   <node_entries>
   <master_entries>

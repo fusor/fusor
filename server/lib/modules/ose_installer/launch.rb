@@ -127,6 +127,14 @@ module OSEInstaller
 
       template = File.read("#{File.dirname(__FILE__)}/#{template_file_name}")
 
+      # if user is not root, we need to enable ansible_sudo flag
+      if !opts[:username].eql? "root"
+        template = template.gsub(/#ansible_sudo=true/, "ansible_sudo=true")
+      end
+
+      template = template.gsub(/<ssh_user>/, opts[:username])
+      template = template.gsub(/<satellite_hostname>/, opts[:satellite_hostname])
+
       node_entries = nil
       opts[:nodes].each do |n|
         stdout = `getent hosts #{n}`

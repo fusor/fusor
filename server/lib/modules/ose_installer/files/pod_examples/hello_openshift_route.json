@@ -1,0 +1,25 @@
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": { },
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Route",
+            "metadata": {
+                "name": "hello-openshift",
+                "labels": {
+                    "name": "hello-openshift"
+                }
+             },
+            "spec": {
+                "host": "hello-openshift.cloudapps.example.com",
+                "to": {
+                    "kind": "Service",
+                    "name": "php-helloworld"
+                }
+            }
+        }
+
+    ]
+}
