@@ -1,4 +1,6 @@
 require 'test_plugin_helper'
+require "fusor/multilog"
+require "fusor/deployment_logger"
 
 module Actions::Fusor::ActivationKey
   class ConfigureActivationKeyTest < FusorActionTest
@@ -29,7 +31,7 @@ module Actions::Fusor::ActivationKey
       assert_action_planed_with(@action,
                                 AddSubscriptions,
                                 100,
-                                hostgroup_params,
+                                @hostgroup_params,
                                 ["Test"],
                                 @repositories)
     end
@@ -45,7 +47,7 @@ module Actions::Fusor::ActivationKey
       assert_action_planed_with(@action,
                                 AddSubscriptions,
                                 key.id,
-                                hostgroup_params,
+                                @hostgroup_params,
                                 ["Test"],
                                 @repositories)
     end
