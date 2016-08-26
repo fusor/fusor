@@ -1,3 +1,42 @@
-RHV
-CFME
-OSE
+
+The following are prerequisites for each of the products you have selected to deploy:
+
+=======
+General
+=======
+- Red Hat Customer Portal username and password. This account must be an Organization Administrator within the Portal.
+- Sufficient subscriptions. To check your subscriptions, log in to https://access.redhat.com/management/subscriptions
+- Host machines are started and discoverable
+- Networks and subnets are set up and available
+
+=============================
+Disconnected network scenario
+=============================
+If you are deploying into an environment that does not have external network access, these are additional requirements:
+- URL to an alternate repository to download content from
+- Subscription manifest. For more information about obtaining a manifest, see https://access.redhat.com/solutions/118573
+
+======================
+Red Hat Virtualization
+======================
+Engine + Hypervisor
+- 2 hosts (1 for engine, 1 for hypervisor). 
+  -- Engine     : 25 GB disk space, 4  GB RAM, 2 CPU. 
+  -- Hypervisor : 10 GB disk space, 40 GB RAM, 4 CPUs
+- All host hardware clocks are synchronized with the hardware clock on the Satellite system
+- NFS/GlusterFS share. For data domain: IP address and shared path
+
+Self-hosted
+- 1 host for hypervisor. Hypervisor host requires 70 GB disk space, 48 GB RAM, and 4 CPUs
+- All host hardware clocks are synchronized with the hardware clock on the Satellite system
+- NFS/GlusterFS share. For data domain, and self-hosted domain: IP address and shared path
+
+==================
+Red Hat CloudForms
+==================
+NFS/GlusterFS share. For export domain: IP address and shared path
+
+===============================
+OpenShift Enterprise by Red Hat
+===============================
+NFS/GlusterFS share. For docker registry: IP address and shared path
