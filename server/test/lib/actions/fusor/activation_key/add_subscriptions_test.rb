@@ -30,7 +30,7 @@ module Actions::Fusor::ActivationKey
       ::Katello::ActivationKey.stubs(:find).returns(@activation_key)
       @activation_key.expects(:set_content_override).once
       products = SETTINGS[:fusor][:content][:rhevm].map { |p| p[:product_id] }.uniq
-      @activation_key.expects(:add_custom_product).with() {|p| products.include? p.to_s }.at_least_once
+      @activation_key.expects(:add_custom_product).with { |p| products.include? p.to_s }.at_least_once
       plan = plan_action @action, @activation_key.id, @hostgroup, @descriptions, @repositories
       run_action plan
     end
