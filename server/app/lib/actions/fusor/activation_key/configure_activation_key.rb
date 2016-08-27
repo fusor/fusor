@@ -38,6 +38,7 @@ module Actions
             # on changes in configuration... not urgent, since currently there is only a single
             # subscription in the configuration
             plan_action(::Actions::Fusor::ActivationKey::AddSubscriptions, key.id,
+                        hostgroup,
                         subscription_descriptions(hostgroup),
                         repositories)
           end
