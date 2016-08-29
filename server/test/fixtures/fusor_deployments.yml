@@ -94,7 +94,7 @@ rhev_and_ose:
   rhev_storage_name: my_storage
   rhev_storage_type: NFS
   rhev_storage_address: 10.13.129.106
-  rhev_share_path: "/storage/rhev_storage"
+  rhev_share_path: /storage/rhev_storage
   description: 
   rhev_is_self_hosted: false
   rhev_engine_admin_password: redhat1234
@@ -116,7 +116,7 @@ rhev_and_ose:
   openshift_number_master_nodes: 1
   openshift_number_worker_nodes: 1
   openshift_storage_type: NFS
-  openshift_export_path: "/storage/rhev_export"
+  openshift_export_path: /storage/rhev_export
   cloudforms_vcpu: 
   cloudforms_ram: 
   cloudforms_vm_disk_size: 
