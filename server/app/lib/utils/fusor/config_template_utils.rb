@@ -7,6 +7,7 @@ module Utils
 
         # set custom snippet names
         @rhevm_guest_agent_snippet_name = params[:rhevm_guest_agent_snippet_name] ||= 'rhevm_guest_agent'
+        @enabled_repos = params[:enabled_repos] ||= []
       end
 
       def create_snippet(name)
@@ -119,6 +120,8 @@ module Utils
       def create_rhevm_guest_agent_snippet
         name = @rhevm_guest_agent_snippet_name
         return nil unless create_snippet(name)
+        append(name, "\nsubscription-manager --enable #{@enabled_repos.join ' --enable '}")
+        append(name, "\nsubscription-manager --disable \"*\"")
         append(name, "\nyum install rhevm-guest-agent-common -y")
         append(name, "\nsystemctl start ovirt-guest-agent.service")
         append(name, "\nsystemctl enable ovirt-guest-agent.service\n")

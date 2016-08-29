@@ -41,7 +41,8 @@ module Actions
 
             ks_name = "#{hostgroup.name} Kickstart"
             snippet_name = "rhevm_guest_agent"
-            ct_util = Utils::Fusor::ConfigTemplateUtils.new({:rhevm_guest_agent_snippet_name => snippet_name})
+            repos = SETTINGS[:fusor][:content][:openshift].map { |p| p[:repository_set_label] if p[:repository_set_label] =~ /rpms$/ }.compact
+            ct_util = Utils::Fusor::ConfigTemplateUtils.new({:rhevm_guest_agent_snippet_name => snippet_name, :enabled_repos => repos})
             ret = ct_util.ensure_ks_with_snippet(ks_name, snippet_name)
             fail _("====== Could not ensure '#{ks_name}' with '#{snippet_name}'") unless ret
 
