@@ -69,14 +69,20 @@ module Fusor
         else
           if deployment.rhev_share_path.empty?
             deployment.errors[:rhev_share_path] << _('RHV storage specified but missing path to the share')
-          else
-            error = validate_storage_path(deployment, deployment.rhev_share_path)
+          end
+
+          if deployment.rhev_storage_address.empty?
+            deployment.errors[:rhev_storage_address] << _('RHV storage specified but missing address to the share')
+          end
+
+          if deployment.rhev_storage_address && deployment.rhev_share_path
+            error = validate_storage_path(deployment.rhev_share_path, deployment.rhev_storage_type)
             if error
               deployment.errors[:rhev_share_path] << _(error)
             elsif deployment.rhev_storage_address.empty?
               deployment.errors[:rhev_storage_address] << _('RHV storage specified but missing address to the share')
             else
-              validate_storage_share(deployment, deployment.rhev_storage_address, deployment.rhev_share_path, 36, 36)
+              validate_storage_share(deployment, deployment.rhev_storage_type, deployment.rhev_storage_address, deployment.rhev_share_path, 36)
             end
           end
         end
@@ -85,19 +91,27 @@ module Fusor
           if deployment.rhev_data_center_name != 'Default'
             deployment.errors[:rhev_data_center_name] << _('RHV self hosted deployments must use the Default datacenter')
           end
+
           if  deployment.rhev_cluster_name != 'Default'
             deployment.errors[:rhev_cluster_name] << _('RHV self hosted deployments must use the Default cluster')
           end
+
           if deployment.hosted_storage_path.empty?
             deployment.errors[:hosted_storage_path] << _('RHV self hosted deployments must specify hosted storage path')
-          else
-            error = validate_storage_path(deployment, deployment.hosted_storage_path)
+          end
+
+          if deployment.hosted_storage_address.empty?
+            deployment.errors[:hosted_storage_address] << _('RHV self hosted deployments must specify hosted storage address')
+          end
+
+          if deployment.hosted_storage_address && deployment.hosted_storage_path
+            error = validate_storage_path(deployment.hosted_storage_path, deployment.rhev_storage_type)
             if error
               deployment.errors[:hosted_storage_path] << _(error)
             elsif deployment.hosted_storage_address.empty?
               deployment.errors[:hosted_storage_address] << _('RHV self hosted deployments must specify hosted storage address')
             else
-              validate_storage_share(deployment, deployment.hosted_storage_address, deployment.hosted_storage_path, 36, 36)
+              validate_storage_share(deployment, deployment.rhev_storage_type, deployment.hosted_storage_address, deployment.hosted_storage_path, 36)
             end
           end
         end
@@ -133,16 +147,19 @@ module Fusor
         if deployment.cfme_install_loc == 'RHEV'
           if deployment.rhev_export_domain_address.empty?
             deployment.errors[:rhev_export_domain_address] << _('NFS share specified but missing address of NFS server')
-          else
-            if deployment.rhev_export_domain_path.empty?
-              deployment.errors[:rhev_export_domain_path] << _('NFS share specified but missing path to the share')
-            else
-              error = validate_storage_path(deployment, deployment.rhev_export_domain_path)
-              if error
-                deployment.errors[:rhev_export_domain_path] << _(error)
-              end
-              validate_storage_share(deployment, deployment.rhev_export_domain_address, deployment.rhev_export_domain_path, 36, 36)
+          end
+
+          if deployment.rhev_export_domain_path.empty?
+            deployment.errors[:rhev_export_domain_path] << _('NFS share specified but missing path to the share')
+          end
+
+          if deployment.rhev_export_domain_path && deployment.rhev_export_domain_address
+            error = validate_storage_path(deployment.rhev_export_domain_path, deployment.rhev_storage_type)
+            if error
+              deployment.errors[:rhev_export_domain_path] << _(error)
             end
+
+            validate_storage_share(deployment, deployment.rhev_storage_type, deployment.rhev_export_domain_address, deployment.rhev_export_domain_path, 36)
           end
         end
       end
@@ -196,14 +213,29 @@ module Fusor
           deployment.errors[:openshift_storage_size] << _("OpenShift deployments must have a storage size greater than zero")
         end
 
-        validate_storage_share(deployment, deployment.openshift_storage_host, deployment.openshift_export_path, -1, -1)
+        if deployment.openshift_storage_host.empty?
+          deployment.errors[:openshift_storage_host] << _("OpenShift deployments must have a storage host address specified")
+        end
+
+        if deployment.openshift_export_path.empty?
+          deployment.errors[:openshift_export_path] << _("OpenShift deployments must have a storage path specified")
+        end
+
+        if deployment.openshift_storage_host && deployment.openshift_export_path
+          error = validate_storage_path(deployment.openshift_export_path, deployment.openshift_storage_type)
+          if error
+            deployment.errors[:openshift_export_path] << _(error)
+          else
+            validate_storage_share(deployment, deployment.openshift_storage_type, deployment.openshift_storage_host, deployment.openshift_export_path, -1)
+          end
+        end
       end
 
       private
 
-      def validate_storage_path(deployment, path)
+      def validate_storage_path(path, type)
         error = nil
-        if deployment.rhev_storage_type == 'NFS'
+        if type == 'NFS'
           # See https://tools.ietf.org/html/rfc2224#section-1
           # NFS paths cannot end in slash or contain non-ascii chars
           if path.end_with?("/") && path.length > 1
@@ -216,7 +248,7 @@ module Fusor
           if !path.ascii_only?
             error = 'NFS path specified contains non-ascii characters, which is invalid'
           end
-        elsif deployment.rhev_storage_type == 'glusterfs'
+        elsif type == 'glusterfs'
           if path.end_with?("/") && path.length > 1
             error = 'Gluster path specified ends in a "/", which is invalid'
           end
@@ -232,13 +264,13 @@ module Fusor
         return error
       end
 
-      def validate_storage_share(deployment, address, path, uid, gid)
+      def validate_storage_share(deployment, type, address, path, uid)
         # validate that the NFS server exists
         # don't proceed if it doesn't
         return unless validate_storage_server(deployment, address)
 
         # validate that the NFS share exists and is clean
-        validate_storage_mount(deployment, address, path, uid, gid)
+        validate_storage_mount(deployment, type, address, path, uid)
       end
 
       def validate_storage_server(deployment, address)
@@ -255,8 +287,8 @@ module Fusor
         return true
       end
 
-      def validate_storage_mount(deployment, address, path, uid, gid)
-        if deployment.rhev_storage_type == "NFS"
+      def validate_storage_mount(deployment, storage_type, address, path, uid)
+        if storage_type == "NFS"
           type = "nfs"
         else
           type = "glusterfs"
@@ -274,7 +306,7 @@ module Fusor
         # Check if we want to verify NFS mount credentials as well
         # If specified UID is -1, do not check
         if uid != -1
-          validate_storage_credentials(deployment, uid, gid)
+          validate_storage_credentials(deployment, uid, uid)
         end
 
         files = Dir["/tmp/fusor-test-mount-#{deployment.id}/*"] # this may return [] if it can't read the share

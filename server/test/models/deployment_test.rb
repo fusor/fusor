@@ -286,6 +286,30 @@ class DeploymentTest < ActiveSupport::TestCase
       end
     end
 
+    describe "ose deployment" do
+      before do
+        @deploy_val = Fusor::Validators::DeploymentValidator.new
+        Fusor::Validators::DeploymentValidator.any_instance.stubs(:validate_openshift_subdomain)
+
+        domain = domains(:mydomain)
+        subnet = subnets(:two)
+        fbase = ::Hostgroup.new(:name => "Fusor Base", :id => 1, :subnet_id => subnet.id, :domain_id => domain.id, :title => "Fusor Base", :lookup_value_matcher => "hostgroup=Fusor Base")
+        fbase.save
+      end
+
+      test "should not save ose deployment with empty storage path" do
+        ose_d = fusor_deployments(:rhev_and_ose)
+        ose_d.openshift_export_path = nil
+        assert_not ose_d.save, "Saved ose deployment with empty storage path"
+      end
+
+      test "should not save ose deployment with empty storage host" do
+        ose_d = fusor_deployments(:rhev_and_ose)
+        ose_d.openshift_storage_host = nil
+        assert_not ose_d.save, "Saved ose deployment with empty storage host"
+      end
+    end
+
     describe "cfme deployment" do
       test "should not save cfme deployment with short password" do
         cfme_d = fusor_deployments(:rhev_and_cfme)
