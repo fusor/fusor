@@ -24,7 +24,21 @@ export default Ember.Route.extend(ResetsVerticalScroll, {
 
       var entitlements = this.store.query('entitlement', {uuid: consumerUUID});
       var pools        = this.store.query('pool',        {uuid: consumerUUID});
-      var subscriptions = this.store.query('subscription', {deployment_id: deploymentId, source: 'added'});
+
+      ////////////////////////////////////////////////////////////
+      // HACK: We're seeing the production configured fusor_server returning
+      // a 304 from this request, which is probably correct. Despite the network
+      // reponse resolving fully, Ember Data fails to resolve the promise
+      // at all, so we're left hanging. The cachebust forces a 200 response,
+      // and thus the promise to resolve. We're expecting this to be fixed
+      // after an Ember upgrade to the LTS.
+      ////////////////////////////////////////////////////////////
+      var subscriptions = this.store.query('subscription', {
+        deployment_id: deploymentId,
+        source: 'added',
+        cachebust: Date.now().toString() // Force a non-cached response
+      });
+      ////////////////////////////////////////////////////////////
 
       return Ember.RSVP.Promise.all([
         entitlements,
