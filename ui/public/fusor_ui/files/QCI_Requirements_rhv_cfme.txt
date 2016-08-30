@@ -22,7 +22,7 @@ Red Hat Virtualization
 Engine + Hypervisor
 - 2 hosts (1 for engine, 1 for hypervisor). 
   -- Engine     : 25 GB disk space, 4  GB RAM, 2 CPU. 
-  -- Hypervisor : 10 GB disk space, 16 GB RAM, 4 CPUs
+  -- Hypervisor : 10 GB disk space, 24 GB RAM, 4 CPUs
 - All host hardware clocks are synchronized with the hardware clock on the Satellite system
 - NFS/GlusterFS share. For data domain: IP address and shared path
 
