@@ -15466,7 +15466,21 @@ define('fusor-ember-cli/routes/subscriptions/select-subscriptions', ['exports', 
 
         var entitlements = this.store.query('entitlement', { uuid: consumerUUID });
         var pools = this.store.query('pool', { uuid: consumerUUID });
-        var subscriptions = this.store.query('subscription', { deployment_id: deploymentId, source: 'added' });
+
+        ////////////////////////////////////////////////////////////
+        // HACK: We're seeing the production configured fusor_server returning
+        // a 304 from this request, which is probably correct. Despite the network
+        // reponse resolving fully, Ember Data fails to resolve the promise
+        // at all, so we're left hanging. The cachebust forces a 200 response,
+        // and thus the promise to resolve. We're expecting this to be fixed
+        // after an Ember upgrade to the LTS.
+        ////////////////////////////////////////////////////////////
+        var subscriptions = this.store.query('subscription', {
+          deployment_id: deploymentId,
+          source: 'added',
+          cachebust: Date.now().toString() // Force a non-cached response
+        });
+        ////////////////////////////////////////////////////////////
 
         return _ember['default'].RSVP.Promise.all([entitlements, pools, subscriptions]).then(function (results) {
           var entitlementsResults = results[0];
@@ -55240,11 +55254,11 @@ define('fusor-ember-cli/views/application', ['exports', 'ember'], function (expo
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+ed6bc267"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+37658af3"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+ed6bc267"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+37658af3"});
 }
 
 /* jshint ignore:end */
