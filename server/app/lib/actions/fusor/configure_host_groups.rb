@@ -214,12 +214,31 @@ module Actions
 
       def get_deployment_overrides(deployment, hostgroup, product_type)
         return [
+          get_rhev_hypervisor_deployment_overrides(),
           get_rhev_engine_deployment_overrides(deployment, hostgroup, product_type),
           get_rhev_self_hosted_deployment_overrides(deployment, hostgroup, product_type)
         ]
       end
 
+      def get_rhev_hypervisor_deployment_overrides()
+        repositories = SETTINGS[:fusor][:content][:rhevh].map { |p| p[:repository_set_label] if p[:repository_set_label] =~ /rpms$/ }.compact
+        return {
+          :hostgroup_name => "RHV-Hypervisor",
+          :puppet_classes =>
+          [
+            {
+              :name => "ovirt::hypervisor::subscription",
+              :parameters =>
+              [
+                { :name => "hypervisor_repositories", :value => repositories }
+              ]
+            }
+          ]
+        }
+      end
+
       def get_rhev_engine_deployment_overrides(deployment, hostgroup, product_type)
+        repositories = SETTINGS[:fusor][:content][:rhevm].map { |p| p[:repository_set_label] if p[:repository_set_label] =~ /rpms$/ }.compact
         return {
           :hostgroup_name => "RHV-Engine",
           :puppet_classes =>
@@ -262,7 +281,14 @@ module Actions
                 { :name => "db_password", :value => deployment.rhev_engine_admin_password },
                 { :name => "engine_fqdn", :value => "#{deployment.rhev_engine_host_name}.#{hostgroup.domain.name}" },
                 # Disable automatic setup of a local nfs share for the ISO domain
-                { :name => "nfs_config_enabled", :value => false }
+                { :name => "nfs_config_enabled", :value => false },
+              ]
+            },
+            {
+              :name => "ovirt::engine::subscription",
+              :parameters =>
+              [
+                { :name => "engine_repositories", :value => repositories }
               ]
             }
           ]
@@ -270,6 +296,9 @@ module Actions
       end
 
       def get_rhev_self_hosted_deployment_overrides(deployment, hostgroup, product_type)
+        engine_repos = SETTINGS[:fusor][:content][:rhevm].map { |p| p[:repository_set_label] if p[:repository_set_label] =~ /rpms$/ }.compact
+        hyp_repos = SETTINGS[:fusor][:content][:rhevsh].map { |p| p[:repository_set_label] if p[:repository_set_label] =~ /rpms$/ }.compact
+
         return {
           :hostgroup_name => "RHV-Self-hosted",
           :puppet_classes =>
@@ -317,7 +346,15 @@ module Actions
                 { :name => "export_path", :value => deployment.rhev_export_domain_path },
                 { :name => "hosted_storage_name", :value => deployment.hosted_storage_name },
                 { :name => "hosted_storage_address", :value => deployment.hosted_storage_address },
-                { :name => "hosted_storage_path", :value => deployment.hosted_storage_path }
+                { :name => "hosted_storage_path", :value => deployment.hosted_storage_path },
+                { :name => "engine_repositories", :value => engine_repos }
+              ]
+            },
+            {
+              :name => "ovirt::self_hosted::subscription",
+              :parameters =>
+              [
+                { :name => "self_hosted_repositories", :value => hyp_repos }
               ]
             }
           ]

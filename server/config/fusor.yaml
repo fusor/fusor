@@ -315,15 +315,18 @@
     - :name: "ovirt"
     - :name: "ovirt::engine::config"
     - :name: "ovirt::engine::packages"
+    - :name: "ovirt::engine::subscription"
     - :name: "ovirt::engine::setup"
     - :name: "ovirt::engine::import_template"
     - :name: "ovirt::engine::run_vm"
+    - :name: "ovirt::hypervisor::subscription"
     - :name: "ovirt::hypervisor::packages"
     - :name: "ovirt::self_hosted::setup"
     - :name: "ovirt::self_hosted::config"
     - :name: "ovirt::self_hosted::packages"
     - :name: "ovirt::self_hosted::import_template"
     - :name: "ovirt::self_hosted::run_vm"
+    - :name: "ovirt::self_hosted::subscription"
 
   :docker_repos:
     - :name: "hello-openshift"
@@ -361,6 +364,7 @@
                :override: "RHEV"
            - :name: "ovirt::engine::config"
            - :name: "ovirt::engine::packages"
+           - :name: "ovirt::engine::subscription"
            - :name: "ovirt::engine::setup"
              :parameters:
              - :name: "firewall_manager"
@@ -382,6 +386,7 @@
              - :name: "product"
                :override: "RHEV"
            - :name: "ovirt::hypervisor::packages"
+           - :name: "ovirt::hypervisor::subscription"
          :activation_key:
            :name: "RHV-Hypervisor"
            :content: :rhevh
@@ -402,6 +407,7 @@
            - :name: "ovirt::self_hosted::config"
            - :name: "ovirt::self_hosted::packages"
            - :name: "ovirt::self_hosted::setup"
+           - :name: "ovirt::self_hosted::subscription"
          :activation_key:
            :name: "RHV-Self-hosted"
            :content: :rhevsh
