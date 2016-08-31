@@ -214,7 +214,7 @@ module Actions
 
       def get_deployment_overrides(deployment, hostgroup, product_type)
         return [
-          get_rhev_hypervisor_deployment_overrides(),
+          get_rhev_hypervisor_deployment_overrides,
           get_rhev_engine_deployment_overrides(deployment, hostgroup, product_type),
           get_rhev_self_hosted_deployment_overrides(deployment, hostgroup, product_type)
         ]
@@ -281,7 +281,7 @@ module Actions
                 { :name => "db_password", :value => deployment.rhev_engine_admin_password },
                 { :name => "engine_fqdn", :value => "#{deployment.rhev_engine_host_name}.#{hostgroup.domain.name}" },
                 # Disable automatic setup of a local nfs share for the ISO domain
-                { :name => "nfs_config_enabled", :value => false },
+                { :name => "nfs_config_enabled", :value => false }
               ]
             },
             {
