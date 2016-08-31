@@ -10,4 +10,4 @@
       action: copy src="{{output_dir}}/atomic-openshift-installer.answers.cfg.yml" dest="/tmp/atomic-openshift-installer.answers.cfg.yml" owner={{ansible_ssh_user}} mode=0775
 
     - name: execute atomic-openshift-installer
-      shell: atomic-openshift-installer -u -c /tmp/atomic-openshift-installer.answers.cfg.yml install
+      shell: atomic-openshift-installer -u -c /tmp/atomic-openshift-installer.answers.cfg.yml install --force
