@@ -33,9 +33,20 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return `http://hello-openshift.${subdomainName}.${domainName}`;
   }),
 
-  rhevEngineUrl: Ember.computed('selectedRhevEngine.name', function() {
-    return ('https://' + this.get('selectedRhevEngine.name') + '/ovirt-engine/');
+  rhevEngineUrl: Ember.computed('selectedRhevEngine.name', 'selectedRhevEngine.domain_name', function() {
+    // The cached version of the model for selectedRhevEngine  has a stale name without the domain name,
+    // but is of type Host::Managed, so we can't tell if it needs to add the domain based on Discovered/Managed.
+    // We just add in the domain if we can't find it in the name.
+    let domainName = this.get('selectedRhevEngine.domain_name');
+    let engineName = this.get('selectedRhevEngine.name');
+
+    if (engineName && domainName && engineName.toLowerCase().indexOf(domainName.toLowerCase()) < 0) {
+      engineName = `${engineName}.${domainName}`;
+    }
+
+    return ('https://' + engineName + '/ovirt-engine/');
   }),
+
   rhevEngineUrlIP: Ember.computed('selectedRhevEngine.ip', function() {
     return ('https://' + this.get('selectedRhevEngine.ip') + '/ovirt-engine/');
   }),
