@@ -5332,9 +5332,20 @@ define('fusor-ember-cli/controllers/review/summary', ['exports', 'ember', 'fusor
       return 'http://hello-openshift.' + subdomainName + '.' + domainName;
     }),
 
-    rhevEngineUrl: _ember['default'].computed('selectedRhevEngine.name', function () {
-      return 'https://' + this.get('selectedRhevEngine.name') + '/ovirt-engine/';
+    rhevEngineUrl: _ember['default'].computed('selectedRhevEngine.name', 'selectedRhevEngine.domain_name', function () {
+      // The cached version of the model for selectedRhevEngine  has a stale name without the domain name,
+      // but is of type Host::Managed, so we can't tell if it needs to add the domain based on Discovered/Managed.
+      // We just add in the domain if we can't find it in the name.
+      var domainName = this.get('selectedRhevEngine.domain_name');
+      var engineName = this.get('selectedRhevEngine.name');
+
+      if (engineName && domainName && engineName.toLowerCase().indexOf(domainName.toLowerCase()) < 0) {
+        engineName = engineName + '.' + domainName;
+      }
+
+      return 'https://' + engineName + '/ovirt-engine/';
     }),
+
     rhevEngineUrlIP: _ember['default'].computed('selectedRhevEngine.ip', function () {
       return 'https://' + this.get('selectedRhevEngine.ip') + '/ovirt-engine/';
     }),
@@ -55254,11 +55265,11 @@ define('fusor-ember-cli/views/application', ['exports', 'ember'], function (expo
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+37658af3"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+5acec5ee"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+37658af3"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+5acec5ee"});
 }
 
 /* jshint ignore:end */
