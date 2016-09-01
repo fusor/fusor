@@ -67,6 +67,8 @@ module Fusor
       fail ::Katello::HttpErrors::BadRequest, _("No deployment specified") if params[:manifest_file][:deployment_id].blank?
 
       deployment = Deployment.find(params[:manifest_file][:deployment_id])
+      deployment.subscriptions = []
+      deployment.save(:validate => false)
 
       begin
         # candlepin requires that the file has a zip file extension
