@@ -5,7 +5,8 @@ module.exports = function(environment) {
     modulePrefix: 'fusor-ember-cli',
     environment: environment,
     baseURL: '/',
-    locationType: 'hash',
+    rootURL: '/r/',
+    locationType: 'history',
     EmberENV: {
       FEATURES: {
         // Here you can enable experimental features on an ember canary build
