@@ -18,13 +18,13 @@ module FusorUi
 
         sub_menu :top_menu, :fusor_menu, :caption => N_('QuickStart Cloud Installer'), :after => :infrastructure_menu do
           menu :top_menu, :fusor_deployments,
-               :url      => '/r/#/deployments',
+               :url      => '/r/deployments',
                :url_hash => { :controller => 'fusor_ui/placeholders', :action => :index },
                :caption  => N_('Deployments'),
                :engine   => FusorUi::Engine,
                :turbolinks => false
           menu :top_menu, :new_fusor_deployment,
-               :url      => '/r/#/deployments/new/start',
+               :url      => '/r/deployments/new/start',
                :url_hash => { :controller => 'fusor_ui/placeholders', :action => :new },
                :caption  => N_('New Deployment'),
                :engine   => FusorUi::Engine,

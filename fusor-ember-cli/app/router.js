@@ -3,6 +3,7 @@ import config from './config/environment';
 
 var Router = Ember.Router.extend({
   location: config.locationType,
+  rootURL: config.rootURL,
   // log when Ember generates a controller or a route from a generic class
   LOG_ACTIVE_GENERATION: true,
   // log when Ember looks up a template or a view
