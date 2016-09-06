@@ -61,7 +61,7 @@ export default Ember.Mixin.create({
     if (this.get('isUpstream')) { return "ManageIQ"; } else { return "Red Hat Cloud Forms Management Engine"; }
   }),
 
-  fullnameOpenShift: "OpenShift Enterprise by Red Hat",
+  fullnameOpenShift: "OpenShift Container Platform",
 
   fullnameSatellite: "Red Hat Satellite",
 
