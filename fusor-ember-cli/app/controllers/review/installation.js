@@ -252,8 +252,16 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     return this.humanizedLocation(this.get('model.cfme_install_loc'));
   }),
 
+  deployOseExampleApp: Ember.computed('model.openshift_sample_helloworld', function() {
+    return this.humanizedBoolean(this.get('model.openshift_sample_helloworld'));
+  }), 
+
   humanizedLocation(location) {
     return location === 'RHEV' ? 'RHV' : location;
+  },
+
+  humanizedBoolean(value) {
+    return value ? 'Enabled' : 'Disabled';
   },
 
   closeContinueDeployModal() {
