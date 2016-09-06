@@ -96,7 +96,7 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
     "cfmeInstallLoc",
     function() {
       // ignore if CFME is not selected OR if both RHEV and OSP are selected
-      // but locations of CFME and OSE are different
+      // but locations of CFME and OCP are different
       return (!this.get('isCloudForms') ||
               (this.get('isRhev') && this.get('isOpenStack') &&
                ((this.get('openshiftInstallLoc') === 'RHEV' && this.get('cfmeInstallLoc') === 'OpenStack') ||
