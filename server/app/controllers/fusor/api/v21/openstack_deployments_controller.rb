@@ -59,7 +59,8 @@ module Fusor
 
       return render json: {errors: @openstack_deployment.errors}, status: 422 unless @openstack_deployment.valid?
 
-      undercloud_handle.edit_plan_environments('overcloud', {'environments/puppet-ceph-external.yaml' => @openstack_deployment.external_ceph_storage })
+      undercloud_handle.edit_plan_environments('overcloud', {'environments/puppet-ceph-external.yaml' => @openstack_deployment.external_ceph_storage,
+                                                             'environments/rhel-registration.yaml' => true })
       undercloud_handle.edit_plan_parameters('overcloud', build_openstack_params)
       sync_failures = get_sync_failures
       return render json: {errors: sync_failures}, status: 500 unless sync_failures.empty?
@@ -74,7 +75,11 @@ module Fusor
     end
 
     def build_openstack_params
-      osp_params = {}
+      osp_params = {'rhel_reg_sat_repo' => 'rhel-7-server-satellite-tools-6.2-rpms',
+                    'rhel_reg_org' => 'Default_Organization',
+                    'rhel_reg_method' => 'satellite',
+                    'rhel_reg_sat_url' => Setting[:foreman_url],
+                    'rhel_reg_activation_key' => "OpenStack_Undercloud-#{Fusor::OpenstackDeployment.find(params[:id]).deployment.label}-OpenStack_Undercloud" }
       Fusor::OpenstackDeployment::OVERCLOUD_ATTR_PARAM_HASH.each { |attr_name, param_name| osp_params[param_name] = @openstack_deployment.send(attr_name) }
       if @openstack_deployment.external_ceph_storage
         Fusor::OpenstackDeployment::CEPH_ATTR_PARAM_HASH.each { |attr_name, param_name| osp_params[param_name] = @openstack_deployment.send(attr_name) }
