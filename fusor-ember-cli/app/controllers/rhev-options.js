@@ -15,9 +15,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
   cpuTypes: ['Intel Conroe Family', 'Intel Penryn Family', 'Intel Nehalem Family',
              'Intel Westmere Family', 'Intel SandyBridge Family', 'Intel Haswell Family',
-             'Intel Haswell-noTSX Family', 'Intel Broadwell Family', 'Intel Broadwell-noTSX Family',
-             'AMD Opteron G1', 'AMD Opteron G2', 'AMD Opteron G3', 'AMD Opteron G4',
-             'AMD Opteron G5', 'IBM POWER 8'],
+             'Intel Haswell-noTSX Family', 'AMD Opteron G1', 'AMD Opteron G2',
+             'AMD Opteron G3', 'AMD Opteron G4', 'AMD Opteron G5', 'IBM POWER 8'],
 
   passwordValidator: RequiredPasswordValidator.create({}),
 
