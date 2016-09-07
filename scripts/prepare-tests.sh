@@ -29,7 +29,7 @@ FILES=`ls ../../../fusor/server/test/fixtures/ ../../../katello/test/fixtures/mo
 for f in $FILES
 do
     # skip operatingsystems.yml
-    if [ "$f" != "operatingsystems.yml" ]; then
+    if [ "$f" != "operatingsystems.yml" ] && [ "$f" != "hostgroups.yml" ]; then
         rm -f $f
     fi
 done
@@ -37,18 +37,26 @@ done
 if [ -e 'os.yml.foreman' ]; then
     mv -f os.yml.foreman operatingsystems.yml
 fi
+if [ -e 'hostgroups.yml.foreman' ]; then
+    mv -f hostgroups.yml.foreman hostgroups.yml
+fi
 
 # proceed
 mv -f operatingsystems.yml os.yml.foreman
+mv -f hostgroups.yml hostgroups.yml.foreman
 ln -s ../../../fusor/server/test/fixtures/* .
 
 # Combine operatingsystems.yml
 mv operatingsystems.yml os.yml.fusor
+mv hostgroups.yml hostgroups.yml.fusor
 touch operatingsystems.yml
+touch hostgroups.yml
 cat os.yml.foreman >> operatingsystems.yml
 cat os.yml.fusor >> operatingsystems.yml
+cat hostgroups.yml.foreman >> hostgroups.yml
+cat hostgroups.yml.fusor >> hostgroups.yml
 #rm -f hosts.yml os.yml.foreman os.yml.fusor
-rm -f hosts.yml os.yml.fusor
+rm -f hosts.yml os.yml.fusor hostgroups.yml.fusor hostgroups.yaml.foreman
 
 # Combine katello_subscriptions.yml
 # MUST BE DONE BEFORE KATELLO FIXTURES

@@ -48,9 +48,8 @@ module Actions
             overcloud = {
               :name => "#{deployment.label}-RHOS",
               :type => "ManageIQ::Providers::Openstack::CloudManager",
-              :security_protocol => 'non-ssl',
-              :hostname => deployment.openstack_deployment.overcloud_address,
-              :port => "5000",
+              :hostname => deployment.openstack_deployment.overcloud_hostname,
+              :port => "13000",
               :zone_id => "1000000000001",
               :credentials => {
                 :userid => 'admin',

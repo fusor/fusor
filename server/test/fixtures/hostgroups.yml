@@ -1,0 +1,14 @@
+fusor_base:
+  name: Fusor Base
+  title: Fusor Base
+  architecture: x86_64
+  environment: global_puppetmaster
+  operatingsystem: centos5_3
+  medium: one
+  puppet_proxy: puppetmaster
+  puppet_ca_proxy: puppetmaster
+  domain: mydomain
+  subnet: three
+  compute_profile: one
+  lookup_value_matcher: hostgroup=Fusor Base
+

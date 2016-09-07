@@ -60,9 +60,12 @@ module Fusor
       return render json: {errors: @openstack_deployment.errors}, status: 422 unless @openstack_deployment.valid?
 
       undercloud_handle.edit_plan_environments('overcloud', {'environments/puppet-ceph-external.yaml' => @openstack_deployment.external_ceph_storage,
-                                                             'environments/rhel-registration.yaml' => true })
-      undercloud_handle.edit_plan_parameters('overcloud', build_openstack_params)
-      sync_failures = get_sync_failures
+                                                             'environments/rhel-registration.yaml' => true,
+                                                             'environments/enable-tls.yaml' => true,
+                                                             'environments/inject-trust-anchor.yaml' => true })
+      ssl_params = build_openstack_ssl_params
+      undercloud_handle.edit_plan_parameters('overcloud', ssl_params.merge(build_openstack_params))
+      sync_failures = get_sync_failures(ssl_params)
       return render json: {errors: sync_failures}, status: 500 unless sync_failures.empty?
 
       render json: {}, status: 204
@@ -74,12 +77,20 @@ module Fusor
       Overcloud::UndercloudHandle.new('admin', @openstack_deployment.undercloud_admin_password, @openstack_deployment.undercloud_ip_address, 5000)
     end
 
+    def build_openstack_ssl_params
+      deployment = Fusor::OpenstackDeployment.find(params[:id]).deployment
+      certs = Utils::Fusor::OvercloudSSL.new(deployment).gen_certs
+      {'CloudName' => "#{deployment.label.tr('_', '-')}-overcloud.#{Domain.find(Hostgroup.find_by_name('Fusor Base').domain_id)}",
+       'SSLRootCertificate' => certs['ca'], 'SSLCertificate' => certs['cert'], 'SSLKey' => certs['key']}
+    end
+
     def build_openstack_params
+      deployment = Fusor::OpenstackDeployment.find(params[:id]).deployment
       osp_params = {'rhel_reg_sat_repo' => 'rhel-7-server-satellite-tools-6.2-rpms',
                     'rhel_reg_org' => 'Default_Organization',
                     'rhel_reg_method' => 'satellite',
                     'rhel_reg_sat_url' => Setting[:foreman_url],
-                    'rhel_reg_activation_key' => "OpenStack_Undercloud-#{Fusor::OpenstackDeployment.find(params[:id]).deployment.label}-OpenStack_Undercloud" }
+                    'rhel_reg_activation_key' => "OpenStack_Undercloud-#{deployment.label}-OpenStack_Undercloud"}
       Fusor::OpenstackDeployment::OVERCLOUD_ATTR_PARAM_HASH.each { |attr_name, param_name| osp_params[param_name] = @openstack_deployment.send(attr_name) }
       if @openstack_deployment.external_ceph_storage
         Fusor::OpenstackDeployment::CEPH_ATTR_PARAM_HASH.each { |attr_name, param_name| osp_params[param_name] = @openstack_deployment.send(attr_name) }
@@ -87,7 +98,7 @@ module Fusor
       osp_params
     end
 
-    def get_sync_failures
+    def get_sync_failures(ssl_params)
       plan = undercloud_handle.get_plan_parameters('overcloud')
       errors = {}
       attr_param_hash = Fusor::OpenstackDeployment::OVERCLOUD_ATTR_PARAM_HASH
@@ -97,6 +108,16 @@ module Fusor
         attr_value = @openstack_deployment.send(attr_name)
         param_value = plan[param_name].try(:[], 'Default')
         errors[attr_name] = [_("Openstack #{param_name} was not properly synchronized.  Expected: #{attr_value} but got #{param_value}")] unless attr_value == param_value
+      end
+
+      ['CloudName', 'SSLRootCertificate', 'SSLCertificate', 'SSLKey'].each do |param_name|
+        attr_value = ssl_params[param_name]
+        param_value = plan[param_name].try(:[], 'Default')
+        if attr_value.nil?
+          errors[param_name] = [_("SSL Certificates were not properly generated for the Openstack Overcloud Deployment. #{param_name} value is nil.")]
+        elsif attr_value != param_value
+          errors[param_name] = [_("Openstack #{param_name} was not properly synchronized.  Expected: #{attr_value} but got #{param_value}")]
+        end
       end
 
       env_ceph_external_setting = get_env_ceph_external_setting
