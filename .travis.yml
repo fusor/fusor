@@ -7,8 +7,7 @@ branches:
  only:
  - master
  - develop
- - satellite-6.2
- - openshift3
+ - release-1.0
 
 notifications:
  email: false
