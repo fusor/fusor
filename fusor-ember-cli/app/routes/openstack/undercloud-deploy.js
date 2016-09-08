@@ -5,11 +5,7 @@ import PollingPromise from '../../mixins/polling-promise-mixin';
 export default Ember.Route.extend(PollingPromise, {
   setupController(controller, model) {
     controller.set('model', model);
-    this.displayStackStatus().catch(error => {
-      console.log(error);
-      this.set('controller.errorMsg', `Error trying to retrieve stacks from undercloud.  ${error.jqXHR.status}: ${error.jqXHR.statusText}`);
-      this.set('controller.showLoadingSpinner', false);
-    });
+    this.loadUndercloudStatus();
   },
 
   deactivate() {
@@ -19,8 +15,11 @@ export default Ember.Route.extend(PollingPromise, {
   actions: {
     deployUndercloud() {
       this.deployUndercloudRequest()
+        .then(() => this.refreshOpenstackDeploymentModel())
+        .then(() => this.getUndercloud())
         .then(() => this.displayDeployUndercloudStatus())
-        .then(() => this.refreshDeployedUndercloudModel())
+        .then(() => this.getUndercloudStacks())
+        .then(() => this.displayUndercloudStatus())
         .catch(error => {
           if (error.jqXHR && error.jqXHR.status === 401) {
             this.send('userTimeout');
@@ -33,38 +32,97 @@ export default Ember.Route.extend(PollingPromise, {
 
     deleteStack() {
       this.deleteStackRequest()
-        .then(() => this.displayStackStatus())
-        .catch(error => {
-          this.displayDeleteError(error);
-          this.set('controller.showLoadingSpinner', false);
-        });
+        .then(() => this.getUndercloudStacks())
+        .then(() => this.displayUndercloudStatus())
+        .catch(error =>  this.displayRequestError(error, 'Error trying to delete stack from undercloud.'));
+    },
+
+    updateDns() {
+      this.updateDnsRequest()
+        .then(() => this.displayUndercloudStatus())
+        .catch(error =>  this.displayRequestError(error, 'Error trying to update the DNS address.'));
     }
   },
 
-  displayStackStatus() {
-    let deployment = this.modelFor('deployment');
-    let openstackDeployment = this.get('controller.openstackDeployment');
+  displayRequestError(error, message) {
+    console.log(error);
+    this.set('controller.errorMsg', `${message} ${error.jqXHR.status}: ${error.jqXHR.statusText}`);
+    this.set('controller.showLoadingSpinner', false);
+  },
 
-    if (deployment.get('isStarted') || !openstackDeployment.get('isUndercloudConnected')) {
-      return Ember.RSVP.Promise.resolve(null);
-    }
-
+  loadUndercloudStatus() {
     this.set('controller.errorMsg', null);
     this.set('controller.loadingSpinnerText', 'Inspecting Undercloud...');
     this.set('controller.showLoadingSpinner', true);
 
-    return this.getUndercloudStacks().then(() => {
-      let stack = this.get('controller.stack');
-      let stackIsDeleting = this.get('controller.stack.stack_status') === 'DELETE_IN_PROGRESS';
+    this.getUndercloud()
+      .then(() => this.getUndercloudStacks())
+      .then(() => this.displayUndercloudStatus())
+      .catch(error =>  this.displayRequestError(error, 'Error trying to retrieve information from undercloud.'));
+  },
 
-      if (stackIsDeleting) {
-        this.set('controller.showLoadingSpinner', true);
-        this.set('controller.loadingSpinnerText', `Deleting stack ${stack.get('stack_name')}...`);
-        this.startPolling('pollForDeletedStackStatus');
-      } else {
-        this.set('controller.showLoadingSpinner', false);
+  getUndercloud() {
+    let deployment = this.modelFor('deployment');
+    let deploymentId = deployment.get('id');
+    let openstackDeployment = this.get('controller.openstackDeployment');
+
+    if (deployment.get('isStarted') || !openstackDeployment.get('isUndercloudConnected')) {
+      this.set('controller.undercloud', null);
+      return Ember.RSVP.Promise.resolve(null);
+    }
+
+    return request({
+      url: `/fusor/api/openstack/deployments/${deploymentId}/undercloud`,
+      type: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': Ember.$('meta[name="csrf-token"]').attr('content')
       }
+    }).then(response => {
+      this.set('controller.undercloud', Ember.Object.create(response));
+      return response;
     });
+  },
+
+  getUndercloudStacks() {
+    let deployment = this.modelFor('deployment');
+    let deploymentId = deployment.get('id');
+    let openstackDeployment = this.get('controller.openstackDeployment');
+
+    if (deployment.get('isStarted') || !openstackDeployment.get('isUndercloudConnected')) {
+      this.set('controller.stack', null);
+      return Ember.RSVP.Promise.resolve(null);
+    }
+
+    return request({
+      url: `/fusor/api/openstack/deployments/${deploymentId}/stacks`,
+      type: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': Ember.$('meta[name="csrf-token"]').attr('content')
+      }
+    }).then(response => {
+      let stack = response.stacks[0] ? Ember.Object.create(response.stacks[0]) : null;
+      this.set('controller.stack', stack);
+      openstackDeployment.set('overcloud_deployed', Ember.isPresent(stack));
+      return response;
+    });
+  },
+
+  displayUndercloudStatus() {
+    let undercloud = this.get('controller.undercloud');
+    let stack = this.get('controller.stack');
+    let stackIsDeleting = this.get('controller.stack.stack_status') === 'DELETE_IN_PROGRESS';
+
+    if (stackIsDeleting) {
+      this.set('controller.showLoadingSpinner', true);
+      this.set('controller.loadingSpinnerText', `Deleting stack ${stack.get('stack_name')}...`);
+      this.startPolling('pollForDeletedStackStatus');
+    } else {
+      this.set('controller.showLoadingSpinner', false);
+    }
   },
 
   deployUndercloudRequest() {
@@ -77,7 +135,7 @@ export default Ember.Route.extend(PollingPromise, {
     this.set('controller.showLoadingSpinner', true);
 
     return request({
-      url: `/fusor/api/openstack/deployments/${deploymentId}/underclouds`,
+      url: `/fusor/api/openstack/deployments/${deploymentId}/undercloud`,
       type: 'POST',
       data: JSON.stringify({
         'undercloud_host': openstackDeployment.get('undercloud_ip_address'),
@@ -100,57 +158,23 @@ export default Ember.Route.extend(PollingPromise, {
   },
 
   displayDeployUndercloudStatus() {
-    let deploymentId = this.get('controller.deploymentId');
-
-    this.set('controller.errorMsg', null);
-    this.set('controller.loadingSpinnerText', `Checking deployment status ...`);
-    this.set('controller.showLoadingSpinner', true);
-    this.set('controller.deploymentError', null);
-
     return new Ember.RSVP.Promise((resolve, reject) => {
-      request({
-        url: `/fusor/api/openstack/deployments/${deploymentId}/underclouds/${deploymentId}`,
-        type: 'GET',
-        contentType: 'application/json'
-      }).then(response => {
-        if (response.deployed) {
-          resolve(null);
-        } else {
-          reject('There was an issue deploying the undercloud.  Please check foreman logs.');
-        }
-        this.set('controller.showLoadingSpinner', false);
-      });
+      if (this.get('controller.undercloud.deployed')) {
+        resolve(null);
+      } else {
+        reject('There was an issue deploying the undercloud.  Please check foreman logs.');
+      }
     });
   },
 
-  refreshDeployedUndercloudModel() {
+  refreshOpenstackDeploymentModel() {
     // this.refresh();
     // Refresh doesn't work.  Manually reloading the openstack-deployment object.
     let openstackDeploymentId = this.get('controller.openstackDeployment.id');
     this.set('controller.showLoadingSpinner', true);
 
     return this.store.findRecord('openstack-deployment', openstackDeploymentId, {reload: true})
-      .then(ospd => this.set('controller.openstackDeployment', ospd))
-      .then(() => this.displayStackStatus());
-  },
-
-  getUndercloudStacks() {
-    let deploymentId = this.modelFor('deployment').get('id');
-    let openstackDeployment = this.get('controller.openstackDeployment');
-
-    return request({
-      url: `/fusor/api/openstack/deployments/${deploymentId}/stacks`,
-      type: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': Ember.$('meta[name="csrf-token"]').attr('content')
-      }
-    }).then(response => {
-      let stack = response.stacks[0] ? Ember.Object.create(response.stacks[0]) : null;
-      this.set('controller.stack', stack);
-      openstackDeployment.set('overcloud_deployed', Ember.isPresent(stack));
-    });
+      .then(ospd => this.set('controller.openstackDeployment', ospd));
   },
 
   pollForDeletedStackStatus() {
@@ -161,6 +185,29 @@ export default Ember.Route.extend(PollingPromise, {
         this.set('controller.showLoadingSpinner', false);
       }
     }));
+  },
+
+  updateDnsRequest() {
+    let deploymentId = this.modelFor('deployment').get('id');
+    let controller = this.get('controller');
+    let openstackDeployment = controller.get('openstackDeployment');
+
+    controller.set('errorMsg', null);
+    controller.set('loadingSpinnerText', 'Updating DNS...');
+    controller.set('showLoadingSpinner', true);
+
+    return request({
+      url: `/fusor/api/openstack/deployments/${deploymentId}/undercloud/update_dns`,
+      type: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': Ember.$('meta[name="csrf-token"]').attr('content')
+      }
+    }).then(response => {
+      this.set('controller.undercloud', Ember.Object.create(response));
+      return response;
+    });
   },
 
   deleteStackRequest() {

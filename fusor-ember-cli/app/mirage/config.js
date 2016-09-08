@@ -116,16 +116,28 @@ export default function() {
     return db.foreman_tasks.find(id);
   });
 
-  this.post('/fusor/api/openstack/deployments/:id/underclouds', function(db, request) {
+  this.post('/fusor/api/openstack/deployments/:id/undercloud', function(db, request) {
     return {'undercloud': 2};
   });
 
-  this.get('/fusor/api/openstack/deployments/:id/underclouds/:id', function(db, request) {
+  this.get('/fusor/api/openstack/deployments/:id/undercloud', function(db, request) {
     return {
       'deployed': true,
-      'failed': false
+      'undercloud_dns': '192.168.236.10',
+      'overcloud_dns': '192.168.236.10',
+      'satellite_dns': '192.168.236.10'
     };
   });
+
+  this.post('/fusor/api/openstack/deployments/:id/undercloud/update_dns', function(db, request) {
+    return {
+      'deployed': true,
+      'undercloud_dns': '192.168.236.10',
+      'overcloud_dns': '192.168.236.10',
+      'satellite_dns': '192.168.236.10'
+    };
+  });
+
   this.get('/fusor/api/openstack/deployments/:id/stacks', function(db, request) {
     return {'stacks': []};
   });
