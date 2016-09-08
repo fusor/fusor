@@ -5,6 +5,7 @@ import {
   AllValidator,
   PresenceValidator,
   NfsPathValidator,
+  GlusterPathValidator,
   AlphaNumericDashUnderscoreValidator,
   HostnameValidator,
   HostAddressValidator,
@@ -88,11 +89,26 @@ export default Ember.Controller.extend(OpenshiftMixin, {
     ]
   }),
 
-  exportPathValidator: AllValidator.create({
+  nfsPathValidator: AllValidator.create({
     validators: [
       PresenceValidator.create({}),
       NfsPathValidator.create({})
     ]
+  }),
+
+  glusterPathValidator: AllValidator.create({
+    validators: [
+      PresenceValidator.create({}),
+      GlusterPathValidator.create({})
+    ]
+  }),
+
+  exportPathValidator: Ember.computed('deploymentController.model.openshift_storage_type', function() {
+    if (this.get('deploymentController.model.openshift_storage_type') === 'NFS') {
+      return this.get('nfsPathValidator');
+    }
+
+    return this.get('glusterPathValidator');
   }),
 
   subdomainValidator: AllValidator.create({
