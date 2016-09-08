@@ -31,11 +31,28 @@ module Fusor
         return @product_ids
       end
 
-      def get_product_key(pids)
+      def get_product_keys(pids)
         ::Fusor.log.debug "SUB-INFO: #{@name}.get_product_key: pids: #{pids}"
+        # if pids - values is empty we found our best match
+        # otherwise if any of the items matched add the key to the list
+        # skip if pids - values == pids
+        #
+        keys = []
         @product_ids.each do |key, values|
-          return key if (pids - values).empty?
+          #return key if (pids - values).empty?
+
+          diff = (pids - values)
+          if diff.empty?
+            return [key] # best match
+          end
+
+          if diff.count < pids.count
+            # found at least one add it to the list
+            keys << key
+          end
         end
+
+        return keys
       end
 
       def get_product_ids_by_name(product)

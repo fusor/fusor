@@ -73,14 +73,20 @@ module Fusor
             ::Fusor.log.info "SUB-VAL.compare: deployment has product: #{product} with count: #{count}"
             ::Fusor.log.info "SUB-VAL.compare: #{deployment_si.get_product_ids_by_name(product)}"
 
-            key = other_si.get_product_key(deployment_si.get_product_ids_by_name(product))
-            if key.nil?
-              ::Fusor.log.error "SUB-VAL.compare: COULD NOT FIND key #{key} for product [#{product}]. #{deployment_si.get_product_ids_by_name(product)}"
+            # get the set of keys that encompass the counts
+            # for each of the keys, get their count
+            # each count has to be >= to the count we need
+            keys = other_si.get_product_keys(deployment_si.get_product_ids_by_name(product))
+            if keys.empty?
+              ::Fusor.log.error "SUB-VAL.compare: COULD NOT FIND any keys for product [#{product}]. #{deployment_si.get_product_ids_by_name(product)}"
             end
+
             dep_count = deployment_si.get_counts_by_name(product)
-            count = other_si.get_counts_by_name(key)
-            valid &&= (dep_count <= count)  # valid = valid && (dep_count <= count)
-            ::Fusor.log.info "SUB-VAL.compare: deployment needs #{dep_count}. subscriptions supply #{count}. Valid? #{valid}"
+            keys.each do |key|
+              count = other_si.get_counts_by_name(key)
+              valid &&= (dep_count <= count)  # valid = valid && (dep_count <= count)
+              ::Fusor.log.info "SUB-VAL.compare: deployment needs #{dep_count}. subscriptions supply #{count}. Valid? #{valid}"
+            end
           end
         end
 
