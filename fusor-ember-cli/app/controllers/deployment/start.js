@@ -3,7 +3,5 @@ import StartControllerMixin from "../../mixins/start-controller-mixin";
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 
 export default Ember.Controller.extend(StartControllerMixin, NeedsDeploymentMixin, {
-  isNew: false,
-  isDisabledOpenShift: true,
-  isDisabledCloudForms: true
+  isNew: false
 });
