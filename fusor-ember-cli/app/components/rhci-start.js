@@ -4,20 +4,26 @@ export default Ember.Component.extend({
 
   classNames: ['rhci-start-block'],
 
-  setIsDisabledCfmeAndOpenshift: Ember.observer('isRhev', 'isOpenStack', function() {
-    if (this.get('isRhev')) {
-      this.set('isDisabledOpenShift', false);
-      this.set('isDisabledCfme', false);
-    } else if (this.get('isOpenStack')) {
-      this.set('isDisabledOpenShift', true);
-      this.set('isDisabledCfme', false);
-      this.set('isOpenShift', false);
-    } else {
-      this.set('isOpenShift', false);
-      this.set('isCloudForms', false);
-      this.set('isDisabledOpenShift', true);
-      this.set('isDisabledCfme', true);
-    }
+  isDisabledRhev: Ember.computed.alias('isDisabled'),
+  isDisabledOpenStack: Ember.computed.alias('isDisabled'),
+
+  isDisabledCfme: Ember.computed('isDisabled', 'isRhev', 'isOpenStack', function() {
+    return this.get('isDisabled') || (!this.get('isRhev') && !this.get('isOpenStack'));
+  }),
+
+  isDisabledOpenShift: Ember.computed('isDisabled', 'isRhev', function() {
+    return this.get('isDisabled') || !this.get('isRhev');
+  }),
+
+  clearInvalidSelections: Ember.observer('isRhev', 'isOpenStack', function() {
+    Ember.run.once(this, () => {
+      if (!this.get('isRhev')) {
+        this.set('isOpenShift', false);
+        if (!this.get('isOpenStack')) {
+          this.set('isCloudForms', false);
+        }
+      }
+    });
   }),
 
   reqDownloadLink: Ember.computed('isRhev', 'isOpenStack', 'isCloudForms', 'isOpenShift', function() {
