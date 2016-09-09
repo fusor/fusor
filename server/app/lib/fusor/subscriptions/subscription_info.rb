@@ -39,7 +39,6 @@ module Fusor
         #
         keys = []
         @product_ids.each do |key, values|
-          #return key if (pids - values).empty?
 
           diff = (pids - values)
           if diff.empty?
