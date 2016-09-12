@@ -72,8 +72,8 @@ module Actions
             fail _("====== Puppet run for host #{host.name} status reported as #{host.configuration_status_label} ====== \n\n#{messages.uniq.join("\n")}")
           elsif host.configuration_status_label == 'Out of sync'
             output[:out_of_sync] += 1
-            if output[:out_of_sync] > 10
-              fail _("====== Puppet run for #{host.name} puppet run reported as out of sync for the last 10 polls - something may have gone wrong. ====== ")
+            if (output[:out_of_sync] % 100 == 0)
+               ::Fusor.log.warn("====== Puppet status for #{host.name} reported as out of sync for the last 100 polls - something may have gone wrong. ====== ")
             end
           elsif host.configuration_status_label == 'Active'
             true
