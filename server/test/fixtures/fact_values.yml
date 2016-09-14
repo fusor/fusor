@@ -1,0 +1,19 @@
+fact_storage:
+  host: host_haswell
+  fact_name: fact_name_storage
+  value: 200 GB
+
+fact_hostname:
+  host: host_haswell
+  fact_name: fact_name_hostname
+  value: sat62devg.example.com
+
+fact_memory:
+  host: host_haswell
+  fact_name: fact_name_memory
+  value: 4096 MB
+
+fact_processors:
+  host: host_haswell
+  fact_name: fact_name_processors
+  value: '{ "processorcount" :  16, "models" : [ "Intel Haswell-noTSX", "Intel Haswell-noTSX" ] }'

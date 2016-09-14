@@ -11,6 +11,7 @@ Fusor::Engine.routes.draw do
             get :log
             get :openshift_disk_space
             get :check_mount_point
+            get :compatible_cpu_families
           end
         end
         resources :openstack_deployments do

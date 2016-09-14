@@ -30,7 +30,7 @@
         {{select-simple-f label="CPU Type"
                           content=cpuTypes
                           value=rhevCpuType
-                          prompt="Intel Nehalem Family"
+                          prompt=defaultCpuFamily
                           renderInPlace=true
                           disabled=isStarted
                           action="setSelectValue"
@@ -46,4 +46,3 @@
                    disableNext=disableNextRhevOptions
                    disableCancel=isStarted
                    deploymentName=deploymentName}}
-

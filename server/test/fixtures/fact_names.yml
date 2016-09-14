@@ -1,0 +1,11 @@
+fact_name_memory:
+  name: memory
+
+fact_name_processors:
+  name: processors
+
+fact_name_hostname:
+  name: hostname
+
+fact_name_storage:
+  name: storage

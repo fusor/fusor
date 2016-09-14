@@ -515,5 +515,14 @@ module Fusor
       end
     end
 
+    context 'cpu_compat_detector' do
+      test 'compatible_cpu_families should return a compatible list of cpus' do
+        @deployment.discovered_hosts = [hosts(:host_haswell)]
+        response = JSON.parse(get(:compatible_cpu_families, :id => @deployment.id).body)
+        assert_response :success
+        assert response['cpu_families'].count == 6
+        assert response['default_family'].include?('Haswell-noTSX')
+      end
+    end
   end
 end

@@ -13,10 +13,12 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   confirmRhevRootPassword: Ember.computed.alias("deploymentController.confirmRhevRootPassword"),
   confirmRhevEngineAdminPassword: Ember.computed.alias("deploymentController.confirmRhevEngineAdminPassword"),
 
-  cpuTypes: ['Intel Conroe Family', 'Intel Penryn Family', 'Intel Nehalem Family',
-             'Intel Westmere Family', 'Intel SandyBridge Family', 'Intel Haswell Family',
-             'Intel Haswell-noTSX Family', 'AMD Opteron G1', 'AMD Opteron G2',
-             'AMD Opteron G3', 'AMD Opteron G4', 'AMD Opteron G5', 'IBM POWER 8'],
+  cpuTypes: Ember.computed('model.cpu_families', function() {
+    return this.get('model.cpu_families');
+  }),
+  defaultCpuFamily: Ember.computed('model.default_family', function() {
+    return this.get('model.default_family');
+  }),
 
   passwordValidator: RequiredPasswordValidator.create({}),
 

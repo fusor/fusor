@@ -13,12 +13,14 @@
 require "net/http"
 require "sys/filesystem"
 require "uri"
+require "json"
 
 module Fusor
   class Api::V21::DeploymentsController < Api::V2::DeploymentsController
 
     before_filter :find_deployment, :only => [:destroy, :show, :update, :check_mount_point,
-                                              :deploy, :redeploy, :validate, :log, :openshift_disk_space]
+                                              :deploy, :redeploy, :validate, :log,
+                                              :openshift_disk_space, :compatible_cpu_families]
 
     rescue_from Encoding::UndefinedConversionError, :with => :ignore_it
 
@@ -132,6 +134,13 @@ module Fusor
         render json: { :error => message }, status: 400
       end
     end
+
+    def compatible_cpu_families
+      rhv_hypervisors = @deployment.discovered_hosts
+      cpu_families = Utils::Fusor::CpuCompatDetector.rhv_cpu_families(rhv_hypervisors)
+      render json: cpu_families, status: 200
+    end
+
 
     def check_mount_point
       mount_address = params['address']
