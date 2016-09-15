@@ -420,6 +420,10 @@ th {
   color:#fff !important;
 }
 
+tr.disabled td {
+  color: #999 !important;
+}
+
 li.disabled a {
   color: #999 !important;
 }

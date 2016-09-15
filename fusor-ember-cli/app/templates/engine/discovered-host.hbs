@@ -40,8 +40,9 @@
         <tbody>
           {{#each sortedHosts as |host|}}
              {{tr-engine host=host
+                         hypervisorModelIds=hypervisorModelIds
                          selectedRhevEngineHost=selectedRhevEngineHost
-                         disabled=isStarted
+                         isStarted=isStarted
                          action="onEngineChanged"
                          setIfHostnameInvalid='setIfHostnameInvalid'}}
           {{/each}}

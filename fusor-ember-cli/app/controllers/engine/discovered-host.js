@@ -30,14 +30,12 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, PaginationControlle
     }
 
     let deployingHosts = this.get('deployingHosts');
-    let hypervisorIds = this.get('hypervisorModelIds');
 
     return allDiscoveredHosts.filter(host => {
       let hostId = host.get('id');
-      let isHypervisor = hypervisorIds && hypervisorIds.contains(host.get('id'));
       let isDeploying = deployingHosts.any(deployingHost => deployingHost.get('id') === hostId);
 
-      return !isHypervisor && !isDeploying;
+      return !isDeploying;
     });
   }),
 

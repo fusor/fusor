@@ -5,11 +5,17 @@ export default Ember.Mixin.create({
 
   tagName: 'tr',
 
-  classNameBindings: ['bgColor'],
+  classNameBindings: ['bgColor', 'disabledTr'],
 
   bgColor: Ember.computed('isChecked', function () {
     if (this.get('isChecked')) {
       return 'white-on-blue';
+    }
+  }),
+
+  disabledTr: Ember.computed('isHypervisorOrStarted', function() {
+    if (this.get('isHypervisorOrStarted')) {
+      return 'disabled';
     }
   }),
 
