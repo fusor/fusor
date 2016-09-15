@@ -21,9 +21,7 @@ module Fusor
       class UndercloudsController < Api::Openstack::BaseController
 
         def show
-          dep_has_password = !@deployment.openstack_deployment.undercloud_admin_password.empty?
-          render :json => {:deployed => dep_has_password,
-                           :failed => !dep_has_password}
+          render :json => get_undercloud_status_hash
         end
 
         def create
@@ -65,7 +63,37 @@ module Fusor
           end
         end
 
+        def update_dns
+          result = Utils::Fusor::OpenstackDNS.new(@deployment.openstack_deployment).update
+          if result
+            render :json => get_undercloud_status_hash
+          else
+            render(json: {errors: "Failed to update DNS settings"}, status: 500)
+          end
+        end
+
         private
+
+        def get_undercloud_status_hash
+          deployed = !@deployment.openstack_deployment.undercloud_admin_password.empty?
+          undercloud_dns = nil
+          overcloud_dns = nil
+          satellite_dns = nil
+
+          if deployed
+            overcloud_dns_utils = Utils::Fusor::OpenstackDNS.new(@deployment.openstack_deployment)
+            undercloud_dns = overcloud_dns_utils.undercloud_dns
+            overcloud_dns = overcloud_dns_utils.overcloud_dns
+            satellite_dns = overcloud_dns_utils.satellite_dns
+          end
+
+          return {
+            :deployed => deployed,
+            :undercloud_dns => undercloud_dns,
+            :overcloud_dns => overcloud_dns,
+            :satellite_dns => satellite_dns
+          }
+        end
 
         def tcp_pingable?(ip)
           # This code is from net-ping, and stripped down for use here

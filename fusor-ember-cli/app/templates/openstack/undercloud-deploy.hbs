@@ -1,12 +1,10 @@
 {{#if errorMsg}}
   <div class="row">
-    <div class='col-md-9'>
-      <div class='col-md-9'>
+    <div class='col-md-9 col-lg-6'>
         <div class="alert alert-danger">
           <span class="pficon pficon-error-circle-o"></span>
           {{errorMsg}}
         </div>
-      </div>
     </div>
   </div>
 {{else if showLoadingSpinner}}
@@ -17,9 +15,8 @@
 {{else if isConnected}}
   {{#if stack}}
     <div class="row">
-      <div class='col-md-9'>
-        <div class='col-md-9'>
-          <div class="alert alert-danger">
+      <div class='col-md-9 col-lg-6'>
+          <div class="alert alert-danger undercloud-deploy-alert">
             <span class="pficon pficon-error-circle-o"></span>
             {{#if stackDeleteFailed}}
               Deleting the "{{stack.stack_name}}" stack failed.  You may try again.
@@ -29,18 +26,34 @@
             <a {{action 'deleteStack'}}> Delete {{stack.stack_name}}</a> to continue the current deployment or
             <a {{action 'resetCredentials'}}>use a different undercloud</a>.
           </div>
-        </div>
       </div>
     </div>
   {{else}}
     <div class="row">
-      <div class='col-md-9'>
-        <div class='col-md-9'>
-          <div class="alert alert-success" style="margin-bottom: 0px;">
+        <div class='col-md-9 col-lg-6'>
+          <div class="alert alert-success undercloud-deploy-alert">
             <span class="pficon pficon-ok"></span>
             Undercloud has been successfully detected. If you want to connect to a different undercloud
             <a {{action 'resetCredentials'}}> click here to enter new credentials</a>.
           </div>
+      </div>
+    </div>
+  {{/if}}
+  {{#if dnsMismatch}}
+    <div class="row">
+      <div class='col-md-9 col-lg-6'>
+        <div class='alert alert-warning rhci-alert undercloud-deploy-alert'>
+          <i class="fa fa-2x fa-exclamation-triangle warningForValidation validation-alert-icon"></i>
+          <p>Possible DNS issues detected:</p>
+          <ul class="validation-alert-message">
+            {{#if undercloudDnsMismatch}}
+              <li>Undercloud DNS ({{undercloud.undercloud_dns}}) does not match Satellite DNS ({{undercloud.satellite_dns}})</li>
+            {{/if}}
+            {{#if overcloudDnsMismatch}}
+              <li>Overcloud DNS ({{undercloud.overcloud_dns}}) does not match Satellite DNS ({{undercloud.satellite_dns}})</li>
+            {{/if}}
+          </ul>
+          <p>Click <a {{action 'updateDns'}}>here</a> update OpenStack DNS addresses to match Satellite</p>
         </div>
       </div>
     </div>
@@ -77,8 +90,8 @@
 
   {{#if deploymentError}}
     <div class="row">
-      <div class='col-md-9' style="padding-top: 10px;">
-        <div class="alert alert-danger" style="margin-bottom: 0px; max-width: 600px">
+      <div class="col-md-9 col-lg-6">
+        <div class="alert alert-danger undercloud-deploy-alert">
           <span class="pficon pficon-error-circle-o"></span> Undercloud detection failed: {{deploymentError}}
         </div>
       </div>

@@ -50,58 +50,58 @@ module Fusor
     end
 
     describe 'sync_openstack' do
-      def build_overcloud_edit_plan_parameters(deployment)
+      def build_overcloud_edit_plan_parameters(openstack_deployment)
         {
-          'NeutronPublicInterface'      =>  deployment.overcloud_ext_net_interface,
-          'NovaComputeLibvirtType'      =>  deployment.overcloud_libvirt_type,
-          'AdminPassword'               =>  deployment.overcloud_password,
-          'OvercloudComputeFlavor'      =>  deployment.overcloud_compute_flavor,
-          'ComputeCount'                =>  deployment.overcloud_compute_count,
-          'OvercloudControlFlavor'      =>  deployment.overcloud_controller_flavor,
-          'ControllerCount'             =>  deployment.overcloud_controller_count,
-          'OvercloudCephStorageFlavor'  =>  deployment.overcloud_ceph_storage_flavor,
-          'CephStorageCount'            =>  deployment.overcloud_ceph_storage_count,
-          'OvercloudBlockStorageFlavor' =>  deployment.overcloud_block_storage_flavor,
-          'BlockStorageCount'           =>  deployment.overcloud_block_storage_count,
-          'OvercloudSwiftStorageFlavor' =>  deployment.overcloud_object_storage_flavor,
-          'ObjectStorageCount'          =>  deployment.overcloud_object_storage_count
+          'NeutronPublicInterface'      =>  openstack_deployment.overcloud_ext_net_interface,
+          'NovaComputeLibvirtType'      =>  openstack_deployment.overcloud_libvirt_type,
+          'AdminPassword'               =>  openstack_deployment.overcloud_password,
+          'OvercloudComputeFlavor'      =>  openstack_deployment.overcloud_compute_flavor,
+          'ComputeCount'                =>  openstack_deployment.overcloud_compute_count,
+          'OvercloudControlFlavor'      =>  openstack_deployment.overcloud_controller_flavor,
+          'ControllerCount'             =>  openstack_deployment.overcloud_controller_count,
+          'OvercloudCephStorageFlavor'  =>  openstack_deployment.overcloud_ceph_storage_flavor,
+          'CephStorageCount'            =>  openstack_deployment.overcloud_ceph_storage_count,
+          'OvercloudBlockStorageFlavor' =>  openstack_deployment.overcloud_block_storage_flavor,
+          'BlockStorageCount'           =>  openstack_deployment.overcloud_block_storage_count,
+          'OvercloudSwiftStorageFlavor' =>  openstack_deployment.overcloud_object_storage_flavor,
+          'ObjectStorageCount'          =>  openstack_deployment.overcloud_object_storage_count
         }
       end
 
-      def build_ceph_edit_plan_parameters(deployment)
+      def build_ceph_edit_plan_parameters(openstack_deployment)
         {
-          'CephExternalMonHost'         => deployment.ceph_ext_mon_host,
-          'CephClusterFSID'             => deployment.ceph_cluster_fsid,
-          'CephClientUserName'          => deployment.ceph_client_username,
-          'CephClientKey'               => deployment.ceph_client_key,
-          'NovaRbdPoolName'             => deployment.nova_rbd_pool_name,
-          'CinderRbdPoolName'           => deployment.cinder_rbd_pool_name,
-          'GlanceRbdPoolName'           => deployment.glance_rbd_pool_name
+          'CephExternalMonHost'         => openstack_deployment.ceph_ext_mon_host,
+          'CephClusterFSID'             => openstack_deployment.ceph_cluster_fsid,
+          'CephClientUserName'          => openstack_deployment.ceph_client_username,
+          'CephClientKey'               => openstack_deployment.ceph_client_key,
+          'NovaRbdPoolName'             => openstack_deployment.nova_rbd_pool_name,
+          'CinderRbdPoolName'           => openstack_deployment.cinder_rbd_pool_name,
+          'GlanceRbdPoolName'           => openstack_deployment.glance_rbd_pool_name
         }
       end
 
-      def build_get_plan_parameters(deployment)
+      def build_get_plan_parameters(openstack_deployment)
         {
-          'NeutronPublicInterface'      => {'Default' => deployment.overcloud_ext_net_interface},
-          'NovaComputeLibvirtType'      => {'Default' => deployment.overcloud_libvirt_type},
-          'AdminPassword'               => {'Default' => deployment.overcloud_password},
-          'OvercloudComputeFlavor'      => {'Default' => deployment.overcloud_compute_flavor},
-          'ComputeCount'                => {'Default' => deployment.overcloud_compute_count},
-          'OvercloudControlFlavor'      => {'Default' => deployment.overcloud_controller_flavor},
-          'ControllerCount'             => {'Default' => deployment.overcloud_controller_count},
-          'OvercloudCephStorageFlavor'  => {'Default' => deployment.overcloud_ceph_storage_flavor},
-          'CephStorageCount'            => {'Default' => deployment.overcloud_ceph_storage_count},
-          'OvercloudBlockStorageFlavor' => {'Default' => deployment.overcloud_block_storage_flavor},
-          'BlockStorageCount'           => {'Default' => deployment.overcloud_block_storage_count},
-          'OvercloudSwiftStorageFlavor' => {'Default' => deployment.overcloud_object_storage_flavor},
-          'ObjectStorageCount'          => {'Default' => deployment.overcloud_object_storage_count},
-          'CephExternalMonHost'         => {'Default' => deployment.ceph_ext_mon_host},
-          'CephClusterFSID'             => {'Default' => deployment.ceph_cluster_fsid},
-          'CephClientUserName'          => {'Default' => deployment.ceph_client_username},
-          'CephClientKey'               => {'Default' => deployment.ceph_client_key},
-          'NovaRbdPoolName'             => {'Default' => deployment.nova_rbd_pool_name},
-          'CinderRbdPoolName'           => {'Default' => deployment.cinder_rbd_pool_name},
-          'GlanceRbdPoolName'           => {'Default' => deployment.glance_rbd_pool_name}
+          'NeutronPublicInterface'      => {'Default' => openstack_deployment.overcloud_ext_net_interface},
+          'NovaComputeLibvirtType'      => {'Default' => openstack_deployment.overcloud_libvirt_type},
+          'AdminPassword'               => {'Default' => openstack_deployment.overcloud_password},
+          'OvercloudComputeFlavor'      => {'Default' => openstack_deployment.overcloud_compute_flavor},
+          'ComputeCount'                => {'Default' => openstack_deployment.overcloud_compute_count},
+          'OvercloudControlFlavor'      => {'Default' => openstack_deployment.overcloud_controller_flavor},
+          'ControllerCount'             => {'Default' => openstack_deployment.overcloud_controller_count},
+          'OvercloudCephStorageFlavor'  => {'Default' => openstack_deployment.overcloud_ceph_storage_flavor},
+          'CephStorageCount'            => {'Default' => openstack_deployment.overcloud_ceph_storage_count},
+          'OvercloudBlockStorageFlavor' => {'Default' => openstack_deployment.overcloud_block_storage_flavor},
+          'BlockStorageCount'           => {'Default' => openstack_deployment.overcloud_block_storage_count},
+          'OvercloudSwiftStorageFlavor' => {'Default' => openstack_deployment.overcloud_object_storage_flavor},
+          'ObjectStorageCount'          => {'Default' => openstack_deployment.overcloud_object_storage_count},
+          'CephExternalMonHost'         => {'Default' => openstack_deployment.ceph_ext_mon_host},
+          'CephClusterFSID'             => {'Default' => openstack_deployment.ceph_cluster_fsid},
+          'CephClientUserName'          => {'Default' => openstack_deployment.ceph_client_username},
+          'CephClientKey'               => {'Default' => openstack_deployment.ceph_client_key},
+          'NovaRbdPoolName'             => {'Default' => openstack_deployment.nova_rbd_pool_name},
+          'CinderRbdPoolName'           => {'Default' => openstack_deployment.cinder_rbd_pool_name},
+          'GlanceRbdPoolName'           => {'Default' => openstack_deployment.glance_rbd_pool_name}
         }
       end
 

@@ -24,6 +24,18 @@ const UndercloudDeployController = Ember.Controller.extend(NeedsDeploymentMixin,
     return !this.get('isStarted') && this.get('openstackDeployment.isUndercloudConnected');
   }),
 
+  undercloudDnsMismatch:  Ember.computed('undercloud.undercloud_dns', 'undercloud.satellite_dns', function() {
+    return this.get('undercloud.undercloud_dns') !== this.get('undercloud.satellite_dns');
+  }),
+
+  overcloudDnsMismatch:  Ember.computed('undercloud.overcloud_dns', 'undercloud.satellite_dns', function() {
+    return this.get('undercloud.overcloud_dns') !== this.get('undercloud.satellite_dns');
+  }),
+
+  dnsMismatch: Ember.computed('undercloudDnsMismatch', 'overcloudDnsMismatch', function() {
+    return this.get('undercloudDnsMismatch') || this.get('overcloudDnsMismatch');
+  }),
+
   deployDisabled: Ember.computed(
     'isStarted',
     'openstackDeployment.undercloud_ip_address',
