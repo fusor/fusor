@@ -9,7 +9,7 @@ module Utils
         @application     = params[:application]
         @provider        = params[:provider]
         @hostgroup       = params[:hostgroup]
-        @operatingsystem = params[:os] ||= 'RedHat 7.2'
+        @operatingsystem = params[:os] ||= 'RedHat 7.3'
         @architecture    = params[:arch] ||= 'x86_64'
         @ptable_name     = params[:ptable_name] ||= 'Kickstart default'
         @profile_name = "#{@deployment.label}-#{@application}"

@@ -64,8 +64,8 @@ module Actions
           def create_host(deployment, mac_addr)
             # TODO(fabianvf): Temporary fix while we figure out why this keeps flipping
             # Feel free to yell at fabian if this is still here when we hit GA
-            redhat = Operatingsystem.find_by_title('RedHat 7.2')
-            rhel_server = Operatingsystem.find_by_title('RHEL Server 7.2')
+            redhat = Operatingsystem.find_by_title('RedHat 7.3')
+            rhel_server = Operatingsystem.find_by_title('RHEL Server 7.3')
             os = redhat.nil? ? rhel_server : redhat
 
             rhevm = {"name" => "#{deployment.label.tr('_', '-')}-rhev-engine",
