@@ -24,6 +24,7 @@
                 </span>
                 {{#if isCustomScheme}}
                     {{text-f label='Prepend host names with'
+                             maxlength="40"
                              value=customPreprendName
                              disabled=isStarted
                              placeholder='Enter custom prefix'
