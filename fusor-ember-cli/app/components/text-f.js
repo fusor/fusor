@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import ValidatedInput from "../mixins/validated-input-mixin";
+import ValidatedInput from '../mixins/validated-input-mixin';
 
 export default Ember.Component.extend(ValidatedInput, {
 
@@ -17,6 +17,10 @@ export default Ember.Component.extend(ValidatedInput, {
     return (this.get('type') === 'password');
   }),
 
+  inputLength: Ember.computed('maxlength', function() {
+    return this.getWithDefault('maxlength', '250');
+  }),
+
   setOrigValue: Ember.on('didInsertElement', function () {
     this.set('origValue', this.get('value'));
   }),
@@ -29,10 +33,10 @@ export default Ember.Component.extend(ValidatedInput, {
       this.set('isEyeOpen', this.toggleProperty('isEyeOpen'));
       if (this.get('isEyeOpen')) {
         this.set('typeInput', 'password');
-        this.set('eyeIcon', "fa-eye");
+        this.set('eyeIcon', 'fa-eye');
       } else {
         this.set('typeInput', 'text');
-        this.set('eyeIcon', "fa-eye-slash");
+        this.set('eyeIcon', 'fa-eye-slash');
       }
     }
   }

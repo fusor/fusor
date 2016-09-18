@@ -3,7 +3,8 @@ import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
 import {
   AllValidator,
   PresenceValidator,
-  AlphaNumericDashUnderscoreValidator
+  LengthValidator,
+  RegExpValidator
 } from '../../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, {
@@ -124,7 +125,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   customPrefixValidator: AllValidator.create({
     validators: [
       PresenceValidator.create({}),
-      AlphaNumericDashUnderscoreValidator.create({})
+      LengthValidator.create({max: 40}),
+      RegExpValidator.create({
+        regExp: new RegExp(/^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*)$/),
+        message: 'Custom prefixes must begin with "a-z" or "0-9" and contain only "a-z", "0-9", "." or "-" characters.'
+      })
     ]
   }),
 
