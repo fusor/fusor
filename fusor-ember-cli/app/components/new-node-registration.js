@@ -274,14 +274,21 @@ export default Ember.Component.extend(OspNodeForm, {
   },
 
   updateAutoDetectedNodes(hostArray) {
-    let autoDetectedNodesErrorMsg = null;
+    this.set('autoDetectedNodesErrorMsg', null);
+    this.set('autoDetectedNodes', []);
+
+    if (Ember.isEmpty(hostArray)) {
+      return;
+    }
+
+    if (hostArray.length === 1 && Ember.isEmpty(hostArray[0].mac_addresses)) {
+      this.set('autoDetectedNodesErrorMsg', hostArray[0].hostname);
+      return;
+    }
+
     let autoDetectedNodesMultiMac = [];
     let autoDetectedNodesSingleMac = [];
     let usedMacs = this.getPortMacAddresses();
-
-    if (hostArray.length === 1 && Ember.isEmpty(hostArray[0].mac_addresses)) {
-      autoDetectedNodesErrorMsg = hostArray[0].hostname;
-    }
 
     hostArray.forEach(hostHash => {
       let host = Ember.Object.create({
@@ -303,7 +310,6 @@ export default Ember.Component.extend(OspNodeForm, {
       }
     });
 
-    this.set('autoDetectedNodesErrorMsg', autoDetectedNodesErrorMsg);
     this.set('autoDetectedNodes', autoDetectedNodesMultiMac.concat(autoDetectedNodesSingleMac));
   },
 
