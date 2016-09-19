@@ -1,7 +1,14 @@
-<td>
-  {{radio-button value=host groupValue=selectedRhevEngineHost changed="engineHostChanged" id=cssIdHostId dataQci=cssIdHostId disabled=disabled}}
+{{#if isHypervisorOrStarted}}
+<td class="disabled" data-toggle="tooltip" data-placement="top" data-container="body" title="Selected as Hypervisor">
+  {{radio-button value=host groupValue=selectedRhevEngineHost changed="engineHostChanged" id=cssIdHostId dataQci=cssIdHostId disabled=isHypervisorOrStarted}}
 </td>
-<td class="{{if isSelectedAsEngine 'white-font' 'not-selected'}}">
+{{else}}
+<td>
+  {{radio-button value=host groupValue=selectedRhevEngineHost changed="engineHostChanged" id=cssIdHostId dataQci=cssIdHostId disabled=isHypervisorOrStarted}}
+</td>
+{{/if}}
+
+<td class="{{if isSelectedAsEngine 'white-font' 'not-selected'}} {{if isHypervisorOrStarted 'disabled'}}">
     {{#if isSelectedAsEngine}}
       {{partial 'rhev-hostname-input'}}
     {{else}}
