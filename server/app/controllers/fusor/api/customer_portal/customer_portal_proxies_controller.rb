@@ -15,10 +15,10 @@ module Fusor
     module CustomerPortal
       class CustomerPortalProxiesController < Api::V2::BaseController
 
-        before_filter :verify_logged_in, :except => [:login, :logout]
+        before_filter :verify_logged_in, :except => [:login, :logout, :is_authenticated]
         before_filter :verify_portal_credentials, :only => [:login]
-        before_filter :proxy_request_path, :except => [:login, :logout]
-        before_filter :proxy_request_body, :except => [:login, :logout]
+        before_filter :proxy_request_path, :except => [:login, :logout, :is_authenticated]
+        before_filter :proxy_request_body, :except => [:login, :logout, :is_authenticated]
 
         def login
           session[:portal_username] = params[:username]
@@ -30,6 +30,15 @@ module Fusor
           session.delete(:portal_username)
           session.delete(:portal_password)
           render :json => {}
+        end
+
+        def is_authenticated
+          authenticated = false
+          if session[:portal_username] && session[:portal_password]
+            # they are not nil, let's make sure neither is empty
+            authenticated = !session[:portal_username].empty? && !session[:portal_password].empty?
+          end
+          render :json => authenticated
         end
 
         def get

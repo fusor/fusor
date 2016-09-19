@@ -5,6 +5,7 @@ Fusor::Engine.routes.draw do
     scope :path => :customer_portal, :module => :customer_portal, :as => :customer_portal do
       match '/login' => 'customer_portal_proxies#login', :via => :post
       match '/logout' => 'customer_portal_proxies#logout', :via => :post
+      match '/is_authenticated' => 'customer_portal_proxies#is_authenticated', :via => :get
 
       match '/users/:login/owners' => 'customer_portal_proxies#get', :via => :get, :as => :proxy_users_owners_path, :constraints => { :login => /\S+/ }
       match '/owners/:id/consumers' => 'customer_portal_proxies#get', :via => :get, :as => :proxy_owners_consumers_path

@@ -189,11 +189,10 @@ export default Ember.Route.extend({
     // a previous login success. This method is called to confirm that our
     // session is still valid, and if not, sets the local storage value to false
     return new Ember.RSVP.Promise((resolve, reject) => {
-      const urlVerify =
-        `/customer_portal/users/${sessionPortal.get('identification')}/owners`;
+      const urlVerify = `/customer_portal/is_authenticated`;
 
       Ember.$.getJSON(urlVerify).then(
-        () => resolve(true), () => resolve(false));
+        (response) => resolve(response), () => resolve(false));
     });
   }
 });
