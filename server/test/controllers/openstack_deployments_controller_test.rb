@@ -52,6 +52,11 @@ module Fusor
     describe 'sync_openstack' do
       def build_overcloud_edit_plan_parameters(openstack_deployment)
         {
+          'rhel_reg_sat_repo'           => 'rhel-7-server-satellite-tools-6.2-rpms',
+          'rhel_reg_org'                => 'Default_Organization',
+          'rhel_reg_method'             => 'satellite',
+          'rhel_reg_sat_url'            => Setting[:foreman_url],
+          'rhel_reg_activation_key'     => "OpenStack_Undercloud-#{openstack_deployment.deployment.label}-OpenStack_Undercloud",
           'NeutronPublicInterface'      =>  openstack_deployment.overcloud_ext_net_interface,
           'NovaComputeLibvirtType'      =>  openstack_deployment.overcloud_libvirt_type,
           'AdminPassword'               =>  openstack_deployment.overcloud_password,
@@ -144,10 +149,10 @@ module Fusor
         @ceph_edit_parameters = build_overcloud_edit_plan_parameters(@ceph_openstack_deployment).merge(build_ceph_edit_plan_parameters(@ceph_openstack_deployment))
         @ceph_get_parameters = build_get_plan_parameters(@ceph_openstack_deployment)
 
-        @overcloud_edit_environments = {'environments/puppet-ceph-external.yaml' => false}
+        @overcloud_edit_environments = {'environments/puppet-ceph-external.yaml' => false, 'environments/rhel-registration.yaml' => true}
         @overcloud_get_environments = build_get_plan_environments(false)
 
-        @ceph_edit_environments = {'environments/puppet-ceph-external.yaml' => true}
+        @ceph_edit_environments = {'environments/puppet-ceph-external.yaml' => true, 'environments/rhel-registration.yaml' => true}
         @ceph_get_environments = build_get_plan_environments(true)
       end
 

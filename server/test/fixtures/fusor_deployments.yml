@@ -178,6 +178,20 @@ osp:
   cfme_install_loc: OpenStack
   openstack_deployment: osp
 
+osp_ceph:
+  name: osp_ceph
+  label: osp_ceph
+  organization: empty_organization
+  lifecycle_environment: library
+  upstream_consumer_uuid: 1
+  organization_id: 1
+  deploy_openstack: true
+  deploy_cfme: true
+  deploy_rhev: false
+  cfme_root_password: redhat1234
+  cfme_install_loc: OpenStack
+  openstack_deployment: osp_ceph
+
 sub_val_subsequent_rhev_cfme:
   rhev_root_password: redhat1234
   rhev_engine_admin_password: redhat1234
