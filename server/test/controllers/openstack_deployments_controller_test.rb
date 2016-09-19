@@ -52,6 +52,10 @@ module Fusor
     describe 'sync_openstack' do
       def build_overcloud_edit_plan_parameters(openstack_deployment)
         {
+          'CloudName' =>                "#{openstack_deployment.deployment.label.tr('_', '-')}-overcloud.#{Domain.find(Hostgroup.find_by_name('Fusor Base').domain_id)}",
+          'SSLRootCertificate'          => 'x',
+          'SSLCertificate'              => 'y',
+          'SSLKey'                      => 'z',
           'rhel_reg_sat_repo'           => 'rhel-7-server-satellite-tools-6.2-rpms',
           'rhel_reg_org'                => 'Default_Organization',
           'rhel_reg_method'             => 'satellite',
@@ -87,6 +91,15 @@ module Fusor
 
       def build_get_plan_parameters(openstack_deployment)
         {
+          'CloudName'                   => {'Default' => "#{openstack_deployment.deployment.label.tr('_', '-')}-overcloud.#{Domain.find(Hostgroup.find_by_name('Fusor Base').domain_id)}"},
+          'SSLRootCertificate'          => {'Default' => 'x'},
+          'SSLCertificate'              => {'Default' => 'y'},
+          'SSLKey'                      => {'Default' => 'z'},
+          'rhel_reg_sat_repo'           => {'Default' => 'rhel-7-server-satellite-tools-6.2-rpms'},
+          'rhel_reg_org'                => {'Default' => 'Default_Organization'},
+          'rhel_reg_method'             => {'Default' => 'satellite'},
+          'rhel_reg_sat_url'            => {'Default' => Setting[:foreman_url]},
+          'rhel_reg_activation_key'     => {'Default' => "OpenStack_Undercloud-#{openstack_deployment.deployment.label}-OpenStack_Undercloud"},
           'NeutronPublicInterface'      => {'Default' => openstack_deployment.overcloud_ext_net_interface},
           'NovaComputeLibvirtType'      => {'Default' => openstack_deployment.overcloud_libvirt_type},
           'AdminPassword'               => {'Default' => openstack_deployment.overcloud_password},
@@ -149,14 +162,17 @@ module Fusor
         @ceph_edit_parameters = build_overcloud_edit_plan_parameters(@ceph_openstack_deployment).merge(build_ceph_edit_plan_parameters(@ceph_openstack_deployment))
         @ceph_get_parameters = build_get_plan_parameters(@ceph_openstack_deployment)
 
-        @overcloud_edit_environments = {'environments/puppet-ceph-external.yaml' => false, 'environments/rhel-registration.yaml' => true}
+        @overcloud_edit_environments = {'environments/puppet-ceph-external.yaml' => false, 'environments/rhel-registration.yaml' => true,
+                                        'environments/enable-tls.yaml' => true, 'environments/inject-trust-anchor.yaml' => true}
         @overcloud_get_environments = build_get_plan_environments(false)
 
-        @ceph_edit_environments = {'environments/puppet-ceph-external.yaml' => true, 'environments/rhel-registration.yaml' => true}
+        @ceph_edit_environments = {'environments/puppet-ceph-external.yaml' => true, 'environments/rhel-registration.yaml' => true,
+                                   'environments/enable-tls.yaml' => true, 'environments/inject-trust-anchor.yaml' => true}
         @ceph_get_environments = build_get_plan_environments(true)
       end
 
       test 'sync_openstack should sync overcloud parameters and environments when ceph is disabled' do
+        Utils::Fusor::OvercloudSSL.any_instance.stubs(:gen_certs).returns({'ca' => 'x', 'cert' => 'y', 'key' => 'z'})
         Overcloud::UndercloudHandle.any_instance
           .expects(:list_stacks).returns([])
         Overcloud::UndercloudHandle.any_instance
@@ -173,13 +189,13 @@ module Fusor
         Overcloud::UndercloudHandle.any_instance
           .expects(:get_plan_parameters)
           .returns(@overcloud_get_parameters)
-
         JSON.parse(post(:sync_openstack, :id => @openstack_deployment.id).body)
         assert_response :success
       end
 
 
       test 'sync_openstack should sync overcloud parameters and environments when ceph is enabled' do
+        Utils::Fusor::OvercloudSSL.any_instance.expects(:gen_certs).returns({'ca' => 'x', 'cert' => 'y', 'key' => 'z'})
         Overcloud::UndercloudHandle.any_instance
           .expects(:list_stacks).returns([])
         Overcloud::UndercloudHandle.any_instance
@@ -211,6 +227,7 @@ module Fusor
       end
 
       test 'sync_openstack should return an error if environments are not synchronized when ceph is disabled' do
+        Utils::Fusor::OvercloudSSL.any_instance.expects(:gen_certs).returns({'ca' => 'x', 'cert' => 'y', 'key' => 'z'})
         bad_environments = build_get_plan_environments(true)
 
         Overcloud::UndercloudHandle.any_instance
@@ -236,6 +253,7 @@ module Fusor
       end
 
       test 'sync_openstack should return an error if environments are not synchronized when ceph is enabled' do
+        Utils::Fusor::OvercloudSSL.any_instance.expects(:gen_certs).returns({'ca' => 'x', 'cert' => 'y', 'key' => 'z'})
         bad_environments = build_get_plan_environments(false)
 
         Overcloud::UndercloudHandle.any_instance
@@ -261,6 +279,7 @@ module Fusor
       end
 
       test 'sync_openstack should return an error if overcloud parameters are not synchronized when ceph is disabled' do
+        Utils::Fusor::OvercloudSSL.any_instance.expects(:gen_certs).returns({'ca' => 'x', 'cert' => 'y', 'key' => 'z'})
         bad_parameters = build_get_plan_parameters(@openstack_deployment)
         bad_parameters['NeutronPublicInterface']['Default'] = 'wrong'
 
@@ -288,6 +307,7 @@ module Fusor
 
 
       test 'sync_openstack should return an error if overcloud parameters are not synchronized when ceph is enabled' do
+        Utils::Fusor::OvercloudSSL.any_instance.expects(:gen_certs).returns({'ca' => 'x', 'cert' => 'y', 'key' => 'z'})
         bad_parameters = build_get_plan_parameters(@ceph_openstack_deployment)
         bad_parameters['CephExternalMonHost']['Default'] = ''
 

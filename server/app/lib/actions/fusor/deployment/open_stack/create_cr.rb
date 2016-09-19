@@ -33,7 +33,7 @@ module Actions
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             cr = { "name" => "#{deployment.label}-RHOS",
                    "location_ids" => ["", Location.where(:name => "Default Location").first.id],
-                   "url" => "http://#{deployment.openstack_deployment.overcloud_address}:5000/v2.0/tokens",
+                   "url" => "https://#{deployment.openstack_deployment.overcloud_hostname}:13000/v2.0/tokens",
                    "provider" => "Foreman::Model::Openstack", "user" => 'admin',
                    "password" => deployment.openstack_deployment.overcloud_password,
                    "organization_ids" => [deployment.organization_id], "tenant" => deployment.label }

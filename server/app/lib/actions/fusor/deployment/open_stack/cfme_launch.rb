@@ -63,7 +63,7 @@ module Actions
 
           def create_compute_profile(deployment)
             cp = ComputeProfile.create("name" => "#{deployment.label}-cfme")
-            overcloud = { :openstack_auth_url  => "http://#{deployment.openstack_deployment.overcloud_address}:5000/v2.0/tokens",
+            overcloud = { :openstack_auth_url  => "https://#{deployment.openstack_deployment.overcloud_hostname}:13000/v2.0/tokens",
                           :openstack_username  => 'admin', :openstack_tenant => 'admin',
                           :openstack_api_key   => deployment.openstack_deployment.overcloud_password }
             keystone = Fog::Identity::OpenStack.new(overcloud)

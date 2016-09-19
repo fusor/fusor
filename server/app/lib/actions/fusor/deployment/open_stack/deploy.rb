@@ -39,10 +39,10 @@ module Actions::Fusor::Deployment::OpenStack
 
       sequence do
         plan_self(deployment_id: deployment.id)
+        plan_action(AddOspHostnames, deployment)
         plan_action(SshCommand, deployment, "/opt/theforeman/tfm/root/bin/initialize_overcloud.sh")
         plan_action(OvercloudConfiguration, deployment)
         plan_action(CreateCr, deployment)
-        plan_action(AddOspHostnames, deployment)
       end
     end
 

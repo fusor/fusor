@@ -19,8 +19,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   overcloudUsername: 'admin',
   overcloudPassword: Ember.computed.alias("model.openstack_deployment.overcloud_password"),
 
-  overcloudUrlIP: Ember.computed('model.openstack_deployment.overcloud_hostname', function() {
-    return ('http://' + this.get('model.openstack_deployment.overcloud_address') + '/dashboard/admin');
+  overcloudUrl: Ember.computed('model.openstack_deployment.overcloud_hostname', function() {
+    return ('https://' + this.get('model.openstack_deployment.overcloud_hostname') + '/dashboard/admin');
   }),
 
   selectedRhevEngine: Ember.computed.alias('model.discovered_host'),
