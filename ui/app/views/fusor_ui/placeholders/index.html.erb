@@ -1,6 +1,10 @@
 <%= stylesheet('fusor_ui/fusor-ember-cli') %>
 
 <%= javascript('fusor_ui/vendor') %>
+<script type="text/javascript">
+  $.noConflict();
+</script>
+
 <%= javascript_include_tag 'fusor_ui/fusor-ember-cli', 'data-turbolinks-eval'=>'always' %>
 
 <%= content_for(:title, _("QuickStart Cloud Installer")) %>
