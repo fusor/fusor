@@ -45,10 +45,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
     return allDiscoveredHosts.filter(host => {
       let hostId = host.get('id');
-      let isEngine = hostId === this.get('selectedRhevEngine.id');
       let isDeploying = deployingHosts.any(deployingHost => deployingHost.get('id') === hostId);
 
-      return !isEngine && !isDeploying;
+      return !isDeploying;
     });
   }),
 
