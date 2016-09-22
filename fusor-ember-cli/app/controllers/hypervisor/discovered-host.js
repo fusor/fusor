@@ -1,5 +1,9 @@
 import Ember from 'ember';
+
 import NeedsDeploymentMixin from "../../mixins/needs-deployment-mixin";
+import PaginationControllerMixin from "../../mixins/pagination-controller-mixin";
+import FilterSortHostsMixin from "../../mixins/filter-sort-hosts-mixin";
+
 import {
   AllValidator,
   PresenceValidator,
@@ -7,11 +11,14 @@ import {
   RegExpValidator
 } from '../../utils/validators';
 
-export default Ember.Controller.extend(NeedsDeploymentMixin, {
+export default Ember.Controller.extend(NeedsDeploymentMixin, PaginationControllerMixin,  FilterSortHostsMixin, {
+
+  sortRoute: "hypervisor.discovered-host",
 
   deployments: Ember.computed.alias('applicationController.model'),
   selectedRhevEngine: Ember.computed.alias("deploymentController.model.discovered_host"),
   rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
+
 
   hostNamingScheme: Ember.computed.alias("deploymentController.model.host_naming_scheme"),
   customPreprendName: Ember.computed.alias("deploymentController.model.custom_preprend_name"),
@@ -50,27 +57,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
 
       return !isEngine && !isDeploying;
     });
-  }),
-
-  // same as Engine. TODO. put it mixin
-  filteredHosts: Ember.computed('availableHosts.[]', 'searchString', 'isStarted', function(){
-    var searchString = this.get('searchString');
-    var rx = new RegExp(searchString, 'gi');
-    var availableHosts = this.get('availableHosts');
-
-    if (this.get('isStarted')) {
-      return this.get('model');
-    } else if (availableHosts.get('length') > 0) {
-      return availableHosts.filter(function(record) {
-        return record.get('name').match(rx) ||
-          record.get('memory_human_size').match(rx) ||
-          record.get('disks_human_size').match(rx) ||
-          record.get('subnet_to_s').match(rx) ||
-          record.get('mac').match(rx);
-      });
-    } else {
-      return availableHosts;
-    }
   }),
 
   hypervisorModelIds: Ember.computed('model.[]', 'selectedRhevEngine', function() {
