@@ -1,6 +1,12 @@
-<td>
-  {{input type="checkbox" name="isSelectedAsHypervisor" checked=isSelectedAsHypervisor id=cssIdHostId data-qci=cssIdHostId disabled=disabled}}
+{{#if isEngineOrStarted}}
+<td class="disabled" data-toggle="tooltip" data-placement="top" data-container="body" title="Selected as Engine">
+  {{input type="checkbox" name="isSelectedAsHypervisor" checked=isSelectedAsHypervisor id=cssIdHostId data-qci=cssIdHostId disabled=isEngineOrStarted}}
 </td>
+{{else}}
+<td>
+  {{input type="checkbox" name="isSelectedAsHypervisor" checked=isSelectedAsHypervisor id=cssIdHostId data-qci=cssIdHostId disabled=isEngineOrStarted}}
+</td>
+{{/if}}
 
 <td class="{{if isSelectedAsHypervisor 'white-font' 'not-selected'}}">
   {{#if isSelectedAsHypervisor}}

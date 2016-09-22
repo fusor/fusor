@@ -8,6 +8,16 @@ export default Ember.Component.extend(TrEngineHypervisorMixin, {
 
   isChecked: Ember.computed.alias('isSelectedAsHypervisor'),
 
+  isEngineOrStarted: Ember.computed('host', 'selectedRhevEngine', 'disabled', function() {
+    let isStarted = this.get('disabled');
+    let engineId = this.get('selectedRhevEngine.id');
+    let hostId = this.get('host.id');
+
+    let isEngine = hostId === engineId;
+
+    return isEngine || isStarted;
+  }),
+
   observeHostName: Ember.observer(
     'isSelectedAsHypervisor',
     'customPreprendName',

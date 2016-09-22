@@ -13,8 +13,8 @@ export default Ember.Mixin.create({
     }
   }),
 
-  disabledTr: Ember.computed('isHypervisorOrStarted', function() {
-    if (this.get('isHypervisorOrStarted')) {
+  disabledTr: Ember.computed('isHypervisorOrStarted', 'isEngineOrStarted', function() {
+    if (this.get('isHypervisorOrStarted') || this.get('isEngineOrStarted')) {
       return 'disabled';
     }
   }),
