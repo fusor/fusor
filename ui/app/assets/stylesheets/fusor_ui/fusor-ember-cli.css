@@ -488,6 +488,9 @@ th {
 .white-font {
   color: #fff !important; }
 
+tr.disabled td {
+  color: #999 !important; }
+
 li.disabled a {
   color: #999 !important; }
 
@@ -1668,6 +1671,11 @@ span.hanging-indent {
     display: inline-block; }
   .title-bar + .row hr {
     margin-top: 5px; } }
+
+.undercloud-deploy-alert {
+  margin-top: 20px; }
+  .undercloud-deploy-alert p {
+    margin-left: 48px; }
 
 .register-nodes-errors .foreman-task-error-link {
   color: #333; }
