@@ -10,7 +10,7 @@ module Fusor
                :rhev_export_domain_name, :rhev_export_domain_address,
                :rhev_export_domain_path, :hosted_storage_name, :hosted_storage_address,
                :hosted_storage_path, :rhev_local_storage_path,
-               :rhev_is_self_hosted, :cfme_install_loc,
+               :rhev_is_self_hosted, :rhev_self_hosted_engine_hostname, :cfme_install_loc,
                :foreman_task_uuid, :upstream_consumer_uuid, :upstream_consumer_name,
                :rhev_root_password, :cfme_root_password, :cfme_admin_password,
                :host_naming_scheme, :custom_preprend_name, :enable_access_insights,

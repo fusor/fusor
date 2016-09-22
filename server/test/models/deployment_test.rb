@@ -39,14 +39,14 @@ class DeploymentTest < ActiveSupport::TestCase
       new_rhev.name = "Name with space"
       new_rhev.label = nil
       new_rhev.save!
-      assert_equal "Name_with_space", new_rhev.label, "Label was not properly generated on create"
+      assert_equal "name_with_space", new_rhev.label, "Label was not properly generated on create"
     end
 
     test "should update a label on save" do
       rhev_d = fusor_deployments(:rhev)
       rhev_d.name = "Updated Name"
       rhev_d.save!
-      assert_equal "Updated_Name", rhev_d.label, "Label was not properly updated on save"
+      assert_equal "updated_name", rhev_d.label, "Label was not properly updated on save"
     end
 
     test "should not save with duplicate label" do
@@ -116,6 +116,30 @@ class DeploymentTest < ActiveSupport::TestCase
         assert rhev_d.deploy_rhev, "Is not a rhev deployment"
         assert rhev_d2.deploy_rhev, "Is not a rhev deployment"
         assert_not rhev_d2.save, "Saved deployment with a rhev engine another deployment is using"
+      end
+
+      test "should not save rhev deployment if self hosted and no self-hosted engine hostname" do
+        rhev = fusor_deployments(:rhev_self_hosted)
+        rhev.rhev_self_hosted_engine_hostname = nil
+        assert_not rhev.save, "Saved self hosted rhev deployment with nil engine hostname"
+      end
+
+      test "should not save rhev deployment if self hosted and blank self-hosted engine hostname" do
+        rhev = fusor_deployments(:rhev_self_hosted)
+        rhev.rhev_self_hosted_engine_hostname = ''
+        assert_not rhev.save, "Saved self hosted rhev deployment with blank engine hostname"
+      end
+
+      test "should not save rhev deployment if self hosted and modified data center name" do
+        rhev = fusor_deployments(:rhev_self_hosted)
+        rhev.rhev_data_center_name = 'Changed'
+        assert_not rhev.save, "Saved self hosted rhev deployment with non default data center"
+      end
+
+      test "should not save rhev deployment if self hosted and modified cluster name" do
+        rhev = fusor_deployments(:rhev_self_hosted)
+        rhev.rhev_cluster_name = 'Changed'
+        assert_not rhev.save, "Saved self hosted rhev deployment with non default cluster name"
       end
 
       test "should not save rhev deployment with no rhev engine host" do

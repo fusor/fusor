@@ -135,7 +135,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
   deploymentId: Ember.computed.alias('deploymentController.model.id'),
   step3RouteName: Ember.computed.alias("deploymentController.step3RouteName"),
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
-  rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
   errorMsg: null,
   storageNotEmptyError: null,
 

@@ -1,62 +1,70 @@
-<div class='row'>
-  <div class='col-lg-9'>
+<div class="row">
+  <div class='col-md-12'>
+    <p>
+      Select a target machine for the {{engineTabNameLowercase}}:
+    </p>
+    <div class='row'>
+      <div class='col-lg-9'>
 
-    {{#if isLoadingHosts}}
-      <div class="spinner spinner-md spinner-inline"></div>
-      <span class='spinner-text'>
-        Loading ....
-      </span>
+        {{#if isLoadingHosts}}
+          <div class="spinner spinner-md spinner-inline"></div>
+          <span class='spinner-text'>
+            Loading ....
+          </span>
 
-    {{else}}
+        {{else}}
 
-      <div class="rhev-searchbar clearfix">
-        <form class="form-inline">
-          <div class='col-md-5'>
-            <div class="form-group">
-              <div class='rhev-search-box'>
-                  {{input type='text' class='form-control rhev-search-input'
-                               placeholder=' Search ...'
-                               data-qci='rhev-search-input'
-                               value=searchString
-                               disabled=isStarted}}
+          <div class="rhev-searchbar clearfix">
+            <form class="form-inline">
+              <div class='col-md-5'>
+                <div class="form-group">
+                  <div class='rhev-search-box'>
+                      {{input type='text' class='form-control rhev-search-input'
+                                   placeholder=' Search ...'
+                                   data-qci='rhev-search-input'
+                                   value=searchString
+                                   disabled=isStarted}}
+                  </div>
+                </div>
               </div>
-            </div>
+
+              <div class='col-md-7 text-right'>
+
+                {{numSelected}} selected
+
+                <button class='btn btn-default btn-sm' {{action 'refreshDiscoveredHosts'}} disabled={{isStarted}} data-qci='refresh_engines'>
+                    Refresh Data
+                </button>
+              </div>
+
+            </form>
           </div>
 
-          <div class='col-md-7 text-right'>
+          <table class="table table-bordered small fusor-table">
+            {{partial 'thead-discovered-hosts'}}
+            <tbody>
+              {{#each sortedHosts as |host|}}
+                 {{tr-engine host=host
+                             hypervisorModelIds=hypervisorModelIds
+                             selectedRhevEngineHost=selectedRhevEngineHost
+                             isStarted=isStarted
+                             action="onEngineChanged"
+                             setIfHostnameInvalid='setIfHostnameInvalid'}}
+              {{/each}}
+            </tbody>
+          </table>
 
-            {{numSelected}} selected
+        {{/if}}
 
-            <button class='btn btn-default btn-sm' {{action 'refreshDiscoveredHosts'}} disabled={{isStarted}} data-qci='refresh_engines'>
-                Refresh Data
-            </button>
-          </div>
-
-        </form>
       </div>
+    </div>
 
-      <table class="table table-bordered small fusor-table">
-        {{partial 'thead-discovered-hosts'}}
-        <tbody>
-          {{#each sortedHosts as |host|}}
-             {{tr-engine host=host
-                         hypervisorModelIds=hypervisorModelIds
-                         selectedRhevEngineHost=selectedRhevEngineHost
-                         isStarted=isStarted
-                         action="onEngineChanged"
-                         setIfHostnameInvalid='setIfHostnameInvalid'}}
-          {{/each}}
-        </tbody>
-      </table>
-
-    {{/if}}
-
+    {{cancel-back-next backRouteName='rhev-setup'
+                       disableBack=false
+                       nextRouteName=engineNextRouteName
+                       disableNext=disableNextOnEngine
+                       disableCancel=isStarted
+                       deploymentName=deploymentName}}
   </div>
 </div>
 
-{{cancel-back-next backRouteName='rhev-setup'
-                   disableBack=false
-                   nextRouteName=engineNextRouteName
-                   disableNext=disableNextOnEngine
-                   disableCancel=isStarted
-                   deploymentName=deploymentName}}

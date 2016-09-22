@@ -1,95 +1,110 @@
-<div class='row'>
-  <div class='col-lg-9'>
+{{#if rhevIsSelfHosted}}
+  <p>The engine will be a virtual machine on the selected hypervisor.</p>
+  <div class="row">
+    <form class="form form-horizontal">
+      {{text-f label="Engine Hostname" type="text" value=deployment.rhev_self_hosted_engine_hostname cssId="rhev-engine-hostname"
+      isRequired=true disabled=isStarted validator=engineHostnameValidator}}
+    </form>
+  </div>
+{{/if}}
 
-    {{#if isLoadingHosts}}
-      <div class="spinner spinner-md spinner-inline"></div>
-      <span class='spinner-text'>
-        Loading ....
-      </span>
+<div class="row">
+  <div class='col-md-12'>
+    <p>Select one or more target machines to be hypervisors.</p>
+    <div class='row'>
+      <div class='col-lg-9'>
 
-    {{else}}
+        {{#if isLoadingHosts}}
+          <div class="spinner spinner-md spinner-inline"></div>
+          <span class='spinner-text'>
+            Loading ....
+          </span>
 
-      <div class="rhev-searchbar clearfix">
-        <form class="form-inline">
-          <div class='col-md-5'>
-            <div class="form-group">
-              <div class='rhev-search-box'>
-                  {{input type='text' class='form-control rhev-search-input'
-                               placeholder=' Search ...'
-                               data-qci='rhev-search-input'
-                               value=searchString
-                               disabled=isStarted}}
+        {{else}}
+
+          <div class="rhev-searchbar clearfix">
+            <form class="form-inline">
+              <div class='col-md-5'>
+                <div class="form-group">
+                  <div class='rhev-search-box'>
+                      {{input type='text' class='form-control rhev-search-input'
+                                   placeholder=' Search ...'
+                                   data-qci='rhev-search-input'
+                                   value=searchString
+                                   disabled=isStarted}}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          <div class='col-md-7 text-right'>
+              <div class='col-md-7 text-right'>
 
-            {{model.length}} selected
+                {{model.length}} selected
 
-            {{#if isNotStarted}}
-              <span class='rhev-select-all'>
-                {{#if isAllChecked}}
-                  <a data-qci='deselect-all' {{action 'setUncheckAll'}}>Deselect all ({{availableHosts.length}})</a>
-                {{else}}
-                  <a data-qci='deselect-all' {{action 'setCheckAll'}}>Select all ({{availableHosts.length}})</a>
+                {{#if isNotStarted}}
+                  <span class='rhev-select-all'>
+                    {{#if isAllChecked}}
+                      <a data-qci='deselect-all' {{action 'setUncheckAll'}}>Deselect all ({{availableHosts.length}})</a>
+                    {{else}}
+                      <a data-qci='deselect-all' {{action 'setCheckAll'}}>Select all ({{availableHosts.length}})</a>
+                    {{/if}}
+                  </span>
                 {{/if}}
-              </span>
-            {{/if}}
 
-            <button class='btn btn-default btn-sm' {{action 'openNamingSchemeModal'}} disabled={{isStarted}} data-qci='edit-naming-scheme'>
-                Edit Naming Scheme
-            </button>
+                <button class='btn btn-default btn-sm' {{action 'openNamingSchemeModal'}} disabled={{isStarted}} data-qci='edit-naming-scheme'>
+                    Edit Naming Scheme
+                </button>
 
-            <button class='btn btn-default btn-sm' {{action 'refreshDiscoveredHosts'}} disabled={{isStarted}} data-qci='refresh_hypervisors'>
-                Refresh Data
-            </button>
+                <button class='btn btn-default btn-sm' {{action 'refreshDiscoveredHosts'}} disabled={{isStarted}} data-qci='refresh_hypervisors'>
+                    Refresh Data
+                </button>
+              </div>
+
+            </form>
           </div>
 
-        </form>
+          <table class="table table-bordered small fusor-table">
+            {{partial 'thead-discovered-hosts'}}
+            <tbody>
+            {{#each sortedHosts as |host|}}
+               {{tr-hypervisor host=host
+                               model=model
+                               isCustomScheme=isCustomScheme
+                               isMac=isMac
+                               isHypervisorN=isHypervisorN
+                               customPreprendName=customPreprendName
+                               isFreeform=isFreeform
+                               num=host.id
+                               disabled=isStarted
+                               filteredHosts=filteredHosts
+                               setIfHostnameInvalid='setIfHostnameInvalid'
+                               customPrefixValidator=customPrefixValidator
+                               selectedRhevEngine=selectedRhevEngine
+                               }}
+            {{/each}}
+            </tbody>
+          </table>
+
+        {{/if}}
+
       </div>
+    </div>
 
-      <table class="table table-bordered small fusor-table">
-        {{partial 'thead-discovered-hosts'}}
-        <tbody>
-        {{#each sortedHosts as |host|}}
-           {{tr-hypervisor host=host
-                           model=model
-                           isCustomScheme=isCustomScheme
-                           isMac=isMac
-                           isHypervisorN=isHypervisorN
-                           customPreprendName=customPreprendName
-                           isFreeform=isFreeform
-                           num=host.id
-                           disabled=isStarted
-                           filteredHosts=filteredHosts
-                           setIfHostnameInvalid='setIfHostnameInvalid'
-                           customPrefixValidator=customPrefixValidator
-                           selectedRhevEngine=selectedRhevEngine
-                           }}
-        {{/each}}
-        </tbody>
-      </table>
+    {{cancel-back-next backRouteName=hypervisorBackRouteName
+                        disableBack=false
+                        nextRouteName='rhev-options'
+                        disableNext=disableNextOnHypervisor
+                        disableCancel=isStarted
+                        deploymentName=deploymentName}}
 
-    {{/if}}
-
+    {{naming-scheme-modal openModal=openModalNamingScheme
+                          namingOptions=namingOptions
+                          hostNamingScheme=hostNamingScheme
+                          isStarted=isStarted
+                          customPreprendName=customPreprendName
+                          saveNamingScheme='saveNamingScheme'
+                          cancelNamingScheme='cancelNamingScheme'
+                          setSelectValue='setSelectValue'
+                          customPrefixValidator=customPrefixValidator
+                          }}
   </div>
 </div>
-
-{{cancel-back-next backRouteName=hypervisorBackRouteName
-                    disableBack=false
-                    nextRouteName='rhev-options'
-                    disableNext=disableNextOnHypervisor
-                    disableCancel=isStarted
-                    deploymentName=deploymentName}}
-
-{{naming-scheme-modal openModal=openModalNamingScheme
-                      namingOptions=namingOptions
-                      hostNamingScheme=hostNamingScheme
-                      isStarted=isStarted
-                      customPreprendName=customPreprendName
-                      saveNamingScheme='saveNamingScheme'
-                      cancelNamingScheme='cancelNamingScheme'
-                      setSelectValue='setSelectValue'
-                      customPrefixValidator=customPrefixValidator
-                      }}

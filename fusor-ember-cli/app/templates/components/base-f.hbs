@@ -2,12 +2,10 @@
    <div class="form-group {{if hasError 'has-error'}}">
 
       <label class="control-label {{labelClassSize}} {{class}}">
-        <label class="class">
-          {{#if isRequired}}
-            <span class='errorForValidation'>*</span>
-          {{/if}}
-          {{label}}
-        </label>
+        {{#if isRequired}}
+          <span class='errorForValidation'>*</span>
+        {{/if}}
+        {{label}}
         {{#if showHelpPopover}}
           <button {{action 'doNothing' bubbles=false}}
                   class="pficon fa fa-info-circle rhci-popover-button"

@@ -131,6 +131,9 @@ rhev_self_hosted:
   rhev_root_password: redhat1234
   rhev_engine_admin_password: redhat1234
   rhev_is_self_hosted: true
+  rhev_self_hosted_engine_hostname: my-rhev-engine
+  rhev_data_center_name: Default
+  rhev_cluster_name: Default
   rhev_share_path: /storage/rhev_storage
   rhev_storage_address: 10.13.129.106
   hosted_storage_path: /storage/hosted_storage

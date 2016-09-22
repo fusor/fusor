@@ -87,7 +87,7 @@ module Fusor
     protected
 
     def update_label
-      self.label = name ? name.gsub(/[^a-z0-9_]/i, "_") : nil
+      self.label = name ? name.downcase.gsub(/[^a-z0-9_]/i, "_") : nil
     end
 
     def ensure_openstack_deployment

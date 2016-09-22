@@ -25,6 +25,8 @@ export default Ember.Mixin.create({
   upstreamConsumerName: Ember.computed.alias(
     'deploymentController.model.upstream_consumer_name'),
 
+  rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
+
   // Product names
   fullnameSatellite: Ember.computed.alias('deploymentController.fullnameSatellite'),
   fullnameRhev: Ember.computed.alias('deploymentController.fullnameRhev'),

@@ -17,6 +17,7 @@ export default DS.Model.extend(UsesOseDefaults, {
   is_disconnected: DS.attr('boolean'),
   has_content_error: DS.attr('boolean'),
   rhev_is_self_hosted: DS.attr('boolean'),
+  rhev_self_hosted_engine_hostname: DS.attr('string'),
 
   rhev_engine_admin_password: DS.attr('string'),
   rhev_data_center_name: DS.attr('string'),

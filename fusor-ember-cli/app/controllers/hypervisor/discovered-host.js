@@ -8,7 +8,8 @@ import {
   AllValidator,
   PresenceValidator,
   LengthValidator,
-  RegExpValidator
+  RegExpValidator,
+  HostnameValidator
 } from '../../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, PaginationControllerMixin,  FilterSortHostsMixin, {
@@ -16,8 +17,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, PaginationControlle
   sortRoute: "hypervisor.discovered-host",
 
   deployments: Ember.computed.alias('applicationController.model'),
+  deployment: Ember.computed.alias("deploymentController.model"),
   selectedRhevEngine: Ember.computed.alias("deploymentController.model.discovered_host"),
-  rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
 
 
   hostNamingScheme: Ember.computed.alias("deploymentController.model.host_naming_scheme"),
@@ -85,6 +86,13 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, PaginationControlle
     }
   }),
 
+  engineHostnameValidator: AllValidator.create({
+    validators: [
+      PresenceValidator.create({}),
+      HostnameValidator.create({})
+    ]
+  }),
+
   hostnameValidity: Ember.Object.create({
     updated: Date.now(),
     state: Ember.Object.create()
@@ -92,8 +100,16 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, PaginationControlle
   disableNextOnHypervisor: Ember.computed(
     'hypervisorModelIds',
     'hostnameValidity.updated',
+    'rhevIsSelfHosted',
+    'deployment.rhev_self_hosted_engine_hostname',
+    'engineHostNameValidator',
     function() {
       if(this.get('hypervisorModelIds').get('length') === 0) {
+        return true;
+      }
+
+      if (this.get('rhevIsSelfHosted') &&
+          this.get('engineHostnameValidator').isInvalid(this.get('deployment.rhev_self_hosted_engine_hostname'))) {
         return true;
       }
 
