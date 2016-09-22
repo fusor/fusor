@@ -52,7 +52,7 @@
       <table class="table table-bordered small fusor-table">
         {{partial 'thead-discovered-hosts'}}
         <tbody>
-        {{#each filteredHosts as |host|}}
+        {{#each sortedHosts as |host|}}
            {{tr-hypervisor host=host
                            model=model
                            isCustomScheme=isCustomScheme
