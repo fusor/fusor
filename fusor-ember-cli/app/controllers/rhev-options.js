@@ -9,7 +9,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   rhevDataCenterName: Ember.computed.alias("deploymentController.model.rhev_data_center_name"),
   rhevClusterName: Ember.computed.alias("deploymentController.model.rhev_cluster_name"),
   rhevCpuType: Ember.computed.alias("deploymentController.model.rhev_cpu_type"),
-  rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
   confirmRhevRootPassword: Ember.computed.alias("deploymentController.confirmRhevRootPassword"),
   confirmRhevEngineAdminPassword: Ember.computed.alias("deploymentController.confirmRhevEngineAdminPassword"),
 

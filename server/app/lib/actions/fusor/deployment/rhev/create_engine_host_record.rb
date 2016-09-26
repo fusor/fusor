@@ -68,7 +68,7 @@ module Actions
             rhel_server = Operatingsystem.find_by_title('RHEL Server 7.3')
             os = redhat.nil? ? rhel_server : redhat
 
-            rhevm = {"name" => "#{deployment.label.tr('_', '-')}-rhev-engine",
+            rhevm = {"name" => deployment.rhev_self_hosted_engine_hostname,
                      "location_id" => Location.find_by_name('Default Location').id,
                      "environment_id" => Environment.where(:katello_id => "Default_Organization/Library/Fusor_Puppet_Content").first.id,
                      "organization_id" => deployment["organization_id"],

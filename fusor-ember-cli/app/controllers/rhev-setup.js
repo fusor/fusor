@@ -4,8 +4,6 @@ import NeedsDiscoveredHostsAjax from '../mixins/needs-discovered-hosts-ajax';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, NeedsDiscoveredHostsAjax, {
 
-  rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
-
   setupNextRouteName: Ember.computed('rhevIsSelfHosted', function(){
     return this.get('rhevIsSelfHosted') ?
       'hypervisor.discovered-host' : 'engine.discovered-host';

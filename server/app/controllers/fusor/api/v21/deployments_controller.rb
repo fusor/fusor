@@ -223,7 +223,7 @@ module Fusor
       allowed = [
         :name, :description, :deploy_rhev, :deploy_cfme,
         :deploy_openstack, :deploy_openshift, :is_disconnected, :rhev_is_self_hosted,
-        :rhev_engine_admin_password, :rhev_data_center_name,
+        :rhev_self_hosted_engine_hostname, :rhev_engine_admin_password, :rhev_data_center_name,
         :rhev_cluster_name, :rhev_storage_name, :rhev_storage_type,
         :rhev_storage_address, :rhev_cpu_type, :rhev_share_path,
         :hosted_storage_name, :hosted_storage_address, :hosted_storage_path,

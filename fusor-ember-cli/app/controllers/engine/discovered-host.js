@@ -11,7 +11,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, PaginationControlle
   rhevController: Ember.inject.controller('rhev'),
 
   selectedRhevEngineHost: Ember.computed.alias("model"),
-  rhevIsSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
 
   hypervisorModelIds: Ember.computed('deploymentController.model.discovered_hosts.[]', function() {
     return this.get('deploymentController.model.discovered_hosts').getEach('id');

@@ -9,7 +9,18 @@ export default Ember.Route.extend(DiscoveredHostRouteMixin, NeedsDiscoveredHosts
 
   setupController(controller, model) {
     this._super(controller, model);
-    this.set('saveOnTransition', true);
+
+    let deployment = this.modelFor('deployment');
+    this.set('saveOnTransition', deployment.get('isNotStarted'));
+
+    if (deployment.get('isNotStarted') && Ember.isEmpty(deployment.get('rhev_self_hosted_engine_hostname')) && Ember.isPresent(deployment.get('label'))) {
+      let dasherizedLabel = deployment.get('label').trim().replace('_', '-');
+      deployment.set('rhev_self_hosted_engine_hostname', `${dasherizedLabel}-rhev-engine`);
+    }
+  },
+
+  deactivate() {
+    this.send('saveDeployment', null);
   },
 
   actions: {

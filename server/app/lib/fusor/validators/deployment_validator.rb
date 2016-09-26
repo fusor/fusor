@@ -88,6 +88,10 @@ module Fusor
         end
 
         if deployment.rhev_is_self_hosted
+          if deployment.rhev_self_hosted_engine_hostname.empty?
+            deployment.errors[:rhev_self_hosted_engine_hostname] << _('RHV self hosted deployments must have an engine hostname')
+          end
+
           if deployment.rhev_data_center_name != 'Default'
             deployment.errors[:rhev_data_center_name] << _('RHV self hosted deployments must use the Default datacenter')
           end
