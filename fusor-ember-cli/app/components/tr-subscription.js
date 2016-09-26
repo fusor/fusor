@@ -30,11 +30,18 @@ export default Ember.Component.extend({
   }),
 
   isQtyValid: Ember.computed('subscription.qtyAvailable', 'subscription.qtyToAttach', function() {
-    if ((this.get('subscription.qtyToAttach') >= 0) && (this.get('subscription.qtyAvailable') > 0)) {
-      return (this.get('subscription.qtyToAttach') <= this.get('subscription.qtyAvailable'));
+    let qtyAvailable = this.get('subscription.qtyAvailable');
+    let qtyToAttach = this.get('subscription.qtyToAttach');
+    return Ember.isPresent(qtyToAttach) && qtyToAttach >= 0 && qtyToAttach <= qtyAvailable;
+  }),
+
+  qtyToAttachClass: Ember.computed('isQtyValid', function() {
+    if (this.get('isQtyValid')) {
+      return 'center';
+    } else {
+      return 'center invalid-input';
     }
   }),
-  isQtyInValid: Ember.computed.not('isQtyValid'),
 
   disableQty: Ember.computed('subscription.qtyAvailable', function() {
     return (this.get('subscription.qtyAvailable') === 0);
@@ -76,8 +83,8 @@ export default Ember.Component.extend({
 
   actions: {
     setValidQty() {
-      if (this.get('isQtyInValid')) {
-        this.set('subscription.qtyToAttach', this.get('subscription.qtyAvailable') );
+      if (!this.get('isQtyValid')) {
+        this.set('subscription.qtyToAttach', 0 );
       }
       var pool = this.get('subscription');
       this.sendAction('saveSubscription', pool, this.get('subscription.qtyToAttach'));
