@@ -25,9 +25,13 @@ export default Ember.Route.extend(PaginationRouteMixin, {
 
   actions: {
     deleteDeployment(item) {
+      let controller = this.controllerFor('deployments');
+      let newTotalCnt = controller.get('totalCnt') - 1;
       return this.store.findRecord('deployment', item.get('id')).then(function(deployment) {
         deployment.deleteRecord();
-        deployment.save();
+        deployment.save().then(function(result) {
+          controller.set('totalCnt', newTotalCnt);
+        });
       });
     },
 
