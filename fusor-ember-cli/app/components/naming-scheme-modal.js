@@ -40,6 +40,12 @@ export default Ember.Component.extend({
 
   actions: {
     saveNamingScheme() {
+      // field name provided by setSelectValue below
+      let fieldName = this.get('lookupName');
+      let selectionValue = this.get(fieldName);
+
+      // triggers action updating hostNamingScheme on deployment model
+      this.sendAction('setSelectValue', fieldName, selectionValue);
       this.set('openModal', false);
       this.sendAction('saveNamingScheme');
     },
@@ -50,12 +56,12 @@ export default Ember.Component.extend({
       this.set('origCustomPreprendName', null);
       this.sendAction('cancelNamingScheme');
     },
+
     setSelectValue(fieldName, selectionValue) {
+      // sets lookupName so that we know fieldName in 'saveNamingScheme' above
+      this.set('lookupName', fieldName);
       // this just sets hostNamingScheme on the modal component
       this.set(fieldName, selectionValue);
-      // this triggers the action to update hostNamingScheme on the deployment modal
-      this.sendAction('setSelectValue', fieldName, selectionValue);
     }
-
   }
 });
