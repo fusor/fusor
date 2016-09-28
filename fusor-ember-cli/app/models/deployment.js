@@ -153,6 +153,58 @@ export default DS.Model.extend(UsesOseDefaults, {
     return this.get('deploy_rhev') || this.get('deploy_cfme') || this.get('deploy_openstack') || this.get('deploy_openshift');
   }),
 
+  multipleCfme: Ember.computed(
+    'deploy_cfme',
+    'deploy_rhev',
+    'deploy_openstack',
+    function() {
+      return this.get('deploy_cfme') && this.get('deploy_rhev') && this.get('deploy_openstack');
+    }),
+
+  primaryCfmeInstallLoc: Ember.computed('cfme_install_loc', function() {
+    return this.get('cfme_install_loc');
+  }),
+
+  primaryCfmeHostname: Ember.computed('primaryCfmeInstallLoc', 'cfme_rhv_hostname', 'cfme_osp_hostname', function() {
+    switch (this.get('primaryCfmeInstallLoc')) {
+    case 'RHEV':
+      return this.get('cfme_rhv_hostname');
+    case 'OpenStack':
+      return this.get('cfme_osp_hostname');
+    default:
+      return null;
+    }
+  }),
+
+  workerCfmeInstallLoc: Ember.computed(
+    'cfme_install_loc',
+    'multipleCfme',
+    function() {
+      if (!this.get('multipleCfme')) {
+        return null;
+      }
+
+      switch (this.get('cfme_install_loc')) {
+      case 'RHEV':
+        return 'OpenStack';
+      case 'OpenStack':
+        return 'RHEV';
+      default:
+        return null;
+      }
+    }),
+
+  workerCfmeHostname: Ember.computed('workerCfmeInstallLoc', 'cfme_rhv_hostname', 'cfme_osp_hostname', function() {
+    switch (this.get('workerCfmeInstallLoc')) {
+    case 'RHEV':
+      return this.get('cfme_rhv_hostname');
+    case 'OpenStack':
+      return this.get('cfme_osp_hostname');
+    default:
+      return null;
+    }
+  }),
+
   // controller.deployment.isStarted returns false if refreshing child route,
   // so best to have it on model as well
   isStarted: Ember.computed('foreman_task_uuid', function() {

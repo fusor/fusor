@@ -51,18 +51,21 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
     return ('https://' + this.get('selectedRhevEngine.ip') + '/ovirt-engine/');
   }),
 
-  cfmeUrl: Ember.computed('model.cfme_hostname', function() {
-    return ('https://' + this.get('model.cfme_hostname'));
-  }),
-  cfmeUrlIP: Ember.computed('model.cfme_address', function() {
-    return ('https://' + this.get('model.cfme_address'));
+  multipleCfme: Ember.computed.alias('model.multipleCfme'),
+
+  primaryCfmeUrl: Ember.computed('model.primaryCfmeHostname', function() {
+    return ('https://' + this.get('model.primaryCfmeHostname'));
   }),
 
-  cfmeUrlSelfService: Ember.computed('cfmeUrl', function() {
-    return (this.get('cfmeUrl') + '/self_service');
+  primaryCfmeUrlSelfService: Ember.computed('primaryCfmeUrl', function() {
+    return (this.get('primaryCfmeUrl') + '/self_service');
   }),
-  cfmeUrlSelfServiceIP: Ember.computed('cfmeUrlIP', function() {
-    return (this.get('cfmeUrlIP') + '/self_service');
+
+  workerCfmeUrl: Ember.computed('model.workerCfmeHostname', function() {
+    return ('https://' + this.get('model.workerCfmeHostname'));
+  }),
+
+  workerCfmeUrlSelfService: Ember.computed('workerCfmeUrl', function() {
+    return (this.get('workerCfmeUrl') + '/self_service');
   })
-
 });

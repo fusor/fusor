@@ -248,13 +248,19 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     return this.humanizedLocation(this.get('model.openshift_install_loc'));
   }),
 
-  cfmeInstallLoc: Ember.computed('model.cfme_install_loc', function() {
-    return this.humanizedLocation(this.get('model.cfme_install_loc'));
+  multipleCfme: Ember.computed.alias('model.multipleCfme'),
+
+  primaryCfmeInstallLoc: Ember.computed('model.primaryCfmeInstallLoc', function() {
+    return this.humanizedLocation(this.get('model.primaryCfmeInstallLoc'));
+  }),
+
+  workerCfmeInstallLoc: Ember.computed('model.workerCfmeInstallLoc', function () {
+    return this.humanizedLocation(this.get('model.workerCfmeInstallLoc'));
   }),
 
   deployOseExampleApp: Ember.computed('model.openshift_sample_helloworld', function() {
     return this.humanizedBoolean(this.get('model.openshift_sample_helloworld'));
-  }), 
+  }),
 
   humanizedLocation(location) {
     return location === 'RHEV' ? 'RHV' : location;
