@@ -164,7 +164,7 @@ const AssignNodesController =  Ember.Controller.extend(DeploymentControllerMixin
     function() {
       const availableNodes = this.get('availableNodesPerFlavor');
       const configuredNodes = this.get('configuredNodesPerFlavor');
-      const flavors = Ember.keys(availableNodes);
+      const flavors = Object.keys(availableNodes);
 
       const hasValidRoleCounts = flavors.reduce((isValid, flavor) => {
         const configuredCount = configuredNodes.get(flavor);
