@@ -28,7 +28,8 @@ module Actions
             ::Fusor.log.debug "================ AddRhvProvider run method ===================="
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
-            cfme_address = deployment.cfme_address
+            cfme_addresses = [deployment.cfme_rhv_address, deployment.cfme_osp_address]
+            cfme_addresses.compact
 
             provider = {
               :name => "#{deployment.label}-RHEV",
@@ -48,8 +49,10 @@ module Actions
 
             ::Fusor.log.info "Adding RHV provider #{provider[:name]} to CFME."
 
-            Utils::CloudForms::AddProvider.add(cfme_address, provider, deployment)
-            Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)
+            cfme_addresses.each do |cfme_address|
+              Utils::CloudForms::AddProvider.add(cfme_address, provider, deployment)
+              Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)
+            end
 
             ::Fusor.log.debug "================ Leaving AddRhvProvider run method ===================="
           end

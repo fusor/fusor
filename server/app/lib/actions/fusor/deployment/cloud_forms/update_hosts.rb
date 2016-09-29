@@ -31,17 +31,19 @@ module Actions
 
               ssh_user = "root"
               deployment = ::Fusor::Deployment.find(input[:deployment_id])
-              cfme_address = deployment.cfme_address
+              cfme_addresses = [deployment.cfme_rhv_address, deployment.cfme_osp_address]
+              cfme_addresses.compact
               ssh_password = deployment.cfme_root_password
 
-              @io = StringIO.new
-              client = Utils::Fusor::SSHConnection.new(cfme_address, ssh_user, ssh_password)
-              cmd = 'echo "127.0.0.1 $(uname -n)" >> /etc/hosts'
-              client.execute(cmd, @io)
+              cfme_addresses.each do |cfme_address|
+                @io = StringIO.new
+                client = Utils::Fusor::SSHConnection.new(cfme_address, ssh_user, ssh_password)
+                cmd = 'echo "127.0.0.1 $(uname -n)" >> /etc/hosts'
+                client.execute(cmd, @io)
 
-              # close the stringio at the end
-              @io.close unless @io.closed?
-
+                # close the stringio at the end
+                @io.close unless @io.closed?
+              end
             rescue Exception => e
               @io.close if @io && !@io.closed?
               fail _("Failed to update /etc/hosts on appliance. Error message: #{e.message}")
