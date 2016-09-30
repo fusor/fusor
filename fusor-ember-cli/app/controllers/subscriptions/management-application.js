@@ -36,8 +36,6 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
       this.get('sessionPortal').save();
       this.set('upstreamConsumerUuid', managementApp.get('id'));
       this.set('upstreamConsumerName', managementApp.get('name'));
-      // show selected UUID in url
-      return this.transitionTo('subscriptions.management-application.consumer', managementApp.get('id'));
     },
 
     createSatellite(newSatelliteName) {

@@ -60,9 +60,7 @@ export default Router.map(function() {
 
     this.route('subscriptions', {resetNamespace: true}, function() {
       this.route('credentials');
-      this.route('management-application', function() {
-        this.route('consumer', { path: '/:management_application_uuid' });
-      });
+      this.route('management-application');
       this.route('select-subscriptions', {path: 'select'});
       this.route('review-subscriptions', {path: 'review'});
     });
