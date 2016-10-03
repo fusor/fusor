@@ -2,13 +2,13 @@
   <div class='col-md-9'>
 
     <p>
-      Select a product to create and manage virtual machines.
+      Select where to install the primary CloudForms appliance. A CloudForms appliance must be installed for each provider, but workers will use the database of the primary appliance.
     </p>
 
     <div class='ident-radio'>
       {{#radio-button value="RHEV" groupValue=cfmeInstallLoc changed="cfmeLocationChanged" id="install_on_rhev" disabled=disableRHEVradio dataQci="rhevCfmeInstallLoc"}}
         <span class="{{if disableRHEV 'disabled'}}">
-          Install CloudForms on Red Hat Virtualization
+          Install primary appliance on {{fullnameRhev}}
         </span>
       {{/radio-button}}
     </div>
@@ -16,7 +16,7 @@
     <div class='ident-radio'>
       {{#radio-button value="OpenStack" groupValue=cfmeInstallLoc changed="cfmeLocationChanged" id="install_on_openstack" disabled=disableOpenstackradio dataQci="openstackCfmeInstallLoc"}}
         <span class="inline-block {{if disableOpenStack 'disabled'}}">
-          Install CloudForms on {{fullnameOpenStack}}
+          Install primary appliance on {{fullnameOpenStack}}
           <p style='margin-left:16px;' class="explanatory-text">
             Able to split virtualization workloads across multiple controller nodes
           </p>

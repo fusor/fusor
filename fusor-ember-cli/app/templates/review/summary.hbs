@@ -62,13 +62,23 @@
     {{#if isCloudForms}}
       {{#accordion-item name=fullnameCloudForms isOpen=true}}
 
-        {{review-link label='Admin Console'
-                      value=cfmeUrl
+        {{review-link label='Primary Admin Console'
+                      value=primaryCfmeUrl
                       isExternalURL=true}}
 
-        {{review-link label='Self-Service Console'
-                      value=cfmeUrlSelfService
+        {{review-link label='Primary Self-Service Console'
+                      value=primaryCfmeUrlSelfService
                       isExternalURL=true}}
+
+        {{#if multipleCfme}}
+          {{review-link label='Worker Admin Console'
+                        value=workerCfmeUrl
+                        isExternalURL=true}}
+
+          {{review-link label='Worker Self-Service Console'
+                        value=workerCfmeUrlSelfService
+                        isExternalURL=true}}
+        {{/if}}
 
         {{review-link label='Username' value='admin'}}
 
