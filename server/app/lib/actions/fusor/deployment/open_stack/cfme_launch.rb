@@ -33,8 +33,8 @@ module Actions
             create_image(deployment)
             create_compute_profile(deployment)
             host = create_host(deployment)
-            deployment.cfme_address = host.ip
-            deployment.cfme_hostname = host.name
+            deployment.cfme_osp_address = host.ip
+            deployment.cfme_osp_hostname = host.name
             deployment.save!
             ::Fusor.log.debug '====== Leaving CFME Launch run method ======'
           end
@@ -52,7 +52,7 @@ module Actions
           def create_image(deployment)
             cr = ComputeResource.find_by_name("#{deployment.label}-RHOS")
             hostgroup = find_hostgroup(deployment, "Cloudforms")
-            Image.create("name" => "#{deployment.label}-cfme",
+            Image.create("name" => "#{deployment.label}-osp-cfme",
               "username" => 'root',
               "user_data" => 1,
               "uuid" => cr.available_images.find { |hash| "#{deployment.label}-cfme" == hash.name }.id,
@@ -62,7 +62,7 @@ module Actions
           end
 
           def create_compute_profile(deployment)
-            cp = ComputeProfile.create("name" => "#{deployment.label}-cfme")
+            cp = ComputeProfile.create("name" => "#{deployment.label}-osp-cfme")
             overcloud = { :openstack_auth_url  => "https://#{deployment.openstack_deployment.overcloud_hostname}:13000/v2.0/tokens",
                           :openstack_username  => 'admin', :openstack_tenant => 'admin',
                           :openstack_api_key   => deployment.openstack_deployment.overcloud_password }
@@ -76,7 +76,7 @@ module Actions
                                      "vm_attrs" => {
                                        "flavor_ref" => "4",
                                        "network" => "#{deployment.label}-float-net",
-                                       "image_ref" => Image.find_by_name("#{deployment.label}-cfme").uuid,
+                                       "image_ref" => Image.find_by_name("#{deployment.label}-osp-cfme").uuid,
                                        "security_groups" => "#{deployment.label}-sec-group",
                                        "nics" => ["", nic],
                                        "tenant_id" => tenant['id']
@@ -85,7 +85,7 @@ module Actions
           end
 
           def create_host(deployment)
-            cfme = {"name" => "#{deployment.label.tr('_', '-')}-cfme",
+            cfme = {"name" => "#{deployment.label.tr('_', '-')}-osp-cfme",
                     "location_id" => Location.find_by_name('Default Location').id,
                     "environment_id" => Environment.where(:katello_id => "Default_Organization/Library/Fusor_Puppet_Content").first.id,
                     "organization_id" => deployment["organization_id"],
@@ -99,7 +99,7 @@ module Actions
                     "provision_method" => "image",
                     "build" => 1,
                     "is_owned_by" => "3-Users",
-                    "compute_profile_id" => ComputeProfile.find_by_name("#{deployment.label}-cfme").id}
+                    "compute_profile_id" => ComputeProfile.find_by_name("#{deployment.label}-osp-cfme").id}
             host = ::Host.create(cfme)
 
             if host.global_status == 0

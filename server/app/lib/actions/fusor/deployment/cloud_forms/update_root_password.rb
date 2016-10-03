@@ -28,41 +28,44 @@ module Actions
           def run
             ::Fusor.log.debug "================ UpdateRootPassword run method ===================="
             begin
-
               ::Fusor.log.info("Updating CFME password...")
 
               ssh_user = "root"
               ssh_password = "smartvm"
 
               deployment = ::Fusor::Deployment.find(input[:deployment_id])
-              cfme_address = deployment.cfme_address
+              cfme_addresses = [deployment.cfme_rhv_address, deployment.cfme_osp_address]
+              cfme_addresses.compact
               @success = false
               @retry = false
               @retries = 30
               @io = StringIO.new
-              client = Utils::Fusor::SSHConnection.new(cfme_address, ssh_user, ssh_password)
-              client.on_complete(lambda { update_root_password_completed })
-              client.on_failure(lambda { update_root_password_failed })
-              cmd = "echo \"#{deployment.cfme_root_password}\" | passwd --stdin #{ssh_user}"
-              client.execute(cmd, @io)
 
-              # close the stringio at the end
-              @io.close unless @io.closed?
-
-              # retry if necessary
-              sleep_seconds = 30
-              while !@success && @retry
-                ::Fusor.log.info "UpdateRootPassword will retry again in #{sleep_seconds} seconds."
-
-                # pause for station identification, actually pausing to give
-                # cfme time to start ssh or whatever caused the original timeout
-                # to be ready for use
-                sleep sleep_seconds
-
-                @io = StringIO.new
+              cfme_addresses.each do |cfme_address|
+                client = Utils::Fusor::SSHConnection.new(cfme_address, ssh_user, ssh_password)
+                client.on_complete(lambda { update_root_password_completed })
+                client.on_failure(lambda { update_root_password_failed })
+                cmd = "echo \"#{deployment.cfme_root_password}\" | passwd --stdin #{ssh_user}"
                 client.execute(cmd, @io)
-                if !@success
-                  @io.close unless @io.closed?
+
+                # close the stringio at the end
+                @io.close unless @io.closed?
+
+                # retry if necessary
+                sleep_seconds = 30
+                while !@success && @retry
+                  ::Fusor.log.info "UpdateRootPassword will retry again in #{sleep_seconds} seconds."
+
+                  # pause for station identification, actually pausing to give
+                  # cfme time to start ssh or whatever caused the original timeout
+                  # to be ready for use
+                  sleep sleep_seconds
+
+                  @io = StringIO.new
+                  client.execute(cmd, @io)
+                  if !@success
+                    @io.close unless @io.closed?
+                  end
                 end
               end
             rescue Exception => e

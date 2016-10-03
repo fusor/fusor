@@ -52,8 +52,10 @@ export default DS.Model.extend(UsesOseDefaults, {
   host_naming_scheme: DS.attr('string'),
   custom_preprend_name: DS.attr('string'),
   enable_access_insights: DS.attr('boolean'),
-  cfme_address: DS.attr('string'),
-  cfme_hostname: DS.attr('string'),
+  cfme_rhv_address: DS.attr('string'),
+  cfme_rhv_hostname: DS.attr('string'),
+  cfme_osp_address: DS.attr('string'),
+  cfme_osp_hostname: DS.attr('string'),
 
   cdn_url: DS.attr('string'),
   manifest_file: DS.attr('string'),

@@ -19,9 +19,9 @@ module Actions
             _("Run CloudForms Appliance Console")
           end
 
-          def plan(deployment)
+          def plan(deployment, primary_appliance)
             super(deployment)
-            plan_self(deployment_id: deployment.id)
+            plan_self(deployment_id: deployment.id, primary_appliance: primary_appliance)
           end
 
           def run
@@ -31,32 +31,45 @@ module Actions
             script_dir = "/usr/share/fusor_ovirt/bin/"
             db_password = deployment.cfme_db_password
             ssh_user = "root"
-            cfme_address = deployment.cfme_address
-            #
-            # JWM 6/9/2015, We are not yet setting the CloudForms VM root password
-            # We need to use the default password of 'smartvm' until we add support.
-            #
-            #ssh_password = "smartvm" # TODO: need to update to use deployment.cfme_root_password; however, that means it must also be set on VM during/after creation
+            if input[:primary_appliance] == 'RHEV'
+              cfme_address = deployment.cfme_rhv_address
+              secondary_address = deployment.cfme_osp_address
+            else
+              cfme_address = deployment.cfme_osp_address
+              secondary_address = deployment.cfme_rhv_address
+            end
+
             ::Fusor.log.warn "using cfme_root_password"
             ssh_password = deployment.cfme_root_password
 
             cmd = "#{script_dir}miq_run_appliance_console.py "\
-                "--miq_ip #{cfme_address} "\
-                "--ssh_user #{ssh_user} "\
-                "--ssh_pass #{ssh_password} "\
-                "--db_password #{db_password}"
+                  "--miq_ip #{cfme_address} "\
+                  "--ssh_user #{ssh_user} "\
+                  "--ssh_pass #{ssh_password} "\
+                  "--db_password #{db_password}"
 
             status, output = run_command(cmd)
             fail _("Unable to run appliance console: %{output}") % { :output => output.join('; ') } unless status == 0
 
-            # TODO: observing issues with running the appliance console using SSHConnection; therefore, temporarily
-            # commenting out and using the approach above which will run it from a python script
-            #client = Utils::Fusor::SSHConnection.new(cfme_address, ssh_user, ssh_password)
-            #client.on_complete(lambda { run_appliance_console_completed })
-            #client.on_failure(lambda { run_appliance_console_failed })
-            #cmd = "appliance_console_cli --region 1 --internal --force-key -p #{db_password} --verbose"
-            #client.execute(cmd)
+            if secondary_address
+              cmd = "#{script_dir}miq_run_appliance_console.py "\
+                  "--miq_ip #{secondary_address} "\
+                  "--ssh_user #{ssh_user} "\
+                  "--ssh_pass #{ssh_password} "\
+                  "--db_password #{db_password}"\
+                  "--primary_appliance #{cfme_address}"
 
+              status, output = run_command(cmd)
+              fail _("Unable to run appliance console: %{output}") % { :output => output.join('; ') } unless status == 0
+
+              # TODO: observing issues with running the appliance console using SSHConnection; therefore, temporarily
+              # commenting out and using the approach above which will run it from a python script
+              #client = Utils::Fusor::SSHConnection.new(cfme_address, ssh_user, ssh_password)
+              #client.on_complete(lambda { run_appliance_console_completed })
+              #client.on_failure(lambda { run_appliance_console_failed })
+              #cmd = "appliance_console_cli --region 1 --internal --force-key -p #{db_password} --verbose"
+              #client.execute(cmd)
+            end
             ::Fusor.log.debug "================ Leaving RunApplianceConsole run method ===================="
           end
 

@@ -32,12 +32,18 @@ module Actions
 
           def invoke_external_task
             ::Fusor.log.debug "================ CloudForms::WaitForConsole invoke_external_task method ===================="
-            is_up? ::Fusor::Deployment.find(input[:deployment_id]).cfme_address
+            deployment = ::Fusor::Deployment.find(input[:deployment_id])
+            rhv_up = deployment.cfme_rhv_address ? (is_up? deployment.cfme_rhv_address) : true
+            osp_up = deployment.cfme_osp_address ? (is_up? deployment.cfme_osp_address) : true
+            return rhv_up && osp_up
           end
 
           def poll_external_task
             ::Fusor.log.debug "================ CloudForms::WaitForConsole poll_external_task method ===================="
-            is_up? ::Fusor::Deployment.find(input[:deployment_id]).cfme_address
+            deployment = ::Fusor::Deployment.find(input[:deployment_id])
+            rhv_up = deployment.cfme_rhv_address ? (is_up? deployment.cfme_rhv_address) : true
+            osp_up = deployment.cfme_osp_address ? (is_up? deployment.cfme_osp_address) : true
+            return rhv_up && osp_up
           end
 
           private

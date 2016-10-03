@@ -32,8 +32,8 @@ module Actions
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             compute_attrs = create_compute_profile(deployment).vm_attrs
             host = create_host(deployment, compute_attrs)
-            deployment.cfme_address = host.ip
-            deployment.cfme_hostname = host.name
+            deployment.cfme_rhv_address = host.ip
+            deployment.cfme_rhv_hostname = host.name
             deployment.save!
             ::Fusor.log.debug '====== Leaving CFME Launch run method ======'
           end
@@ -50,7 +50,7 @@ module Actions
           private
 
           def create_compute_profile(deployment)
-            cp = ComputeProfile.create("name" => "#{deployment.label}-cfme")
+            cp = ComputeProfile.create("name" => "#{deployment.label}-rhv-cfme")
             cr = ComputeResource.find_by_name("#{deployment.label}-RHEV")
             cl_id = cr.clusters.find { |c| c.name == deployment.rhev_cluster_name }.id
             net_id = cr.available_networks(cl_id).first.id
@@ -101,7 +101,7 @@ module Actions
             cl_id = cr.clusters.find { |c| c.name == deployment.rhev_cluster_name }.id
             net_id = cr.available_networks(cl_id).first.id
 
-            cfme = {"name" => "#{deployment.label.tr('_', '-')}-cfme",
+            cfme = {"name" => "#{deployment.label.tr('_', '-')}-rhv-cfme",
                     "location_id" => Location.find_by_name('Default Location').id,
                     "environment_id" => Environment.where(:katello_id => "Default_Organization/Library/Fusor_Puppet_Content").first.id,
                     "organization_id" => deployment["organization_id"],

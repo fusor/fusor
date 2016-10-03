@@ -28,7 +28,8 @@ module Actions
             ::Fusor.log.debug "================ AddOseProvider run method ===================="
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
-            cfme_address = deployment.cfme_address
+            cfme_addresses = [deployment.cfme_rhv_address, deployment.cfme_osp_address]
+            cfme_addresses.compact
             deployment.ose_master_hosts.each_with_index do |master, index|
               token = File.read("#{Rails.root}/tmp/#{deployment.label}/#{master}.token")
               provider = {
@@ -44,7 +45,9 @@ module Actions
 
               ::Fusor.log.info "Adding OSE provider #{provider[:name]} to CFME."
 
-              Utils::CloudForms::AddProvider.add(cfme_address, provider, deployment)
+              cfme_addresses.each do |cfme_address|
+                Utils::CloudForms::AddProvider.add(cfme_address, provider, deployment)
+              end
             end
 
             Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)

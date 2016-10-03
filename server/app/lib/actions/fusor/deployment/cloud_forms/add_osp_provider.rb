@@ -27,7 +27,8 @@ module Actions
           def run
             ::Fusor.log.debug "================ AddOspProvider run method ===================="
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
-            cfme_address = deployment.cfme_address
+            cfme_addresses = [deployment.cfme_rhv_address, deployment.cfme_osp_address]
+            cfme_addresses.compact
 
             undercloud = {
               :name => "#{deployment.label}-RHOS-Director",
@@ -43,25 +44,27 @@ module Actions
             }
 
             ::Fusor.log.info "Adding Director #{undercloud[:name]} to CFME."
-            uc = Utils::CloudForms::AddProvider.add(cfme_address, undercloud, deployment)
+            cfme_addresses.each do |cfme_address|
+              uc = Utils::CloudForms::AddProvider.add(cfme_address, undercloud, deployment)
 
-            overcloud = {
-              :name => "#{deployment.label}-RHOS",
-              :type => "ManageIQ::Providers::Openstack::CloudManager",
-              :hostname => deployment.openstack_deployment.overcloud_hostname,
-              :port => "13000",
-              :zone_id => "1000000000001",
-              :credentials => {
-                :userid => 'admin',
-                :password => deployment.openstack_deployment.overcloud_password
+              overcloud = {
+                :name => "#{deployment.label}-RHOS",
+                :type => "ManageIQ::Providers::Openstack::CloudManager",
+                :hostname => deployment.openstack_deployment.overcloud_hostname,
+                :port => "13000",
+                :zone_id => "1000000000001",
+                :credentials => {
+                  :userid => 'admin',
+                  :password => deployment.openstack_deployment.overcloud_password
+                }
               }
-            }
 
-            #Prevent failed deployment if undercloud isn't created due to BZ#1351253
-            overcloud[:provider_id] = JSON.parse(uc.to_s)["results"].first["provider_id"] if uc
+              #Prevent failed deployment if undercloud isn't created due to BZ#1351253
+              overcloud[:provider_id] = JSON.parse(uc.to_s)["results"].first["provider_id"] if uc
 
-            ::Fusor.log.info "Adding OSP provider #{overcloud[:name]} to CFME."
-            Utils::CloudForms::AddProvider.add(cfme_address, overcloud, deployment)
+              ::Fusor.log.info "Adding OSP provider #{overcloud[:name]} to CFME."
+              Utils::CloudForms::AddProvider.add(cfme_address, overcloud, deployment)
+            end
             ::Fusor.log.debug "================ Leaving AddOspProvider run method ===================="
           end
         end

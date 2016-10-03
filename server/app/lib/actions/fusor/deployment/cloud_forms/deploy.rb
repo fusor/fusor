@@ -42,7 +42,7 @@ module Actions
               repositories = retrieve_deployment_repositories(deployment.organization,
                                                               SETTINGS[:fusor][:content][:cloudforms])
 
-              if deployment.cfme_install_loc == 'RHEV'
+              if deployment.deploy_rhev
                 transfer_action = plan_action(::Actions::Fusor::Deployment::Rhev::TransferImage,
                                               deployment, file_repositories(repositories).first,
                                               image_file_name(SETTINGS[:fusor][:content][:cloudforms], :rhev_image_file_name))
@@ -54,20 +54,20 @@ module Actions
                             deployment, upload_action.output[:template_name])
 
                 plan_action(::Actions::Fusor::Deployment::Rhev::CfmeLaunch, deployment)
+              end
 
-              elsif deployment.cfme_install_loc == 'OpenStack'
+              if deployment.deploy_openstack
                 plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeUpload, deployment,
                             file_repositories(repositories).first,
                             image_file_name(SETTINGS[:fusor][:content][:cloudforms], :rhos_image_file_name))
                 plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeSecgroup, deployment)
                 plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeLaunch, deployment)
               end
-
               plan_action(::Actions::Fusor::Deployment::CloudForms::UpdateRootPassword,
                           deployment)
 
               plan_action(::Actions::Fusor::Deployment::CloudForms::RunApplianceConsole,
-                          deployment)
+                          deployment, deployment.cfme_install_loc)
 
               plan_action(::Actions::Fusor::Deployment::CloudForms::WaitForConsole,
                           deployment)
@@ -86,6 +86,7 @@ module Actions
 
               plan_action(::Actions::Fusor::Deployment::CloudForms::AddOseProvider,
                           deployment) if deployment.deploy_openshift
+
             end
           end
 

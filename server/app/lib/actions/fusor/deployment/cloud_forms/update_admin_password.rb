@@ -29,7 +29,8 @@ module Actions
             ::Fusor.log.debug "================ UpdateAdminPassword run method ===================="
 
             deployment   = ::Fusor::Deployment.find(input[:deployment_id])
-            cfme_address = deployment.cfme_address
+            cfme_addresses = [deployment.cfme_rhv_address, deployment.cfme_osp_address]
+            cfme_addresses.compact
             admin_user   = "admin"
             old_password = "smartvm"
             new_password = deployment.cfme_admin_password
@@ -39,28 +40,30 @@ module Actions
               :password => new_password
             }
 
-            begin
-              request_url = "https://#{admin_user}:#{old_password}@#{cfme_address}/api/users"
-              client = RestClient::Resource.new(request_url, :verify_ssl => OpenSSL::SSL::VERIFY_NONE)
-              response = JSON.parse(client.get)
+            cfme_addresses.each do |cfme_address|
+              begin
+                request_url = "https://#{admin_user}:#{old_password}@#{cfme_address}/api/users"
+                client = RestClient::Resource.new(request_url, :verify_ssl => OpenSSL::SSL::VERIFY_NONE)
+                response = JSON.parse(client.get)
 
-              # get the admin user id
-              admin_id = get_user_id(response, admin_user, old_password)
-              if admin_id.eql?("") || admin_id.nil?
-                fail _("ERROR: admin user ID not found! Failed to update admin password on appliance.")
+                # get the admin user id
+                admin_id = get_user_id(response, admin_user, old_password)
+                if admin_id.eql?("") || admin_id.nil?
+                  fail _("ERROR: admin user ID not found! Failed to update admin password on appliance.")
+                end
+
+                # update the admin password
+                request_url = "https://#{admin_user}:#{old_password}@#{cfme_address}/api/users/#{admin_id}"
+                client = RestClient::Resource.new(request_url, :verify_ssl => OpenSSL::SSL::VERIFY_NONE)
+
+                response = client.post data.to_json
+                ::Fusor.log.debug response
+                ::Fusor.log.info "Updated #{admin_user} user password: Status Code is #{response.code}"
+              rescue Exception => e
+                fail _("Failed to update admin password on appliance. Error message: #{e.message}")
               end
-
-              # update the admin password
-              request_url = "https://#{admin_user}:#{old_password}@#{cfme_address}/api/users/#{admin_id}"
-              client = RestClient::Resource.new(request_url, :verify_ssl => OpenSSL::SSL::VERIFY_NONE)
-
-              response = client.post data.to_json
-              ::Fusor.log.debug response
-              ::Fusor.log.info "Updated #{admin_user} user password: Status Code is #{response.code}"
-            rescue Exception => e
-              fail _("Failed to update admin password on appliance. Error message: #{e.message}")
+              ::Fusor.log.debug "================ Leaving UpdateAdminPassword run method ===================="
             end
-            ::Fusor.log.debug "================ Leaving UpdateAdminPassword run method ===================="
           end
 
           def get_user_id(response, username, password)
