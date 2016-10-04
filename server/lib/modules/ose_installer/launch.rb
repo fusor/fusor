@@ -32,7 +32,7 @@ module OSEInstaller
       @logger ||= Logger.new("#{@log_dir}/ose_installer.log", File::WRONLY | File::APPEND)
 
       @ansible_playbooks_root = ansible_playbooks_root
-      @ansible_playbooks_root ||= "/usr/share/fusor-playbooks/ocp"
+      @ansible_playbooks_root ||= "/usr/share/ansible_ocp/"
     end
 
     # rubocop:disable Style/MethodCalledOnDoEndBlock
@@ -82,7 +82,7 @@ module OSEInstaller
 
       # if user is not root, we need to enable ansible_sudo flag
       if !opts[:username].eql? "root"
-        template = template.gsub(/#ansible_sudo=true/, "ansible_sudo=true")
+        template = template.gsub(/#ansible_become=true/, "ansible_become=true")
       end
 
       # master and worker node list
