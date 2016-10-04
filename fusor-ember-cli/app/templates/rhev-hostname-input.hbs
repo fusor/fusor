@@ -1,8 +1,8 @@
 {{#if disabled}}
-  {{host.name}}
+  <span class="text-lowercase">{{host.name}}</span>
 {{else}}
    <div class="{{if isInvalidHostname 'has-error'}}">
-      {{input type="text" maxlength="45" value=host.name class='form-control' key-up='saveHostname' id=cssHostHostId data-qci=cssHostHostId}}
+      {{input type="text" maxlength="45" value=host.name class='form-control text-lowercase' key-up='saveHostname' id=cssHostHostId data-qci=cssHostHostId}}
       {{#if isInvalidHostname}}
         <span class="error errorForValidation invalid-rhev-hostname">
           <i class="fa fa-warning"></i> Hostname is invalid.
