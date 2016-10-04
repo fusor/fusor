@@ -21,7 +21,7 @@ module OSEInstaller
   class Launch
     attr_accessor :output_dir, :logger
 
-    def initialize(output_dir = nil, log_dir = nil, logger = nil)
+    def initialize(output_dir = nil, log_dir = nil, logger = nil, ansible_playbooks_root = nil)
       @output_dir = output_dir
       @output_dir ||= "/tmp/"
 
@@ -30,6 +30,9 @@ module OSEInstaller
 
       @logger = logger
       @logger ||= Logger.new("#{@log_dir}/ose_installer.log", File::WRONLY | File::APPEND)
+
+      @ansible_playbooks_root = ansible_playbooks_root
+      @ansible_playbooks_root ||= "/usr/share/ansible-ocp/"
     end
 
     # rubocop:disable Style/MethodCalledOnDoEndBlock
@@ -72,14 +75,14 @@ module OSEInstaller
       @logger.info "Parsing options to create inventory file."
       @logger.debug opts
 
-      template = File.read("#{File.dirname(__FILE__)}/#{template_file_name}")
+      template = File.read("#{@ansible_playbooks_root}/#{template_file_name}")
 
       template = template.gsub(/<ssh_user>/, opts[:username])
       template = template.gsub(/<ssh_private_key>/, opts[:ssh_key])
 
       # if user is not root, we need to enable ansible_sudo flag
       if !opts[:username].eql? "root"
-        template = template.gsub(/#ansible_sudo=true/, "ansible_sudo=true")
+        template = template.gsub(/#ansible_become=true/, "ansible_become=true")
       end
 
       # master and worker node list
@@ -125,7 +128,7 @@ module OSEInstaller
       @logger.info "Parsing options to create answers file."
       @logger.debug opts
 
-      template = File.read("#{File.dirname(__FILE__)}/#{template_file_name}")
+      template = File.read("#{@ansible_playbooks_root}/#{template_file_name}")
 
       # if user is not root, we need to enable ansible_sudo flag
       if !opts[:username].eql? "root"
@@ -201,7 +204,7 @@ module OSEInstaller
     def update_docker_storage_setup(opts)
       @logger.info "Updating docker storage setup file."
       docker_storage_setup_file = "docker-storage-setup"
-      template = File.read("#{File.dirname(__FILE__)}/templates/docker-storage-setup.template")
+      template = File.read("#{@ansible_playbooks_root}/templates/docker-storage-setup.template")
       if !opts[:docker_storage].nil? and !opts[:docker_volume].nil?
         template = template.gsub(/<docker_storage>/, opts[:docker_storage])
         template = template.gsub(/<docker_volume>/, opts[:docker_volume])
@@ -213,7 +216,7 @@ module OSEInstaller
     def update_docker_config(opts)
       @logger.info "Updating docker configuration file."
       docker_config_file = "docker"
-      template = File.read("#{File.dirname(__FILE__)}/templates/docker.template")
+      template = File.read("#{@ansible_playbooks_root}/templates/docker.template")
       if !opts[:satellite_hostname].nil?
         template = template.gsub(/<satellite_hostname>/, opts[:satellite_hostname])
       end
@@ -232,7 +235,7 @@ module OSEInstaller
       ENV['HOME'] = @output_dir
     end
 
-    def setup(inventory, verbose = false, playbook = "#{File.dirname(__FILE__)}/playbooks/setup.yml")
+    def setup(inventory, verbose = false, playbook = "#{@ansible_playbooks_root}/playbooks/setup.yml")
       flags = ""
       if verbose
         flags = "-v"
@@ -243,7 +246,7 @@ module OSEInstaller
       spawn_process("ansible-playbook #{flags} #{playbook} -i #{inventory}")
     end
 
-    def install(inventory, verbose = false, playbook = "#{File.dirname(__FILE__)}/playbooks/install.yml")
+    def install(inventory, verbose = false, playbook = "#{@ansible_playbooks_root}/playbooks/install.yml")
       flags = ""
       if verbose
         flags = "-v"
@@ -254,7 +257,7 @@ module OSEInstaller
       spawn_process("ansible-playbook #{flags} #{playbook} -i #{inventory}")
     end
 
-    def post_install(inventory, verbose = false, playbook = "#{File.dirname(__FILE__)}/playbooks/post_install.yml")
+    def post_install(inventory, verbose = false, playbook = "#{@ansible_playbooks_root}/playbooks/post_install.yml")
       flags = ""
       if verbose
         flags = "-v"
