@@ -32,7 +32,7 @@ module OSEInstaller
       @logger ||= Logger.new("#{@log_dir}/ose_installer.log", File::WRONLY | File::APPEND)
 
       @ansible_playbooks_root = ansible_playbooks_root
-      @ansible_playbooks_root ||= "/usr/share/ansible_ocp/"
+      @ansible_playbooks_root ||= "/usr/share/ansible-ocp/"
     end
 
     # rubocop:disable Style/MethodCalledOnDoEndBlock
