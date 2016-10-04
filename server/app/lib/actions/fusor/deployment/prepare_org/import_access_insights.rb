@@ -1,5 +1,5 @@
 #
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 #
 # This software is licensed to you under the GNU General Public
 # License as published by the Free Software Foundation; either version
@@ -14,23 +14,27 @@ module Actions
   module Fusor
     module Deployment
       module PrepareOrg
-        class UploadModule < Actions::Fusor::FusorActionWithSubPlans
+        class ImportAccessInsights < Actions::Fusor::FusorBaseAction
           def humanized_name
-            _("Upload Module")
+            _("Import access insights puppet class")
           end
 
           def plan
             super
-            fail _("Unable to locate fusor.yaml settings in config/settings.plugins.d") unless SETTINGS[:fusor]
-            fail _("Unable to locate puppet module settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:puppet_module]
             plan_self
           end
 
-          def create_sub_plans
-            repository = ::Katello::Repository.find_by_name('Puppet')
-            modulepath = SETTINGS[:fusor][:puppet_module][:ovirt][:filepath]
-            file = File.new(modulepath)
-            trigger(::Actions::Katello::Repository::UploadFiles, repository, [{:path => file.path}])
+          def run
+            importer = PuppetClassImporter.new({ :url => SmartProxy.first.url })
+            changes = importer.changes
+            unless changes.empty? || changes.nil?
+              ['new', 'updated', 'obsolete'].each do |kind|
+                changes[kind].each_key do |key|
+                  changes[kind.to_s][key] = changes[kind.to_s][key].to_json
+                end
+              end
+              PuppetClassImporter.new.obsolete_and_new(changes)
+            end
           end
         end
       end
