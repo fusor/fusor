@@ -28,7 +28,7 @@ module Actions::Fusor::Deployment::Rhev
                                 @deployment.rhev_engine_host)
       assert_action_planed_with(@deploy,
                                 WaitUntilProvisioned,
-                                @deployment.rhev_engine_host.id, true)
+                                @deployment.rhev_engine_host.id)
 
       for hypervisor in @deployment.rhev_hypervisor_hosts
         assert_action_planed_with(@deploy,
@@ -38,7 +38,7 @@ module Actions::Fusor::Deployment::Rhev
                                   hypervisor)
         assert_action_planed_with(@deploy,
                                   WaitUntilProvisioned,
-                                  hypervisor.id, true)
+                                  hypervisor.id)
       end
     end
     test "plan call should schedule provision and wait actions for each host for self-hosted" do
@@ -47,38 +47,28 @@ module Actions::Fusor::Deployment::Rhev
       assert_action_planed_with(@deploy,
                                 CreateEngineHostRecord,
                                 @deployment,
-                                'RHV-Self-hosted')
+                                'RHV-Engine')
 
-      first_host = @deployment.rhev_hypervisor_hosts[0]
-      additional_hosts = @deployment.rhev_hypervisor_hosts[1..-1]
-      puppetclass_id = 1
+      first_host, *additional_hosts = *@deployment.rhev_hypervisor_hosts
 
       assert_action_planed_with(@deploy,
                                   TriggerProvisioning,
                                 @deployment,
                                 'RHV-Self-hosted',
-                                first_host,
-                                {puppetclass_id => {:mac_address => nil}})
+                                first_host)
       assert_action_planed_with(@deploy,
                                 WaitUntilProvisioned,
-                                first_host.id, true)
+                                first_host.id)
 
       additional_hosts.each_with_index do |hypervisor, index|
-        override = {
-          puppetclass_id => {
-            :additional_host => true,
-            :host_id => index + 2,
-            :mac_address => nil
-          }
-        }
         assert_action_planed_with(@deploy,
                                   TriggerProvisioning,
                                   @deployment,
                                   'RHV-Self-hosted',
-                                  hypervisor, override)
+                                  hypervisor)
         assert_action_planed_with(@deploy,
                                   WaitUntilProvisioned,
-                                  hypervisor.id, true)
+                                  hypervisor.id)
       end
     end
 

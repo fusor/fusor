@@ -31,44 +31,22 @@ module Actions
             ::Fusor.log.debug '====== CreateEngineHostRecord run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             ::Fusor.log.debug "Found deployment with label #{deployment.name}"
+            hostgroup = find_hostgroup(deployment, input[:hostgroup_name])
+            ::Fusor.log.debug "Found hostgroup with name #{deployment.name}"
+            mac_address = Utils::Fusor::MacAddresses.generate_mac_address
+            ::Fusor.log.debug "Generated mac address: #{mac_address}"
 
-            mac_address = get_mac_address(deployment, input[:hostgroup_name])
-            ::Fusor.log.debug "Found mac address override value: #{mac_address}"
-
-            deployment.rhev_engine_host = create_host(deployment, mac_address)
+            deployment.rhev_engine_host = create_host(deployment, hostgroup, mac_address)
             deployment.save!
+            ::Fusor.log.debug "Created host record with name #{deployment.rhev_engine_host.name}"
             ::Fusor.log.debug '====== Leaving CreateEngineHostRecord run method ======'
           end
 
           private
 
-          def get_mac_address(deployment, hostgroup_name)
-            hostgroup = find_hostgroup(deployment, hostgroup_name)
-            fail _("no hostgroup with name #{input[:hostgroup_name]} found") if hostgroup.nil?
-            ::Fusor.log.debug "Found hostgroup with name: #{hostgroup.name}"
-
-            # get the self-hosted puppet class from the hostgroup
-            pc_self_hosted_setup = hostgroup.puppetclasses.where(:name =>  'ovirt::self_hosted::setup').first
-            fail _("no puppet class 'ovirt::self_hosted::setup' found") if pc_self_hosted_setup.nil?
-            ::Fusor.log.debug "Found puppetclass with name: #{pc_self_hosted_setup.name}"
-
-            # get the lookup key
-            lookup_key = pc_self_hosted_setup.class_params.where(:key => 'engine_mac_address').first
-            fail _("no puppet override for 'engine_mac_address' found") if lookup_key.nil?
-            ::Fusor.log.debug "Found LookupKey for key: #{lookup_key.key}"
-
-            match_value = "hostgroup=Fusor Base/#{deployment.label}/#{hostgroup_name}"
-            return LookupValue.where(:lookup_key_id => lookup_key.id).where(:match => match_value).first.value
-          end
-
-          def create_host(deployment, mac_addr)
-            # TODO(fabianvf): Temporary fix while we figure out why this keeps flipping
-            # Feel free to yell at fabian if this is still here when we hit GA
-            redhat = Operatingsystem.find_by_title('RedHat 7.3')
-            rhel_server = Operatingsystem.find_by_title('RHEL Server 7.3')
-            os = redhat.nil? ? rhel_server : redhat
-
+          def create_host(deployment, hostgroup, mac)
             rhevm = {"name" => deployment.rhev_self_hosted_engine_hostname,
+                     "hostgroup_id" => hostgroup.id,
                      "location_id" => Location.find_by_name('Default Location').id,
                      "environment_id" => Environment.where(:katello_id => "Default_Organization/Library/Fusor_Puppet_Content").first.id,
                      "organization_id" => deployment["organization_id"],
@@ -76,19 +54,18 @@ module Actions
                      "enabled" => "1",
                      "managed" => "1",
                      "architecture_id" => Architecture.find_by_name('x86_64')['id'],
-                     "operatingsystem_id" => os['id'],
+                     "operatingsystem_id" => hostgroup.os.id,
                      "ptable_id" => Ptable.find { |p| p["name"] == "Kickstart default" }.id,
                      "domain_id" => 1,
                      "root_pass" => deployment.rhev_root_password,
-                     "mac" => mac_addr,
+                     "mac" => mac,
                      "build" => "0"}
             host = ::Host.create(rhevm)
 
             if host.errors.empty?
-              ::Fusor.log.info 'RHV Engine Host Record Created'
               return host
             else
-              fail _("RHV Engine Host Record creation with mac #{mac_addr} failed with errors: #{host.errors.messages}")
+              fail _("RHV Engine Host Record creation with mac #{mac} failed with errors: #{host.errors.messages}")
             end
           end
 

@@ -312,21 +312,6 @@
         :releasever: "7Server"
 
   :puppet_classes:
-    - :name: "ovirt"
-    - :name: "ovirt::engine::config"
-    - :name: "ovirt::engine::packages"
-    - :name: "ovirt::engine::subscription"
-    - :name: "ovirt::engine::setup"
-    - :name: "ovirt::engine::import_template"
-    - :name: "ovirt::engine::run_vm"
-    - :name: "ovirt::hypervisor::subscription"
-    - :name: "ovirt::hypervisor::packages"
-    - :name: "ovirt::self_hosted::setup"
-    - :name: "ovirt::self_hosted::config"
-    - :name: "ovirt::self_hosted::packages"
-    - :name: "ovirt::self_hosted::import_template"
-    - :name: "ovirt::self_hosted::run_vm"
-    - :name: "ovirt::self_hosted::subscription"
 
   :docker_repos:
     - :name: "hello-openshift"
@@ -358,17 +343,6 @@
          :minor: "3"
          :parent: :root_deployment
          :puppet_classes:
-           - :name: "ovirt"
-             :parameters:
-             - :name: "product"
-               :override: "RHEV"
-           - :name: "ovirt::engine::config"
-           - :name: "ovirt::engine::packages"
-           - :name: "ovirt::engine::subscription"
-           - :name: "ovirt::engine::setup"
-             :parameters:
-             - :name: "firewall_manager"
-               :override: "iptables"
          :activation_key:
            :name: "RHV-Engine"
            :content: :rhevm
@@ -381,12 +355,6 @@
          :minor: "3"
          :parent: :root_deployment
          :puppet_classes:
-           - :name: "ovirt"
-             :parameters:
-             - :name: "product"
-               :override: "RHEV"
-           - :name: "ovirt::hypervisor::packages"
-           - :name: "ovirt::hypervisor::subscription"
          :activation_key:
            :name: "RHV-Hypervisor"
            :content: :rhevh
@@ -400,14 +368,6 @@
          :ptable: "rhev_self_hosted"
          :parent: :root_deployment
          :puppet_classes:
-           - :name: "ovirt"
-             :parameters:
-             - :name: "product"
-               :override: "RHEV"
-           - :name: "ovirt::self_hosted::config"
-           - :name: "ovirt::self_hosted::packages"
-           - :name: "ovirt::self_hosted::setup"
-           - :name: "ovirt::self_hosted::subscription"
          :activation_key:
            :name: "RHV-Self-hosted"
            :content: :rhevsh
@@ -490,8 +450,3 @@
         - "foreman-tasks/action"
 
   :puppet_module:
-    :ovirt:
-      :name: "ovirt"
-      :author: "jcannon"
-      :version: "1.0.1"
-      :filepath: "/usr/share/ovirt-puppet/pkg/jcannon-ovirt-1.0.1.tar.gz"
