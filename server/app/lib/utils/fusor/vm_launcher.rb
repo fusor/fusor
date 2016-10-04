@@ -237,7 +237,7 @@ module Utils
         ::Fusor.log.debug "====== setting common host attributes ======"
         @host_attrs = {"name" => @host_name,
                        "location_id" => Location.find_by_name('Default Location').id,
-                       "environment_id" => Environment.where(:katello_id => "Default_Organization/Library/Fusor_Puppet_Content").first.id,
+                       "environment_id" => Environment.where(:name => "production").first.id,
                        "organization_id" => @deployment["organization_id"],
                        "compute_resource_id" => @cr.id,
                        "enabled" => "1",

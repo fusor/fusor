@@ -66,7 +66,6 @@ module Actions::Fusor
       # I can't think of a great way to test this. for now just check to
       # ensure the methods were called
 
-      ConfigureHostGroups.any_instance.expects(:apply_setting_parameter_overrides).times(@rhev_hostgroup_length)
       ::GroupParameter.expects(:create!).times(@activation_key_length)
       plan = plan_action @action, @deployment, 'rhev', @rhev_hostgroup
       assert_difference('Hostgroup.count', +@rhev_hostgroup_length, 'The number of hostgroups should increase') do
@@ -77,7 +76,6 @@ module Actions::Fusor
     test "run should update hostgroup if it already exists" do
       # I can't think of a great way to test this. for now just check to
       # ensure the methods were called
-      ConfigureHostGroups.any_instance.expects(:apply_setting_parameter_overrides).times(@rhev_hostgroup_length)
       @hostgroup.expects(:update_attributes!).times(@rhev_hostgroup_length)
       ::GroupParameter.any_instance.expects(:update_attributes!).times(@activation_key_length)
       @rhev_hostgroup[:parent] = nil

@@ -38,7 +38,6 @@ module Actions
                 end
               end
 
-              plan_action(::Actions::Fusor::Deployment::PrepareOrg::UploadModule)
 
               unless ::Katello::ContentView.find_by_name('Fusor Puppet Content')
                 plan_action(::Actions::Fusor::Deployment::PrepareOrg::CreateContentView, deployment)

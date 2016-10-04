@@ -48,7 +48,7 @@ module Actions
             rhevm = {"name" => deployment.rhev_self_hosted_engine_hostname,
                      "hostgroup_id" => hostgroup.id,
                      "location_id" => Location.find_by_name('Default Location').id,
-                     "environment_id" => Environment.where(:katello_id => "Default_Organization/Library/Fusor_Puppet_Content").first.id,
+                     "environment_id" => Environment.where(:name => "production").first.id,
                      "organization_id" => deployment["organization_id"],
                      "subnet_id" => Subnet.find_by_name('default').id,
                      "enabled" => "1",
