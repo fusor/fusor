@@ -187,9 +187,9 @@
     :openshift:
       - :product_name: "Red Hat OpenShift Enterprise"
         :product_id: "290"
-        :repository_set_id: "4889"
-        :repository_set_name: "Red Hat OpenShift Enterprise 3.2 (RPMs)"
-        :repository_set_label: "rhel-7-server-ose-3.2-rpms"
+        :repository_set_id: "5253"
+        :repository_set_name: "Red Hat OpenShift Enterprise 3.3 (RPMs)"
+        :repository_set_label: "rhel-7-server-ose-3.3-rpms"
         :basearch: "x86_64"
 
       - :product_name: "Red Hat Enterprise Linux Server"
