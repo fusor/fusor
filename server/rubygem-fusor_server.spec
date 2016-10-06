@@ -84,7 +84,6 @@ Requires: %{?scl_prefix}rubygem-ruby-ip
 Requires: %{?scl_prefix}rubygem-rubyzip
 Requires: fusor_ovirt
 Requires: fusor-utils
-Requires: ansible-ocp
 
 Requires: ansible >= 1.9.0
 
