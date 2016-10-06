@@ -46,10 +46,10 @@ module Actions
 
               cfme_addresses.each do |cfme_address|
                 Utils::CloudForms::AddProvider.add(cfme_address, provider, deployment)
+                Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)
               end
             end
 
-            Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)
 
             ::Fusor.log.debug "================ Leaving AddOseProvider run method ===================="
           end
