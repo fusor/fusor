@@ -34,8 +34,7 @@ module Actions
               ssh_password = "smartvm"
 
               deployment = ::Fusor::Deployment.find(input[:deployment_id])
-              cfme_addresses = [deployment.cfme_rhv_address, deployment.cfme_osp_address]
-              cfme_addresses.compact
+              cfme_addresses = [deployment.cfme_rhv_address, deployment.cfme_osp_address].compact
               @success = false
               @retry = false
               @retries = 30
