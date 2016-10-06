@@ -87,7 +87,7 @@ module Actions
           def create_host(deployment)
             cfme = {"name" => "#{deployment.label.tr('_', '-')}-osp-cfme",
                     "location_id" => Location.find_by_name('Default Location').id,
-                    "environment_id" => Environment.where(:katello_id => "Default_Organization/Library/Fusor_Puppet_Content").first.id,
+                    "environment_id" => Environment.where(:name => "production").first.id,
                     "organization_id" => deployment["organization_id"],
                     "compute_resource_id" => ComputeResource.find_by_name("#{deployment.label}-RHOS").id,
                     "enabled" => 1,

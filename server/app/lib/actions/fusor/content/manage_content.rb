@@ -25,12 +25,9 @@ module Actions
           fail _("Unable to locate fusor.yaml settings in config/settings.plugins.d") unless SETTINGS[:fusor]
           fail _("Unable to locate content settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:content]
           fail _("Unable to locate host group settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:host_groups]
-          fail _("Unable to locate puppet class settings in config/settings.plugins.d/fusor.yaml") unless SETTINGS[:fusor][:puppet_classes]
 
           sequence do
             content = SETTINGS[:fusor][:content]
-
-            enable_smart_class_parameter_overrides
 
             product_content_details = PRODUCT_MAP.each_with_object([]) do |(deploy, product_types), details|
               details << product_types.map { |type| content[type] } if deployment.deploy?(deploy)
@@ -58,22 +55,6 @@ module Actions
                         yum_repositories(repositories)) if deployment.lifecycle_environment_id
           end
         end
-
-        private
-
-        def enable_smart_class_parameter_overrides
-          # Enable parameter overrides for all parameters supported by the configured puppet classes
-          puppet_classes = ::Puppetclass.where(:name => SETTINGS[:fusor][:puppet_classes].map { |p| p[:name] })
-          puppet_classes.each do |puppet_class|
-            puppet_class.smart_class_parameters.each do |parameter|
-              unless parameter.override
-                parameter.override = true
-                parameter.save!
-              end
-            end
-          end
-        end
-
       end
     end
   end

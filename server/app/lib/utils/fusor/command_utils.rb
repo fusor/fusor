@@ -15,10 +15,10 @@ require 'fusor/password_filter'
 module Utils
   module Fusor
     class CommandUtils
-      def self.run_command(cmd, log_on_success = false)
+      def self.run_command(cmd, log_on_success = false, environment = {})
         # popen2e merges stdout and stderr, which we have put into
         # the the output variable
-        stdin, stdout_err, wait_thr = Open3.popen2e(cmd)
+        stdin, stdout_err, wait_thr = Open3.popen2e(environment, cmd)
         status = wait_thr.value.exitstatus
 
         # capture the output into a variable because once we close

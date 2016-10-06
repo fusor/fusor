@@ -1,14 +1,13 @@
 
 module Utils
   module Fusor
-    class OseSshKeyUtils
-      def initialize(deployment, key_type)
+    class SSHKeyUtils
+      def initialize(deployment, key_type, path)
         @deployment = deployment
         @key_type = key_type
-        @key_from_path = File.join(Rails.root, '.ssh', 'openshift', "#{@deployment.label}-#{@deployment.id}")
+        @key_from_path = path
         @key_to_path   = ".ssh"
         @key_base_name = "id_#{@key_type}"
-        @root_password = @deployment.openshift_root_password
       end
 
       def get_ssh_private_key_path
@@ -25,9 +24,9 @@ module Utils
         end
       end
 
-      def copy_keys_to_user(hostname, username)
-        copy_keys_to_root(hostname)
-        client = Utils::Fusor::SSHConnection.new(hostname, 'root', @root_password)
+      def copy_keys_to_user(hostname, username, password)
+        copy_keys_to_root(hostname, password)
+        client = Utils::Fusor::SSHConnection.new(hostname, 'root', password)
         client.execute("useradd #{username}")
         client.execute("echo '#{username}        ALL=(ALL)       NOPASSWD: ALL' >> /etc/sudoers")
         client.execute("runuser -l #{username} -c 'mkdir ~/#{@key_to_path} && chmod 700 ~/#{@key_to_path}'")
@@ -41,16 +40,14 @@ module Utils
         client.execute("runuser -l #{username} -c 'chmod 644 ~/#{@key_to_path}/authorized_keys'")
       end
 
-      private
-
-      def copy_keys_to_root(hostname)
-        client = Utils::Fusor::SSHConnection.new(hostname, 'root', @root_password)
+      def copy_keys_to_root(hostname, password)
+        client = Utils::Fusor::SSHConnection.new(hostname, 'root', password)
         client.execute("mkdir -p ~/#{@key_to_path} && chmod 700 ~/#{@key_to_path}")
         ssh_keys = ["#{@key_base_name}", "#{@key_base_name}.pub"]
         ssh_keys.each { |key|
           from_path = "#{@key_from_path}/#{key}"
           to_path   = "/root/#{@key_to_path}/#{key}"
-          Net::SCP.start(hostname, "root", :password => @root_password, :paranoid => false) do |scp|
+          Net::SCP.start(hostname, "root", :password => password, :paranoid => false) do |scp|
             scp.upload!(from_path, to_path)
           end
         }
