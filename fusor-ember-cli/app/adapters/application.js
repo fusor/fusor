@@ -6,7 +6,9 @@ var token = Ember.$('meta[name="csrf-token"]').attr('content');
 export default ActiveModelAdapter.extend({
   namespace: 'api/v21',
   headers: {
-    "X-CSRF-Token": token
+    "X-CSRF-Token": token,
+    "Accept": "application/json",
+    "Content-Type": "application/json"
   },
   shouldReloadRecord(store, ticketSnapshot) {
     return true;

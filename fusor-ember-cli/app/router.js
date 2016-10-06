@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import config from './config/environment';
 
-var Router = Ember.Router.extend({
+const Router = Ember.Router.extend({
   location: config.locationType,
   rootURL: config.rootURL,
   // log when Ember generates a controller or a route from a generic class
@@ -10,7 +10,7 @@ var Router = Ember.Router.extend({
   LOG_VIEW_LOOKUPS: true
 });
 
-export default Router.map(function() {
+Router.map(function() {
 
   this.route('deployments', {resetNamespace: true});
 
@@ -78,3 +78,5 @@ export default Router.map(function() {
 
   this.route('readme'); // for demo only, not used in app
 });
+
+export default Router;

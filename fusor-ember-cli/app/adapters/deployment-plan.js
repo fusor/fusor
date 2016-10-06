@@ -2,6 +2,8 @@ import ApplicationAdapter from './application';
 
 export default ApplicationAdapter.extend({
 
+  namespace: 'fusor/api/openstack',
+
   // 'overcloud' is hard coded
   // ex. /fusor/api/openstack/deployments/:id/deployment_plans/overcloud
   urlForFindRecord(id, modelName, snapshot) {

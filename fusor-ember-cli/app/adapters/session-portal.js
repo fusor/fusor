@@ -1,8 +1,1 @@
-import LSAdapter from 'ember-localstorage-adapter';
-
-export default LSAdapter.extend({
-  namespace: 'rhci',
-  shouldReloadAll() {
-    return true;
-  }
-});
+export { default } from 'ember-local-storage/adapters/local';

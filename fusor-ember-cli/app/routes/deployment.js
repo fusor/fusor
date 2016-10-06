@@ -89,11 +89,12 @@ export default Ember.Route.extend(DeploymentRouteMixin, {
           "Authorization": "Basic " + self.get('session.basicAuthToken')
         }
       }).then(
-        function (_) {
+        function () {
           deployment.reload().then(() => {
             controller.set('showSpinner', false);
             self.transitionTo('review.progress.overview');
-          }).catch(() => {
+          }).catch(err => {
+            console.log(err);
             controller.set('showSpinner', false);
             controller.set('errorMsg', 'Error reloading deployment task');
             controller.set('showErrorMessage', true);

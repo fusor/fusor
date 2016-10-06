@@ -1,3 +1,1 @@
-import { LSSerializer } from 'ember-localstorage-adapter';
-
-export default LSSerializer.extend();
+export { default } from 'ember-local-storage/serializers/serializer';

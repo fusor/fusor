@@ -1,6 +1,6 @@
 import { moduleForModel, test } from 'ember-qunit';
 import Ember from 'ember';
-import startMirage from '../../helpers/setup-mirage-for-integration';
+import startMirage from '../../helpers/start-mirage';
 
 moduleForModel('deployment', 'Unit | Model | deployment', {
   // Specify the other units that are required for this test.
