@@ -53,6 +53,10 @@ export default Ember.Mixin.create({
       var host = this.get('host');
       var self = this;
       var token = Ember.$('meta[name="csrf-token"]').attr('content');
+
+      // hostname to lowercase to match what user sees (css styled lowercase)
+      this.set('host.name', this.get('host.name').toLowerCase());
+
       if (this.get('isValidHostname')) {
         request({
           url: '/api/v21/discovered_hosts/' + host.get('id') + '/rename',
