@@ -29,8 +29,7 @@ module Actions
             ::Fusor.log.debug "================ UpdateAdminPassword run method ===================="
 
             deployment   = ::Fusor::Deployment.find(input[:deployment_id])
-            cfme_addresses = [deployment.cfme_rhv_address, deployment.cfme_osp_address]
-            cfme_addresses.compact
+            cfme_addresses = [deployment.cfme_rhv_address, deployment.cfme_osp_address].compact
             admin_user   = "admin"
             old_password = "smartvm"
             new_password = deployment.cfme_admin_password

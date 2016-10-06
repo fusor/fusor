@@ -27,8 +27,7 @@ module Actions
           def run
             ::Fusor.log.debug "================ AddOspProvider run method ===================="
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
-            cfme_addresses = [deployment.cfme_rhv_address, deployment.cfme_osp_address]
-            cfme_addresses.compact
+            cfme_addresses = [deployment.cfme_rhv_address, deployment.cfme_osp_address].compact
 
             undercloud = {
               :name => "#{deployment.label}-RHOS-Director",

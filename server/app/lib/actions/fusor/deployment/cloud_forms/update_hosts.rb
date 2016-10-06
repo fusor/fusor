@@ -31,8 +31,7 @@ module Actions
 
               ssh_user = "root"
               deployment = ::Fusor::Deployment.find(input[:deployment_id])
-              cfme_addresses = [deployment.cfme_rhv_address, deployment.cfme_osp_address]
-              cfme_addresses.compact
+              cfme_addresses = [deployment.cfme_rhv_address, deployment.cfme_osp_address].compact
               ssh_password = deployment.cfme_root_password
 
               cfme_addresses.each do |cfme_address|
