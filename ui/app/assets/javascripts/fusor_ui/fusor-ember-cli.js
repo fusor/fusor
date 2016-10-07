@@ -1,5 +1,8 @@
 "use strict";
+
 /* jshint ignore:start */
+
+
 
 /* jshint ignore:end */
 
@@ -9,7 +12,9 @@ define('fusor-ember-cli/adapters/application', ['exports', 'ember-data', 'ember'
   exports['default'] = _activeModelAdapter['default'].extend({
     namespace: 'api/v21',
     headers: {
-      "X-CSRF-Token": token
+      "X-CSRF-Token": token,
+      "Accept": "application/json",
+      "Content-Type": "application/json"
     },
     shouldReloadRecord: function shouldReloadRecord(store, ticketSnapshot) {
       return true;
@@ -32,6 +37,8 @@ define('fusor-ember-cli/adapters/application', ['exports', 'ember-data', 'ember'
 });
 define('fusor-ember-cli/adapters/deployment-plan', ['exports', 'fusor-ember-cli/adapters/application'], function (exports, _fusorEmberCliAdaptersApplication) {
   exports['default'] = _fusorEmberCliAdaptersApplication['default'].extend({
+
+    namespace: 'fusor/api/openstack',
 
     // 'overcloud' is hard coded
     // ex. /fusor/api/openstack/deployments/:id/deployment_plans/overcloud
@@ -86,9 +93,6 @@ define('fusor-ember-cli/adapters/image', ['exports', 'fusor-ember-cli/adapters/a
 
   });
 });
-define('fusor-ember-cli/adapters/ls-adapter', ['exports', 'ember-localstorage-adapter/adapters/ls-adapter'], function (exports, _emberLocalstorageAdapterAdaptersLsAdapter) {
-  exports['default'] = _emberLocalstorageAdapterAdaptersLsAdapter['default'];
-});
 define('fusor-ember-cli/adapters/management-application', ['exports', 'fusor-ember-cli/adapters/application'], function (exports, _fusorEmberCliAdaptersApplication) {
   exports['default'] = _fusorEmberCliAdaptersApplication['default'].extend({
 
@@ -127,11 +131,11 @@ define('fusor-ember-cli/adapters/pool', ['exports', 'fusor-ember-cli/adapters/ap
 
   });
 });
-define('fusor-ember-cli/adapters/session-portal', ['exports', 'ember-localstorage-adapter'], function (exports, _emberLocalstorageAdapter) {
-  exports['default'] = _emberLocalstorageAdapter['default'].extend({
-    namespace: 'rhci',
-    shouldReloadAll: function shouldReloadAll() {
-      return true;
+define('fusor-ember-cli/adapters/session-portal', ['exports', 'ember-local-storage/adapters/local'], function (exports, _emberLocalStorageAdaptersLocal) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberLocalStorageAdaptersLocal['default'];
     }
   });
 });
@@ -140,16 +144,16 @@ define('fusor-ember-cli/adapters/subscription', ['exports', 'fusor-ember-cli/ada
     namespace: 'fusor/api/v21'
   });
 });
-define('fusor-ember-cli/app', ['exports', 'ember', 'ember/resolver', 'ember/load-initializers', 'fusor-ember-cli/config/environment'], function (exports, _ember, _emberResolver, _emberLoadInitializers, _fusorEmberCliConfigEnvironment) {
+define('fusor-ember-cli/app', ['exports', 'ember', 'fusor-ember-cli/resolver', 'ember-load-initializers', 'fusor-ember-cli/config/environment'], function (exports, _ember, _fusorEmberCliResolver, _emberLoadInitializers, _fusorEmberCliConfigEnvironment) {
 
-  var App;
+  var App = undefined;
 
   _ember['default'].MODEL_FACTORY_INJECTIONS = true;
 
   App = _ember['default'].Application.extend({
     modulePrefix: _fusorEmberCliConfigEnvironment['default'].modulePrefix,
     podModulePrefix: _fusorEmberCliConfigEnvironment['default'].podModulePrefix,
-    Resolver: _emberResolver['default']
+    Resolver: _fusorEmberCliResolver['default']
   });
 
   (0, _emberLoadInitializers['default'])(App, _fusorEmberCliConfigEnvironment['default'].modulePrefix);
@@ -232,9 +236,10 @@ define('fusor-ember-cli/components/add-node-registration', ['exports', 'ember', 
   });
 });
 define('fusor-ember-cli/components/app-version', ['exports', 'ember-cli-app-version/components/app-version', 'fusor-ember-cli/config/environment'], function (exports, _emberCliAppVersionComponentsAppVersion, _fusorEmberCliConfigEnvironment) {
-  var _config$APP = _fusorEmberCliConfigEnvironment['default'].APP;
-  var name = _config$APP.name;
-  var version = _config$APP.version;
+
+  var name = _fusorEmberCliConfigEnvironment['default'].APP.name;
+  var version = _fusorEmberCliConfigEnvironment['default'].APP.version;
+
   exports['default'] = _emberCliAppVersionComponentsAppVersion['default'].extend({
     version: version,
     name: name
@@ -930,6 +935,30 @@ define('fusor-ember-cli/components/error-modal', ['exports', 'ember'], function 
     }
   });
 });
+define('fusor-ember-cli/components/fa-icon', ['exports', 'ember-font-awesome/components/fa-icon'], function (exports, _emberFontAwesomeComponentsFaIcon) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberFontAwesomeComponentsFaIcon['default'];
+    }
+  });
+});
+define('fusor-ember-cli/components/fa-list', ['exports', 'ember-font-awesome/components/fa-list'], function (exports, _emberFontAwesomeComponentsFaList) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberFontAwesomeComponentsFaList['default'];
+    }
+  });
+});
+define('fusor-ember-cli/components/fa-stack', ['exports', 'ember-font-awesome/components/fa-stack'], function (exports, _emberFontAwesomeComponentsFaStack) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberFontAwesomeComponentsFaStack['default'];
+    }
+  });
+});
 define('fusor-ember-cli/components/file-upload-form', ['exports', 'ember'], function (exports, _ember) {
   exports['default'] = _ember['default'].Component.extend({
     selectedFile: null,
@@ -1011,9 +1040,6 @@ define('fusor-ember-cli/components/log-entry', ['exports', 'ember'], function (e
       return 'log-entry-level-' + level.toLowerCase();
     })
   });
-});
-define('fusor-ember-cli/components/markdown-to-html', ['exports', 'ember-cli-showdown/components/markdown-to-html'], function (exports, _emberCliShowdownComponentsMarkdownToHtml) {
-  exports['default'] = _emberCliShowdownComponentsMarkdownToHtml['default'];
 });
 define('fusor-ember-cli/components/naming-scheme-modal', ['exports', 'ember'], function (exports, _ember) {
   exports['default'] = _ember['default'].Component.extend({
@@ -3148,18 +3174,15 @@ define('fusor-ember-cli/controllers/application', ['exports', 'ember'], function
 
     actions: {
       invalidate: function invalidate() {
-        return this.transitionTo('login');
+        return this.transitionToRoute('login');
       },
 
       signOut: function signOut() {
-        return this.transitionTo('login');
+        return this.transitionToRoute('login');
       }
     }
 
   });
-});
-define('fusor-ember-cli/controllers/array', ['exports', 'ember'], function (exports, _ember) {
-  exports['default'] = _ember['default'].Controller;
 });
 define('fusor-ember-cli/controllers/cloudforms', ['exports', 'ember', 'fusor-ember-cli/mixins/needs-deployment-mixin'], function (exports, _ember, _fusorEmberCliMixinsNeedsDeploymentMixin) {
   exports['default'] = _ember['default'].Controller.extend(_fusorEmberCliMixinsNeedsDeploymentMixin['default'], {
@@ -3894,9 +3917,6 @@ define('fusor-ember-cli/controllers/new-environment', ['exports', 'ember'], func
 define('fusor-ember-cli/controllers/node', ['exports', 'ember'], function (exports, _ember) {
   exports['default'] = _ember['default'].Controller.extend({});
 });
-define('fusor-ember-cli/controllers/object', ['exports', 'ember'], function (exports, _ember) {
-  exports['default'] = _ember['default'].Controller;
-});
 define('fusor-ember-cli/controllers/openshift', ['exports', 'ember', 'fusor-ember-cli/mixins/openshift-mixin', 'fusor-ember-cli/utils/validators'], function (exports, _ember, _fusorEmberCliMixinsOpenshiftMixin, _fusorEmberCliUtilsValidators) {
   exports['default'] = _ember['default'].Controller.extend(_fusorEmberCliMixinsOpenshiftMixin['default'], {
     stepNumberOpenShift: _ember['default'].computed.alias('deploymentController.stepNumberOpenShift'),
@@ -4053,7 +4073,7 @@ define('fusor-ember-cli/controllers/openshift/openshift-configuration', ['export
 
           if (mounted) {
             _this.set('errorMsg', null);
-            _this.transitionTo(_this.get('nextRouteNameAfterOpenshift'));
+            _this.transitionToRoute(_this.get('nextRouteNameAfterOpenshift'));
           } else {
             _this.set('errorMsg', 'Failed to mount specified registry');
           }
@@ -5767,7 +5787,7 @@ define('fusor-ember-cli/controllers/storage', ['exports', 'ember', 'fusor-ember-
           if (validMounts && isStorageEmpty) {
             _this.set('errorMsg', null);
             _this.set('storageNotEmptyError', null);
-            _this.transitionTo(_this.get('step3RouteName'));
+            _this.transitionToRoute(_this.get('step3RouteName'));
           } else if (!validMounts) {
             var errorMsg = function errorMsg(err) {
               return 'Error mounting ' + err.failedDomain + ' domain ' + err.failedDomainName + ', ' + 'please make sure it is a valid mount point';
@@ -6283,99 +6303,6 @@ define('fusor-ember-cli/helpers/eq', ['exports', 'ember', 'ember-truth-helpers/h
 
   exports['default'] = forExport;
 });
-define('fusor-ember-cli/helpers/fa-icon', ['exports', 'ember'], function (exports, _ember) {
-
-  var FA_PREFIX = /^fa\-.+/;
-
-  var warn = _ember['default'].Logger.warn;
-
-  /**
-   * Handlebars helper for generating HTML that renders a FontAwesome icon.
-   *
-   * @param  {String} name    The icon name. Note that the `fa-` prefix is optional.
-   *                          For example, you can pass in either `fa-camera` or just `camera`.
-   * @param  {Object} options Options passed to helper.
-   * @return {Ember.Handlebars.SafeString} The HTML markup.
-   */
-  var faIcon = function faIcon(name, options) {
-    if (_ember['default'].typeOf(name) !== 'string') {
-      var message = "fa-icon: no icon specified";
-      warn(message);
-      return _ember['default'].String.htmlSafe(message);
-    }
-
-    var params = options.hash,
-        classNames = [],
-        html = "";
-
-    classNames.push("fa");
-    if (!name.match(FA_PREFIX)) {
-      name = "fa-" + name;
-    }
-    classNames.push(name);
-    if (params.spin) {
-      classNames.push("fa-spin");
-    }
-    if (params.flip) {
-      classNames.push("fa-flip-" + params.flip);
-    }
-    if (params.rotate) {
-      classNames.push("fa-rotate-" + params.rotate);
-    }
-    if (params.lg) {
-      warn("fa-icon: the 'lg' parameter is deprecated. Use 'size' instead. I.e. {{fa-icon size=\"lg\"}}");
-      classNames.push("fa-lg");
-    }
-    if (params.x) {
-      warn("fa-icon: the 'x' parameter is deprecated. Use 'size' instead. I.e. {{fa-icon size=\"" + params.x + "\"}}");
-      classNames.push("fa-" + params.x + "x");
-    }
-    if (params.size) {
-      if (_ember['default'].typeOf(params.size) === "string" && params.size.match(/\d+/)) {
-        params.size = Number(params.size);
-      }
-      if (_ember['default'].typeOf(params.size) === "number") {
-        classNames.push("fa-" + params.size + "x");
-      } else {
-        classNames.push("fa-" + params.size);
-      }
-    }
-    if (params.fixedWidth) {
-      classNames.push("fa-fw");
-    }
-    if (params.listItem) {
-      classNames.push("fa-li");
-    }
-    if (params.pull) {
-      classNames.push("pull-" + params.pull);
-    }
-    if (params.border) {
-      classNames.push("fa-border");
-    }
-    if (params.classNames && !_ember['default'].isArray(params.classNames)) {
-      params.classNames = [params.classNames];
-    }
-    if (!_ember['default'].isEmpty(params.classNames)) {
-      Array.prototype.push.apply(classNames, params.classNames);
-    }
-
-    html += "<";
-    var tagName = params.tagName || 'i';
-    html += tagName;
-    html += " class='" + classNames.join(" ") + "'";
-    if (params.title) {
-      html += " title='" + params.title + "'";
-    }
-    if (params.ariaHidden === undefined || params.ariaHidden) {
-      html += " aria-hidden=\"true\"";
-    }
-    html += "></" + tagName + ">";
-    return _ember['default'].String.htmlSafe(html);
-  };
-
-  exports.faIcon = faIcon;
-  exports['default'] = _ember['default'].Handlebars.makeBoundHelper(faIcon);
-});
 define('fusor-ember-cli/helpers/gt', ['exports', 'ember', 'ember-truth-helpers/helpers/gt'], function (exports, _ember, _emberTruthHelpersHelpersGt) {
 
   var forExport = null;
@@ -6399,20 +6326,6 @@ define('fusor-ember-cli/helpers/gte', ['exports', 'ember', 'ember-truth-helpers/
   }
 
   exports['default'] = forExport;
-});
-define('fusor-ember-cli/helpers/hash', ['exports', 'ember-hash-helper-polyfill/helpers/hash'], function (exports, _emberHashHelperPolyfillHelpersHash) {
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function get() {
-      return _emberHashHelperPolyfillHelpersHash['default'];
-    }
-  });
-  Object.defineProperty(exports, 'hash', {
-    enumerable: true,
-    get: function get() {
-      return _emberHashHelperPolyfillHelpersHash.hash;
-    }
-  });
 });
 define('fusor-ember-cli/helpers/is-array', ['exports', 'ember', 'ember-truth-helpers/helpers/is-array'], function (exports, _ember, _emberTruthHelpersHelpersIsArray) {
 
@@ -6457,6 +6370,34 @@ define('fusor-ember-cli/helpers/lte', ['exports', 'ember', 'ember-truth-helpers/
 
   exports['default'] = forExport;
 });
+define('fusor-ember-cli/helpers/moment-calendar', ['exports', 'ember', 'fusor-ember-cli/config/environment', 'ember-moment/helpers/moment-calendar'], function (exports, _ember, _fusorEmberCliConfigEnvironment, _emberMomentHelpersMomentCalendar) {
+  exports['default'] = _emberMomentHelpersMomentCalendar['default'].extend({
+    globalAllowEmpty: !!_ember['default'].get(_fusorEmberCliConfigEnvironment['default'], 'moment.allowEmpty')
+  });
+});
+define('fusor-ember-cli/helpers/moment-duration', ['exports', 'ember-moment/helpers/moment-duration'], function (exports, _emberMomentHelpersMomentDuration) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberMomentHelpersMomentDuration['default'];
+    }
+  });
+});
+define('fusor-ember-cli/helpers/moment-format', ['exports', 'ember', 'fusor-ember-cli/config/environment', 'ember-moment/helpers/moment-format'], function (exports, _ember, _fusorEmberCliConfigEnvironment, _emberMomentHelpersMomentFormat) {
+  exports['default'] = _emberMomentHelpersMomentFormat['default'].extend({
+    globalAllowEmpty: !!_ember['default'].get(_fusorEmberCliConfigEnvironment['default'], 'moment.allowEmpty')
+  });
+});
+define('fusor-ember-cli/helpers/moment-from-now', ['exports', 'ember', 'fusor-ember-cli/config/environment', 'ember-moment/helpers/moment-from-now'], function (exports, _ember, _fusorEmberCliConfigEnvironment, _emberMomentHelpersMomentFromNow) {
+  exports['default'] = _emberMomentHelpersMomentFromNow['default'].extend({
+    globalAllowEmpty: !!_ember['default'].get(_fusorEmberCliConfigEnvironment['default'], 'moment.allowEmpty')
+  });
+});
+define('fusor-ember-cli/helpers/moment-to-now', ['exports', 'ember', 'fusor-ember-cli/config/environment', 'ember-moment/helpers/moment-to-now'], function (exports, _ember, _fusorEmberCliConfigEnvironment, _emberMomentHelpersMomentToNow) {
+  exports['default'] = _emberMomentHelpersMomentToNow['default'].extend({
+    globalAllowEmpty: !!_ember['default'].get(_fusorEmberCliConfigEnvironment['default'], 'moment.allowEmpty')
+  });
+});
 define('fusor-ember-cli/helpers/not-eq', ['exports', 'ember', 'ember-truth-helpers/helpers/not-equal'], function (exports, _ember, _emberTruthHelpersHelpersNotEqual) {
 
   var forExport = null;
@@ -6480,6 +6421,14 @@ define('fusor-ember-cli/helpers/not', ['exports', 'ember', 'ember-truth-helpers/
   }
 
   exports['default'] = forExport;
+});
+define('fusor-ember-cli/helpers/now', ['exports', 'ember-moment/helpers/now'], function (exports, _emberMomentHelpersNow) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberMomentHelpersNow['default'];
+    }
+  });
 });
 define('fusor-ember-cli/helpers/or', ['exports', 'ember', 'ember-truth-helpers/helpers/or'], function (exports, _ember, _emberTruthHelpersHelpersOr) {
 
@@ -6560,12 +6509,21 @@ define('fusor-ember-cli/initializers/add-data-qci', ['exports', 'ember-radio-but
   };
 });
 define('fusor-ember-cli/initializers/app-version', ['exports', 'ember-cli-app-version/initializer-factory', 'fusor-ember-cli/config/environment'], function (exports, _emberCliAppVersionInitializerFactory, _fusorEmberCliConfigEnvironment) {
-  var _config$APP = _fusorEmberCliConfigEnvironment['default'].APP;
-  var name = _config$APP.name;
-  var version = _config$APP.version;
   exports['default'] = {
     name: 'App Version',
-    initialize: (0, _emberCliAppVersionInitializerFactory['default'])(name, version)
+    initialize: (0, _emberCliAppVersionInitializerFactory['default'])(_fusorEmberCliConfigEnvironment['default'].APP.name, _fusorEmberCliConfigEnvironment['default'].APP.version)
+  };
+});
+define('fusor-ember-cli/initializers/container-debug-adapter', ['exports', 'ember-resolver/container-debug-adapter'], function (exports, _emberResolverContainerDebugAdapter) {
+  exports['default'] = {
+    name: 'container-debug-adapter',
+
+    initialize: function initialize() {
+      var app = arguments[1] || arguments[0];
+
+      app.register('container-debug-adapter:main', _emberResolverContainerDebugAdapter['default']);
+      app.inject('container-debug-adapter:main', 'namespace', 'application:main');
+    }
   };
 });
 define("fusor-ember-cli/initializers/coordinator-setup", ["exports", "fusor-ember-cli/models/coordinator"], function (exports, _fusorEmberCliModelsCoordinator) {
@@ -6577,6 +6535,21 @@ define("fusor-ember-cli/initializers/coordinator-setup", ["exports", "fusor-embe
       app.register("drag:coordinator", _fusorEmberCliModelsCoordinator["default"]);
       app.inject("component", "coordinator", "drag:coordinator");
     }
+  };
+});
+define('fusor-ember-cli/initializers/data-adapter', ['exports', 'ember'], function (exports, _ember) {
+
+  /*
+    This initializer is here to keep backwards compatibility with code depending
+    on the `data-adapter` initializer (before Ember Data was an addon).
+  
+    Should be removed for Ember Data 3.x
+  */
+
+  exports['default'] = {
+    name: 'data-adapter',
+    before: 'store',
+    initialize: _ember['default'].K
   };
 });
 define('fusor-ember-cli/initializers/ember-cli-mirage', ['exports', 'ember-cli-mirage/utils/read-modules', 'fusor-ember-cli/config/environment', 'fusor-ember-cli/mirage/config', 'ember-cli-mirage/server'], function (exports, _emberCliMirageUtilsReadModules, _fusorEmberCliConfigEnvironment, _fusorEmberCliMirageConfig, _emberCliMirageServer) {
@@ -6617,64 +6590,49 @@ define('fusor-ember-cli/initializers/ember-cli-mirage', ['exports', 'ember-cli-m
     return usingInDev || usingInTest;
   }
 });
-define('fusor-ember-cli/initializers/ember-devtools', ['exports', 'fusor-ember-cli/services/ember-devtools', 'fusor-ember-cli/config/environment'], function (exports, _fusorEmberCliServicesEmberDevtools, _fusorEmberCliConfigEnvironment) {
+define('fusor-ember-cli/initializers/ember-data', ['exports', 'ember-data/setup-container', 'ember-data/-private/core'], function (exports, _emberDataSetupContainer, _emberDataPrivateCore) {
+
+  /*
+  
+    This code initializes Ember-Data onto an Ember application.
+  
+    If an Ember.js developer defines a subclass of DS.Store on their application,
+    as `App.StoreService` (or via a module system that resolves to `service:store`)
+    this code will automatically instantiate it and make it available on the
+    router.
+  
+    Additionally, after an application's controllers have been injected, they will
+    each have the store made available to them.
+  
+    For example, imagine an Ember.js application with the following classes:
+  
+    App.StoreService = DS.Store.extend({
+      adapter: 'custom'
+    });
+  
+    App.PostsController = Ember.ArrayController.extend({
+      // ...
+    });
+  
+    When the application is initialized, `App.ApplicationStore` will automatically be
+    instantiated, and the instance of `App.PostsController` will have its `store`
+    property set to that instance.
+  
+    Note that this code will only be run if the `ember-application` package is
+    loaded. If Ember Data is being used in an environment other than a
+    typical application (e.g., node.js where only `ember-runtime` is available),
+    this code will be ignored.
+  */
+
   exports['default'] = {
-    name: 'ember-devtools',
-    after: DS !== undefined ? 'store' : null,
-    initialize: function initialize(container, app) {
-      Ember.deprecate("ember-devtools: 'config.APP.emberDevTools' is deprecated. Please configure ember-devtools using config['ember-devtools'].", !app.emberDevTools, { url: 'https://github.com/aexmachina/ember-devtools' });
-
-      var devToolsConfig = app.emberDevTools || _fusorEmberCliConfigEnvironment['default']['ember-devtools'] || {};
-
-      app.devTools = _fusorEmberCliServicesEmberDevtools['default'].create({
-        container: container
-      });
-      container.register('service:devtools', app.devTools);
-      if (devToolsConfig.global === true) {
-        app.devTools.globalize();
-      } else if (devToolsConfig.global) {
-        window[devToolsConfig.global] = app.devTools;
-      }
-    }
-  };
-});
-/* global DS */
-define('fusor-ember-cli/initializers/ember-moment', ['exports', 'ember-moment/helpers/moment', 'ember-moment/helpers/ago', 'ember-moment/helpers/duration', 'ember'], function (exports, _emberMomentHelpersMoment, _emberMomentHelpersAgo, _emberMomentHelpersDuration, _ember) {
-  var initialize = function initialize() /* container, app */{
-    var registerHelper;
-
-    if (_ember['default'].HTMLBars) {
-      registerHelper = function (helperName, fn) {
-        _ember['default'].HTMLBars._registerHelper(helperName, _ember['default'].HTMLBars.makeBoundHelper(fn));
-      };
-    } else {
-      registerHelper = _ember['default'].Handlebars.helper;
-    };
-
-    registerHelper('moment', _emberMomentHelpersMoment['default']);
-    registerHelper('ago', _emberMomentHelpersAgo['default']);
-    registerHelper('duration', _emberMomentHelpersDuration['default']);
-  };
-
-  exports.initialize = initialize;
-  exports['default'] = {
-    name: 'ember-moment',
-
-    initialize: initialize
+    name: 'ember-data',
+    initialize: _emberDataSetupContainer['default']
   };
 });
 define('fusor-ember-cli/initializers/event-bus', ['exports', 'ember'], function (exports, _ember) {
   exports.initialize = initialize;
 
-  function initialize(registry, application) {
-    // NOTE: This interface can be confusing; be sure you are
-    // operating on the object you expect to be. Newer versions of
-    // Ember have deprecated the first param, and newer versions of ember-cli
-    // will generate boilerplate in accordance. For ember v1.13.10,
-    // we continue to be passed the registry and application seperately.
-    //
-    // Ref:
-    // https://github.com/ember-cli/ember-cli/commit/00e25f7de8075cfa01bfdb582b16a2f5611b5912
+  function initialize(application) {
 
     var factoryName = 'event-bus:main';
     var injectedProp = 'eventBus';
@@ -6723,6 +6681,65 @@ define('fusor-ember-cli/initializers/export-application-global', ['exports', 'em
     initialize: initialize
   };
 });
+define('fusor-ember-cli/initializers/injectStore', ['exports', 'ember'], function (exports, _ember) {
+
+  /*
+    This initializer is here to keep backwards compatibility with code depending
+    on the `injectStore` initializer (before Ember Data was an addon).
+  
+    Should be removed for Ember Data 3.x
+  */
+
+  exports['default'] = {
+    name: 'injectStore',
+    before: 'store',
+    initialize: _ember['default'].K
+  };
+});
+define('fusor-ember-cli/initializers/local-storage-adapter', ['exports', 'ember-local-storage/initializers/local-storage-adapter'], function (exports, _emberLocalStorageInitializersLocalStorageAdapter) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberLocalStorageInitializersLocalStorageAdapter['default'];
+    }
+  });
+  Object.defineProperty(exports, 'initialize', {
+    enumerable: true,
+    get: function get() {
+      return _emberLocalStorageInitializersLocalStorageAdapter.initialize;
+    }
+  });
+});
+define('fusor-ember-cli/initializers/store', ['exports', 'ember'], function (exports, _ember) {
+
+  /*
+    This initializer is here to keep backwards compatibility with code depending
+    on the `store` initializer (before Ember Data was an addon).
+  
+    Should be removed for Ember Data 3.x
+  */
+
+  exports['default'] = {
+    name: 'store',
+    after: 'ember-data',
+    initialize: _ember['default'].K
+  };
+});
+define('fusor-ember-cli/initializers/transforms', ['exports', 'ember'], function (exports, _ember) {
+
+  /*
+    This initializer is here to keep backwards compatibility with code depending
+    on the `transforms` initializer (before Ember Data was an addon).
+  
+    Should be removed for Ember Data 3.x
+  */
+
+  exports['default'] = {
+    name: 'transforms',
+    before: 'store',
+    initialize: _ember['default'].K
+  };
+});
 define('fusor-ember-cli/initializers/truth-helpers', ['exports', 'ember', 'ember-truth-helpers/utils/register-helper', 'ember-truth-helpers/helpers/and', 'ember-truth-helpers/helpers/or', 'ember-truth-helpers/helpers/equal', 'ember-truth-helpers/helpers/not', 'ember-truth-helpers/helpers/is-array', 'ember-truth-helpers/helpers/not-equal', 'ember-truth-helpers/helpers/gt', 'ember-truth-helpers/helpers/gte', 'ember-truth-helpers/helpers/lt', 'ember-truth-helpers/helpers/lte'], function (exports, _ember, _emberTruthHelpersUtilsRegisterHelper, _emberTruthHelpersHelpersAnd, _emberTruthHelpersHelpersOr, _emberTruthHelpersHelpersEqual, _emberTruthHelpersHelpersNot, _emberTruthHelpersHelpersIsArray, _emberTruthHelpersHelpersNotEqual, _emberTruthHelpersHelpersGt, _emberTruthHelpersHelpersGte, _emberTruthHelpersHelpersLt, _emberTruthHelpersHelpersLte) {
   exports.initialize = initialize;
 
@@ -6751,6 +6768,34 @@ define('fusor-ember-cli/initializers/truth-helpers', ['exports', 'ember', 'ember
     initialize: initialize
   };
 });
+define("fusor-ember-cli/instance-initializers/ember-data", ["exports", "ember-data/-private/instance-initializers/initialize-store-service"], function (exports, _emberDataPrivateInstanceInitializersInitializeStoreService) {
+  exports["default"] = {
+    name: "ember-data",
+    initialize: _emberDataPrivateInstanceInitializersInitializeStoreService["default"]
+  };
+});
+define('fusor-ember-cli/instance-initializers/ember-devtools', ['exports', 'fusor-ember-cli/config/environment'], function (exports, _fusorEmberCliConfigEnvironment) {
+  exports['default'] = {
+    initialize: function initialize(appInstance) {
+      var devToolsConfig = _fusorEmberCliConfigEnvironment['default']['ember-devtools'] || {};
+      var enabled = devToolsConfig.enabled;
+      if (enabled === undefined) {
+        enabled = /(development|test)/.test(_fusorEmberCliConfigEnvironment['default'].environment);
+      }
+      if (!enabled) return;
+      var service = 'service:ember-devtools';
+      var devTools = appInstance.lookup ? appInstance.lookup(service)
+      // backwards compatibility < 2.1
+      : appInstance.container.lookup(service);
+      if (devToolsConfig.global === true) {
+        devTools.globalize();
+      } else if (devToolsConfig.global) {
+        window[devToolsConfig.global] = devTools;
+      }
+    }
+  };
+});
+/* global window */
 define('fusor-ember-cli/mirage/config', ['exports', 'ember-cli-mirage'], function (exports, _emberCliMirage) {
   exports['default'] = function () {
 
@@ -12644,6 +12689,18 @@ define('fusor-ember-cli/models/session-portal', ['exports', 'ember-data'], funct
     isAuthenticated: _emberData['default'].attr('boolean')
   });
 });
+define('fusor-ember-cli/models/setting', ['exports', 'ember-data'], function (exports, _emberData) {
+  exports['default'] = _emberData['default'].Model.extend({
+    name: _emberData['default'].attr('string'),
+    value: _emberData['default'].attr('string'),
+    description: _emberData['default'].attr('string'),
+    category: _emberData['default'].attr('string'),
+    settings_type: _emberData['default'].attr('string'),
+    'default': _emberData['default'].attr('string'),
+    created_at: _emberData['default'].attr('date'),
+    updated_at: _emberData['default'].attr('date')
+  });
+});
 define('fusor-ember-cli/models/subnet', ['exports', 'ember-data'], function (exports, _emberData) {
   exports['default'] = _emberData['default'].Model.extend({
     network: _emberData['default'].attr('string'),
@@ -12686,6 +12743,9 @@ define('fusor-ember-cli/models/subscription', ['exports', 'ember', 'ember-data']
 
   });
 });
+define('fusor-ember-cli/resolver', ['exports', 'ember-resolver'], function (exports, _emberResolver) {
+  exports['default'] = _emberResolver['default'];
+});
 define('fusor-ember-cli/router', ['exports', 'ember', 'fusor-ember-cli/config/environment'], function (exports, _ember, _fusorEmberCliConfigEnvironment) {
 
   var Router = _ember['default'].Router.extend({
@@ -12697,7 +12757,7 @@ define('fusor-ember-cli/router', ['exports', 'ember', 'fusor-ember-cli/config/en
     LOG_VIEW_LOOKUPS: true
   });
 
-  exports['default'] = Router.map(function () {
+  Router.map(function () {
 
     this.route('deployments', { resetNamespace: true });
 
@@ -12765,6 +12825,8 @@ define('fusor-ember-cli/router', ['exports', 'ember', 'fusor-ember-cli/config/en
 
     this.route('readme'); // for demo only, not used in app
   });
+
+  exports['default'] = Router;
 });
 define('fusor-ember-cli/routes/application', ['exports', 'ember'], function (exports, _ember) {
   exports['default'] = _ember['default'].Route.extend({
@@ -13086,11 +13148,12 @@ define('fusor-ember-cli/routes/deployment', ['exports', 'ember', 'fusor-ember-cl
             "X-CSRF-Token": token,
             "Authorization": "Basic " + self.get('session.basicAuthToken')
           }
-        }).then(function (_) {
+        }).then(function () {
           deployment.reload().then(function () {
             controller.set('showSpinner', false);
             self.transitionTo('review.progress.overview');
-          })['catch'](function () {
+          })['catch'](function (err) {
+            console.log(err);
             controller.set('showSpinner', false);
             controller.set('errorMsg', 'Error reloading deployment task');
             controller.set('showErrorMessage', true);
@@ -14210,7 +14273,7 @@ define('fusor-ember-cli/routes/openstack/undercloud-deploy', ['exports', 'ember'
       }).then(function (response) {
         if (_this7.get('controller.applicationController.isEmberCliMode')) {
           // only used for development to enabled OSP tabs (disableOspTab: false)
-          openstackDeployment.set('openstack_undercloud_password', 'this-passwd-is-populated by fusor/server');
+          openstackDeployment.set('undercloud_admin_password', 'this-passwd-is-populated by fusor/server');
           _this7.send('saveOpenstackDeployment', null);
         }
       });
@@ -14405,7 +14468,7 @@ define('fusor-ember-cli/routes/review/installation', ['exports', 'ember', 'ic-aj
     setupController: function setupController(controller, modelHash) {
       var _this2 = this;
 
-      var model = modelHash.reviewModel;
+      var model = this.modelFor('review');
       controller.set('model', model);
       controller.set('showErrorMessage', false);
       controller.set('useExistingManifest', modelHash.useExistingManifest);
@@ -14509,7 +14572,7 @@ define('fusor-ember-cli/routes/review/installation', ['exports', 'ember', 'ic-aj
       });
     },
 
-    loadSubscriptionPools: function loadSubscriptionPools(deployment_id) {
+    loadSubscriptionPools: function loadSubscriptionPools() {
       var deployment = this.modelFor('deployment');
       return this.store.query('subscription', {
         deployment_id: deployment.get('id'),
@@ -15899,6 +15962,9 @@ define('fusor-ember-cli/routes/where-install', ['exports', 'ember'], function (e
 
   });
 });
+define('fusor-ember-cli/serializers/application', ['exports', 'ember-data', 'active-model-adapter'], function (exports, _emberData, _activeModelAdapter) {
+  exports['default'] = _activeModelAdapter.ActiveModelSerializer.extend({});
+});
 define('fusor-ember-cli/serializers/deployment-plan-parameter', ['exports', 'ember-data'], function (exports, _emberData) {
   exports['default'] = _emberData['default'].RESTSerializer.extend({
     primaryKey: 'name'
@@ -15920,104 +15986,47 @@ define('fusor-ember-cli/serializers/deployment-role', ['exports', 'ember-data'],
 });
 define('fusor-ember-cli/serializers/deployment', ['exports', 'ember-data', 'active-model-adapter'], function (exports, _emberData, _activeModelAdapter) {
   exports['default'] = _activeModelAdapter.ActiveModelSerializer.extend({
-    isNewSerializerAPI: true,
-
     attrs: {
       foreman_task_id: false
     }
-
   });
 });
 define('fusor-ember-cli/serializers/entitlement', ['exports', 'ember-data'], function (exports, _emberData) {
-  exports['default'] = _emberData['default'].RESTSerializer.extend({
-
-    // add root node 'entitlements' that customer protal JSON response doesn't return
-    extractArray: function extractArray(store, type, payload) {
-      payload = { entitlements: payload };
-      return this._super(store, type, payload);
-    },
+  exports['default'] = _emberData['default'].JSONSerializer.extend({
 
     // remove attribute keys in the json response that aren't in the model management application
-    normalizeHash: {
-      entitlements: function entitlements(hash) {
-        delete hash.consumer;
-        delete hash.certificates;
-        // move attributes within the 'pool' node to main level
-        hash.poolId = hash.pool.id;
-        hash.poolType = hash.pool.type;
-        hash.poolQuantity = hash.pool.quantity;
-        hash.subscriptionId = hash.pool.subscriptionId;
-        hash.activeSubscription = hash.pool.activeSubscription;
-        hash.contractNumber = hash.pool.contractNumber;
-        hash.accountNumber = hash.pool.accountNumber;
-        hash.consumed = hash.pool.consumed;
-        hash.exported = hash.pool.exported;
-        hash.consumed = hash.pool.consumed;
-        hash.productName = hash.pool.productName;
-        delete hash.pool;
-        return hash;
-      }
+    normalize: function normalize(modelClass, hash) {
+      delete hash.consumer;
+      delete hash.certificates;
+      // move attributes within the 'pool' node to main level
+      hash.poolId = hash.pool.id;
+      hash.poolType = hash.pool.type;
+      hash.poolQuantity = hash.pool.quantity;
+      hash.subscriptionId = hash.pool.subscriptionId;
+      hash.activeSubscription = hash.pool.activeSubscription;
+      hash.contractNumber = hash.pool.contractNumber;
+      hash.accountNumber = hash.pool.accountNumber;
+      hash.consumed = hash.pool.consumed;
+      hash.exported = hash.pool.exported;
+      hash.consumed = hash.pool.consumed;
+      hash.productName = hash.pool.productName;
+      delete hash.pool;
+      return this._super(modelClass, hash);
     }
 
   });
 });
 define('fusor-ember-cli/serializers/foreman-task', ['exports', 'ember-data', 'active-model-adapter'], function (exports, _emberData, _activeModelAdapter) {
   exports['default'] = _activeModelAdapter.ActiveModelSerializer.extend({
-    isNewSerializerAPI: true,
     attrs: {
       humanized: { embedded: 'always' }
     }
   });
 });
-define('fusor-ember-cli/serializers/ls-serializer', ['exports', 'ember-localstorage-adapter/serializers/ls-serializer'], function (exports, _emberLocalstorageAdapterSerializersLsSerializer) {
-  exports['default'] = _emberLocalstorageAdapterSerializersLsSerializer['default'];
-});
 define('fusor-ember-cli/serializers/management-application', ['exports', 'ember-data'], function (exports, _emberData) {
-  exports['default'] = _emberData['default'].RESTSerializer.extend({
-
-    primaryKey: 'uuid',
-
-    // add root node 'management_applications' that customer protal JSON response doesn't return
-    extractArray: function extractArray(store, type, payload) {
-      payload = { management_applications: payload };
-      return this._super(store, type, payload);
-    },
-
-    // remove attribute keys in the json response that aren't in the model management application
-    normalizeHash: {
-      management_applications: function management_applications(hash) {
-        delete hash.releaseVer;
-        delete hash.type;
-        delete hash.owner;
-        delete hash.installedProducts;
-        delete hash.guestIds;
-        delete hash.capabilities;
-        return hash;
-      }
-    }
-
+  exports['default'] = _emberData['default'].JSONSerializer.extend({
+    primaryKey: 'uuid'
   });
-
-  // These objects are in the JSON response but removed in the serializer
-  // and not saved in the store
-  //
-  // "releaseVer": {
-  //     "releaseVer": null
-  // },
-  // "type": {
-  //     "id": "9",
-  //     "label": "satellite",
-  //     "manifest": true
-  // },
-  // "owner": {
-  //     "id": "8a85f9814a192108014a1adef5826b38",
-  //     "key": "7473998",
-  //     "displayName": "7473998",
-  //     "href": "/owners/7473998"
-  // },
-  // "installedProducts": [],
-  // "guestIds": [],
-  // "capabilities": [],
 });
 define('fusor-ember-cli/serializers/node', ['exports', 'ember-data'], function (exports, _emberData) {
   exports['default'] = _emberData['default'].RESTSerializer.extend({
@@ -16025,37 +16034,21 @@ define('fusor-ember-cli/serializers/node', ['exports', 'ember-data'], function (
   });
 });
 define('fusor-ember-cli/serializers/pool', ['exports', 'ember-data'], function (exports, _emberData) {
-  exports['default'] = _emberData['default'].RESTSerializer.extend({
-
-    // add root node 'entitlements' that customer protal JSON response doesn't return
-    extractArray: function extractArray(store, type, payload) {
-      payload = { pools: payload };
-      return this._super(store, type, payload);
-    },
-
-    // remove attribute keys in the json response that aren't in the model management application
-    normalizeHash: {
-      management_applications: function management_applications(hash) {
-        delete hash.releaseVer;
-        delete hash.type;
-        delete hash.owner;
-        delete hash.installedProducts;
-        delete hash.guestIds;
-        delete hash.capabilities;
-        return hash;
-      }
-    }
-
-  });
+  exports['default'] = _emberData['default'].JSONSerializer.extend({});
 });
-define('fusor-ember-cli/serializers/session-portal', ['exports', 'ember-localstorage-adapter'], function (exports, _emberLocalstorageAdapter) {
-  exports['default'] = _emberLocalstorageAdapter.LSSerializer.extend();
-});
-define('fusor-ember-cli/service-tests/ember-devtools', ['exports', 'ember-devtools/service-tests/ember-devtools'], function (exports, _emberDevtoolsServiceTestsEmberDevtools) {
+define('fusor-ember-cli/serializers/session-portal', ['exports', 'ember-local-storage/serializers/serializer'], function (exports, _emberLocalStorageSerializersSerializer) {
   Object.defineProperty(exports, 'default', {
     enumerable: true,
     get: function get() {
-      return _emberDevtoolsServiceTestsEmberDevtools['default'];
+      return _emberLocalStorageSerializersSerializer['default'];
+    }
+  });
+});
+define('fusor-ember-cli/services/ajax', ['exports', 'ember-ajax/services/ajax'], function (exports, _emberAjaxServicesAjax) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberAjaxServicesAjax['default'];
     }
   });
 });
@@ -16063,34 +16056,43 @@ define('fusor-ember-cli/services/drag-coordinator', ['exports', 'ember-drag-drop
   exports['default'] = _emberDragDropServicesDragCoordinator['default'];
 });
 define('fusor-ember-cli/services/ember-devtools', ['exports', 'ember'], function (exports, _ember) {
-
-  var map = _ember['default'].ArrayPolyfills.map;
-  var $ = _ember['default'].$;
-
-  exports['default'] = _ember['default'].Object.extend({
+  var Service = _ember['default'].Service;
+  exports['default'] = Service.extend({
+    renderedComponents: {},
     init: function init() {
       this.global = this.global || window;
       this.console = this.console || window.console;
-      this.registry = this._registry();
-      if (DS !== undefined) {
-        this.store = this.container.lookup('store:main');
-        this.typeMaps = this.store.typeMaps;
+      if (_ember['default'].getOwner) {
+        // for ember > 2.3
+        Object.defineProperty(this, 'container', {
+          get: function get() {
+            return _ember['default'].getOwner(this);
+          }
+        });
       }
+      Object.defineProperty(this, 'store', {
+        get: function get() {
+          return this.lookup('service:store') || this.lookup('store:main'); // for ember-data < 2
+        }
+      });
     },
     consoleLog: function consoleLog() {
-      this.console.log.apply(this.console, arguments);
+      var _console;
+
+      (_console = this.console).log.apply(_console, arguments);
     },
-    app: function app(name) {
-      name = name || 'main';
-      return this.container.lookup('application:' + name);
+    app: function app() {
+      var name = arguments.length <= 0 || arguments[0] === undefined ? 'main' : arguments[0];
+
+      return this.lookup('application:' + name);
     },
     route: function route(name) {
       name = name || this.currentRouteName();
-      return this.container.lookup('route:' + name);
+      return this.lookup('route:' + name);
     },
     controller: function controller(name) {
       name = name || this.currentRouteName();
-      return this.container.lookup('controller:' + name);
+      return this.lookup('controller:' + name);
     },
     model: function model(name) {
       var controller = this.controller(name);
@@ -16099,41 +16101,20 @@ define('fusor-ember-cli/services/ember-devtools', ['exports', 'ember'], function
     service: function service(name) {
       return this.lookup('service:' + name);
     },
-    router: function router(name) {
-      name = name || 'main';
-      return this.container.lookup('router:' + name).get('router');
+    router: function router() {
+      var name = arguments.length <= 0 || arguments[0] === undefined ? 'main' : arguments[0];
+
+      return this.lookup('router:' + name).get('router');
     },
     routes: function routes() {
-      return _ember['default'].keys(this.router().recognizer.names);
+      return Object.keys(this.router().recognizer.names);
     },
-    view: function view(idDomElementOrSelector) {
-      if (typeof idDomElementOrSelector === 'object') {
-        idDomElementOrSelector = idDomElementOrSelector.id;
-      }
-      return _ember['default'].View.views[idDomElementOrSelector] || this.views(idDomElementOrSelector)[0];
-    },
-    views: function views(selectorOrName) {
-      var views = _ember['default'].View.views;
-      var viewClass = this.lookupFactory('component:' + selectorOrName) || this.lookupFactory('view:' + selectorOrName);
-
-      if (viewClass) {
-        return Object.keys(views).map(function (id) {
-          return views[id];
-        }).filter(function (view) {
-          return view instanceof viewClass;
-        });
-      }
-
-      return map.call($(selectorOrName), function (element) {
-        return views[element.id];
-      });
-    },
-    component: function component() {
-      return this.view.apply(this, arguments);
-    },
-    components: function components() {
-      return this.views.apply(this, arguments);
-    },
+    // component(idDomElementOrSelector, type) {
+    //  if (typeof idDomElementOrSelector === 'object') {
+    //    idDomElementOrSelector = idDomElementOrSelector.id;
+    //  }
+    //  return this.lookup(`component:${type}::${idDomElementOrSelector}`);
+    // },
     currentRouteName: function currentRouteName() {
       return this.controller('application').get('currentRouteName');
     },
@@ -16141,37 +16122,48 @@ define('fusor-ember-cli/services/ember-devtools', ['exports', 'ember'], function
       return this.controller('application').get('currentPath');
     },
     log: function log(promise, property, getEach) {
-      var self = this;
+      var _this = this;
+
       return promise.then(function (value) {
-        self.global.$E = value;
+        _this.global.$E = value;
         if (property) {
           value = value[getEach ? 'getEach' : 'get'].call(value, property);
         }
-        self.consoleLog(value);
+        _this.consoleLog(value);
       }, function (err) {
-        self.console.error(err);
+        _this.console.error(err);
       });
     },
     lookup: function lookup(name) {
       return this.container.lookup(name);
     },
-    lookupFactory: function lookupFactory(name) {
-      return this.container.lookupFactory(name);
+    resolveRegistration: function resolveRegistration(name) {
+      return this.container.resolveRegistration
+      // ember < 2.3.1
+      ? this.container.resolveRegistration(name)
+      // previous ember versions
+      : this.container.lookupFactory(name);
     },
     containerNameFor: function containerNameFor(object) {
-      var cache = this.container.cache || this.container._defaultContainer.cache;
+      var cache =
+      // ember 2.3.1
+      _ember['default'].get(this.container, '__container__.cache')
+      // previous ember versions
+       || _ember['default'].get(this.container, '_defaultContainer.cache') || this.container.cache;
       var keys = Object.keys(cache);
       for (var i = 0; i < keys.length; i++) {
         if (cache[keys[i]] === object) return keys[i];
       }
     },
     inspect: _ember['default'].inspect,
-    logResolver: function logResolver(bool) {
-      bool = typeof bool === 'undefined' ? true : bool;
+    logResolver: function logResolver() {
+      var bool = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
       _ember['default'].ENV.LOG_MODULE_RESOLVER = bool;
     },
-    logAll: function logAll(bool) {
-      bool = typeof bool === 'undefined' ? true : bool;
+    logAll: function logAll() {
+      var bool = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
       var app = this.app();
       app.LOG_ACTIVE_GENERATION = bool;
       app.LOG_VIEW_LOOKUPS = bool;
@@ -16179,45 +16171,100 @@ define('fusor-ember-cli/services/ember-devtools', ['exports', 'ember'], function
       app.LOG_TRANSITIONS_INTERNAL = bool;
       this.logResolver(bool);
     },
-    globalize: function globalize() {
+    logRenders: function logRenders() {
       var self = this;
-      var props = ['app', 'container', 'registry', 'store', 'typeMaps', 'route', 'controller', 'model', 'service', 'routes', 'view', 'currentRouteName', 'currentPath', 'log', 'lookup', 'lookupFactory', 'containerNameFor', 'inspect', 'logResolver', 'logAll'];
+
+      _ember['default'].subscribe('render', {
+        before: function before(name, start, payload) {
+          return start;
+        },
+        after: function after(name, end, payload, start) {
+          var id = payload.containerKey;
+          if (!id) return;
+
+          var duration = Math.round(end - start);
+          var color = self.colorForRender(duration);
+          var logId = 'renderedComponents.' + id;
+          var ocurrences = self.get(logId);
+
+          if (!ocurrences) {
+            self.set(logId, []);
+          }
+
+          self.get(logId).push(duration);
+
+          console.log('%c rendered ' + id + ' in ' + duration + 'ms', 'color: ' + color);
+        }
+      });
+    },
+    colorForRender: function colorForRender(duration) {
+      var ok = '#000000';
+      var warning = '#F1B178';
+      var serious = '#E86868';
+
+      if (duration < 300) return ok;
+      if (duration < 600) return warning;
+
+      return serious;
+    },
+    environment: function environment() {
+      _ember['default'].deprecate('environment() has been deprecated, please use config() instead');
+    },
+    config: function config() {
+      return this.resolveRegistration('config:environment');
+    },
+    globalize: function globalize() {
+      var _this2 = this;
+
+      var props = ['app', 'container', 'store', 'typeMaps', 'route', 'controller', 'model', 'service', 'routes', 'view', 'component', 'currentRouteName', 'currentPath', 'log', 'lookup', 'resolveRegistration', 'containerNameFor', 'inspect', 'logResolver', 'logAll', 'environment', 'config'];
       // don't stomp on pre-existing global vars
       var skipGlobalize = this.constructor.skipGlobalize;
       if (skipGlobalize === null) {
         skipGlobalize = this.constructor.skipGlobalize = props.filter(function (prop) {
-          return !_ember['default'].isNone(self.global[prop]);
+          return !_ember['default'].isNone(_this2.global[prop]);
         });
       }
+      var self = this;
       props.map(function (name) {
         if (skipGlobalize.indexOf(name) !== -1) return;
-        var prop = self[name];
+        var prop = _this2[name];
         if (typeof prop === 'function') {
           prop = function () {
+            // arguments variable is wrong if we use an arrow function here
             return self[name].apply(self, arguments);
           };
         }
-        self.global[name] = prop;
+        _this2.global[name] = prop;
       });
-    },
-    _registry: function _registry() {
-      var registry;
-      if (this.container._registry) {
-        registry = this.container._registry.registrations;
-      }
-      return registry || this.container.registrations || this.container.registry.dict || this.container.registry;
     }
   }).reopenClass({
     skipGlobalize: null
   });
 });
 /* global DS */
+define('fusor-ember-cli/services/moment', ['exports', 'ember', 'fusor-ember-cli/config/environment', 'ember-moment/services/moment'], function (exports, _ember, _fusorEmberCliConfigEnvironment, _emberMomentServicesMoment) {
+  exports['default'] = _emberMomentServicesMoment['default'].extend({
+    defaultFormat: _ember['default'].get(_fusorEmberCliConfigEnvironment['default'], 'moment.outputFormat')
+  });
+});
+define('fusor-ember-cli/services/text-measurer', ['exports', 'ember-text-measurer/services/text-measurer'], function (exports, _emberTextMeasurerServicesTextMeasurer) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberTextMeasurerServicesTextMeasurer['default'];
+    }
+  });
+});
 define("fusor-ember-cli/templates/application", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template((function () {
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -16231,6 +16278,7 @@ define("fusor-ember-cli/templates/application", ["exports"], function (exports) 
           },
           "moduleName": "fusor-ember-cli/templates/application.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -16256,7 +16304,11 @@ define("fusor-ember-cli/templates/application", ["exports"], function (exports) 
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -16270,6 +16322,7 @@ define("fusor-ember-cli/templates/application", ["exports"], function (exports) 
         },
         "moduleName": "fusor-ember-cli/templates/application.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -16317,7 +16370,8 @@ define("fusor-ember-cli/templates/cloudforms", ["exports"], function (exports) {
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -16331,6 +16385,7 @@ define("fusor-ember-cli/templates/cloudforms", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/cloudforms.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -16371,7 +16426,8 @@ define("fusor-ember-cli/templates/cloudforms", ["exports"], function (exports) {
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -16385,6 +16441,7 @@ define("fusor-ember-cli/templates/cloudforms", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/cloudforms.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -16424,7 +16481,11 @@ define("fusor-ember-cli/templates/cloudforms", ["exports"], function (exports) {
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -16438,6 +16499,7 @@ define("fusor-ember-cli/templates/cloudforms", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/cloudforms.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -16468,7 +16530,11 @@ define("fusor-ember-cli/templates/cloudforms", ["exports"], function (exports) {
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -16482,6 +16548,7 @@ define("fusor-ember-cli/templates/cloudforms", ["exports"], function (exports) {
         },
         "moduleName": "fusor-ember-cli/templates/cloudforms.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -16508,7 +16575,11 @@ define("fusor-ember-cli/templates/cloudforms/cfme-configuration", ["exports"], f
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -16522,6 +16593,7 @@ define("fusor-ember-cli/templates/cloudforms/cfme-configuration", ["exports"], f
         },
         "moduleName": "fusor-ember-cli/templates/cloudforms/cfme-configuration.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -16616,7 +16688,11 @@ define("fusor-ember-cli/templates/cloudforms/index", ["exports"], function (expo
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -16630,6 +16706,7 @@ define("fusor-ember-cli/templates/cloudforms/index", ["exports"], function (expo
         },
         "moduleName": "fusor-ember-cli/templates/cloudforms/index.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -16659,7 +16736,8 @@ define("fusor-ember-cli/templates/components/abandon-deployment-modal", ["export
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -16673,6 +16751,7 @@ define("fusor-ember-cli/templates/components/abandon-deployment-modal", ["export
             },
             "moduleName": "fusor-ember-cli/templates/components/abandon-deployment-modal.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -16693,7 +16772,8 @@ define("fusor-ember-cli/templates/components/abandon-deployment-modal", ["export
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -16707,6 +16787,7 @@ define("fusor-ember-cli/templates/components/abandon-deployment-modal", ["export
             },
             "moduleName": "fusor-ember-cli/templates/components/abandon-deployment-modal.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -16745,7 +16826,11 @@ define("fusor-ember-cli/templates/components/abandon-deployment-modal", ["export
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -16759,6 +16844,7 @@ define("fusor-ember-cli/templates/components/abandon-deployment-modal", ["export
           },
           "moduleName": "fusor-ember-cli/templates/components/abandon-deployment-modal.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -16789,7 +16875,11 @@ define("fusor-ember-cli/templates/components/abandon-deployment-modal", ["export
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -16803,6 +16893,7 @@ define("fusor-ember-cli/templates/components/abandon-deployment-modal", ["export
         },
         "moduleName": "fusor-ember-cli/templates/components/abandon-deployment-modal.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -16830,7 +16921,8 @@ define("fusor-ember-cli/templates/components/accordion-item", ["exports"], funct
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -16844,6 +16936,7 @@ define("fusor-ember-cli/templates/components/accordion-item", ["exports"], funct
           },
           "moduleName": "fusor-ember-cli/templates/components/accordion-item.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -16869,7 +16962,10 @@ define("fusor-ember-cli/templates/components/accordion-item", ["exports"], funct
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -16883,6 +16979,7 @@ define("fusor-ember-cli/templates/components/accordion-item", ["exports"], funct
         },
         "moduleName": "fusor-ember-cli/templates/components/accordion-item.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -16947,7 +17044,8 @@ define("fusor-ember-cli/templates/components/add-node-registration", ["exports"]
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -16961,6 +17059,7 @@ define("fusor-ember-cli/templates/components/add-node-registration", ["exports"]
               },
               "moduleName": "fusor-ember-cli/templates/components/add-node-registration.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -16992,7 +17091,8 @@ define("fusor-ember-cli/templates/components/add-node-registration", ["exports"]
         var child1 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -17006,6 +17106,7 @@ define("fusor-ember-cli/templates/components/add-node-registration", ["exports"]
               },
               "moduleName": "fusor-ember-cli/templates/components/add-node-registration.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -17037,7 +17138,8 @@ define("fusor-ember-cli/templates/components/add-node-registration", ["exports"]
         var child2 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -17051,6 +17153,7 @@ define("fusor-ember-cli/templates/components/add-node-registration", ["exports"]
               },
               "moduleName": "fusor-ember-cli/templates/components/add-node-registration.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -17081,7 +17184,8 @@ define("fusor-ember-cli/templates/components/add-node-registration", ["exports"]
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -17095,6 +17199,7 @@ define("fusor-ember-cli/templates/components/add-node-registration", ["exports"]
             },
             "moduleName": "fusor-ember-cli/templates/components/add-node-registration.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -17212,7 +17317,8 @@ define("fusor-ember-cli/templates/components/add-node-registration", ["exports"]
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -17226,6 +17332,7 @@ define("fusor-ember-cli/templates/components/add-node-registration", ["exports"]
             },
             "moduleName": "fusor-ember-cli/templates/components/add-node-registration.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -17269,7 +17376,11 @@ define("fusor-ember-cli/templates/components/add-node-registration", ["exports"]
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -17283,6 +17394,7 @@ define("fusor-ember-cli/templates/components/add-node-registration", ["exports"]
           },
           "moduleName": "fusor-ember-cli/templates/components/add-node-registration.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -17313,7 +17425,11 @@ define("fusor-ember-cli/templates/components/add-node-registration", ["exports"]
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -17327,6 +17443,7 @@ define("fusor-ember-cli/templates/components/add-node-registration", ["exports"]
         },
         "moduleName": "fusor-ember-cli/templates/components/add-node-registration.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -17357,7 +17474,8 @@ define("fusor-ember-cli/templates/components/auto-node-registration-mac-address"
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -17371,6 +17489,7 @@ define("fusor-ember-cli/templates/components/auto-node-registration-mac-address"
                 },
                 "moduleName": "fusor-ember-cli/templates/components/auto-node-registration-mac-address.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -17394,7 +17513,8 @@ define("fusor-ember-cli/templates/components/auto-node-registration-mac-address"
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -17408,6 +17528,7 @@ define("fusor-ember-cli/templates/components/auto-node-registration-mac-address"
               },
               "moduleName": "fusor-ember-cli/templates/components/auto-node-registration-mac-address.hbs"
             },
+            isEmpty: false,
             arity: 1,
             cachedFragment: null,
             hasRendered: false,
@@ -17433,7 +17554,8 @@ define("fusor-ember-cli/templates/components/auto-node-registration-mac-address"
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -17447,6 +17569,7 @@ define("fusor-ember-cli/templates/components/auto-node-registration-mac-address"
             },
             "moduleName": "fusor-ember-cli/templates/components/auto-node-registration-mac-address.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -17477,7 +17600,8 @@ define("fusor-ember-cli/templates/components/auto-node-registration-mac-address"
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -17491,6 +17615,7 @@ define("fusor-ember-cli/templates/components/auto-node-registration-mac-address"
           },
           "moduleName": "fusor-ember-cli/templates/components/auto-node-registration-mac-address.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -17516,7 +17641,8 @@ define("fusor-ember-cli/templates/components/auto-node-registration-mac-address"
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -17530,6 +17656,7 @@ define("fusor-ember-cli/templates/components/auto-node-registration-mac-address"
           },
           "moduleName": "fusor-ember-cli/templates/components/auto-node-registration-mac-address.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -17559,7 +17686,8 @@ define("fusor-ember-cli/templates/components/auto-node-registration-mac-address"
     var child2 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -17573,6 +17701,7 @@ define("fusor-ember-cli/templates/components/auto-node-registration-mac-address"
           },
           "moduleName": "fusor-ember-cli/templates/components/auto-node-registration-mac-address.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -17598,7 +17727,8 @@ define("fusor-ember-cli/templates/components/auto-node-registration-mac-address"
     var child3 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -17612,6 +17742,7 @@ define("fusor-ember-cli/templates/components/auto-node-registration-mac-address"
           },
           "moduleName": "fusor-ember-cli/templates/components/auto-node-registration-mac-address.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -17636,7 +17767,10 @@ define("fusor-ember-cli/templates/components/auto-node-registration-mac-address"
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -17650,6 +17784,7 @@ define("fusor-ember-cli/templates/components/auto-node-registration-mac-address"
         },
         "moduleName": "fusor-ember-cli/templates/components/auto-node-registration-mac-address.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -17730,7 +17865,8 @@ define("fusor-ember-cli/templates/components/base-f", ["exports"], function (exp
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -17744,6 +17880,7 @@ define("fusor-ember-cli/templates/components/base-f", ["exports"], function (exp
           },
           "moduleName": "fusor-ember-cli/templates/components/base-f.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -17771,7 +17908,8 @@ define("fusor-ember-cli/templates/components/base-f", ["exports"], function (exp
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -17785,6 +17923,7 @@ define("fusor-ember-cli/templates/components/base-f", ["exports"], function (exp
           },
           "moduleName": "fusor-ember-cli/templates/components/base-f.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -17817,7 +17956,8 @@ define("fusor-ember-cli/templates/components/base-f", ["exports"], function (exp
     var child2 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -17831,6 +17971,7 @@ define("fusor-ember-cli/templates/components/base-f", ["exports"], function (exp
           },
           "moduleName": "fusor-ember-cli/templates/components/base-f.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -17864,7 +18005,10 @@ define("fusor-ember-cli/templates/components/base-f", ["exports"], function (exp
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -17878,6 +18022,7 @@ define("fusor-ember-cli/templates/components/base-f", ["exports"], function (exp
         },
         "moduleName": "fusor-ember-cli/templates/components/base-f.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -17967,7 +18112,8 @@ define("fusor-ember-cli/templates/components/base-popover", ["exports"], functio
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": false,
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -17981,6 +18127,7 @@ define("fusor-ember-cli/templates/components/base-popover", ["exports"], functio
         },
         "moduleName": "fusor-ember-cli/templates/components/base-popover.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -18005,7 +18152,11 @@ define("fusor-ember-cli/templates/components/button-f", ["exports"], function (e
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -18019,6 +18170,7 @@ define("fusor-ember-cli/templates/components/button-f", ["exports"], function (e
         },
         "moduleName": "fusor-ember-cli/templates/components/button-f.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -18052,7 +18204,8 @@ define("fusor-ember-cli/templates/components/button-selection", ["exports"], fun
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -18066,6 +18219,7 @@ define("fusor-ember-cli/templates/components/button-selection", ["exports"], fun
             },
             "moduleName": "fusor-ember-cli/templates/components/button-selection.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -18091,7 +18245,11 @@ define("fusor-ember-cli/templates/components/button-selection", ["exports"], fun
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -18105,6 +18263,7 @@ define("fusor-ember-cli/templates/components/button-selection", ["exports"], fun
           },
           "moduleName": "fusor-ember-cli/templates/components/button-selection.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -18129,7 +18288,8 @@ define("fusor-ember-cli/templates/components/button-selection", ["exports"], fun
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -18143,6 +18303,7 @@ define("fusor-ember-cli/templates/components/button-selection", ["exports"], fun
           },
           "moduleName": "fusor-ember-cli/templates/components/button-selection.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -18172,7 +18333,11 @@ define("fusor-ember-cli/templates/components/button-selection", ["exports"], fun
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -18186,6 +18351,7 @@ define("fusor-ember-cli/templates/components/button-selection", ["exports"], fun
         },
         "moduleName": "fusor-ember-cli/templates/components/button-selection.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -18213,7 +18379,11 @@ define("fusor-ember-cli/templates/components/cancel-back-next-buttons", ["export
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "modifiers",
+            "modifiers": ["action"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -18227,6 +18397,7 @@ define("fusor-ember-cli/templates/components/cancel-back-next-buttons", ["export
           },
           "moduleName": "fusor-ember-cli/templates/components/cancel-back-next-buttons.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -18258,7 +18429,8 @@ define("fusor-ember-cli/templates/components/cancel-back-next-buttons", ["export
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -18272,6 +18444,7 @@ define("fusor-ember-cli/templates/components/cancel-back-next-buttons", ["export
           },
           "moduleName": "fusor-ember-cli/templates/components/cancel-back-next-buttons.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -18305,7 +18478,8 @@ define("fusor-ember-cli/templates/components/cancel-back-next-buttons", ["export
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -18319,6 +18493,7 @@ define("fusor-ember-cli/templates/components/cancel-back-next-buttons", ["export
             },
             "moduleName": "fusor-ember-cli/templates/components/cancel-back-next-buttons.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -18343,7 +18518,8 @@ define("fusor-ember-cli/templates/components/cancel-back-next-buttons", ["export
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -18357,6 +18533,7 @@ define("fusor-ember-cli/templates/components/cancel-back-next-buttons", ["export
           },
           "moduleName": "fusor-ember-cli/templates/components/cancel-back-next-buttons.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -18382,7 +18559,8 @@ define("fusor-ember-cli/templates/components/cancel-back-next-buttons", ["export
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -18396,6 +18574,7 @@ define("fusor-ember-cli/templates/components/cancel-back-next-buttons", ["export
             },
             "moduleName": "fusor-ember-cli/templates/components/cancel-back-next-buttons.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -18420,7 +18599,8 @@ define("fusor-ember-cli/templates/components/cancel-back-next-buttons", ["export
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -18434,6 +18614,7 @@ define("fusor-ember-cli/templates/components/cancel-back-next-buttons", ["export
           },
           "moduleName": "fusor-ember-cli/templates/components/cancel-back-next-buttons.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -18458,7 +18639,8 @@ define("fusor-ember-cli/templates/components/cancel-back-next-buttons", ["export
     var child4 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -18472,6 +18654,7 @@ define("fusor-ember-cli/templates/components/cancel-back-next-buttons", ["export
           },
           "moduleName": "fusor-ember-cli/templates/components/cancel-back-next-buttons.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -18497,7 +18680,11 @@ define("fusor-ember-cli/templates/components/cancel-back-next-buttons", ["export
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -18511,6 +18698,7 @@ define("fusor-ember-cli/templates/components/cancel-back-next-buttons", ["export
         },
         "moduleName": "fusor-ember-cli/templates/components/cancel-back-next-buttons.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -18548,7 +18736,10 @@ define("fusor-ember-cli/templates/components/cancel-back-next", ["exports"], fun
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -18562,6 +18753,7 @@ define("fusor-ember-cli/templates/components/cancel-back-next", ["exports"], fun
           },
           "moduleName": "fusor-ember-cli/templates/components/cancel-back-next.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -18595,7 +18787,8 @@ define("fusor-ember-cli/templates/components/cancel-back-next", ["exports"], fun
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -18609,6 +18802,7 @@ define("fusor-ember-cli/templates/components/cancel-back-next", ["exports"], fun
           },
           "moduleName": "fusor-ember-cli/templates/components/cancel-back-next.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -18634,7 +18828,11 @@ define("fusor-ember-cli/templates/components/cancel-back-next", ["exports"], fun
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -18648,6 +18846,7 @@ define("fusor-ember-cli/templates/components/cancel-back-next", ["exports"], fun
         },
         "moduleName": "fusor-ember-cli/templates/components/cancel-back-next.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -18682,7 +18881,8 @@ define("fusor-ember-cli/templates/components/cancel-deployment-modal", ["exports
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -18696,6 +18896,7 @@ define("fusor-ember-cli/templates/components/cancel-deployment-modal", ["exports
             },
             "moduleName": "fusor-ember-cli/templates/components/cancel-deployment-modal.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -18716,7 +18917,8 @@ define("fusor-ember-cli/templates/components/cancel-deployment-modal", ["exports
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -18730,6 +18932,7 @@ define("fusor-ember-cli/templates/components/cancel-deployment-modal", ["exports
             },
             "moduleName": "fusor-ember-cli/templates/components/cancel-deployment-modal.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -18777,7 +18980,11 @@ define("fusor-ember-cli/templates/components/cancel-deployment-modal", ["exports
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -18791,6 +18998,7 @@ define("fusor-ember-cli/templates/components/cancel-deployment-modal", ["exports
           },
           "moduleName": "fusor-ember-cli/templates/components/cancel-deployment-modal.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -18821,7 +19029,11 @@ define("fusor-ember-cli/templates/components/cancel-deployment-modal", ["exports
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -18835,6 +19047,7 @@ define("fusor-ember-cli/templates/components/cancel-deployment-modal", ["exports
         },
         "moduleName": "fusor-ember-cli/templates/components/cancel-deployment-modal.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -18862,7 +19075,11 @@ define("fusor-ember-cli/templates/components/check-f", ["exports"], function (ex
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -18876,6 +19093,7 @@ define("fusor-ember-cli/templates/components/check-f", ["exports"], function (ex
           },
           "moduleName": "fusor-ember-cli/templates/components/check-f.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -18901,7 +19119,11 @@ define("fusor-ember-cli/templates/components/check-f", ["exports"], function (ex
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -18915,6 +19137,7 @@ define("fusor-ember-cli/templates/components/check-f", ["exports"], function (ex
         },
         "moduleName": "fusor-ember-cli/templates/components/check-f.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -18941,7 +19164,11 @@ define("fusor-ember-cli/templates/components/column-name", ["exports"], function
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -18955,6 +19182,7 @@ define("fusor-ember-cli/templates/components/column-name", ["exports"], function
         },
         "moduleName": "fusor-ember-cli/templates/components/column-name.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -18988,7 +19216,8 @@ define("fusor-ember-cli/templates/components/content-mirror-f", ["exports"], fun
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -19002,6 +19231,7 @@ define("fusor-ember-cli/templates/components/content-mirror-f", ["exports"], fun
             },
             "moduleName": "fusor-ember-cli/templates/components/content-mirror-f.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -19034,7 +19264,8 @@ define("fusor-ember-cli/templates/components/content-mirror-f", ["exports"], fun
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -19048,6 +19279,7 @@ define("fusor-ember-cli/templates/components/content-mirror-f", ["exports"], fun
               },
               "moduleName": "fusor-ember-cli/templates/components/content-mirror-f.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -19077,7 +19309,8 @@ define("fusor-ember-cli/templates/components/content-mirror-f", ["exports"], fun
         var child1 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -19091,6 +19324,7 @@ define("fusor-ember-cli/templates/components/content-mirror-f", ["exports"], fun
               },
               "moduleName": "fusor-ember-cli/templates/components/content-mirror-f.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -19119,7 +19353,8 @@ define("fusor-ember-cli/templates/components/content-mirror-f", ["exports"], fun
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -19133,6 +19368,7 @@ define("fusor-ember-cli/templates/components/content-mirror-f", ["exports"], fun
             },
             "moduleName": "fusor-ember-cli/templates/components/content-mirror-f.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -19156,7 +19392,10 @@ define("fusor-ember-cli/templates/components/content-mirror-f", ["exports"], fun
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -19170,6 +19409,7 @@ define("fusor-ember-cli/templates/components/content-mirror-f", ["exports"], fun
           },
           "moduleName": "fusor-ember-cli/templates/components/content-mirror-f.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -19202,7 +19442,11 @@ define("fusor-ember-cli/templates/components/content-mirror-f", ["exports"], fun
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -19216,6 +19460,7 @@ define("fusor-ember-cli/templates/components/content-mirror-f", ["exports"], fun
         },
         "moduleName": "fusor-ember-cli/templates/components/content-mirror-f.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -19244,7 +19489,8 @@ define("fusor-ember-cli/templates/components/continue-deployment-modal", ["expor
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -19258,6 +19504,7 @@ define("fusor-ember-cli/templates/components/continue-deployment-modal", ["expor
             },
             "moduleName": "fusor-ember-cli/templates/components/continue-deployment-modal.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -19284,7 +19531,8 @@ define("fusor-ember-cli/templates/components/continue-deployment-modal", ["expor
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -19298,6 +19546,7 @@ define("fusor-ember-cli/templates/components/continue-deployment-modal", ["expor
             },
             "moduleName": "fusor-ember-cli/templates/components/continue-deployment-modal.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -19336,7 +19585,11 @@ define("fusor-ember-cli/templates/components/continue-deployment-modal", ["expor
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -19350,6 +19603,7 @@ define("fusor-ember-cli/templates/components/continue-deployment-modal", ["expor
           },
           "moduleName": "fusor-ember-cli/templates/components/continue-deployment-modal.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -19380,7 +19634,11 @@ define("fusor-ember-cli/templates/components/continue-deployment-modal", ["expor
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -19394,6 +19652,7 @@ define("fusor-ember-cli/templates/components/continue-deployment-modal", ["expor
         },
         "moduleName": "fusor-ember-cli/templates/components/continue-deployment-modal.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -19421,7 +19680,11 @@ define("fusor-ember-cli/templates/components/debug-info", ["exports"], function 
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -19435,6 +19698,7 @@ define("fusor-ember-cli/templates/components/debug-info", ["exports"], function 
           },
           "moduleName": "fusor-ember-cli/templates/components/debug-info.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -19461,7 +19725,8 @@ define("fusor-ember-cli/templates/components/debug-info", ["exports"], function 
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -19475,6 +19740,7 @@ define("fusor-ember-cli/templates/components/debug-info", ["exports"], function 
           },
           "moduleName": "fusor-ember-cli/templates/components/debug-info.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -19494,7 +19760,11 @@ define("fusor-ember-cli/templates/components/debug-info", ["exports"], function 
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -19508,6 +19778,7 @@ define("fusor-ember-cli/templates/components/debug-info", ["exports"], function 
         },
         "moduleName": "fusor-ember-cli/templates/components/debug-info.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -19534,7 +19805,10 @@ define("fusor-ember-cli/templates/components/delete-deployment-button", ["export
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -19548,6 +19822,7 @@ define("fusor-ember-cli/templates/components/delete-deployment-button", ["export
         },
         "moduleName": "fusor-ember-cli/templates/components/delete-deployment-button.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -19577,7 +19852,8 @@ define("fusor-ember-cli/templates/components/delete-deployment-modal", ["exports
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -19591,6 +19867,7 @@ define("fusor-ember-cli/templates/components/delete-deployment-modal", ["exports
             },
             "moduleName": "fusor-ember-cli/templates/components/delete-deployment-modal.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -19617,7 +19894,8 @@ define("fusor-ember-cli/templates/components/delete-deployment-modal", ["exports
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -19631,6 +19909,7 @@ define("fusor-ember-cli/templates/components/delete-deployment-modal", ["exports
             },
             "moduleName": "fusor-ember-cli/templates/components/delete-deployment-modal.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -19669,7 +19948,11 @@ define("fusor-ember-cli/templates/components/delete-deployment-modal", ["exports
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -19683,6 +19966,7 @@ define("fusor-ember-cli/templates/components/delete-deployment-modal", ["exports
           },
           "moduleName": "fusor-ember-cli/templates/components/delete-deployment-modal.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -19713,7 +19997,11 @@ define("fusor-ember-cli/templates/components/delete-deployment-modal", ["exports
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -19727,6 +20015,7 @@ define("fusor-ember-cli/templates/components/delete-deployment-modal", ["exports
         },
         "moduleName": "fusor-ember-cli/templates/components/delete-deployment-modal.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -19755,7 +20044,8 @@ define("fusor-ember-cli/templates/components/delete-node-confirmation", ["export
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -19769,6 +20059,7 @@ define("fusor-ember-cli/templates/components/delete-node-confirmation", ["export
             },
             "moduleName": "fusor-ember-cli/templates/components/delete-node-confirmation.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -19815,7 +20106,8 @@ define("fusor-ember-cli/templates/components/delete-node-confirmation", ["export
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -19829,6 +20121,7 @@ define("fusor-ember-cli/templates/components/delete-node-confirmation", ["export
             },
             "moduleName": "fusor-ember-cli/templates/components/delete-node-confirmation.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -19871,7 +20164,11 @@ define("fusor-ember-cli/templates/components/delete-node-confirmation", ["export
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -19885,6 +20182,7 @@ define("fusor-ember-cli/templates/components/delete-node-confirmation", ["export
           },
           "moduleName": "fusor-ember-cli/templates/components/delete-node-confirmation.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -19915,7 +20213,11 @@ define("fusor-ember-cli/templates/components/delete-node-confirmation", ["export
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -19929,6 +20231,7 @@ define("fusor-ember-cli/templates/components/delete-node-confirmation", ["export
         },
         "moduleName": "fusor-ember-cli/templates/components/delete-node-confirmation.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -19958,7 +20261,8 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -19972,6 +20276,7 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
               },
               "moduleName": "fusor-ember-cli/templates/components/deployment-role.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -19992,7 +20297,8 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
         var child1 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -20006,6 +20312,7 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
               },
               "moduleName": "fusor-ember-cli/templates/components/deployment-role.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -20025,7 +20332,8 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -20039,6 +20347,7 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
             },
             "moduleName": "fusor-ember-cli/templates/components/deployment-role.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -20082,7 +20391,11 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -20096,6 +20409,7 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
           },
           "moduleName": "fusor-ember-cli/templates/components/deployment-role.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -20124,7 +20438,8 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
             var child0 = (function () {
               return {
                 meta: {
-                  "revision": "Ember@1.13.10",
+                  "fragmentReason": false,
+                  "revision": "Ember@2.4.6",
                   "loc": {
                     "source": null,
                     "start": {
@@ -20138,6 +20453,7 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
                   },
                   "moduleName": "fusor-ember-cli/templates/components/deployment-role.hbs"
                 },
+                isEmpty: false,
                 arity: 0,
                 cachedFragment: null,
                 hasRendered: false,
@@ -20161,7 +20477,8 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
             })();
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -20175,6 +20492,7 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
                 },
                 "moduleName": "fusor-ember-cli/templates/components/deployment-role.hbs"
               },
+              isEmpty: false,
               arity: 1,
               cachedFragment: null,
               hasRendered: false,
@@ -20200,7 +20518,8 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -20214,6 +20533,7 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
               },
               "moduleName": "fusor-ember-cli/templates/components/deployment-role.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -20237,7 +20557,8 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -20251,6 +20572,7 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
             },
             "moduleName": "fusor-ember-cli/templates/components/deployment-role.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -20275,7 +20597,8 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -20289,6 +20612,7 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
             },
             "moduleName": "fusor-ember-cli/templates/components/deployment-role.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -20339,7 +20663,8 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -20353,6 +20678,7 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
           },
           "moduleName": "fusor-ember-cli/templates/components/deployment-role.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -20399,7 +20725,11 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -20413,6 +20743,7 @@ define("fusor-ember-cli/templates/components/deployment-role", ["exports"], func
         },
         "moduleName": "fusor-ember-cli/templates/components/deployment-role.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -20440,7 +20771,11 @@ define("fusor-ember-cli/templates/components/draggable-object-target", ["exports
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "modifiers",
+            "modifiers": ["action"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -20454,6 +20789,7 @@ define("fusor-ember-cli/templates/components/draggable-object-target", ["exports
           },
           "moduleName": "fusor-ember-cli/templates/components/draggable-object-target.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -20489,7 +20825,8 @@ define("fusor-ember-cli/templates/components/draggable-object-target", ["exports
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -20503,6 +20840,7 @@ define("fusor-ember-cli/templates/components/draggable-object-target", ["exports
           },
           "moduleName": "fusor-ember-cli/templates/components/draggable-object-target.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -20528,7 +20866,11 @@ define("fusor-ember-cli/templates/components/draggable-object-target", ["exports
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -20542,6 +20884,7 @@ define("fusor-ember-cli/templates/components/draggable-object-target", ["exports
         },
         "moduleName": "fusor-ember-cli/templates/components/draggable-object-target.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -20569,7 +20912,11 @@ define("fusor-ember-cli/templates/components/draggable-object", ["exports"], fun
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "modifiers",
+            "modifiers": ["action"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -20583,6 +20930,7 @@ define("fusor-ember-cli/templates/components/draggable-object", ["exports"], fun
           },
           "moduleName": "fusor-ember-cli/templates/components/draggable-object.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -20618,7 +20966,8 @@ define("fusor-ember-cli/templates/components/draggable-object", ["exports"], fun
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -20632,6 +20981,7 @@ define("fusor-ember-cli/templates/components/draggable-object", ["exports"], fun
           },
           "moduleName": "fusor-ember-cli/templates/components/draggable-object.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -20657,7 +21007,11 @@ define("fusor-ember-cli/templates/components/draggable-object", ["exports"], fun
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -20671,6 +21025,7 @@ define("fusor-ember-cli/templates/components/draggable-object", ["exports"], fun
         },
         "moduleName": "fusor-ember-cli/templates/components/draggable-object.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -20702,7 +21057,8 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
             var child0 = (function () {
               return {
                 meta: {
-                  "revision": "Ember@1.13.10",
+                  "fragmentReason": false,
+                  "revision": "Ember@2.4.6",
                   "loc": {
                     "source": null,
                     "start": {
@@ -20716,6 +21072,7 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
                   },
                   "moduleName": "fusor-ember-cli/templates/components/edit-deployment-role.hbs"
                 },
+                isEmpty: false,
                 arity: 0,
                 cachedFragment: null,
                 hasRendered: false,
@@ -20739,7 +21096,8 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
             })();
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -20753,6 +21111,7 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
                 },
                 "moduleName": "fusor-ember-cli/templates/components/edit-deployment-role.hbs"
               },
+              isEmpty: false,
               arity: 1,
               cachedFragment: null,
               hasRendered: false,
@@ -20778,7 +21137,8 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -20792,6 +21152,7 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
               },
               "moduleName": "fusor-ember-cli/templates/components/edit-deployment-role.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -20817,7 +21178,8 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -20831,6 +21193,7 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
                 },
                 "moduleName": "fusor-ember-cli/templates/components/edit-deployment-role.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -20857,7 +21220,8 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
           var child1 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -20871,6 +21235,7 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
                 },
                 "moduleName": "fusor-ember-cli/templates/components/edit-deployment-role.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -20896,7 +21261,8 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -20910,6 +21276,7 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
               },
               "moduleName": "fusor-ember-cli/templates/components/edit-deployment-role.hbs"
             },
+            isEmpty: false,
             arity: 1,
             cachedFragment: null,
             hasRendered: false,
@@ -20933,7 +21300,8 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -20947,6 +21315,7 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
             },
             "moduleName": "fusor-ember-cli/templates/components/edit-deployment-role.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -21195,7 +21564,8 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -21209,6 +21579,7 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
             },
             "moduleName": "fusor-ember-cli/templates/components/edit-deployment-role.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -21251,7 +21622,11 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -21265,6 +21640,7 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
           },
           "moduleName": "fusor-ember-cli/templates/components/edit-deployment-role.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -21295,7 +21671,11 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -21309,6 +21689,7 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
         },
         "moduleName": "fusor-ember-cli/templates/components/edit-deployment-role.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -21339,7 +21720,8 @@ define("fusor-ember-cli/templates/components/edit-global-service-config", ["expo
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -21353,6 +21735,7 @@ define("fusor-ember-cli/templates/components/edit-global-service-config", ["expo
                 },
                 "moduleName": "fusor-ember-cli/templates/components/edit-global-service-config.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -21379,7 +21762,8 @@ define("fusor-ember-cli/templates/components/edit-global-service-config", ["expo
           var child1 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -21393,6 +21777,7 @@ define("fusor-ember-cli/templates/components/edit-global-service-config", ["expo
                 },
                 "moduleName": "fusor-ember-cli/templates/components/edit-global-service-config.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -21418,7 +21803,8 @@ define("fusor-ember-cli/templates/components/edit-global-service-config", ["expo
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -21432,6 +21818,7 @@ define("fusor-ember-cli/templates/components/edit-global-service-config", ["expo
               },
               "moduleName": "fusor-ember-cli/templates/components/edit-global-service-config.hbs"
             },
+            isEmpty: false,
             arity: 1,
             cachedFragment: null,
             hasRendered: false,
@@ -21455,7 +21842,8 @@ define("fusor-ember-cli/templates/components/edit-global-service-config", ["expo
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -21469,6 +21857,7 @@ define("fusor-ember-cli/templates/components/edit-global-service-config", ["expo
             },
             "moduleName": "fusor-ember-cli/templates/components/edit-global-service-config.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -21523,7 +21912,8 @@ define("fusor-ember-cli/templates/components/edit-global-service-config", ["expo
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -21537,6 +21927,7 @@ define("fusor-ember-cli/templates/components/edit-global-service-config", ["expo
             },
             "moduleName": "fusor-ember-cli/templates/components/edit-global-service-config.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -21579,7 +21970,11 @@ define("fusor-ember-cli/templates/components/edit-global-service-config", ["expo
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -21593,6 +21988,7 @@ define("fusor-ember-cli/templates/components/edit-global-service-config", ["expo
           },
           "moduleName": "fusor-ember-cli/templates/components/edit-global-service-config.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -21623,7 +22019,11 @@ define("fusor-ember-cli/templates/components/edit-global-service-config", ["expo
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -21637,6 +22037,7 @@ define("fusor-ember-cli/templates/components/edit-global-service-config", ["expo
         },
         "moduleName": "fusor-ember-cli/templates/components/edit-global-service-config.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -21664,7 +22065,8 @@ define("fusor-ember-cli/templates/components/env-path-list-item", ["exports"], f
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -21678,6 +22080,7 @@ define("fusor-ember-cli/templates/components/env-path-list-item", ["exports"], f
           },
           "moduleName": "fusor-ember-cli/templates/components/env-path-list-item.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -21703,7 +22106,10 @@ define("fusor-ember-cli/templates/components/env-path-list-item", ["exports"], f
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -21717,6 +22123,7 @@ define("fusor-ember-cli/templates/components/env-path-list-item", ["exports"], f
         },
         "moduleName": "fusor-ember-cli/templates/components/env-path-list-item.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -21766,7 +22173,10 @@ define("fusor-ember-cli/templates/components/error-message", ["exports"], functi
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -21780,6 +22190,7 @@ define("fusor-ember-cli/templates/components/error-message", ["exports"], functi
           },
           "moduleName": "fusor-ember-cli/templates/components/error-message.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -21838,7 +22249,11 @@ define("fusor-ember-cli/templates/components/error-message", ["exports"], functi
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -21852,6 +22267,7 @@ define("fusor-ember-cli/templates/components/error-message", ["exports"], functi
         },
         "moduleName": "fusor-ember-cli/templates/components/error-message.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -21880,7 +22296,8 @@ define("fusor-ember-cli/templates/components/error-modal", ["exports"], function
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -21894,6 +22311,7 @@ define("fusor-ember-cli/templates/components/error-modal", ["exports"], function
             },
             "moduleName": "fusor-ember-cli/templates/components/error-modal.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -21920,7 +22338,8 @@ define("fusor-ember-cli/templates/components/error-modal", ["exports"], function
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -21934,6 +22353,7 @@ define("fusor-ember-cli/templates/components/error-modal", ["exports"], function
             },
             "moduleName": "fusor-ember-cli/templates/components/error-modal.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -21963,7 +22383,11 @@ define("fusor-ember-cli/templates/components/error-modal", ["exports"], function
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -21977,6 +22401,7 @@ define("fusor-ember-cli/templates/components/error-modal", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/components/error-modal.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -22007,7 +22432,11 @@ define("fusor-ember-cli/templates/components/error-modal", ["exports"], function
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -22021,6 +22450,7 @@ define("fusor-ember-cli/templates/components/error-modal", ["exports"], function
         },
         "moduleName": "fusor-ember-cli/templates/components/error-modal.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -22047,7 +22477,10 @@ define("fusor-ember-cli/templates/components/file-upload-form", ["exports"], fun
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -22061,6 +22494,7 @@ define("fusor-ember-cli/templates/components/file-upload-form", ["exports"], fun
         },
         "moduleName": "fusor-ember-cli/templates/components/file-upload-form.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -22136,7 +22570,10 @@ define("fusor-ember-cli/templates/components/host-type-icon", ["exports"], funct
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -22150,6 +22587,7 @@ define("fusor-ember-cli/templates/components/host-type-icon", ["exports"], funct
         },
         "moduleName": "fusor-ember-cli/templates/components/host-type-icon.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -22182,7 +22620,11 @@ define("fusor-ember-cli/templates/components/hypervisor-name", ["exports"], func
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -22196,6 +22638,7 @@ define("fusor-ember-cli/templates/components/hypervisor-name", ["exports"], func
           },
           "moduleName": "fusor-ember-cli/templates/components/hypervisor-name.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -22221,7 +22664,11 @@ define("fusor-ember-cli/templates/components/hypervisor-name", ["exports"], func
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -22235,6 +22682,7 @@ define("fusor-ember-cli/templates/components/hypervisor-name", ["exports"], func
         },
         "moduleName": "fusor-ember-cli/templates/components/hypervisor-name.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -22262,7 +22710,11 @@ define("fusor-ember-cli/templates/components/labeled-radio-button", ["exports"],
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -22276,6 +22728,7 @@ define("fusor-ember-cli/templates/components/labeled-radio-button", ["exports"],
         },
         "moduleName": "fusor-ember-cli/templates/components/labeled-radio-button.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -22309,7 +22762,10 @@ define("fusor-ember-cli/templates/components/loading-spinner", ["exports"], func
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -22323,6 +22779,7 @@ define("fusor-ember-cli/templates/components/loading-spinner", ["exports"], func
           },
           "moduleName": "fusor-ember-cli/templates/components/loading-spinner.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -22377,7 +22834,11 @@ define("fusor-ember-cli/templates/components/loading-spinner", ["exports"], func
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -22391,6 +22852,7 @@ define("fusor-ember-cli/templates/components/loading-spinner", ["exports"], func
         },
         "moduleName": "fusor-ember-cli/templates/components/loading-spinner.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -22417,7 +22879,11 @@ define("fusor-ember-cli/templates/components/log-entry", ["exports"], function (
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -22431,6 +22897,7 @@ define("fusor-ember-cli/templates/components/log-entry", ["exports"], function (
         },
         "moduleName": "fusor-ember-cli/templates/components/log-entry.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -22454,47 +22921,6 @@ define("fusor-ember-cli/templates/components/log-entry", ["exports"], function (
     };
   })());
 });
-define("fusor-ember-cli/templates/components/markdown-to-html", ["exports"], function (exports) {
-  exports["default"] = Ember.HTMLBars.template((function () {
-    return {
-      meta: {
-        "revision": "Ember@1.13.10",
-        "loc": {
-          "source": null,
-          "start": {
-            "line": 1,
-            "column": 0
-          },
-          "end": {
-            "line": 2,
-            "column": 0
-          }
-        },
-        "moduleName": "fusor-ember-cli/templates/components/markdown-to-html.hbs"
-      },
-      arity: 0,
-      cachedFragment: null,
-      hasRendered: false,
-      buildFragment: function buildFragment(dom) {
-        var el0 = dom.createDocumentFragment();
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        return el0;
-      },
-      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-        var morphs = new Array(1);
-        morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
-        dom.insertBoundary(fragment, 0);
-        return morphs;
-      },
-      statements: [["content", "html", ["loc", [null, [1, 0], [1, 8]]]]],
-      locals: [],
-      templates: []
-    };
-  })());
-});
 define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template((function () {
     var child0 = (function () {
@@ -22503,7 +22929,8 @@ define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], 
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -22517,6 +22944,7 @@ define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], 
                 },
                 "moduleName": "fusor-ember-cli/templates/components/naming-scheme-modal.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -22564,7 +22992,8 @@ define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], 
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -22578,6 +23007,7 @@ define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], 
               },
               "moduleName": "fusor-ember-cli/templates/components/naming-scheme-modal.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -22609,7 +23039,8 @@ define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], 
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -22623,6 +23054,7 @@ define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], 
                 },
                 "moduleName": "fusor-ember-cli/templates/components/naming-scheme-modal.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -22661,7 +23093,8 @@ define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], 
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -22675,6 +23108,7 @@ define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], 
               },
               "moduleName": "fusor-ember-cli/templates/components/naming-scheme-modal.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -22698,7 +23132,8 @@ define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], 
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -22712,6 +23147,7 @@ define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], 
             },
             "moduleName": "fusor-ember-cli/templates/components/naming-scheme-modal.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -22776,7 +23212,8 @@ define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], 
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -22790,6 +23227,7 @@ define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], 
             },
             "moduleName": "fusor-ember-cli/templates/components/naming-scheme-modal.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -22829,7 +23267,11 @@ define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], 
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -22843,6 +23285,7 @@ define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], 
           },
           "moduleName": "fusor-ember-cli/templates/components/naming-scheme-modal.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -22873,7 +23316,11 @@ define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], 
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -22887,6 +23334,7 @@ define("fusor-ember-cli/templates/components/naming-scheme-modal", ["exports"], 
         },
         "moduleName": "fusor-ember-cli/templates/components/naming-scheme-modal.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -22915,7 +23363,8 @@ define("fusor-ember-cli/templates/components/new-environment-modal", ["exports"]
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -22929,6 +23378,7 @@ define("fusor-ember-cli/templates/components/new-environment-modal", ["exports"]
             },
             "moduleName": "fusor-ember-cli/templates/components/new-environment-modal.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -22965,7 +23415,8 @@ define("fusor-ember-cli/templates/components/new-environment-modal", ["exports"]
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -22979,6 +23430,7 @@ define("fusor-ember-cli/templates/components/new-environment-modal", ["exports"]
             },
             "moduleName": "fusor-ember-cli/templates/components/new-environment-modal.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -23009,7 +23461,11 @@ define("fusor-ember-cli/templates/components/new-environment-modal", ["exports"]
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -23023,6 +23479,7 @@ define("fusor-ember-cli/templates/components/new-environment-modal", ["exports"]
           },
           "moduleName": "fusor-ember-cli/templates/components/new-environment-modal.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -23053,7 +23510,11 @@ define("fusor-ember-cli/templates/components/new-environment-modal", ["exports"]
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -23067,6 +23528,7 @@ define("fusor-ember-cli/templates/components/new-environment-modal", ["exports"]
         },
         "moduleName": "fusor-ember-cli/templates/components/new-environment-modal.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -23093,7 +23555,11 @@ define("fusor-ember-cli/templates/components/new-node-registration-mac-address",
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -23107,6 +23573,7 @@ define("fusor-ember-cli/templates/components/new-node-registration-mac-address",
         },
         "moduleName": "fusor-ember-cli/templates/components/new-node-registration-mac-address.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -23137,7 +23604,8 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -23151,6 +23619,7 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
               },
               "moduleName": "fusor-ember-cli/templates/components/new-node-registration.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -23177,7 +23646,8 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
         var child1 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -23191,6 +23661,7 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
               },
               "moduleName": "fusor-ember-cli/templates/components/new-node-registration.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -23216,7 +23687,8 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -23230,6 +23702,7 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
             },
             "moduleName": "fusor-ember-cli/templates/components/new-node-registration.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -23256,7 +23729,8 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -23270,6 +23744,7 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
                 },
                 "moduleName": "fusor-ember-cli/templates/components/new-node-registration.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -23308,7 +23783,8 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
           var child1 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -23322,6 +23798,7 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
                 },
                 "moduleName": "fusor-ember-cli/templates/components/new-node-registration.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -23354,7 +23831,8 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -23368,6 +23846,7 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
               },
               "moduleName": "fusor-ember-cli/templates/components/new-node-registration.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -23404,7 +23883,8 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
         var child1 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -23418,6 +23898,7 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
               },
               "moduleName": "fusor-ember-cli/templates/components/new-node-registration.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -23477,7 +23958,8 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -23491,6 +23973,7 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
             },
             "moduleName": "fusor-ember-cli/templates/components/new-node-registration.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -23515,7 +23998,11 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -23529,6 +24016,7 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
           },
           "moduleName": "fusor-ember-cli/templates/components/new-node-registration.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -23559,7 +24047,11 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -23573,6 +24065,7 @@ define("fusor-ember-cli/templates/components/new-node-registration", ["exports"]
         },
         "moduleName": "fusor-ember-cli/templates/components/new-node-registration.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -23601,7 +24094,8 @@ define("fusor-ember-cli/templates/components/new-satellite-modal", ["exports"], 
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -23615,6 +24109,7 @@ define("fusor-ember-cli/templates/components/new-satellite-modal", ["exports"], 
             },
             "moduleName": "fusor-ember-cli/templates/components/new-satellite-modal.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -23641,7 +24136,8 @@ define("fusor-ember-cli/templates/components/new-satellite-modal", ["exports"], 
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -23655,6 +24151,7 @@ define("fusor-ember-cli/templates/components/new-satellite-modal", ["exports"], 
             },
             "moduleName": "fusor-ember-cli/templates/components/new-satellite-modal.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -23685,7 +24182,11 @@ define("fusor-ember-cli/templates/components/new-satellite-modal", ["exports"], 
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -23699,6 +24200,7 @@ define("fusor-ember-cli/templates/components/new-satellite-modal", ["exports"], 
           },
           "moduleName": "fusor-ember-cli/templates/components/new-satellite-modal.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -23729,7 +24231,11 @@ define("fusor-ember-cli/templates/components/new-satellite-modal", ["exports"], 
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -23743,6 +24249,7 @@ define("fusor-ember-cli/templates/components/new-satellite-modal", ["exports"], 
         },
         "moduleName": "fusor-ember-cli/templates/components/new-satellite-modal.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -23770,7 +24277,8 @@ define("fusor-ember-cli/templates/components/node-details-block", ["exports"], f
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -23784,6 +24292,7 @@ define("fusor-ember-cli/templates/components/node-details-block", ["exports"], f
           },
           "moduleName": "fusor-ember-cli/templates/components/node-details-block.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -23828,7 +24337,11 @@ define("fusor-ember-cli/templates/components/node-details-block", ["exports"], f
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -23842,6 +24355,7 @@ define("fusor-ember-cli/templates/components/node-details-block", ["exports"], f
         },
         "moduleName": "fusor-ember-cli/templates/components/node-details-block.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -23906,7 +24420,11 @@ define("fusor-ember-cli/templates/components/node-details", ["exports"], functio
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -23920,6 +24438,7 @@ define("fusor-ember-cli/templates/components/node-details", ["exports"], functio
         },
         "moduleName": "fusor-ember-cli/templates/components/node-details.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -24025,7 +24544,8 @@ define("fusor-ember-cli/templates/components/node-profile", ["exports"], functio
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -24039,6 +24559,7 @@ define("fusor-ember-cli/templates/components/node-profile", ["exports"], functio
               },
               "moduleName": "fusor-ember-cli/templates/components/node-profile.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -24064,7 +24585,8 @@ define("fusor-ember-cli/templates/components/node-profile", ["exports"], functio
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -24078,6 +24600,7 @@ define("fusor-ember-cli/templates/components/node-profile", ["exports"], functio
             },
             "moduleName": "fusor-ember-cli/templates/components/node-profile.hbs"
           },
+          isEmpty: false,
           arity: 1,
           cachedFragment: null,
           hasRendered: false,
@@ -24104,7 +24627,8 @@ define("fusor-ember-cli/templates/components/node-profile", ["exports"], functio
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -24118,6 +24642,7 @@ define("fusor-ember-cli/templates/components/node-profile", ["exports"], functio
                 },
                 "moduleName": "fusor-ember-cli/templates/components/node-profile.hbs"
               },
+              isEmpty: false,
               arity: 1,
               cachedFragment: null,
               hasRendered: false,
@@ -24148,7 +24673,8 @@ define("fusor-ember-cli/templates/components/node-profile", ["exports"], functio
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -24162,6 +24688,7 @@ define("fusor-ember-cli/templates/components/node-profile", ["exports"], functio
               },
               "moduleName": "fusor-ember-cli/templates/components/node-profile.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -24222,7 +24749,8 @@ define("fusor-ember-cli/templates/components/node-profile", ["exports"], functio
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -24236,6 +24764,7 @@ define("fusor-ember-cli/templates/components/node-profile", ["exports"], functio
             },
             "moduleName": "fusor-ember-cli/templates/components/node-profile.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -24259,7 +24788,8 @@ define("fusor-ember-cli/templates/components/node-profile", ["exports"], functio
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -24273,6 +24803,7 @@ define("fusor-ember-cli/templates/components/node-profile", ["exports"], functio
           },
           "moduleName": "fusor-ember-cli/templates/components/node-profile.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -24324,7 +24855,8 @@ define("fusor-ember-cli/templates/components/node-profile", ["exports"], functio
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -24338,6 +24870,7 @@ define("fusor-ember-cli/templates/components/node-profile", ["exports"], functio
           },
           "moduleName": "fusor-ember-cli/templates/components/node-profile.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -24376,7 +24909,10 @@ define("fusor-ember-cli/templates/components/node-profile", ["exports"], functio
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -24390,6 +24926,7 @@ define("fusor-ember-cli/templates/components/node-profile", ["exports"], functio
         },
         "moduleName": "fusor-ember-cli/templates/components/node-profile.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -24579,7 +25116,8 @@ define("fusor-ember-cli/templates/components/object-bin", ["exports"], function 
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -24593,6 +25131,7 @@ define("fusor-ember-cli/templates/components/object-bin", ["exports"], function 
               },
               "moduleName": "fusor-ember-cli/templates/components/object-bin.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -24618,7 +25157,8 @@ define("fusor-ember-cli/templates/components/object-bin", ["exports"], function 
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -24632,6 +25172,7 @@ define("fusor-ember-cli/templates/components/object-bin", ["exports"], function 
             },
             "moduleName": "fusor-ember-cli/templates/components/object-bin.hbs"
           },
+          isEmpty: false,
           arity: 1,
           cachedFragment: null,
           hasRendered: false,
@@ -24655,7 +25196,11 @@ define("fusor-ember-cli/templates/components/object-bin", ["exports"], function 
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["multiple-nodes", "wrong-type"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -24669,6 +25214,7 @@ define("fusor-ember-cli/templates/components/object-bin", ["exports"], function 
           },
           "moduleName": "fusor-ember-cli/templates/components/object-bin.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -24705,7 +25251,11 @@ define("fusor-ember-cli/templates/components/object-bin", ["exports"], function 
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -24719,6 +25269,7 @@ define("fusor-ember-cli/templates/components/object-bin", ["exports"], function 
         },
         "moduleName": "fusor-ember-cli/templates/components/object-bin.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -24746,7 +25297,8 @@ define("fusor-ember-cli/templates/components/ose-env-summary", ["exports"], func
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -24760,6 +25312,7 @@ define("fusor-ember-cli/templates/components/ose-env-summary", ["exports"], func
           },
           "moduleName": "fusor-ember-cli/templates/components/ose-env-summary.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -24785,7 +25338,11 @@ define("fusor-ember-cli/templates/components/ose-env-summary", ["exports"], func
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -24799,6 +25356,7 @@ define("fusor-ember-cli/templates/components/ose-env-summary", ["exports"], func
         },
         "moduleName": "fusor-ember-cli/templates/components/ose-env-summary.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -24903,7 +25461,11 @@ define("fusor-ember-cli/templates/components/ose-host-review-link", ["exports"],
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -24917,6 +25479,7 @@ define("fusor-ember-cli/templates/components/ose-host-review-link", ["exports"],
           },
           "moduleName": "fusor-ember-cli/templates/components/ose-host-review-link.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -24943,7 +25506,8 @@ define("fusor-ember-cli/templates/components/ose-host-review-link", ["exports"],
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -24957,6 +25521,7 @@ define("fusor-ember-cli/templates/components/ose-host-review-link", ["exports"],
           },
           "moduleName": "fusor-ember-cli/templates/components/ose-host-review-link.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -24982,7 +25547,11 @@ define("fusor-ember-cli/templates/components/ose-host-review-link", ["exports"],
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -24996,6 +25565,7 @@ define("fusor-ember-cli/templates/components/ose-host-review-link", ["exports"],
         },
         "moduleName": "fusor-ember-cli/templates/components/ose-host-review-link.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -25023,7 +25593,8 @@ define("fusor-ember-cli/templates/components/ose-node-detail-line", ["exports"],
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -25037,6 +25608,7 @@ define("fusor-ember-cli/templates/components/ose-node-detail-line", ["exports"],
           },
           "moduleName": "fusor-ember-cli/templates/components/ose-node-detail-line.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -25063,7 +25635,8 @@ define("fusor-ember-cli/templates/components/ose-node-detail-line", ["exports"],
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -25077,6 +25650,7 @@ define("fusor-ember-cli/templates/components/ose-node-detail-line", ["exports"],
           },
           "moduleName": "fusor-ember-cli/templates/components/ose-node-detail-line.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -25107,7 +25681,11 @@ define("fusor-ember-cli/templates/components/ose-node-detail-line", ["exports"],
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -25121,6 +25699,7 @@ define("fusor-ember-cli/templates/components/ose-node-detail-line", ["exports"],
         },
         "moduleName": "fusor-ember-cli/templates/components/ose-node-detail-line.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -25166,7 +25745,11 @@ define("fusor-ember-cli/templates/components/ose-summary-needed-available", ["ex
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -25180,6 +25763,7 @@ define("fusor-ember-cli/templates/components/ose-summary-needed-available", ["ex
         },
         "moduleName": "fusor-ember-cli/templates/components/ose-summary-needed-available.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -25305,7 +25889,8 @@ define("fusor-ember-cli/templates/components/osp-node-manager", ["exports"], fun
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -25319,6 +25904,7 @@ define("fusor-ember-cli/templates/components/osp-node-manager", ["exports"], fun
           },
           "moduleName": "fusor-ember-cli/templates/components/osp-node-manager.hbs"
         },
+        isEmpty: false,
         arity: 1,
         cachedFragment: null,
         hasRendered: false,
@@ -25344,7 +25930,10 @@ define("fusor-ember-cli/templates/components/osp-node-manager", ["exports"], fun
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -25358,6 +25947,7 @@ define("fusor-ember-cli/templates/components/osp-node-manager", ["exports"], fun
         },
         "moduleName": "fusor-ember-cli/templates/components/osp-node-manager.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -25566,7 +26156,8 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -25580,6 +26171,7 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
           },
           "moduleName": "fusor-ember-cli/templates/components/osp-node.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -25606,7 +26198,8 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -25620,6 +26213,7 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
             },
             "moduleName": "fusor-ember-cli/templates/components/osp-node.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -25646,7 +26240,8 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -25660,6 +26255,7 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
               },
               "moduleName": "fusor-ember-cli/templates/components/osp-node.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -25686,7 +26282,8 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -25700,6 +26297,7 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
                 },
                 "moduleName": "fusor-ember-cli/templates/components/osp-node.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -25725,7 +26323,8 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
           var child1 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -25739,6 +26338,7 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
                 },
                 "moduleName": "fusor-ember-cli/templates/components/osp-node.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -25763,7 +26363,8 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -25777,6 +26378,7 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
               },
               "moduleName": "fusor-ember-cli/templates/components/osp-node.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -25800,7 +26402,8 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -25814,6 +26417,7 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
             },
             "moduleName": "fusor-ember-cli/templates/components/osp-node.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -25837,7 +26441,8 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -25851,6 +26456,7 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
           },
           "moduleName": "fusor-ember-cli/templates/components/osp-node.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -25874,7 +26480,11 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -25888,6 +26498,7 @@ define("fusor-ember-cli/templates/components/osp-node", ["exports"], function (e
         },
         "moduleName": "fusor-ember-cli/templates/components/osp-node.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -25986,7 +26597,8 @@ define("fusor-ember-cli/templates/components/pagination-footer", ["exports"], fu
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -26000,6 +26612,7 @@ define("fusor-ember-cli/templates/components/pagination-footer", ["exports"], fu
             },
             "moduleName": "fusor-ember-cli/templates/components/pagination-footer.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -26021,7 +26634,8 @@ define("fusor-ember-cli/templates/components/pagination-footer", ["exports"], fu
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -26035,6 +26649,7 @@ define("fusor-ember-cli/templates/components/pagination-footer", ["exports"], fu
               },
               "moduleName": "fusor-ember-cli/templates/components/pagination-footer.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -26058,7 +26673,8 @@ define("fusor-ember-cli/templates/components/pagination-footer", ["exports"], fu
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -26072,6 +26688,7 @@ define("fusor-ember-cli/templates/components/pagination-footer", ["exports"], fu
             },
             "moduleName": "fusor-ember-cli/templates/components/pagination-footer.hbs"
           },
+          isEmpty: false,
           arity: 1,
           cachedFragment: null,
           hasRendered: false,
@@ -26104,7 +26721,8 @@ define("fusor-ember-cli/templates/components/pagination-footer", ["exports"], fu
       var child2 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -26118,6 +26736,7 @@ define("fusor-ember-cli/templates/components/pagination-footer", ["exports"], fu
             },
             "moduleName": "fusor-ember-cli/templates/components/pagination-footer.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -26137,7 +26756,8 @@ define("fusor-ember-cli/templates/components/pagination-footer", ["exports"], fu
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -26151,6 +26771,7 @@ define("fusor-ember-cli/templates/components/pagination-footer", ["exports"], fu
           },
           "moduleName": "fusor-ember-cli/templates/components/pagination-footer.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -26217,7 +26838,11 @@ define("fusor-ember-cli/templates/components/pagination-footer", ["exports"], fu
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -26231,6 +26856,7 @@ define("fusor-ember-cli/templates/components/pagination-footer", ["exports"], fu
         },
         "moduleName": "fusor-ember-cli/templates/components/pagination-footer.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -26275,7 +26901,10 @@ define("fusor-ember-cli/templates/components/pf-modal-base", ["exports"], functi
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -26289,6 +26918,7 @@ define("fusor-ember-cli/templates/components/pf-modal-base", ["exports"], functi
         },
         "moduleName": "fusor-ember-cli/templates/components/pf-modal-base.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -26372,7 +27002,10 @@ define("fusor-ember-cli/templates/components/pf-modal-body", ["exports"], functi
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -26386,6 +27019,7 @@ define("fusor-ember-cli/templates/components/pf-modal-body", ["exports"], functi
         },
         "moduleName": "fusor-ember-cli/templates/components/pf-modal-body.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -26419,7 +27053,10 @@ define("fusor-ember-cli/templates/components/pf-modal-footer", ["exports"], func
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -26433,6 +27070,7 @@ define("fusor-ember-cli/templates/components/pf-modal-footer", ["exports"], func
         },
         "moduleName": "fusor-ember-cli/templates/components/pf-modal-footer.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -26467,7 +27105,8 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -26481,6 +27120,7 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
           },
           "moduleName": "fusor-ember-cli/templates/components/progress-bar-satellite.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -26507,7 +27147,8 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -26521,6 +27162,7 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
             },
             "moduleName": "fusor-ember-cli/templates/components/progress-bar-satellite.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -26547,7 +27189,8 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -26561,6 +27204,7 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
               },
               "moduleName": "fusor-ember-cli/templates/components/progress-bar-satellite.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -26586,7 +27230,8 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
         var child1 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -26600,6 +27245,7 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
               },
               "moduleName": "fusor-ember-cli/templates/components/progress-bar-satellite.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -26624,7 +27270,8 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -26638,6 +27285,7 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
             },
             "moduleName": "fusor-ember-cli/templates/components/progress-bar-satellite.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -26661,7 +27309,8 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -26675,6 +27324,7 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
           },
           "moduleName": "fusor-ember-cli/templates/components/progress-bar-satellite.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -26700,7 +27350,8 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -26714,6 +27365,7 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
             },
             "moduleName": "fusor-ember-cli/templates/components/progress-bar-satellite.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -26739,7 +27391,8 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -26753,6 +27406,7 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
           },
           "moduleName": "fusor-ember-cli/templates/components/progress-bar-satellite.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -26788,7 +27442,8 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -26802,6 +27457,7 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
               },
               "moduleName": "fusor-ember-cli/templates/components/progress-bar-satellite.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -26825,7 +27481,8 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -26839,6 +27496,7 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
             },
             "moduleName": "fusor-ember-cli/templates/components/progress-bar-satellite.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -26877,7 +27535,8 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -26891,6 +27550,7 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
           },
           "moduleName": "fusor-ember-cli/templates/components/progress-bar-satellite.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -26915,7 +27575,8 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
     var child4 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -26929,6 +27590,7 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
           },
           "moduleName": "fusor-ember-cli/templates/components/progress-bar-satellite.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -26961,7 +27623,11 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -26975,6 +27641,7 @@ define("fusor-ember-cli/templates/components/progress-bar-satellite", ["exports"
         },
         "moduleName": "fusor-ember-cli/templates/components/progress-bar-satellite.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -27082,7 +27749,10 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -27096,6 +27766,7 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
           },
           "moduleName": "fusor-ember-cli/templates/components/progress-bar.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -27131,7 +27802,8 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -27145,6 +27817,7 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
           },
           "moduleName": "fusor-ember-cli/templates/components/progress-bar.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -27171,7 +27844,8 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -27185,6 +27859,7 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
             },
             "moduleName": "fusor-ember-cli/templates/components/progress-bar.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -27211,7 +27886,8 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -27225,6 +27901,7 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
               },
               "moduleName": "fusor-ember-cli/templates/components/progress-bar.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -27251,7 +27928,8 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -27265,6 +27943,7 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
                 },
                 "moduleName": "fusor-ember-cli/templates/components/progress-bar.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -27289,7 +27968,8 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -27303,6 +27983,7 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
               },
               "moduleName": "fusor-ember-cli/templates/components/progress-bar.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -27326,7 +28007,8 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -27340,6 +28022,7 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
             },
             "moduleName": "fusor-ember-cli/templates/components/progress-bar.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -27363,7 +28046,8 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -27377,6 +28061,7 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
           },
           "moduleName": "fusor-ember-cli/templates/components/progress-bar.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -27402,7 +28087,8 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -27416,6 +28102,7 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
             },
             "moduleName": "fusor-ember-cli/templates/components/progress-bar.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -27439,7 +28126,8 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -27453,6 +28141,7 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
           },
           "moduleName": "fusor-ember-cli/templates/components/progress-bar.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -27491,7 +28180,11 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -27505,6 +28198,7 @@ define("fusor-ember-cli/templates/components/progress-bar", ["exports"], functio
         },
         "moduleName": "fusor-ember-cli/templates/components/progress-bar.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -27594,7 +28288,8 @@ define("fusor-ember-cli/templates/components/radio-button", ["exports"], functio
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -27608,6 +28303,7 @@ define("fusor-ember-cli/templates/components/radio-button", ["exports"], functio
           },
           "moduleName": "fusor-ember-cli/templates/components/radio-button.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -27648,7 +28344,8 @@ define("fusor-ember-cli/templates/components/radio-button", ["exports"], functio
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -27662,6 +28359,7 @@ define("fusor-ember-cli/templates/components/radio-button", ["exports"], functio
           },
           "moduleName": "fusor-ember-cli/templates/components/radio-button.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -27687,7 +28385,11 @@ define("fusor-ember-cli/templates/components/radio-button", ["exports"], functio
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -27701,6 +28403,7 @@ define("fusor-ember-cli/templates/components/radio-button", ["exports"], functio
         },
         "moduleName": "fusor-ember-cli/templates/components/radio-button.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -27733,7 +28436,8 @@ define("fusor-ember-cli/templates/components/range-text-f", ["exports"], functio
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -27747,6 +28451,7 @@ define("fusor-ember-cli/templates/components/range-text-f", ["exports"], functio
               },
               "moduleName": "fusor-ember-cli/templates/components/range-text-f.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -27784,7 +28489,8 @@ define("fusor-ember-cli/templates/components/range-text-f", ["exports"], functio
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -27798,6 +28504,7 @@ define("fusor-ember-cli/templates/components/range-text-f", ["exports"], functio
             },
             "moduleName": "fusor-ember-cli/templates/components/range-text-f.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -27821,7 +28528,11 @@ define("fusor-ember-cli/templates/components/range-text-f", ["exports"], functio
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["multiple-nodes", "wrong-type"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -27835,6 +28546,7 @@ define("fusor-ember-cli/templates/components/range-text-f", ["exports"], functio
           },
           "moduleName": "fusor-ember-cli/templates/components/range-text-f.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -27905,7 +28617,11 @@ define("fusor-ember-cli/templates/components/range-text-f", ["exports"], functio
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -27919,6 +28635,7 @@ define("fusor-ember-cli/templates/components/range-text-f", ["exports"], functio
         },
         "moduleName": "fusor-ember-cli/templates/components/range-text-f.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -27947,7 +28664,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -27961,6 +28679,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -27988,7 +28707,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -28002,6 +28722,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
               },
               "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -28033,7 +28754,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -28047,6 +28769,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
             },
             "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -28085,7 +28808,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -28099,6 +28823,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
                 },
                 "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -28125,7 +28850,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
           var child1 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -28139,6 +28865,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
                 },
                 "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -28165,7 +28892,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
           var child2 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -28179,6 +28907,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
                 },
                 "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -28206,7 +28935,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -28220,6 +28950,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
               },
               "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -28249,7 +28980,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
             var child0 = (function () {
               return {
                 meta: {
-                  "revision": "Ember@1.13.10",
+                  "fragmentReason": false,
+                  "revision": "Ember@2.4.6",
                   "loc": {
                     "source": null,
                     "start": {
@@ -28263,6 +28995,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
                   },
                   "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
                 },
+                isEmpty: false,
                 arity: 0,
                 cachedFragment: null,
                 hasRendered: false,
@@ -28289,7 +29022,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
             var child1 = (function () {
               return {
                 meta: {
-                  "revision": "Ember@1.13.10",
+                  "fragmentReason": false,
+                  "revision": "Ember@2.4.6",
                   "loc": {
                     "source": null,
                     "start": {
@@ -28303,6 +29037,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
                   },
                   "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
                 },
+                isEmpty: false,
                 arity: 0,
                 cachedFragment: null,
                 hasRendered: false,
@@ -28328,7 +29063,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
             })();
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -28342,6 +29078,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
                 },
                 "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -28366,7 +29103,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
           var child1 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -28380,6 +29118,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
                 },
                 "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -28407,7 +29146,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -28421,6 +29161,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
               },
               "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -28448,7 +29189,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -28462,6 +29204,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
             },
             "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -28487,7 +29230,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -28501,6 +29245,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
               },
               "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -28526,7 +29271,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -28540,6 +29286,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
             },
             "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -28574,7 +29321,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -28588,6 +29336,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
               },
               "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -28613,7 +29362,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -28627,6 +29377,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
             },
             "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -28659,7 +29410,8 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -28673,6 +29425,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -28706,7 +29459,10 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -28720,6 +29476,7 @@ define("fusor-ember-cli/templates/components/review-link", ["exports"], function
         },
         "moduleName": "fusor-ember-cli/templates/components/review-link.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -28772,7 +29529,8 @@ define("fusor-ember-cli/templates/components/rhci-item", ["exports"], function (
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -28786,6 +29544,7 @@ define("fusor-ember-cli/templates/components/rhci-item", ["exports"], function (
           },
           "moduleName": "fusor-ember-cli/templates/components/rhci-item.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -28812,7 +29571,10 @@ define("fusor-ember-cli/templates/components/rhci-item", ["exports"], function (
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -28826,6 +29588,7 @@ define("fusor-ember-cli/templates/components/rhci-item", ["exports"], function (
         },
         "moduleName": "fusor-ember-cli/templates/components/rhci-item.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -28922,7 +29685,8 @@ define("fusor-ember-cli/templates/components/rhci-start", ["exports"], function 
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -28936,6 +29700,7 @@ define("fusor-ember-cli/templates/components/rhci-start", ["exports"], function 
           },
           "moduleName": "fusor-ember-cli/templates/components/rhci-start.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -28962,7 +29727,8 @@ define("fusor-ember-cli/templates/components/rhci-start", ["exports"], function 
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -28976,6 +29742,7 @@ define("fusor-ember-cli/templates/components/rhci-start", ["exports"], function 
           },
           "moduleName": "fusor-ember-cli/templates/components/rhci-start.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -29002,7 +29769,8 @@ define("fusor-ember-cli/templates/components/rhci-start", ["exports"], function 
     var child2 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -29016,6 +29784,7 @@ define("fusor-ember-cli/templates/components/rhci-start", ["exports"], function 
           },
           "moduleName": "fusor-ember-cli/templates/components/rhci-start.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -29042,7 +29811,8 @@ define("fusor-ember-cli/templates/components/rhci-start", ["exports"], function 
     var child3 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -29056,6 +29826,7 @@ define("fusor-ember-cli/templates/components/rhci-start", ["exports"], function 
           },
           "moduleName": "fusor-ember-cli/templates/components/rhci-start.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -29081,7 +29852,11 @@ define("fusor-ember-cli/templates/components/rhci-start", ["exports"], function 
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -29095,6 +29870,7 @@ define("fusor-ember-cli/templates/components/rhci-start", ["exports"], function 
         },
         "moduleName": "fusor-ember-cli/templates/components/rhci-start.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -29265,7 +30041,8 @@ define("fusor-ember-cli/templates/components/rhci-wizard", ["exports"], function
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -29279,6 +30056,7 @@ define("fusor-ember-cli/templates/components/rhci-wizard", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/components/rhci-wizard.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -29308,7 +30086,8 @@ define("fusor-ember-cli/templates/components/rhci-wizard", ["exports"], function
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -29322,6 +30101,7 @@ define("fusor-ember-cli/templates/components/rhci-wizard", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/components/rhci-wizard.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -29348,7 +30128,8 @@ define("fusor-ember-cli/templates/components/rhci-wizard", ["exports"], function
     var child2 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -29362,6 +30143,7 @@ define("fusor-ember-cli/templates/components/rhci-wizard", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/components/rhci-wizard.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -29388,7 +30170,8 @@ define("fusor-ember-cli/templates/components/rhci-wizard", ["exports"], function
     var child3 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -29402,6 +30185,7 @@ define("fusor-ember-cli/templates/components/rhci-wizard", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/components/rhci-wizard.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -29428,7 +30212,8 @@ define("fusor-ember-cli/templates/components/rhci-wizard", ["exports"], function
     var child4 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -29442,6 +30227,7 @@ define("fusor-ember-cli/templates/components/rhci-wizard", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/components/rhci-wizard.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -29468,7 +30254,8 @@ define("fusor-ember-cli/templates/components/rhci-wizard", ["exports"], function
     var child5 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -29482,6 +30269,7 @@ define("fusor-ember-cli/templates/components/rhci-wizard", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/components/rhci-wizard.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -29507,7 +30295,11 @@ define("fusor-ember-cli/templates/components/rhci-wizard", ["exports"], function
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -29521,6 +30313,7 @@ define("fusor-ember-cli/templates/components/rhci-wizard", ["exports"], function
         },
         "moduleName": "fusor-ember-cli/templates/components/rhci-wizard.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -29614,7 +30407,8 @@ define("fusor-ember-cli/templates/components/select-f", ["exports"], function (e
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -29628,6 +30422,7 @@ define("fusor-ember-cli/templates/components/select-f", ["exports"], function (e
                 },
                 "moduleName": "fusor-ember-cli/templates/components/select-f.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -29651,7 +30446,8 @@ define("fusor-ember-cli/templates/components/select-f", ["exports"], function (e
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -29665,6 +30461,7 @@ define("fusor-ember-cli/templates/components/select-f", ["exports"], function (e
               },
               "moduleName": "fusor-ember-cli/templates/components/select-f.hbs"
             },
+            isEmpty: false,
             arity: 1,
             cachedFragment: null,
             hasRendered: false,
@@ -29690,7 +30487,8 @@ define("fusor-ember-cli/templates/components/select-f", ["exports"], function (e
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -29704,6 +30502,7 @@ define("fusor-ember-cli/templates/components/select-f", ["exports"], function (e
             },
             "moduleName": "fusor-ember-cli/templates/components/select-f.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -29727,7 +30526,11 @@ define("fusor-ember-cli/templates/components/select-f", ["exports"], function (e
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -29741,6 +30544,7 @@ define("fusor-ember-cli/templates/components/select-f", ["exports"], function (e
           },
           "moduleName": "fusor-ember-cli/templates/components/select-f.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -29771,7 +30575,11 @@ define("fusor-ember-cli/templates/components/select-f", ["exports"], function (e
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -29785,6 +30593,7 @@ define("fusor-ember-cli/templates/components/select-f", ["exports"], function (e
         },
         "moduleName": "fusor-ember-cli/templates/components/select-f.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -29815,7 +30624,8 @@ define("fusor-ember-cli/templates/components/select-req-f", ["exports"], functio
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -29829,6 +30639,7 @@ define("fusor-ember-cli/templates/components/select-req-f", ["exports"], functio
                 },
                 "moduleName": "fusor-ember-cli/templates/components/select-req-f.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -29852,7 +30663,8 @@ define("fusor-ember-cli/templates/components/select-req-f", ["exports"], functio
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -29866,6 +30678,7 @@ define("fusor-ember-cli/templates/components/select-req-f", ["exports"], functio
               },
               "moduleName": "fusor-ember-cli/templates/components/select-req-f.hbs"
             },
+            isEmpty: false,
             arity: 1,
             cachedFragment: null,
             hasRendered: false,
@@ -29891,7 +30704,8 @@ define("fusor-ember-cli/templates/components/select-req-f", ["exports"], functio
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -29905,6 +30719,7 @@ define("fusor-ember-cli/templates/components/select-req-f", ["exports"], functio
             },
             "moduleName": "fusor-ember-cli/templates/components/select-req-f.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -29931,7 +30746,8 @@ define("fusor-ember-cli/templates/components/select-req-f", ["exports"], functio
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -29945,6 +30761,7 @@ define("fusor-ember-cli/templates/components/select-req-f", ["exports"], functio
                 },
                 "moduleName": "fusor-ember-cli/templates/components/select-req-f.hbs"
               },
+              isEmpty: false,
               arity: 1,
               cachedFragment: null,
               hasRendered: false,
@@ -29973,7 +30790,8 @@ define("fusor-ember-cli/templates/components/select-req-f", ["exports"], functio
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -29987,6 +30805,7 @@ define("fusor-ember-cli/templates/components/select-req-f", ["exports"], functio
               },
               "moduleName": "fusor-ember-cli/templates/components/select-req-f.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -30010,7 +30829,8 @@ define("fusor-ember-cli/templates/components/select-req-f", ["exports"], functio
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -30024,6 +30844,7 @@ define("fusor-ember-cli/templates/components/select-req-f", ["exports"], functio
             },
             "moduleName": "fusor-ember-cli/templates/components/select-req-f.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -30047,7 +30868,11 @@ define("fusor-ember-cli/templates/components/select-req-f", ["exports"], functio
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -30061,6 +30886,7 @@ define("fusor-ember-cli/templates/components/select-req-f", ["exports"], functio
           },
           "moduleName": "fusor-ember-cli/templates/components/select-req-f.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -30096,7 +30922,11 @@ define("fusor-ember-cli/templates/components/select-req-f", ["exports"], functio
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -30110,6 +30940,7 @@ define("fusor-ember-cli/templates/components/select-req-f", ["exports"], functio
         },
         "moduleName": "fusor-ember-cli/templates/components/select-req-f.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -30138,7 +30969,8 @@ define("fusor-ember-cli/templates/components/select-simple-f", ["exports"], func
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -30152,6 +30984,7 @@ define("fusor-ember-cli/templates/components/select-simple-f", ["exports"], func
             },
             "moduleName": "fusor-ember-cli/templates/components/select-simple-f.hbs"
           },
+          isEmpty: false,
           arity: 1,
           cachedFragment: null,
           hasRendered: false,
@@ -30177,7 +31010,11 @@ define("fusor-ember-cli/templates/components/select-simple-f", ["exports"], func
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -30191,6 +31028,7 @@ define("fusor-ember-cli/templates/components/select-simple-f", ["exports"], func
           },
           "moduleName": "fusor-ember-cli/templates/components/select-simple-f.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -30221,7 +31059,11 @@ define("fusor-ember-cli/templates/components/select-simple-f", ["exports"], func
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -30235,6 +31077,7 @@ define("fusor-ember-cli/templates/components/select-simple-f", ["exports"], func
         },
         "moduleName": "fusor-ember-cli/templates/components/select-simple-f.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -30263,7 +31106,8 @@ define("fusor-ember-cli/templates/components/simple-text-f", ["exports"], functi
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -30277,6 +31121,7 @@ define("fusor-ember-cli/templates/components/simple-text-f", ["exports"], functi
             },
             "moduleName": "fusor-ember-cli/templates/components/simple-text-f.hbs"
           },
+          isEmpty: false,
           arity: 1,
           cachedFragment: null,
           hasRendered: false,
@@ -30305,7 +31150,8 @@ define("fusor-ember-cli/templates/components/simple-text-f", ["exports"], functi
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -30319,6 +31165,7 @@ define("fusor-ember-cli/templates/components/simple-text-f", ["exports"], functi
           },
           "moduleName": "fusor-ember-cli/templates/components/simple-text-f.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -30342,7 +31189,10 @@ define("fusor-ember-cli/templates/components/simple-text-f", ["exports"], functi
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -30356,6 +31206,7 @@ define("fusor-ember-cli/templates/components/simple-text-f", ["exports"], functi
         },
         "moduleName": "fusor-ember-cli/templates/components/simple-text-f.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -30398,7 +31249,11 @@ define("fusor-ember-cli/templates/components/sortable-objects", ["exports"], fun
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -30412,6 +31267,7 @@ define("fusor-ember-cli/templates/components/sortable-objects", ["exports"], fun
         },
         "moduleName": "fusor-ember-cli/templates/components/sortable-objects.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -30438,7 +31294,11 @@ define("fusor-ember-cli/templates/components/step-number", ["exports"], function
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -30452,6 +31312,7 @@ define("fusor-ember-cli/templates/components/step-number", ["exports"], function
         },
         "moduleName": "fusor-ember-cli/templates/components/step-number.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -30485,7 +31346,8 @@ define("fusor-ember-cli/templates/components/text-f", ["exports"], function (exp
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -30499,6 +31361,7 @@ define("fusor-ember-cli/templates/components/text-f", ["exports"], function (exp
             },
             "moduleName": "fusor-ember-cli/templates/components/text-f.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -30528,7 +31391,8 @@ define("fusor-ember-cli/templates/components/text-f", ["exports"], function (exp
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -30542,6 +31406,7 @@ define("fusor-ember-cli/templates/components/text-f", ["exports"], function (exp
               },
               "moduleName": "fusor-ember-cli/templates/components/text-f.hbs"
             },
+            isEmpty: false,
             arity: 1,
             cachedFragment: null,
             hasRendered: false,
@@ -30570,7 +31435,8 @@ define("fusor-ember-cli/templates/components/text-f", ["exports"], function (exp
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -30584,6 +31450,7 @@ define("fusor-ember-cli/templates/components/text-f", ["exports"], function (exp
             },
             "moduleName": "fusor-ember-cli/templates/components/text-f.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -30616,7 +31483,11 @@ define("fusor-ember-cli/templates/components/text-f", ["exports"], function (exp
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -30630,6 +31501,7 @@ define("fusor-ember-cli/templates/components/text-f", ["exports"], function (exp
           },
           "moduleName": "fusor-ember-cli/templates/components/text-f.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -30676,7 +31548,11 @@ define("fusor-ember-cli/templates/components/text-f", ["exports"], function (exp
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -30690,6 +31566,7 @@ define("fusor-ember-cli/templates/components/text-f", ["exports"], function (exp
         },
         "moduleName": "fusor-ember-cli/templates/components/text-f.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -30717,7 +31594,8 @@ define("fusor-ember-cli/templates/components/textarea-f-alt", ["exports"], funct
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -30731,6 +31609,7 @@ define("fusor-ember-cli/templates/components/textarea-f-alt", ["exports"], funct
           },
           "moduleName": "fusor-ember-cli/templates/components/textarea-f-alt.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -30758,7 +31637,8 @@ define("fusor-ember-cli/templates/components/textarea-f-alt", ["exports"], funct
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -30772,6 +31652,7 @@ define("fusor-ember-cli/templates/components/textarea-f-alt", ["exports"], funct
           },
           "moduleName": "fusor-ember-cli/templates/components/textarea-f-alt.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -30804,7 +31685,8 @@ define("fusor-ember-cli/templates/components/textarea-f-alt", ["exports"], funct
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -30818,6 +31700,7 @@ define("fusor-ember-cli/templates/components/textarea-f-alt", ["exports"], funct
             },
             "moduleName": "fusor-ember-cli/templates/components/textarea-f-alt.hbs"
           },
+          isEmpty: false,
           arity: 1,
           cachedFragment: null,
           hasRendered: false,
@@ -30846,7 +31729,8 @@ define("fusor-ember-cli/templates/components/textarea-f-alt", ["exports"], funct
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -30860,6 +31744,7 @@ define("fusor-ember-cli/templates/components/textarea-f-alt", ["exports"], funct
           },
           "moduleName": "fusor-ember-cli/templates/components/textarea-f-alt.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -30901,7 +31786,10 @@ define("fusor-ember-cli/templates/components/textarea-f-alt", ["exports"], funct
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -30915,6 +31803,7 @@ define("fusor-ember-cli/templates/components/textarea-f-alt", ["exports"], funct
         },
         "moduleName": "fusor-ember-cli/templates/components/textarea-f-alt.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -31004,7 +31893,8 @@ define("fusor-ember-cli/templates/components/textarea-f-alt2", ["exports"], func
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -31018,6 +31908,7 @@ define("fusor-ember-cli/templates/components/textarea-f-alt2", ["exports"], func
           },
           "moduleName": "fusor-ember-cli/templates/components/textarea-f-alt2.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -31045,7 +31936,8 @@ define("fusor-ember-cli/templates/components/textarea-f-alt2", ["exports"], func
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -31059,6 +31951,7 @@ define("fusor-ember-cli/templates/components/textarea-f-alt2", ["exports"], func
           },
           "moduleName": "fusor-ember-cli/templates/components/textarea-f-alt2.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -31091,7 +31984,8 @@ define("fusor-ember-cli/templates/components/textarea-f-alt2", ["exports"], func
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -31105,6 +31999,7 @@ define("fusor-ember-cli/templates/components/textarea-f-alt2", ["exports"], func
             },
             "moduleName": "fusor-ember-cli/templates/components/textarea-f-alt2.hbs"
           },
+          isEmpty: false,
           arity: 1,
           cachedFragment: null,
           hasRendered: false,
@@ -31133,7 +32028,8 @@ define("fusor-ember-cli/templates/components/textarea-f-alt2", ["exports"], func
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -31147,6 +32043,7 @@ define("fusor-ember-cli/templates/components/textarea-f-alt2", ["exports"], func
           },
           "moduleName": "fusor-ember-cli/templates/components/textarea-f-alt2.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -31188,7 +32085,10 @@ define("fusor-ember-cli/templates/components/textarea-f-alt2", ["exports"], func
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -31202,6 +32102,7 @@ define("fusor-ember-cli/templates/components/textarea-f-alt2", ["exports"], func
         },
         "moduleName": "fusor-ember-cli/templates/components/textarea-f-alt2.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -31272,7 +32173,8 @@ define("fusor-ember-cli/templates/components/textarea-f", ["exports"], function 
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -31286,6 +32188,7 @@ define("fusor-ember-cli/templates/components/textarea-f", ["exports"], function 
             },
             "moduleName": "fusor-ember-cli/templates/components/textarea-f.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -31312,7 +32215,8 @@ define("fusor-ember-cli/templates/components/textarea-f", ["exports"], function 
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -31326,6 +32230,7 @@ define("fusor-ember-cli/templates/components/textarea-f", ["exports"], function 
             },
             "moduleName": "fusor-ember-cli/templates/components/textarea-f.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -31351,7 +32256,11 @@ define("fusor-ember-cli/templates/components/textarea-f", ["exports"], function 
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -31365,6 +32274,7 @@ define("fusor-ember-cli/templates/components/textarea-f", ["exports"], function 
           },
           "moduleName": "fusor-ember-cli/templates/components/textarea-f.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -31395,7 +32305,11 @@ define("fusor-ember-cli/templates/components/textarea-f", ["exports"], function 
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -31409,6 +32323,7 @@ define("fusor-ember-cli/templates/components/textarea-f", ["exports"], function 
         },
         "moduleName": "fusor-ember-cli/templates/components/textarea-f.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -31436,7 +32351,10 @@ define("fusor-ember-cli/templates/components/tool-tip", ["exports"], function (e
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -31450,6 +32368,7 @@ define("fusor-ember-cli/templates/components/tool-tip", ["exports"], function (e
           },
           "moduleName": "fusor-ember-cli/templates/components/tool-tip.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -31477,7 +32396,8 @@ define("fusor-ember-cli/templates/components/tool-tip", ["exports"], function (e
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -31491,6 +32411,7 @@ define("fusor-ember-cli/templates/components/tool-tip", ["exports"], function (e
           },
           "moduleName": "fusor-ember-cli/templates/components/tool-tip.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -31515,7 +32436,11 @@ define("fusor-ember-cli/templates/components/tool-tip", ["exports"], function (e
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -31529,6 +32454,7 @@ define("fusor-ember-cli/templates/components/tool-tip", ["exports"], function (e
         },
         "moduleName": "fusor-ember-cli/templates/components/tool-tip.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -31563,7 +32489,8 @@ define("fusor-ember-cli/templates/components/tr-deployment", ["exports"], functi
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -31577,6 +32504,7 @@ define("fusor-ember-cli/templates/components/tr-deployment", ["exports"], functi
           },
           "moduleName": "fusor-ember-cli/templates/components/tr-deployment.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -31603,7 +32531,8 @@ define("fusor-ember-cli/templates/components/tr-deployment", ["exports"], functi
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -31617,6 +32546,7 @@ define("fusor-ember-cli/templates/components/tr-deployment", ["exports"], functi
           },
           "moduleName": "fusor-ember-cli/templates/components/tr-deployment.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -31637,7 +32567,8 @@ define("fusor-ember-cli/templates/components/tr-deployment", ["exports"], functi
     var child2 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -31651,6 +32582,7 @@ define("fusor-ember-cli/templates/components/tr-deployment", ["exports"], functi
           },
           "moduleName": "fusor-ember-cli/templates/components/tr-deployment.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -31676,7 +32608,11 @@ define("fusor-ember-cli/templates/components/tr-deployment", ["exports"], functi
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -31690,6 +32626,7 @@ define("fusor-ember-cli/templates/components/tr-deployment", ["exports"], functi
         },
         "moduleName": "fusor-ember-cli/templates/components/tr-deployment.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -31769,7 +32706,7 @@ define("fusor-ember-cli/templates/components/tr-deployment", ["exports"], functi
         morphs[6] = dom.createMorphAt(element0, 3, 3);
         return morphs;
       },
-      statements: [["block", "link-to", [["get", "routeNameForEdit", ["loc", [null, [1, 16], [1, 32]]]], ["get", "deployment", ["loc", [null, [1, 33], [1, 43]]]]], [], 0, null, ["loc", [null, [1, 5], [1, 79]]]], ["content", "deployment.lifecycle_environment.name", ["loc", [null, [2, 5], [2, 46]]]], ["content", "deployment.organization.name", ["loc", [null, [3, 5], [3, 37]]]], ["content", "statusDisplay", ["loc", [null, [4, 5], [4, 22]]]], ["inline", "moment", [["get", "deployment.created_at", ["loc", [null, [5, 14], [5, 35]]]], "lll"], [], ["loc", [null, [5, 5], [5, 43]]]], ["block", "link-to", ["deployment", ["get", "deployment", ["loc", [null, [7, 28], [7, 38]]]]], ["class", "btn btn-sm btn-default"], 1, null, ["loc", [null, [7, 4], [7, 89]]]], ["block", "if", [["get", "canDelete", ["loc", [null, [8, 10], [8, 19]]]]], [], 2, null, ["loc", [null, [8, 4], [10, 11]]]]],
+      statements: [["block", "link-to", [["get", "routeNameForEdit", ["loc", [null, [1, 16], [1, 32]]]], ["get", "deployment", ["loc", [null, [1, 33], [1, 43]]]]], [], 0, null, ["loc", [null, [1, 5], [1, 79]]]], ["content", "deployment.lifecycle_environment.name", ["loc", [null, [2, 5], [2, 46]]]], ["content", "deployment.organization.name", ["loc", [null, [3, 5], [3, 37]]]], ["content", "statusDisplay", ["loc", [null, [4, 5], [4, 22]]]], ["inline", "moment-format", [["get", "deployment.created_at", ["loc", [null, [5, 21], [5, 42]]]], "lll"], [], ["loc", [null, [5, 5], [5, 50]]]], ["block", "link-to", ["deployment", ["get", "deployment", ["loc", [null, [7, 28], [7, 38]]]]], ["class", "btn btn-sm btn-default"], 1, null, ["loc", [null, [7, 4], [7, 89]]]], ["block", "if", [["get", "canDelete", ["loc", [null, [8, 10], [8, 19]]]]], [], 2, null, ["loc", [null, [8, 4], [10, 11]]]]],
       locals: [],
       templates: [child0, child1, child2]
     };
@@ -31780,7 +32717,10 @@ define("fusor-ember-cli/templates/components/tr-engine", ["exports"], function (
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -31794,6 +32734,7 @@ define("fusor-ember-cli/templates/components/tr-engine", ["exports"], function (
           },
           "moduleName": "fusor-ember-cli/templates/components/tr-engine.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -31829,7 +32770,8 @@ define("fusor-ember-cli/templates/components/tr-engine", ["exports"], function (
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -31843,6 +32785,7 @@ define("fusor-ember-cli/templates/components/tr-engine", ["exports"], function (
           },
           "moduleName": "fusor-ember-cli/templates/components/tr-engine.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -31873,7 +32816,8 @@ define("fusor-ember-cli/templates/components/tr-engine", ["exports"], function (
     var child2 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -31887,6 +32831,7 @@ define("fusor-ember-cli/templates/components/tr-engine", ["exports"], function (
           },
           "moduleName": "fusor-ember-cli/templates/components/tr-engine.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -31913,7 +32858,8 @@ define("fusor-ember-cli/templates/components/tr-engine", ["exports"], function (
     var child3 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -31927,6 +32873,7 @@ define("fusor-ember-cli/templates/components/tr-engine", ["exports"], function (
           },
           "moduleName": "fusor-ember-cli/templates/components/tr-engine.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -31955,7 +32902,11 @@ define("fusor-ember-cli/templates/components/tr-engine", ["exports"], function (
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -31969,6 +32920,7 @@ define("fusor-ember-cli/templates/components/tr-engine", ["exports"], function (
         },
         "moduleName": "fusor-ember-cli/templates/components/tr-engine.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -32088,7 +33040,10 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -32102,6 +33057,7 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
           },
           "moduleName": "fusor-ember-cli/templates/components/tr-hypervisor.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -32137,7 +33093,8 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -32151,6 +33108,7 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
           },
           "moduleName": "fusor-ember-cli/templates/components/tr-hypervisor.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -32182,7 +33140,8 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -32196,6 +33155,7 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
             },
             "moduleName": "fusor-ember-cli/templates/components/tr-hypervisor.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -32222,7 +33182,8 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -32236,6 +33197,7 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
             },
             "moduleName": "fusor-ember-cli/templates/components/tr-hypervisor.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -32264,7 +33226,8 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -32278,6 +33241,7 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
           },
           "moduleName": "fusor-ember-cli/templates/components/tr-hypervisor.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -32302,7 +33266,8 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
     var child3 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -32316,6 +33281,7 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
           },
           "moduleName": "fusor-ember-cli/templates/components/tr-hypervisor.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -32344,7 +33310,11 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -32358,6 +33328,7 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
         },
         "moduleName": "fusor-ember-cli/templates/components/tr-hypervisor.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -32476,7 +33447,11 @@ define("fusor-ember-cli/templates/components/tr-management-app", ["exports"], fu
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -32490,6 +33465,7 @@ define("fusor-ember-cli/templates/components/tr-management-app", ["exports"], fu
         },
         "moduleName": "fusor-ember-cli/templates/components/tr-management-app.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -32557,7 +33533,8 @@ define("fusor-ember-cli/templates/components/tr-subscription-manifest", ["export
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -32571,6 +33548,7 @@ define("fusor-ember-cli/templates/components/tr-subscription-manifest", ["export
           },
           "moduleName": "fusor-ember-cli/templates/components/tr-subscription-manifest.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -32603,7 +33581,11 @@ define("fusor-ember-cli/templates/components/tr-subscription-manifest", ["export
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -32617,6 +33599,7 @@ define("fusor-ember-cli/templates/components/tr-subscription-manifest", ["export
         },
         "moduleName": "fusor-ember-cli/templates/components/tr-subscription-manifest.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -32690,7 +33673,7 @@ define("fusor-ember-cli/templates/components/tr-subscription-manifest", ["export
         dom.insertBoundary(fragment, null);
         return morphs;
       },
-      statements: [["content", "subscription.product_name", ["loc", [null, [1, 5], [1, 34]]]], ["content", "subscription.contract_number", ["loc", [null, [2, 5], [2, 37]]]], ["inline", "moment", [["get", "subscription.start_date", ["loc", [null, [3, 34], [3, 57]]]], "ll"], [], ["loc", [null, [3, 25], [3, 64]]]], ["inline", "moment", [["get", "subscription.end_date", ["loc", [null, [4, 34], [4, 55]]]], "ll"], [], ["loc", [null, [4, 25], [4, 62]]]], ["content", "qtyColumn", ["loc", [null, [5, 25], [5, 38]]]], ["block", "unless", [["get", "useExistingManifest", ["loc", [null, [6, 10], [6, 29]]]]], [], 0, null, ["loc", [null, [6, 0], [8, 11]]]]],
+      statements: [["content", "subscription.product_name", ["loc", [null, [1, 5], [1, 34]]]], ["content", "subscription.contract_number", ["loc", [null, [2, 5], [2, 37]]]], ["inline", "moment-format", [["get", "subscription.start_date", ["loc", [null, [3, 41], [3, 64]]]], "ll"], [], ["loc", [null, [3, 25], [3, 71]]]], ["inline", "moment-format", [["get", "subscription.end_date", ["loc", [null, [4, 41], [4, 62]]]], "ll"], [], ["loc", [null, [4, 25], [4, 69]]]], ["content", "qtyColumn", ["loc", [null, [5, 25], [5, 38]]]], ["block", "unless", [["get", "useExistingManifest", ["loc", [null, [6, 10], [6, 29]]]]], [], 0, null, ["loc", [null, [6, 0], [8, 11]]]]],
       locals: [],
       templates: [child0]
     };
@@ -32700,7 +33683,11 @@ define("fusor-ember-cli/templates/components/tr-subscription-saved", ["exports"]
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -32714,6 +33701,7 @@ define("fusor-ember-cli/templates/components/tr-subscription-saved", ["exports"]
         },
         "moduleName": "fusor-ember-cli/templates/components/tr-subscription-saved.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -32779,7 +33767,8 @@ define("fusor-ember-cli/templates/components/tr-subscription", ["exports"], func
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -32793,6 +33782,7 @@ define("fusor-ember-cli/templates/components/tr-subscription", ["exports"], func
           },
           "moduleName": "fusor-ember-cli/templates/components/tr-subscription.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -32819,7 +33809,8 @@ define("fusor-ember-cli/templates/components/tr-subscription", ["exports"], func
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -32833,6 +33824,7 @@ define("fusor-ember-cli/templates/components/tr-subscription", ["exports"], func
           },
           "moduleName": "fusor-ember-cli/templates/components/tr-subscription.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -32852,7 +33844,11 @@ define("fusor-ember-cli/templates/components/tr-subscription", ["exports"], func
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -32866,6 +33862,7 @@ define("fusor-ember-cli/templates/components/tr-subscription", ["exports"], func
         },
         "moduleName": "fusor-ember-cli/templates/components/tr-subscription.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -32976,7 +33973,7 @@ define("fusor-ember-cli/templates/components/tr-subscription", ["exports"], func
         morphs[9] = dom.createMorphAt(element0, 1, 1);
         return morphs;
       },
-      statements: [["inline", "input", [], ["type", "checkbox", "name", "isSelectedSubscription", "checked", ["subexpr", "@mut", [["get", "subscription.isSelectedSubscription", ["loc", [null, [2, 64], [2, 99]]]]], [], []], "data-qci", ["subexpr", "@mut", [["get", "subCssId", ["loc", [null, [2, 109], [2, 117]]]]], [], []]], ["loc", [null, [2, 2], [2, 119]]]], ["content", "subscription.productName", ["loc", [null, [4, 5], [4, 33]]]], ["content", "subscription.contractNumber", ["loc", [null, [5, 5], [5, 36]]]], ["content", "systemType", ["loc", [null, [6, 5], [6, 19]]]], ["inline", "moment", [["get", "subscription.startDate", ["loc", [null, [7, 14], [7, 36]]]], "ll"], [], ["loc", [null, [7, 5], [7, 43]]]], ["inline", "moment", [["get", "subscription.endDate", ["loc", [null, [8, 14], [8, 34]]]], "ll"], [], ["loc", [null, [8, 5], [8, 41]]]], ["content", "subscription.qtyAttached", ["loc", [null, [9, 25], [9, 53]]]], ["content", "subscription.qtyAvailableOfTotal", ["loc", [null, [10, 25], [10, 61]]]], ["attribute", "class", ["concat", ["text-center ", ["subexpr", "if", [["get", "subscription.isSelectedSubscription", ["loc", [null, [11, 28], [11, 63]]]], "black-font", "not-selected"], [], ["loc", [null, [11, 23], [11, 93]]]]]]], ["block", "if", [["get", "subscription.isSelectedSubscription", ["loc", [null, [12, 8], [12, 43]]]]], [], 0, 1, ["loc", [null, [12, 2], [24, 9]]]]],
+      statements: [["inline", "input", [], ["type", "checkbox", "name", "isSelectedSubscription", "checked", ["subexpr", "@mut", [["get", "subscription.isSelectedSubscription", ["loc", [null, [2, 64], [2, 99]]]]], [], []], "data-qci", ["subexpr", "@mut", [["get", "subCssId", ["loc", [null, [2, 109], [2, 117]]]]], [], []]], ["loc", [null, [2, 2], [2, 119]]]], ["content", "subscription.productName", ["loc", [null, [4, 5], [4, 33]]]], ["content", "subscription.contractNumber", ["loc", [null, [5, 5], [5, 36]]]], ["content", "systemType", ["loc", [null, [6, 5], [6, 19]]]], ["inline", "moment-format", [["get", "subscription.startDate", ["loc", [null, [7, 21], [7, 43]]]], "ll"], [], ["loc", [null, [7, 5], [7, 50]]]], ["inline", "moment-format", [["get", "subscription.endDate", ["loc", [null, [8, 21], [8, 41]]]], "ll"], [], ["loc", [null, [8, 5], [8, 48]]]], ["content", "subscription.qtyAttached", ["loc", [null, [9, 25], [9, 53]]]], ["content", "subscription.qtyAvailableOfTotal", ["loc", [null, [10, 25], [10, 61]]]], ["attribute", "class", ["concat", ["text-center ", ["subexpr", "if", [["get", "subscription.isSelectedSubscription", ["loc", [null, [11, 28], [11, 63]]]], "black-font", "not-selected"], [], ["loc", [null, [11, 23], [11, 93]]]]]]], ["block", "if", [["get", "subscription.isSelectedSubscription", ["loc", [null, [12, 8], [12, 43]]]]], [], 0, 1, ["loc", [null, [12, 2], [24, 9]]]]],
       locals: [],
       templates: [child0, child1]
     };
@@ -32988,7 +33985,8 @@ define("fusor-ember-cli/templates/components/tr-task", ["exports"], function (ex
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -33002,6 +34000,7 @@ define("fusor-ember-cli/templates/components/tr-task", ["exports"], function (ex
             },
             "moduleName": "fusor-ember-cli/templates/components/tr-task.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -33033,7 +34032,8 @@ define("fusor-ember-cli/templates/components/tr-task", ["exports"], function (ex
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -33047,6 +34047,7 @@ define("fusor-ember-cli/templates/components/tr-task", ["exports"], function (ex
             },
             "moduleName": "fusor-ember-cli/templates/components/tr-task.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -33073,7 +34074,8 @@ define("fusor-ember-cli/templates/components/tr-task", ["exports"], function (ex
       var child2 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -33087,6 +34089,7 @@ define("fusor-ember-cli/templates/components/tr-task", ["exports"], function (ex
             },
             "moduleName": "fusor-ember-cli/templates/components/tr-task.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -33118,7 +34121,8 @@ define("fusor-ember-cli/templates/components/tr-task", ["exports"], function (ex
       var child3 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -33132,6 +34136,7 @@ define("fusor-ember-cli/templates/components/tr-task", ["exports"], function (ex
             },
             "moduleName": "fusor-ember-cli/templates/components/tr-task.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -33157,7 +34162,11 @@ define("fusor-ember-cli/templates/components/tr-task", ["exports"], function (ex
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -33171,6 +34180,7 @@ define("fusor-ember-cli/templates/components/tr-task", ["exports"], function (ex
           },
           "moduleName": "fusor-ember-cli/templates/components/tr-task.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -33250,14 +34260,18 @@ define("fusor-ember-cli/templates/components/tr-task", ["exports"], function (ex
           morphs[7] = dom.createMorphAt(dom.childAt(fragment, [9]), 1, 1);
           return morphs;
         },
-        statements: [["attribute", "href", ["get", "task.taskUrl", ["loc", [null, [3, 16], [3, 28]]]]], ["content", "actionNameAndRepository", ["loc", [null, [3, 47], [3, 74]]]], ["content", "task.state", ["loc", [null, [6, 6], [6, 20]]]], ["attribute", "class", ["concat", ["center ", ["get", "textBold", ["loc", [null, [8, 22], [8, 30]]]], " ", ["get", "textColor", ["loc", [null, [8, 35], [8, 44]]]]]]], ["block", "if", [["get", "isError", ["loc", [null, [9, 12], [9, 19]]]]], [], 0, 1, ["loc", [null, [9, 6], [13, 13]]]], ["attribute", "class", ["concat", ["center ", ["get", "textBold", ["loc", [null, [15, 22], [15, 30]]]], " ", ["get", "textColor", ["loc", [null, [15, 35], [15, 44]]]]]]], ["block", "if", [["get", "isError", ["loc", [null, [16, 12], [16, 19]]]]], [], 2, 3, ["loc", [null, [16, 6], [20, 13]]]], ["inline", "moment", [["get", "task.started_at", ["loc", [null, [23, 15], [23, 30]]]], "lll"], [], ["loc", [null, [23, 6], [23, 38]]]]],
+        statements: [["attribute", "href", ["get", "task.taskUrl", ["loc", [null, [3, 16], [3, 28]]]]], ["content", "actionNameAndRepository", ["loc", [null, [3, 47], [3, 74]]]], ["content", "task.state", ["loc", [null, [6, 6], [6, 20]]]], ["attribute", "class", ["concat", ["center ", ["get", "textBold", ["loc", [null, [8, 22], [8, 30]]]], " ", ["get", "textColor", ["loc", [null, [8, 35], [8, 44]]]]]]], ["block", "if", [["get", "isError", ["loc", [null, [9, 12], [9, 19]]]]], [], 0, 1, ["loc", [null, [9, 6], [13, 13]]]], ["attribute", "class", ["concat", ["center ", ["get", "textBold", ["loc", [null, [15, 22], [15, 30]]]], " ", ["get", "textColor", ["loc", [null, [15, 35], [15, 44]]]]]]], ["block", "if", [["get", "isError", ["loc", [null, [16, 12], [16, 19]]]]], [], 2, 3, ["loc", [null, [16, 6], [20, 13]]]], ["inline", "moment-format", [["get", "task.started_at", ["loc", [null, [23, 22], [23, 37]]]], "lll"], [], ["loc", [null, [23, 6], [23, 45]]]]],
         locals: [],
         templates: [child0, child1, child2, child3]
       };
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -33271,6 +34285,7 @@ define("fusor-ember-cli/templates/components/tr-task", ["exports"], function (ex
         },
         "moduleName": "fusor-ember-cli/templates/components/tr-task.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -33298,7 +34313,11 @@ define("fusor-ember-cli/templates/components/wizard-item", ["exports"], function
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -33312,6 +34331,7 @@ define("fusor-ember-cli/templates/components/wizard-item", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/components/wizard-item.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -33344,7 +34364,8 @@ define("fusor-ember-cli/templates/components/wizard-item", ["exports"], function
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -33358,6 +34379,7 @@ define("fusor-ember-cli/templates/components/wizard-item", ["exports"], function
             },
             "moduleName": "fusor-ember-cli/templates/components/wizard-item.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -33388,7 +34410,8 @@ define("fusor-ember-cli/templates/components/wizard-item", ["exports"], function
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -33402,6 +34425,7 @@ define("fusor-ember-cli/templates/components/wizard-item", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/components/wizard-item.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -33425,7 +34449,11 @@ define("fusor-ember-cli/templates/components/wizard-item", ["exports"], function
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -33439,6 +34467,7 @@ define("fusor-ember-cli/templates/components/wizard-item", ["exports"], function
         },
         "moduleName": "fusor-ember-cli/templates/components/wizard-item.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -33465,7 +34494,11 @@ define("fusor-ember-cli/templates/components/wizard-step", ["exports"], function
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -33479,6 +34512,7 @@ define("fusor-ember-cli/templates/components/wizard-step", ["exports"], function
         },
         "moduleName": "fusor-ember-cli/templates/components/wizard-step.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -33544,7 +34578,10 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -33558,6 +34595,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
           },
           "moduleName": "fusor-ember-cli/templates/configure-environment.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -33608,7 +34646,8 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -33622,6 +34661,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
           },
           "moduleName": "fusor-ember-cli/templates/configure-environment.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -33656,7 +34696,8 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
     var child2 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -33670,6 +34711,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
           },
           "moduleName": "fusor-ember-cli/templates/configure-environment.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -33705,7 +34747,8 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -33719,6 +34762,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
             },
             "moduleName": "fusor-ember-cli/templates/configure-environment.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -33755,7 +34799,8 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -33769,6 +34814,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
               },
               "moduleName": "fusor-ember-cli/templates/configure-environment.hbs"
             },
+            isEmpty: false,
             arity: 1,
             cachedFragment: null,
             hasRendered: false,
@@ -33828,7 +34874,8 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -33842,6 +34889,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
             },
             "moduleName": "fusor-ember-cli/templates/configure-environment.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -33899,7 +34947,8 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -33913,6 +34962,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
           },
           "moduleName": "fusor-ember-cli/templates/configure-environment.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -33976,7 +35026,8 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -33990,6 +35041,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
               },
               "moduleName": "fusor-ember-cli/templates/configure-environment.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -34015,7 +35067,8 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
         var child1 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -34029,6 +35082,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
               },
               "moduleName": "fusor-ember-cli/templates/configure-environment.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -34053,7 +35107,8 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -34067,6 +35122,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
             },
             "moduleName": "fusor-ember-cli/templates/configure-environment.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -34104,7 +35160,8 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -34118,6 +35175,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
             },
             "moduleName": "fusor-ember-cli/templates/configure-environment.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -34154,7 +35212,8 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -34168,6 +35227,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
           },
           "moduleName": "fusor-ember-cli/templates/configure-environment.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -34191,7 +35251,11 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -34205,6 +35269,7 @@ define("fusor-ember-cli/templates/configure-environment", ["exports"], function 
         },
         "moduleName": "fusor-ember-cli/templates/configure-environment.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -34319,7 +35384,11 @@ define("fusor-ember-cli/templates/configure-environment.loading", ["exports"], f
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -34333,6 +35402,7 @@ define("fusor-ember-cli/templates/configure-environment.loading", ["exports"], f
         },
         "moduleName": "fusor-ember-cli/templates/configure-environment.loading.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -34355,7 +35425,11 @@ define("fusor-ember-cli/templates/debug-deployment", ["exports"], function (expo
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -34369,6 +35443,7 @@ define("fusor-ember-cli/templates/debug-deployment", ["exports"], function (expo
         },
         "moduleName": "fusor-ember-cli/templates/debug-deployment.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -34610,7 +35685,11 @@ define("fusor-ember-cli/templates/deployment-new", ["exports"], function (export
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -34624,6 +35703,7 @@ define("fusor-ember-cli/templates/deployment-new", ["exports"], function (export
         },
         "moduleName": "fusor-ember-cli/templates/deployment-new.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -34651,7 +35731,11 @@ define("fusor-ember-cli/templates/deployment-new/index", ["exports"], function (
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -34665,6 +35749,7 @@ define("fusor-ember-cli/templates/deployment-new/index", ["exports"], function (
         },
         "moduleName": "fusor-ember-cli/templates/deployment-new/index.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -34692,7 +35777,11 @@ define("fusor-ember-cli/templates/deployment-new/satellite", ["exports"], functi
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -34706,6 +35795,7 @@ define("fusor-ember-cli/templates/deployment-new/satellite", ["exports"], functi
         },
         "moduleName": "fusor-ember-cli/templates/deployment-new/satellite.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -34733,7 +35823,11 @@ define("fusor-ember-cli/templates/deployment-new/satellite/configure-environment
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -34747,6 +35841,7 @@ define("fusor-ember-cli/templates/deployment-new/satellite/configure-environment
         },
         "moduleName": "fusor-ember-cli/templates/deployment-new/satellite/configure-environment.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -34774,7 +35869,11 @@ define("fusor-ember-cli/templates/deployment-new/satellite/configure-environment
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -34788,6 +35887,7 @@ define("fusor-ember-cli/templates/deployment-new/satellite/configure-environment
         },
         "moduleName": "fusor-ember-cli/templates/deployment-new/satellite/configure-environment.loading.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -34810,7 +35910,11 @@ define("fusor-ember-cli/templates/deployment-new/satellite/index", ["exports"], 
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -34824,6 +35928,7 @@ define("fusor-ember-cli/templates/deployment-new/satellite/index", ["exports"], 
         },
         "moduleName": "fusor-ember-cli/templates/deployment-new/satellite/index.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -34851,7 +35956,11 @@ define("fusor-ember-cli/templates/deployment-new/satellite/loading", ["exports"]
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -34865,6 +35974,7 @@ define("fusor-ember-cli/templates/deployment-new/satellite/loading", ["exports"]
         },
         "moduleName": "fusor-ember-cli/templates/deployment-new/satellite/loading.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -34887,7 +35997,11 @@ define("fusor-ember-cli/templates/deployment-new/start", ["exports"], function (
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -34901,6 +36015,7 @@ define("fusor-ember-cli/templates/deployment-new/start", ["exports"], function (
         },
         "moduleName": "fusor-ember-cli/templates/deployment-new/start.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -34928,7 +36043,10 @@ define("fusor-ember-cli/templates/deployment", ["exports"], function (exports) {
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -34942,6 +36060,7 @@ define("fusor-ember-cli/templates/deployment", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/deployment.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -34972,7 +36091,11 @@ define("fusor-ember-cli/templates/deployment", ["exports"], function (exports) {
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -34986,6 +36109,7 @@ define("fusor-ember-cli/templates/deployment", ["exports"], function (exports) {
         },
         "moduleName": "fusor-ember-cli/templates/deployment.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -35025,7 +36149,11 @@ define("fusor-ember-cli/templates/deployment/start", ["exports"], function (expo
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -35039,6 +36167,7 @@ define("fusor-ember-cli/templates/deployment/start", ["exports"], function (expo
         },
         "moduleName": "fusor-ember-cli/templates/deployment/start.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -35067,7 +36196,8 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -35081,6 +36211,7 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
           },
           "moduleName": "fusor-ember-cli/templates/deployments.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -35113,7 +36244,8 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -35127,6 +36259,7 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
           },
           "moduleName": "fusor-ember-cli/templates/deployments.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -35147,7 +36280,8 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
     var child2 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -35161,6 +36295,7 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
           },
           "moduleName": "fusor-ember-cli/templates/deployments.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -35187,7 +36322,8 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
     var child3 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -35201,6 +36337,7 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
           },
           "moduleName": "fusor-ember-cli/templates/deployments.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -35227,7 +36364,8 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
     var child4 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -35241,6 +36379,7 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
           },
           "moduleName": "fusor-ember-cli/templates/deployments.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -35267,7 +36406,8 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
     var child5 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -35281,6 +36421,7 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
           },
           "moduleName": "fusor-ember-cli/templates/deployments.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -35307,7 +36448,8 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
     var child6 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -35321,6 +36463,7 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
           },
           "moduleName": "fusor-ember-cli/templates/deployments.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -35347,7 +36490,8 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
     var child7 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -35361,6 +36505,7 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
           },
           "moduleName": "fusor-ember-cli/templates/deployments.hbs"
         },
+        isEmpty: false,
         arity: 1,
         cachedFragment: null,
         hasRendered: false,
@@ -35386,7 +36531,11 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -35400,6 +36549,7 @@ define("fusor-ember-cli/templates/deployments", ["exports"], function (exports) 
         },
         "moduleName": "fusor-ember-cli/templates/deployments.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -35599,7 +36749,11 @@ define("fusor-ember-cli/templates/engine", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -35613,6 +36767,7 @@ define("fusor-ember-cli/templates/engine", ["exports"], function (exports) {
         },
         "moduleName": "fusor-ember-cli/templates/engine.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -35641,7 +36796,8 @@ define("fusor-ember-cli/templates/engine/discovered-host", ["exports"], function
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -35655,6 +36811,7 @@ define("fusor-ember-cli/templates/engine/discovered-host", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/engine/discovered-host.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -35688,7 +36845,8 @@ define("fusor-ember-cli/templates/engine/discovered-host", ["exports"], function
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -35702,6 +36860,7 @@ define("fusor-ember-cli/templates/engine/discovered-host", ["exports"], function
             },
             "moduleName": "fusor-ember-cli/templates/engine/discovered-host.hbs"
           },
+          isEmpty: false,
           arity: 1,
           cachedFragment: null,
           hasRendered: false,
@@ -35727,7 +36886,8 @@ define("fusor-ember-cli/templates/engine/discovered-host", ["exports"], function
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -35741,6 +36901,7 @@ define("fusor-ember-cli/templates/engine/discovered-host", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/engine/discovered-host.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -35850,7 +37011,10 @@ define("fusor-ember-cli/templates/engine/discovered-host", ["exports"], function
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -35864,6 +37028,7 @@ define("fusor-ember-cli/templates/engine/discovered-host", ["exports"], function
         },
         "moduleName": "fusor-ember-cli/templates/engine/discovered-host.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -35930,7 +37095,11 @@ define("fusor-ember-cli/templates/entitlements.loading", ["exports"], function (
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["empty-body"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -35944,6 +37113,7 @@ define("fusor-ember-cli/templates/entitlements.loading", ["exports"], function (
         },
         "moduleName": "fusor-ember-cli/templates/entitlements.loading.hbs"
       },
+      isEmpty: true,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -35964,7 +37134,11 @@ define("fusor-ember-cli/templates/hypervisor", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -35978,6 +37152,7 @@ define("fusor-ember-cli/templates/hypervisor", ["exports"], function (exports) {
         },
         "moduleName": "fusor-ember-cli/templates/hypervisor.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -36006,7 +37181,11 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -36020,6 +37199,7 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
           },
           "moduleName": "fusor-ember-cli/templates/hypervisor/discovered-host.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -36066,7 +37246,8 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -36080,6 +37261,7 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
           },
           "moduleName": "fusor-ember-cli/templates/hypervisor/discovered-host.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -36114,7 +37296,8 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -36128,6 +37311,7 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
               },
               "moduleName": "fusor-ember-cli/templates/hypervisor/discovered-host.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -36163,7 +37347,8 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
         var child1 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -36177,6 +37362,7 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
               },
               "moduleName": "fusor-ember-cli/templates/hypervisor/discovered-host.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -36211,7 +37397,8 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -36225,6 +37412,7 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
             },
             "moduleName": "fusor-ember-cli/templates/hypervisor/discovered-host.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -36258,7 +37446,8 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -36272,6 +37461,7 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
             },
             "moduleName": "fusor-ember-cli/templates/hypervisor/discovered-host.hbs"
           },
+          isEmpty: false,
           arity: 1,
           cachedFragment: null,
           hasRendered: false,
@@ -36297,7 +37487,8 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -36311,6 +37502,7 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
           },
           "moduleName": "fusor-ember-cli/templates/hypervisor/discovered-host.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -36436,7 +37628,11 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -36450,6 +37646,7 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
         },
         "moduleName": "fusor-ember-cli/templates/hypervisor/discovered-host.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -36527,7 +37724,11 @@ define("fusor-ember-cli/templates/loading", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -36541,6 +37742,7 @@ define("fusor-ember-cli/templates/loading", ["exports"], function (exports) {
         },
         "moduleName": "fusor-ember-cli/templates/loading.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -36590,7 +37792,8 @@ define("fusor-ember-cli/templates/mainmenu", ["exports"], function (exports) {
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -36604,6 +37807,7 @@ define("fusor-ember-cli/templates/mainmenu", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/mainmenu.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -36624,7 +37828,8 @@ define("fusor-ember-cli/templates/mainmenu", ["exports"], function (exports) {
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -36638,6 +37843,7 @@ define("fusor-ember-cli/templates/mainmenu", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/mainmenu.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -36658,7 +37864,8 @@ define("fusor-ember-cli/templates/mainmenu", ["exports"], function (exports) {
     var child2 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -36672,6 +37879,7 @@ define("fusor-ember-cli/templates/mainmenu", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/mainmenu.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -36692,7 +37900,8 @@ define("fusor-ember-cli/templates/mainmenu", ["exports"], function (exports) {
     var child3 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -36706,6 +37915,7 @@ define("fusor-ember-cli/templates/mainmenu", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/mainmenu.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -36725,7 +37935,10 @@ define("fusor-ember-cli/templates/mainmenu", ["exports"], function (exports) {
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -36739,6 +37952,7 @@ define("fusor-ember-cli/templates/mainmenu", ["exports"], function (exports) {
         },
         "moduleName": "fusor-ember-cli/templates/mainmenu.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -36861,7 +38075,8 @@ define("fusor-ember-cli/templates/new-node-registration-csv", ["exports"], funct
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -36875,6 +38090,7 @@ define("fusor-ember-cli/templates/new-node-registration-csv", ["exports"], funct
             },
             "moduleName": "fusor-ember-cli/templates/new-node-registration-csv.hbs"
           },
+          isEmpty: false,
           arity: 1,
           cachedFragment: null,
           hasRendered: false,
@@ -36902,7 +38118,8 @@ define("fusor-ember-cli/templates/new-node-registration-csv", ["exports"], funct
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -36916,6 +38133,7 @@ define("fusor-ember-cli/templates/new-node-registration-csv", ["exports"], funct
           },
           "moduleName": "fusor-ember-cli/templates/new-node-registration-csv.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -36970,7 +38188,8 @@ define("fusor-ember-cli/templates/new-node-registration-csv", ["exports"], funct
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -36984,6 +38203,7 @@ define("fusor-ember-cli/templates/new-node-registration-csv", ["exports"], funct
               },
               "moduleName": "fusor-ember-cli/templates/new-node-registration-csv.hbs"
             },
+            isEmpty: false,
             arity: 1,
             cachedFragment: null,
             hasRendered: false,
@@ -37011,7 +38231,8 @@ define("fusor-ember-cli/templates/new-node-registration-csv", ["exports"], funct
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -37025,6 +38246,7 @@ define("fusor-ember-cli/templates/new-node-registration-csv", ["exports"], funct
             },
             "moduleName": "fusor-ember-cli/templates/new-node-registration-csv.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -37082,7 +38304,8 @@ define("fusor-ember-cli/templates/new-node-registration-csv", ["exports"], funct
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -37096,6 +38319,7 @@ define("fusor-ember-cli/templates/new-node-registration-csv", ["exports"], funct
           },
           "moduleName": "fusor-ember-cli/templates/new-node-registration-csv.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -37119,7 +38343,11 @@ define("fusor-ember-cli/templates/new-node-registration-csv", ["exports"], funct
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -37133,6 +38361,7 @@ define("fusor-ember-cli/templates/new-node-registration-csv", ["exports"], funct
         },
         "moduleName": "fusor-ember-cli/templates/new-node-registration-csv.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -37205,7 +38434,8 @@ define("fusor-ember-cli/templates/new-node-registration-specify", ["exports"], f
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -37219,6 +38449,7 @@ define("fusor-ember-cli/templates/new-node-registration-specify", ["exports"], f
           },
           "moduleName": "fusor-ember-cli/templates/new-node-registration-specify.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -37279,7 +38510,8 @@ define("fusor-ember-cli/templates/new-node-registration-specify", ["exports"], f
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -37293,6 +38525,7 @@ define("fusor-ember-cli/templates/new-node-registration-specify", ["exports"], f
             },
             "moduleName": "fusor-ember-cli/templates/new-node-registration-specify.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -37319,7 +38552,8 @@ define("fusor-ember-cli/templates/new-node-registration-specify", ["exports"], f
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -37333,6 +38567,7 @@ define("fusor-ember-cli/templates/new-node-registration-specify", ["exports"], f
             },
             "moduleName": "fusor-ember-cli/templates/new-node-registration-specify.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -37358,7 +38593,8 @@ define("fusor-ember-cli/templates/new-node-registration-specify", ["exports"], f
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -37372,6 +38608,7 @@ define("fusor-ember-cli/templates/new-node-registration-specify", ["exports"], f
           },
           "moduleName": "fusor-ember-cli/templates/new-node-registration-specify.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -37436,7 +38673,11 @@ define("fusor-ember-cli/templates/new-node-registration-specify", ["exports"], f
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -37450,6 +38691,7 @@ define("fusor-ember-cli/templates/new-node-registration-specify", ["exports"], f
         },
         "moduleName": "fusor-ember-cli/templates/new-node-registration-specify.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -37532,7 +38774,8 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -37546,6 +38789,7 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
           },
           "moduleName": "fusor-ember-cli/templates/new-node-registration-step1-body.hbs"
         },
+        isEmpty: true,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -37564,7 +38808,8 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -37578,6 +38823,7 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
           },
           "moduleName": "fusor-ember-cli/templates/new-node-registration-step1-body.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -37604,7 +38850,8 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
     var child2 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -37618,6 +38865,7 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
           },
           "moduleName": "fusor-ember-cli/templates/new-node-registration-step1-body.hbs"
         },
+        isEmpty: true,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -37636,7 +38884,8 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
     var child3 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -37650,6 +38899,7 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
           },
           "moduleName": "fusor-ember-cli/templates/new-node-registration-step1-body.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -37675,7 +38925,11 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -37689,6 +38943,7 @@ define("fusor-ember-cli/templates/new-node-registration-step1-body", ["exports"]
         },
         "moduleName": "fusor-ember-cli/templates/new-node-registration-step1-body.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -37789,7 +39044,10 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -37803,6 +39061,7 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
           },
           "moduleName": "fusor-ember-cli/templates/new-node-registration-step2-body.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -37895,7 +39154,8 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -37909,6 +39169,7 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
             },
             "moduleName": "fusor-ember-cli/templates/new-node-registration-step2-body.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -37999,7 +39260,8 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -38013,6 +39275,7 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
               },
               "moduleName": "fusor-ember-cli/templates/new-node-registration-step2-body.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -38102,7 +39365,8 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
         var child1 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -38116,6 +39380,7 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
               },
               "moduleName": "fusor-ember-cli/templates/new-node-registration-step2-body.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -38204,7 +39469,8 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -38218,6 +39484,7 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
             },
             "moduleName": "fusor-ember-cli/templates/new-node-registration-step2-body.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -38241,7 +39508,8 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -38255,6 +39523,7 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
           },
           "moduleName": "fusor-ember-cli/templates/new-node-registration-step2-body.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -38279,7 +39548,8 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
     var child2 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -38293,6 +39563,7 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
           },
           "moduleName": "fusor-ember-cli/templates/new-node-registration-step2-body.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -38318,7 +39589,8 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
     var child3 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -38332,6 +39604,7 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
           },
           "moduleName": "fusor-ember-cli/templates/new-node-registration-step2-body.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -38361,7 +39634,8 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -38375,6 +39649,7 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
             },
             "moduleName": "fusor-ember-cli/templates/new-node-registration-step2-body.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -38413,7 +39688,8 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -38427,6 +39703,7 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
               },
               "moduleName": "fusor-ember-cli/templates/new-node-registration-step2-body.hbs"
             },
+            isEmpty: false,
             arity: 2,
             cachedFragment: null,
             hasRendered: false,
@@ -38452,7 +39729,8 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -38466,6 +39744,7 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
             },
             "moduleName": "fusor-ember-cli/templates/new-node-registration-step2-body.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -38498,7 +39777,8 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -38512,6 +39792,7 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
           },
           "moduleName": "fusor-ember-cli/templates/new-node-registration-step2-body.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -38548,7 +39829,11 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -38562,6 +39847,7 @@ define("fusor-ember-cli/templates/new-node-registration-step2-body", ["exports"]
         },
         "moduleName": "fusor-ember-cli/templates/new-node-registration-step2-body.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -38727,7 +40013,8 @@ define("fusor-ember-cli/templates/openshift", ["exports"], function (exports) {
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -38741,6 +40028,7 @@ define("fusor-ember-cli/templates/openshift", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/openshift.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -38781,7 +40069,8 @@ define("fusor-ember-cli/templates/openshift", ["exports"], function (exports) {
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -38795,6 +40084,7 @@ define("fusor-ember-cli/templates/openshift", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/openshift.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -38834,7 +40124,11 @@ define("fusor-ember-cli/templates/openshift", ["exports"], function (exports) {
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -38848,6 +40142,7 @@ define("fusor-ember-cli/templates/openshift", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/openshift.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -38878,7 +40173,11 @@ define("fusor-ember-cli/templates/openshift", ["exports"], function (exports) {
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -38892,6 +40191,7 @@ define("fusor-ember-cli/templates/openshift", ["exports"], function (exports) {
         },
         "moduleName": "fusor-ember-cli/templates/openshift.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -38919,7 +40219,10 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -38933,6 +40236,7 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
           },
           "moduleName": "fusor-ember-cli/templates/openshift/openshift-configuration.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -38986,7 +40290,8 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -39000,6 +40305,7 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
             },
             "moduleName": "fusor-ember-cli/templates/openshift/openshift-configuration.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -39037,7 +40343,8 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -39051,6 +40358,7 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
           },
           "moduleName": "fusor-ember-cli/templates/openshift/openshift-configuration.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -39076,7 +40384,8 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -39090,6 +40399,7 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
             },
             "moduleName": "fusor-ember-cli/templates/openshift/openshift-configuration.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -39119,7 +40429,8 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -39133,6 +40444,7 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
             },
             "moduleName": "fusor-ember-cli/templates/openshift/openshift-configuration.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -39161,7 +40473,8 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -39175,6 +40488,7 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
           },
           "moduleName": "fusor-ember-cli/templates/openshift/openshift-configuration.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -39206,7 +40520,8 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -39220,6 +40535,7 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
             },
             "moduleName": "fusor-ember-cli/templates/openshift/openshift-configuration.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -39244,7 +40560,8 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -39258,6 +40575,7 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
           },
           "moduleName": "fusor-ember-cli/templates/openshift/openshift-configuration.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -39281,7 +40599,11 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -39295,6 +40617,7 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
         },
         "moduleName": "fusor-ember-cli/templates/openshift/openshift-configuration.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -39420,7 +40743,8 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -39434,6 +40758,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               },
               "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -39459,7 +40784,8 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -39473,6 +40799,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             },
             "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -39568,7 +40895,8 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -39582,6 +40910,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               },
               "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -39607,7 +40936,8 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -39621,6 +40951,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             },
             "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -39724,7 +41055,8 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -39738,6 +41070,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               },
               "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -39763,7 +41096,8 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -39777,6 +41111,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             },
             "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -39878,7 +41213,11 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["multiple-nodes", "wrong-type"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -39892,6 +41231,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
           },
           "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -39964,7 +41304,8 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -39978,6 +41319,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
           },
           "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -40012,7 +41354,8 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
     var child2 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -40026,6 +41369,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
           },
           "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -40059,7 +41403,8 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -40073,6 +41418,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             },
             "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
           },
+          isEmpty: false,
           arity: 1,
           cachedFragment: null,
           hasRendered: false,
@@ -40099,7 +41445,8 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -40113,6 +41460,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             },
             "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -40139,7 +41487,8 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
       var child2 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -40153,6 +41502,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             },
             "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -40183,7 +41533,8 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
       var child3 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -40197,6 +41548,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             },
             "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -40223,7 +41575,8 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
       var child4 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -40237,6 +41590,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             },
             "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -40267,7 +41621,8 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
       var child5 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -40281,6 +41636,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             },
             "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -40311,7 +41667,8 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -40325,6 +41682,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
           },
           "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -40453,7 +41811,11 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -40467,6 +41829,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
         },
         "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -40546,7 +41909,8 @@ define("fusor-ember-cli/templates/openstack", ["exports"], function (exports) {
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -40560,6 +41924,7 @@ define("fusor-ember-cli/templates/openstack", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/openstack.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -40600,7 +41965,8 @@ define("fusor-ember-cli/templates/openstack", ["exports"], function (exports) {
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -40614,6 +41980,7 @@ define("fusor-ember-cli/templates/openstack", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/openstack.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -40654,7 +42021,8 @@ define("fusor-ember-cli/templates/openstack", ["exports"], function (exports) {
       var child2 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -40668,6 +42036,7 @@ define("fusor-ember-cli/templates/openstack", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/openstack.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -40708,7 +42077,8 @@ define("fusor-ember-cli/templates/openstack", ["exports"], function (exports) {
       var child3 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -40722,6 +42092,7 @@ define("fusor-ember-cli/templates/openstack", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/openstack.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -40761,7 +42132,11 @@ define("fusor-ember-cli/templates/openstack", ["exports"], function (exports) {
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -40775,6 +42150,7 @@ define("fusor-ember-cli/templates/openstack", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/openstack.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -40815,7 +42191,11 @@ define("fusor-ember-cli/templates/openstack", ["exports"], function (exports) {
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -40829,6 +42209,7 @@ define("fusor-ember-cli/templates/openstack", ["exports"], function (exports) {
         },
         "moduleName": "fusor-ember-cli/templates/openstack.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -40856,7 +42237,10 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -40870,6 +42254,7 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/openstack/assign-nodes.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -40923,7 +42308,8 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -40937,6 +42323,7 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
             },
             "moduleName": "fusor-ember-cli/templates/openstack/assign-nodes.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -40970,7 +42357,8 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -40984,6 +42372,7 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
               },
               "moduleName": "fusor-ember-cli/templates/openstack/assign-nodes.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -41016,7 +42405,8 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
             var child0 = (function () {
               return {
                 meta: {
-                  "revision": "Ember@1.13.10",
+                  "fragmentReason": false,
+                  "revision": "Ember@2.4.6",
                   "loc": {
                     "source": null,
                     "start": {
@@ -41030,6 +42420,7 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
                   },
                   "moduleName": "fusor-ember-cli/templates/openstack/assign-nodes.hbs"
                 },
+                isEmpty: false,
                 arity: 0,
                 cachedFragment: null,
                 hasRendered: false,
@@ -41055,7 +42446,8 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
             })();
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -41069,6 +42461,7 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
                 },
                 "moduleName": "fusor-ember-cli/templates/openstack/assign-nodes.hbs"
               },
+              isEmpty: false,
               arity: 1,
               cachedFragment: null,
               hasRendered: false,
@@ -41093,7 +42486,8 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
           var child1 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -41107,6 +42501,7 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
                 },
                 "moduleName": "fusor-ember-cli/templates/openstack/assign-nodes.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -41133,7 +42528,8 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -41147,6 +42543,7 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
               },
               "moduleName": "fusor-ember-cli/templates/openstack/assign-nodes.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -41185,7 +42582,8 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -41199,6 +42597,7 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
                 },
                 "moduleName": "fusor-ember-cli/templates/openstack/assign-nodes.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -41225,7 +42624,8 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
           var child1 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -41239,6 +42639,7 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
                 },
                 "moduleName": "fusor-ember-cli/templates/openstack/assign-nodes.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -41264,7 +42665,8 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -41278,6 +42680,7 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
               },
               "moduleName": "fusor-ember-cli/templates/openstack/assign-nodes.hbs"
             },
+            isEmpty: false,
             arity: 1,
             cachedFragment: null,
             hasRendered: false,
@@ -41317,7 +42720,8 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -41331,6 +42735,7 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
             },
             "moduleName": "fusor-ember-cli/templates/openstack/assign-nodes.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -41442,7 +42847,8 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -41456,6 +42862,7 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/openstack/assign-nodes.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -41479,7 +42886,11 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -41493,6 +42904,7 @@ define("fusor-ember-cli/templates/openstack/assign-nodes", ["exports"], function
         },
         "moduleName": "fusor-ember-cli/templates/openstack/assign-nodes.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -41519,7 +42931,11 @@ define("fusor-ember-cli/templates/openstack/index", ["exports"], function (expor
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -41533,6 +42949,7 @@ define("fusor-ember-cli/templates/openstack/index", ["exports"], function (expor
         },
         "moduleName": "fusor-ember-cli/templates/openstack/index.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -41560,7 +42977,11 @@ define("fusor-ember-cli/templates/openstack/loading", ["exports"], function (exp
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -41574,6 +42995,7 @@ define("fusor-ember-cli/templates/openstack/loading", ["exports"], function (exp
         },
         "moduleName": "fusor-ember-cli/templates/openstack/loading.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -41602,7 +43024,8 @@ define("fusor-ember-cli/templates/openstack/overcloud", ["exports"], function (e
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -41616,6 +43039,7 @@ define("fusor-ember-cli/templates/openstack/overcloud", ["exports"], function (e
           },
           "moduleName": "fusor-ember-cli/templates/openstack/overcloud.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -41671,7 +43095,11 @@ define("fusor-ember-cli/templates/openstack/overcloud", ["exports"], function (e
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -41685,6 +43113,7 @@ define("fusor-ember-cli/templates/openstack/overcloud", ["exports"], function (e
         },
         "moduleName": "fusor-ember-cli/templates/openstack/overcloud.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -41818,7 +43247,11 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -41832,6 +43265,7 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
           },
           "moduleName": "fusor-ember-cli/templates/openstack/register-nodes.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -41865,7 +43299,8 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -41879,6 +43314,7 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
             },
             "moduleName": "fusor-ember-cli/templates/openstack/register-nodes.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -41934,7 +43370,8 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -41948,6 +43385,7 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
             },
             "moduleName": "fusor-ember-cli/templates/openstack/register-nodes.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -42004,7 +43442,8 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -42018,6 +43457,7 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
               },
               "moduleName": "fusor-ember-cli/templates/openstack/register-nodes.hbs"
             },
+            isEmpty: false,
             arity: 1,
             cachedFragment: null,
             hasRendered: false,
@@ -42051,7 +43491,8 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -42065,6 +43506,7 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
             },
             "moduleName": "fusor-ember-cli/templates/openstack/register-nodes.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -42131,7 +43573,8 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
       var child3 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -42145,6 +43588,7 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
             },
             "moduleName": "fusor-ember-cli/templates/openstack/register-nodes.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -42191,7 +43635,8 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
       var child4 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -42205,6 +43650,7 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
             },
             "moduleName": "fusor-ember-cli/templates/openstack/register-nodes.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -42271,7 +43717,8 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
       var child5 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -42285,6 +43732,7 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
             },
             "moduleName": "fusor-ember-cli/templates/openstack/register-nodes.hbs"
           },
+          isEmpty: false,
           arity: 1,
           cachedFragment: null,
           hasRendered: false,
@@ -42310,7 +43758,8 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -42324,6 +43773,7 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
           },
           "moduleName": "fusor-ember-cli/templates/openstack/register-nodes.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -42395,7 +43845,11 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -42409,6 +43863,7 @@ define("fusor-ember-cli/templates/openstack/register-nodes", ["exports"], functi
         },
         "moduleName": "fusor-ember-cli/templates/openstack/register-nodes.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -42457,7 +43912,10 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -42471,6 +43929,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
           },
           "moduleName": "fusor-ember-cli/templates/openstack/undercloud-deploy.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -42524,7 +43983,8 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -42538,6 +43998,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
             },
             "moduleName": "fusor-ember-cli/templates/openstack/undercloud-deploy.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -42579,7 +44040,8 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
             var child0 = (function () {
               return {
                 meta: {
-                  "revision": "Ember@1.13.10",
+                  "fragmentReason": false,
+                  "revision": "Ember@2.4.6",
                   "loc": {
                     "source": null,
                     "start": {
@@ -42593,6 +44055,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
                   },
                   "moduleName": "fusor-ember-cli/templates/openstack/undercloud-deploy.hbs"
                 },
+                isEmpty: false,
                 arity: 0,
                 cachedFragment: null,
                 hasRendered: false,
@@ -42619,7 +44082,8 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
             var child1 = (function () {
               return {
                 meta: {
-                  "revision": "Ember@1.13.10",
+                  "fragmentReason": false,
+                  "revision": "Ember@2.4.6",
                   "loc": {
                     "source": null,
                     "start": {
@@ -42633,6 +44097,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
                   },
                   "moduleName": "fusor-ember-cli/templates/openstack/undercloud-deploy.hbs"
                 },
+                isEmpty: false,
                 arity: 0,
                 cachedFragment: null,
                 hasRendered: false,
@@ -42658,7 +44123,8 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
             })();
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -42672,6 +44138,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
                 },
                 "moduleName": "fusor-ember-cli/templates/openstack/undercloud-deploy.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -42744,7 +44211,8 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
           var child1 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -42758,6 +44226,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
                 },
                 "moduleName": "fusor-ember-cli/templates/openstack/undercloud-deploy.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -42814,7 +44283,8 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
             var child0 = (function () {
               return {
                 meta: {
-                  "revision": "Ember@1.13.10",
+                  "fragmentReason": false,
+                  "revision": "Ember@2.4.6",
                   "loc": {
                     "source": null,
                     "start": {
@@ -42828,6 +44298,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
                   },
                   "moduleName": "fusor-ember-cli/templates/openstack/undercloud-deploy.hbs"
                 },
+                isEmpty: false,
                 arity: 0,
                 cachedFragment: null,
                 hasRendered: false,
@@ -42866,7 +44337,8 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
             var child1 = (function () {
               return {
                 meta: {
-                  "revision": "Ember@1.13.10",
+                  "fragmentReason": false,
+                  "revision": "Ember@2.4.6",
                   "loc": {
                     "source": null,
                     "start": {
@@ -42880,6 +44352,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
                   },
                   "moduleName": "fusor-ember-cli/templates/openstack/undercloud-deploy.hbs"
                 },
+                isEmpty: false,
                 arity: 0,
                 cachedFragment: null,
                 hasRendered: false,
@@ -42917,7 +44390,8 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
             })();
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -42931,6 +44405,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
                 },
                 "moduleName": "fusor-ember-cli/templates/openstack/undercloud-deploy.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -43014,7 +44489,8 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -43028,6 +44504,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
               },
               "moduleName": "fusor-ember-cli/templates/openstack/undercloud-deploy.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -43056,7 +44533,8 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -43070,6 +44548,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
                 },
                 "moduleName": "fusor-ember-cli/templates/openstack/undercloud-deploy.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -43121,7 +44600,8 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -43135,6 +44615,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
               },
               "moduleName": "fusor-ember-cli/templates/openstack/undercloud-deploy.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -43209,7 +44690,8 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -43223,6 +44705,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
             },
             "moduleName": "fusor-ember-cli/templates/openstack/undercloud-deploy.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -43246,7 +44729,8 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -43260,6 +44744,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
           },
           "moduleName": "fusor-ember-cli/templates/openstack/undercloud-deploy.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -43283,7 +44768,11 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -43297,6 +44786,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
         },
         "moduleName": "fusor-ember-cli/templates/openstack/undercloud-deploy.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -43329,7 +44819,11 @@ define("fusor-ember-cli/templates/readme", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -43343,6 +44837,7 @@ define("fusor-ember-cli/templates/readme", ["exports"], function (exports) {
         },
         "moduleName": "fusor-ember-cli/templates/readme.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -43370,7 +44865,10 @@ define("fusor-ember-cli/templates/req-cloudforms", ["exports"], function (export
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -43384,6 +44882,7 @@ define("fusor-ember-cli/templates/req-cloudforms", ["exports"], function (export
         },
         "moduleName": "fusor-ember-cli/templates/req-cloudforms.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -43437,7 +44936,10 @@ define("fusor-ember-cli/templates/req-disconnected", ["exports"], function (expo
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -43451,6 +44953,7 @@ define("fusor-ember-cli/templates/req-disconnected", ["exports"], function (expo
         },
         "moduleName": "fusor-ember-cli/templates/req-disconnected.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -43514,7 +45017,10 @@ define("fusor-ember-cli/templates/req-general", ["exports"], function (exports) 
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -43528,6 +45034,7 @@ define("fusor-ember-cli/templates/req-general", ["exports"], function (exports) 
         },
         "moduleName": "fusor-ember-cli/templates/req-general.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -43599,7 +45106,10 @@ define("fusor-ember-cli/templates/req-openshift", ["exports"], function (exports
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -43613,6 +45123,7 @@ define("fusor-ember-cli/templates/req-openshift", ["exports"], function (exports
         },
         "moduleName": "fusor-ember-cli/templates/req-openshift.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -43690,7 +45201,10 @@ define("fusor-ember-cli/templates/req-openstack", ["exports"], function (exports
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -43704,6 +45218,7 @@ define("fusor-ember-cli/templates/req-openstack", ["exports"], function (exports
         },
         "moduleName": "fusor-ember-cli/templates/req-openstack.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -43785,7 +45300,10 @@ define("fusor-ember-cli/templates/req-rhev", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "triple-curlies"
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -43799,6 +45317,7 @@ define("fusor-ember-cli/templates/req-rhev", ["exports"], function (exports) {
         },
         "moduleName": "fusor-ember-cli/templates/req-rhev.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -43885,7 +45404,8 @@ define("fusor-ember-cli/templates/review", ["exports"], function (exports) {
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -43899,6 +45419,7 @@ define("fusor-ember-cli/templates/review", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/review.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -43939,7 +45460,8 @@ define("fusor-ember-cli/templates/review", ["exports"], function (exports) {
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -43953,6 +45475,7 @@ define("fusor-ember-cli/templates/review", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/review.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -43993,7 +45516,8 @@ define("fusor-ember-cli/templates/review", ["exports"], function (exports) {
       var child2 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -44007,6 +45531,7 @@ define("fusor-ember-cli/templates/review", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/review.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -44046,7 +45571,11 @@ define("fusor-ember-cli/templates/review", ["exports"], function (exports) {
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -44060,6 +45589,7 @@ define("fusor-ember-cli/templates/review", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/review.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -44095,7 +45625,11 @@ define("fusor-ember-cli/templates/review", ["exports"], function (exports) {
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -44109,6 +45643,7 @@ define("fusor-ember-cli/templates/review", ["exports"], function (exports) {
         },
         "moduleName": "fusor-ember-cli/templates/review.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -44135,7 +45670,11 @@ define("fusor-ember-cli/templates/review/index", ["exports"], function (exports)
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -44149,6 +45688,7 @@ define("fusor-ember-cli/templates/review/index", ["exports"], function (exports)
         },
         "moduleName": "fusor-ember-cli/templates/review/index.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -44172,13 +45712,16 @@ define("fusor-ember-cli/templates/review/index", ["exports"], function (exports)
     };
   })());
 });
-define("fusor-ember-cli/templates/review/installation",["exports"],function(exports){exports["default"] = Ember.HTMLBars.template((function(){var child0=(function(){var child0=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":3,"column":2},"end":{"line":13,"column":2}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("    ");dom.appendChild(el0,el1);var el1=dom.createElement("div");dom.setAttribute(el1,"class","row");var el2=dom.createTextNode("\n      ");dom.appendChild(el1,el2);var el2=dom.createElement("div");dom.setAttribute(el2,"class","col-md-9");var el3=dom.createTextNode("\n        ");dom.appendChild(el2,el3);var el3=dom.createElement("div");dom.setAttribute(el3,"class","alert alert-danger rhci-alert");var el4=dom.createTextNode("\n          ");dom.appendChild(el3,el4);var el4=dom.createElement("i");dom.setAttribute(el4,"class","fa fa-2x fa-exclamation-triangle errorForValidation");dom.appendChild(el3,el4);var el4=dom.createTextNode("\n           \n          ");dom.appendChild(el3,el4);var el4=dom.createComment("");dom.appendChild(el3,el4);var el4=dom.createTextNode("\n        ");dom.appendChild(el3,el4);dom.appendChild(el2,el3);var el3=dom.createTextNode("\n      ");dom.appendChild(el2,el3);dom.appendChild(el1,el2);var el2=dom.createTextNode("\n    ");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(dom.childAt(fragment,[1,1,1]),3,3);return morphs;},statements:[["content","errorMsg",["loc",[null,[9,10],[9,22]]]]],locals:[],templates:[]};})();var child1=(function(){var child0=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":21,"column":12},"end":{"line":23,"column":12}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:1,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("              ");dom.appendChild(el0,el1);var el1=dom.createElement("li");var el2=dom.createComment("");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(dom.childAt(fragment,[1]),0,0);return morphs;},statements:[["content","errorMsg",["loc",[null,[22,18],[22,30]]]]],locals:["errorMsg"],templates:[]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":15,"column":2},"end":{"line":28,"column":2}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("    ");dom.appendChild(el0,el1);var el1=dom.createElement("div");dom.setAttribute(el1,"class","row");var el2=dom.createTextNode("\n      ");dom.appendChild(el1,el2);var el2=dom.createElement("div");dom.setAttribute(el2,"class","col-md-9");var el3=dom.createTextNode("\n        ");dom.appendChild(el2,el3);var el3=dom.createElement("div");dom.setAttribute(el3,"class","alert alert-danger rhci-alert");var el4=dom.createTextNode("\n          ");dom.appendChild(el3,el4);var el4=dom.createElement("i");dom.setAttribute(el4,"class","fa fa-2x fa-exclamation-triangle errorForValidation validation-alert-icon");dom.appendChild(el3,el4);var el4=dom.createTextNode("\n          ");dom.appendChild(el3,el4);var el4=dom.createElement("ul");dom.setAttribute(el4,"class","validation-alert-message");var el5=dom.createTextNode("\n");dom.appendChild(el4,el5);var el5=dom.createComment("");dom.appendChild(el4,el5);var el5=dom.createTextNode("          ");dom.appendChild(el4,el5);dom.appendChild(el3,el4);var el4=dom.createTextNode("\n        ");dom.appendChild(el3,el4);dom.appendChild(el2,el3);var el3=dom.createTextNode("\n      ");dom.appendChild(el2,el3);dom.appendChild(el1,el2);var el2=dom.createTextNode("\n    ");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(dom.childAt(fragment,[1,1,1,3]),1,1);return morphs;},statements:[["block","each",[["get","validationErrors",["loc",[null,[21,20],[21,36]]]]],[],0,null,["loc",[null,[21,12],[23,21]]]]],locals:[],templates:[child0]};})();var child2=(function(){var child0=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":36,"column":14},"end":{"line":38,"column":14}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:1,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                ");dom.appendChild(el0,el1);var el1=dom.createElement("li");var el2=dom.createComment("");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(dom.childAt(fragment,[1]),0,0);return morphs;},statements:[["content","warningMsg",["loc",[null,[37,20],[37,34]]]]],locals:["warningMsg"],templates:[]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":30,"column":2},"end":{"line":43,"column":2}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("    ");dom.appendChild(el0,el1);var el1=dom.createElement("div");dom.setAttribute(el1,"class","row");var el2=dom.createTextNode("\n      ");dom.appendChild(el1,el2);var el2=dom.createElement("div");dom.setAttribute(el2,"class","col-md-9");var el3=dom.createTextNode("\n        ");dom.appendChild(el2,el3);var el3=dom.createElement("div");dom.setAttribute(el3,"class","alert alert-warning rhci-alert");var el4=dom.createTextNode("\n            ");dom.appendChild(el3,el4);var el4=dom.createElement("i");dom.setAttribute(el4,"class","fa fa-2x fa-exclamation-triangle warningForValidation validation-alert-icon");dom.appendChild(el3,el4);var el4=dom.createTextNode("\n            ");dom.appendChild(el3,el4);var el4=dom.createElement("ul");dom.setAttribute(el4,"class","validation-alert-message");var el5=dom.createTextNode("\n");dom.appendChild(el4,el5);var el5=dom.createComment("");dom.appendChild(el4,el5);var el5=dom.createTextNode("            ");dom.appendChild(el4,el5);dom.appendChild(el3,el4);var el4=dom.createTextNode("\n        ");dom.appendChild(el3,el4);dom.appendChild(el2,el3);var el3=dom.createTextNode("\n      ");dom.appendChild(el2,el3);dom.appendChild(el1,el2);var el2=dom.createTextNode("\n    ");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(dom.childAt(fragment,[1,1,1,3]),1,1);return morphs;},statements:[["block","each",[["get","validationWarnings",["loc",[null,[36,22],[36,40]]]]],[],0,null,["loc",[null,[36,14],[38,23]]]]],locals:[],templates:[child0]};})();var child3=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":48,"column":6},"end":{"line":62,"column":6}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(4);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);morphs[3] = dom.createMorphAt(fragment,7,7,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Name","routeName","satellite","isRequired",true,"value",["subexpr","@mut",[["get","model.name",["loc",[null,[50,28],[50,38]]]]],[],[]]],["loc",[null,[49,8],[50,40]]]],["inline","review-link",[],["label","Organization","isRequired",true,"value",["subexpr","@mut",[["get","model.organization.name",["loc",[null,[53,28],[53,51]]]]],[],[]]],["loc",[null,[52,8],[53,53]]]],["inline","review-link",[],["label","Environment","routeName","configure-environment","value",["subexpr","@mut",[["get","lifecycleEnvironmentName",["loc",[null,[56,28],[56,52]]]]],[],[]]],["loc",[null,[55,8],[56,54]]]],["inline","review-link",[],["label","Red Hat Insights","routeName","satellite.access-insights","value",["subexpr","@mut",[["get","deploymentController.enableAccessInsights",["loc",[null,[60,28],[60,69]]]]],[],[]]],["loc",[null,[58,8],[60,72]]]]],locals:[],templates:[]};})();var child4=(function(){var child0=(function(){var child0=(function(){var child0=(function(){var child0=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":71,"column":16},"end":{"line":73,"column":16}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:1,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                   ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);return morphs;},statements:[["inline","hypervisor-name",[],["host",["subexpr","@mut",[["get","host",["loc",[null,[72,42],[72,46]]]]],[],[]],"hypervisorDomain",["subexpr","@mut",[["get","hypervisorDomain",["loc",[null,[72,64],[72,80]]]]],[],[]]],["loc",[null,[72,19],[72,82]]]]],locals:["host"],templates:[]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":70,"column":12},"end":{"line":74,"column":12}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","each",[["get","selectedHypervisorHosts",["loc",[null,[71,24],[71,47]]]]],[],0,null,["loc",[null,[71,16],[73,25]]]]],locals:[],templates:[child0]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":69,"column":8},"end":{"line":76,"column":8}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);return morphs;},statements:[["block","review-link",[],["label","Engine/Hypervisor Host Name","routeName","hypervisor.discovered-host","isRequired",true,"value",["subexpr","@mut",[["get","selectedHypervisorHosts",["loc",[null,[70,124],[70,147]]]]],[],[]],"useYieldInstead",true],0,null,["loc",[null,[70,12],[74,28]]]]],locals:[],templates:[child0]};})();var child1=(function(){var child0=(function(){var child0=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":81,"column":16},"end":{"line":83,"column":16}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:1,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                   ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);return morphs;},statements:[["inline","hypervisor-name",[],["host",["subexpr","@mut",[["get","host",["loc",[null,[82,42],[82,46]]]]],[],[]],"hypervisorDomain",["subexpr","@mut",[["get","hypervisorDomain",["loc",[null,[82,64],[82,80]]]]],[],[]]],["loc",[null,[82,19],[82,82]]]]],locals:["host"],templates:[]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":80,"column":12},"end":{"line":84,"column":12}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","each",[["get","selectedHypervisorHosts",["loc",[null,[81,24],[81,47]]]]],[],0,null,["loc",[null,[81,16],[83,25]]]]],locals:[],templates:[child0]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":76,"column":8},"end":{"line":85,"column":8}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(2);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);dom.insertBoundary(fragment,null);return morphs;},statements:[["inline","review-link",[],["label","Engine Host Name","routeName","engine.discovered-host","isRequired",true,"value",["subexpr","@mut",[["get","engineNamePlusDomain",["loc",[null,[78,32],[78,52]]]]],[],[]]],["loc",[null,[77,12],[78,54]]]],["block","review-link",[],["label","Hypervisor Host Name","routeName","hypervisor.discovered-host","isRequired",true,"value",["subexpr","@mut",[["get","selectedHypervisorHosts",["loc",[null,[80,117],[80,140]]]]],[],[]],"useYieldInstead",true],0,null,["loc",[null,[80,12],[84,28]]]]],locals:[],templates:[child0]};})();var child2=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":114,"column":8},"end":{"line":125,"column":8}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(3);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Export Domain Name","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_export_domain_name",["loc",[null,[117,32],[117,61]]]]],[],[]]],["loc",[null,[116,12],[117,63]]]],["inline","review-link",[],["label","Export Storage Address","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_export_domain_address",["loc",[null,[120,32],[120,64]]]]],[],[]]],["loc",[null,[119,12],[120,66]]]],["inline","review-link",[],["label","Export Storage Path","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_export_domain_path",["loc",[null,[123,32],[123,61]]]]],[],[]]],["loc",[null,[122,12],[123,63]]]]],locals:[],templates:[]};})();var child3=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":126,"column":8},"end":{"line":137,"column":8}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(3);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Hosted Storage Domain Name","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.hosted_storage_name",["loc",[null,[129,32],[129,57]]]]],[],[]]],["loc",[null,[128,12],[129,59]]]],["inline","review-link",[],["label","Hosted Storage Address","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.hosted_storage_address",["loc",[null,[132,32],[132,60]]]]],[],[]]],["loc",[null,[131,12],[132,62]]]],["inline","review-link",[],["label","Hosted Storage Path","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.hosted_storage_path",["loc",[null,[135,32],[135,57]]]]],[],[]]],["loc",[null,[134,12],[135,59]]]]],locals:[],templates:[]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":65,"column":6},"end":{"line":140,"column":6}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n        ");dom.appendChild(el0,el1);var el1=dom.createElement("br");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(13);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);morphs[3] = dom.createMorphAt(fragment,7,7,contextualElement);morphs[4] = dom.createMorphAt(fragment,9,9,contextualElement);morphs[5] = dom.createMorphAt(fragment,11,11,contextualElement);morphs[6] = dom.createMorphAt(fragment,13,13,contextualElement);morphs[7] = dom.createMorphAt(fragment,15,15,contextualElement);morphs[8] = dom.createMorphAt(fragment,17,17,contextualElement);morphs[9] = dom.createMorphAt(fragment,19,19,contextualElement);morphs[10] = dom.createMorphAt(fragment,21,21,contextualElement);morphs[11] = dom.createMorphAt(fragment,23,23,contextualElement);morphs[12] = dom.createMorphAt(fragment,24,24,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Setup Type","routeName","rhev-setup","isRequired",true,"value",["subexpr","@mut",[["get","rhevSetupController.rhevSetupTitle",["loc",[null,[68,32],[68,66]]]]],[],[]]],["loc",[null,[67,8],[68,68]]]],["block","if",[["get","isSelfHosted",["loc",[null,[69,14],[69,26]]]]],[],0,1,["loc",[null,[69,8],[85,15]]]],["inline","review-link",[],["label","Root password Engine & Hypervisor","routeName","rhev-options","isRequired",true,"isPassword",true,"value",["subexpr","@mut",[["get","model.rhev_root_password",["loc",[null,[88,44],[88,68]]]]],[],[]]],["loc",[null,[87,8],[88,71]]]],["inline","review-link",[],["label","Engine admin password","routeName","rhev-options","isRequired",true,"isPassword",true,"value",["subexpr","@mut",[["get","model.rhev_engine_admin_password",["loc",[null,[91,28],[91,60]]]]],[],[]]],["loc",[null,[90,8],[91,63]]]],["inline","review-link",[],["label","Datacenter Name","routeName","rhev-options","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_data_center_name",["loc",[null,[94,28],[94,55]]]]],[],[]]],["loc",[null,[93,8],[94,57]]]],["inline","review-link",[],["label","Cluster Name","routeName","rhev-options","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_cluster_name",["loc",[null,[97,28],[97,51]]]]],[],[]]],["loc",[null,[96,8],[97,53]]]],["inline","review-link",[],["label","CPU Type","routeName","rhev-options","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_cpu_type",["loc",[null,[100,28],[100,47]]]]],[],[]]],["loc",[null,[99,8],[100,49]]]],["inline","review-link",[],["label","Storage Type","routeName","storage","isRequired",true,"value",["subexpr","@mut",[["get","model.rhev_storage_type",["loc",[null,[103,28],[103,51]]]]],[],[]]],["loc",[null,[102,8],[103,53]]]],["inline","review-link",[],["label","Data Domain Name","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_storage_name",["loc",[null,[106,28],[106,51]]]]],[],[]]],["loc",[null,[105,8],[106,53]]]],["inline","review-link",[],["label","Data Storage Address","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_storage_address",["loc",[null,[109,28],[109,54]]]]],[],[]]],["loc",[null,[108,8],[109,56]]]],["inline","review-link",[],["label","Data Storage Path","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_share_path",["loc",[null,[112,28],[112,49]]]]],[],[]]],["loc",[null,[111,8],[112,51]]]],["block","if",[["get","isCloudForms",["loc",[null,[114,14],[114,26]]]]],[],2,null,["loc",[null,[114,8],[125,15]]]],["block","if",[["get","isSelfHosted",["loc",[null,[126,14],[126,26]]]]],[],3,null,["loc",[null,[126,8],[137,15]]]]],locals:[],templates:[child0,child1,child2,child3]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":64,"column":4},"end":{"line":141,"column":4}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","accordion-item",[],["name",["subexpr","@mut",[["get","fullnameRhev",["loc",[null,[65,29],[65,41]]]]],[],[]],"isOpen",["subexpr","@mut",[["get","isRhevOpen",["loc",[null,[65,49],[65,59]]]]],[],[]]],0,null,["loc",[null,[65,6],[140,25]]]]],locals:[],templates:[child0]};})();var child5=(function(){var child0=(function(){var child0=(function(){var child0=(function(){var child0=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":151,"column":16},"end":{"line":153,"column":16}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:1,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                  ");dom.appendChild(el0,el1);var el1=dom.createElement("div");dom.setAttribute(el1,"class","node-count-review-link");var el2=dom.createComment("");dom.appendChild(el1,el2);var el2=dom.createTextNode(" ");dom.appendChild(el1,el2);var el2=dom.createComment("");dom.appendChild(el1,el2);var el2=dom.createTextNode(" Nodes");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var element0=dom.childAt(fragment,[1]);var morphs=new Array(2);morphs[0] = dom.createMorphAt(element0,0,0);morphs[1] = dom.createMorphAt(element0,2,2);return morphs;},statements:[["content","node.count",["loc",[null,[152,54],[152,68]]]],["content","node.name",["loc",[null,[152,69],[152,82]]]]],locals:["node"],templates:[]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":149,"column":14},"end":{"line":154,"column":14}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:1,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                ");dom.appendChild(el0,el1);var el1=dom.createElement("div");var el2=dom.createComment("");dom.appendChild(el1,el2);var el2=dom.createTextNode(":");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(2);morphs[0] = dom.createMorphAt(dom.childAt(fragment,[1]),0,0);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);dom.insertBoundary(fragment,null);return morphs;},statements:[["content","profile.flavor",["loc",[null,[150,21],[150,39]]]],["block","each",[["get","profile.nodes",["loc",[null,[151,24],[151,37]]]]],[],0,null,["loc",[null,[151,16],[153,25]]]]],locals:["profile"],templates:[child0]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":147,"column":12},"end":{"line":155,"column":12}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","each",[["get","profiles",["loc",[null,[149,22],[149,30]]]]],[],0,null,["loc",[null,[149,14],[154,23]]]]],locals:[],templates:[child0]};})();var child1=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":182,"column":8},"end":{"line":224,"column":8}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n\n          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n\n          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n\n          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n\n          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n\n          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n\n          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(7);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);morphs[3] = dom.createMorphAt(fragment,7,7,contextualElement);morphs[4] = dom.createMorphAt(fragment,9,9,contextualElement);morphs[5] = dom.createMorphAt(fragment,11,11,contextualElement);morphs[6] = dom.createMorphAt(fragment,13,13,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Ceph External Mon Host","value",["subexpr","@mut",[["get","model.openstack_deployment.ceph_ext_mon_host",["loc",[null,[184,30],[184,74]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[183,10],[186,57]]]],["inline","review-link",[],["label","Ceph Cluster FSID","value",["subexpr","@mut",[["get","model.openstack_deployment.ceph_cluster_fsid",["loc",[null,[190,30],[190,74]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[189,10],[192,57]]]],["inline","review-link",[],["label","Ceph Client Username","value",["subexpr","@mut",[["get","model.openstack_deployment.ceph_client_username",["loc",[null,[196,30],[196,77]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[195,10],[198,57]]]],["inline","review-link",[],["label","Ceph Client Key","value",["subexpr","@mut",[["get","model.openstack_deployment.ceph_client_key",["loc",[null,[202,30],[202,72]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[201,10],[204,57]]]],["inline","review-link",[],["label","Nova Rbd Pool Name","value",["subexpr","@mut",[["get","model.openstack_deployment.nova_rbd_pool_name",["loc",[null,[208,30],[208,75]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[207,10],[210,57]]]],["inline","review-link",[],["label","Cinder Rbd Pool Name","value",["subexpr","@mut",[["get","model.openstack_deployment.cinder_rbd_pool_name",["loc",[null,[214,30],[214,77]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[213,10],[216,57]]]],["inline","review-link",[],["label","Glance Rbd Pool Name","value",["subexpr","@mut",[["get","model.openstack_deployment.glance_rbd_pool_name",["loc",[null,[220,30],[220,77]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[219,10],[222,57]]]]],locals:[],templates:[]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":144,"column":6},"end":{"line":225,"column":6}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(10);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);morphs[3] = dom.createMorphAt(fragment,7,7,contextualElement);morphs[4] = dom.createMorphAt(fragment,9,9,contextualElement);morphs[5] = dom.createMorphAt(fragment,11,11,contextualElement);morphs[6] = dom.createMorphAt(fragment,13,13,contextualElement);morphs[7] = dom.createMorphAt(fragment,15,15,contextualElement);morphs[8] = dom.createMorphAt(fragment,17,17,contextualElement);morphs[9] = dom.createMorphAt(fragment,19,19,contextualElement);dom.insertBoundary(fragment,null);return morphs;},statements:[["inline","review-link",[],["label","Undercloud username","value","admin","isRequired",true],["loc",[null,[145,12],[145,85]]]],["inline","review-link",[],["label","Undercloud password","value",["subexpr","@mut",[["get","model.openstack_deployment.undercloud_admin_password",["loc",[null,[146,60],[146,112]]]]],[],[]],"isPassword",true,"isRequired",true],["loc",[null,[146,12],[146,146]]]],["block","review-link",[],["label","Assigned Nodes","routeName","openstack.assign-nodes","isRequired",true,"value",["subexpr","@mut",[["get","profiles",["loc",[null,[148,24],[148,32]]]]],[],[]],"useYieldInstead",true],0,null,["loc",[null,[147,12],[155,28]]]],["inline","review-link",[],["label","External Network Interface","value",["subexpr","@mut",[["get","model.openstack_deployment.overcloud_ext_net_interface",["loc",[null,[157,32],[157,86]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[156,12],[159,59]]]],["inline","review-link",[],["label","Private Network","value",["subexpr","@mut",[["get","model.openstack_deployment.overcloud_private_net",["loc",[null,[161,32],[161,80]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[160,12],[163,59]]]],["inline","review-link",[],["label","Floating IP Network","value",["subexpr","@mut",[["get","model.openstack_deployment.overcloud_float_net",["loc",[null,[165,32],[165,78]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[164,12],[167,59]]]],["inline","review-link",[],["label","Floating IP Network Gateway","value",["subexpr","@mut",[["get","model.openstack_deployment.overcloud_float_gateway",["loc",[null,[169,32],[169,82]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[168,12],[171,59]]]],["inline","review-link",[],["label","Overcloud Admin Password","value",["subexpr","@mut",[["get","model.openstack_deployment.overcloud_password",["loc",[null,[173,32],[173,77]]]]],[],[]],"isPassword",true,"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[172,12],[176,59]]]],["inline","review-link",[],["label","Ceph Storage","value",["subexpr","@mut",[["get","model.openstack_deployment.cephStorageStatus",["loc",[null,[178,32],[178,76]]]]],[],[]],"routeName","openstack.overcloud"],["loc",[null,[177,12],[179,59]]]],["block","if",[["get","model.openstack_deployment.external_ceph_storage",["loc",[null,[182,14],[182,62]]]]],[],1,null,["loc",[null,[182,8],[224,15]]]]],locals:[],templates:[child0,child1]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":143,"column":4},"end":{"line":226,"column":4}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","accordion-item",[],["name",["subexpr","@mut",[["get","fullnameOpenStack",["loc",[null,[144,29],[144,46]]]]],[],[]],"isOpen",["subexpr","@mut",[["get","isOpenStackOpen",["loc",[null,[144,54],[144,69]]]]],[],[]]],0,null,["loc",[null,[144,6],[225,25]]]]],locals:[],templates:[child0]};})();var child6=(function(){var child0=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":229,"column":6},"end":{"line":291,"column":6}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(13);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);morphs[3] = dom.createMorphAt(fragment,7,7,contextualElement);morphs[4] = dom.createMorphAt(fragment,9,9,contextualElement);morphs[5] = dom.createMorphAt(fragment,11,11,contextualElement);morphs[6] = dom.createMorphAt(fragment,13,13,contextualElement);morphs[7] = dom.createMorphAt(fragment,15,15,contextualElement);morphs[8] = dom.createMorphAt(fragment,17,17,contextualElement);morphs[9] = dom.createMorphAt(fragment,19,19,contextualElement);morphs[10] = dom.createMorphAt(fragment,21,21,contextualElement);morphs[11] = dom.createMorphAt(fragment,23,23,contextualElement);morphs[12] = dom.createMorphAt(fragment,25,25,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Nodes Location","routeName","openshift.openshift-nodes","isRequired",true,"value",["subexpr","@mut",[["get","openshiftInstallLoc",["loc",[null,[234,28],[234,47]]]]],[],[]]],["loc",[null,[231,8],[234,49]]]],["inline","review-link",[],["label","# of Master Nodes","routeName","openshift.openshift-nodes","isRequired",true,"value",["subexpr","@mut",[["get","model.openshift_number_master_nodes",["loc",[null,[239,28],[239,63]]]]],[],[]]],["loc",[null,[236,8],[239,65]]]],["inline","review-link",[],["label","# of Worker Nodes","routeName","openshift.openshift-nodes","isRequired",true,"value",["subexpr","@mut",[["get","model.openshift_number_worker_nodes",["loc",[null,[244,28],[244,63]]]]],[],[]]],["loc",[null,[241,8],[244,65]]]],["inline","review-link",[],["label","Docker Storage per Worker","routeName","openshift.openshift-nodes","isRequired",true,"value",["subexpr","@mut",[["get","storageSizeGB",["loc",[null,[249,28],[249,41]]]]],[],[]]],["loc",[null,[246,8],[249,43]]]],["inline","review-link",[],["label","vCPU Needed","routeName","openshift.openshift-nodes","isRequired",true,"value",["subexpr","@mut",[["get","vcpuNeeded",["loc",[null,[254,28],[254,38]]]]],[],[]]],["loc",[null,[251,8],[254,40]]]],["inline","review-link",[],["label","RAM Needed","routeName","openshift.openshift-nodes","isRequired",true,"value",["subexpr","@mut",[["get","ramNeededGB",["loc",[null,[259,28],[259,39]]]]],[],[]]],["loc",[null,[256,8],[259,41]]]],["inline","review-link",[],["label","Disk Needed","routeName","openshift.openshift-nodes","isRequired",true,"value",["subexpr","@mut",[["get","diskNeededGB",["loc",[null,[264,28],[264,40]]]]],[],[]]],["loc",[null,[261,8],[264,42]]]],["inline","review-link",[],["label","Storage Type","routeName","openshift.openshift-configuration","isRequired",true,"value",["subexpr","@mut",[["get","model.openshift_storage_type",["loc",[null,[269,28],[269,56]]]]],[],[]]],["loc",[null,[266,8],[269,58]]]],["inline","review-link",[],["label","Storage Host","routeName","openshift.openshift-configuration","value",["subexpr","@mut",[["get","model.openshift_storage_host",["loc",[null,[273,28],[273,56]]]]],[],[]]],["loc",[null,[271,8],[273,58]]]],["inline","review-link",[],["label","Export Path","routeName","openshift.openshift-configuration","value",["subexpr","@mut",[["get","model.openshift_export_path",["loc",[null,[277,28],[277,55]]]]],[],[]]],["loc",[null,[275,8],[277,57]]]],["inline","review-link",[],["label","Username","routeName","openshift.openshift-configuration","value",["subexpr","@mut",[["get","model.openshift_username",["loc",[null,[281,28],[281,52]]]]],[],[]]],["loc",[null,[279,8],[281,54]]]],["inline","review-link",[],["label","Subdomain","routeName","openshift.openshift-configuration","value",["subexpr","@mut",[["get","fullOpenshiftSubdomain",["loc",[null,[285,28],[285,50]]]]],[],[]]],["loc",[null,[283,8],[285,52]]]],["inline","review-link",[],["label","Example Application","routeName","openshift.openshift-configuration","value",["subexpr","@mut",[["get","deployOseExampleApp",["loc",[null,[289,28],[289,47]]]]],[],[]]],["loc",[null,[287,8],[289,49]]]]],locals:[],templates:[]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":228,"column":4},"end":{"line":292,"column":4}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","accordion-item",[],["name",["subexpr","@mut",[["get","fullnameOpenShift",["loc",[null,[229,29],[229,46]]]]],[],[]],"isOpen",["subexpr","@mut",[["get","isOpenshiftOpen",["loc",[null,[229,54],[229,69]]]]],[],[]]],0,null,["loc",[null,[229,6],[291,25]]]]],locals:[],templates:[child0]};})();var child7=(function(){var child0=(function(){var child0=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":297,"column":10},"end":{"line":299,"column":10}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Worker Appliance","routeName","where-install","isRequired",true,"value",["subexpr","@mut",[["get","workerCfmeInstallLoc",["loc",[null,[298,99],[298,119]]]]],[],[]]],["loc",[null,[298,12],[298,122]]]]],locals:[],templates:[]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":295,"column":6},"end":{"line":306,"column":6}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(5);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);morphs[3] = dom.createMorphAt(fragment,7,7,contextualElement);morphs[4] = dom.createMorphAt(fragment,9,9,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Primary Appliance","routeName","where-install","isRequired",true,"value",["subexpr","@mut",[["get","primaryCfmeInstallLoc",["loc",[null,[296,98],[296,119]]]]],[],[]]],["loc",[null,[296,10],[296,122]]]],["block","if",[["get","multipleCfme",["loc",[null,[297,16],[297,28]]]]],[],0,null,["loc",[null,[297,10],[299,17]]]],["inline","review-link",[],["label","CFME Root password","routeName","cloudforms.cfme-configuration","isRequired",true,"isPassword",true,"value",["subexpr","@mut",[["get","model.cfme_root_password",["loc",[null,[301,62],[301,86]]]]],[],[]]],["loc",[null,[300,10],[301,89]]]],["inline","review-link",[],["label","CFME Admin password","routeName","cloudforms.cfme-configuration","isRequired",true,"isPassword",true,"value",["subexpr","@mut",[["get","model.cfme_admin_password",["loc",[null,[303,62],[303,87]]]]],[],[]]],["loc",[null,[302,10],[303,90]]]],["inline","review-link",[],["label","CFME Database password","routeName","cloudforms.cfme-configuration","isRequired",true,"isPassword",true,"value",["subexpr","@mut",[["get","model.cfme_db_password",["loc",[null,[305,62],[305,84]]]]],[],[]]],["loc",[null,[304,10],[305,87]]]]],locals:[],templates:[child0]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":294,"column":4},"end":{"line":307,"column":4}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","accordion-item",[],["name",["subexpr","@mut",[["get","fullnameCloudForms",["loc",[null,[295,29],[295,47]]]]],[],[]],"isOpen",["subexpr","@mut",[["get","isCloudFormsOpen",["loc",[null,[295,55],[295,71]]]]],[],[]]],0,null,["loc",[null,[295,6],[306,25]]]]],locals:[],templates:[child0]};})();var child8=(function(){var child0=(function(){var child0=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":311,"column":12},"end":{"line":320,"column":12}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n                ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(2);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Content Mirror URL","routeName","subscriptions.credentials","isRequired",true,"value",["subexpr","@mut",[["get","cdnUrl",["loc",[null,[315,36],[315,42]]]]],[],[]]],["loc",[null,[312,16],[315,45]]]],["inline","review-link",[],["label","Manifest File","routeName","subscriptions.credentials","isRequired",true,"value",["subexpr","@mut",[["get","model.manifest_file",["loc",[null,[319,36],[319,55]]]]],[],[]]],["loc",[null,[316,16],[319,58]]]]],locals:[],templates:[]};})();var child1=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":320,"column":12},"end":{"line":324,"column":12}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Subscription Management Application","routeName","subscriptions.management-application","isRequired",true,"value",["subexpr","@mut",[["get","deploymentController.managementApplicationName",["loc",[null,[323,36],[323,82]]]]],[],[]]],["loc",[null,[321,16],[323,85]]]]],locals:[],templates:[]};})();var child2=(function(){var child0=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":336,"column":16},"end":{"line":342,"column":16}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                    ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Quantity Added","routeName","subscriptions.select-subscriptions","value",["subexpr","if",[["get","isMissingSubscriptions",["loc",[null,[339,44],[339,66]]]],null,["get","sub.quantity_to_add",["loc",[null,[339,72],[339,91]]]]],[],["loc",[null,[339,40],[339,92]]]],"isRequired",true,"validationMessage","Need to re-enter"],["loc",[null,[337,20],[341,72]]]]],locals:[],templates:[]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":326,"column":12},"end":{"line":343,"column":12}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:1,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n                ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n                ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(4);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);morphs[3] = dom.createMorphAt(fragment,7,7,contextualElement);dom.insertBoundary(fragment,null);return morphs;},statements:[["inline","review-link",[],["label","Subscription Name","routeName","subscriptions.select-subscriptions","value",["subexpr","@mut",[["get","sub.product_name",["loc",[null,[329,36],[329,52]]]]],[],[]]],["loc",[null,[327,16],[329,55]]]],["inline","review-link",[],["label","Contract Number","routeName","subscriptions.select-subscriptions","value",["subexpr","@mut",[["get","sub.contract_number",["loc",[null,[332,36],[332,55]]]]],[],[]]],["loc",[null,[330,16],[332,58]]]],["inline","review-link",[],["label","Quantity Attached","routeName","subscriptions.select-subscriptions","value",["subexpr","@mut",[["get","sub.quantity_attached",["loc",[null,[335,36],[335,57]]]]],[],[]]],["loc",[null,[333,16],[335,60]]]],["block","if",[["get","hasSubscriptionsToAttach",["loc",[null,[336,22],[336,46]]]]],[],0,null,["loc",[null,[336,16],[342,23]]]]],locals:["sub"],templates:[child0]};})();var child3=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":343,"column":12},"end":{"line":347,"column":12}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Quantity","routeName","subscriptions.select-subscriptions","value","0 - no subscriptions in manifest"],["loc",[null,[344,16],[346,73]]]]],locals:[],templates:[]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":310,"column":8},"end":{"line":349,"column":8}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(2);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);morphs[1] = dom.createMorphAt(fragment,2,2,contextualElement);dom.insertBoundary(fragment,0);return morphs;},statements:[["block","if",[["get","isDisconnected",["loc",[null,[311,18],[311,32]]]]],[],0,1,["loc",[null,[311,12],[324,19]]]],["block","each",[["get","reviewSubscriptions",["loc",[null,[326,20],[326,39]]]]],[],2,3,["loc",[null,[326,12],[347,21]]]]],locals:[],templates:[child0,child1,child2,child3]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":309,"column":4},"end":{"line":351,"column":4}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);return morphs;},statements:[["block","accordion-item",[],["name","Subscriptions","isOpen",["subexpr","@mut",[["get","isSubscriptionsOpen",["loc",[null,[310,54],[310,73]]]]],[],[]]],0,null,["loc",[null,[310,8],[349,27]]]]],locals:[],templates:[child0]};})();var child9=(function(){var child0=(function(){var child0=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":360,"column":10},"end":{"line":362,"column":10}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("            Next ");dom.appendChild(el0,el1);var el1=dom.createElement("i");dom.setAttribute(el1,"class","fa fa-angle-right");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(){return [];},statements:[],locals:[],templates:[]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":359,"column":6},"end":{"line":363,"column":6}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","link-to",["review.progress.overview"],["role","button","class","btn btn-primary next-button"],0,null,["loc",[null,[360,10],[362,22]]]]],locals:[],templates:[child0]};})();var child1=(function(){var child0=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":364,"column":10},"end":{"line":366,"column":10}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("             ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode(" ");dom.appendChild(el0,el1);var el1=dom.createElement("i");dom.setAttribute(el1,"class","fa fa-angle-right");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);return morphs;},statements:[["content","buttonDeployTitle",["loc",[null,[365,13],[365,34]]]]],locals:[],templates:[]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":363,"column":6},"end":{"line":367,"column":6}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","button-f",[],["disabled",["subexpr","@mut",[["get","buttonDeployDisabled",["loc",[null,[364,31],[364,51]]]]],[],[]],"action","onDeployButton"],0,null,["loc",[null,[364,10],[366,23]]]]],locals:[],templates:[child0]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":356,"column":2},"end":{"line":368,"column":2}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","if",[["get","isStarted",["loc",[null,[359,12],[359,21]]]]],[],0,1,["loc",[null,[359,6],[367,13]]]]],locals:[],templates:[child0,child1]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":1,"column":0},"end":{"line":370,"column":0}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n  ");dom.appendChild(el0,el1);var el1=dom.createElement("div");dom.setAttribute(el1,"class","row");var el2=dom.createTextNode("\n    ");dom.appendChild(el1,el2);var el2=dom.createElement("div");dom.setAttribute(el2,"class","col-md-12");var el3=dom.createTextNode("\n\n");dom.appendChild(el2,el3);var el3=dom.createComment("");dom.appendChild(el2,el3);var el3=dom.createTextNode("\n");dom.appendChild(el2,el3);var el3=dom.createComment("");dom.appendChild(el2,el3);var el3=dom.createTextNode("\n");dom.appendChild(el2,el3);var el3=dom.createComment("");dom.appendChild(el2,el3);var el3=dom.createTextNode("\n");dom.appendChild(el2,el3);var el3=dom.createComment("");dom.appendChild(el2,el3);var el3=dom.createTextNode("\n");dom.appendChild(el2,el3);var el3=dom.createComment("");dom.appendChild(el2,el3);var el3=dom.createTextNode("\n");dom.appendChild(el2,el3);var el3=dom.createComment("");dom.appendChild(el2,el3);var el3=dom.createTextNode("\n    ");dom.appendChild(el2,el3);dom.appendChild(el1,el2);var el2=dom.createTextNode("\n  ");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var element1=dom.childAt(fragment,[7,1]);var morphs=new Array(10);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);morphs[3] = dom.createMorphAt(element1,1,1);morphs[4] = dom.createMorphAt(element1,3,3);morphs[5] = dom.createMorphAt(element1,5,5);morphs[6] = dom.createMorphAt(element1,7,7);morphs[7] = dom.createMorphAt(element1,9,9);morphs[8] = dom.createMorphAt(element1,11,11);morphs[9] = dom.createMorphAt(fragment,9,9,contextualElement);return morphs;},statements:[["block","if",[["get","showErrorMessage",["loc",[null,[3,8],[3,24]]]]],[],0,null,["loc",[null,[3,2],[13,9]]]],["block","if",[["get","showValidationErrors",["loc",[null,[15,8],[15,28]]]]],[],1,null,["loc",[null,[15,2],[28,9]]]],["block","if",[["get","showValidationWarnings",["loc",[null,[30,8],[30,30]]]]],[],2,null,["loc",[null,[30,2],[43,9]]]],["block","accordion-item",[],["name",["subexpr","@mut",[["get","fullnameSatellite",["loc",[null,[48,29],[48,46]]]]],[],[]],"isOpen",true],3,null,["loc",[null,[48,6],[62,25]]]],["block","if",[["get","isRhev",["loc",[null,[64,10],[64,16]]]]],[],4,null,["loc",[null,[64,4],[141,11]]]],["block","if",[["get","isOpenStack",["loc",[null,[143,10],[143,21]]]]],[],5,null,["loc",[null,[143,4],[226,11]]]],["block","if",[["get","isOpenShift",["loc",[null,[228,10],[228,21]]]]],[],6,null,["loc",[null,[228,4],[292,11]]]],["block","if",[["get","isCloudForms",["loc",[null,[294,10],[294,22]]]]],[],7,null,["loc",[null,[294,4],[307,11]]]],["block","if",[["get","isSubscriptions",["loc",[null,[309,10],[309,25]]]]],[],8,null,["loc",[null,[309,4],[351,11]]]],["block","cancel-back-next",[],["backRouteName",["subexpr","@mut",[["get","backRouteNameonReviewInstallation",["loc",[null,[356,36],[356,69]]]]],[],[]],"disableBack",false,"disableCancel",["subexpr","@mut",[["get","isStarted",["loc",[null,[358,36],[358,45]]]]],[],[]]],9,null,["loc",[null,[356,2],[368,23]]]]],locals:[],templates:[child0,child1,child2,child3,child4,child5,child6,child7,child8,child9]};})();var child1=(function(){return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":370,"column":0},"end":{"line":377,"column":0}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("\n  ");dom.appendChild(el0,el1);var el1=dom.createElement("div");dom.setAttribute(el1,"class","spinner spinner-md spinner-inline");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n  ");dom.appendChild(el0,el1);var el1=dom.createElement("span");dom.setAttribute(el1,"class","spinner-text");var el2=dom.createTextNode("\n      ");dom.appendChild(el1,el2);var el2=dom.createComment("");dom.appendChild(el1,el2);var el2=dom.createTextNode("\n  ");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(dom.childAt(fragment,[3]),1,1);return morphs;},statements:[["content","spinnerTextMessage",["loc",[null,[374,6],[374,28]]]]],locals:[],templates:[]};})();return {meta:{"revision":"Ember@1.13.10","loc":{"source":null,"start":{"line":1,"column":0},"end":{"line":383,"column":0}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(2);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);morphs[1] = dom.createMorphAt(fragment,2,2,contextualElement);dom.insertBoundary(fragment,0);return morphs;},statements:[["block","unless",[["get","showSpinner",["loc",[null,[1,10],[1,21]]]]],[],0,1,["loc",[null,[1,0],[377,11]]]],["inline","continue-deployment-modal",[],["openModal",["subexpr","@mut",[["get","openModal",["loc",[null,[379,38],[379,47]]]]],[],[]],"deployment",["subexpr","@mut",[["get","deploymentController.model",["loc",[null,[380,39],[380,65]]]]],[],[]],"installDeployment","installDeployment"],["loc",[null,[379,0],[382,30]]]]],locals:[],templates:[child0,child1]};})());});
+define("fusor-ember-cli/templates/review/installation",["exports"],function(exports){exports["default"] = Ember.HTMLBars.template((function(){var child0=(function(){var child0=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":3,"column":2},"end":{"line":13,"column":2}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("    ");dom.appendChild(el0,el1);var el1=dom.createElement("div");dom.setAttribute(el1,"class","row");var el2=dom.createTextNode("\n      ");dom.appendChild(el1,el2);var el2=dom.createElement("div");dom.setAttribute(el2,"class","col-md-9");var el3=dom.createTextNode("\n        ");dom.appendChild(el2,el3);var el3=dom.createElement("div");dom.setAttribute(el3,"class","alert alert-danger rhci-alert");var el4=dom.createTextNode("\n          ");dom.appendChild(el3,el4);var el4=dom.createElement("i");dom.setAttribute(el4,"class","fa fa-2x fa-exclamation-triangle errorForValidation");dom.appendChild(el3,el4);var el4=dom.createTextNode("\n           \n          ");dom.appendChild(el3,el4);var el4=dom.createComment("");dom.appendChild(el3,el4);var el4=dom.createTextNode("\n        ");dom.appendChild(el3,el4);dom.appendChild(el2,el3);var el3=dom.createTextNode("\n      ");dom.appendChild(el2,el3);dom.appendChild(el1,el2);var el2=dom.createTextNode("\n    ");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(dom.childAt(fragment,[1,1,1]),3,3);return morphs;},statements:[["content","errorMsg",["loc",[null,[9,10],[9,22]]]]],locals:[],templates:[]};})();var child1=(function(){var child0=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":21,"column":12},"end":{"line":23,"column":12}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:1,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("              ");dom.appendChild(el0,el1);var el1=dom.createElement("li");var el2=dom.createComment("");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(dom.childAt(fragment,[1]),0,0);return morphs;},statements:[["content","errorMsg",["loc",[null,[22,18],[22,30]]]]],locals:["errorMsg"],templates:[]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":15,"column":2},"end":{"line":28,"column":2}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("    ");dom.appendChild(el0,el1);var el1=dom.createElement("div");dom.setAttribute(el1,"class","row");var el2=dom.createTextNode("\n      ");dom.appendChild(el1,el2);var el2=dom.createElement("div");dom.setAttribute(el2,"class","col-md-9");var el3=dom.createTextNode("\n        ");dom.appendChild(el2,el3);var el3=dom.createElement("div");dom.setAttribute(el3,"class","alert alert-danger rhci-alert");var el4=dom.createTextNode("\n          ");dom.appendChild(el3,el4);var el4=dom.createElement("i");dom.setAttribute(el4,"class","fa fa-2x fa-exclamation-triangle errorForValidation validation-alert-icon");dom.appendChild(el3,el4);var el4=dom.createTextNode("\n          ");dom.appendChild(el3,el4);var el4=dom.createElement("ul");dom.setAttribute(el4,"class","validation-alert-message");var el5=dom.createTextNode("\n");dom.appendChild(el4,el5);var el5=dom.createComment("");dom.appendChild(el4,el5);var el5=dom.createTextNode("          ");dom.appendChild(el4,el5);dom.appendChild(el3,el4);var el4=dom.createTextNode("\n        ");dom.appendChild(el3,el4);dom.appendChild(el2,el3);var el3=dom.createTextNode("\n      ");dom.appendChild(el2,el3);dom.appendChild(el1,el2);var el2=dom.createTextNode("\n    ");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(dom.childAt(fragment,[1,1,1,3]),1,1);return morphs;},statements:[["block","each",[["get","validationErrors",["loc",[null,[21,20],[21,36]]]]],[],0,null,["loc",[null,[21,12],[23,21]]]]],locals:[],templates:[child0]};})();var child2=(function(){var child0=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":36,"column":14},"end":{"line":38,"column":14}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:1,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                ");dom.appendChild(el0,el1);var el1=dom.createElement("li");var el2=dom.createComment("");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(dom.childAt(fragment,[1]),0,0);return morphs;},statements:[["content","warningMsg",["loc",[null,[37,20],[37,34]]]]],locals:["warningMsg"],templates:[]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":30,"column":2},"end":{"line":43,"column":2}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("    ");dom.appendChild(el0,el1);var el1=dom.createElement("div");dom.setAttribute(el1,"class","row");var el2=dom.createTextNode("\n      ");dom.appendChild(el1,el2);var el2=dom.createElement("div");dom.setAttribute(el2,"class","col-md-9");var el3=dom.createTextNode("\n        ");dom.appendChild(el2,el3);var el3=dom.createElement("div");dom.setAttribute(el3,"class","alert alert-warning rhci-alert");var el4=dom.createTextNode("\n            ");dom.appendChild(el3,el4);var el4=dom.createElement("i");dom.setAttribute(el4,"class","fa fa-2x fa-exclamation-triangle warningForValidation validation-alert-icon");dom.appendChild(el3,el4);var el4=dom.createTextNode("\n            ");dom.appendChild(el3,el4);var el4=dom.createElement("ul");dom.setAttribute(el4,"class","validation-alert-message");var el5=dom.createTextNode("\n");dom.appendChild(el4,el5);var el5=dom.createComment("");dom.appendChild(el4,el5);var el5=dom.createTextNode("            ");dom.appendChild(el4,el5);dom.appendChild(el3,el4);var el4=dom.createTextNode("\n        ");dom.appendChild(el3,el4);dom.appendChild(el2,el3);var el3=dom.createTextNode("\n      ");dom.appendChild(el2,el3);dom.appendChild(el1,el2);var el2=dom.createTextNode("\n    ");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(dom.childAt(fragment,[1,1,1,3]),1,1);return morphs;},statements:[["block","each",[["get","validationWarnings",["loc",[null,[36,22],[36,40]]]]],[],0,null,["loc",[null,[36,14],[38,23]]]]],locals:[],templates:[child0]};})();var child3=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":48,"column":6},"end":{"line":62,"column":6}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(4);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);morphs[3] = dom.createMorphAt(fragment,7,7,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Name","routeName","satellite","isRequired",true,"value",["subexpr","@mut",[["get","model.name",["loc",[null,[50,28],[50,38]]]]],[],[]]],["loc",[null,[49,8],[50,40]]]],["inline","review-link",[],["label","Organization","isRequired",true,"value",["subexpr","@mut",[["get","model.organization.name",["loc",[null,[53,28],[53,51]]]]],[],[]]],["loc",[null,[52,8],[53,53]]]],["inline","review-link",[],["label","Environment","routeName","configure-environment","value",["subexpr","@mut",[["get","lifecycleEnvironmentName",["loc",[null,[56,28],[56,52]]]]],[],[]]],["loc",[null,[55,8],[56,54]]]],["inline","review-link",[],["label","Red Hat Insights","routeName","satellite.access-insights","value",["subexpr","@mut",[["get","deploymentController.enableAccessInsights",["loc",[null,[60,28],[60,69]]]]],[],[]]],["loc",[null,[58,8],[60,72]]]]],locals:[],templates:[]};})();var child4=(function(){var child0=(function(){var child0=(function(){var child0=(function(){var child0=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":71,"column":16},"end":{"line":73,"column":16}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:1,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                   ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);return morphs;},statements:[["inline","hypervisor-name",[],["host",["subexpr","@mut",[["get","host",["loc",[null,[72,42],[72,46]]]]],[],[]],"hypervisorDomain",["subexpr","@mut",[["get","hypervisorDomain",["loc",[null,[72,64],[72,80]]]]],[],[]]],["loc",[null,[72,19],[72,82]]]]],locals:["host"],templates:[]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":70,"column":12},"end":{"line":74,"column":12}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","each",[["get","selectedHypervisorHosts",["loc",[null,[71,24],[71,47]]]]],[],0,null,["loc",[null,[71,16],[73,25]]]]],locals:[],templates:[child0]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":69,"column":8},"end":{"line":76,"column":8}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);return morphs;},statements:[["block","review-link",[],["label","Engine/Hypervisor Host Name","routeName","hypervisor.discovered-host","isRequired",true,"value",["subexpr","@mut",[["get","selectedHypervisorHosts",["loc",[null,[70,124],[70,147]]]]],[],[]],"useYieldInstead",true],0,null,["loc",[null,[70,12],[74,28]]]]],locals:[],templates:[child0]};})();var child1=(function(){var child0=(function(){var child0=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":81,"column":16},"end":{"line":83,"column":16}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:1,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                   ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);return morphs;},statements:[["inline","hypervisor-name",[],["host",["subexpr","@mut",[["get","host",["loc",[null,[82,42],[82,46]]]]],[],[]],"hypervisorDomain",["subexpr","@mut",[["get","hypervisorDomain",["loc",[null,[82,64],[82,80]]]]],[],[]]],["loc",[null,[82,19],[82,82]]]]],locals:["host"],templates:[]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":80,"column":12},"end":{"line":84,"column":12}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","each",[["get","selectedHypervisorHosts",["loc",[null,[81,24],[81,47]]]]],[],0,null,["loc",[null,[81,16],[83,25]]]]],locals:[],templates:[child0]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":76,"column":8},"end":{"line":85,"column":8}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(2);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);dom.insertBoundary(fragment,null);return morphs;},statements:[["inline","review-link",[],["label","Engine Host Name","routeName","engine.discovered-host","isRequired",true,"value",["subexpr","@mut",[["get","engineNamePlusDomain",["loc",[null,[78,32],[78,52]]]]],[],[]]],["loc",[null,[77,12],[78,54]]]],["block","review-link",[],["label","Hypervisor Host Name","routeName","hypervisor.discovered-host","isRequired",true,"value",["subexpr","@mut",[["get","selectedHypervisorHosts",["loc",[null,[80,117],[80,140]]]]],[],[]],"useYieldInstead",true],0,null,["loc",[null,[80,12],[84,28]]]]],locals:[],templates:[child0]};})();var child2=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":114,"column":8},"end":{"line":125,"column":8}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(3);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Export Domain Name","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_export_domain_name",["loc",[null,[117,32],[117,61]]]]],[],[]]],["loc",[null,[116,12],[117,63]]]],["inline","review-link",[],["label","Export Storage Address","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_export_domain_address",["loc",[null,[120,32],[120,64]]]]],[],[]]],["loc",[null,[119,12],[120,66]]]],["inline","review-link",[],["label","Export Storage Path","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_export_domain_path",["loc",[null,[123,32],[123,61]]]]],[],[]]],["loc",[null,[122,12],[123,63]]]]],locals:[],templates:[]};})();var child3=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":126,"column":8},"end":{"line":137,"column":8}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(3);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Hosted Storage Domain Name","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.hosted_storage_name",["loc",[null,[129,32],[129,57]]]]],[],[]]],["loc",[null,[128,12],[129,59]]]],["inline","review-link",[],["label","Hosted Storage Address","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.hosted_storage_address",["loc",[null,[132,32],[132,60]]]]],[],[]]],["loc",[null,[131,12],[132,62]]]],["inline","review-link",[],["label","Hosted Storage Path","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.hosted_storage_path",["loc",[null,[135,32],[135,57]]]]],[],[]]],["loc",[null,[134,12],[135,59]]]]],locals:[],templates:[]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":65,"column":6},"end":{"line":140,"column":6}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n        ");dom.appendChild(el0,el1);var el1=dom.createElement("br");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(13);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);morphs[3] = dom.createMorphAt(fragment,7,7,contextualElement);morphs[4] = dom.createMorphAt(fragment,9,9,contextualElement);morphs[5] = dom.createMorphAt(fragment,11,11,contextualElement);morphs[6] = dom.createMorphAt(fragment,13,13,contextualElement);morphs[7] = dom.createMorphAt(fragment,15,15,contextualElement);morphs[8] = dom.createMorphAt(fragment,17,17,contextualElement);morphs[9] = dom.createMorphAt(fragment,19,19,contextualElement);morphs[10] = dom.createMorphAt(fragment,21,21,contextualElement);morphs[11] = dom.createMorphAt(fragment,23,23,contextualElement);morphs[12] = dom.createMorphAt(fragment,24,24,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Setup Type","routeName","rhev-setup","isRequired",true,"value",["subexpr","@mut",[["get","rhevSetupController.rhevSetupTitle",["loc",[null,[68,32],[68,66]]]]],[],[]]],["loc",[null,[67,8],[68,68]]]],["block","if",[["get","isSelfHosted",["loc",[null,[69,14],[69,26]]]]],[],0,1,["loc",[null,[69,8],[85,15]]]],["inline","review-link",[],["label","Root password Engine & Hypervisor","routeName","rhev-options","isRequired",true,"isPassword",true,"value",["subexpr","@mut",[["get","model.rhev_root_password",["loc",[null,[88,44],[88,68]]]]],[],[]]],["loc",[null,[87,8],[88,71]]]],["inline","review-link",[],["label","Engine admin password","routeName","rhev-options","isRequired",true,"isPassword",true,"value",["subexpr","@mut",[["get","model.rhev_engine_admin_password",["loc",[null,[91,28],[91,60]]]]],[],[]]],["loc",[null,[90,8],[91,63]]]],["inline","review-link",[],["label","Datacenter Name","routeName","rhev-options","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_data_center_name",["loc",[null,[94,28],[94,55]]]]],[],[]]],["loc",[null,[93,8],[94,57]]]],["inline","review-link",[],["label","Cluster Name","routeName","rhev-options","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_cluster_name",["loc",[null,[97,28],[97,51]]]]],[],[]]],["loc",[null,[96,8],[97,53]]]],["inline","review-link",[],["label","CPU Type","routeName","rhev-options","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_cpu_type",["loc",[null,[100,28],[100,47]]]]],[],[]]],["loc",[null,[99,8],[100,49]]]],["inline","review-link",[],["label","Storage Type","routeName","storage","isRequired",true,"value",["subexpr","@mut",[["get","model.rhev_storage_type",["loc",[null,[103,28],[103,51]]]]],[],[]]],["loc",[null,[102,8],[103,53]]]],["inline","review-link",[],["label","Data Domain Name","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_storage_name",["loc",[null,[106,28],[106,51]]]]],[],[]]],["loc",[null,[105,8],[106,53]]]],["inline","review-link",[],["label","Data Storage Address","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_storage_address",["loc",[null,[109,28],[109,54]]]]],[],[]]],["loc",[null,[108,8],[109,56]]]],["inline","review-link",[],["label","Data Storage Path","routeName","storage","isDefault",true,"value",["subexpr","@mut",[["get","model.rhev_share_path",["loc",[null,[112,28],[112,49]]]]],[],[]]],["loc",[null,[111,8],[112,51]]]],["block","if",[["get","isCloudForms",["loc",[null,[114,14],[114,26]]]]],[],2,null,["loc",[null,[114,8],[125,15]]]],["block","if",[["get","isSelfHosted",["loc",[null,[126,14],[126,26]]]]],[],3,null,["loc",[null,[126,8],[137,15]]]]],locals:[],templates:[child0,child1,child2,child3]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":64,"column":4},"end":{"line":141,"column":4}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","accordion-item",[],["name",["subexpr","@mut",[["get","fullnameRhev",["loc",[null,[65,29],[65,41]]]]],[],[]],"isOpen",["subexpr","@mut",[["get","isRhevOpen",["loc",[null,[65,49],[65,59]]]]],[],[]]],0,null,["loc",[null,[65,6],[140,25]]]]],locals:[],templates:[child0]};})();var child5=(function(){var child0=(function(){var child0=(function(){var child0=(function(){var child0=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":151,"column":16},"end":{"line":153,"column":16}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:1,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                  ");dom.appendChild(el0,el1);var el1=dom.createElement("div");dom.setAttribute(el1,"class","node-count-review-link");var el2=dom.createComment("");dom.appendChild(el1,el2);var el2=dom.createTextNode(" ");dom.appendChild(el1,el2);var el2=dom.createComment("");dom.appendChild(el1,el2);var el2=dom.createTextNode(" Nodes");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var element0=dom.childAt(fragment,[1]);var morphs=new Array(2);morphs[0] = dom.createMorphAt(element0,0,0);morphs[1] = dom.createMorphAt(element0,2,2);return morphs;},statements:[["content","node.count",["loc",[null,[152,54],[152,68]]]],["content","node.name",["loc",[null,[152,69],[152,82]]]]],locals:["node"],templates:[]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":149,"column":14},"end":{"line":154,"column":14}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:1,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                ");dom.appendChild(el0,el1);var el1=dom.createElement("div");var el2=dom.createComment("");dom.appendChild(el1,el2);var el2=dom.createTextNode(":");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(2);morphs[0] = dom.createMorphAt(dom.childAt(fragment,[1]),0,0);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);dom.insertBoundary(fragment,null);return morphs;},statements:[["content","profile.flavor",["loc",[null,[150,21],[150,39]]]],["block","each",[["get","profile.nodes",["loc",[null,[151,24],[151,37]]]]],[],0,null,["loc",[null,[151,16],[153,25]]]]],locals:["profile"],templates:[child0]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":147,"column":12},"end":{"line":155,"column":12}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","each",[["get","profiles",["loc",[null,[149,22],[149,30]]]]],[],0,null,["loc",[null,[149,14],[154,23]]]]],locals:[],templates:[child0]};})();var child1=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":182,"column":8},"end":{"line":224,"column":8}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n\n          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n\n          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n\n          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n\n          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n\n          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n\n          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(7);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);morphs[3] = dom.createMorphAt(fragment,7,7,contextualElement);morphs[4] = dom.createMorphAt(fragment,9,9,contextualElement);morphs[5] = dom.createMorphAt(fragment,11,11,contextualElement);morphs[6] = dom.createMorphAt(fragment,13,13,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Ceph External Mon Host","value",["subexpr","@mut",[["get","model.openstack_deployment.ceph_ext_mon_host",["loc",[null,[184,30],[184,74]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[183,10],[186,57]]]],["inline","review-link",[],["label","Ceph Cluster FSID","value",["subexpr","@mut",[["get","model.openstack_deployment.ceph_cluster_fsid",["loc",[null,[190,30],[190,74]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[189,10],[192,57]]]],["inline","review-link",[],["label","Ceph Client Username","value",["subexpr","@mut",[["get","model.openstack_deployment.ceph_client_username",["loc",[null,[196,30],[196,77]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[195,10],[198,57]]]],["inline","review-link",[],["label","Ceph Client Key","value",["subexpr","@mut",[["get","model.openstack_deployment.ceph_client_key",["loc",[null,[202,30],[202,72]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[201,10],[204,57]]]],["inline","review-link",[],["label","Nova Rbd Pool Name","value",["subexpr","@mut",[["get","model.openstack_deployment.nova_rbd_pool_name",["loc",[null,[208,30],[208,75]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[207,10],[210,57]]]],["inline","review-link",[],["label","Cinder Rbd Pool Name","value",["subexpr","@mut",[["get","model.openstack_deployment.cinder_rbd_pool_name",["loc",[null,[214,30],[214,77]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[213,10],[216,57]]]],["inline","review-link",[],["label","Glance Rbd Pool Name","value",["subexpr","@mut",[["get","model.openstack_deployment.glance_rbd_pool_name",["loc",[null,[220,30],[220,77]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[219,10],[222,57]]]]],locals:[],templates:[]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":144,"column":6},"end":{"line":225,"column":6}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(10);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);morphs[3] = dom.createMorphAt(fragment,7,7,contextualElement);morphs[4] = dom.createMorphAt(fragment,9,9,contextualElement);morphs[5] = dom.createMorphAt(fragment,11,11,contextualElement);morphs[6] = dom.createMorphAt(fragment,13,13,contextualElement);morphs[7] = dom.createMorphAt(fragment,15,15,contextualElement);morphs[8] = dom.createMorphAt(fragment,17,17,contextualElement);morphs[9] = dom.createMorphAt(fragment,19,19,contextualElement);dom.insertBoundary(fragment,null);return morphs;},statements:[["inline","review-link",[],["label","Undercloud username","value","admin","isRequired",true],["loc",[null,[145,12],[145,85]]]],["inline","review-link",[],["label","Undercloud password","value",["subexpr","@mut",[["get","model.openstack_deployment.undercloud_admin_password",["loc",[null,[146,60],[146,112]]]]],[],[]],"isPassword",true,"isRequired",true],["loc",[null,[146,12],[146,146]]]],["block","review-link",[],["label","Assigned Nodes","routeName","openstack.assign-nodes","isRequired",true,"value",["subexpr","@mut",[["get","profiles",["loc",[null,[148,24],[148,32]]]]],[],[]],"useYieldInstead",true],0,null,["loc",[null,[147,12],[155,28]]]],["inline","review-link",[],["label","External Network Interface","value",["subexpr","@mut",[["get","model.openstack_deployment.overcloud_ext_net_interface",["loc",[null,[157,32],[157,86]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[156,12],[159,59]]]],["inline","review-link",[],["label","Private Network","value",["subexpr","@mut",[["get","model.openstack_deployment.overcloud_private_net",["loc",[null,[161,32],[161,80]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[160,12],[163,59]]]],["inline","review-link",[],["label","Floating IP Network","value",["subexpr","@mut",[["get","model.openstack_deployment.overcloud_float_net",["loc",[null,[165,32],[165,78]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[164,12],[167,59]]]],["inline","review-link",[],["label","Floating IP Network Gateway","value",["subexpr","@mut",[["get","model.openstack_deployment.overcloud_float_gateway",["loc",[null,[169,32],[169,82]]]]],[],[]],"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[168,12],[171,59]]]],["inline","review-link",[],["label","Overcloud Admin Password","value",["subexpr","@mut",[["get","model.openstack_deployment.overcloud_password",["loc",[null,[173,32],[173,77]]]]],[],[]],"isPassword",true,"isRequired",true,"routeName","openstack.overcloud"],["loc",[null,[172,12],[176,59]]]],["inline","review-link",[],["label","Ceph Storage","value",["subexpr","@mut",[["get","model.openstack_deployment.cephStorageStatus",["loc",[null,[178,32],[178,76]]]]],[],[]],"routeName","openstack.overcloud"],["loc",[null,[177,12],[179,59]]]],["block","if",[["get","model.openstack_deployment.external_ceph_storage",["loc",[null,[182,14],[182,62]]]]],[],1,null,["loc",[null,[182,8],[224,15]]]]],locals:[],templates:[child0,child1]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":143,"column":4},"end":{"line":226,"column":4}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","accordion-item",[],["name",["subexpr","@mut",[["get","fullnameOpenStack",["loc",[null,[144,29],[144,46]]]]],[],[]],"isOpen",["subexpr","@mut",[["get","isOpenStackOpen",["loc",[null,[144,54],[144,69]]]]],[],[]]],0,null,["loc",[null,[144,6],[225,25]]]]],locals:[],templates:[child0]};})();var child6=(function(){var child0=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":229,"column":6},"end":{"line":291,"column":6}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n        ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(13);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);morphs[3] = dom.createMorphAt(fragment,7,7,contextualElement);morphs[4] = dom.createMorphAt(fragment,9,9,contextualElement);morphs[5] = dom.createMorphAt(fragment,11,11,contextualElement);morphs[6] = dom.createMorphAt(fragment,13,13,contextualElement);morphs[7] = dom.createMorphAt(fragment,15,15,contextualElement);morphs[8] = dom.createMorphAt(fragment,17,17,contextualElement);morphs[9] = dom.createMorphAt(fragment,19,19,contextualElement);morphs[10] = dom.createMorphAt(fragment,21,21,contextualElement);morphs[11] = dom.createMorphAt(fragment,23,23,contextualElement);morphs[12] = dom.createMorphAt(fragment,25,25,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Nodes Location","routeName","openshift.openshift-nodes","isRequired",true,"value",["subexpr","@mut",[["get","openshiftInstallLoc",["loc",[null,[234,28],[234,47]]]]],[],[]]],["loc",[null,[231,8],[234,49]]]],["inline","review-link",[],["label","# of Master Nodes","routeName","openshift.openshift-nodes","isRequired",true,"value",["subexpr","@mut",[["get","model.openshift_number_master_nodes",["loc",[null,[239,28],[239,63]]]]],[],[]]],["loc",[null,[236,8],[239,65]]]],["inline","review-link",[],["label","# of Worker Nodes","routeName","openshift.openshift-nodes","isRequired",true,"value",["subexpr","@mut",[["get","model.openshift_number_worker_nodes",["loc",[null,[244,28],[244,63]]]]],[],[]]],["loc",[null,[241,8],[244,65]]]],["inline","review-link",[],["label","Docker Storage per Worker","routeName","openshift.openshift-nodes","isRequired",true,"value",["subexpr","@mut",[["get","storageSizeGB",["loc",[null,[249,28],[249,41]]]]],[],[]]],["loc",[null,[246,8],[249,43]]]],["inline","review-link",[],["label","vCPU Needed","routeName","openshift.openshift-nodes","isRequired",true,"value",["subexpr","@mut",[["get","vcpuNeeded",["loc",[null,[254,28],[254,38]]]]],[],[]]],["loc",[null,[251,8],[254,40]]]],["inline","review-link",[],["label","RAM Needed","routeName","openshift.openshift-nodes","isRequired",true,"value",["subexpr","@mut",[["get","ramNeededGB",["loc",[null,[259,28],[259,39]]]]],[],[]]],["loc",[null,[256,8],[259,41]]]],["inline","review-link",[],["label","Disk Needed","routeName","openshift.openshift-nodes","isRequired",true,"value",["subexpr","@mut",[["get","diskNeededGB",["loc",[null,[264,28],[264,40]]]]],[],[]]],["loc",[null,[261,8],[264,42]]]],["inline","review-link",[],["label","Storage Type","routeName","openshift.openshift-configuration","isRequired",true,"value",["subexpr","@mut",[["get","model.openshift_storage_type",["loc",[null,[269,28],[269,56]]]]],[],[]]],["loc",[null,[266,8],[269,58]]]],["inline","review-link",[],["label","Storage Host","routeName","openshift.openshift-configuration","value",["subexpr","@mut",[["get","model.openshift_storage_host",["loc",[null,[273,28],[273,56]]]]],[],[]]],["loc",[null,[271,8],[273,58]]]],["inline","review-link",[],["label","Export Path","routeName","openshift.openshift-configuration","value",["subexpr","@mut",[["get","model.openshift_export_path",["loc",[null,[277,28],[277,55]]]]],[],[]]],["loc",[null,[275,8],[277,57]]]],["inline","review-link",[],["label","Username","routeName","openshift.openshift-configuration","value",["subexpr","@mut",[["get","model.openshift_username",["loc",[null,[281,28],[281,52]]]]],[],[]]],["loc",[null,[279,8],[281,54]]]],["inline","review-link",[],["label","Subdomain","routeName","openshift.openshift-configuration","value",["subexpr","@mut",[["get","fullOpenshiftSubdomain",["loc",[null,[285,28],[285,50]]]]],[],[]]],["loc",[null,[283,8],[285,52]]]],["inline","review-link",[],["label","Example Application","routeName","openshift.openshift-configuration","value",["subexpr","@mut",[["get","deployOseExampleApp",["loc",[null,[289,28],[289,47]]]]],[],[]]],["loc",[null,[287,8],[289,49]]]]],locals:[],templates:[]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":228,"column":4},"end":{"line":292,"column":4}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","accordion-item",[],["name",["subexpr","@mut",[["get","fullnameOpenShift",["loc",[null,[229,29],[229,46]]]]],[],[]],"isOpen",["subexpr","@mut",[["get","isOpenshiftOpen",["loc",[null,[229,54],[229,69]]]]],[],[]]],0,null,["loc",[null,[229,6],[291,25]]]]],locals:[],templates:[child0]};})();var child7=(function(){var child0=(function(){var child0=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":297,"column":10},"end":{"line":299,"column":10}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("            ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Worker Appliance","routeName","where-install","isRequired",true,"value",["subexpr","@mut",[["get","workerCfmeInstallLoc",["loc",[null,[298,99],[298,119]]]]],[],[]]],["loc",[null,[298,12],[298,122]]]]],locals:[],templates:[]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":295,"column":6},"end":{"line":306,"column":6}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n          ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(5);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);morphs[3] = dom.createMorphAt(fragment,7,7,contextualElement);morphs[4] = dom.createMorphAt(fragment,9,9,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Primary Appliance","routeName","where-install","isRequired",true,"value",["subexpr","@mut",[["get","primaryCfmeInstallLoc",["loc",[null,[296,98],[296,119]]]]],[],[]]],["loc",[null,[296,10],[296,122]]]],["block","if",[["get","multipleCfme",["loc",[null,[297,16],[297,28]]]]],[],0,null,["loc",[null,[297,10],[299,17]]]],["inline","review-link",[],["label","CFME Root password","routeName","cloudforms.cfme-configuration","isRequired",true,"isPassword",true,"value",["subexpr","@mut",[["get","model.cfme_root_password",["loc",[null,[301,62],[301,86]]]]],[],[]]],["loc",[null,[300,10],[301,89]]]],["inline","review-link",[],["label","CFME Admin password","routeName","cloudforms.cfme-configuration","isRequired",true,"isPassword",true,"value",["subexpr","@mut",[["get","model.cfme_admin_password",["loc",[null,[303,62],[303,87]]]]],[],[]]],["loc",[null,[302,10],[303,90]]]],["inline","review-link",[],["label","CFME Database password","routeName","cloudforms.cfme-configuration","isRequired",true,"isPassword",true,"value",["subexpr","@mut",[["get","model.cfme_db_password",["loc",[null,[305,62],[305,84]]]]],[],[]]],["loc",[null,[304,10],[305,87]]]]],locals:[],templates:[child0]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":294,"column":4},"end":{"line":307,"column":4}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","accordion-item",[],["name",["subexpr","@mut",[["get","fullnameCloudForms",["loc",[null,[295,29],[295,47]]]]],[],[]],"isOpen",["subexpr","@mut",[["get","isCloudFormsOpen",["loc",[null,[295,55],[295,71]]]]],[],[]]],0,null,["loc",[null,[295,6],[306,25]]]]],locals:[],templates:[child0]};})();var child8=(function(){var child0=(function(){var child0=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":311,"column":12},"end":{"line":320,"column":12}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n                ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(2);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Content Mirror URL","routeName","subscriptions.credentials","isRequired",true,"value",["subexpr","@mut",[["get","cdnUrl",["loc",[null,[315,36],[315,42]]]]],[],[]]],["loc",[null,[312,16],[315,45]]]],["inline","review-link",[],["label","Manifest File","routeName","subscriptions.credentials","isRequired",true,"value",["subexpr","@mut",[["get","model.manifest_file",["loc",[null,[319,36],[319,55]]]]],[],[]]],["loc",[null,[316,16],[319,58]]]]],locals:[],templates:[]};})();var child1=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":320,"column":12},"end":{"line":324,"column":12}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Subscription Management Application","routeName","subscriptions.management-application","isRequired",true,"value",["subexpr","@mut",[["get","deploymentController.managementApplicationName",["loc",[null,[323,36],[323,82]]]]],[],[]]],["loc",[null,[321,16],[323,85]]]]],locals:[],templates:[]};})();var child2=(function(){var child0=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":336,"column":16},"end":{"line":342,"column":16}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                    ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Quantity Added","routeName","subscriptions.select-subscriptions","value",["subexpr","if",[["get","isMissingSubscriptions",["loc",[null,[339,44],[339,66]]]],null,["get","sub.quantity_to_add",["loc",[null,[339,72],[339,91]]]]],[],["loc",[null,[339,40],[339,92]]]],"isRequired",true,"validationMessage","Need to re-enter"],["loc",[null,[337,20],[341,72]]]]],locals:[],templates:[]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":326,"column":12},"end":{"line":343,"column":12}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:1,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n                ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n                ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(4);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);morphs[3] = dom.createMorphAt(fragment,7,7,contextualElement);dom.insertBoundary(fragment,null);return morphs;},statements:[["inline","review-link",[],["label","Subscription Name","routeName","subscriptions.select-subscriptions","value",["subexpr","@mut",[["get","sub.product_name",["loc",[null,[329,36],[329,52]]]]],[],[]]],["loc",[null,[327,16],[329,55]]]],["inline","review-link",[],["label","Contract Number","routeName","subscriptions.select-subscriptions","value",["subexpr","@mut",[["get","sub.contract_number",["loc",[null,[332,36],[332,55]]]]],[],[]]],["loc",[null,[330,16],[332,58]]]],["inline","review-link",[],["label","Quantity Attached","routeName","subscriptions.select-subscriptions","value",["subexpr","@mut",[["get","sub.quantity_attached",["loc",[null,[335,36],[335,57]]]]],[],[]]],["loc",[null,[333,16],[335,60]]]],["block","if",[["get","hasSubscriptionsToAttach",["loc",[null,[336,22],[336,46]]]]],[],0,null,["loc",[null,[336,16],[342,23]]]]],locals:["sub"],templates:[child0]};})();var child3=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":343,"column":12},"end":{"line":347,"column":12}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("                ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);return morphs;},statements:[["inline","review-link",[],["label","Quantity","routeName","subscriptions.select-subscriptions","value","0 - no subscriptions in manifest"],["loc",[null,[344,16],[346,73]]]]],locals:[],templates:[]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":310,"column":8},"end":{"line":349,"column":8}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(2);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);morphs[1] = dom.createMorphAt(fragment,2,2,contextualElement);dom.insertBoundary(fragment,0);return morphs;},statements:[["block","if",[["get","isDisconnected",["loc",[null,[311,18],[311,32]]]]],[],0,1,["loc",[null,[311,12],[324,19]]]],["block","each",[["get","reviewSubscriptions",["loc",[null,[326,20],[326,39]]]]],[],2,3,["loc",[null,[326,12],[347,21]]]]],locals:[],templates:[child0,child1,child2,child3]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":309,"column":4},"end":{"line":351,"column":4}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);return morphs;},statements:[["block","accordion-item",[],["name","Subscriptions","isOpen",["subexpr","@mut",[["get","isSubscriptionsOpen",["loc",[null,[310,54],[310,73]]]]],[],[]]],0,null,["loc",[null,[310,8],[349,27]]]]],locals:[],templates:[child0]};})();var child9=(function(){var child0=(function(){var child0=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":360,"column":10},"end":{"line":362,"column":10}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("            Next ");dom.appendChild(el0,el1);var el1=dom.createElement("i");dom.setAttribute(el1,"class","fa fa-angle-right");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(){return [];},statements:[],locals:[],templates:[]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":359,"column":6},"end":{"line":363,"column":6}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","link-to",["review.progress.overview"],["role","button","class","btn btn-primary next-button"],0,null,["loc",[null,[360,10],[362,22]]]]],locals:[],templates:[child0]};})();var child1=(function(){var child0=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":364,"column":10},"end":{"line":366,"column":10}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("             ");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode(" ");dom.appendChild(el0,el1);var el1=dom.createElement("i");dom.setAttribute(el1,"class","fa fa-angle-right");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);return morphs;},statements:[["content","buttonDeployTitle",["loc",[null,[365,13],[365,34]]]]],locals:[],templates:[]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":363,"column":6},"end":{"line":367,"column":6}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","button-f",[],["disabled",["subexpr","@mut",[["get","buttonDeployDisabled",["loc",[null,[364,31],[364,51]]]]],[],[]],"action","onDeployButton"],0,null,["loc",[null,[364,10],[366,23]]]]],locals:[],templates:[child0]};})();return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":356,"column":2},"end":{"line":368,"column":2}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);dom.insertBoundary(fragment,0);dom.insertBoundary(fragment,null);return morphs;},statements:[["block","if",[["get","isStarted",["loc",[null,[359,12],[359,21]]]]],[],0,1,["loc",[null,[359,6],[367,13]]]]],locals:[],templates:[child0,child1]};})();return {meta:{"fragmentReason":{"name":"missing-wrapper","problems":["wrong-type","multiple-nodes"]},"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":1,"column":0},"end":{"line":370,"column":0}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n  ");dom.appendChild(el0,el1);var el1=dom.createElement("div");dom.setAttribute(el1,"class","row");var el2=dom.createTextNode("\n    ");dom.appendChild(el1,el2);var el2=dom.createElement("div");dom.setAttribute(el2,"class","col-md-12");var el3=dom.createTextNode("\n\n");dom.appendChild(el2,el3);var el3=dom.createComment("");dom.appendChild(el2,el3);var el3=dom.createTextNode("\n");dom.appendChild(el2,el3);var el3=dom.createComment("");dom.appendChild(el2,el3);var el3=dom.createTextNode("\n");dom.appendChild(el2,el3);var el3=dom.createComment("");dom.appendChild(el2,el3);var el3=dom.createTextNode("\n");dom.appendChild(el2,el3);var el3=dom.createComment("");dom.appendChild(el2,el3);var el3=dom.createTextNode("\n");dom.appendChild(el2,el3);var el3=dom.createComment("");dom.appendChild(el2,el3);var el3=dom.createTextNode("\n");dom.appendChild(el2,el3);var el3=dom.createComment("");dom.appendChild(el2,el3);var el3=dom.createTextNode("\n    ");dom.appendChild(el2,el3);dom.appendChild(el1,el2);var el2=dom.createTextNode("\n  ");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var element1=dom.childAt(fragment,[7,1]);var morphs=new Array(10);morphs[0] = dom.createMorphAt(fragment,1,1,contextualElement);morphs[1] = dom.createMorphAt(fragment,3,3,contextualElement);morphs[2] = dom.createMorphAt(fragment,5,5,contextualElement);morphs[3] = dom.createMorphAt(element1,1,1);morphs[4] = dom.createMorphAt(element1,3,3);morphs[5] = dom.createMorphAt(element1,5,5);morphs[6] = dom.createMorphAt(element1,7,7);morphs[7] = dom.createMorphAt(element1,9,9);morphs[8] = dom.createMorphAt(element1,11,11);morphs[9] = dom.createMorphAt(fragment,9,9,contextualElement);return morphs;},statements:[["block","if",[["get","showErrorMessage",["loc",[null,[3,8],[3,24]]]]],[],0,null,["loc",[null,[3,2],[13,9]]]],["block","if",[["get","showValidationErrors",["loc",[null,[15,8],[15,28]]]]],[],1,null,["loc",[null,[15,2],[28,9]]]],["block","if",[["get","showValidationWarnings",["loc",[null,[30,8],[30,30]]]]],[],2,null,["loc",[null,[30,2],[43,9]]]],["block","accordion-item",[],["name",["subexpr","@mut",[["get","fullnameSatellite",["loc",[null,[48,29],[48,46]]]]],[],[]],"isOpen",true],3,null,["loc",[null,[48,6],[62,25]]]],["block","if",[["get","isRhev",["loc",[null,[64,10],[64,16]]]]],[],4,null,["loc",[null,[64,4],[141,11]]]],["block","if",[["get","isOpenStack",["loc",[null,[143,10],[143,21]]]]],[],5,null,["loc",[null,[143,4],[226,11]]]],["block","if",[["get","isOpenShift",["loc",[null,[228,10],[228,21]]]]],[],6,null,["loc",[null,[228,4],[292,11]]]],["block","if",[["get","isCloudForms",["loc",[null,[294,10],[294,22]]]]],[],7,null,["loc",[null,[294,4],[307,11]]]],["block","if",[["get","isSubscriptions",["loc",[null,[309,10],[309,25]]]]],[],8,null,["loc",[null,[309,4],[351,11]]]],["block","cancel-back-next",[],["backRouteName",["subexpr","@mut",[["get","backRouteNameonReviewInstallation",["loc",[null,[356,36],[356,69]]]]],[],[]],"disableBack",false,"disableCancel",["subexpr","@mut",[["get","isStarted",["loc",[null,[358,36],[358,45]]]]],[],[]]],9,null,["loc",[null,[356,2],[368,23]]]]],locals:[],templates:[child0,child1,child2,child3,child4,child5,child6,child7,child8,child9]};})();var child1=(function(){return {meta:{"fragmentReason":false,"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":370,"column":0},"end":{"line":377,"column":0}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createTextNode("\n  ");dom.appendChild(el0,el1);var el1=dom.createElement("div");dom.setAttribute(el1,"class","spinner spinner-md spinner-inline");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n  ");dom.appendChild(el0,el1);var el1=dom.createElement("span");dom.setAttribute(el1,"class","spinner-text");var el2=dom.createTextNode("\n      ");dom.appendChild(el1,el2);var el2=dom.createComment("");dom.appendChild(el1,el2);var el2=dom.createTextNode("\n  ");dom.appendChild(el1,el2);dom.appendChild(el0,el1);var el1=dom.createTextNode("\n\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(1);morphs[0] = dom.createMorphAt(dom.childAt(fragment,[3]),1,1);return morphs;},statements:[["content","spinnerTextMessage",["loc",[null,[374,6],[374,28]]]]],locals:[],templates:[]};})();return {meta:{"fragmentReason":{"name":"missing-wrapper","problems":["wrong-type","multiple-nodes"]},"revision":"Ember@2.4.6","loc":{"source":null,"start":{"line":1,"column":0},"end":{"line":383,"column":0}},"moduleName":"fusor-ember-cli/templates/review/installation.hbs"},isEmpty:false,arity:0,cachedFragment:null,hasRendered:false,buildFragment:function buildFragment(dom){var el0=dom.createDocumentFragment();var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);var el1=dom.createComment("");dom.appendChild(el0,el1);var el1=dom.createTextNode("\n");dom.appendChild(el0,el1);return el0;},buildRenderNodes:function buildRenderNodes(dom,fragment,contextualElement){var morphs=new Array(2);morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);morphs[1] = dom.createMorphAt(fragment,2,2,contextualElement);dom.insertBoundary(fragment,0);return morphs;},statements:[["block","unless",[["get","showSpinner",["loc",[null,[1,10],[1,21]]]]],[],0,1,["loc",[null,[1,0],[377,11]]]],["inline","continue-deployment-modal",[],["openModal",["subexpr","@mut",[["get","openModal",["loc",[null,[379,38],[379,47]]]]],[],[]],"deployment",["subexpr","@mut",[["get","deploymentController.model",["loc",[null,[380,39],[380,65]]]]],[],[]],"installDeployment","installDeployment"],["loc",[null,[379,0],[382,30]]]]],locals:[],templates:[child0,child1]};})());});
 define("fusor-ember-cli/templates/review/progress", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template((function () {
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -44192,6 +45735,7 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
           },
           "moduleName": "fusor-ember-cli/templates/review/progress.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -44244,7 +45788,8 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -44258,6 +45803,7 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
           },
           "moduleName": "fusor-ember-cli/templates/review/progress.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -44284,7 +45830,8 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
     var child2 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -44298,6 +45845,7 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
           },
           "moduleName": "fusor-ember-cli/templates/review/progress.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -44324,7 +45872,8 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
     var child3 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -44338,6 +45887,7 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
           },
           "moduleName": "fusor-ember-cli/templates/review/progress.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -44367,7 +45917,8 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -44381,6 +45932,7 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
                 },
                 "moduleName": "fusor-ember-cli/templates/review/progress.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -44405,7 +45957,8 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -44419,6 +45972,7 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
               },
               "moduleName": "fusor-ember-cli/templates/review/progress.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -44443,7 +45997,8 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
         var child1 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -44457,6 +46012,7 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
               },
               "moduleName": "fusor-ember-cli/templates/review/progress.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -44495,7 +46051,8 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -44509,6 +46066,7 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
             },
             "moduleName": "fusor-ember-cli/templates/review/progress.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -44532,7 +46090,8 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -44546,6 +46105,7 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
           },
           "moduleName": "fusor-ember-cli/templates/review/progress.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -44569,7 +46129,11 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -44583,6 +46147,7 @@ define("fusor-ember-cli/templates/review/progress", ["exports"], function (expor
         },
         "moduleName": "fusor-ember-cli/templates/review/progress.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -44662,7 +46227,8 @@ define("fusor-ember-cli/templates/review/progress/details", ["exports"], functio
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -44676,6 +46242,7 @@ define("fusor-ember-cli/templates/review/progress/details", ["exports"], functio
           },
           "moduleName": "fusor-ember-cli/templates/review/progress/details.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -44709,7 +46276,8 @@ define("fusor-ember-cli/templates/review/progress/details", ["exports"], functio
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -44723,6 +46291,7 @@ define("fusor-ember-cli/templates/review/progress/details", ["exports"], functio
             },
             "moduleName": "fusor-ember-cli/templates/review/progress/details.hbs"
           },
+          isEmpty: false,
           arity: 1,
           cachedFragment: null,
           hasRendered: false,
@@ -44748,7 +46317,8 @@ define("fusor-ember-cli/templates/review/progress/details", ["exports"], functio
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -44762,6 +46332,7 @@ define("fusor-ember-cli/templates/review/progress/details", ["exports"], functio
           },
           "moduleName": "fusor-ember-cli/templates/review/progress/details.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -44880,7 +46451,11 @@ define("fusor-ember-cli/templates/review/progress/details", ["exports"], functio
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -44894,6 +46469,7 @@ define("fusor-ember-cli/templates/review/progress/details", ["exports"], functio
         },
         "moduleName": "fusor-ember-cli/templates/review/progress/details.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -44926,7 +46502,8 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -44940,6 +46517,7 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
               },
               "moduleName": "fusor-ember-cli/templates/review/progress/log.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -44963,7 +46541,8 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -44977,6 +46556,7 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
             },
             "moduleName": "fusor-ember-cli/templates/review/progress/log.hbs"
           },
+          isEmpty: false,
           arity: 1,
           cachedFragment: null,
           hasRendered: false,
@@ -45002,7 +46582,8 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -45016,6 +46597,7 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
           },
           "moduleName": "fusor-ember-cli/templates/review/progress/log.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -45040,7 +46622,8 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -45054,6 +46637,7 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
           },
           "moduleName": "fusor-ember-cli/templates/review/progress/log.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -45125,7 +46709,8 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
     var child2 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -45139,6 +46724,7 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
           },
           "moduleName": "fusor-ember-cli/templates/review/progress/log.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -45169,7 +46755,8 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
     var child3 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -45183,6 +46770,7 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
           },
           "moduleName": "fusor-ember-cli/templates/review/progress/log.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -45210,7 +46798,8 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
     var child4 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -45224,6 +46813,7 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
           },
           "moduleName": "fusor-ember-cli/templates/review/progress/log.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -45260,7 +46850,8 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
     var child5 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -45274,6 +46865,7 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
           },
           "moduleName": "fusor-ember-cli/templates/review/progress/log.hbs"
         },
+        isEmpty: false,
         arity: 1,
         cachedFragment: null,
         hasRendered: false,
@@ -45300,7 +46892,8 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
     var child6 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -45314,6 +46907,7 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
           },
           "moduleName": "fusor-ember-cli/templates/review/progress/log.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -45348,7 +46942,8 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
     var child7 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -45362,6 +46957,7 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
           },
           "moduleName": "fusor-ember-cli/templates/review/progress/log.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -45391,7 +46987,11 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -45405,6 +47005,7 @@ define("fusor-ember-cli/templates/review/progress/log", ["exports"], function (e
         },
         "moduleName": "fusor-ember-cli/templates/review/progress/log.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -45740,7 +47341,8 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -45754,6 +47356,7 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
             },
             "moduleName": "fusor-ember-cli/templates/review/progress/overview.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -45788,7 +47391,8 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -45802,6 +47406,7 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
                 },
                 "moduleName": "fusor-ember-cli/templates/review/progress/overview.hbs"
               },
+              isEmpty: false,
               arity: 1,
               cachedFragment: null,
               hasRendered: false,
@@ -45833,7 +47438,8 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -45847,6 +47453,7 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
               },
               "moduleName": "fusor-ember-cli/templates/review/progress/overview.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -45877,7 +47484,8 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -45891,6 +47499,7 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
             },
             "moduleName": "fusor-ember-cli/templates/review/progress/overview.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -45957,7 +47566,8 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -45971,6 +47581,7 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
           },
           "moduleName": "fusor-ember-cli/templates/review/progress/overview.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -46005,7 +47616,8 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -46019,6 +47631,7 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
             },
             "moduleName": "fusor-ember-cli/templates/review/progress/overview.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -46045,7 +47658,8 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -46059,6 +47673,7 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
             },
             "moduleName": "fusor-ember-cli/templates/review/progress/overview.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -46085,7 +47700,8 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
       var child2 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -46099,6 +47715,7 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
             },
             "moduleName": "fusor-ember-cli/templates/review/progress/overview.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -46125,7 +47742,8 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
       var child3 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -46139,6 +47757,7 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
             },
             "moduleName": "fusor-ember-cli/templates/review/progress/overview.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -46165,7 +47784,8 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
       var child4 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -46179,6 +47799,7 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
             },
             "moduleName": "fusor-ember-cli/templates/review/progress/overview.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -46204,7 +47825,8 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -46218,6 +47840,7 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
           },
           "moduleName": "fusor-ember-cli/templates/review/progress/overview.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -46268,7 +47891,11 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -46282,6 +47909,7 @@ define("fusor-ember-cli/templates/review/progress/overview", ["exports"], functi
         },
         "moduleName": "fusor-ember-cli/templates/review/progress/overview.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -46319,7 +47947,8 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -46333,6 +47962,7 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
             },
             "moduleName": "fusor-ember-cli/templates/review/summary.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -46363,7 +47993,8 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -46377,6 +48008,7 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
           },
           "moduleName": "fusor-ember-cli/templates/review/summary.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -46402,7 +48034,8 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -46416,6 +48049,7 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
             },
             "moduleName": "fusor-ember-cli/templates/review/summary.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -46461,7 +48095,8 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -46475,6 +48110,7 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
           },
           "moduleName": "fusor-ember-cli/templates/review/summary.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -46501,7 +48137,8 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -46515,6 +48152,7 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
               },
               "moduleName": "fusor-ember-cli/templates/review/summary.hbs"
             },
+            isEmpty: false,
             arity: 1,
             cachedFragment: null,
             hasRendered: false,
@@ -46541,7 +48179,8 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
         var child1 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -46555,6 +48194,7 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
               },
               "moduleName": "fusor-ember-cli/templates/review/summary.hbs"
             },
+            isEmpty: false,
             arity: 1,
             cachedFragment: null,
             hasRendered: false,
@@ -46581,7 +48221,8 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
         var child2 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -46595,6 +48236,7 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
               },
               "moduleName": "fusor-ember-cli/templates/review/summary.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -46620,7 +48262,8 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -46634,6 +48277,7 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
             },
             "moduleName": "fusor-ember-cli/templates/review/summary.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -46678,7 +48322,8 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -46692,6 +48337,7 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
           },
           "moduleName": "fusor-ember-cli/templates/review/summary.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -46718,7 +48364,8 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -46732,6 +48379,7 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
               },
               "moduleName": "fusor-ember-cli/templates/review/summary.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -46762,7 +48410,8 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -46776,6 +48425,7 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
             },
             "moduleName": "fusor-ember-cli/templates/review/summary.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -46816,7 +48466,8 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -46830,6 +48481,7 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
           },
           "moduleName": "fusor-ember-cli/templates/review/summary.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -46855,7 +48507,8 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -46869,6 +48522,7 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
             },
             "moduleName": "fusor-ember-cli/templates/review/summary.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -46888,7 +48542,8 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -46902,6 +48557,7 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
           },
           "moduleName": "fusor-ember-cli/templates/review/summary.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -46925,7 +48581,11 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -46939,6 +48599,7 @@ define("fusor-ember-cli/templates/review/summary", ["exports"], function (export
         },
         "moduleName": "fusor-ember-cli/templates/review/summary.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -47003,7 +48664,10 @@ define("fusor-ember-cli/templates/rhev-hostname-input", ["exports"], function (e
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -47017,6 +48681,7 @@ define("fusor-ember-cli/templates/rhev-hostname-input", ["exports"], function (e
           },
           "moduleName": "fusor-ember-cli/templates/rhev-hostname-input.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -47047,7 +48712,8 @@ define("fusor-ember-cli/templates/rhev-hostname-input", ["exports"], function (e
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -47061,6 +48727,7 @@ define("fusor-ember-cli/templates/rhev-hostname-input", ["exports"], function (e
             },
             "moduleName": "fusor-ember-cli/templates/rhev-hostname-input.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -47092,7 +48759,8 @@ define("fusor-ember-cli/templates/rhev-hostname-input", ["exports"], function (e
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -47106,6 +48774,7 @@ define("fusor-ember-cli/templates/rhev-hostname-input", ["exports"], function (e
           },
           "moduleName": "fusor-ember-cli/templates/rhev-hostname-input.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -47144,7 +48813,11 @@ define("fusor-ember-cli/templates/rhev-hostname-input", ["exports"], function (e
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -47158,6 +48831,7 @@ define("fusor-ember-cli/templates/rhev-hostname-input", ["exports"], function (e
         },
         "moduleName": "fusor-ember-cli/templates/rhev-hostname-input.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -47184,7 +48858,11 @@ define("fusor-ember-cli/templates/rhev-options", ["exports"], function (exports)
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -47198,6 +48876,7 @@ define("fusor-ember-cli/templates/rhev-options", ["exports"], function (exports)
         },
         "moduleName": "fusor-ember-cli/templates/rhev-options.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -47293,7 +48972,8 @@ define("fusor-ember-cli/templates/rhev-setup", ["exports"], function (exports) {
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -47307,6 +48987,7 @@ define("fusor-ember-cli/templates/rhev-setup", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/rhev-setup.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -47327,7 +49008,8 @@ define("fusor-ember-cli/templates/rhev-setup", ["exports"], function (exports) {
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -47341,6 +49023,7 @@ define("fusor-ember-cli/templates/rhev-setup", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/rhev-setup.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -47369,7 +49052,11 @@ define("fusor-ember-cli/templates/rhev-setup", ["exports"], function (exports) {
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -47383,6 +49070,7 @@ define("fusor-ember-cli/templates/rhev-setup", ["exports"], function (exports) {
         },
         "moduleName": "fusor-ember-cli/templates/rhev-setup.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -47460,7 +49148,8 @@ define("fusor-ember-cli/templates/rhev", ["exports"], function (exports) {
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -47474,6 +49163,7 @@ define("fusor-ember-cli/templates/rhev", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/rhev.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -47509,7 +49199,8 @@ define("fusor-ember-cli/templates/rhev", ["exports"], function (exports) {
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -47523,6 +49214,7 @@ define("fusor-ember-cli/templates/rhev", ["exports"], function (exports) {
               },
               "moduleName": "fusor-ember-cli/templates/rhev.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -47562,7 +49254,8 @@ define("fusor-ember-cli/templates/rhev", ["exports"], function (exports) {
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -47576,6 +49269,7 @@ define("fusor-ember-cli/templates/rhev", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/rhev.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -47600,7 +49294,8 @@ define("fusor-ember-cli/templates/rhev", ["exports"], function (exports) {
       var child2 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -47614,6 +49309,7 @@ define("fusor-ember-cli/templates/rhev", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/rhev.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -47660,7 +49356,8 @@ define("fusor-ember-cli/templates/rhev", ["exports"], function (exports) {
       var child3 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -47674,6 +49371,7 @@ define("fusor-ember-cli/templates/rhev", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/rhev.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -47714,7 +49412,8 @@ define("fusor-ember-cli/templates/rhev", ["exports"], function (exports) {
       var child4 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -47728,6 +49427,7 @@ define("fusor-ember-cli/templates/rhev", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/rhev.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -47767,7 +49467,11 @@ define("fusor-ember-cli/templates/rhev", ["exports"], function (exports) {
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -47781,6 +49485,7 @@ define("fusor-ember-cli/templates/rhev", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/rhev.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -47826,7 +49531,11 @@ define("fusor-ember-cli/templates/rhev", ["exports"], function (exports) {
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -47840,6 +49549,7 @@ define("fusor-ember-cli/templates/rhev", ["exports"], function (exports) {
         },
         "moduleName": "fusor-ember-cli/templates/rhev.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -47868,7 +49578,8 @@ define("fusor-ember-cli/templates/satellite", ["exports"], function (exports) {
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -47882,6 +49593,7 @@ define("fusor-ember-cli/templates/satellite", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/satellite.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -47916,7 +49628,8 @@ define("fusor-ember-cli/templates/satellite", ["exports"], function (exports) {
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -47930,6 +49643,7 @@ define("fusor-ember-cli/templates/satellite", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/satellite.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -47964,7 +49678,8 @@ define("fusor-ember-cli/templates/satellite", ["exports"], function (exports) {
       var child2 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -47978,6 +49693,7 @@ define("fusor-ember-cli/templates/satellite", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/satellite.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -48011,7 +49727,11 @@ define("fusor-ember-cli/templates/satellite", ["exports"], function (exports) {
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -48025,6 +49745,7 @@ define("fusor-ember-cli/templates/satellite", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/satellite.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -48060,7 +49781,11 @@ define("fusor-ember-cli/templates/satellite", ["exports"], function (exports) {
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -48074,6 +49799,7 @@ define("fusor-ember-cli/templates/satellite", ["exports"], function (exports) {
         },
         "moduleName": "fusor-ember-cli/templates/satellite.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -48100,7 +49826,11 @@ define("fusor-ember-cli/templates/satellite/access-insights", ["exports"], funct
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -48114,6 +49844,7 @@ define("fusor-ember-cli/templates/satellite/access-insights", ["exports"], funct
         },
         "moduleName": "fusor-ember-cli/templates/satellite/access-insights.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -48194,7 +49925,8 @@ define("fusor-ember-cli/templates/satellite/index", ["exports"], function (expor
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -48208,6 +49940,7 @@ define("fusor-ember-cli/templates/satellite/index", ["exports"], function (expor
             },
             "moduleName": "fusor-ember-cli/templates/satellite/index.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -48234,7 +49967,8 @@ define("fusor-ember-cli/templates/satellite/index", ["exports"], function (expor
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -48248,6 +49982,7 @@ define("fusor-ember-cli/templates/satellite/index", ["exports"], function (expor
             },
             "moduleName": "fusor-ember-cli/templates/satellite/index.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -48274,7 +50009,8 @@ define("fusor-ember-cli/templates/satellite/index", ["exports"], function (expor
       var child2 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -48288,6 +50024,7 @@ define("fusor-ember-cli/templates/satellite/index", ["exports"], function (expor
             },
             "moduleName": "fusor-ember-cli/templates/satellite/index.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -48314,7 +50051,8 @@ define("fusor-ember-cli/templates/satellite/index", ["exports"], function (expor
       var child3 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -48328,6 +50066,7 @@ define("fusor-ember-cli/templates/satellite/index", ["exports"], function (expor
             },
             "moduleName": "fusor-ember-cli/templates/satellite/index.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -48353,7 +50092,8 @@ define("fusor-ember-cli/templates/satellite/index", ["exports"], function (expor
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -48367,6 +50107,7 @@ define("fusor-ember-cli/templates/satellite/index", ["exports"], function (expor
           },
           "moduleName": "fusor-ember-cli/templates/satellite/index.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -48419,7 +50160,11 @@ define("fusor-ember-cli/templates/satellite/index", ["exports"], function (expor
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -48433,6 +50178,7 @@ define("fusor-ember-cli/templates/satellite/index", ["exports"], function (expor
         },
         "moduleName": "fusor-ember-cli/templates/satellite/index.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -48507,7 +50253,11 @@ define("fusor-ember-cli/templates/satellite/loading", ["exports"], function (exp
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -48521,6 +50271,7 @@ define("fusor-ember-cli/templates/satellite/loading", ["exports"], function (exp
         },
         "moduleName": "fusor-ember-cli/templates/satellite/loading.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -48549,7 +50300,10 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -48563,6 +50317,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/storage.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -48616,7 +50371,8 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -48630,6 +50386,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/storage.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -48683,7 +50440,8 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -48697,6 +50455,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
               },
               "moduleName": "fusor-ember-cli/templates/storage.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -48734,7 +50493,8 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -48748,6 +50508,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/storage.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -48771,7 +50532,8 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -48785,6 +50547,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/storage.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -48809,7 +50572,8 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
     var child2 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -48823,6 +50587,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/storage.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -48850,7 +50615,8 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -48864,6 +50630,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/storage.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -48893,7 +50660,8 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -48907,6 +50675,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/storage.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -48935,7 +50704,8 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -48949,6 +50719,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/storage.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -48979,7 +50750,8 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
     var child4 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -48993,6 +50765,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/storage.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -49020,7 +50793,8 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -49034,6 +50808,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/storage.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -49076,7 +50851,8 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -49090,6 +50866,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/storage.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -49131,7 +50908,8 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -49145,6 +50923,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/storage.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -49191,7 +50970,8 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -49205,6 +50985,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
             },
             "moduleName": "fusor-ember-cli/templates/storage.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -49229,7 +51010,8 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -49243,6 +51025,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
           },
           "moduleName": "fusor-ember-cli/templates/storage.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -49266,7 +51049,11 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -49280,6 +51067,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
         },
         "moduleName": "fusor-ember-cli/templates/storage.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -49337,7 +51125,8 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -49351,6 +51140,7 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
               },
               "moduleName": "fusor-ember-cli/templates/subscriptions.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -49390,7 +51180,8 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -49404,6 +51195,7 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
             },
             "moduleName": "fusor-ember-cli/templates/subscriptions.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -49429,7 +51221,8 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -49443,6 +51236,7 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
               },
               "moduleName": "fusor-ember-cli/templates/subscriptions.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -49484,7 +51278,8 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -49498,6 +51293,7 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
                 },
                 "moduleName": "fusor-ember-cli/templates/subscriptions.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -49537,7 +51333,8 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -49551,6 +51348,7 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
               },
               "moduleName": "fusor-ember-cli/templates/subscriptions.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -49577,7 +51375,8 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -49591,6 +51390,7 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
                 },
                 "moduleName": "fusor-ember-cli/templates/subscriptions.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -49631,7 +51431,8 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
           var child1 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -49645,6 +51446,7 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
                 },
                 "moduleName": "fusor-ember-cli/templates/subscriptions.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -49685,7 +51487,8 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
           var child2 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -49699,6 +51502,7 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
                 },
                 "moduleName": "fusor-ember-cli/templates/subscriptions.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -49738,7 +51542,8 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -49752,6 +51557,7 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
               },
               "moduleName": "fusor-ember-cli/templates/subscriptions.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -49786,7 +51592,8 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -49800,6 +51607,7 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
             },
             "moduleName": "fusor-ember-cli/templates/subscriptions.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -49828,7 +51636,11 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -49842,6 +51654,7 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
           },
           "moduleName": "fusor-ember-cli/templates/subscriptions.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -49867,7 +51680,11 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -49881,6 +51698,7 @@ define("fusor-ember-cli/templates/subscriptions", ["exports"], function (exports
         },
         "moduleName": "fusor-ember-cli/templates/subscriptions.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -49908,7 +51726,10 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -49922,6 +51743,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
           },
           "moduleName": "fusor-ember-cli/templates/subscriptions/credentials.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -49974,7 +51796,8 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -49988,6 +51811,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
           },
           "moduleName": "fusor-ember-cli/templates/subscriptions/credentials.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -50018,7 +51842,8 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -50032,6 +51857,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
             },
             "moduleName": "fusor-ember-cli/templates/subscriptions/credentials.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -50103,7 +51929,8 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -50117,6 +51944,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
               },
               "moduleName": "fusor-ember-cli/templates/subscriptions/credentials.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -50144,7 +51972,8 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -50158,6 +51987,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
             },
             "moduleName": "fusor-ember-cli/templates/subscriptions/credentials.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -50242,7 +52072,8 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -50256,6 +52087,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
           },
           "moduleName": "fusor-ember-cli/templates/subscriptions/credentials.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -50280,7 +52112,8 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
     var child3 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -50294,6 +52127,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
           },
           "moduleName": "fusor-ember-cli/templates/subscriptions/credentials.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -50324,7 +52158,8 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -50338,6 +52173,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
             },
             "moduleName": "fusor-ember-cli/templates/subscriptions/credentials.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -50394,7 +52230,8 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
       var child1 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -50408,6 +52245,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
             },
             "moduleName": "fusor-ember-cli/templates/subscriptions/credentials.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -50443,7 +52281,8 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -50457,6 +52296,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
           },
           "moduleName": "fusor-ember-cli/templates/subscriptions/credentials.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -50511,7 +52351,8 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
     var child5 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -50525,6 +52366,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
           },
           "moduleName": "fusor-ember-cli/templates/subscriptions/credentials.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -50553,7 +52395,8 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -50567,6 +52410,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
               },
               "moduleName": "fusor-ember-cli/templates/subscriptions/credentials.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -50597,7 +52441,8 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -50611,6 +52456,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
             },
             "moduleName": "fusor-ember-cli/templates/subscriptions/credentials.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -50634,7 +52480,8 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -50648,6 +52495,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
           },
           "moduleName": "fusor-ember-cli/templates/subscriptions/credentials.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -50673,7 +52521,11 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -50687,6 +52539,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
         },
         "moduleName": "fusor-ember-cli/templates/subscriptions/credentials.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -50775,7 +52628,11 @@ define("fusor-ember-cli/templates/subscriptions/index", ["exports"], function (e
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -50789,6 +52646,7 @@ define("fusor-ember-cli/templates/subscriptions/index", ["exports"], function (e
         },
         "moduleName": "fusor-ember-cli/templates/subscriptions/index.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -50816,7 +52674,11 @@ define("fusor-ember-cli/templates/subscriptions/loading", ["exports"], function 
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -50830,6 +52692,7 @@ define("fusor-ember-cli/templates/subscriptions/loading", ["exports"], function 
         },
         "moduleName": "fusor-ember-cli/templates/subscriptions/loading.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -50859,7 +52722,8 @@ define("fusor-ember-cli/templates/subscriptions/management-application", ["expor
       var child0 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -50873,6 +52737,7 @@ define("fusor-ember-cli/templates/subscriptions/management-application", ["expor
             },
             "moduleName": "fusor-ember-cli/templates/subscriptions/management-application.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -50926,7 +52791,8 @@ define("fusor-ember-cli/templates/subscriptions/management-application", ["expor
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -50940,6 +52806,7 @@ define("fusor-ember-cli/templates/subscriptions/management-application", ["expor
               },
               "moduleName": "fusor-ember-cli/templates/subscriptions/management-application.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -50965,7 +52832,8 @@ define("fusor-ember-cli/templates/subscriptions/management-application", ["expor
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -50979,6 +52847,7 @@ define("fusor-ember-cli/templates/subscriptions/management-application", ["expor
             },
             "moduleName": "fusor-ember-cli/templates/subscriptions/management-application.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -51003,7 +52872,8 @@ define("fusor-ember-cli/templates/subscriptions/management-application", ["expor
       var child2 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -51017,6 +52887,7 @@ define("fusor-ember-cli/templates/subscriptions/management-application", ["expor
             },
             "moduleName": "fusor-ember-cli/templates/subscriptions/management-application.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -51069,7 +52940,8 @@ define("fusor-ember-cli/templates/subscriptions/management-application", ["expor
       var child3 = (function () {
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -51083,6 +52955,7 @@ define("fusor-ember-cli/templates/subscriptions/management-application", ["expor
             },
             "moduleName": "fusor-ember-cli/templates/subscriptions/management-application.hbs"
           },
+          isEmpty: false,
           arity: 1,
           cachedFragment: null,
           hasRendered: false,
@@ -51108,7 +52981,11 @@ define("fusor-ember-cli/templates/subscriptions/management-application", ["expor
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -51122,6 +52999,7 @@ define("fusor-ember-cli/templates/subscriptions/management-application", ["expor
           },
           "moduleName": "fusor-ember-cli/templates/subscriptions/management-application.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -51258,7 +53136,11 @@ define("fusor-ember-cli/templates/subscriptions/management-application", ["expor
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -51272,6 +53154,7 @@ define("fusor-ember-cli/templates/subscriptions/management-application", ["expor
         },
         "moduleName": "fusor-ember-cli/templates/subscriptions/management-application.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -51299,7 +53182,11 @@ define("fusor-ember-cli/templates/subscriptions/management-application.loading",
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -51313,6 +53200,7 @@ define("fusor-ember-cli/templates/subscriptions/management-application.loading",
         },
         "moduleName": "fusor-ember-cli/templates/subscriptions/management-application.loading.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -51336,7 +53224,10 @@ define("fusor-ember-cli/templates/subscriptions/review-subscriptions", ["exports
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -51350,6 +53241,7 @@ define("fusor-ember-cli/templates/subscriptions/review-subscriptions", ["exports
           },
           "moduleName": "fusor-ember-cli/templates/subscriptions/review-subscriptions.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -51399,7 +53291,8 @@ define("fusor-ember-cli/templates/subscriptions/review-subscriptions", ["exports
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -51413,6 +53306,7 @@ define("fusor-ember-cli/templates/subscriptions/review-subscriptions", ["exports
           },
           "moduleName": "fusor-ember-cli/templates/subscriptions/review-subscriptions.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -51466,7 +53360,8 @@ define("fusor-ember-cli/templates/subscriptions/review-subscriptions", ["exports
     var child2 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -51480,6 +53375,7 @@ define("fusor-ember-cli/templates/subscriptions/review-subscriptions", ["exports
           },
           "moduleName": "fusor-ember-cli/templates/subscriptions/review-subscriptions.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -51507,7 +53403,8 @@ define("fusor-ember-cli/templates/subscriptions/review-subscriptions", ["exports
     var child3 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -51521,6 +53418,7 @@ define("fusor-ember-cli/templates/subscriptions/review-subscriptions", ["exports
           },
           "moduleName": "fusor-ember-cli/templates/subscriptions/review-subscriptions.hbs"
         },
+        isEmpty: false,
         arity: 1,
         cachedFragment: null,
         hasRendered: false,
@@ -51547,7 +53445,8 @@ define("fusor-ember-cli/templates/subscriptions/review-subscriptions", ["exports
     var child4 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -51561,6 +53460,7 @@ define("fusor-ember-cli/templates/subscriptions/review-subscriptions", ["exports
           },
           "moduleName": "fusor-ember-cli/templates/subscriptions/review-subscriptions.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -51606,7 +53506,11 @@ define("fusor-ember-cli/templates/subscriptions/review-subscriptions", ["exports
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -51620,6 +53524,7 @@ define("fusor-ember-cli/templates/subscriptions/review-subscriptions", ["exports
         },
         "moduleName": "fusor-ember-cli/templates/subscriptions/review-subscriptions.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -51741,7 +53646,10 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -51755,6 +53663,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
           },
           "moduleName": "fusor-ember-cli/templates/subscriptions/select-subscriptions.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -51807,7 +53716,8 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -51821,6 +53731,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
           },
           "moduleName": "fusor-ember-cli/templates/subscriptions/select-subscriptions.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -51855,7 +53766,8 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -51869,6 +53781,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
               },
               "moduleName": "fusor-ember-cli/templates/subscriptions/select-subscriptions.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -51917,7 +53830,8 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
           var child0 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -51931,6 +53845,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
                 },
                 "moduleName": "fusor-ember-cli/templates/subscriptions/select-subscriptions.hbs"
               },
+              isEmpty: false,
               arity: 1,
               cachedFragment: null,
               hasRendered: false,
@@ -51957,7 +53872,8 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
           var child1 = (function () {
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -51971,6 +53887,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
                 },
                 "moduleName": "fusor-ember-cli/templates/subscriptions/select-subscriptions.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -52018,7 +53935,8 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -52032,6 +53950,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
               },
               "moduleName": "fusor-ember-cli/templates/subscriptions/select-subscriptions.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -52139,7 +54058,8 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
             var child0 = (function () {
               return {
                 meta: {
-                  "revision": "Ember@1.13.10",
+                  "fragmentReason": false,
+                  "revision": "Ember@2.4.6",
                   "loc": {
                     "source": null,
                     "start": {
@@ -52153,6 +54073,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
                   },
                   "moduleName": "fusor-ember-cli/templates/subscriptions/select-subscriptions.hbs"
                 },
+                isEmpty: false,
                 arity: 1,
                 cachedFragment: null,
                 hasRendered: false,
@@ -52178,7 +54099,8 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
             })();
             return {
               meta: {
-                "revision": "Ember@1.13.10",
+                "fragmentReason": false,
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -52192,6 +54114,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
                 },
                 "moduleName": "fusor-ember-cli/templates/subscriptions/select-subscriptions.hbs"
               },
+              isEmpty: false,
               arity: 0,
               cachedFragment: null,
               hasRendered: false,
@@ -52273,7 +54196,8 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
           })();
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -52287,6 +54211,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
               },
               "moduleName": "fusor-ember-cli/templates/subscriptions/select-subscriptions.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -52334,7 +54259,8 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -52348,6 +54274,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
             },
             "moduleName": "fusor-ember-cli/templates/subscriptions/select-subscriptions.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -52380,7 +54307,8 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
         var child0 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -52394,6 +54322,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
               },
               "moduleName": "fusor-ember-cli/templates/subscriptions/select-subscriptions.hbs"
             },
+            isEmpty: false,
             arity: 1,
             cachedFragment: null,
             hasRendered: false,
@@ -52420,7 +54349,8 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
         var child1 = (function () {
           return {
             meta: {
-              "revision": "Ember@1.13.10",
+              "fragmentReason": false,
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -52434,6 +54364,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
               },
               "moduleName": "fusor-ember-cli/templates/subscriptions/select-subscriptions.hbs"
             },
+            isEmpty: false,
             arity: 0,
             cachedFragment: null,
             hasRendered: false,
@@ -52466,7 +54397,8 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
         })();
         return {
           meta: {
-            "revision": "Ember@1.13.10",
+            "fragmentReason": false,
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -52480,6 +54412,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
             },
             "moduleName": "fusor-ember-cli/templates/subscriptions/select-subscriptions.hbs"
           },
+          isEmpty: false,
           arity: 0,
           cachedFragment: null,
           hasRendered: false,
@@ -52554,7 +54487,8 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
       })();
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -52568,6 +54502,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
           },
           "moduleName": "fusor-ember-cli/templates/subscriptions/select-subscriptions.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -52640,7 +54575,11 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -52654,6 +54593,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
         },
         "moduleName": "fusor-ember-cli/templates/subscriptions/select-subscriptions.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -52686,7 +54626,8 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -52700,6 +54641,7 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/thead-discovered-hosts.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -52726,7 +54668,8 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -52740,6 +54683,7 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/thead-discovered-hosts.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -52766,7 +54710,8 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
     var child2 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -52780,6 +54725,7 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/thead-discovered-hosts.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -52806,7 +54752,8 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
     var child3 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -52820,6 +54767,7 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/thead-discovered-hosts.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -52846,7 +54794,8 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
     var child4 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -52860,6 +54809,7 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/thead-discovered-hosts.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -52886,7 +54836,8 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
     var child5 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -52900,6 +54851,7 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/thead-discovered-hosts.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -52926,7 +54878,8 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
     var child6 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -52940,6 +54893,7 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/thead-discovered-hosts.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -52966,7 +54920,8 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
     var child7 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -52980,6 +54935,7 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
           },
           "moduleName": "fusor-ember-cli/templates/thead-discovered-hosts.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -53005,7 +54961,8 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": false,
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -53019,6 +54976,7 @@ define("fusor-ember-cli/templates/thead-discovered-hosts", ["exports"], function
         },
         "moduleName": "fusor-ember-cli/templates/thead-discovered-hosts.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -53155,7 +55113,8 @@ define("fusor-ember-cli/templates/where-install", ["exports"], function (exports
     var child0 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -53169,6 +55128,7 @@ define("fusor-ember-cli/templates/where-install", ["exports"], function (exports
           },
           "moduleName": "fusor-ember-cli/templates/where-install.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -53203,7 +55163,8 @@ define("fusor-ember-cli/templates/where-install", ["exports"], function (exports
     var child1 = (function () {
       return {
         meta: {
-          "revision": "Ember@1.13.10",
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -53217,6 +55178,7 @@ define("fusor-ember-cli/templates/where-install", ["exports"], function (exports
           },
           "moduleName": "fusor-ember-cli/templates/where-install.hbs"
         },
+        isEmpty: false,
         arity: 0,
         cachedFragment: null,
         hasRendered: false,
@@ -53258,7 +55220,11 @@ define("fusor-ember-cli/templates/where-install", ["exports"], function (exports
     })();
     return {
       meta: {
-        "revision": "Ember@1.13.10",
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -53272,6 +55238,7 @@ define("fusor-ember-cli/templates/where-install", ["exports"], function (exports
         },
         "moduleName": "fusor-ember-cli/templates/where-install.hbs"
       },
+      isEmpty: false,
       arity: 0,
       cachedFragment: null,
       hasRendered: false,
@@ -53916,16 +55883,22 @@ define('fusor-ember-cli/views/application', ['exports', 'ember'], function (expo
 });
 /* jshint ignore:start */
 
+
+
 /* jshint ignore:end */
 
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","rootURL":"/r/","locationType":"history","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+7f6ce4d5"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","rootURL":"/r/","locationType":"history","EmberENV":{"FEATURES":{},"_ENABLE_LEGACY_VIEW_SUPPORT":true},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+c2738761"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":["'none'"],"script-src":["'self'"],"font-src":["'self'"],"connect-src":["'self'"],"img-src":["'self'"],"style-src":["'self'"],"media-src":["'self'"]},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
+/* jshint ignore:end */
+
+/* jshint ignore:start */
+
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+7f6ce4d5"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+c2738761"});
 }
 
 /* jshint ignore:end */
