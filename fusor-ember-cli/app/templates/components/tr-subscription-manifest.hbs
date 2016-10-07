@@ -1,7 +1,7 @@
 <td> {{subscription.product_name}} </td>
 <td> {{subscription.contract_number}} </td>
-<td class="text-center"> {{moment subscription.start_date 'll'}} </td>
-<td class="text-center"> {{moment subscription.end_date 'll'}} </td>
+<td class="text-center"> {{moment-format subscription.start_date 'll'}} </td>
+<td class="text-center"> {{moment-format subscription.end_date 'll'}} </td>
 <td class="text-center"> {{qtyColumn}} </td>
 {{#unless useExistingManifest}}
   <td class="text-center"> {{subscription.total_quantity}} </td>

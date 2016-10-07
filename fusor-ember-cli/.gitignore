@@ -7,6 +7,7 @@
 # dependencies
 /node_modules*
 /bower_components*
+use-ember-cli*.sh
 
 # misc
 /.sass-cache
@@ -16,3 +17,4 @@
 npm-debug.log
 testem.log
 coverage.json
+.nvmrc

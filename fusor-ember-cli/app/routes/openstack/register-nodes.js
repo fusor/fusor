@@ -53,7 +53,7 @@ export default Ember.Route.extend(PollingPromise, {
     resetError() {
       this.set('controller.errorMsg', null);
     },
-    
+
     loadError(error, message) {
       console.log(error, message);
       this.set('controller.loadErrorMsg', this.formatError(error, message));

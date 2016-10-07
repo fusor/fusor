@@ -59,7 +59,7 @@ export default Ember.Route.extend(NeedsExistingManifestHelpers, {
   },
 
   setupController(controller, modelHash) {
-    const model = modelHash.reviewModel;
+    const model = this.modelFor('review');
     controller.set('model', model);
     controller.set('showErrorMessage', false);
     controller.set('useExistingManifest', modelHash.useExistingManifest);
@@ -163,7 +163,7 @@ export default Ember.Route.extend(NeedsExistingManifestHelpers, {
       .then(results => results.get('firstObject'));
   },
 
-  loadSubscriptionPools(deployment_id) {
+  loadSubscriptionPools() {
     const deployment = this.modelFor('deployment');
     return this.store.query('subscription', {
       deployment_id: deployment.get('id'),

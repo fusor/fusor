@@ -151,7 +151,7 @@ export default Ember.Route.extend(PollingPromise, {
     }).then(response => {
       if (this.get('controller.applicationController.isEmberCliMode')) {
         // only used for development to enabled OSP tabs (disableOspTab: false)
-        openstackDeployment.set('openstack_undercloud_password', 'this-passwd-is-populated by fusor/server');
+        openstackDeployment.set('undercloud_admin_password', 'this-passwd-is-populated by fusor/server');
         this.send('saveOpenstackDeployment', null);
       }
     });

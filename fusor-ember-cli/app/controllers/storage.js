@@ -109,7 +109,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
         if(validMounts && isStorageEmpty) {
           this.set('errorMsg', null);
           this.set('storageNotEmptyError', null);
-          this.transitionTo(this.get('step3RouteName'));
+          this.transitionToRoute(this.get('step3RouteName'));
         } else if(!validMounts){
           const errorMsg = err => {
             return `Error mounting ${err.failedDomain} domain ${err.failedDomainName}, ` +

@@ -92,7 +92,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
         const { mounted } = result;
         if(mounted) {
           this.set('errorMsg', null);
-          this.transitionTo(this.get('nextRouteNameAfterOpenshift'));
+          this.transitionToRoute(this.get('nextRouteNameAfterOpenshift'));
         } else {
           this.set(
             'errorMsg',

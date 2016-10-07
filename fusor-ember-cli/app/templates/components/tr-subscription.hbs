@@ -4,8 +4,8 @@
 <td> {{subscription.productName}} </td>
 <td> {{subscription.contractNumber}} </td>
 <td> {{systemType}} </td>
-<td> {{moment subscription.startDate 'll'}} </td>
-<td> {{moment subscription.endDate 'll'}} </td>
+<td> {{moment-format subscription.startDate 'll'}} </td>
+<td> {{moment-format subscription.endDate 'll'}} </td>
 <td class='text-center'> {{subscription.qtyAttached}} </td>
 <td class='text-center'> {{subscription.qtyAvailableOfTotal}}</td>
 <td class="text-center {{if subscription.isSelectedSubscription 'black-font' 'not-selected'}}">

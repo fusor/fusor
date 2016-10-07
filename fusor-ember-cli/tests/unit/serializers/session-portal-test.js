@@ -1,8 +1,8 @@
 import { moduleForModel, test } from 'ember-qunit';
 
-moduleForModel('management-application', 'Unit | Serializer | management application', {
+moduleForModel('session-portal', 'Unit | Serializer | session portal', {
   // Specify the other units that are required for this test.
-  needs: ['serializer:management-application']
+  needs: ['serializer:session-portal']
 });
 
 // Replace this with your real tests.

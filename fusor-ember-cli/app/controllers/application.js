@@ -22,11 +22,11 @@ export default Ember.Controller.extend({
 
   actions: {
     invalidate() {
-      return this.transitionTo('login');
+      return this.transitionToRoute('login');
     },
 
     signOut() {
-      return this.transitionTo('login');
+      return this.transitionToRoute('login');
     }
   }
 
