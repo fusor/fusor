@@ -321,8 +321,6 @@
   :puppet_classes:
 
   :docker_repos:
-    - :name: "hello-openshift"
-      :upstream_name: "openshift/hello-openshift"
     - :name: "ose-docker-registry"
       :upstream_name: "openshift3/ose-docker-registry"
     - :name: "ose-haproxy-router"
