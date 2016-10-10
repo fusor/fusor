@@ -33,6 +33,19 @@ module Fusor
             ssh = Net::SSH.start(underhost, underuser, :password => underpass, :timeout => 2,
                                  :auth_methods => ["password"], :number_of_password_prompts => 0,
                                  :paranoid => false)
+          rescue Exception => e
+            error_message =
+              if e.class == SocketError && e.message.match(/getaddrinfo: Name or service not known/)
+                "Unable to resolve host #{underhost} for SSH"
+              elsif e.class == Timeout::Error
+                "Timed out while attempting to SSH to host #{underhost}"
+              else
+                "[#{e.class.name}] #{e.message}"
+              end
+            return render json: {errors: error_message}, status: 422
+          end
+
+          begin
             admin_raw = ssh.exec!('hiera admin_password')
             ip_addr_raw = ssh.exec!('hiera controller_host')
             ssh.close
@@ -59,7 +72,7 @@ module Fusor
               render :json => {:undercloud => @deployment.id}
             end
           rescue Exception => e
-            render json: {errors: e.message}, status: 422
+            render json: {errors: "[#{e.class.name}] #{e.message}"}, status: 422
           end
         end
 
