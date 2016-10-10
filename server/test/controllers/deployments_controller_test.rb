@@ -62,10 +62,10 @@ module Fusor
       successful_manage_manifest_id  = foreman_tasks_tasks(:successful_manage_manifest).id
       running_deployment_task_id = foreman_tasks_tasks(:running_deployment_task).id
 
-      Fusor::Api::V2::DeploymentsController.any_instance.stubs(:sync_task).returns(
+      Fusor::Api::V21::DeploymentsController.any_instance.stubs(:sync_task).returns(
         ::ForemanTasks::Task.find(successful_manage_manifest_id))
 
-      Fusor::Api::V2::DeploymentsController.any_instance.stubs(:async_task).returns(
+      Fusor::Api::V21::DeploymentsController.any_instance.stubs(:async_task).returns(
         ::ForemanTasks::Task.find(running_deployment_task_id))
 
       Fusor::Validators::DeploymentValidator.any_instance.stubs(:validate_storage_share)

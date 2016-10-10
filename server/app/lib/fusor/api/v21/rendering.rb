@@ -12,19 +12,19 @@
 
 module Fusor
   module Api
-    module V2
+    module V21
       module Rendering
         def respond_with_template(action, resource_name, options = {}, &_block)
           yield if block_given?
           status = options[:status] || 200
 
-          render :template => "fusor/api/v2/#{resource_name}/#{action}",
+          render :template => "fusor/api/v21/#{resource_name}/#{action}",
                  :status => status,
                  :locals => { :object_name => options[:object_name],
                               :root_name => options[:root_name] },
-                 :layout => "fusor/api/v2/layouts/#{options[:layout]}"
+                 :layout => "fusor/api/v21/layouts/#{options[:layout]}"
         end
       end # module Rendering
-    end # module V2
+    end # module V21
   end # module Api
 end # module Fusor
