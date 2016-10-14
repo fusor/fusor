@@ -8,8 +8,8 @@
 </td>
 {{/if}}
 
-<td class="{{if isSelectedAsEngine 'white-font' 'not-selected'}} {{if isHypervisorOrStarted 'disabled'}}">
-    {{#if isSelectedAsEngine}}
+<td class="{{if isSelectedAsEngine 'white-font' 'not-selected'}} {{if isHypervisor 'disabled'}}">
+    {{#if isSelectedAndNotStarted }}
       {{partial 'rhev-hostname-input'}}
     {{else}}
       <span class='text-lowercase'>{{host.name}}</span>
