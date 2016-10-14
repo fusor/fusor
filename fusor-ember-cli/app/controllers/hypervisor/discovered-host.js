@@ -59,6 +59,14 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, PaginationControlle
     });
   }),
 
+  availableHostsMinusEngine: Ember.computed('availableHosts.[]', 'selectedRhevEngine', function() {
+    return this.get('availableHosts').filter(host => {
+      let hostId = host.get('id');
+      let isEngine = hostId === this.get('selectedRhevEngine.id');
+      return !isEngine;
+    });
+  }),
+
   hypervisorModelIds: Ember.computed('model.[]', 'selectedRhevEngine', function() {
     if (this.get('model')) {
       var allIds = this.get('model').getEach('id');
@@ -74,8 +82,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, PaginationControlle
     return this.get('cntSelectedHypervisorHosts') === 1 ? 'host' : 'hosts';
   }),
 
-  isAllChecked: Ember.computed('availableHosts.[]', 'cntSelectedHypervisorHosts', function() {
-    return (this.get('cntSelectedHypervisorHosts') === this.get('availableHosts.length'));
+  isAllChecked: Ember.computed('availableHostsMinusEngine.[]', 'cntSelectedHypervisorHosts', function() {
+    return (this.get('cntSelectedHypervisorHosts') === this.get('availableHostsMinusEngine.length'));
   }),
 
   hypervisorBackRouteName: Ember.computed('rhevIsSelfHosted', function() {
@@ -138,7 +146,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, PaginationControlle
 
     setCheckAll() {
       this.get('model').setObjects([]);
-      this.get('model').addObjects(this.get('availableHosts'));
+      this.get('model').addObjects(this.get('availableHostsMinusEngine'));
     },
 
     setUncheckAll() {

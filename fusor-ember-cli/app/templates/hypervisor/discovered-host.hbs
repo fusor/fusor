@@ -43,9 +43,9 @@
                 {{#if isNotStarted}}
                   <span class='rhev-select-all'>
                     {{#if isAllChecked}}
-                      <a data-qci='deselect-all' {{action 'setUncheckAll'}}>Deselect all ({{availableHosts.length}})</a>
+                      <a data-qci='deselect-all' {{action 'setUncheckAll'}}>Deselect all ({{availableHostsMinusEngine.length}})</a>
                     {{else}}
-                      <a data-qci='deselect-all' {{action 'setCheckAll'}}>Select all ({{availableHosts.length}})</a>
+                      <a data-qci='deselect-all' {{action 'setCheckAll'}}>Select all ({{availableHostsMinusEngine.length}})</a>
                     {{/if}}
                   </span>
                 {{/if}}
