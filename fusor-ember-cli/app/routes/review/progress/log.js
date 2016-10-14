@@ -144,10 +144,8 @@ export default Ember.Route.extend(PollingPromise, {
       deployment = self.modelFor('deployment'),
       controller = this.get('controller');
     return this.store.findRecord('foreman-task', deployment.get('foreman_task_uuid')).then(
-      function (foremanTask) {
-        var deploymentInProgress = foremanTask.get('result') === 'pending' && foremanTask.get('progress') !== '1';
-        controller.set('deploymentInProgress',  deploymentInProgress);
-      });
+      deployTask => controller.set('deploymentInProgress',  deployTask.get('isRunning'))
+    );
   },
 
   onPoll() {
