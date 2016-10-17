@@ -8,7 +8,14 @@ export default Ember.Mixin.create({
     var availableHosts = this.get('availableHosts');
 
     if (this.get('isStarted')) {
-      return this.get('model');
+      // hypervisors model will already be packaged as array
+      if (Ember.isArray(this.get('model'))) {
+        return this.get('model');
+      }
+      // convert singular host contained in engine model to array
+      else {
+        return Ember.A([this.get('model')]);
+      }
     } else if (availableHosts.get('length') > 0) {
       return availableHosts.filter(function(record) {
         return record.get('name').match(rx) ||

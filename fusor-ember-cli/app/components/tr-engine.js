@@ -9,15 +9,21 @@ export default Ember.Component.extend(TrEngineHypervisorMixin, {
     }
   }),
 
-  isHypervisorOrStarted: Ember.computed('host', 'hypervisorModelIds.[]', 'isStarted', function() {
+  isHypervisor: Ember.computed('host', 'hypervisorModelIds.[]', function() {
     let hypervisorIds = this.get('hypervisorModelIds');
-    let isHypervisor = hypervisorIds && hypervisorIds.contains(this.get('host.id'));
-    let isStarted = this.get('isStarted');
-    return isHypervisor || isStarted;
+    return hypervisorIds && hypervisorIds.contains(this.get('host.id'));
+  }),
+
+  isHypervisorOrStarted: Ember.computed('isHypervisor', 'isStarted', function() {
+    return this.get('isHypervisor') || this.get('isStarted');
   }),
 
   isChecked: Ember.computed('isSelectedAsEngine', function () {
     return this.get('isSelectedAsEngine');
+  }),
+
+  isSelectedAndNotStarted: Ember.computed('isSelectedAsEngine', 'isStarted', function() {
+    return this.get('isSelectedAsEngine') && !this.get('isStarted');
   }),
 
   actions: {
