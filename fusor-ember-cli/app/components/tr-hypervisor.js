@@ -19,6 +19,18 @@ export default Ember.Component.extend(TrEngineHypervisorMixin, {
     return this.get('isEngine') || isStarted;
   }),
 
+  showTooltipDisableCheckbox: Ember.computed('isEngineOrStarted', 'isSelfHosted', function() {
+    return this.get('isEngineOrStarted') && !this.get('isSelfHosted');
+  }),
+
+  hideTooltipDisableCheckbox: Ember.computed('isEngineOrStarted', 'isSelfHosted', function() {
+    return this.get('isEngineOrStarted') && this.get('isSelfHosted');
+  }),
+
+  hideTooltipEnableCheckbox: Ember.computed('isEngineOrStarted', function() {
+    return !this.get('isEngineOrStarted');
+  }),
+
   observeHostName: Ember.observer(
     'isSelectedAsHypervisor',
     'customPreprendName',

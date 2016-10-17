@@ -19,6 +19,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, PaginationControlle
   deployments: Ember.computed.alias('applicationController.model'),
   deployment: Ember.computed.alias("deploymentController.model"),
   selectedRhevEngine: Ember.computed.alias("deploymentController.model.discovered_host"),
+  isSelfHosted: Ember.computed.alias("deploymentController.model.rhev_is_self_hosted"),
 
 
   hostNamingScheme: Ember.computed.alias("deploymentController.model.host_naming_scheme"),
