@@ -25,9 +25,14 @@ export default DS.Model.extend({
     const taskUtil = new ForemanTaskUtil(csrfToken);
     return taskUtil.resume(this.get('id'));
   },
+
   subtasks: Ember.computed('id', function() {
     return this.store.query('foreman-task', {
       search: 'parent_task_id = ' + this.get('id')
     });
+  }),
+
+  isRunning: Ember.computed('state', 'progress', function() {
+    return this.get('state') === 'running' && this.get('progress') !== '1';
   })
 });
