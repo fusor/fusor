@@ -14,6 +14,16 @@ export default Ember.Route.extend({
       }
     });
   },
+
+  setupController(controller, model) {
+    controller.set('model', model);
+
+    // initialize the deployment cpu family to the default returned family
+    if (this.modelFor('deployment').get('rhev_cpu_type') === null) {
+      this.modelFor('deployment').set('rhev_cpu_type', model.default_family);
+    }
+  },
+
   deactivate() {
     return this.send('saveDeployment', null);
   }
