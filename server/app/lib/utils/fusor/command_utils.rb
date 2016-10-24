@@ -34,12 +34,12 @@ module Utils
         output_filtered = output
 
         # run password filtering code if we're going to log something
-        if status > 0 || log_on_success
+        if status.nil? || status > 0 || log_on_success
           cmd_filtered = PasswordFilter.filter_passwords(cmd.clone)
           output_filtered = PasswordFilter.filter_passwords(output.clone)
         end
 
-        if status > 0
+        if status.nil? || status > 0
           ::Fusor.log.error "Error running command: #{cmd_filtered}"
           ::Fusor.log.error "Status code: #{status}"
           ::Fusor.log.error "Command output: #{output_filtered}"
