@@ -114,12 +114,13 @@ module Actions
 
           def get_environment(deployment, config_dir, private_key)
             {
-              'ANSIBLE_HOST_KEY_CHECKING' => "False",
+              'ANSIBLE_HOST_KEY_CHECKING' => 'False',
               'ANSIBLE_LOG_PATH' => "#{::Fusor.log_file_dir(deployment.label, deployment.id)}/ansible.log",
               'ANSIBLE_RETRY_FILES_ENABLED' => "False",
               'ANSIBLE_SSH_CONTROL_PATH' => "/tmp/%%h-%%r",
               'ANSIBLE_ASK_SUDO_PASS' => "False",
               'ANSIBLE_PRIVATE_KEY_FILE' => private_key,
+              'ANSIBLE_CONFIG' => config_dir,
               'HOME' => config_dir
             }
           end
@@ -159,8 +160,16 @@ module Actions
 
 
           def trigger_ansible_run(playbook, vars, config_dir, environment)
-            cmd = "ansible-playbook #{playbook} -i #{config_dir}/inventory -e '#{vars.to_json}'"
+            debug_log = SETTINGS[:fusor][:system][:logging][:ansible_debug]
+            extra_args = ""
+            if debug_log
+              environment['ANSIBLE_KEEP_REMOTE_FILES'] = 'True'
+              extra_args = '-vvvv '
+            end
+
+            cmd = "ansible-playbook #{playbook} -i #{config_dir}/inventory -e '#{vars.to_json}' #{extra_args}"
             status, output = ::Utils::Fusor::CommandUtils.run_command(cmd, true, environment)
+
             if status != 0
               fail _("ansible-ovirt returned a non-zero return code\n#{output.join.gsub('\n', "\n")}")
             else
