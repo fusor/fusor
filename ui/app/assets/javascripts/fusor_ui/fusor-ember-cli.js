@@ -2805,15 +2805,21 @@ define('fusor-ember-cli/components/tr-engine', ['exports', 'ember', 'fusor-ember
       }
     }),
 
-    isHypervisorOrStarted: _ember['default'].computed('host', 'hypervisorModelIds.[]', 'isStarted', function () {
+    isHypervisor: _ember['default'].computed('host', 'hypervisorModelIds.[]', function () {
       var hypervisorIds = this.get('hypervisorModelIds');
-      var isHypervisor = hypervisorIds && hypervisorIds.contains(this.get('host.id'));
-      var isStarted = this.get('isStarted');
-      return isHypervisor || isStarted;
+      return hypervisorIds && hypervisorIds.contains(this.get('host.id'));
+    }),
+
+    isHypervisorOrStarted: _ember['default'].computed('isHypervisor', 'isStarted', function () {
+      return this.get('isHypervisor') || this.get('isStarted');
     }),
 
     isChecked: _ember['default'].computed('isSelectedAsEngine', function () {
       return this.get('isSelectedAsEngine');
+    }),
+
+    isSelectedAndNotStarted: _ember['default'].computed('isSelectedAsEngine', 'isStarted', function () {
+      return this.get('isSelectedAsEngine') && !this.get('isStarted');
     }),
 
     actions: {
@@ -2831,14 +2837,27 @@ define('fusor-ember-cli/components/tr-hypervisor', ['exports', 'ember', 'fusor-e
 
     isChecked: _ember['default'].computed.alias('isSelectedAsHypervisor'),
 
-    isEngineOrStarted: _ember['default'].computed('host', 'selectedRhevEngine', 'disabled', function () {
-      var isStarted = this.get('disabled');
+    isEngine: _ember['default'].computed('host', 'selectedRhevEngine', function () {
       var engineId = this.get('selectedRhevEngine.id');
       var hostId = this.get('host.id');
+      return hostId === engineId;
+    }),
 
-      var isEngine = hostId === engineId;
+    isEngineOrStarted: _ember['default'].computed('isEngine', 'disabled', function () {
+      var isStarted = this.get('disabled');
+      return this.get('isEngine') || isStarted;
+    }),
 
-      return isEngine || isStarted;
+    showTooltipDisableCheckbox: _ember['default'].computed('isEngineOrStarted', 'isSelfHosted', function () {
+      return this.get('isEngineOrStarted') && !this.get('isSelfHosted');
+    }),
+
+    hideTooltipDisableCheckbox: _ember['default'].computed('isEngineOrStarted', 'isSelfHosted', function () {
+      return this.get('isEngineOrStarted') && this.get('isSelfHosted');
+    }),
+
+    hideTooltipEnableCheckbox: _ember['default'].computed('isEngineOrStarted', function () {
+      return !this.get('isEngineOrStarted');
     }),
 
     observeHostName: _ember['default'].observer('isSelectedAsHypervisor', 'customPreprendName', 'isCustomScheme', 'isHypervisorN', 'isFreeform', 'isMac', function () {
@@ -3770,6 +3789,7 @@ define("fusor-ember-cli/controllers/hypervisor/discovered-host", ["exports", "em
     deployments: _ember["default"].computed.alias('applicationController.model'),
     deployment: _ember["default"].computed.alias("deploymentController.model"),
     selectedRhevEngine: _ember["default"].computed.alias("deploymentController.model.discovered_host"),
+    isSelfHosted: _ember["default"].computed.alias("deploymentController.model.rhev_is_self_hosted"),
 
     hostNamingScheme: _ember["default"].computed.alias("deploymentController.model.host_naming_scheme"),
     customPreprendName: _ember["default"].computed.alias("deploymentController.model.custom_preprend_name"),
@@ -3811,6 +3831,16 @@ define("fusor-ember-cli/controllers/hypervisor/discovered-host", ["exports", "em
       });
     }),
 
+    availableHostsMinusEngine: _ember["default"].computed('availableHosts.[]', 'selectedRhevEngine', function () {
+      var _this = this;
+
+      return this.get('availableHosts').filter(function (host) {
+        var hostId = host.get('id');
+        var isEngine = hostId === _this.get('selectedRhevEngine.id');
+        return !isEngine;
+      });
+    }),
+
     hypervisorModelIds: _ember["default"].computed('model.[]', 'selectedRhevEngine', function () {
       if (this.get('model')) {
         var allIds = this.get('model').getEach('id');
@@ -3826,8 +3856,8 @@ define("fusor-ember-cli/controllers/hypervisor/discovered-host", ["exports", "em
       return this.get('cntSelectedHypervisorHosts') === 1 ? 'host' : 'hosts';
     }),
 
-    isAllChecked: _ember["default"].computed('availableHosts.[]', 'cntSelectedHypervisorHosts', function () {
-      return this.get('cntSelectedHypervisorHosts') === this.get('availableHosts.length');
+    isAllChecked: _ember["default"].computed('availableHostsMinusEngine.[]', 'cntSelectedHypervisorHosts', function () {
+      return this.get('cntSelectedHypervisorHosts') === this.get('availableHostsMinusEngine.length');
     }),
 
     hypervisorBackRouteName: _ember["default"].computed('rhevIsSelfHosted', function () {
@@ -3847,7 +3877,7 @@ define("fusor-ember-cli/controllers/hypervisor/discovered-host", ["exports", "em
       state: _ember["default"].Object.create()
     }),
     disableNextOnHypervisor: _ember["default"].computed('hypervisorModelIds', 'hostnameValidity.updated', 'rhevIsSelfHosted', 'deployment.rhev_self_hosted_engine_hostname', 'engineHostNameValidator', function () {
-      var _this = this;
+      var _this2 = this;
 
       if (this.get('hypervisorModelIds').get('length') === 0) {
         return true;
@@ -3860,7 +3890,7 @@ define("fusor-ember-cli/controllers/hypervisor/discovered-host", ["exports", "em
       var vState = this.get('hostnameValidity').get('state');
       var trackedHostIds = Object.keys(vState);
       return trackedHostIds.length === 0 || !trackedHostIds.filter(function (hostId) {
-        return _this.get('hypervisorModelIds').contains(hostId);
+        return _this2.get('hypervisorModelIds').contains(hostId);
       }).map(function (k) {
         return vState.get(k);
       }).reduce(function (previousAreTrue, currentValue) {
@@ -3879,7 +3909,7 @@ define("fusor-ember-cli/controllers/hypervisor/discovered-host", ["exports", "em
 
       setCheckAll: function setCheckAll() {
         this.get('model').setObjects([]);
-        this.get('model').addObjects(this.get('availableHosts'));
+        this.get('model').addObjects(this.get('availableHostsMinusEngine'));
       },
 
       setUncheckAll: function setUncheckAll() {
@@ -6610,7 +6640,7 @@ define('fusor-ember-cli/initializers/ember-data', ['exports', 'ember-data/setup-
       adapter: 'custom'
     });
   
-    App.PostsController = Ember.ArrayController.extend({
+    App.PostsController = Ember.Controller.extend({
       // ...
     });
   
@@ -6653,6 +6683,18 @@ define('fusor-ember-cli/initializers/export-application-global', ['exports', 'em
   function initialize() {
     var application = arguments[1] || arguments[0];
     if (_fusorEmberCliConfigEnvironment['default'].exportApplicationGlobal !== false) {
+      var theGlobal;
+      if (typeof window !== 'undefined') {
+        theGlobal = window;
+      } else if (typeof global !== 'undefined') {
+        theGlobal = global;
+      } else if (typeof self !== 'undefined') {
+        theGlobal = self;
+      } else {
+        // no reasonable global, just bail
+        return;
+      }
+
       var value = _fusorEmberCliConfigEnvironment['default'].exportApplicationGlobal;
       var globalName;
 
@@ -6662,13 +6704,13 @@ define('fusor-ember-cli/initializers/export-application-global', ['exports', 'em
         globalName = _ember['default'].String.classify(_fusorEmberCliConfigEnvironment['default'].modulePrefix);
       }
 
-      if (!window[globalName]) {
-        window[globalName] = application;
+      if (!theGlobal[globalName]) {
+        theGlobal[globalName] = application;
 
         application.reopen({
           willDestroy: function willDestroy() {
             this._super.apply(this, arguments);
-            delete window[globalName];
+            delete theGlobal[globalName];
           }
         });
       }
@@ -6796,126 +6838,119 @@ define('fusor-ember-cli/instance-initializers/ember-devtools', ['exports', 'fuso
   };
 });
 /* global window */
-define('fusor-ember-cli/mirage/config', ['exports', 'ember-cli-mirage'], function (exports, _emberCliMirage) {
+define('fusor-ember-cli/mirage/config', ['exports', 'ember-cli-mirage', 'fusor-ember-cli/config/environment'], function (exports, _emberCliMirage, _fusorEmberCliConfigEnvironment) {
   exports['default'] = function () {
+
+    this.timing = 5; // default is 400
 
     // route to prevent js console error by ember-cli-blanket
     this.post('/write-blanket-coverage', function (db, request) {
       return {};
     });
 
-    this.get('/fusor/api/v21/deployments', function (db, request) {
-      return { deployments: db.deployments,
-        meta: {
-          total: 107,
-          total_pages: 5,
-          page: 1
-        }
-      };
+    // These routes to SAT6 or FUSOR WILL run using --environment mocks-enabled,
+    // but WILL NOT run using --environment partial-mocks-enabled
+    if (_fusorEmberCliConfigEnvironment['default'].environment === 'mocks-enabled' || _fusorEmberCliConfigEnvironment['default'].environment === 'test') {
+
+      this.get('/fusor/api/v21/deployments', function (db, request) {
+        return { deployments: db.deployments,
+          meta: {
+            total: 107,
+            total_pages: 5,
+            page: 1
+          }
+        };
+      });
+
+      this.post('/fusor/api/v21/deployments', function (db, request) {
+        var attrs = JSON.parse(request.requestBody);
+        attrs['deployment']['id'] = _emberCliMirage.faker.random.number({ min: 150, max: 1000 });
+        return attrs;
+      });
+      this.get('/fusor/api/v21/deployments/:id');
+      this.put('/fusor/api/v21/deployments/:id');
+      this.del('/fusor/api/v21/deployments/:id');
+
+      this.get('/fusor/api/v21/openstack_deployments');
+      this.post('/fusor/api/v21/openstack_deployments');
+      this.get('/fusor/api/v21/openstack_deployments/:id');
+      this.put('/fusor/api/v21/openstack_deployments/:id');
+      this.del('/fusor/api/v21/openstack_deployments/:id');
+
+      this.get('/api/v21/organizations');
+      this.get('/api/v21/organizations/:id');
+
+      this.get('/api/v21/lifecycle_environments');
+      this.get('/api/v21/lifecycle_environments/:id');
+      this.post('/api/v21/lifecycle_environments', function (db, request) {
+        var attrs = JSON.parse(request.requestBody).lifecycle_environment;
+        attrs['prior_id'] = 1;
+        var record = db.lifecycle_environments.insert(attrs);
+        console.log(record);
+        return {
+          lifecycle_environment: record
+        };
+      });
+
+      this.get('/api/v21/discovered_hosts');
+      this.get('/api/v21/discovered_hosts/:id');
+      this.put('/api/v21/discovered_hosts/:id/rename', function (db, request) {
+        var id = request.params.id;
+        return db.discovered_hosts.find(id);
+      });
+
+      this.get('/katello/api/v2/organizations/:id', function (db, request) {
+        var id = request.params.id;
+        return db.katello_organizations.find(id);
+      });
+
+      this.get('/katello/api/v2/organizations/:id/subscriptions', function (db, request) {
+        return { "results": [] };
+      });
+
+      this.get('/fusor/api/v21/subscriptions');
+      this.post('/fusor/api/v21/subscriptions');
+
+      this.get('/api/v21/hostgroups');
+      this.get('/api/v21/hostgroups/:id');
+
+      this.get('/api/v21/domains');
+      this.get('/api/v21/domains/:id');
+
+      this.get('/api/v2/settings', function (db, request) {
+        return { results: db.settings };
+      });
+    } /* END if (ENV.environment === 'mocks-enabled') */
+
+    //////////////////////////////////////////////////////////////
+    // These routes WILL run in EITHER mode
+    // using --environment mocks-enabled OR --environment partial-mocks-enabled
+    // Routes are related to OSP, subscriptions, and validations
+
+    this.get('/fusor/api/v21/subscriptions/validate', function (db, request) {
+      return { valid: true };
+    });
+    this.put('/fusor/api/v21/subscriptions/upload', function (db, request) {
+      return { manifest_file: '/file/path/to/manifest' };
     });
 
-    this.post('/fusor/api/v21/deployments');
-    this.get('/fusor/api/v21/deployments/:id');
-    this.put('/fusor/api/v21/deployments/:id');
-    this.del('/fusor/api/v21/deployments/:id');
-    this.get('/fusor/api/v21/deployments/:id/openshift_disk_space', function (db, request) {
-      return { openshift_disk_space: 1024 * 250 };
+    this.get('/fusor/api/v21/deployments/:id/validate_cdn', function (db, request) {
+      return { cdn_url_code: '200' };
     });
-    this.get('/fusor/api/v21/deployments/:id/check_mount_point', function (db, request) {
-      return { mounted: true };
-    });
-
-    this.get('/fusor/api/v21/openstack_deployments');
-    this.post('/fusor/api/v21/openstack_deployments');
-    this.get('/fusor/api/v21/openstack_deployments/:id');
-    this.put('/fusor/api/v21/openstack_deployments/:id');
-    this.del('/fusor/api/v21/openstack_deployments/:id');
-
-    this.get('/api/v21/organizations');
-    this.get('/api/v21/organizations/:id');
-
-    this.get('/api/v21/lifecycle_environments');
-    this.get('/api/v21/lifecycle_environments/:id');
-    this.post('/api/v21/lifecycle_environments', function (db, request) {
-      var attrs = JSON.parse(request.requestBody).lifecycle_environment;
-      attrs['prior_id'] = 1;
-      var record = db.lifecycle_environments.insert(attrs);
-      console.log(record);
-      return {
-        lifecycle_environment: record
-      };
-    });
-
-    this.get('/api/v21/discovered_hosts');
-    this.get('/api/v21/discovered_hosts/:id');
-    this.put('/api/v21/discovered_hosts/:id/rename', function (db, request) {
-      var id = request.params.id;
-      return db.discovered_hosts.find(id);
-    });
-
-    this.get('/katello/api/v2/organizations/:id', function (db, request) {
-      var id = request.params.id;
-      return db.katello_organizations.find(id);
-    });
-
-    this.get('/katello/api/v2/organizations/:id/subscriptions', function (db, request) {
-      return { "results": [] };
-    });
-
-    this.get('/customer_portal/owners/:owner_key/consumers', function (db, request) {
-      return db.management_applications;
-    });
-
-    this.get('/customer_portal/consumers/:uuid/entitlements', function (db, request) {
-      return db.entitlements;
-    });
-
-    this.get('/customer_portal/users/:username/owners', function (db, request) {
-      return db.owners;
-    });
-
-    this.get('/customer_portal/pools', function (db, request) {
-      return db.pools;
-    });
-
-    this.post('/customer_portal/login', function (db, request) {
-      return {};
-    });
-
-    this.get('/fusor/api/v21/subscriptions', function (db, request) {
-      var id = request.params.deployment_id;
-      console.log(request.params);
-      return db.subscriptions;
-    });
-
-    this.get('/api/v21/hostgroups');
-    this.get('/api/v21/hostgroups/:id');
-
-    this.get('/api/v21/domains');
-    this.get('/api/v21/domains/:id');
 
     this.get('fusor/api/v21/deployments/:id/validate', function (db, request) {
       var id = request.params.id;
       return { validation: { deployment_id: id, errors: [], warnings: [] } };
     });
 
-    this.put('fusor/api/v21/deployments/:id/deploy', function (db, request) {
-      return db.foreman_tasks.find('db25a76f-e344-48ba-ac77-f29303586dbe');
-    });
-
-    this.get('/api/v21/foreman_tasks');
-    this.get('/api/v21/foreman_tasks/:id', function (db, request) {
-      var id = request.params.id;
-      return db.foreman_tasks.find(id);
-    });
-
     this.post('/fusor/api/openstack/deployments/:id/undercloud', function (db, request) {
-      return { 'undercloud': 2 };
+      return { 'undercloud': request.params.id };
     });
 
     this.get('/fusor/api/openstack/deployments/:id/undercloud', function (db, request) {
       return {
         'deployed': true,
+        'failed': false,
         'undercloud_dns': '192.168.236.10',
         'overcloud_dns': '192.168.236.10',
         'satellite_dns': '192.168.236.10'
@@ -6940,8 +6975,9 @@ define('fusor-ember-cli/mirage/config', ['exports', 'ember-cli-mirage'], functio
     });
 
     this.post('/fusor/api/openstack/deployments/:id/nodes', function (db, request) {
-      var id = request.params.id;
-      return db.nodes.find(id);
+      var attrs = JSON.parse(request.requestBody);
+      attrs['node']['uuid'] = 'abcde12314asdf';
+      return attrs;
     });
 
     this.get('/fusor/api/openstack/deployments/:id/node_ports', function (db, request) {
@@ -6972,13 +7008,8 @@ define('fusor-ember-cli/mirage/config', ['exports', 'ember-cli-mirage'], functio
 
     this.post('/fusor/api/v21/openstack_deployments/:id/sync_openstack');
 
-    this.get('/fusor/api/v21/subscriptions');
-    this.post('/fusor/api/v21/subscriptions');
-
-    this.post('/customer_portal/consumers/:uuid/entitlements');
-
-    this.get('/api/v2/settings', function (db, request) {
-      return { results: db.settings };
+    this.get('/fusor/api/v21/deployments/:id/openshift_disk_space', function (db, request) {
+      return { openshift_disk_space: 1024 * 250 };
     });
 
     this.get('/fusor/api/v21/unlogged/deployments/:id/log', function (db, request) {
@@ -6991,65 +7022,67 @@ define('fusor-ember-cli/mirage/config', ['exports', 'ember-cli-mirage'], functio
       };
     });
 
-    /*
-      Route shorthand cheatsheet
-    */
-    /*
-      GET shorthands
-       // Collections
-      this.get('/contacts');
-      this.get('/contacts', 'users');
-      this.get('/contacts', ['contacts', 'addresses']);
-       // Single objects
-      this.get('/contacts/:id');
-      this.get('/contacts/:id', 'user');
-      this.get('/contacts/:id', ['contact', 'addresses']);
-    */
+    this.get('/fusor/api/v21/deployments/:id/check_mount_point', function (db, request) {
+      return { mounted: true, is_empty: true };
+    });
 
-    /*
-      POST shorthands
-       this.post('/contacts');
-      this.post('/contacts', 'user'); // specify the type of resource to be created
-    */
+    this.get('/fusor/api/v21/deployments/:id/compatible_cpu_families', function (db, request) {
+      return { cpu_families: ["Intel Conroe Family", "Intel Penryn Family", "Intel Nehalem Family", "Intel Westmere Family", "Intel SandyBridge Family", "Intel Haswell-noTSX Family"],
+        default_family: "Intel Haswell-noTSX Family"
+      };
+    });
 
-    /*
-      PUT shorthands
-       this.put('/contacts/:id');
-      this.put('/contacts/:id', 'user'); // specify the type of resource to be updated
-    */
+    this.get('/customer_portal/owners/:owner_key/consumers', function (db, request) {
+      return db.management_applications;
+    });
 
-    /*
-      DELETE shorthands
-       this.del('/contacts/:id');
-      this.del('/contacts/:id', 'user'); // specify the type of resource to be deleted
-       // Single object + related resources. Make sure parent resource is first.
-      this.del('/contacts/:id', ['contact', 'addresses']);
-    */
+    this.get('/customer_portal/consumers/:uuid/entitlements', function (db, request) {
+      return db.entitlements;
+    });
 
-    /*
-      Function fallback. Manipulate data in the db via
-         - db.{collection}
-        - db.{collection}.find(id)
-        - db.{collection}.where(query)
-        - db.{collection}.update(target, attrs)
-        - db.{collection}.remove(target)
-       // Example: return a single object with related models
-      this.get('/contacts/:id', function(db, request) {
-        var contactId = +request.params.id;
-         return {
-          contact: db.contacts.find(contactId),
-          addresses: db.addresses.where({contact_id: contactId})
-        };
-      });
-     */
+    this.get('/customer_portal/users/:username/owners', function (db, request) {
+      return db.owners;
+    });
+
+    this.get('/customer_portal/pools', function (db, request) {
+      return db.pools;
+    });
+
+    this.post('/customer_portal/login', function (db, request) {
+      return {};
+    });
+
+    this.post('/customer_portal/login', function (db, request) {
+      return {};
+    });
+    this.post('/customer_portal/consumers/:uuid/entitlements', function (db, request) {
+      return {};
+    });
+
+    // route to prevent js console error by ember-cli-blanket
+    this.post('/write-blanket-coverage', function (db, request) {
+      return {};
+    });
+
+    this.put('fusor/api/v21/deployments/:id/deploy', function (db, request) {
+      // fusor/server saves foreman_task_uuid to deployment
+      // but mirage doesn't have access to ember-data store,
+      // so mirage can't save the foreman_task_uuid to the deployment and
+      // transition to review/progress/overview
+      // fusor/server returns deployment
+      return db.foreman_tasks.find('db25a76f-e344-48ba-ac77-f29303586dbe');
+    });
+
+    this.get('/api/v21/foreman_tasks');
+    this.get('/api/v21/foreman_tasks/:id', function (db, request) {
+      var id = request.params.id;
+      return db.foreman_tasks.find(id);
+    });
+
+    // All route NOT defined in mirage/config.js
+    // will passthrough to real backend server
+    this.passthrough();
   };
-
-  /*
-  You can optionally export a config that is only loaded during tests
-  export function testConfig() {
-  
-  }
-  */
 });
 define('fusor-ember-cli/mirage/factories/contact', ['exports', 'ember-cli-mirage'], function (exports, _emberCliMirage) {
   exports['default'] = _emberCliMirage['default'].Factory.extend({
@@ -10832,7 +10865,14 @@ define('fusor-ember-cli/mixins/filter-sort-hosts-mixin', ['exports', 'ember'], f
       var availableHosts = this.get('availableHosts');
 
       if (this.get('isStarted')) {
-        return this.get('model');
+        // hypervisors model will already be packaged as array
+        if (_ember['default'].isArray(this.get('model'))) {
+          return this.get('model');
+        }
+        // convert singular host contained in engine model to array
+        else {
+            return _ember['default'].A([this.get('model')]);
+          }
       } else if (availableHosts.get('length') > 0) {
         return availableHosts.filter(function (record) {
           return record.get('name').match(rx) || record.get('memory_human_size').match(rx) || record.get('disks_human_size').match(rx) || record.get('subnet_to_s').match(rx) || record.get('mac').match(rx);
@@ -11567,8 +11607,8 @@ define('fusor-ember-cli/mixins/tr-engine-hypervisor-mixin', ['exports', 'ember',
       }
     }),
 
-    disabledTr: _ember['default'].computed('isHypervisorOrStarted', 'isEngineOrStarted', function () {
-      if (this.get('isHypervisorOrStarted') || this.get('isEngineOrStarted')) {
+    disabledTr: _ember['default'].computed('isHypervisor', 'isEngine', function () {
+      if (this.get('isHypervisor') || this.get('isEngine')) {
         return 'disabled';
       }
     }),
@@ -12290,10 +12330,15 @@ define('fusor-ember-cli/models/foreman-task', ['exports', 'ember', 'ember-data',
       var taskUtil = new _fusorEmberCliUtilsForemanTaskUtil['default'](csrfToken);
       return taskUtil.resume(this.get('id'));
     },
+
     subtasks: _ember['default'].computed('id', function () {
       return this.store.query('foreman-task', {
         search: 'parent_task_id = ' + this.get('id')
       });
+    }),
+
+    isRunning: _ember['default'].computed('state', 'progress', function () {
+      return this.get('state') === 'running' && this.get('progress') !== '1';
     })
   });
 });
@@ -13379,8 +13424,8 @@ define('fusor-ember-cli/routes/hypervisor/discovered-host', ['exports', 'ember',
       this.set('saveOnTransition', deployment.get('isNotStarted'));
 
       if (deployment.get('isNotStarted') && _ember['default'].isEmpty(deployment.get('rhev_self_hosted_engine_hostname')) && _ember['default'].isPresent(deployment.get('label'))) {
-        var dasherizedLabel = deployment.get('label').trim().replace('_', '-');
-        deployment.set('rhev_self_hosted_engine_hostname', dasherizedLabel + '-rhev-engine');
+        var dasherizedLabel = deployment.get('label').trim().replace(/_/g, '-');
+        deployment.set('rhev_self_hosted_engine_hostname', dasherizedLabel + '-rhv-engine');
       }
     },
 
@@ -14781,9 +14826,8 @@ define('fusor-ember-cli/routes/review/progress/log', ['exports', 'ember', 'ic-aj
       var self = this,
           deployment = self.modelFor('deployment'),
           controller = this.get('controller');
-      return this.store.findRecord('foreman-task', deployment.get('foreman_task_uuid')).then(function (foremanTask) {
-        var deploymentInProgress = foremanTask.get('result') === 'pending' && foremanTask.get('progress') !== '1';
-        controller.set('deploymentInProgress', deploymentInProgress);
+      return this.store.findRecord('foreman-task', deployment.get('foreman_task_uuid')).then(function (deployTask) {
+        return controller.set('deploymentInProgress', deployTask.get('isRunning'));
       });
     },
 
@@ -33029,7 +33073,7 @@ define("fusor-ember-cli/templates/components/tr-engine", ["exports"], function (
         dom.insertBoundary(fragment, 0);
         return morphs;
       },
-      statements: [["block", "if", [["get", "isHypervisorOrStarted", ["loc", [null, [1, 6], [1, 27]]]]], [], 0, 1, ["loc", [null, [1, 0], [9, 7]]]], ["attribute", "class", ["concat", [["subexpr", "if", [["get", "isSelectedAsEngine", ["loc", [null, [11, 16], [11, 34]]]], "white-font", "not-selected"], [], ["loc", [null, [11, 11], [11, 64]]]], " ", ["subexpr", "if", [["get", "isHypervisorOrStarted", ["loc", [null, [11, 70], [11, 91]]]], "disabled"], [], ["loc", [null, [11, 65], [11, 104]]]]]]], ["block", "if", [["get", "isSelectedAsEngine", ["loc", [null, [12, 10], [12, 28]]]]], [], 2, 3, ["loc", [null, [12, 4], [16, 11]]]], ["content", "host.mac", ["loc", [null, [18, 5], [18, 17]]]], ["inline", "host-type-icon", [], ["isVM", ["subexpr", "@mut", [["get", "host.is_virtual", ["loc", [null, [19, 47], [19, 62]]]]], [], []], "isInverted", ["subexpr", "@mut", [["get", "isSelectedAsEngine", ["loc", [null, [19, 74], [19, 92]]]]], [], []]], ["loc", [null, [19, 25], [19, 94]]]], ["content", "host.cpus", ["loc", [null, [20, 25], [20, 38]]]], ["content", "host.memory_human_size", ["loc", [null, [21, 25], [21, 51]]]], ["content", "host.disk_count", ["loc", [null, [22, 25], [22, 44]]]], ["content", "host.disks_human_size", ["loc", [null, [23, 25], [23, 50]]]], ["content", "host.subnet_to_s", ["loc", [null, [24, 5], [24, 25]]]]],
+      statements: [["block", "if", [["get", "isHypervisorOrStarted", ["loc", [null, [1, 6], [1, 27]]]]], [], 0, 1, ["loc", [null, [1, 0], [9, 7]]]], ["attribute", "class", ["concat", [["subexpr", "if", [["get", "isSelectedAsEngine", ["loc", [null, [11, 16], [11, 34]]]], "white-font", "not-selected"], [], ["loc", [null, [11, 11], [11, 64]]]], " ", ["subexpr", "if", [["get", "isHypervisor", ["loc", [null, [11, 70], [11, 82]]]], "disabled"], [], ["loc", [null, [11, 65], [11, 95]]]]]]], ["block", "if", [["get", "isSelectedAndNotStarted", ["loc", [null, [12, 10], [12, 33]]]]], [], 2, 3, ["loc", [null, [12, 4], [16, 11]]]], ["content", "host.mac", ["loc", [null, [18, 5], [18, 17]]]], ["inline", "host-type-icon", [], ["isVM", ["subexpr", "@mut", [["get", "host.is_virtual", ["loc", [null, [19, 47], [19, 62]]]]], [], []], "isInverted", ["subexpr", "@mut", [["get", "isSelectedAsEngine", ["loc", [null, [19, 74], [19, 92]]]]], [], []]], ["loc", [null, [19, 25], [19, 94]]]], ["content", "host.cpus", ["loc", [null, [20, 25], [20, 38]]]], ["content", "host.memory_human_size", ["loc", [null, [21, 25], [21, 51]]]], ["content", "host.disk_count", ["loc", [null, [22, 25], [22, 44]]]], ["content", "host.disks_human_size", ["loc", [null, [23, 25], [23, 50]]]], ["content", "host.subnet_to_s", ["loc", [null, [24, 5], [24, 25]]]]],
       locals: [],
       templates: [child0, child1, child2, child3]
     };
@@ -33098,11 +33142,58 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
           "loc": {
             "source": null,
             "start": {
-              "line": 5,
+              "line": 7,
               "column": 0
             },
             "end": {
-              "line": 9,
+              "line": 11,
+              "column": 0
+            }
+          },
+          "moduleName": "fusor-ember-cli/templates/components/tr-hypervisor.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createElement("td");
+          dom.setAttribute(el1, "class", "disabled");
+          var el2 = dom.createTextNode("\n  ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(dom.childAt(fragment, [0]), 1, 1);
+          return morphs;
+        },
+        statements: [["inline", "input", [], ["type", "checkbox", "name", "isSelectedAsHypervisor", "checked", ["subexpr", "@mut", [["get", "isSelectedAsHypervisor", ["loc", [null, [9, 64], [9, 86]]]]], [], []], "id", ["subexpr", "@mut", [["get", "cssIdHostId", ["loc", [null, [9, 90], [9, 101]]]]], [], []], "data-qci", ["subexpr", "@mut", [["get", "cssIdHostId", ["loc", [null, [9, 111], [9, 122]]]]], [], []], "disabled", ["subexpr", "@mut", [["get", "isEngineOrStarted", ["loc", [null, [9, 132], [9, 149]]]]], [], []]], ["loc", [null, [9, 2], [9, 151]]]]],
+        locals: [],
+        templates: []
+      };
+    })();
+    var child2 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 13,
+              "column": 0
+            },
+            "end": {
+              "line": 17,
               "column": 0
             }
           },
@@ -33131,12 +33222,12 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
           morphs[0] = dom.createMorphAt(dom.childAt(fragment, [0]), 1, 1);
           return morphs;
         },
-        statements: [["inline", "input", [], ["type", "checkbox", "name", "isSelectedAsHypervisor", "checked", ["subexpr", "@mut", [["get", "isSelectedAsHypervisor", ["loc", [null, [7, 64], [7, 86]]]]], [], []], "id", ["subexpr", "@mut", [["get", "cssIdHostId", ["loc", [null, [7, 90], [7, 101]]]]], [], []], "data-qci", ["subexpr", "@mut", [["get", "cssIdHostId", ["loc", [null, [7, 111], [7, 122]]]]], [], []], "disabled", ["subexpr", "@mut", [["get", "isEngineOrStarted", ["loc", [null, [7, 132], [7, 149]]]]], [], []]], ["loc", [null, [7, 2], [7, 151]]]]],
+        statements: [["inline", "input", [], ["type", "checkbox", "name", "isSelectedAsHypervisor", "checked", ["subexpr", "@mut", [["get", "isSelectedAsHypervisor", ["loc", [null, [15, 64], [15, 86]]]]], [], []], "id", ["subexpr", "@mut", [["get", "cssIdHostId", ["loc", [null, [15, 90], [15, 101]]]]], [], []], "data-qci", ["subexpr", "@mut", [["get", "cssIdHostId", ["loc", [null, [15, 111], [15, 122]]]]], [], []]], ["loc", [null, [15, 2], [15, 124]]]]],
         locals: [],
         templates: []
       };
     })();
-    var child2 = (function () {
+    var child3 = (function () {
       var child0 = (function () {
         return {
           meta: {
@@ -33145,11 +33236,11 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
             "loc": {
               "source": null,
               "start": {
-                "line": 13,
+                "line": 21,
                 "column": 4
               },
               "end": {
-                "line": 15,
+                "line": 23,
                 "column": 4
               }
             },
@@ -33174,7 +33265,7 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
             morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
             return morphs;
           },
-          statements: [["inline", "partial", ["rhev-hostname-input"], [], ["loc", [null, [14, 6], [14, 39]]]]],
+          statements: [["inline", "partial", ["rhev-hostname-input"], [], ["loc", [null, [22, 6], [22, 39]]]]],
           locals: [],
           templates: []
         };
@@ -33187,11 +33278,11 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
             "loc": {
               "source": null,
               "start": {
-                "line": 15,
+                "line": 23,
                 "column": 4
               },
               "end": {
-                "line": 17,
+                "line": 25,
                 "column": 4
               }
             },
@@ -33219,7 +33310,7 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
             morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 0, 0);
             return morphs;
           },
-          statements: [["content", "host.name", ["loc", [null, [16, 35], [16, 48]]]]],
+          statements: [["content", "host.name", ["loc", [null, [24, 35], [24, 48]]]]],
           locals: [],
           templates: []
         };
@@ -33231,11 +33322,11 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
           "loc": {
             "source": null,
             "start": {
-              "line": 12,
+              "line": 20,
               "column": 2
             },
             "end": {
-              "line": 18,
+              "line": 26,
               "column": 2
             }
           },
@@ -33258,12 +33349,12 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
           dom.insertBoundary(fragment, null);
           return morphs;
         },
-        statements: [["block", "if", [["get", "isFreeform", ["loc", [null, [13, 10], [13, 20]]]]], [], 0, 1, ["loc", [null, [13, 4], [17, 11]]]]],
+        statements: [["block", "if", [["get", "isFreeform", ["loc", [null, [21, 10], [21, 20]]]]], [], 0, 1, ["loc", [null, [21, 4], [25, 11]]]]],
         locals: [],
         templates: [child0, child1]
       };
     })();
-    var child3 = (function () {
+    var child4 = (function () {
       return {
         meta: {
           "fragmentReason": false,
@@ -33271,11 +33362,11 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
           "loc": {
             "source": null,
             "start": {
-              "line": 18,
+              "line": 26,
               "column": 2
             },
             "end": {
-              "line": 20,
+              "line": 28,
               "column": 2
             }
           },
@@ -33303,7 +33394,7 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
           morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 0, 0);
           return morphs;
         },
-        statements: [["content", "host.name", ["loc", [null, [19, 33], [19, 46]]]]],
+        statements: [["content", "host.name", ["loc", [null, [27, 33], [27, 46]]]]],
         locals: [],
         templates: []
       };
@@ -33322,7 +33413,7 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
             "column": 0
           },
           "end": {
-            "line": 29,
+            "line": 37,
             "column": 0
           }
         },
@@ -33334,6 +33425,14 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
       hasRendered: false,
       buildFragment: function buildFragment(dom) {
         var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
         var el1 = dom.createComment("");
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n");
@@ -33422,24 +33521,26 @@ define("fusor-ember-cli/templates/components/tr-hypervisor", ["exports"], functi
         return el0;
       },
       buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-        var element0 = dom.childAt(fragment, [2]);
-        var morphs = new Array(10);
+        var element0 = dom.childAt(fragment, [6]);
+        var morphs = new Array(12);
         morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
-        morphs[1] = dom.createAttrMorph(element0, 'class');
-        morphs[2] = dom.createMorphAt(element0, 1, 1);
-        morphs[3] = dom.createMorphAt(dom.childAt(fragment, [4]), 1, 1);
-        morphs[4] = dom.createMorphAt(dom.childAt(fragment, [6]), 1, 1);
+        morphs[1] = dom.createMorphAt(fragment, 2, 2, contextualElement);
+        morphs[2] = dom.createMorphAt(fragment, 4, 4, contextualElement);
+        morphs[3] = dom.createAttrMorph(element0, 'class');
+        morphs[4] = dom.createMorphAt(element0, 1, 1);
         morphs[5] = dom.createMorphAt(dom.childAt(fragment, [8]), 1, 1);
         morphs[6] = dom.createMorphAt(dom.childAt(fragment, [10]), 1, 1);
         morphs[7] = dom.createMorphAt(dom.childAt(fragment, [12]), 1, 1);
         morphs[8] = dom.createMorphAt(dom.childAt(fragment, [14]), 1, 1);
         morphs[9] = dom.createMorphAt(dom.childAt(fragment, [16]), 1, 1);
+        morphs[10] = dom.createMorphAt(dom.childAt(fragment, [18]), 1, 1);
+        morphs[11] = dom.createMorphAt(dom.childAt(fragment, [20]), 1, 1);
         dom.insertBoundary(fragment, 0);
         return morphs;
       },
-      statements: [["block", "if", [["get", "isEngineOrStarted", ["loc", [null, [1, 6], [1, 23]]]]], [], 0, 1, ["loc", [null, [1, 0], [9, 7]]]], ["attribute", "class", ["concat", [["subexpr", "if", [["get", "isSelectedAsHypervisor", ["loc", [null, [11, 16], [11, 38]]]], "white-font", "not-selected"], [], ["loc", [null, [11, 11], [11, 68]]]]]]], ["block", "if", [["get", "isSelectedAsHypervisor", ["loc", [null, [12, 8], [12, 30]]]]], [], 2, 3, ["loc", [null, [12, 2], [20, 9]]]], ["content", "host.mac", ["loc", [null, [22, 5], [22, 17]]]], ["inline", "host-type-icon", [], ["isVM", ["subexpr", "@mut", [["get", "host.is_virtual", ["loc", [null, [23, 47], [23, 62]]]]], [], []], "isInverted", ["subexpr", "@mut", [["get", "isSelectedAsHypervisor", ["loc", [null, [23, 74], [23, 96]]]]], [], []]], ["loc", [null, [23, 25], [23, 98]]]], ["content", "host.cpus", ["loc", [null, [24, 25], [24, 38]]]], ["content", "host.memory_human_size", ["loc", [null, [25, 25], [25, 51]]]], ["content", "host.disk_count", ["loc", [null, [26, 25], [26, 44]]]], ["content", "host.disks_human_size", ["loc", [null, [27, 25], [27, 50]]]], ["content", "host.subnet_to_s", ["loc", [null, [28, 5], [28, 25]]]]],
+      statements: [["block", "if", [["get", "showTooltipDisableCheckbox", ["loc", [null, [1, 6], [1, 32]]]]], [], 0, null, ["loc", [null, [1, 0], [5, 7]]]], ["block", "if", [["get", "hideTooltipDisableCheckbox", ["loc", [null, [7, 6], [7, 32]]]]], [], 1, null, ["loc", [null, [7, 0], [11, 7]]]], ["block", "if", [["get", "hideTooltipEnableCheckbox", ["loc", [null, [13, 6], [13, 31]]]]], [], 2, null, ["loc", [null, [13, 0], [17, 7]]]], ["attribute", "class", ["concat", [["subexpr", "if", [["get", "isSelectedAsHypervisor", ["loc", [null, [19, 16], [19, 38]]]], "white-font", "not-selected"], [], ["loc", [null, [19, 11], [19, 68]]]]]]], ["block", "if", [["get", "isSelectedAsHypervisor", ["loc", [null, [20, 8], [20, 30]]]]], [], 3, 4, ["loc", [null, [20, 2], [28, 9]]]], ["content", "host.mac", ["loc", [null, [30, 5], [30, 17]]]], ["inline", "host-type-icon", [], ["isVM", ["subexpr", "@mut", [["get", "host.is_virtual", ["loc", [null, [31, 47], [31, 62]]]]], [], []], "isInverted", ["subexpr", "@mut", [["get", "isSelectedAsHypervisor", ["loc", [null, [31, 74], [31, 96]]]]], [], []]], ["loc", [null, [31, 25], [31, 98]]]], ["content", "host.cpus", ["loc", [null, [32, 25], [32, 38]]]], ["content", "host.memory_human_size", ["loc", [null, [33, 25], [33, 51]]]], ["content", "host.disk_count", ["loc", [null, [34, 25], [34, 44]]]], ["content", "host.disks_human_size", ["loc", [null, [35, 25], [35, 50]]]], ["content", "host.subnet_to_s", ["loc", [null, [36, 5], [36, 25]]]]],
       locals: [],
-      templates: [child0, child1, child2, child3]
+      templates: [child0, child1, child2, child3, child4]
     };
   })());
 });
@@ -37339,7 +37440,7 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
               morphs[1] = dom.createMorphAt(element1, 1, 1);
               return morphs;
             },
-            statements: [["element", "action", ["setUncheckAll"], [], ["loc", [null, [46, 49], [46, 75]]]], ["content", "availableHosts.length", ["loc", [null, [46, 90], [46, 115]]]]],
+            statements: [["element", "action", ["setUncheckAll"], [], ["loc", [null, [46, 49], [46, 75]]]], ["content", "availableHostsMinusEngine.length", ["loc", [null, [46, 90], [46, 126]]]]],
             locals: [],
             templates: []
           };
@@ -37390,7 +37491,7 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
               morphs[1] = dom.createMorphAt(element0, 1, 1);
               return morphs;
             },
-            statements: [["element", "action", ["setCheckAll"], [], ["loc", [null, [48, 49], [48, 73]]]], ["content", "availableHosts.length", ["loc", [null, [48, 86], [48, 111]]]]],
+            statements: [["element", "action", ["setCheckAll"], [], ["loc", [null, [48, 49], [48, 73]]]], ["content", "availableHostsMinusEngine.length", ["loc", [null, [48, 86], [48, 122]]]]],
             locals: [],
             templates: []
           };
@@ -37455,7 +37556,7 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
                 "column": 12
               },
               "end": {
-                "line": 83,
+                "line": 84,
                 "column": 12
               }
             },
@@ -37480,7 +37581,7 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
             morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
             return morphs;
           },
-          statements: [["inline", "tr-hypervisor", [], ["host", ["subexpr", "@mut", [["get", "host", ["loc", [null, [69, 36], [69, 40]]]]], [], []], "model", ["subexpr", "@mut", [["get", "model", ["loc", [null, [70, 37], [70, 42]]]]], [], []], "isCustomScheme", ["subexpr", "@mut", [["get", "isCustomScheme", ["loc", [null, [71, 46], [71, 60]]]]], [], []], "isMac", ["subexpr", "@mut", [["get", "isMac", ["loc", [null, [72, 37], [72, 42]]]]], [], []], "isHypervisorN", ["subexpr", "@mut", [["get", "isHypervisorN", ["loc", [null, [73, 45], [73, 58]]]]], [], []], "customPreprendName", ["subexpr", "@mut", [["get", "customPreprendName", ["loc", [null, [74, 50], [74, 68]]]]], [], []], "isFreeform", ["subexpr", "@mut", [["get", "isFreeform", ["loc", [null, [75, 42], [75, 52]]]]], [], []], "num", ["subexpr", "@mut", [["get", "host.id", ["loc", [null, [76, 35], [76, 42]]]]], [], []], "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [77, 40], [77, 49]]]]], [], []], "filteredHosts", ["subexpr", "@mut", [["get", "filteredHosts", ["loc", [null, [78, 45], [78, 58]]]]], [], []], "setIfHostnameInvalid", "setIfHostnameInvalid", "customPrefixValidator", ["subexpr", "@mut", [["get", "customPrefixValidator", ["loc", [null, [80, 53], [80, 74]]]]], [], []], "selectedRhevEngine", ["subexpr", "@mut", [["get", "selectedRhevEngine", ["loc", [null, [81, 50], [81, 68]]]]], [], []]], ["loc", [null, [69, 15], [82, 33]]]]],
+          statements: [["inline", "tr-hypervisor", [], ["host", ["subexpr", "@mut", [["get", "host", ["loc", [null, [69, 36], [69, 40]]]]], [], []], "model", ["subexpr", "@mut", [["get", "model", ["loc", [null, [70, 37], [70, 42]]]]], [], []], "isCustomScheme", ["subexpr", "@mut", [["get", "isCustomScheme", ["loc", [null, [71, 46], [71, 60]]]]], [], []], "isMac", ["subexpr", "@mut", [["get", "isMac", ["loc", [null, [72, 37], [72, 42]]]]], [], []], "isHypervisorN", ["subexpr", "@mut", [["get", "isHypervisorN", ["loc", [null, [73, 45], [73, 58]]]]], [], []], "isSelfHosted", ["subexpr", "@mut", [["get", "isSelfHosted", ["loc", [null, [74, 44], [74, 56]]]]], [], []], "customPreprendName", ["subexpr", "@mut", [["get", "customPreprendName", ["loc", [null, [75, 50], [75, 68]]]]], [], []], "isFreeform", ["subexpr", "@mut", [["get", "isFreeform", ["loc", [null, [76, 42], [76, 52]]]]], [], []], "num", ["subexpr", "@mut", [["get", "host.id", ["loc", [null, [77, 35], [77, 42]]]]], [], []], "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [78, 40], [78, 49]]]]], [], []], "filteredHosts", ["subexpr", "@mut", [["get", "filteredHosts", ["loc", [null, [79, 45], [79, 58]]]]], [], []], "setIfHostnameInvalid", "setIfHostnameInvalid", "customPrefixValidator", ["subexpr", "@mut", [["get", "customPrefixValidator", ["loc", [null, [81, 53], [81, 74]]]]], [], []], "selectedRhevEngine", ["subexpr", "@mut", [["get", "selectedRhevEngine", ["loc", [null, [82, 50], [82, 68]]]]], [], []]], ["loc", [null, [69, 15], [83, 33]]]]],
           locals: ["host"],
           templates: []
         };
@@ -37496,7 +37597,7 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
               "column": 8
             },
             "end": {
-              "line": 87,
+              "line": 88,
               "column": 8
             }
           },
@@ -37621,7 +37722,7 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
           morphs[8] = dom.createMorphAt(dom.childAt(element6, [3]), 1, 1);
           return morphs;
         },
-        statements: [["inline", "input", [], ["type", "text", "class", "form-control rhev-search-input", "placeholder", " Search ...", "data-qci", "rhev-search-input", "value", ["subexpr", "@mut", [["get", "searchString", ["loc", [null, [33, 41], [33, 53]]]]], [], []], "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [34, 44], [34, 53]]]]], [], []]], ["loc", [null, [30, 22], [34, 55]]]], ["content", "model.length", ["loc", [null, [41, 16], [41, 32]]]], ["block", "if", [["get", "isNotStarted", ["loc", [null, [43, 22], [43, 34]]]]], [], 0, null, ["loc", [null, [43, 16], [51, 23]]]], ["attribute", "disabled", ["get", "isStarted", ["loc", [null, [53, 101], [53, 110]]]]], ["element", "action", ["openNamingSchemeModal"], [], ["loc", [null, [53, 55], [53, 89]]]], ["attribute", "disabled", ["get", "isStarted", ["loc", [null, [57, 102], [57, 111]]]]], ["element", "action", ["refreshDiscoveredHosts"], [], ["loc", [null, [57, 55], [57, 90]]]], ["inline", "partial", ["thead-discovered-hosts"], [], ["loc", [null, [66, 12], [66, 48]]]], ["block", "each", [["get", "sortedHosts", ["loc", [null, [68, 20], [68, 31]]]]], [], 1, null, ["loc", [null, [68, 12], [83, 21]]]]],
+        statements: [["inline", "input", [], ["type", "text", "class", "form-control rhev-search-input", "placeholder", " Search ...", "data-qci", "rhev-search-input", "value", ["subexpr", "@mut", [["get", "searchString", ["loc", [null, [33, 41], [33, 53]]]]], [], []], "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [34, 44], [34, 53]]]]], [], []]], ["loc", [null, [30, 22], [34, 55]]]], ["content", "model.length", ["loc", [null, [41, 16], [41, 32]]]], ["block", "if", [["get", "isNotStarted", ["loc", [null, [43, 22], [43, 34]]]]], [], 0, null, ["loc", [null, [43, 16], [51, 23]]]], ["attribute", "disabled", ["get", "isStarted", ["loc", [null, [53, 101], [53, 110]]]]], ["element", "action", ["openNamingSchemeModal"], [], ["loc", [null, [53, 55], [53, 89]]]], ["attribute", "disabled", ["get", "isStarted", ["loc", [null, [57, 102], [57, 111]]]]], ["element", "action", ["refreshDiscoveredHosts"], [], ["loc", [null, [57, 55], [57, 90]]]], ["inline", "partial", ["thead-discovered-hosts"], [], ["loc", [null, [66, 12], [66, 48]]]], ["block", "each", [["get", "sortedHosts", ["loc", [null, [68, 20], [68, 31]]]]], [], 1, null, ["loc", [null, [68, 12], [84, 21]]]]],
         locals: [],
         templates: [child0, child1]
       };
@@ -37640,7 +37741,7 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
             "column": 0
           },
           "end": {
-            "line": 111,
+            "line": 112,
             "column": 0
           }
         },
@@ -37714,7 +37815,7 @@ define("fusor-ember-cli/templates/hypervisor/discovered-host", ["exports"], func
         dom.insertBoundary(fragment, 0);
         return morphs;
       },
-      statements: [["block", "if", [["get", "rhevIsSelfHosted", ["loc", [null, [1, 6], [1, 22]]]]], [], 0, null, ["loc", [null, [1, 0], [9, 7]]]], ["block", "if", [["get", "isLoadingHosts", ["loc", [null, [17, 14], [17, 28]]]]], [], 1, 2, ["loc", [null, [17, 8], [87, 15]]]], ["inline", "cancel-back-next", [], ["backRouteName", ["subexpr", "@mut", [["get", "hypervisorBackRouteName", ["loc", [null, [92, 37], [92, 60]]]]], [], []], "disableBack", false, "nextRouteName", "rhev-options", "disableNext", ["subexpr", "@mut", [["get", "disableNextOnHypervisor", ["loc", [null, [95, 36], [95, 59]]]]], [], []], "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [96, 38], [96, 47]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [97, 39], [97, 53]]]]], [], []]], ["loc", [null, [92, 4], [97, 55]]]], ["inline", "naming-scheme-modal", [], ["openModal", ["subexpr", "@mut", [["get", "openModalNamingScheme", ["loc", [null, [99, 36], [99, 57]]]]], [], []], "namingOptions", ["subexpr", "@mut", [["get", "namingOptions", ["loc", [null, [100, 40], [100, 53]]]]], [], []], "hostNamingScheme", ["subexpr", "@mut", [["get", "hostNamingScheme", ["loc", [null, [101, 43], [101, 59]]]]], [], []], "isStarted", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [102, 36], [102, 45]]]]], [], []], "customPreprendName", ["subexpr", "@mut", [["get", "customPreprendName", ["loc", [null, [103, 45], [103, 63]]]]], [], []], "saveNamingScheme", "saveNamingScheme", "cancelNamingScheme", "cancelNamingScheme", "setSelectValue", "setSelectValue", "customPrefixValidator", ["subexpr", "@mut", [["get", "customPrefixValidator", ["loc", [null, [107, 48], [107, 69]]]]], [], []]], ["loc", [null, [99, 4], [108, 28]]]]],
+      statements: [["block", "if", [["get", "rhevIsSelfHosted", ["loc", [null, [1, 6], [1, 22]]]]], [], 0, null, ["loc", [null, [1, 0], [9, 7]]]], ["block", "if", [["get", "isLoadingHosts", ["loc", [null, [17, 14], [17, 28]]]]], [], 1, 2, ["loc", [null, [17, 8], [88, 15]]]], ["inline", "cancel-back-next", [], ["backRouteName", ["subexpr", "@mut", [["get", "hypervisorBackRouteName", ["loc", [null, [93, 37], [93, 60]]]]], [], []], "disableBack", false, "nextRouteName", "rhev-options", "disableNext", ["subexpr", "@mut", [["get", "disableNextOnHypervisor", ["loc", [null, [96, 36], [96, 59]]]]], [], []], "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [97, 38], [97, 47]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [98, 39], [98, 53]]]]], [], []]], ["loc", [null, [93, 4], [98, 55]]]], ["inline", "naming-scheme-modal", [], ["openModal", ["subexpr", "@mut", [["get", "openModalNamingScheme", ["loc", [null, [100, 36], [100, 57]]]]], [], []], "namingOptions", ["subexpr", "@mut", [["get", "namingOptions", ["loc", [null, [101, 40], [101, 53]]]]], [], []], "hostNamingScheme", ["subexpr", "@mut", [["get", "hostNamingScheme", ["loc", [null, [102, 43], [102, 59]]]]], [], []], "isStarted", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [103, 36], [103, 45]]]]], [], []], "customPreprendName", ["subexpr", "@mut", [["get", "customPreprendName", ["loc", [null, [104, 45], [104, 63]]]]], [], []], "saveNamingScheme", "saveNamingScheme", "cancelNamingScheme", "cancelNamingScheme", "setSelectValue", "setSelectValue", "customPrefixValidator", ["subexpr", "@mut", [["get", "customPrefixValidator", ["loc", [null, [108, 48], [108, 69]]]]], [], []]], ["loc", [null, [100, 4], [109, 28]]]]],
       locals: [],
       templates: [child0, child1, child2]
     };
@@ -55890,7 +55991,7 @@ define('fusor-ember-cli/views/application', ['exports', 'ember'], function (expo
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","rootURL":"/r/","locationType":"history","EmberENV":{"FEATURES":{},"_ENABLE_LEGACY_VIEW_SUPPORT":true},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+c2738761"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":["'none'"],"script-src":["'self'"],"font-src":["'self'"],"connect-src":["'self'"],"img-src":["'self'"],"style-src":["'self'"],"media-src":["'self'"]},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","rootURL":"/r/","locationType":"history","EmberENV":{"FEATURES":{},"_ENABLE_LEGACY_VIEW_SUPPORT":true},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+84258f70"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":["'none'"],"script-src":["'self'"],"font-src":["'self'"],"connect-src":["'self'"],"img-src":["'self'"],"style-src":["'self'"],"media-src":["'self'"]},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 /* jshint ignore:end */
@@ -55898,7 +55999,7 @@ define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
 /* jshint ignore:start */
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+c2738761"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+84258f70"});
 }
 
 /* jshint ignore:end */
