@@ -431,7 +431,7 @@
   :system:
     :logging:
       :level: ":debug"
-      :ansible_debug: true # Enable verbose debug logging for ansible
+      :ansible_debug: false # Enable verbose debug logging for ansible
       :show_passwords: false # show passwords in logs for non-prod environments
       :watch:
         :production:
