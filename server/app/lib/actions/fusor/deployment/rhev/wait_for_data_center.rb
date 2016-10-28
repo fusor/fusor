@@ -37,19 +37,14 @@ module Actions
           end
 
           def poll_intervals
-            # It takes almost 7 minutes to do the rpm installation via puppet,
-            # so no point in spinning our wheels trying to see if the datacenter
-            # is up yet. Also, another 22 minutes of "other" activitties after
-            # the last rpm is installed before the datacenter can be checked.
-            #
-            # So reversing the polling intervals so that dynflow will wait 6
-            # minutes before doing the second check. After the first interval
+            # So reversing the polling intervals so that dynflow will wait 1
+            # minute before doing the second check. After the first interval
             # checks fail, it will speed them up as it takes longer. This should
             # minimize the number of polling actions we do on the datacenter and
             # reduce the noise in the logs.
             #
-            # 6m, 4m, 1m, 30s, 8s, 4s, 1s, .5s
-            [360, 240, 60, 30, 8, 4, 1, 0.5]
+            # 1m, 30s, 8s, 4s, 1s, .5s
+            [60, 30, 8, 4, 1, 0.5]
           end
 
           def invoke_external_task
@@ -94,13 +89,13 @@ module Actions
                 "--api_pass #{api_password} "\
                 "--data_center #{data_center}"
 
-              status, output = Utils::Fusor::CommandUtils.run_command(cmd)
+              status, output = Utils::Fusor::CommandUtils.run_command(cmd, true)
               { status: status, output: output }
             end
           end
 
           def is_up?(status)
-            !status.nil? && (status[:status] == 0) && ("up" == status[:output].first.rstrip) ? true : false
+            status && (status[:status] == 0) && (status[:output].rstrip == 'up')
           end
         end
       end

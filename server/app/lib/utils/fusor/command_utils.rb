@@ -16,19 +16,10 @@ module Utils
   module Fusor
     class CommandUtils
       def self.run_command(cmd, log_on_success = false, environment = {})
-        # popen2e merges stdout and stderr, which we have put into
-        # the the output variable
-        stdin, stdout_err, wait_thr = Open3.popen2e(environment, cmd)
-        status = wait_thr.value.exitstatus
-
-        # capture the output into a variable because once we close
-        # it you can no longer read it.
-        #
-        # also need to capture it so that we can log any errors
-        # that may have occurred otherwise we just log the class id
-        # which is useless in a debugging scenario.
-        #
-        output = stdout_err.readlines
+        # capture2e merges stdout and stderr, which we have put into
+        # the output variable
+        output, status_object = Open3.capture2e(environment, cmd)
+        status = status_object.exitstatus
 
         cmd_filtered = cmd
         output_filtered = output
@@ -48,10 +39,6 @@ module Utils
           ::Fusor.log.info "Status code: #{status}"
           ::Fusor.log.info "Command output: #{output_filtered}"
         end
-
-        # need to close these explicitly as per the docs
-        stdin.close unless stdin.closed?
-        stdout_err.close unless stdout_err.closed?
 
         return status, output
       end
