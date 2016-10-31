@@ -14,6 +14,27 @@ module Fusor
   class Api::V21::SubscriptionsController < Api::V21::BaseController
     skip_before_filter :check_content_type, :only => [:upload]
 
+    resource_description do
+      desc 'Information about subscriptions related to a deployment'
+      api_version 'fusor_v21'
+      api_base_url '/fusor/api/v21'
+    end
+
+    def_param_group :subscription do
+      param :deployment_id, String, desc: 'ID of the deployment using this subscription'
+      param :contract_number, String, desc: 'Contract number'
+      param :product_name, String, desc: 'Product name'
+      param :quantity_attached, String, desc: 'Quantity attached'
+      param :start_date, Date, desc: 'Start date'
+      param :end_date, Date, desc: 'Expiration date'
+      param :total_quantity, Integer, desc: 'Total quantity'
+      param :source, String, desc: 'Source'
+      param :quantity_to_add, Integer, desc: 'Quantity to add'
+    end
+
+    api :GET, '/subscriptions', 'Gets a list of subscription objects'
+    param :deployment_id, Integer, desc: 'filter by the ID of the deployment '
+    param :source, :identifier, desc: 'filter by subscription source'
     def index
       if params[:deployment_id] && params[:source]
         ::Fusor.log.debug "filtering by deployment_id AND by source: #{params[:source]}"
@@ -32,6 +53,8 @@ module Fusor
       render :json => @subscriptions, :each_serializer => Fusor::SubscriptionSerializer, :serializer => RootArraySerializer
     end
 
+    api :POST, '/subscriptions', 'create a subscription'
+    param_group :subscription
     def create
       @subscription = Fusor::Subscription.new(subscription_params)
       if @subscription.save
@@ -41,11 +64,16 @@ module Fusor
       end
     end
 
+    api :GET, '/subscriptions', 'Gets a list of subscription objects'
+    param :id, Integer, desc: 'ID of the subscription'
     def show
       @subscription = Fusor::Subscription.find(params[:id])
       render :json => @subscription, :serializer => Fusor::SubscriptionSerializer
     end
 
+    api :PUT, '/subscriptions/:id', 'create a subscription'
+    param :id, Integer, desc: 'ID of the subscription'
+    param_group :subscription
     def update
       @subscription = Fusor::Subscription.find(params[:id])
       if @subscription.update_attributes(subscription_params)
@@ -55,12 +83,19 @@ module Fusor
       end
     end
 
+    api :DELETE, '/subscriptions/:id', 'delete a subscription'
+    param :id, Integer, desc: 'ID of the subscription'
     def destroy
       @subscription = Fusor::Subscription.find(params[:id])
       @subscription.destroy
       render json: {}, status: 204
     end
 
+    api :PUT, '/subscriptions', 'upload a subscription manifest file'
+    param :manifest_file, Hash, desc: 'ID of the subscription' do
+      param :file, :identifier, required: true, desc: 'ID of the deployment'
+      param :deployment_id, Integer, required: true, desc: 'ID of the deployment'
+    end
     def upload
       ::Fusor.log.debug "upload params #{params}"
       fail ::Katello::HttpErrors::BadRequest, _("No manifest file uploaded") if params[:manifest_file][:file].blank?
@@ -100,6 +135,8 @@ module Fusor
       render json: {manifest_file: temp_file.path}, status: 200
     end
 
+    api :GET, '/subscriptions/validate', 'Validate a subscription'
+    param :deployment_id, Integer, desc: 'ID of the deployment'
     def validate
       ::Fusor.log.debug "Enter SubscriptionController.validate"
       valid = false

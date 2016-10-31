@@ -24,14 +24,28 @@ module Fusor
 
         MAC_ADDRESS_REGEX = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/
 
+        resource_description do
+          name 'OpenStack Nodes'
+          desc 'Physical node for OpenStack to use'
+          api_version 'fusor_v21'
+          api_base_url '/fusor/api/openstack/deployments/:deployment_id'
+        end
+
+        api :GET, '/nodes', 'Get OpenStack registered nodes'
+        param :deployment_id, Integer, desc: 'ID of the deployment'
         def index
           render :json => undercloud_handle.list_nodes, :serializer => RootArraySerializer
         end
 
+        api :GET, '/nodes', 'Get OpenStack registered node'
+        param :deployment_id, Integer, desc: 'ID of the deployment'
+        param :id, String, desc: 'UUID of the node'
         def show
           render :json => {:node => undercloud_handle.get_node(params[:id])}
         end
 
+        api :POST, '/nodes', 'Register OpenStack node'
+        param :deployment_id, Integer, desc: 'ID of the deployment'
         def create
           handle = undercloud_handle
           node_param_errors = validate_node_param(params[:node])
@@ -60,6 +74,9 @@ module Fusor
           respond_for_async :resource => task
         end
 
+        api :DELETE, '/nodes', 'Delete (unregister) OpenStack node'
+        param :deployment_id, Integer, desc: 'ID of the deployment'
+        param :id, String, desc: 'UUID of the node'
         def destroy
           undercloud_handle.delete_node(params[:id])
           Fusor::IntrospectionTask.where(:node_uuid => params[:id]).destroy_all
@@ -71,10 +88,14 @@ module Fusor
           render :json => {:node => {:id => params[:id], :ready => ready}}.to_json
         end
 
+        api :GET, '/node_ports', 'Get ports belonging to OpenStack registered nodes'
+        param :deployment_id, Integer, desc: 'ID of the deployment'
         def list_ports
           render :json => {:ports => undercloud_handle.list_ports_detailed}
         end
 
+        api :GET, '/node_mac_addresses', 'Get mac addresses from a power management interface to register as OpenStack nodes'
+        param :deployment_id, Integer, desc: 'ID of the deployment'
         def discover_macs
           render :json => {:nodes => Utils::Fusor::DiscoverMacs.new(params).discover}
         end

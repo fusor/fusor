@@ -26,6 +26,103 @@ module Fusor
 
     rescue_from Encoding::UndefinedConversionError, :with => :ignore_it
 
+    resource_description do
+      desc 'Fusor deployment objects contains all the configuration options for deployment.'
+      api_version 'fusor_v21'
+      api_base_url '/fusor/api/v21'
+    end
+
+    def_param_group :deployment do
+      param :deployment, Hash, desc: 'QCI Deployment', required: true do
+        param :name, String, desc: 'Deployment name'
+        param :description, String, desc: 'Deployment description'
+        param :foreman_task_uuid, :identifier, desc: 'Task identifier for the main deployment task'
+
+        param :deploy_rhev, :bool, desc: 'Will the deployment deploy Red Hat Virtualization (RHV)'
+        param :deploy_cfme, :bool, desc: 'Will the deployment deploy Red Hat Cloud Forms Management Engine (CFME)'
+        param :deploy_openstack, :bool, desc: 'Will the deployment deploy Red Hat OpenStack Platform (OSP)'
+        param :deploy_openshift, :bool, desc: 'Will the deployment deploy OpenShift Container Platform (OCP)'
+
+        param :organization_id, Integer, 'ID of the Organization the deployment should use'
+        param :lifecycle_environment_id, Integer, 'ID of the lifecycle environment the deployment should use'
+
+        param :enable_access_insights, :bool, desc: 'Will the deployment enable Red Hat Insights'
+
+        param :is_disconnected, :bool, desc: 'Will the deployment use disconnected sync'
+        param :rhev_is_self_hosted, :bool, desc: 'Will the RHV management engine be deployed to a hypervisor'
+        param :rhev_self_hosted_engine_hostname, String, desc: "Self hosted RHV engine's hostname"
+        param :host_naming_scheme, String, desc: 'Choose RHV hypervisor naming scheme (hypervisorN/Freeform/MAC Address/Custom scheme)'
+        param :custom_preprend_name, String, desc: 'When using a "Custom scheme" for host naming scheme, this string will be prepended to the host ID'
+        param :rhev_engine_host_id, Integer, desc: 'ID of the host where the RHV engine will be deployed'
+        param :discovered_host_id, Integer, desc: 'ID of the host where the RHV engine will be deployed'
+
+        param :rhev_root_password, String, desc: 'RHV hosts root password'
+        param :rhev_engine_admin_password, String, desc: 'RHV management engine password for the admin user'
+        param :rhev_data_center_name, String, desc: 'RHV data center name'
+        param :rhev_cluster_name, String, desc: 'RHV cluster name'
+        param :rhev_cpu_type, String, desc: 'Type of CPU for RHV installation'
+
+        param :rhev_storage_type, String, desc: 'RHV host storage type (NFS/glusterfs) for data, export, and self hosted'
+
+        param :rhev_storage_name, String, desc: 'RHV data storage name'
+        param :rhev_storage_address, String, desc: 'RHV data storage address'
+        param :rhev_share_path, String, desc: 'RHV data storage path on the server'
+
+        param :rhev_export_domain_name, String, desc: 'RHV export domain storage name'
+        param :rhev_export_domain_address, String, desc: 'RHV export domain storage address'
+        param :rhev_export_domain_path, String, desc: 'RHV export domain storage path'
+
+        param :hosted_storage_name, String, desc: 'Storage name for the self-hosted RHV engine'
+        param :hosted_storage_address, String, desc: 'Storage address for the self-hosted RHV engine'
+        param :hosted_storage_path, String, desc: 'Storage path for the self-hosted RHV engine'
+
+        param :openstack_deployment_id, Integer, desc: 'ID of the OpenStack deployment object with OpenStack fields'
+
+        param :openshift_install_loc, String, desc: 'Location where OpenShift should be installed (RHV/OSP)'
+        param :openshift_number_master_nodes, Integer, desc: 'Number of OpenShift master nodes to be deployed'
+        param :openshift_number_worker_nodes, Integer, desc: 'Number of OpenShift worker nodes to be deployed'
+
+        param :openshift_available_vcpu, Integer, desc: 'vCPUs available to allocate to OpenShift Nodes'
+        param :openshift_available_ram, Integer, desc: 'RAM available to allocate to OpenShift Nodes'
+        param :openshift_available_disk, Integer, desc: 'Disk storage available to allocate to OpenShift Nodes'
+
+        param :openshift_master_vcpu, Integer, desc: 'vCPUs allocated to each master node'
+        param :openshift_master_ram, Integer, desc: 'RAM allocated to each master node'
+        param :openshift_master_disk, Integer, desc: 'Disk storage allocated to each master node'
+
+        param :openshift_node_vcpu, Integer, desc: 'vCPUs allocated to each worker node'
+        param :openshift_node_ram, Integer, desc: 'RAM allocated to each worker node'
+        param :openshift_node_disk, Integer, desc: 'Disk storage allocated to each worker node'
+        param :openshift_storage_size, Integer, desc: 'Additional storage needed for Docker containers on each worker node'
+
+        param :openshift_storage_type, String, desc: 'OpenShift export storage type (NFS/glusterfs)'
+        param :openshift_storage_host, String, desc: 'OpenShift storage host'
+        param :openshift_export_path, String, desc: 'OpenShift export storage path'
+        param :openshift_username, String, desc: 'Username on the account that will be created and used to configure all nodes'
+        param :openshift_user_password, String, desc: 'Password on the account that will be created and used to configure all nodes'
+        param :openshift_subdomain_name, String, desc: 'Subdomain name for a wildcard entry to point to the OpenShift router'
+        param :openshift_sample_helloworld, :bool, desc: 'Will the deployment deploy an OpenShift "Hello World" sample application'
+
+        param :cfme_install_loc, String, desc: 'Location of the primary CloudForms appliance'
+        param :cfme_root_password, String, desc: 'CloudForms password for root ssh'
+        param :cfme_admin_password, String, desc: 'CloudForms admin password for the admin user'
+        param :cfme_db_password, String, desc: 'CloudForms password for the database '
+
+        param :upstream_consumer_uuid, String, desc: 'UUID of the Subscription Management Application for consumed products'
+        param :upstream_consumer_name, String, desc: 'Name of the Subscription Management Application for consumed products'
+
+        param :cdn_url, String, desc: 'CDN URL for content sync'
+        param :manifest_file, String, desc: 'Subscription manifest file used for disconnected sync'
+
+        param :has_content_error, String, desc: 'Set when the deployment has encountered a content sync error and must be redeployed'
+      end
+    end
+
+
+    api :GET, '/deployments', 'Gets a list of deployments'
+    param :search, String, desc: 'Text to search deployments for'
+    param :order, String, desc: 'Ordering of deployment results'
+    param :page, Integer, desc: 'Page of deployment results to display'
     def index
       @deployments = Deployment.includes(:organization, :lifecycle_environment, :discovered_host,
                                          :discovered_hosts, :ose_master_hosts, :ose_worker_hosts, :subscriptions,
@@ -42,10 +139,8 @@ module Fusor
                       }
     end
 
-    def show
-      render :json => @deployment, :serializer => Fusor::DeploymentSerializer
-    end
-
+    api :POST, '/deployments', 'Create a deployment'
+    param_group :deployment
     def create
       @deployment = Deployment.new(deployment_params)
       if @deployment.save
@@ -55,17 +150,30 @@ module Fusor
       end
     end
 
+    api :GET, '/deployments/:id', 'Show a deployment'
+    param :id, Integer, desc: 'ID of the deployment'
+    def show
+      render :json => @deployment, :serializer => Fusor::DeploymentSerializer
+    end
+
+    api :PUT, '/deployments/:id', 'Update a deployment'
+    param :id, Integer, desc: 'ID of the deployment'
+    param_group :deployment
     def update
       @deployment.attributes = deployment_params
       @deployment.save(:validate => false)
       render :json => @deployment, :serializer => Fusor::DeploymentSerializer
     end
 
+    api :DELETE, '/deployments/:id', 'Delete a deployment'
+    param :id, Integer, desc: 'ID of the deployment'
     def destroy
       @deployment.destroy
       respond_for_show :resource => @deployment
     end
 
+    api :PUT, '/deployments/:id/deploy', 'Start a deployment'
+    param :id, Integer, desc: 'ID of the deployment'
     def deploy
       begin
         # If we're deploying then the deployment object needs to be valid.
@@ -109,6 +217,8 @@ module Fusor
       end
     end
 
+    api :PUT, '/deployments/:id/redeploy', 'Redeploy a deployment that has encountered a content sync error'
+    param :id, Integer, required: true, desc: 'ID of the deployment'
     def redeploy
       begin
         if @deployment.invalid?
@@ -122,6 +232,8 @@ module Fusor
       end
     end
 
+    api :GET, '/deployments/:id/validate', 'Validate a deployment is ready for deployment'
+    param :id, Integer, required: true, desc: 'ID of the deployment'
     def validate
       @deployment.valid?
       error_messages = @deployment.errors.full_messages
@@ -138,6 +250,9 @@ module Fusor
       }
     end
 
+    api :GET, '/deployments/:id/validate_cdn', 'Validate a CDN can be used for content sync'
+    param :id, Integer, required: true, desc: 'ID of the deployment'
+    param :cdn_url, String, desc: 'URL of the CDN the deployment will use'
     def validate_cdn
       begin
         if params.key?('cdn_url')
@@ -171,6 +286,8 @@ module Fusor
       end
     end
 
+    api :GET, '/deployments/:id/compatible_cpu_families', 'Get a list of compatible CPU families for all selected RHV hypervisor hosts'
+    param :id, Integer, required: true, desc: 'ID of the deployment'
     def compatible_cpu_families
       rhv_hypervisors = @deployment.discovered_hosts
       cpu_families = Utils::Fusor::CpuCompatDetector.rhv_cpu_families(rhv_hypervisors)
@@ -178,6 +295,11 @@ module Fusor
     end
 
 
+    api :GET, '/deployments/:id/check_mount_point', 'Check a file mount is available'
+    param :id, Integer, required: true, desc: 'ID of the deployment'
+    param :address, String, required: true, desc: 'Address of the file server'
+    param :path, String, required: true, desc: 'Path of the shared file system'
+    param :type, String, required: true, desc: 'Type of file share (NFS/glusterfs)'
     def check_mount_point
       mount_address = params['address']
       mount_path = params['path']
@@ -217,6 +339,9 @@ module Fusor
       }
     end
 
+    api :GET, '/deployments/:id/log', 'Get the log for a deployment'
+    param :id, Integer, required: true, desc: 'ID of the deployment'
+    param :log_type, String, desc: 'type of log to retrieve (fusor_log/foreman_log/candlepin_log/foreman_proxy_log/ansible_log)'
     def log
       log_type_param = params[:log_type] || 'fusor_log'
       reader = create_log_reader(log_type_param)
@@ -271,15 +396,13 @@ module Fusor
         :rhev_gluster_node_address, :rhev_gluster_ssh_port,
         :rhev_gluster_root_password, :host_naming_scheme, :has_content_error,
         :custom_preprend_name, :enable_access_insights,
-        :cfme_rhv_address, :cfme_osp_address, :cfme_rhv_hostname, :cfme_osp_hostname,
         :openshift_install_loc, :openshift_number_master_nodes, :openshift_number_worker_nodes,
         :openshift_storage_size, :openshift_username, :openshift_user_password,
-        :openshift_root_password, :openshift_master_vcpu, :openshift_master_ram,
+        :openshift_master_vcpu, :openshift_master_ram,
         :openshift_master_disk, :openshift_node_vcpu, :openshift_node_ram, :openshift_node_disk,
         :openshift_available_vcpu, :openshift_available_ram, :openshift_available_disk,
         :openshift_storage_type, :openshift_sample_helloworld, :openshift_storage_host,
-        :openshift_export_path, :openshift_subdomain_name, :cloudforms_vcpu,
-        :cloudforms_ram, :cloudforms_vm_disk_size, :cloudforms_db_disk_size,
+        :openshift_export_path, :openshift_subdomain_name,
         :cdn_url, :manifest_file, :created_at, :updated_at, :rhev_engine_host_id,
         :organization_id, :lifecycle_environment_id, :discovered_host_id,
         :foreman_task_id, :openstack_deployment_id

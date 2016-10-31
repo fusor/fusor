@@ -17,12 +17,6 @@ module Fusor
 
         include Api::V21::Rendering
 
-        resource_description do
-          resource_id 'fusor'
-          api_version 'v21'
-          api_base_url '/fusor/api'
-        end
-
       end
     end
   end

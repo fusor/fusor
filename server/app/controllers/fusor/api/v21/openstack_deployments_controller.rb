@@ -13,6 +13,48 @@
 module Fusor
   class Api::V21::OpenstackDeploymentsController < Api::V21::BaseController
 
+    resource_description do
+      name 'OpenStack Deployments'
+      desc 'Contains all the configuration options for an OpenStack deployment as part of a Fusor deployment.'
+      api_version 'fusor_v21'
+      api_base_url '/fusor/api/v21'
+    end
+
+    def_param_group :openstack_deployment do
+      param :undercloud_admin_password, String, desc: 'password for the admin account on the undercloud'
+      param :undercloud_ip_address, String, desc: 'IP Address or hostname of the undercloud'
+      param :undercloud_ssh_username, String, desc: 'Username to SSH into the undercloud'
+      param :undercloud_ssh_password, String, desc: 'Password to SSH into the undercloud'
+      param :overcloud_deployed, :bool, desc: 'Does the undercloud have an existing deployed overcloud'
+      param :overcloud_ext_net_interface, String, desc: 'Interface to provide external network access for the overcloud'
+      param :overcloud_private_net, String, desc: 'CIDR notated network range for the overcloud private IP addresses'
+      param :overcloud_float_net, String, desc: 'CIDR notated network range for the overcloud floating IP addresses'
+      param :overcloud_float_gateway, String, desc: 'IP address of the gateway for the overcloud floating network'
+      param :overcloud_password, String, desc: 'Password for the admin account on the overcloud'
+      param :overcloud_libvirt_type, String, desc: 'Overcloud virtualization type (kvm)'
+      param :overcloud_node_count, Integer, desc: 'Total number of registered nodes'
+      param :overcloud_compute_flavor, String, desc: 'Flavor assigned to overcloud compute nodes'
+      param :overcloud_compute_count, Integer, desc: 'Number of overcloud compute nodes to be deployed'
+      param :overcloud_controller_flavor, String, desc: 'Flavor assigned to overcloud controller nodes'
+      param :overcloud_controller_count, Integer, desc: 'Number of overcloud controller nodes to be deployed'
+      param :overcloud_ceph_storage_flavor, String, desc: 'Flavor assigned to overcloud ceph storage nodes'
+      param :overcloud_ceph_storage_count, Integer, desc: 'Number of overcloud compute ceph storage to be deployed'
+      param :overcloud_block_storage_flavor, String, desc: 'Flavor assigned to overcloud block storage nodes'
+      param :overcloud_block_storage_count, Integer, desc: 'Number of overcloud block storage nodes to be deployed'
+      param :overcloud_object_storage_flavor, String, desc: 'Flavor assigned to overcloud object storage nodes'
+      param :overcloud_object_storage_count, Integer, desc: 'Number of overcloud object storage nodes to be deployed'
+      param :external_ceph_storage, :bool, desc: 'Will the overcloud use an externally hosted Ceph storage device'
+      param :ceph_ext_mon_host, String, desc: 'Location of the externally hosted Ceph storage device'
+      param :ceph_cluster_fsid, String, desc: 'Cluster FSID of the externally hosted Ceph storage device'
+      param :ceph_client_username, String, desc: 'Username to log into the externally hosted Ceph storage device'
+      param :ceph_client_key, String, desc: 'Client key used to log into the externally hosted Ceph storage device'
+      param :nova_rdb_pool_name, String, desc: 'Nova RDB pool name is required when using external ceph storage (vms)'
+      param :cinder_rdb_pool_name, String, desc: 'Cinder RDB pool name is required when using external ceph storage (volumes)'
+      param :glance_rdb_pool_name, String, desc: 'Glance RDB pool name is required when using external ceph storage (images)'
+    end
+
+    api :GET, '/openstack_deployments', 'Gets a list of OpenStack deployments'
+    param :deployment_id, Integer, desc: 'ID of the deployment the OpenStack deployments are associated with'
     def index
       if params[:deployment_id]
         @openstack_deployments = Fusor::OpenstackDeployment.where(:deployment_id => params[:deployment_id])
@@ -22,6 +64,8 @@ module Fusor
       render :json => @openstack_deployments, :each_serializer => Fusor::OpenstackDeploymentSerializer, :serializer => RootArraySerializer
     end
 
+    api :POST, '/openstack_deployments', 'Create a OpenStack deployment'
+    param_group :openstack_deployment
     def create
       @openstack_deployment = Fusor::OpenstackDeployment.new(openstack_deployment_params)
       if @openstack_deployment.save
@@ -31,11 +75,16 @@ module Fusor
       end
     end
 
+    api :GET, '/openstack_deployments/:id', 'Show a OpenStack deployment'
+    param :id, Integer, required: true, desc: 'ID of the OpenStack deployment'
     def show
       @openstack_deployment = Fusor::OpenstackDeployment.find(params[:id])
       render :json => @openstack_deployment, :serializer => Fusor::OpenstackDeploymentSerializer
     end
 
+    api :PUT, '/openstack_deployments', 'Update a OpenStack deployment'
+    param :id, Integer, required: true, desc: 'ID of the OpenStack deployment'
+    param_group :openstack_deployment
     def update
       @openstack_deployment = Fusor::OpenstackDeployment.find(params[:id])
 
@@ -45,12 +94,16 @@ module Fusor
       render :json => @openstack_deployment, :serializer => Fusor::OpenstackDeploymentSerializer
     end
 
+    api :DELETE, '/openstack_deployments/:id', 'Delete a OpenStack deployment'
+    param :id, Integer, required: true, desc: 'ID of the OpenStack deployment'
     def destroy
       @openstack_deployment = Fusor::OpenstackDeployment.find(params[:id])
       @openstack_deployment.destroy
       render json: {}, status: 204
     end
 
+    api :POST, '/openstack_deployments/:id/sync_openstack', 'Synchronize a Openstack deployment object with the OpenStack deployment plan'
+    param :id, Integer, required: true, desc: 'ID of the OpenStack deployment'
     def sync_openstack
       @openstack_deployment = Fusor::OpenstackDeployment.find(params[:id])
 
@@ -68,7 +121,7 @@ module Fusor
       sync_failures = get_sync_failures(ssl_params)
       return render json: {errors: sync_failures}, status: 500 unless sync_failures.empty?
 
-      render json: {}, status: 204
+      render json: {}, status: 200
     end
 
     private

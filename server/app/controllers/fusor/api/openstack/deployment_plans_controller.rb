@@ -17,28 +17,45 @@ module Fusor
     module Openstack
       class DeploymentPlansController < Api::Openstack::BaseController
 
-        def deploy
-          @plan = undercloud_handle.deploy_plan(params[:id])
-          render :json => build_deployment_plan(params[:id])
+        resource_description do
+          name 'OpenStack Deployment Plans'
+          desc 'OpenStack deployment plan on the undercloud'
+          api_version 'fusor_v21'
+          api_base_url '/fusor/api/openstack/deployments/:deployment_id'
         end
 
+        api :POST, '/deployment_plans/:name', 'Show the undercloud deployment status'
+        param :deployment_id, Integer, required: true, desc: 'ID of the deployment'
+        param :name, String, required: true, desc: 'Name of the deployment plan (ex. overcloud)'
+        def deploy
+          @plan = undercloud_handle.deploy_plan(params[:name])
+          render :json => build_deployment_plan(params[:name])
+        end
+
+        api :GET, '/deployment_plans/:name', 'Get the deployment plan.  Includes name, parameters, and roles'
+        param :deployment_id, Integer, required: true, desc: 'ID of the deployment'
+        param :name, String, required: true, desc: 'Name of the deployment plan (ex. overcloud)'
         def show
-          render :json => build_deployment_plan(params[:id])
+          render :json => build_deployment_plan(params[:name])
         end
 
         def update_role_count
-          @plan = undercloud_handle.edit_plan_deployment_role_count(params[:id], params[:role_name], params[:count])
-          render :json => build_deployment_plan(params[:id])
+          @plan = undercloud_handle.edit_plan_deployment_role_count(params[:name], params[:role_name], params[:count])
+          render :json => build_deployment_plan(params[:name])
         end
 
         def update_role_flavor
-          @plan = undercloud_handle.edit_plan_deployment_role_flavor(params[:id], params[:role_name], params[:flavor_name])
-          render :json => build_deployment_plan(params[:id])
+          @plan = undercloud_handle.edit_plan_deployment_role_flavor(params[:name], params[:role_name], params[:flavor_name])
+          render :json => build_deployment_plan(params[:name])
         end
 
+        api :PUT, '/deployment_plans/:id/update_parameters', 'Updates deployment plan parameters'
+        param :deployment_id, Integer, required: true, desc: 'ID of the deployment'
+        param :name, String, required: true, desc: 'Name of the deployment plan (ex. overcloud)'
+        param :parameters, Hash, desc: 'Hash of deployment plan parameters to change'
         def update_parameters
-          @plan = undercloud_handle.edit_plan_parameters(params[:id], params[:parameters])
-          render :json => build_deployment_plan(params[:id])
+          @plan = undercloud_handle.edit_plan_parameters(params[:name], params[:parameters])
+          render :json => build_deployment_plan(params[:name])
         end
 
         private
