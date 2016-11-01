@@ -43,11 +43,12 @@ export default Ember.Component.extend({
   }),
 
   didInsertElement() {
-    return Ember.$('[data-toggle="popover"]').popover({html: true,
-                                                       trigger: 'click hover',
-                                                       title: this.get('title'),
-                                                       placement: 'right'
-                                                      });
+    return Ember.$('[data-toggle="popover"]').popover({
+      html: true,
+      trigger: 'click hover',
+      title: this.get('title'),
+      placement: 'right'
+    });
   },
 
   willDestroyElement() {
