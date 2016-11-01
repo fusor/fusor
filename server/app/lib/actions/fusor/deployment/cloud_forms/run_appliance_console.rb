@@ -49,7 +49,7 @@ module Actions
                   "--db_password #{db_password}"
 
             status, output = run_command(cmd)
-            fail _("Unable to run appliance console: %{output}") % { :output => output.join('; ') } unless status == 0
+            fail _("Unable to run appliance console: %{output}") % { :output => output } unless status == 0
 
             if secondary_address
               cmd = "#{script_dir}miq_run_appliance_console.py "\
@@ -60,7 +60,7 @@ module Actions
                   "--primary_appliance #{cfme_address}"
 
               status, output = run_command(cmd)
-              fail _("Unable to run appliance console: %{output}") % { :output => output.join('; ') } unless status == 0
+              fail _("Unable to run appliance console: %{output}") % { :output => output } unless status == 0
 
               # TODO: observing issues with running the appliance console using SSHConnection; therefore, temporarily
               # commenting out and using the approach above which will run it from a python script

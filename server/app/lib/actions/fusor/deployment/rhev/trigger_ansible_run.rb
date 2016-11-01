@@ -171,7 +171,7 @@ module Actions
             status, output = ::Utils::Fusor::CommandUtils.run_command(cmd, true, environment)
 
             if status != 0
-              fail _("ansible-ovirt returned a non-zero return code\n#{output.join.gsub('\n', "\n")}")
+              fail _("ansible-ovirt returned a non-zero return code\n#{output.gsub('\n', "\n")}")
             else
               ::Fusor.log.debug(output)
               status
