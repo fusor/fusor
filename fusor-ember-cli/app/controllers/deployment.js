@@ -32,10 +32,10 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
 
   isDisabledRhev: Ember.computed.alias("satelliteInvalid"),
 
-  isDisabledOpenstack: Ember.computed("satelliteInvalid", 'isRhev', 'validRhev', function() {
+  isDisabledOpenstack: Ember.computed("satelliteInvalid", 'isRhev', 'validRhev', function () {
     return (this.get('satelliteInvalid') ||
-            (this.get('isRhev') && !(this.get('validRhev')))
-           );
+      (this.get('isRhev') && !(this.get('validRhev')))
+    );
   }),
 
   isDisabledOpenShift: Ember.computed(
@@ -44,11 +44,11 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
     'isOpenStack',
     'validRhev',
     'validOpenStack',
-    function() {
+    function () {
       return (this.get('satelliteInvalid') ||
-              (this.get('isRhev') && !(this.get('validRhev'))) ||
-              (this.get('isOpenStack') && !(this.get('validOpenStack')))
-              );
+        (this.get('isRhev') && !(this.get('validRhev'))) ||
+        (this.get('isOpenStack') && !(this.get('validOpenStack')))
+      );
     }
   ),
 
@@ -60,12 +60,12 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
     'validRhev',
     'validOpenStack',
     'validOpenshift',
-    function() {
+    function () {
       return (this.get('satelliteInvalid') ||
-              (this.get('isRhev') && !(this.get('validRhev'))) ||
-              (this.get('isOpenStack') && !(this.get('validOpenStack'))) ||
-              (this.get('isOpenShift') && !(this.get('validOpenshift')))
-              );
+        (this.get('isRhev') && !(this.get('validRhev'))) ||
+        (this.get('isOpenStack') && !(this.get('validOpenStack'))) ||
+        (this.get('isOpenShift') && !(this.get('validOpenshift')))
+      );
     }
   ),
 
@@ -79,13 +79,13 @@ export default Ember.Controller.extend(DeploymentControllerMixin, DisableTabMixi
     'validOpenshift',
     'isCloudForms',
     'validCloudforms',
-    function() {
+    function () {
       return (this.get('satelliteInvalid') ||
-              (this.get('isRhev') && !(this.get('validRhev'))) ||
-              (this.get('isOpenStack') && !(this.get('validOpenStack'))) ||
-              (this.get('isOpenShift') && !(this.get('validOpenshift'))) ||
-              (this.get('isCloudForms') && !(this.get('validCloudforms')))
-             );
+        (this.get('isRhev') && !(this.get('validRhev'))) ||
+        (this.get('isOpenStack') && !(this.get('validOpenStack'))) ||
+        (this.get('isOpenShift') && !(this.get('validOpenshift'))) ||
+        (this.get('isCloudForms') && !(this.get('validCloudforms')))
+      );
     }
   ),
 

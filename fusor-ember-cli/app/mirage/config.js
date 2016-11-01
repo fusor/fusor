@@ -14,14 +14,15 @@ export default function() {
   // but WILL NOT run using --environment partial-mocks-enabled
   if ((ENV.environment === 'mocks-enabled') || (ENV.environment === 'test')) {
 
-    this.get('/fusor/api/v21/deployments', function(db, request) {
-      return {deployments: db.deployments,
-              meta: {
-                total: 107,
-                total_pages: 5,
-                page: 1
-              }
-             };
+    this.get('/fusor/api/v21/deployments', function (db, request) {
+      return {
+        deployments: db.deployments,
+        meta: {
+          total: 107,
+          total_pages: 5,
+          page: 1
+        }
+      };
     });
 
     this.post('/fusor/api/v21/deployments', function(db, request) {
@@ -192,14 +193,17 @@ export default function() {
   });
 
   this.get('/fusor/api/v21/deployments/:id/compatible_cpu_families', function(db, request) {
-    return {cpu_families: ["Intel Conroe Family",
-                           "Intel Penryn Family",
-                           "Intel Nehalem Family",
-                           "Intel Westmere Family",
-                           "Intel SandyBridge Family",
-                           "Intel Haswell-noTSX Family"],
-            default_family: "Intel Haswell-noTSX Family"
-           };
+    return {
+      cpu_families: [
+        "Intel Conroe Family",
+        "Intel Penryn Family",
+        "Intel Nehalem Family",
+        "Intel Westmere Family",
+        "Intel SandyBridge Family",
+        "Intel Haswell-noTSX Family"
+      ],
+      default_family: "Intel Haswell-noTSX Family"
+    };
   });
 
   this.get('/customer_portal/owners/:owner_key/consumers', function(db, request) {
