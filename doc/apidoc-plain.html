@@ -1,0 +1,5392 @@
+  <h4><a href='#customer_portal_proxies'>Customer Portal Proxy</a></h4>
+  <ul>
+      <li><a href='#customer_portal_proxies-login'>login</a></li>
+      <li><a href='#customer_portal_proxies-logout'>logout</a></li>
+      <li><a href='#customer_portal_proxies-is_authenticated'>is_authenticated</a></li>
+      <li><a href='#customer_portal_proxies-get_owners'>get_owners</a></li>
+      <li><a href='#customer_portal_proxies-get_pools'>get_pools</a></li>
+      <li><a href='#customer_portal_proxies-get_consumers'>get_consumers</a></li>
+      <li><a href='#customer_portal_proxies-get_consumer'>get_consumer</a></li>
+      <li><a href='#customer_portal_proxies-create_consumer'>create_consumer</a></li>
+      <li><a href='#customer_portal_proxies-get_entitlements'>get_entitlements</a></li>
+      <li><a href='#customer_portal_proxies-create_entitlement'>create_entitlement</a></li>
+      <li><a href='#customer_portal_proxies-delete_entitlements'>delete_entitlements</a></li>
+  </ul>
+  <h4><a href='#deployment_plans'>OpenStack Deployment Plans</a></h4>
+  <ul>
+      <li><a href='#deployment_plans-deploy'>deploy</a></li>
+      <li><a href='#deployment_plans-show'>show</a></li>
+      <li><a href='#deployment_plans-update_parameters'>update_parameters</a></li>
+  </ul>
+  <h4><a href='#deployments'>Deployments</a></h4>
+  <ul>
+      <li><a href='#deployments-index'>index</a></li>
+      <li><a href='#deployments-create'>create</a></li>
+      <li><a href='#deployments-show'>show</a></li>
+      <li><a href='#deployments-update'>update</a></li>
+      <li><a href='#deployments-destroy'>destroy</a></li>
+      <li><a href='#deployments-deploy'>deploy</a></li>
+      <li><a href='#deployments-redeploy'>redeploy</a></li>
+      <li><a href='#deployments-validate'>validate</a></li>
+      <li><a href='#deployments-validate_cdn'>validate_cdn</a></li>
+      <li><a href='#deployments-compatible_cpu_families'>compatible_cpu_families</a></li>
+      <li><a href='#deployments-check_mount_point'>check_mount_point</a></li>
+      <li><a href='#deployments-log'>log</a></li>
+  </ul>
+  <h4><a href='#flavors'>OpenStack Flavors</a></h4>
+  <ul>
+      <li><a href='#flavors-index'>index</a></li>
+      <li><a href='#flavors-show'>show</a></li>
+  </ul>
+  <h4><a href='#images'>OpenStack Images</a></h4>
+  <ul>
+      <li><a href='#images-index'>index</a></li>
+      <li><a href='#images-show_by_name'>show_by_name</a></li>
+  </ul>
+  <h4><a href='#nodes'>OpenStack Nodes</a></h4>
+  <ul>
+      <li><a href='#nodes-index'>index</a></li>
+      <li><a href='#nodes-show'>show</a></li>
+      <li><a href='#nodes-create'>create</a></li>
+      <li><a href='#nodes-destroy'>destroy</a></li>
+      <li><a href='#nodes-list_ports'>list_ports</a></li>
+      <li><a href='#nodes-discover_macs'>discover_macs</a></li>
+  </ul>
+  <h4><a href='#openstack_deployments'>OpenStack Deployments</a></h4>
+  <ul>
+      <li><a href='#openstack_deployments-index'>index</a></li>
+      <li><a href='#openstack_deployments-create'>create</a></li>
+      <li><a href='#openstack_deployments-show'>show</a></li>
+      <li><a href='#openstack_deployments-update'>update</a></li>
+      <li><a href='#openstack_deployments-destroy'>destroy</a></li>
+      <li><a href='#openstack_deployments-sync_openstack'>sync_openstack</a></li>
+  </ul>
+  <h4><a href='#stacks'>OpenStack Stacks</a></h4>
+  <ul>
+      <li><a href='#stacks-index'>index</a></li>
+      <li><a href='#stacks-show'>show</a></li>
+      <li><a href='#stacks-destroy'>destroy</a></li>
+  </ul>
+  <h4><a href='#subscriptions'>Subscriptions</a></h4>
+  <ul>
+      <li><a href='#subscriptions-index'>index</a></li>
+      <li><a href='#subscriptions-create'>create</a></li>
+      <li><a href='#subscriptions-show'>show</a></li>
+      <li><a href='#subscriptions-update'>update</a></li>
+      <li><a href='#subscriptions-destroy'>destroy</a></li>
+      <li><a href='#subscriptions-upload'>upload</a></li>
+      <li><a href='#subscriptions-validate'>validate</a></li>
+  </ul>
+  <h4><a href='#underclouds'>Undercloud</a></h4>
+  <ul>
+      <li><a href='#underclouds-show'>show</a></li>
+      <li><a href='#underclouds-create'>create</a></li>
+      <li><a href='#underclouds-update_dns'>update_dns</a></li>
+  </ul>
+
+
+
+  <hr/>
+
+  <div>
+    <h2 id="customer_portal_proxies">
+      <a href='#customer_portal_proxies'>Customer Portal Proxy</a><br>
+      <small></small>
+    </h2>
+  </div>
+
+    <div>
+<p>Logs in and Capsules API methods from customer portal</p>
+</div>
+
+  <div>
+
+      <hr/>
+
+      <h3 id="customer_portal_proxies-login">
+      <a href='#customer_portal_proxies'>Customer Portal Proxy</a> / <a href='#customer_portal_proxies-login'>login</a>
+      </h3>
+
+      <div>
+          <h4>
+              post /fusor/api/customer_portal/login
+            <br>
+            <small>Log in to customer portal (creates session)</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>username </strong>:
+      <small>
+        required
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Username to customer portal account.</p>
+
+    </li>
+    
+    <li>
+      <strong>password </strong>:
+      <small>
+        required
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Password to customer portal account.</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="customer_portal_proxies-logout">
+      <a href='#customer_portal_proxies'>Customer Portal Proxy</a> / <a href='#customer_portal_proxies-logout'>logout</a>
+      </h3>
+
+      <div>
+          <h4>
+              post /fusor/api/customer_portal/logout
+            <br>
+            <small>Log out of customer portal (deletes session)</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+      </div>
+      <hr/>
+
+      <h3 id="customer_portal_proxies-is_authenticated">
+      <a href='#customer_portal_proxies'>Customer Portal Proxy</a> / <a href='#customer_portal_proxies-is_authenticated'>is_authenticated</a>
+      </h3>
+
+      <div>
+          <h4>
+              get /fusor/api/customer_portal/is_authenticated
+            <br>
+            <small>Verifies an active authenticated session to the customer portal.</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+      </div>
+      <hr/>
+
+      <h3 id="customer_portal_proxies-get_owners">
+      <a href='#customer_portal_proxies'>Customer Portal Proxy</a> / <a href='#customer_portal_proxies-get_owners'>get_owners</a>
+      </h3>
+
+      <div>
+          <h4>
+              get /fusor/api/customer_portal/users/:login/owners
+            <br>
+            <small>Get a list of subscription owners from RHN customer portal. See customer portal API documentation for a full list of parameters.</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>login </strong>:
+      <small>
+        required
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Subscription account login username</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="customer_portal_proxies-get_pools">
+      <a href='#customer_portal_proxies'>Customer Portal Proxy</a> / <a href='#customer_portal_proxies-get_pools'>get_pools</a>
+      </h3>
+
+      <div>
+          <h4>
+              get /fusor/api/customer_portal/pools
+            <br>
+            <small>Get a list of subscription pools from RHN customer portal. See customer portal API documentation for a full list of parameters.</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+      </div>
+      <hr/>
+
+      <h3 id="customer_portal_proxies-get_consumers">
+      <a href='#customer_portal_proxies'>Customer Portal Proxy</a> / <a href='#customer_portal_proxies-get_consumers'>get_consumers</a>
+      </h3>
+
+      <div>
+          <h4>
+              get /fusor/api/customer_portal/owners/:id/consumers
+            <br>
+            <small>Get a list of subscription consumers from RHN customer portal. See customer portal API documentation for a full list of parameters.</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>string from 2 to 128 characters containing only alphanumeric characters, space, ‘<em>‘, ‘-’ with no leading or trailing space..</em></p>
+ ]
+      </small>
+      
+<p>ID of the subscription owner</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="customer_portal_proxies-get_consumer">
+      <a href='#customer_portal_proxies'>Customer Portal Proxy</a> / <a href='#customer_portal_proxies-get_consumer'>get_consumer</a>
+      </h3>
+
+      <div>
+          <h4>
+              get /fusor/api/customer_portal/consumers/:id
+            <br>
+            <small>Get a subscription consumer from RHN customer portal. See customer portal API documentation for a full list of parameters.</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>string from 2 to 128 characters containing only alphanumeric characters, space, ‘<em>‘, ‘-’ with no leading or trailing space..</em></p>
+ ]
+      </small>
+      
+<p>Subscription consumer UUID</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="customer_portal_proxies-create_consumer">
+      <a href='#customer_portal_proxies'>Customer Portal Proxy</a> / <a href='#customer_portal_proxies-create_consumer'>create_consumer</a>
+      </h3>
+
+      <div>
+          <h4>
+              post /fusor/api/customer_portal/consumers
+            <br>
+            <small>Create a new subscription consumer from RHN customer portal. See customer portal API documentation for a full list of parameters.</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Name of the new subscription management application</p>
+
+    </li>
+    
+    <li>
+      <strong>type </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Type of the new subscription management application (ex. satellite)</p>
+
+    </li>
+    
+    <li>
+      <strong>facts </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Hash</p>
+ ]
+      </small>
+      
+<p>Facts about the new subscription management application</p>
+
+    </li>
+    <ul>
+    <li>
+      <strong>distributor_version </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Distributor version of the new subscription management application (ex. sat-6.2)</p>
+
+    </li>
+    
+    <li>
+      <strong>system.certificate_version </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>System certificate version of the new subscription management application (ex. 3.2)</p>
+
+    </li>
+    
+</ul>
+
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="customer_portal_proxies-get_entitlements">
+      <a href='#customer_portal_proxies'>Customer Portal Proxy</a> / <a href='#customer_portal_proxies-get_entitlements'>get_entitlements</a>
+      </h3>
+
+      <div>
+          <h4>
+              get /fusor/api/customer_portal/consumers/:id/entitlements
+            <br>
+            <small>Get a list of subscription entitlements from RHN customer portal. See customer portal API documentation for a full list of parameters.</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>string from 2 to 128 characters containing only alphanumeric characters, space, ‘<em>‘, ‘-’ with no leading or trailing space..</em></p>
+ ]
+      </small>
+      
+<p>Subscription consumer UUID</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="customer_portal_proxies-create_entitlement">
+      <a href='#customer_portal_proxies'>Customer Portal Proxy</a> / <a href='#customer_portal_proxies-create_entitlement'>create_entitlement</a>
+      </h3>
+
+      <div>
+          <h4>
+              post /fusor/api/customer_portal/consumers/:id/entitlements
+            <br>
+            <small>Create new subscription entitlement from RHN customer portal. See customer portal API documentation for a full list of parameters.</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>string from 2 to 128 characters containing only alphanumeric characters, space, ‘<em>‘, ‘-’ with no leading or trailing space..</em></p>
+ ]
+      </small>
+      
+<p>Subscription consumer UUID</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="customer_portal_proxies-delete_entitlements">
+      <a href='#customer_portal_proxies'>Customer Portal Proxy</a> / <a href='#customer_portal_proxies-delete_entitlements'>delete_entitlements</a>
+      </h3>
+
+      <div>
+          <h4>
+              delete /fusor/api/customer_portal/consumers/:id/entitlements
+            <br>
+            <small>Delete all entitlements for a subscription consumer from RHN customer portal. See customer portal API documentation for a full list of parameters.</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>string from 2 to 128 characters containing only alphanumeric characters, space, ‘<em>‘, ‘-’ with no leading or trailing space..</em></p>
+ ]
+      </small>
+      
+<p>Subscription consumer UUID</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+  </div>
+
+  <hr/>
+
+  <div>
+    <h2 id="deployment_plans">
+      <a href='#deployment_plans'>OpenStack Deployment Plans</a><br>
+      <small></small>
+    </h2>
+  </div>
+
+    <div>
+<p>RHEL OpenStack Platform deployment plan on the undercloud</p>
+</div>
+
+  <div>
+
+      <hr/>
+
+      <h3 id="deployment_plans-deploy">
+      <a href='#deployment_plans'>OpenStack Deployment Plans</a> / <a href='#deployment_plans-deploy'>deploy</a>
+      </h3>
+
+      <div>
+          <h4>
+              POST /fusor/api/openstack/deployments/:deployment_id/deployment_plans/:name
+            <br>
+            <small>Show the undercloud deployment status</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+    <li>
+      <strong>name </strong>:
+      <small>
+        required
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Name of the deployment plan (ex. overcloud)</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="deployment_plans-show">
+      <a href='#deployment_plans'>OpenStack Deployment Plans</a> / <a href='#deployment_plans-show'>show</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/openstack/deployments/:deployment_id/deployment_plans/:name
+            <br>
+            <small>Get the deployment plan.  Includes name, parameters, and roles</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+    <li>
+      <strong>name </strong>:
+      <small>
+        required
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Name of the deployment plan (ex. overcloud)</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="deployment_plans-update_parameters">
+      <a href='#deployment_plans'>OpenStack Deployment Plans</a> / <a href='#deployment_plans-update_parameters'>update_parameters</a>
+      </h3>
+
+      <div>
+          <h4>
+              PUT /fusor/api/openstack/deployments/:deployment_id/deployment_plans/:id/update_parameters
+            <br>
+            <small>Updates deployment plan parameters</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+    <li>
+      <strong>name </strong>:
+      <small>
+        required
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Name of the deployment plan (ex. overcloud)</p>
+
+    </li>
+    
+    <li>
+      <strong>parameters </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Hash</p>
+ ]
+      </small>
+      
+<p>Hash of deployment plan parameters to change</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+  </div>
+
+  <hr/>
+
+  <div>
+    <h2 id="deployments">
+      <a href='#deployments'>Deployments</a><br>
+      <small></small>
+    </h2>
+  </div>
+
+    <div>
+<p>Fusor deployment objects contains all the configuration options for deployment.</p>
+</div>
+
+  <div>
+
+      <hr/>
+
+      <h3 id="deployments-index">
+      <a href='#deployments'>Deployments</a> / <a href='#deployments-index'>index</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/v21/deployments
+            <br>
+            <small>Gets a list of deployments</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>search </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Text to search deployments for</p>
+
+    </li>
+    
+    <li>
+      <strong>order </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Ordering of deployment results</p>
+
+    </li>
+    
+    <li>
+      <strong>page </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Page of deployment results to display</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="deployments-create">
+      <a href='#deployments'>Deployments</a> / <a href='#deployments-create'>create</a>
+      </h3>
+
+      <div>
+          <h4>
+              POST /fusor/api/v21/deployments
+            <br>
+            <small>Create a deployment</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment </strong>:
+      <small>
+        required
+        
+          [ 
+<p>Hash</p>
+ ]
+      </small>
+      
+<p>QCI Deployment</p>
+
+    </li>
+    <ul>
+    <li>
+      <strong>name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Deployment name</p>
+
+    </li>
+    
+    <li>
+      <strong>description </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Deployment description</p>
+
+    </li>
+    
+    <li>
+      <strong>foreman_task_uuid </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>string from 2 to 128 characters containing only alphanumeric characters, space, ‘<em>‘, ‘-’ with no leading or trailing space..</em></p>
+ ]
+      </small>
+      
+<p>Task identifier for the main deployment task</p>
+
+    </li>
+    
+    <li>
+      <strong>deploy_rhev </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the deployment deploy Red Hat Virtualization (RHV)</p>
+
+    </li>
+    
+    <li>
+      <strong>deploy_cfme </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the deployment deploy Red Hat Cloud Forms Management Engine (CFME)</p>
+
+    </li>
+    
+    <li>
+      <strong>deploy_openstack </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the deployment deploy Red Hat RHEL OpenStack Platform Platform (OSP)</p>
+
+    </li>
+    
+    <li>
+      <strong>deploy_openshift </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the deployment deploy OpenShift Container Platform (OCP)</p>
+
+    </li>
+    
+    <li>
+      <strong>organization_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the Organization the deployment should use</p>
+
+    </li>
+    
+    <li>
+      <strong>lifecycle_environment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the lifecycle environment the deployment should use</p>
+
+    </li>
+    
+    <li>
+      <strong>enable_access_insights </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the deployment enable Red Hat Insights</p>
+
+    </li>
+    
+    <li>
+      <strong>is_disconnected </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the deployment use disconnected sync</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_is_self_hosted </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the RHV management engine be deployed to a hypervisor</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_self_hosted_engine_hostname </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Self hosted RHV engine’s hostname</p>
+
+    </li>
+    
+    <li>
+      <strong>host_naming_scheme </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Choose RHV hypervisor naming scheme (hypervisorN/Freeform/MAC Address/Custom scheme)</p>
+
+    </li>
+    
+    <li>
+      <strong>custom_preprend_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>When using a “Custom scheme” for host naming scheme, this string will be prepended to the host ID</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_engine_host_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the host where the RHV engine will be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>discovered_host_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the host where the RHV engine will be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_root_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV hosts root password</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_engine_admin_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV management engine password for the admin user</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_data_center_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV data center name</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_cluster_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV cluster name</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_cpu_type </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Type of CPU for RHV installation</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_storage_type </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV host storage type (NFS/glusterfs) for data, export, and self hosted</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_storage_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV data storage name</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_storage_address </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV data storage address</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_share_path </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV data storage path on the server</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_export_domain_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV export domain storage name</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_export_domain_address </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV export domain storage address</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_export_domain_path </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV export domain storage path</p>
+
+    </li>
+    
+    <li>
+      <strong>hosted_storage_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Storage name for the self-hosted RHV engine</p>
+
+    </li>
+    
+    <li>
+      <strong>hosted_storage_address </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Storage address for the self-hosted RHV engine</p>
+
+    </li>
+    
+    <li>
+      <strong>hosted_storage_path </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Storage path for the self-hosted RHV engine</p>
+
+    </li>
+    
+    <li>
+      <strong>openstack_deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the RHEL OpenStack Platform deployment object with RHEL OpenStack Platform fields</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_install_loc </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Location where OpenShift should be installed (RHV/OSP)</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_number_master_nodes </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Number of OpenShift master nodes to be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_number_worker_nodes </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Number of OpenShift worker nodes to be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_available_vcpu </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>vCPUs available to allocate to OpenShift Nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_available_ram </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>RAM available to allocate to OpenShift Nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_available_disk </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Disk storage available to allocate to OpenShift Nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_master_vcpu </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>vCPUs allocated to each master node</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_master_ram </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>RAM allocated to each master node</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_master_disk </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Disk storage allocated to each master node</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_node_vcpu </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>vCPUs allocated to each worker node</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_node_ram </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>RAM allocated to each worker node</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_node_disk </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Disk storage allocated to each worker node</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_storage_size </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Additional storage needed for Docker containers on each worker node</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_storage_type </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>OpenShift export storage type (NFS/glusterfs)</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_storage_host </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>OpenShift storage host</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_export_path </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>OpenShift export storage path</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_username </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Username on the account that will be created and used to configure all nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_user_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Password on the account that will be created and used to configure all nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_subdomain_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Subdomain name for a wildcard entry to point to the OpenShift router</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_sample_helloworld </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the deployment deploy an OpenShift “Hello World” sample application</p>
+
+    </li>
+    
+    <li>
+      <strong>cfme_install_loc </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Location of the primary CloudForms appliance</p>
+
+    </li>
+    
+    <li>
+      <strong>cfme_root_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>CloudForms password for root ssh</p>
+
+    </li>
+    
+    <li>
+      <strong>cfme_admin_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>CloudForms admin password for the admin user</p>
+
+    </li>
+    
+    <li>
+      <strong>cfme_db_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>CloudForms password for the database</p>
+
+    </li>
+    
+    <li>
+      <strong>upstream_consumer_uuid </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>UUID of the Subscription Management Application for consumed products</p>
+
+    </li>
+    
+    <li>
+      <strong>upstream_consumer_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Name of the Subscription Management Application for consumed products</p>
+
+    </li>
+    
+    <li>
+      <strong>cdn_url </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>CDN URL for content sync</p>
+
+    </li>
+    
+    <li>
+      <strong>manifest_file </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Subscription manifest file used for disconnected sync</p>
+
+    </li>
+    
+    <li>
+      <strong>has_content_error </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Set when the deployment has encountered a content sync error and must be redeployed</p>
+
+    </li>
+    
+</ul>
+
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="deployments-show">
+      <a href='#deployments'>Deployments</a> / <a href='#deployments-show'>show</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/v21/deployments/:id
+            <br>
+            <small>Show a deployment</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="deployments-update">
+      <a href='#deployments'>Deployments</a> / <a href='#deployments-update'>update</a>
+      </h3>
+
+      <div>
+          <h4>
+              PUT /fusor/api/v21/deployments/:id
+            <br>
+            <small>Update a deployment</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+    <li>
+      <strong>deployment </strong>:
+      <small>
+        required
+        
+          [ 
+<p>Hash</p>
+ ]
+      </small>
+      
+<p>QCI Deployment</p>
+
+    </li>
+    <ul>
+    <li>
+      <strong>name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Deployment name</p>
+
+    </li>
+    
+    <li>
+      <strong>description </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Deployment description</p>
+
+    </li>
+    
+    <li>
+      <strong>foreman_task_uuid </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>string from 2 to 128 characters containing only alphanumeric characters, space, ‘<em>‘, ‘-’ with no leading or trailing space..</em></p>
+ ]
+      </small>
+      
+<p>Task identifier for the main deployment task</p>
+
+    </li>
+    
+    <li>
+      <strong>deploy_rhev </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the deployment deploy Red Hat Virtualization (RHV)</p>
+
+    </li>
+    
+    <li>
+      <strong>deploy_cfme </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the deployment deploy Red Hat Cloud Forms Management Engine (CFME)</p>
+
+    </li>
+    
+    <li>
+      <strong>deploy_openstack </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the deployment deploy Red Hat RHEL OpenStack Platform Platform (OSP)</p>
+
+    </li>
+    
+    <li>
+      <strong>deploy_openshift </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the deployment deploy OpenShift Container Platform (OCP)</p>
+
+    </li>
+    
+    <li>
+      <strong>organization_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the Organization the deployment should use</p>
+
+    </li>
+    
+    <li>
+      <strong>lifecycle_environment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the lifecycle environment the deployment should use</p>
+
+    </li>
+    
+    <li>
+      <strong>enable_access_insights </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the deployment enable Red Hat Insights</p>
+
+    </li>
+    
+    <li>
+      <strong>is_disconnected </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the deployment use disconnected sync</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_is_self_hosted </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the RHV management engine be deployed to a hypervisor</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_self_hosted_engine_hostname </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Self hosted RHV engine’s hostname</p>
+
+    </li>
+    
+    <li>
+      <strong>host_naming_scheme </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Choose RHV hypervisor naming scheme (hypervisorN/Freeform/MAC Address/Custom scheme)</p>
+
+    </li>
+    
+    <li>
+      <strong>custom_preprend_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>When using a “Custom scheme” for host naming scheme, this string will be prepended to the host ID</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_engine_host_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the host where the RHV engine will be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>discovered_host_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the host where the RHV engine will be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_root_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV hosts root password</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_engine_admin_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV management engine password for the admin user</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_data_center_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV data center name</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_cluster_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV cluster name</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_cpu_type </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Type of CPU for RHV installation</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_storage_type </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV host storage type (NFS/glusterfs) for data, export, and self hosted</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_storage_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV data storage name</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_storage_address </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV data storage address</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_share_path </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV data storage path on the server</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_export_domain_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV export domain storage name</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_export_domain_address </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV export domain storage address</p>
+
+    </li>
+    
+    <li>
+      <strong>rhev_export_domain_path </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>RHV export domain storage path</p>
+
+    </li>
+    
+    <li>
+      <strong>hosted_storage_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Storage name for the self-hosted RHV engine</p>
+
+    </li>
+    
+    <li>
+      <strong>hosted_storage_address </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Storage address for the self-hosted RHV engine</p>
+
+    </li>
+    
+    <li>
+      <strong>hosted_storage_path </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Storage path for the self-hosted RHV engine</p>
+
+    </li>
+    
+    <li>
+      <strong>openstack_deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the RHEL OpenStack Platform deployment object with RHEL OpenStack Platform fields</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_install_loc </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Location where OpenShift should be installed (RHV/OSP)</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_number_master_nodes </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Number of OpenShift master nodes to be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_number_worker_nodes </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Number of OpenShift worker nodes to be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_available_vcpu </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>vCPUs available to allocate to OpenShift Nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_available_ram </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>RAM available to allocate to OpenShift Nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_available_disk </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Disk storage available to allocate to OpenShift Nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_master_vcpu </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>vCPUs allocated to each master node</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_master_ram </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>RAM allocated to each master node</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_master_disk </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Disk storage allocated to each master node</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_node_vcpu </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>vCPUs allocated to each worker node</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_node_ram </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>RAM allocated to each worker node</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_node_disk </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Disk storage allocated to each worker node</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_storage_size </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Additional storage needed for Docker containers on each worker node</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_storage_type </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>OpenShift export storage type (NFS/glusterfs)</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_storage_host </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>OpenShift storage host</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_export_path </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>OpenShift export storage path</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_username </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Username on the account that will be created and used to configure all nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_user_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Password on the account that will be created and used to configure all nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_subdomain_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Subdomain name for a wildcard entry to point to the OpenShift router</p>
+
+    </li>
+    
+    <li>
+      <strong>openshift_sample_helloworld </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the deployment deploy an OpenShift “Hello World” sample application</p>
+
+    </li>
+    
+    <li>
+      <strong>cfme_install_loc </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Location of the primary CloudForms appliance</p>
+
+    </li>
+    
+    <li>
+      <strong>cfme_root_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>CloudForms password for root ssh</p>
+
+    </li>
+    
+    <li>
+      <strong>cfme_admin_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>CloudForms admin password for the admin user</p>
+
+    </li>
+    
+    <li>
+      <strong>cfme_db_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>CloudForms password for the database</p>
+
+    </li>
+    
+    <li>
+      <strong>upstream_consumer_uuid </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>UUID of the Subscription Management Application for consumed products</p>
+
+    </li>
+    
+    <li>
+      <strong>upstream_consumer_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Name of the Subscription Management Application for consumed products</p>
+
+    </li>
+    
+    <li>
+      <strong>cdn_url </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>CDN URL for content sync</p>
+
+    </li>
+    
+    <li>
+      <strong>manifest_file </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Subscription manifest file used for disconnected sync</p>
+
+    </li>
+    
+    <li>
+      <strong>has_content_error </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Set when the deployment has encountered a content sync error and must be redeployed</p>
+
+    </li>
+    
+</ul>
+
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="deployments-destroy">
+      <a href='#deployments'>Deployments</a> / <a href='#deployments-destroy'>destroy</a>
+      </h3>
+
+      <div>
+          <h4>
+              DELETE /fusor/api/v21/deployments/:id
+            <br>
+            <small>Delete a deployment</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="deployments-deploy">
+      <a href='#deployments'>Deployments</a> / <a href='#deployments-deploy'>deploy</a>
+      </h3>
+
+      <div>
+          <h4>
+              PUT /fusor/api/v21/deployments/:id/deploy
+            <br>
+            <small>Start a deployment</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="deployments-redeploy">
+      <a href='#deployments'>Deployments</a> / <a href='#deployments-redeploy'>redeploy</a>
+      </h3>
+
+      <div>
+          <h4>
+              PUT /fusor/api/v21/deployments/:id/redeploy
+            <br>
+            <small>Redeploy a deployment that has encountered a content sync error</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="deployments-validate">
+      <a href='#deployments'>Deployments</a> / <a href='#deployments-validate'>validate</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/v21/deployments/:id/validate
+            <br>
+            <small>Validate a deployment is ready for deployment</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="deployments-validate_cdn">
+      <a href='#deployments'>Deployments</a> / <a href='#deployments-validate_cdn'>validate_cdn</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/v21/deployments/:id/validate_cdn
+            <br>
+            <small>Validate a CDN can be used for content sync</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+    <li>
+      <strong>cdn_url </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>URL of the CDN the deployment will use</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="deployments-compatible_cpu_families">
+      <a href='#deployments'>Deployments</a> / <a href='#deployments-compatible_cpu_families'>compatible_cpu_families</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/v21/deployments/:id/compatible_cpu_families
+            <br>
+            <small>Get a list of compatible CPU families for all selected RHV hypervisor hosts</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="deployments-check_mount_point">
+      <a href='#deployments'>Deployments</a> / <a href='#deployments-check_mount_point'>check_mount_point</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/v21/deployments/:id/check_mount_point
+            <br>
+            <small>Check a file mount is available</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+    <li>
+      <strong>address </strong>:
+      <small>
+        required
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Address of the file server</p>
+
+    </li>
+    
+    <li>
+      <strong>path </strong>:
+      <small>
+        required
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Path of the shared file system</p>
+
+    </li>
+    
+    <li>
+      <strong>type </strong>:
+      <small>
+        required
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Type of file share (NFS/glusterfs)</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="deployments-log">
+      <a href='#deployments'>Deployments</a> / <a href='#deployments-log'>log</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/v21/deployments/:id/log
+            <br>
+            <small>Get the log for a deployment</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+    <li>
+      <strong>log_type </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>type of log to retrieve (fusor_log/foreman_log/candlepin_log/foreman_proxy_log/ansible_log)</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+  </div>
+
+  <hr/>
+
+  <div>
+    <h2 id="flavors">
+      <a href='#flavors'>OpenStack Flavors</a><br>
+      <small></small>
+    </h2>
+  </div>
+
+    <div>
+<p>RHEL OpenStack Platform flavors of nodes</p>
+</div>
+
+  <div>
+
+      <hr/>
+
+      <h3 id="flavors-index">
+      <a href='#flavors'>OpenStack Flavors</a> / <a href='#flavors-index'>index</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/openstack/deployments/:deployment_id/flavors
+            <br>
+            <small>Get a list RHEL OpenStack Platform flavors</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="flavors-show">
+      <a href='#flavors'>OpenStack Flavors</a> / <a href='#flavors-show'>show</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/openstack/deployments/:deployment_id/flavors
+            <br>
+            <small>Get RHEL OpenStack Platform flavor by ID</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+    <li>
+      <strong>id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID number of the flavor</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+  </div>
+
+  <hr/>
+
+  <div>
+    <h2 id="images">
+      <a href='#images'>OpenStack Images</a><br>
+      <small></small>
+    </h2>
+  </div>
+
+    <div>
+<p>RHEL OpenStack Platform images of virtual machines</p>
+</div>
+
+  <div>
+
+      <hr/>
+
+      <h3 id="images-index">
+      <a href='#images'>OpenStack Images</a> / <a href='#images-index'>index</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/openstack/deployments/:deployment_id/images
+            <br>
+            <small>Get RHEL OpenStack Platform images</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="images-show_by_name">
+      <a href='#images'>OpenStack Images</a> / <a href='#images-show_by_name'>show_by_name</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/openstack/deployments/:deployment_id/images/show_by_name/:name
+            <br>
+            <small>Get RHEL OpenStack Platform image by name</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+    <li>
+      <strong>name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Name of the RHEL OpenStack Platform image</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+  </div>
+
+  <hr/>
+
+  <div>
+    <h2 id="nodes">
+      <a href='#nodes'>OpenStack Nodes</a><br>
+      <small></small>
+    </h2>
+  </div>
+
+    <div>
+<p>Physical node for RHEL OpenStack Platform to use</p>
+</div>
+
+  <div>
+
+      <hr/>
+
+      <h3 id="nodes-index">
+      <a href='#nodes'>OpenStack Nodes</a> / <a href='#nodes-index'>index</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/openstack/deployments/:deployment_id/nodes
+            <br>
+            <small>Get RHEL OpenStack Platform registered nodes</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="nodes-show">
+      <a href='#nodes'>OpenStack Nodes</a> / <a href='#nodes-show'>show</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/openstack/deployments/:deployment_id/nodes
+            <br>
+            <small>Get RHEL OpenStack Platform registered node</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+    <li>
+      <strong>id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>UUID of the node</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="nodes-create">
+      <a href='#nodes'>OpenStack Nodes</a> / <a href='#nodes-create'>create</a>
+      </h3>
+
+      <div>
+          <h4>
+              POST /fusor/api/openstack/deployments/:deployment_id/nodes
+            <br>
+            <small>Register RHEL OpenStack Platform node</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="nodes-destroy">
+      <a href='#nodes'>OpenStack Nodes</a> / <a href='#nodes-destroy'>destroy</a>
+      </h3>
+
+      <div>
+          <h4>
+              DELETE /fusor/api/openstack/deployments/:deployment_id/nodes
+            <br>
+            <small>Delete (unregister) RHEL OpenStack Platform node</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+    <li>
+      <strong>id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>UUID of the node</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="nodes-list_ports">
+      <a href='#nodes'>OpenStack Nodes</a> / <a href='#nodes-list_ports'>list_ports</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/openstack/deployments/:deployment_id/node_ports
+            <br>
+            <small>Get ports belonging to RHEL OpenStack Platform registered nodes</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="nodes-discover_macs">
+      <a href='#nodes'>OpenStack Nodes</a> / <a href='#nodes-discover_macs'>discover_macs</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/openstack/deployments/:deployment_id/node_mac_addresses
+            <br>
+            <small>Get mac addresses from a power management interface to register as RHEL OpenStack Platform nodes</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+  </div>
+
+  <hr/>
+
+  <div>
+    <h2 id="openstack_deployments">
+      <a href='#openstack_deployments'>OpenStack Deployments</a><br>
+      <small></small>
+    </h2>
+  </div>
+
+    <div>
+<p>Contains all the configuration options for an RHEL OpenStack Platform deployment as part of a Fusor deployment.</p>
+</div>
+
+  <div>
+
+      <hr/>
+
+      <h3 id="openstack_deployments-index">
+      <a href='#openstack_deployments'>OpenStack Deployments</a> / <a href='#openstack_deployments-index'>index</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/v21/openstack_deployments
+            <br>
+            <small>Gets a list of RHEL OpenStack Platform deployments</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment the RHEL OpenStack Platform deployments are associated with</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="openstack_deployments-create">
+      <a href='#openstack_deployments'>OpenStack Deployments</a> / <a href='#openstack_deployments-create'>create</a>
+      </h3>
+
+      <div>
+          <h4>
+              POST /fusor/api/v21/openstack_deployments
+            <br>
+            <small>Create a RHEL OpenStack Platform deployment</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>undercloud_admin_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>password for the admin account on the undercloud</p>
+
+    </li>
+    
+    <li>
+      <strong>undercloud_ip_address </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>IP Address or hostname of the undercloud</p>
+
+    </li>
+    
+    <li>
+      <strong>undercloud_ssh_username </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Username to SSH into the undercloud</p>
+
+    </li>
+    
+    <li>
+      <strong>undercloud_ssh_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Password to SSH into the undercloud</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_deployed </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Does the undercloud have an existing deployed overcloud</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_ext_net_interface </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Interface to provide external network access for the overcloud</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_private_net </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>CIDR notated network range for the overcloud private IP addresses</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_float_net </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>CIDR notated network range for the overcloud floating IP addresses</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_float_gateway </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>IP address of the gateway for the overcloud floating network</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Password for the admin account on the overcloud</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_libvirt_type </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Overcloud virtualization type (kvm)</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_node_count </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Total number of registered nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_compute_flavor </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Flavor assigned to overcloud compute nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_compute_count </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Number of overcloud compute nodes to be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_controller_flavor </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Flavor assigned to overcloud controller nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_controller_count </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Number of overcloud controller nodes to be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_ceph_storage_flavor </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Flavor assigned to overcloud ceph storage nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_ceph_storage_count </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Number of overcloud compute ceph storage to be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_block_storage_flavor </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Flavor assigned to overcloud block storage nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_block_storage_count </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Number of overcloud block storage nodes to be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_object_storage_flavor </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Flavor assigned to overcloud object storage nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_object_storage_count </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Number of overcloud object storage nodes to be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>external_ceph_storage </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the overcloud use an externally hosted Ceph storage device</p>
+
+    </li>
+    
+    <li>
+      <strong>ceph_ext_mon_host </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Location of the externally hosted Ceph storage device</p>
+
+    </li>
+    
+    <li>
+      <strong>ceph_cluster_fsid </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Cluster FSID of the externally hosted Ceph storage device</p>
+
+    </li>
+    
+    <li>
+      <strong>ceph_client_username </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Username to log into the externally hosted Ceph storage device</p>
+
+    </li>
+    
+    <li>
+      <strong>ceph_client_key </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Client key used to log into the externally hosted Ceph storage device</p>
+
+    </li>
+    
+    <li>
+      <strong>nova_rdb_pool_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Nova RDB pool name is required when using external ceph storage (vms)</p>
+
+    </li>
+    
+    <li>
+      <strong>cinder_rdb_pool_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Cinder RDB pool name is required when using external ceph storage (volumes)</p>
+
+    </li>
+    
+    <li>
+      <strong>glance_rdb_pool_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Glance RDB pool name is required when using external ceph storage (images)</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="openstack_deployments-show">
+      <a href='#openstack_deployments'>OpenStack Deployments</a> / <a href='#openstack_deployments-show'>show</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/v21/openstack_deployments/:id
+            <br>
+            <small>Show a RHEL OpenStack Platform deployment</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the RHEL OpenStack Platform deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="openstack_deployments-update">
+      <a href='#openstack_deployments'>OpenStack Deployments</a> / <a href='#openstack_deployments-update'>update</a>
+      </h3>
+
+      <div>
+          <h4>
+              PUT /fusor/api/v21/openstack_deployments
+            <br>
+            <small>Update a RHEL OpenStack Platform deployment</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the RHEL OpenStack Platform deployment</p>
+
+    </li>
+    
+    <li>
+      <strong>undercloud_admin_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>password for the admin account on the undercloud</p>
+
+    </li>
+    
+    <li>
+      <strong>undercloud_ip_address </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>IP Address or hostname of the undercloud</p>
+
+    </li>
+    
+    <li>
+      <strong>undercloud_ssh_username </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Username to SSH into the undercloud</p>
+
+    </li>
+    
+    <li>
+      <strong>undercloud_ssh_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Password to SSH into the undercloud</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_deployed </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Does the undercloud have an existing deployed overcloud</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_ext_net_interface </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Interface to provide external network access for the overcloud</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_private_net </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>CIDR notated network range for the overcloud private IP addresses</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_float_net </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>CIDR notated network range for the overcloud floating IP addresses</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_float_gateway </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>IP address of the gateway for the overcloud floating network</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_password </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Password for the admin account on the overcloud</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_libvirt_type </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Overcloud virtualization type (kvm)</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_node_count </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Total number of registered nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_compute_flavor </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Flavor assigned to overcloud compute nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_compute_count </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Number of overcloud compute nodes to be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_controller_flavor </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Flavor assigned to overcloud controller nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_controller_count </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Number of overcloud controller nodes to be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_ceph_storage_flavor </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Flavor assigned to overcloud ceph storage nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_ceph_storage_count </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Number of overcloud compute ceph storage to be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_block_storage_flavor </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Flavor assigned to overcloud block storage nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_block_storage_count </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Number of overcloud block storage nodes to be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_object_storage_flavor </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Flavor assigned to overcloud object storage nodes</p>
+
+    </li>
+    
+    <li>
+      <strong>overcloud_object_storage_count </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Number of overcloud object storage nodes to be deployed</p>
+
+    </li>
+    
+    <li>
+      <strong>external_ceph_storage </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>boolean</p>
+ ]
+      </small>
+      
+<p>Will the overcloud use an externally hosted Ceph storage device</p>
+
+    </li>
+    
+    <li>
+      <strong>ceph_ext_mon_host </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Location of the externally hosted Ceph storage device</p>
+
+    </li>
+    
+    <li>
+      <strong>ceph_cluster_fsid </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Cluster FSID of the externally hosted Ceph storage device</p>
+
+    </li>
+    
+    <li>
+      <strong>ceph_client_username </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Username to log into the externally hosted Ceph storage device</p>
+
+    </li>
+    
+    <li>
+      <strong>ceph_client_key </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Client key used to log into the externally hosted Ceph storage device</p>
+
+    </li>
+    
+    <li>
+      <strong>nova_rdb_pool_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Nova RDB pool name is required when using external ceph storage (vms)</p>
+
+    </li>
+    
+    <li>
+      <strong>cinder_rdb_pool_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Cinder RDB pool name is required when using external ceph storage (volumes)</p>
+
+    </li>
+    
+    <li>
+      <strong>glance_rdb_pool_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Glance RDB pool name is required when using external ceph storage (images)</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="openstack_deployments-destroy">
+      <a href='#openstack_deployments'>OpenStack Deployments</a> / <a href='#openstack_deployments-destroy'>destroy</a>
+      </h3>
+
+      <div>
+          <h4>
+              DELETE /fusor/api/v21/openstack_deployments/:id
+            <br>
+            <small>Delete a RHEL OpenStack Platform deployment</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the RHEL OpenStack Platform deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="openstack_deployments-sync_openstack">
+      <a href='#openstack_deployments'>OpenStack Deployments</a> / <a href='#openstack_deployments-sync_openstack'>sync_openstack</a>
+      </h3>
+
+      <div>
+          <h4>
+              POST /fusor/api/v21/openstack_deployments/:id/sync_openstack
+            <br>
+            <small>Synchronize a Openstack deployment object with the RHEL OpenStack Platform deployment plan</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the RHEL OpenStack Platform deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+  </div>
+
+  <hr/>
+
+  <div>
+    <h2 id="stacks">
+      <a href='#stacks'>OpenStack Stacks</a><br>
+      <small></small>
+    </h2>
+  </div>
+
+    <div>
+<p>RHEL OpenStack Platform stacks</p>
+</div>
+
+  <div>
+
+      <hr/>
+
+      <h3 id="stacks-index">
+      <a href='#stacks'>OpenStack Stacks</a> / <a href='#stacks-index'>index</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/openstack/deployments/:deployment_id/stacks
+            <br>
+            <small>Get RHEL OpenStack Platform stacks</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="stacks-show">
+      <a href='#stacks'>OpenStack Stacks</a> / <a href='#stacks-show'>show</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/openstack/deployments/:deployment_id/flavors
+            <br>
+            <small>Get RHEL OpenStack Platform flavor by name</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+    <li>
+      <strong>name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Name of the stack (ex. overcloud)</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="stacks-destroy">
+      <a href='#stacks'>OpenStack Stacks</a> / <a href='#stacks-destroy'>destroy</a>
+      </h3>
+
+      <div>
+          <h4>
+              DELETE /fusor/api/openstack/deployments/:deployment_id/flavors
+            <br>
+            <small>Delete RHEL OpenStack Platform flavor by name</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+    <li>
+      <strong>name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Name of the stack to delete (ex. overcloud)</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+  </div>
+
+  <hr/>
+
+  <div>
+    <h2 id="subscriptions">
+      <a href='#subscriptions'>Subscriptions</a><br>
+      <small></small>
+    </h2>
+  </div>
+
+    <div>
+<p>Information about subscriptions related to a deployment</p>
+</div>
+
+  <div>
+
+      <hr/>
+
+      <h3 id="subscriptions-index">
+      <a href='#subscriptions'>Subscriptions</a> / <a href='#subscriptions-index'>index</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/v21/subscriptions
+            <br>
+            <small>Gets a list of subscription objects</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>filter by the ID of the deployment</p>
+
+    </li>
+    
+    <li>
+      <strong>source </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>string from 2 to 128 characters containing only alphanumeric characters, space, ‘<em>‘, ‘-’ with no leading or trailing space..</em></p>
+ ]
+      </small>
+      
+<p>filter by subscription source</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="subscriptions-create">
+      <a href='#subscriptions'>Subscriptions</a> / <a href='#subscriptions-create'>create</a>
+      </h3>
+
+      <div>
+          <h4>
+              POST /fusor/api/v21/subscriptions
+            <br>
+            <small>create a subscription</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>ID of the deployment using this subscription</p>
+
+    </li>
+    
+    <li>
+      <strong>contract_number </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Contract number</p>
+
+    </li>
+    
+    <li>
+      <strong>product_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Product name</p>
+
+    </li>
+    
+    <li>
+      <strong>quantity_attached </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Quantity attached</p>
+
+    </li>
+    
+    <li>
+      <strong>start_date </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Date</p>
+ ]
+      </small>
+      
+<p>Start date</p>
+
+    </li>
+    
+    <li>
+      <strong>end_date </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Date</p>
+ ]
+      </small>
+      
+<p>Expiration date</p>
+
+    </li>
+    
+    <li>
+      <strong>total_quantity </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Total quantity</p>
+
+    </li>
+    
+    <li>
+      <strong>source </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Source</p>
+
+    </li>
+    
+    <li>
+      <strong>quantity_to_add </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Quantity to add</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="subscriptions-show">
+      <a href='#subscriptions'>Subscriptions</a> / <a href='#subscriptions-show'>show</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/v21/subscriptions
+            <br>
+            <small>Gets a list of subscription objects</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the subscription</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="subscriptions-update">
+      <a href='#subscriptions'>Subscriptions</a> / <a href='#subscriptions-update'>update</a>
+      </h3>
+
+      <div>
+          <h4>
+              PUT /fusor/api/v21/subscriptions/:id
+            <br>
+            <small>create a subscription</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the subscription</p>
+
+    </li>
+    
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>ID of the deployment using this subscription</p>
+
+    </li>
+    
+    <li>
+      <strong>contract_number </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Contract number</p>
+
+    </li>
+    
+    <li>
+      <strong>product_name </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Product name</p>
+
+    </li>
+    
+    <li>
+      <strong>quantity_attached </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Quantity attached</p>
+
+    </li>
+    
+    <li>
+      <strong>start_date </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Date</p>
+ ]
+      </small>
+      
+<p>Start date</p>
+
+    </li>
+    
+    <li>
+      <strong>end_date </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Date</p>
+ ]
+      </small>
+      
+<p>Expiration date</p>
+
+    </li>
+    
+    <li>
+      <strong>total_quantity </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Total quantity</p>
+
+    </li>
+    
+    <li>
+      <strong>source </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>String</p>
+ ]
+      </small>
+      
+<p>Source</p>
+
+    </li>
+    
+    <li>
+      <strong>quantity_to_add </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>Quantity to add</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="subscriptions-destroy">
+      <a href='#subscriptions'>Subscriptions</a> / <a href='#subscriptions-destroy'>destroy</a>
+      </h3>
+
+      <div>
+          <h4>
+              DELETE /fusor/api/v21/subscriptions/:id
+            <br>
+            <small>delete a subscription</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the subscription</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="subscriptions-upload">
+      <a href='#subscriptions'>Subscriptions</a> / <a href='#subscriptions-upload'>upload</a>
+      </h3>
+
+      <div>
+          <h4>
+              PUT /fusor/api/v21/subscriptions
+            <br>
+            <small>upload a subscription manifest file</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>manifest_file </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Hash</p>
+ ]
+      </small>
+      
+<p>ID of the subscription</p>
+
+    </li>
+    <ul>
+    <li>
+      <strong>file </strong>:
+      <small>
+        required
+        
+          [ 
+<p>string from 2 to 128 characters containing only alphanumeric characters, space, ‘<em>‘, ‘-’ with no leading or trailing space..</em></p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        required
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+</ul>
+
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="subscriptions-validate">
+      <a href='#subscriptions'>Subscriptions</a> / <a href='#subscriptions-validate'>validate</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/v21/subscriptions/validate
+            <br>
+            <small>Validate a subscription</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+  </div>
+
+  <hr/>
+
+  <div>
+    <h2 id="underclouds">
+      <a href='#underclouds'>Undercloud</a><br>
+      <small></small>
+    </h2>
+  </div>
+
+    <div>
+<p>Connect a deployment to an RHEL OpenStack Platform undercloud and perform operations</p>
+</div>
+
+  <div>
+
+      <hr/>
+
+      <h3 id="underclouds-show">
+      <a href='#underclouds'>Undercloud</a> / <a href='#underclouds-show'>show</a>
+      </h3>
+
+      <div>
+          <h4>
+              GET /fusor/api/openstack/deployments/:deployment_id/undercloud
+            <br>
+            <small>Show the undercloud deployment status</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="underclouds-create">
+      <a href='#underclouds'>Undercloud</a> / <a href='#underclouds-create'>create</a>
+      </h3>
+
+      <div>
+          <h4>
+              POST /fusor/api/openstack/deployments/:deployment_id/undercloud
+            <br>
+            <small>Connect to the undercloud via SSH and link to the deployment using admin account</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+          <h4>Params</h4>
+          <ul>
+    <li>
+      <strong>deployment_id </strong>:
+      <small>
+        optional
+        
+          [ 
+<p>Integer</p>
+ ]
+      </small>
+      
+<p>ID of the deployment</p>
+
+    </li>
+    
+</ul>
+
+      </div>
+      <hr/>
+
+      <h3 id="underclouds-update_dns">
+      <a href='#underclouds'>Undercloud</a> / <a href='#underclouds-update_dns'>update_dns</a>
+      </h3>
+
+      <div>
+          <h4>
+              POST /fusor/api/openstack/deployments/:deployment_id/undercloud/update_dns
+            <br>
+            <small>Change undercloud DNS settings to match the DNS on this Satellite server</small>
+          </h4>
+      </div>
+
+      <div>
+        
+
+
+      </div>
+  </div>

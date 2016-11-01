@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>API documentation</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link type='text/css' rel='stylesheet' href='./apidoc/stylesheets/bundled/bootstrap.min.css'/>
+<link type='text/css' rel='stylesheet' href='./apidoc/stylesheets/bundled/prettify.css'/>
+<link type='text/css' rel='stylesheet' href='./apidoc/stylesheets/bundled/bootstrap-responsive.min.css'/>
+  <link type='text/css' rel='stylesheet' href='./apidoc/stylesheets/application.css'/>
+  <!-- IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div id='container'>
+        <ul class='breadcrumb'>
+  <li class='active'><a href='./apidoc.html'>Foreman fusor_v21</a></li>
+  
+</ul>
+
+<div>
+<p>Satellite API v1 is deprecated. Please use v2. If you still need to use v1, you may do so by either passing ‘version=1’ in the Accept Header or using api/v1/ in the URL.</p>
+</div>
+
+<h1 class='page-header'>Resources</h1>
+
+  <h2>
+    <a href='./apidoc/customer_portal_proxies.html'>
+      Customer Portal Proxy
+    </a><br>
+    <small></small>
+  </h2>
+  <table class='table'>
+    <thead>
+      <tr>
+        <th>Resource</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr>
+            <td>
+              <a href='./apidoc/customer_portal_proxies/login.html'>post /fusor/api/customer_portal/login</a>
+            </td>
+            <td width='60%'>Log in to customer portal (creates session)</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/customer_portal_proxies/logout.html'>post /fusor/api/customer_portal/logout</a>
+            </td>
+            <td width='60%'>Log out of customer portal (deletes session)</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/customer_portal_proxies/is_authenticated.html'>get /fusor/api/customer_portal/is_authenticated</a>
+            </td>
+            <td width='60%'>Verifies an active authenticated session to the customer portal.</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/customer_portal_proxies/get_owners.html'>get /fusor/api/customer_portal/users/:login/owners</a>
+            </td>
+            <td width='60%'>Get a list of subscription owners from RHN customer portal. See customer portal API documentation for a full list of parameters.</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/customer_portal_proxies/get_pools.html'>get /fusor/api/customer_portal/pools</a>
+            </td>
+            <td width='60%'>Get a list of subscription pools from RHN customer portal. See customer portal API documentation for a full list of parameters.</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/customer_portal_proxies/get_consumers.html'>get /fusor/api/customer_portal/owners/:id/consumers</a>
+            </td>
+            <td width='60%'>Get a list of subscription consumers from RHN customer portal. See customer portal API documentation for a full list of parameters.</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/customer_portal_proxies/get_consumer.html'>get /fusor/api/customer_portal/consumers/:id</a>
+            </td>
+            <td width='60%'>Get a subscription consumer from RHN customer portal. See customer portal API documentation for a full list of parameters.</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/customer_portal_proxies/create_consumer.html'>post /fusor/api/customer_portal/consumers</a>
+            </td>
+            <td width='60%'>Create a new subscription consumer from RHN customer portal. See customer portal API documentation for a full list of parameters.</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/customer_portal_proxies/get_entitlements.html'>get /fusor/api/customer_portal/consumers/:id/entitlements</a>
+            </td>
+            <td width='60%'>Get a list of subscription entitlements from RHN customer portal. See customer portal API documentation for a full list of parameters.</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/customer_portal_proxies/create_entitlement.html'>post /fusor/api/customer_portal/consumers/:id/entitlements</a>
+            </td>
+            <td width='60%'>Create new subscription entitlement from RHN customer portal. See customer portal API documentation for a full list of parameters.</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/customer_portal_proxies/delete_entitlements.html'>delete /fusor/api/customer_portal/consumers/:id/entitlements</a>
+            </td>
+            <td width='60%'>Delete all entitlements for a subscription consumer from RHN customer portal. See customer portal API documentation for a full list of parameters.</td>
+          </tr>
+    </tbody>
+  </table>
+  <h2>
+    <a href='./apidoc/deployment_plans.html'>
+      OpenStack Deployment Plans
+    </a><br>
+    <small></small>
+  </h2>
+  <table class='table'>
+    <thead>
+      <tr>
+        <th>Resource</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr>
+            <td>
+              <a href='./apidoc/deployment_plans/deploy.html'>POST /fusor/api/openstack/deployments/:deployment_id/deployment_plans/:name</a>
+            </td>
+            <td width='60%'>Show the undercloud deployment status</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/deployment_plans/show.html'>GET /fusor/api/openstack/deployments/:deployment_id/deployment_plans/:name</a>
+            </td>
+            <td width='60%'>Get the deployment plan.  Includes name, parameters, and roles</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/deployment_plans/update_parameters.html'>PUT /fusor/api/openstack/deployments/:deployment_id/deployment_plans/:id/update_parameters</a>
+            </td>
+            <td width='60%'>Updates deployment plan parameters</td>
+          </tr>
+    </tbody>
+  </table>
+  <h2>
+    <a href='./apidoc/deployments.html'>
+      Deployments
+    </a><br>
+    <small></small>
+  </h2>
+  <table class='table'>
+    <thead>
+      <tr>
+        <th>Resource</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr>
+            <td>
+              <a href='./apidoc/deployments/index.html'>GET /fusor/api/v21/deployments</a>
+            </td>
+            <td width='60%'>Gets a list of deployments</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/deployments/create.html'>POST /fusor/api/v21/deployments</a>
+            </td>
+            <td width='60%'>Create a deployment</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/deployments/show.html'>GET /fusor/api/v21/deployments/:id</a>
+            </td>
+            <td width='60%'>Show a deployment</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/deployments/update.html'>PUT /fusor/api/v21/deployments/:id</a>
+            </td>
+            <td width='60%'>Update a deployment</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/deployments/destroy.html'>DELETE /fusor/api/v21/deployments/:id</a>
+            </td>
+            <td width='60%'>Delete a deployment</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/deployments/deploy.html'>PUT /fusor/api/v21/deployments/:id/deploy</a>
+            </td>
+            <td width='60%'>Start a deployment</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/deployments/redeploy.html'>PUT /fusor/api/v21/deployments/:id/redeploy</a>
+            </td>
+            <td width='60%'>Redeploy a deployment that has encountered a content sync error</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/deployments/validate.html'>GET /fusor/api/v21/deployments/:id/validate</a>
+            </td>
+            <td width='60%'>Validate a deployment is ready for deployment</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/deployments/validate_cdn.html'>GET /fusor/api/v21/deployments/:id/validate_cdn</a>
+            </td>
+            <td width='60%'>Validate a CDN can be used for content sync</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/deployments/compatible_cpu_families.html'>GET /fusor/api/v21/deployments/:id/compatible_cpu_families</a>
+            </td>
+            <td width='60%'>Get a list of compatible CPU families for all selected RHV hypervisor hosts</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/deployments/check_mount_point.html'>GET /fusor/api/v21/deployments/:id/check_mount_point</a>
+            </td>
+            <td width='60%'>Check a file mount is available</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/deployments/log.html'>GET /fusor/api/v21/deployments/:id/log</a>
+            </td>
+            <td width='60%'>Get the log for a deployment</td>
+          </tr>
+    </tbody>
+  </table>
+  <h2>
+    <a href='./apidoc/flavors.html'>
+      OpenStack Flavors
+    </a><br>
+    <small></small>
+  </h2>
+  <table class='table'>
+    <thead>
+      <tr>
+        <th>Resource</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr>
+            <td>
+              <a href='./apidoc/flavors/index.html'>GET /fusor/api/openstack/deployments/:deployment_id/flavors</a>
+            </td>
+            <td width='60%'>Get a list RHEL OpenStack Platform flavors</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/flavors/show.html'>GET /fusor/api/openstack/deployments/:deployment_id/flavors</a>
+            </td>
+            <td width='60%'>Get RHEL OpenStack Platform flavor by ID</td>
+          </tr>
+    </tbody>
+  </table>
+  <h2>
+    <a href='./apidoc/images.html'>
+      OpenStack Images
+    </a><br>
+    <small></small>
+  </h2>
+  <table class='table'>
+    <thead>
+      <tr>
+        <th>Resource</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr>
+            <td>
+              <a href='./apidoc/images/index.html'>GET /fusor/api/openstack/deployments/:deployment_id/images</a>
+            </td>
+            <td width='60%'>Get RHEL OpenStack Platform images</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/images/show_by_name.html'>GET /fusor/api/openstack/deployments/:deployment_id/images/show_by_name/:name</a>
+            </td>
+            <td width='60%'>Get RHEL OpenStack Platform image by name</td>
+          </tr>
+    </tbody>
+  </table>
+  <h2>
+    <a href='./apidoc/nodes.html'>
+      OpenStack Nodes
+    </a><br>
+    <small></small>
+  </h2>
+  <table class='table'>
+    <thead>
+      <tr>
+        <th>Resource</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr>
+            <td>
+              <a href='./apidoc/nodes/index.html'>GET /fusor/api/openstack/deployments/:deployment_id/nodes</a>
+            </td>
+            <td width='60%'>Get RHEL OpenStack Platform registered nodes</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/nodes/show.html'>GET /fusor/api/openstack/deployments/:deployment_id/nodes</a>
+            </td>
+            <td width='60%'>Get RHEL OpenStack Platform registered node</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/nodes/create.html'>POST /fusor/api/openstack/deployments/:deployment_id/nodes</a>
+            </td>
+            <td width='60%'>Register RHEL OpenStack Platform node</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/nodes/destroy.html'>DELETE /fusor/api/openstack/deployments/:deployment_id/nodes</a>
+            </td>
+            <td width='60%'>Delete (unregister) RHEL OpenStack Platform node</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/nodes/list_ports.html'>GET /fusor/api/openstack/deployments/:deployment_id/node_ports</a>
+            </td>
+            <td width='60%'>Get ports belonging to RHEL OpenStack Platform registered nodes</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/nodes/discover_macs.html'>GET /fusor/api/openstack/deployments/:deployment_id/node_mac_addresses</a>
+            </td>
+            <td width='60%'>Get mac addresses from a power management interface to register as RHEL OpenStack Platform nodes</td>
+          </tr>
+    </tbody>
+  </table>
+  <h2>
+    <a href='./apidoc/openstack_deployments.html'>
+      OpenStack Deployments
+    </a><br>
+    <small></small>
+  </h2>
+  <table class='table'>
+    <thead>
+      <tr>
+        <th>Resource</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr>
+            <td>
+              <a href='./apidoc/openstack_deployments/index.html'>GET /fusor/api/v21/openstack_deployments</a>
+            </td>
+            <td width='60%'>Gets a list of RHEL OpenStack Platform deployments</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/openstack_deployments/create.html'>POST /fusor/api/v21/openstack_deployments</a>
+            </td>
+            <td width='60%'>Create a RHEL OpenStack Platform deployment</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/openstack_deployments/show.html'>GET /fusor/api/v21/openstack_deployments/:id</a>
+            </td>
+            <td width='60%'>Show a RHEL OpenStack Platform deployment</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/openstack_deployments/update.html'>PUT /fusor/api/v21/openstack_deployments</a>
+            </td>
+            <td width='60%'>Update a RHEL OpenStack Platform deployment</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/openstack_deployments/destroy.html'>DELETE /fusor/api/v21/openstack_deployments/:id</a>
+            </td>
+            <td width='60%'>Delete a RHEL OpenStack Platform deployment</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/openstack_deployments/sync_openstack.html'>POST /fusor/api/v21/openstack_deployments/:id/sync_openstack</a>
+            </td>
+            <td width='60%'>Synchronize a Openstack deployment object with the RHEL OpenStack Platform deployment plan</td>
+          </tr>
+    </tbody>
+  </table>
+  <h2>
+    <a href='./apidoc/stacks.html'>
+      OpenStack Stacks
+    </a><br>
+    <small></small>
+  </h2>
+  <table class='table'>
+    <thead>
+      <tr>
+        <th>Resource</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr>
+            <td>
+              <a href='./apidoc/stacks/index.html'>GET /fusor/api/openstack/deployments/:deployment_id/stacks</a>
+            </td>
+            <td width='60%'>Get RHEL OpenStack Platform stacks</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/stacks/show.html'>GET /fusor/api/openstack/deployments/:deployment_id/flavors</a>
+            </td>
+            <td width='60%'>Get RHEL OpenStack Platform flavor by name</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/stacks/destroy.html'>DELETE /fusor/api/openstack/deployments/:deployment_id/flavors</a>
+            </td>
+            <td width='60%'>Delete RHEL OpenStack Platform flavor by name</td>
+          </tr>
+    </tbody>
+  </table>
+  <h2>
+    <a href='./apidoc/subscriptions.html'>
+      Subscriptions
+    </a><br>
+    <small></small>
+  </h2>
+  <table class='table'>
+    <thead>
+      <tr>
+        <th>Resource</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr>
+            <td>
+              <a href='./apidoc/subscriptions/index.html'>GET /fusor/api/v21/subscriptions</a>
+            </td>
+            <td width='60%'>Gets a list of subscription objects</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/subscriptions/create.html'>POST /fusor/api/v21/subscriptions</a>
+            </td>
+            <td width='60%'>create a subscription</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/subscriptions/show.html'>GET /fusor/api/v21/subscriptions</a>
+            </td>
+            <td width='60%'>Gets a list of subscription objects</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/subscriptions/update.html'>PUT /fusor/api/v21/subscriptions/:id</a>
+            </td>
+            <td width='60%'>create a subscription</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/subscriptions/destroy.html'>DELETE /fusor/api/v21/subscriptions/:id</a>
+            </td>
+            <td width='60%'>delete a subscription</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/subscriptions/upload.html'>PUT /fusor/api/v21/subscriptions</a>
+            </td>
+            <td width='60%'>upload a subscription manifest file</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/subscriptions/validate.html'>GET /fusor/api/v21/subscriptions/validate</a>
+            </td>
+            <td width='60%'>Validate a subscription</td>
+          </tr>
+    </tbody>
+  </table>
+  <h2>
+    <a href='./apidoc/underclouds.html'>
+      Undercloud
+    </a><br>
+    <small></small>
+  </h2>
+  <table class='table'>
+    <thead>
+      <tr>
+        <th>Resource</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr>
+            <td>
+              <a href='./apidoc/underclouds/show.html'>GET /fusor/api/openstack/deployments/:deployment_id/undercloud</a>
+            </td>
+            <td width='60%'>Show the undercloud deployment status</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/underclouds/create.html'>POST /fusor/api/openstack/deployments/:deployment_id/undercloud</a>
+            </td>
+            <td width='60%'>Connect to the undercloud via SSH and link to the deployment using admin account</td>
+          </tr>
+          <tr>
+            <td>
+              <a href='./apidoc/underclouds/update_dns.html'>POST /fusor/api/openstack/deployments/:deployment_id/undercloud/update_dns</a>
+            </td>
+            <td width='60%'>Change undercloud DNS settings to match the DNS on this Satellite server</td>
+          </tr>
+    </tbody>
+  </table>
+
+  
+
+        
+      </div>
+    </div>
+    <hr>
+    <footer></footer>
+  </div>
+  <script type='text/javascript' src='./apidoc/javascripts/bundled/jquery.js'></script>
+<script type='text/javascript' src='./apidoc/javascripts/bundled/bootstrap-collapse.js'></script>
+<script type='text/javascript' src='./apidoc/javascripts/bundled/prettify.js'></script>
+<script type='text/javascript' src='./apidoc/javascripts/apipie.js'></script>
+</body>
+</html>
