@@ -54,6 +54,7 @@ export default Ember.Route.extend({
     var sessionPortal = this.modelFor('subscriptions').sessionPortal;
     var deployment = this.modelFor('deployment');
     var upstream_consumer_uuid = deployment.get('upstream_consumer_uuid');
+    this.set('saveOnTransition', deployment.get('isNotStarted'));
 
     if (deployment.get('isStarted')) {
       sessionPortal.set('consumerUUID', upstream_consumer_uuid);
@@ -90,11 +91,20 @@ export default Ember.Route.extend({
 
   actions: {
     willTransition(transition) {
-      if (this.modelFor('deployment').get('isNotStarted')) {
-        this.saveSma().catch(err => console.log(err));
+      let controller = this.get('controller');
+
+      if (!this.get('saveOnTransition')) {
+        return true;
       }
 
-      return true;
+      this.set('saveOnTransition', false);
+      transition.abort();
+      this.saveSma().catch(err => {
+        console.log(err);
+      }).finally(() => {
+        controller.set('showWaitingMessage', false);
+        transition.retry();
+      });
     },
 
     error(reason, transition) {
@@ -110,7 +120,8 @@ export default Ember.Route.extend({
     let consumerUUID = deployment.get('upstream_consumer_uuid');
     let isDisconnected = this.controllerFor('deployment').get('isDisconnected');
 
-    controller.set('isLoading', true);
+    controller.set('showWaitingMessage', true);
+    controller.set('msgWaiting', 'Updating subscriptions');
     controller.set('errorMsg', null);
 
 
