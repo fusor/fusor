@@ -24,7 +24,7 @@
         :repository_set_name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
         :repository_set_label: "rhel-7-server-kickstart"
         :basearch: "x86_64"
-        :releasever: "7.2"
+        :releasever: "7.3"
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
@@ -79,7 +79,7 @@
         :repository_set_name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
         :repository_set_label: "rhel-7-server-kickstart"
         :basearch: "x86_64"
-        :releasever: "7.2"
+        :releasever: "7.3"
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
@@ -127,7 +127,7 @@
         :repository_set_name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
         :repository_set_label: "rhel-7-server-kickstart"
         :basearch: "x86_64"
-        :releasever: "7.2"
+        :releasever: "7.3"
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
@@ -180,8 +180,8 @@
         :repository_set_name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
         :repository_set_label: "rhel-7-server-kickstart"
         :basearch: "x86_64"
-        :releasever: "7.2"
-        # Need Red Hat 7.2 Operating System setup including Media,
+        :releasever: "7.3"
+        # Need Red Hat 7.3 Operating System setup including Media,
         # architecture, and other associations.
 
     :openshift:
@@ -206,7 +206,7 @@
         :repository_set_name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
         :repository_set_label: "rhel-7-server-kickstart"
         :basearch: "x86_64"
-        :releasever: "7.2"
+        :releasever: "7.3"
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
@@ -254,7 +254,7 @@
         :repository_set_name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
         :repository_set_label: "rhel-7-server-kickstart"
         :basearch: "x86_64"
-        :releasever: "7.2"
+        :releasever: "7.3"
 
       - :product_name: "Red Hat Enterprise Linux Server"
         :product_id: "69"
@@ -275,7 +275,7 @@
         :product_id: "69"
         :repository_set_id: "2472"
         :repository_set_name: "Red Hat Enterprise Linux 7 Server - RH Common (RPMs)"
-        :repository_set_label: "rhel-7-server-rh-common-beta-rpms"
+        :repository_set_label: "rhel-7-server-rh-common-rpms"
         :basearch: "x86_64"
         :releasever: "7Server"
 
