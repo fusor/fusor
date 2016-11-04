@@ -1,7 +1,8 @@
 import Ember from 'ember';
 import ResetsVerticalScroll from '../../mixins/resets-vertical-scroll';
+import LoadUpdatedSubscriptions from '../../mixins/load-updated-subscriptions-mixin';
 
-export default Ember.Route.extend(ResetsVerticalScroll, {
+export default Ember.Route.extend(ResetsVerticalScroll, LoadUpdatedSubscriptions, {
 
   model() {
     // GET /fusor/subscriptions?source=added&deployment_id=ID_OF_DEPLOYMENT
@@ -12,100 +13,57 @@ export default Ember.Route.extend(ResetsVerticalScroll, {
   setupController(controller, model) {
     controller.set('model', model);
     var deployment = this.modelFor('deployment');
-    var deploymentId = deployment.get('id');
     var isDisconnected = this.controllerFor('deployment').get('isDisconnected');
     var sessionPortal = this.modelFor('subscriptions').sessionPortal;
+    var consumerUUID = this.modelFor('deployment').get('upstream_consumer_uuid');
 
-    if (!(this.controllerFor('deployment').get('isStarted'))) {
-      controller.set('isLoading', true);
-      controller.set('errorMsg', null);
-
-      var consumerUUID = this.modelFor('deployment').get('upstream_consumer_uuid');
-
-      var entitlements = this.store.query('entitlement', {uuid: consumerUUID});
-      var pools        = this.store.query('pool',        {uuid: consumerUUID});
-
-      ////////////////////////////////////////////////////////////
-      // HACK: We're seeing the production configured fusor_server returning
-      // a 304 from this request, which is probably correct. Despite the network
-      // reponse resolving fully, Ember Data fails to resolve the promise
-      // at all, so we're left hanging. The cachebust forces a 200 response,
-      // and thus the promise to resolve. We're expecting this to be fixed
-      // after an Ember upgrade to the LTS.
-      ////////////////////////////////////////////////////////////
-      var subscriptions = this.store.query('subscription', {
-        deployment_id: deploymentId,
-        source: 'added',
-        cachebust: Date.now().toString() // Force a non-cached response
-      });
-      ////////////////////////////////////////////////////////////
-
-      return Ember.RSVP.Promise.all([
-        entitlements,
-        pools,
-        subscriptions
-      ]).then(results => {
-        var entitlementsResults = results[0];
-        var allPoolsResults     = results[1];
-        var subscriptionResults     = results[2];
-
-        // in case go to this route from URL
-        sessionPortal.set('isAuthenticated', true);
-        allPoolsResults.forEach(pool => {
-          pool.set('qtyAttached', 0); //default for loop
-
-          entitlementsResults.forEach(entitlement => {
-            if (entitlement.get('poolId') === pool.get('id')) {
-              pool.incrementProperty('qtyAttached', entitlement.get('quantity'));
-            }
-          });
-
-          //create Fusor::Subscription records if they don't exist
-          var matchingSubscription = subscriptionResults.filterBy(
-            'contract_number', pool.get('contractNumber')).get('firstObject');
-          if (Ember.isBlank(matchingSubscription)) {
-            var sub = this.store.createRecord('subscription', {
-              'contract_number': pool.get('contractNumber'),
-              'product_name': pool.get('productName'),
-              'quantity_to_add': 0,
-              'quantity_attached': pool.get('qtyAttached'),
-              'source': 'added',
-              'start_date': pool.get('startDate'),
-              'end_date': pool.get('endDate'),
-              'total_quantity': pool.get('quantity'),
-              'deployment': deployment
-            });
-            sub.save();
-          } else {
-            // update quantity_attached is it may have changed since record was created
-            matchingSubscription.set('quantity_attached', pool.get('qtyAttached'));
-            matchingSubscription.save();
-          }
-
-        });
-        controller.set('subscriptionEntitlements', Ember.A(results[0]));
-        controller.set('subscriptionPools', Ember.A(results[1]));
-      }).catch(error => {
-        console.debug('route::select-subscriptions::setupController: Main RSVP catch block');
-        console.debug(error);
-        console.debug('route::select-subscriptions::setupController: Saving session portal...');
-        console.debug(sessionPortal);
-        return sessionPortal.save().then(() => {
-          console.debug('route::select-subscriptions::setupController: Session portal successfully saved');
-          console.debug(error);
-          controller.set('errorMsg', 'An error occurred while loading subscription data');
-          controller.set('showErrorMessage', true);
-        }).catch(error => {
-          console.debug('route::select-subscriptions::setupController: Session portal save catch');
-          console.debug(error);
-          controller.set('errorMsg', 'An error occurred while persisting login credentials');
-          controller.set('showErrorMessage', true);
-        });
-      }).finally(() => {
-        console.debug('route::select-subscriptions::setupController: finally bringing down spinner');
-        controller.set('isLoading', false);
-      });
+    if (isDisconnected || this.controllerFor('deployment').get('isStarted')) {
+      return;
     }
+
+    controller.set('isLoading', true);
+    controller.set('errorMsg', null);
+
+    this.loadUpdatedSubscriptionInfo(deployment, consumerUUID).then(results => {
+      let entitlementsResults = results.entitlements;
+      let allPoolsResults = results.pools;
+      let subscriptionResults = results.subscriptions;
+
+      // in case go to this route from URL
+      sessionPortal.set('isAuthenticated', true);
+      allPoolsResults.forEach(pool => {
+        pool.set('qtyAttached', 0); //default for loop
+
+        entitlementsResults.forEach(entitlement => {
+          if (entitlement.get('poolId') === pool.get('id')) {
+            pool.incrementProperty('qtyAttached', entitlement.get('quantity'));
+          }
+        });
+
+      });
+      controller.set('subscriptionEntitlements', entitlementsResults);
+      controller.set('subscriptionPools', allPoolsResults);
+      controller.set('model', subscriptionResults);
+    }).catch(error => {
+      console.debug('route::select-subscriptions::setupController: Main RSVP catch block');
+      console.debug(error);
+      console.debug('route::select-subscriptions::setupController: Saving session portal...');
+      console.debug(sessionPortal);
+      return sessionPortal.save().then(() => {
+        console.debug('route::select-subscriptions::setupController: Session portal successfully saved');
+        console.debug(error);
+        controller.set('errorMsg', 'An error occurred while loading subscription data');
+        controller.set('showErrorMessage', true);
+      }).catch(error => {
+        console.debug('route::select-subscriptions::setupController: Session portal save catch');
+        console.debug(error);
+        controller.set('errorMsg', 'An error occurred while persisting login credentials');
+        controller.set('showErrorMessage', true);
+      });
+    }).finally(() => {
+      console.debug('route::select-subscriptions::setupController: finally bringing down spinner');
+      controller.set('isLoading', false);
+    });
   },
 
   actions: {
