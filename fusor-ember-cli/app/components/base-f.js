@@ -25,6 +25,10 @@ export default Ember.Component.extend({
     return this.getWithDefault('inputSize', 'col-lg-4 col-md-6 col-sm-6');
   }),
 
+  helpClassSize: Ember.computed('helpSize', function () {
+    return 'help-block ' + this.getWithDefault('helpSize', 'col-lg-offset-0 col-lg-6 col-md-offset-3 col-md-9 col-sm-offset-5 col-sm-7');
+  }),
+
   showUnits: Ember.computed('unitsLabel', function() {
     return !Ember.isBlank(this.get('unitsLabel'));
   }),
