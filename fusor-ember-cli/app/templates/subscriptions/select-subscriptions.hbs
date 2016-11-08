@@ -27,16 +27,6 @@
 
     {{#unless isStarted}}
 
-        {{#if hasContractNumbersInModelNotInPool}}
-          <div class="row">
-            <div class='col-md-9'>
-              <div class='alert alert-danger rhci-alert'>
-                  You previously selected subscriptions (Contract Number {{contractNumbersInModelNotInPool}}) that are no longer available to be selected in the pool.
-              </div>
-            </div>
-          </div>
-        {{/if}}
-
         {{#if hasSubscriptionPools}}
           <table class="table table-bordered small">
             <thead>

@@ -1,6 +1,7 @@
 import Ember from 'ember';
+import LoadUpdatedSubscriptions from '../../mixins/load-updated-subscriptions-mixin';
 
-export default Ember.Route.extend({
+export default Ember.Route.extend(LoadUpdatedSubscriptions, {
 
   model() {
     var self = this;
@@ -54,6 +55,7 @@ export default Ember.Route.extend({
     var sessionPortal = this.modelFor('subscriptions').sessionPortal;
     var deployment = this.modelFor('deployment');
     var upstream_consumer_uuid = deployment.get('upstream_consumer_uuid');
+    this.set('saveOnTransition', deployment.get('isNotStarted'));
 
     if (deployment.get('isStarted')) {
       sessionPortal.set('consumerUUID', upstream_consumer_uuid);
@@ -90,11 +92,20 @@ export default Ember.Route.extend({
 
   actions: {
     willTransition(transition) {
-      if (this.modelFor('deployment').get('isNotStarted')) {
-        this.saveSma().catch(err => console.log(err));
+      let controller = this.get('controller');
+
+      if (!this.get('saveOnTransition')) {
+        return true;
       }
 
-      return true;
+      this.set('saveOnTransition', false);
+      transition.abort();
+      this.saveSma().catch(err => {
+        console.log(err);
+      }).finally(() => {
+        controller.set('showWaitingMessage', false);
+        transition.retry();
+      });
     },
 
     error(reason, transition) {
@@ -106,59 +117,12 @@ export default Ember.Route.extend({
   saveSma() {
     let controller = this.get('controller');
     let deployment = this.modelFor('deployment');
-    let deploymentId = deployment.get('id');
     let consumerUUID = deployment.get('upstream_consumer_uuid');
-    let isDisconnected = this.controllerFor('deployment').get('isDisconnected');
 
-    controller.set('isLoading', true);
+    controller.set('showWaitingMessage', true);
+    controller.set('msgWaiting', 'Updating subscriptions');
     controller.set('errorMsg', null);
 
-
-    return Ember.RSVP.hash({
-      entitlements: this.store.query('entitlement', {uuid: consumerUUID}),
-      pools: this.store.query('pool', {uuid: consumerUUID}),
-      subscriptions: this.store.query('subscription', {
-        deployment_id: deploymentId,
-        source: 'added',
-        cachebust: Date.now().toString() // Force a non-cached response
-      })
-    }).then(results => {
-
-      let promises = [];
-
-      results.pools.forEach(pool => {
-        pool.set('qtyAttached', 0); //default for loop
-
-        results.entitlements.forEach(entitlement => {
-          if (entitlement.get('poolId') === pool.get('id')) {
-            pool.incrementProperty('qtyAttached', entitlement.get('quantity'));
-          }
-        });
-
-        //create Fusor::Subscription records if they don't exist
-        var matchingSubscription = results.subscriptions.filterBy(
-          'contract_number', pool.get('contractNumber')).get('firstObject');
-        if (Ember.isBlank(matchingSubscription)) {
-          var sub = this.store.createRecord('subscription', {
-            'contract_number': pool.get('contractNumber'),
-            'product_name': pool.get('productName'),
-            'quantity_to_add': 0,
-            'quantity_attached': pool.get('qtyAttached'),
-            'source': 'added',
-            'start_date': pool.get('startDate'),
-            'end_date': pool.get('endDate'),
-            'total_quantity': pool.get('quantity'),
-            'deployment': deployment
-          });
-          promises.push(sub.save());
-        } else {
-          // update quantity_attached is it may have changed since record was created
-          matchingSubscription.set('quantity_attached', pool.get('qtyAttached'));
-          promises.push(matchingSubscription.save());
-        }
-      });
-
-      return Ember.RSVP.all(promises);
-    });
+    return this.loadUpdatedSubscriptionInfo(deployment, consumerUUID);
   }
 });
