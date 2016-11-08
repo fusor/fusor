@@ -3,7 +3,7 @@ Fusor::Engine.routes.draw do
     namespace :api do
       scope :openstack, :module => :openstack, :path => :openstack do
         resources :deployments do
-          resources :deployment_plans, :only => [:show, :update] do
+          resources :deployment_plans, :param => :name, :only => [:show, :update] do
             member do
               post 'deploy', to: 'deployment_plans#deploy'
               put 'update_parameters', to: 'deployment_plans#update_parameters'
@@ -12,7 +12,6 @@ Fusor::Engine.routes.draw do
             end
           end
 
-          resources :deployment_roles, :only => :index
           resources :flavors, :only => [:index, :show]
 
           resources :images, :only => :index
@@ -22,7 +21,7 @@ Fusor::Engine.routes.draw do
           get '/node_ports', to: 'nodes#list_ports'
           post '/node_mac_addresses', to: 'nodes#discover_macs' #POST so we don't expose password param
 
-          resources :stacks, :only => [:index, :show, :destroy]
+          resources :stacks, :param => :name, :only => [:index, :show, :destroy]
 
           get '/undercloud', to: 'underclouds#show'
           post '/undercloud', to: 'underclouds#create'

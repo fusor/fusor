@@ -64,8 +64,12 @@ module Fusor
     end
 
     initializer "fusor.apipie" do
-      Apipie.configuration.api_controllers_matcher << "#{Fusor::Engine.root}/app/controllers/fusor/api/v2/*.rb"
-      Apipie.configuration.checksum_path += ['/fusor/api/']
+      Apipie.configuration.api_controllers_matcher << "#{Fusor::Engine.root}/app/controllers/fusor/api/v21/*.rb"
+      Apipie.configuration.api_controllers_matcher << "#{Fusor::Engine.root}/app/controllers/fusor/api/openstack/*.rb"
+      Apipie.configuration.api_controllers_matcher << "#{Fusor::Engine.root}/app/controllers/fusor/api/customer_portal/*.rb"
+      Apipie.configuration.checksum_path += ['/fusor/api']
+      # Reset languages when generating html docs using rake apipie:static[fusor_v21] to omit localized versions
+      # Apipie.configuration.languages = []
     end
 
     #Include concerns in this config.to_prepare block

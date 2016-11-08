@@ -20,10 +20,21 @@ module Fusor
     module Openstack
       class UndercloudsController < Api::Openstack::BaseController
 
+        resource_description do
+          name 'Undercloud'
+          desc 'Connect a deployment to an OpenStack undercloud and perform operations'
+          api_version 'fusor_v21'
+          api_base_url '/fusor/api/openstack/deployments/:deployment_id'
+        end
+
+        api :GET, '/undercloud', 'Show the undercloud deployment status'
+        param :deployment_id, Integer, desc: 'ID of the deployment'
         def show
           render :json => get_undercloud_status_hash
         end
 
+        api :POST, '/undercloud', 'Connect to the undercloud via SSH and link to the deployment using admin account'
+        param :deployment_id, Integer, desc: 'ID of the deployment'
         def create
           underhost = params[:undercloud_host]
           underuser = params[:undercloud_user]
@@ -76,6 +87,7 @@ module Fusor
           end
         end
 
+        api :POST, '/undercloud/update_dns', 'Change undercloud DNS settings to match the DNS on this Satellite server'
         def update_dns
           result = Utils::Fusor::OpenstackDNS.new(@deployment.openstack_deployment).update
           if result

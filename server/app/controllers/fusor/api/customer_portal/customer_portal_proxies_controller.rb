@@ -20,18 +20,30 @@ module Fusor
         before_filter :proxy_request_path, :except => [:login, :logout, :is_authenticated]
         before_filter :proxy_request_body, :except => [:login, :logout, :is_authenticated]
 
+        resource_description do
+          name 'Customer Portal Proxy'
+          desc 'Logs in and proxies API methods from customer portal'
+          api_version 'fusor_v21'
+          api_base_url '/fusor/api/customer_portal'
+        end
+
+        api :post, '/login', 'Log in to customer portal (creates session)'
+        param :username, String, required: true, desc: 'Username to customer portal account.'
+        param :password, String, required: true, desc: 'Password to customer portal account.'
         def login
           session[:portal_username] = params[:username]
           session[:portal_password] = params[:password]
           render :json => {}
         end
 
+        api :post, '/logout', 'Log out of customer portal (deletes session)'
         def logout
           session.delete(:portal_username)
           session.delete(:portal_password)
           render :json => {}
         end
 
+        api :get, '/is_authenticated', 'Verifies an active authenticated session to the customer portal.'
         def is_authenticated
           authenticated = false
           if session[:portal_username] && session[:portal_password]
@@ -40,6 +52,50 @@ module Fusor
           end
           render :json => authenticated
         end
+
+        # Apipie doesn't support multiple actions for a single controller method
+        # The following methods document the requests but are not used directly.
+        #
+        #### BEGIN Apipie Docs ####
+        api :get, '/users/:login/owners', 'Get a list of subscription owners from RHN customer portal. See customer portal API documentation for a full list of parameters.'
+        param :login, String, required: true, desc: 'Subscription account login username'
+        def get_owners; end #apipie docs dummy.  Routes to get()
+
+        api :get, '/pools', 'Get a list of subscription pools from RHN customer portal. See customer portal API documentation for a full list of parameters.'
+        def get_pools; end #apipie docs dummy.  Routes to get()
+
+        api :get, '/owners/:id/consumers', 'Get a list of subscription consumers from RHN customer portal. See customer portal API documentation for a full list of parameters.'
+        param :id, :identifier, required: true, desc: 'ID of the subscription owner'
+        def get_consumers; end #apipie docs dummy.  Routes to get()
+
+        api :get, '/consumers/:id', 'Get a subscription consumer from RHN customer portal. See customer portal API documentation for a full list of parameters.'
+        param :id, :identifier, required: true, desc: 'Subscription consumer UUID'
+        def get_consumer; end #apipie docs dummy.  Routes to get()
+
+        api :post, '/consumers', 'Create a new subscription consumer from RHN customer portal. See customer portal API documentation for a full list of parameters.'
+        param :name, String, desc: 'Name of the new subscription management application'
+        param :type, String, desc: 'Type of the new subscription management application (ex. satellite)'
+        param :facts, Hash, desc: 'Facts about the new subscription management application' do
+          param :distributor_version, String, desc: 'Distributor version of the new subscription management application (ex. sat-6.2)'
+          param 'system.certificate_version', String, desc: 'System certificate version of the new subscription management application (ex. 3.2)'
+        end
+        def create_consumer; end #apipie docs dummy.  Routes to post()
+
+        api :get, '/consumers/:id/entitlements',
+            'Get a list of subscription entitlements from RHN customer portal. See customer portal API documentation for a full list of parameters.'
+        param :id, :identifier, desc: 'Subscription consumer UUID'
+        def get_entitlements; end #apipie docs dummy.  Routes to get()
+
+        api :post, '/consumers/:id/entitlements',
+            'Create new subscription entitlement from RHN customer portal. See customer portal API documentation for a full list of parameters.'
+        param :id, :identifier, required: true, desc: 'Subscription consumer UUID'
+        def create_entitlement; end #apipie docs dummy.  Routes to post()
+
+        api :delete, '/consumers/:id/entitlements',
+            'Delete all entitlements for a subscription consumer from RHN customer portal. See customer portal API documentation for a full list of parameters.'
+        param :id, :identifier, required: true, desc: 'Subscription consumer UUID'
+        def delete_entitlements; end #apipie docs dummy.  Routes to delete()
+        #### END Apipie Docs ####
 
         def get
           response = Resources::CustomerPortal::Proxy.get(@request_path, credentials)

@@ -17,17 +17,32 @@ module Fusor
     module Openstack
       class StacksController < Api::Openstack::BaseController
 
+        resource_description do
+          name 'OpenStack Stacks'
+          desc 'OpenStack stacks'
+          api_version 'fusor_v21'
+          api_base_url '/fusor/api/openstack/deployments/:deployment_id'
+        end
+
+        api :GET, '/stacks', 'Get OpenStack stacks'
+        param :deployment_id, Integer, desc: 'ID of the deployment'
         def index
           stacks = undercloud_handle.list_stacks
           render :json => stacks, :serializer => RootArraySerializer
         end
 
+        api :GET, '/flavors', 'Get OpenStack flavor by name'
+        param :deployment_id, Integer, desc: 'ID of the deployment'
+        param :name, String, desc: 'Name of the stack (ex. overcloud)'
         def show
-          render :json => {:stack => undercloud_handle.get_stack_by_name(params[:id])}
+          render :json => {:stack => undercloud_handle.get_stack_by_name(params[:name])}
         end
 
+        api :DELETE, '/flavors', 'Delete OpenStack flavor by name'
+        param :deployment_id, Integer, desc: 'ID of the deployment'
+        param :name, String, desc: 'Name of the stack to delete (ex. overcloud)'
         def destroy
-          stack = undercloud_handle.get_stack_by_name(params[:id])
+          stack = undercloud_handle.get_stack_by_name(params[:name])
           undercloud_handle.delete_stack(stack) if stack
           render json: {}, status: 204
         end

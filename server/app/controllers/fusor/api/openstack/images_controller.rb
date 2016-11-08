@@ -17,10 +17,22 @@ module Fusor
     module Openstack
       class ImagesController < Api::Openstack::BaseController
 
+        resource_description do
+          name 'OpenStack Images'
+          desc 'OpenStack images of virtual machines'
+          api_version 'fusor_v21'
+          api_base_url '/fusor/api/openstack/deployments/:deployment_id'
+        end
+
+        api :GET, '/images', 'Get OpenStack images'
+        param :deployment_id, Integer, desc: 'ID of the deployment'
         def index
           render :json => undercloud_handle.list_images.as_json, :serializer => RootArraySerializer
         end
 
+        api :GET, '/images/show_by_name/:name', 'Get OpenStack image by name'
+        param :deployment_id, Integer, desc: 'ID of the deployment'
+        param :name, String, desc: 'Name of the OpenStack image'
         def show_by_name
           render :json => {:image => undercloud_handle.find_image_by_name(params[:name]).as_json}
         end
