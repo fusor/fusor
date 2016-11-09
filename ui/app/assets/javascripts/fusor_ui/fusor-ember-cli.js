@@ -307,6 +307,10 @@ define('fusor-ember-cli/components/base-f', ['exports', 'ember'], function (expo
       return this.getWithDefault('inputSize', 'col-lg-4 col-md-6 col-sm-6');
     }),
 
+    helpClassSize: _ember['default'].computed('helpSize', function () {
+      return 'help-block ' + this.getWithDefault('helpSize', 'col-lg-offset-0 col-lg-6 col-md-offset-3 col-md-9 col-sm-offset-5 col-sm-7');
+    }),
+
     showUnits: _ember['default'].computed('unitsLabel', function () {
       return !_ember['default'].isBlank(this.get('unitsLabel'));
     }),
@@ -10903,6 +10907,108 @@ define('fusor-ember-cli/mixins/filter-sort-hosts-mixin', ['exports', 'ember'], f
 
   });
 });
+define('fusor-ember-cli/mixins/load-updated-subscriptions-mixin', ['exports', 'ember'], function (exports, _ember) {
+  exports['default'] = _ember['default'].Mixin.create({
+
+    loadUpdatedSubscriptionInfo: function loadUpdatedSubscriptionInfo(deployment, consumerUUID) {
+      var _this = this;
+
+      var deploymentId = deployment.get('id');
+
+      if (deployment.get('is_disconnected')) {
+        return _ember['default'].RSVP.hash({
+          entitlements: [],
+          pools: [],
+          subscriptions: this.store.query('subscription', {
+            deployment_id: deploymentId,
+            source: 'added',
+            cachebust: Date.now().toString() // Force a non-cached response
+          })
+        });
+      }
+
+      return _ember['default'].RSVP.hash({
+        entitlements: this.store.query('entitlement', { uuid: consumerUUID }),
+        pools: this.store.query('pool', { uuid: consumerUUID }),
+        subscriptions: this.store.query('subscription', {
+          deployment_id: deploymentId,
+          source: 'added',
+          cachebust: Date.now().toString() // Force a non-cached response
+        })
+      }).then(function (results) {
+        var subscriptions = [];
+
+        results.subscriptions.forEach(function (subscription) {
+          // increment as we encounter entitlements
+          subscription.set('quantity_attached', 0);
+          subscriptions.push(subscription);
+        });
+
+        results.entitlements.forEach(function (entitlement) {
+          var matchingSub = subscriptions.findBy('contract_number', entitlement.get('contractNumber'));
+          if (_ember['default'].isEmpty(matchingSub)) {
+            matchingSub = _this.createSubscription(entitlement, deployment);
+            subscriptions.push(matchingSub);
+          }
+
+          matchingSub.incrementProperty('quantity_attached', entitlement.get('quantity'));
+
+          var qtyAvailableToAdd = entitlement.get('poolQuantity') - entitlement.get('consumed');
+          matchingSub.set('quantity_to_add', Math.min(matchingSub.get('quantity_to_add'), qtyAvailableToAdd));
+          matchingSub.set('total_quantity', entitlement.get('poolQuantity'));
+        });
+
+        results.pools.forEach(function (pool) {
+          var matchingSub = subscriptions.findBy('contract_number', pool.get('contractNumber'));
+          if (_ember['default'].isEmpty(matchingSub)) {
+            matchingSub = _this.createSubscription(pool, deployment);
+            subscriptions.push(matchingSub);
+          }
+
+          var qtyAvailableToAdd = pool.get('quantity') - pool.get('consumed');
+          matchingSub.set('quantity_to_add', Math.min(matchingSub.get('quantity_to_add'), qtyAvailableToAdd));
+          matchingSub.set('total_quantity', pool.get('quantity'));
+        });
+
+        var promises = [];
+        subscriptions.forEach(function (subscription) {
+          var hasEntitlement = results.entitlements.findBy('contractNumber', subscription.get('contract_number'));
+          var hasAvailablePool = results.pools.findBy('contractNumber', subscription.get('contract_number'));
+
+          if (!hasAvailablePool) {
+            subscription.set('quantity_to_add', 0);
+          }
+
+          if (hasEntitlement || hasAvailablePool) {
+            promises.push(subscription.save());
+          } else {
+            promises.push(subscription.destroyRecord());
+          }
+        });
+
+        return _ember['default'].RSVP.hash({
+          entitlements: results.entitlements,
+          pools: results.pools,
+          subscriptions: _ember['default'].RSVP.all(promises)
+        });
+      });
+    },
+
+    createSubscription: function createSubscription(subInfo, deployment) {
+      return this.store.createRecord('subscription', {
+        'contract_number': subInfo.get('contractNumber'),
+        'product_name': subInfo.get('productName'),
+        'quantity_to_add': 0,
+        'quantity_attached': 0,
+        'source': 'added',
+        'start_date': subInfo.get('startDate'),
+        'end_date': subInfo.get('endDate'),
+        'deployment': deployment
+      });
+    }
+
+  });
+});
 define('fusor-ember-cli/mixins/needs-deployment-mixin', ['exports', 'ember'], function (exports, _ember) {
   exports['default'] = _ember['default'].Mixin.create({
 
@@ -15592,8 +15698,8 @@ define('fusor-ember-cli/routes/subscriptions/index', ['exports', 'ember'], funct
     }
   });
 });
-define('fusor-ember-cli/routes/subscriptions/management-application', ['exports', 'ember'], function (exports, _ember) {
-  exports['default'] = _ember['default'].Route.extend({
+define('fusor-ember-cli/routes/subscriptions/management-application', ['exports', 'ember', 'fusor-ember-cli/mixins/load-updated-subscriptions-mixin'], function (exports, _ember, _fusorEmberCliMixinsLoadUpdatedSubscriptionsMixin) {
+  exports['default'] = _ember['default'].Route.extend(_fusorEmberCliMixinsLoadUpdatedSubscriptionsMixin['default'], {
 
     model: function model() {
       var self = this;
@@ -15645,6 +15751,7 @@ define('fusor-ember-cli/routes/subscriptions/management-application', ['exports'
       var sessionPortal = this.modelFor('subscriptions').sessionPortal;
       var deployment = this.modelFor('deployment');
       var upstream_consumer_uuid = deployment.get('upstream_consumer_uuid');
+      this.set('saveOnTransition', deployment.get('isNotStarted'));
 
       if (deployment.get('isStarted')) {
         sessionPortal.set('consumerUUID', upstream_consumer_uuid);
@@ -15681,13 +15788,20 @@ define('fusor-ember-cli/routes/subscriptions/management-application', ['exports'
 
     actions: {
       willTransition: function willTransition(transition) {
-        if (this.modelFor('deployment').get('isNotStarted')) {
-          this.saveSma()['catch'](function (err) {
-            return console.log(err);
-          });
+        var controller = this.get('controller');
+
+        if (!this.get('saveOnTransition')) {
+          return true;
         }
 
-        return true;
+        this.set('saveOnTransition', false);
+        transition.abort();
+        this.saveSma()['catch'](function (err) {
+          console.log(err);
+        })['finally'](function () {
+          controller.set('showWaitingMessage', false);
+          transition.retry();
+        });
       },
 
       error: function error(reason, transition) {
@@ -15697,62 +15811,15 @@ define('fusor-ember-cli/routes/subscriptions/management-application', ['exports'
     },
 
     saveSma: function saveSma() {
-      var _this = this;
-
       var controller = this.get('controller');
       var deployment = this.modelFor('deployment');
-      var deploymentId = deployment.get('id');
       var consumerUUID = deployment.get('upstream_consumer_uuid');
-      var isDisconnected = this.controllerFor('deployment').get('isDisconnected');
 
-      controller.set('isLoading', true);
+      controller.set('showWaitingMessage', true);
+      controller.set('msgWaiting', 'Updating subscriptions');
       controller.set('errorMsg', null);
 
-      return _ember['default'].RSVP.hash({
-        entitlements: this.store.query('entitlement', { uuid: consumerUUID }),
-        pools: this.store.query('pool', { uuid: consumerUUID }),
-        subscriptions: this.store.query('subscription', {
-          deployment_id: deploymentId,
-          source: 'added',
-          cachebust: Date.now().toString() // Force a non-cached response
-        })
-      }).then(function (results) {
-
-        var promises = [];
-
-        results.pools.forEach(function (pool) {
-          pool.set('qtyAttached', 0); //default for loop
-
-          results.entitlements.forEach(function (entitlement) {
-            if (entitlement.get('poolId') === pool.get('id')) {
-              pool.incrementProperty('qtyAttached', entitlement.get('quantity'));
-            }
-          });
-
-          //create Fusor::Subscription records if they don't exist
-          var matchingSubscription = results.subscriptions.filterBy('contract_number', pool.get('contractNumber')).get('firstObject');
-          if (_ember['default'].isBlank(matchingSubscription)) {
-            var sub = _this.store.createRecord('subscription', {
-              'contract_number': pool.get('contractNumber'),
-              'product_name': pool.get('productName'),
-              'quantity_to_add': 0,
-              'quantity_attached': pool.get('qtyAttached'),
-              'source': 'added',
-              'start_date': pool.get('startDate'),
-              'end_date': pool.get('endDate'),
-              'total_quantity': pool.get('quantity'),
-              'deployment': deployment
-            });
-            promises.push(sub.save());
-          } else {
-            // update quantity_attached is it may have changed since record was created
-            matchingSubscription.set('quantity_attached', pool.get('qtyAttached'));
-            promises.push(matchingSubscription.save());
-          }
-        });
-
-        return _ember['default'].RSVP.all(promises);
-      });
+      return this.loadUpdatedSubscriptionInfo(deployment, consumerUUID);
     }
   });
 });
@@ -15855,8 +15922,8 @@ define('fusor-ember-cli/routes/subscriptions/review-subscriptions', ['exports', 
     }
   });
 });
-define('fusor-ember-cli/routes/subscriptions/select-subscriptions', ['exports', 'ember', 'fusor-ember-cli/mixins/resets-vertical-scroll'], function (exports, _ember, _fusorEmberCliMixinsResetsVerticalScroll) {
-  exports['default'] = _ember['default'].Route.extend(_fusorEmberCliMixinsResetsVerticalScroll['default'], {
+define('fusor-ember-cli/routes/subscriptions/select-subscriptions', ['exports', 'ember', 'fusor-ember-cli/mixins/resets-vertical-scroll', 'fusor-ember-cli/mixins/load-updated-subscriptions-mixin'], function (exports, _ember, _fusorEmberCliMixinsResetsVerticalScroll, _fusorEmberCliMixinsLoadUpdatedSubscriptionsMixin) {
+  exports['default'] = _ember['default'].Route.extend(_fusorEmberCliMixinsResetsVerticalScroll['default'], _fusorEmberCliMixinsLoadUpdatedSubscriptionsMixin['default'], {
 
     model: function model() {
       // GET /fusor/subscriptions?source=added&deployment_id=ID_OF_DEPLOYMENT
@@ -15865,103 +15932,63 @@ define('fusor-ember-cli/routes/subscriptions/select-subscriptions', ['exports', 
     },
 
     setupController: function setupController(controller, model) {
-      var _this = this;
-
       controller.set('model', model);
       var deployment = this.modelFor('deployment');
-      var deploymentId = deployment.get('id');
       var isDisconnected = this.controllerFor('deployment').get('isDisconnected');
       var sessionPortal = this.modelFor('subscriptions').sessionPortal;
+      var consumerUUID = this.modelFor('deployment').get('upstream_consumer_uuid');
 
-      if (!this.controllerFor('deployment').get('isStarted')) {
-        controller.set('isLoading', true);
-        controller.set('errorMsg', null);
+      if (isDisconnected || this.controllerFor('deployment').get('isStarted')) {
+        return;
+      }
 
-        var consumerUUID = this.modelFor('deployment').get('upstream_consumer_uuid');
+      controller.set('isLoading', true);
+      controller.set('errorMsg', null);
 
-        var entitlements = this.store.query('entitlement', { uuid: consumerUUID });
-        var pools = this.store.query('pool', { uuid: consumerUUID });
+      this.loadUpdatedSubscriptionInfo(deployment, consumerUUID).then(function (results) {
+        var entitlementsResults = results.entitlements;
+        var allPoolsResults = results.pools;
+        var subscriptionResults = results.subscriptions;
 
-        ////////////////////////////////////////////////////////////
-        // HACK: We're seeing the production configured fusor_server returning
-        // a 304 from this request, which is probably correct. Despite the network
-        // reponse resolving fully, Ember Data fails to resolve the promise
-        // at all, so we're left hanging. The cachebust forces a 200 response,
-        // and thus the promise to resolve. We're expecting this to be fixed
-        // after an Ember upgrade to the LTS.
-        ////////////////////////////////////////////////////////////
-        var subscriptions = this.store.query('subscription', {
-          deployment_id: deploymentId,
-          source: 'added',
-          cachebust: Date.now().toString() // Force a non-cached response
-        });
-        ////////////////////////////////////////////////////////////
+        // in case go to this route from URL
+        sessionPortal.set('isAuthenticated', true);
+        allPoolsResults.forEach(function (pool) {
+          pool.set('qtyAttached', 0); //default for loop
 
-        return _ember['default'].RSVP.Promise.all([entitlements, pools, subscriptions]).then(function (results) {
-          var entitlementsResults = results[0];
-          var allPoolsResults = results[1];
-          var subscriptionResults = results[2];
-
-          // in case go to this route from URL
-          sessionPortal.set('isAuthenticated', true);
-          allPoolsResults.forEach(function (pool) {
-            pool.set('qtyAttached', 0); //default for loop
-
-            entitlementsResults.forEach(function (entitlement) {
-              if (entitlement.get('poolId') === pool.get('id')) {
-                pool.incrementProperty('qtyAttached', entitlement.get('quantity'));
-              }
-            });
-
-            //create Fusor::Subscription records if they don't exist
-            var matchingSubscription = subscriptionResults.filterBy('contract_number', pool.get('contractNumber')).get('firstObject');
-            if (_ember['default'].isBlank(matchingSubscription)) {
-              var sub = _this.store.createRecord('subscription', {
-                'contract_number': pool.get('contractNumber'),
-                'product_name': pool.get('productName'),
-                'quantity_to_add': 0,
-                'quantity_attached': pool.get('qtyAttached'),
-                'source': 'added',
-                'start_date': pool.get('startDate'),
-                'end_date': pool.get('endDate'),
-                'total_quantity': pool.get('quantity'),
-                'deployment': deployment
-              });
-              sub.save();
-            } else {
-              // update quantity_attached is it may have changed since record was created
-              matchingSubscription.set('quantity_attached', pool.get('qtyAttached'));
-              matchingSubscription.save();
+          entitlementsResults.forEach(function (entitlement) {
+            if (entitlement.get('poolId') === pool.get('id')) {
+              pool.incrementProperty('qtyAttached', entitlement.get('quantity'));
             }
           });
-          controller.set('subscriptionEntitlements', _ember['default'].A(results[0]));
-          controller.set('subscriptionPools', _ember['default'].A(results[1]));
-        })['catch'](function (error) {
-          console.debug('route::select-subscriptions::setupController: Main RSVP catch block');
-          console.debug(error);
-          console.debug('route::select-subscriptions::setupController: Saving session portal...');
-          console.debug(sessionPortal);
-          return sessionPortal.save().then(function () {
-            console.debug('route::select-subscriptions::setupController: Session portal successfully saved');
-            console.debug(error);
-            controller.set('errorMsg', 'An error occurred while loading subscription data');
-            controller.set('showErrorMessage', true);
-          })['catch'](function (error) {
-            console.debug('route::select-subscriptions::setupController: Session portal save catch');
-            console.debug(error);
-            controller.set('errorMsg', 'An error occurred while persisting login credentials');
-            controller.set('showErrorMessage', true);
-          });
-        })['finally'](function () {
-          console.debug('route::select-subscriptions::setupController: finally bringing down spinner');
-          controller.set('isLoading', false);
         });
-      }
+        controller.set('subscriptionEntitlements', entitlementsResults);
+        controller.set('subscriptionPools', allPoolsResults);
+        controller.set('model', subscriptionResults);
+      })['catch'](function (error) {
+        console.debug('route::select-subscriptions::setupController: Main RSVP catch block');
+        console.debug(error);
+        console.debug('route::select-subscriptions::setupController: Saving session portal...');
+        console.debug(sessionPortal);
+        return sessionPortal.save().then(function () {
+          console.debug('route::select-subscriptions::setupController: Session portal successfully saved');
+          console.debug(error);
+          controller.set('errorMsg', 'An error occurred while loading subscription data');
+          controller.set('showErrorMessage', true);
+        })['catch'](function (error) {
+          console.debug('route::select-subscriptions::setupController: Session portal save catch');
+          console.debug(error);
+          controller.set('errorMsg', 'An error occurred while persisting login credentials');
+          controller.set('showErrorMessage', true);
+        });
+      })['finally'](function () {
+        console.debug('route::select-subscriptions::setupController: finally bringing down spinner');
+        controller.set('isLoading', false);
+      });
     },
 
     actions: {
       saveSubscription: function saveSubscription(pool, qty) {
-        var _this2 = this;
+        var _this = this;
 
         // get saved subscriptions and update quantity
         var deployment = this.modelFor('deployment');
@@ -15979,21 +16006,21 @@ define('fusor-ember-cli/routes/subscriptions/select-subscriptions', ['exports', 
         });
 
         subProm.then(function () {
-          _this2.set('subProm', null);
+          _this.set('subProm', null);
         });
 
         this.set('subProm', subProm);
       },
 
       willTransition: function willTransition(transition) {
-        var _this3 = this;
+        var _this2 = this;
 
         var subProm = this.get('subProm');
         if (subProm) {
           transition.abort();
 
           subProm.then(function () {
-            _this3.transitionTo('subscriptions.review-subscriptions');
+            _this2.transitionTo('subscriptions.review-subscriptions');
           });
         }
       },
@@ -18133,7 +18160,6 @@ define("fusor-ember-cli/templates/components/base-f", ["exports"], function (exp
         var el3 = dom.createTextNode("\n      ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("div");
-        dom.setAttribute(el3, "class", "help-block col-lg-6 col-md-9 col-sm-7 col-xs-12");
         var el4 = dom.createTextNode("\n        ");
         dom.appendChild(el3, el4);
         var el4 = dom.createComment("");
@@ -18155,7 +18181,8 @@ define("fusor-ember-cli/templates/components/base-f", ["exports"], function (exp
         var element2 = dom.childAt(fragment, [0, 1]);
         var element3 = dom.childAt(element2, [1]);
         var element4 = dom.childAt(element2, [3]);
-        var morphs = new Array(9);
+        var element5 = dom.childAt(element2, [7]);
+        var morphs = new Array(10);
         morphs[0] = dom.createAttrMorph(element2, 'class');
         morphs[1] = dom.createAttrMorph(element3, 'class');
         morphs[2] = dom.createMorphAt(element3, 1, 1);
@@ -18164,10 +18191,11 @@ define("fusor-ember-cli/templates/components/base-f", ["exports"], function (exp
         morphs[5] = dom.createAttrMorph(element4, 'class');
         morphs[6] = dom.createMorphAt(element4, 1, 1);
         morphs[7] = dom.createMorphAt(element2, 5, 5);
-        morphs[8] = dom.createMorphAt(dom.childAt(element2, [7]), 1, 1);
+        morphs[8] = dom.createAttrMorph(element5, 'class');
+        morphs[9] = dom.createMorphAt(element5, 1, 1);
         return morphs;
       },
-      statements: [["attribute", "class", ["concat", ["form-group ", ["subexpr", "if", [["get", "hasError", ["loc", [null, [2, 31], [2, 39]]]], "has-error"], [], ["loc", [null, [2, 26], [2, 53]]]]]]], ["attribute", "class", ["concat", ["control-label ", ["get", "labelClassSize", ["loc", [null, [4, 36], [4, 50]]]], " ", ["get", "class", ["loc", [null, [4, 55], [4, 60]]]]]]], ["block", "if", [["get", "isRequired", ["loc", [null, [5, 14], [5, 24]]]]], [], 0, null, ["loc", [null, [5, 8], [7, 15]]]], ["content", "label", ["loc", [null, [8, 8], [8, 17]]]], ["block", "if", [["get", "showHelpPopover", ["loc", [null, [9, 14], [9, 29]]]]], [], 1, null, ["loc", [null, [9, 8], [15, 15]]]], ["attribute", "class", ["concat", [["get", "inputClassSize", ["loc", [null, [18, 20], [18, 34]]]]]]], ["content", "yield", ["loc", [null, [19, 8], [19, 17]]]], ["block", "if", [["get", "showUnits", ["loc", [null, [22, 12], [22, 21]]]]], [], 2, null, ["loc", [null, [22, 6], [26, 13]]]], ["content", "help-inline", ["loc", [null, [29, 8], [29, 23]]]]],
+      statements: [["attribute", "class", ["concat", ["form-group ", ["subexpr", "if", [["get", "hasError", ["loc", [null, [2, 31], [2, 39]]]], "has-error"], [], ["loc", [null, [2, 26], [2, 53]]]]]]], ["attribute", "class", ["concat", ["control-label ", ["get", "labelClassSize", ["loc", [null, [4, 36], [4, 50]]]], " ", ["get", "class", ["loc", [null, [4, 55], [4, 60]]]]]]], ["block", "if", [["get", "isRequired", ["loc", [null, [5, 14], [5, 24]]]]], [], 0, null, ["loc", [null, [5, 8], [7, 15]]]], ["content", "label", ["loc", [null, [8, 8], [8, 17]]]], ["block", "if", [["get", "showHelpPopover", ["loc", [null, [9, 14], [9, 29]]]]], [], 1, null, ["loc", [null, [9, 8], [15, 15]]]], ["attribute", "class", ["concat", [["get", "inputClassSize", ["loc", [null, [18, 20], [18, 34]]]]]]], ["content", "yield", ["loc", [null, [19, 8], [19, 17]]]], ["block", "if", [["get", "showUnits", ["loc", [null, [22, 12], [22, 21]]]]], [], 2, null, ["loc", [null, [22, 6], [26, 13]]]], ["attribute", "class", ["get", "helpClassSize", ["loc", [null, [28, 19], [28, 32]]]]], ["content", "help-inline", ["loc", [null, [29, 8], [29, 23]]]]],
       locals: [],
       templates: [child0, child1, child2]
     };
@@ -52056,11 +52084,11 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
               "loc": {
                 "source": null,
                 "start": {
-                  "line": 59,
+                  "line": 68,
                   "column": 18
                 },
                 "end": {
-                  "line": 63,
+                  "line": 72,
                   "column": 18
                 }
               },
@@ -52103,7 +52131,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
                 "column": 10
               },
               "end": {
-                "line": 67,
+                "line": 76,
                 "column": 10
               }
             },
@@ -52187,7 +52215,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
             morphs[2] = dom.createMorphAt(element3, 11, 11);
             return morphs;
           },
-          statements: [["inline", "text-f", [], ["label", "Red Hat login", "value", ["subexpr", "@mut", [["get", "model.identification", ["loc", [null, [56, 53], [56, 73]]]]], [], []], "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [56, 83], [56, 92]]]]], [], []], "cssId", "red-hat-login"], ["loc", [null, [56, 16], [56, 116]]]], ["inline", "text-f", [], ["label", "Password", "value", ["subexpr", "@mut", [["get", "password", ["loc", [null, [57, 48], [57, 56]]]]], [], []], "type", "password", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [57, 82], [57, 91]]]]], [], []], "cssId", "portal-password"], ["loc", [null, [57, 16], [57, 117]]]], ["block", "base-f", [], [], 0, null, ["loc", [null, [59, 18], [63, 29]]]]],
+          statements: [["inline", "text-f", [], ["label", "Red Hat login", "value", ["subexpr", "@mut", [["get", "model.identification", ["loc", [null, [57, 32], [57, 52]]]]], [], []], "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [58, 35], [58, 44]]]]], [], []], "labelSize", "col-lg-3 col-md-4 col-sm-3", "cssId", "red-hat-login"], ["loc", [null, [56, 16], [60, 49]]]], ["inline", "text-f", [], ["label", "Password", "value", ["subexpr", "@mut", [["get", "password", ["loc", [null, [62, 32], [62, 40]]]]], [], []], "type", "password", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [64, 35], [64, 44]]]]], [], []], "labelSize", "col-lg-3 col-md-4 col-sm-3", "cssId", "portal-password"], ["loc", [null, [61, 16], [66, 51]]]], ["block", "base-f", [], [], 0, null, ["loc", [null, [68, 18], [72, 29]]]]],
           locals: [],
           templates: [child0]
         };
@@ -52203,7 +52231,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
               "column": 6
             },
             "end": {
-              "line": 68,
+              "line": 77,
               "column": 6
             }
           },
@@ -52226,7 +52254,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
           dom.insertBoundary(fragment, null);
           return morphs;
         },
-        statements: [["block", "if", [["get", "model.isAuthenticated", ["loc", [null, [31, 16], [31, 37]]]]], [], 0, 1, ["loc", [null, [31, 10], [67, 17]]]]],
+        statements: [["block", "if", [["get", "model.isAuthenticated", ["loc", [null, [31, 16], [31, 37]]]]], [], 0, 1, ["loc", [null, [31, 10], [76, 17]]]]],
         locals: [],
         templates: [child0, child1]
       };
@@ -52239,11 +52267,11 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
           "loc": {
             "source": null,
             "start": {
-              "line": 73,
+              "line": 82,
               "column": 6
             },
             "end": {
-              "line": 82,
+              "line": 91,
               "column": 6
             }
           },
@@ -52271,7 +52299,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
           morphs[0] = dom.createAttrMorph(element2, 'class');
           return morphs;
         },
-        statements: [["attribute", "class", ["concat", [["subexpr", "if", [["get", "isStarted", ["loc", [null, [79, 24], [79, 33]]]], "disabled"], [], ["loc", [null, [79, 19], [79, 46]]]]]]]],
+        statements: [["attribute", "class", ["concat", [["subexpr", "if", [["get", "isStarted", ["loc", [null, [88, 24], [88, 33]]]], "disabled"], [], ["loc", [null, [88, 19], [88, 46]]]]]]]],
         locals: [],
         templates: []
       };
@@ -52285,11 +52313,11 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
             "loc": {
               "source": null,
               "start": {
-                "line": 102,
+                "line": 111,
                 "column": 14
               },
               "end": {
-                "line": 113,
+                "line": 122,
                 "column": 14
               }
             },
@@ -52344,7 +52372,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
             morphs[1] = dom.createElementMorph(element1);
             return morphs;
           },
-          statements: [["content", "manifestFile", ["loc", [null, [107, 36], [107, 52]]]], ["element", "action", ["uploadDifferentManifest"], [], ["loc", [null, [110, 41], [110, 77]]]]],
+          statements: [["content", "manifestFile", ["loc", [null, [116, 36], [116, 52]]]], ["element", "action", ["uploadDifferentManifest"], [], ["loc", [null, [119, 41], [119, 77]]]]],
           locals: [],
           templates: []
         };
@@ -52357,11 +52385,11 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
             "loc": {
               "source": null,
               "start": {
-                "line": 113,
+                "line": 122,
                 "column": 14
               },
               "end": {
-                "line": 118,
+                "line": 127,
                 "column": 14
               }
             },
@@ -52396,7 +52424,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
             morphs[0] = dom.createMorphAt(fragment, 5, 5, contextualElement);
             return morphs;
           },
-          statements: [["inline", "button-f", [], ["title", "Upload", "action", "uploadManifest"], ["loc", [null, [117, 18], [117, 69]]]]],
+          statements: [["inline", "button-f", [], ["title", "Upload", "action", "uploadManifest"], ["loc", [null, [126, 18], [126, 69]]]]],
           locals: [],
           templates: []
         };
@@ -52408,11 +52436,11 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
           "loc": {
             "source": null,
             "start": {
-              "line": 84,
+              "line": 93,
               "column": 6
             },
             "end": {
-              "line": 120,
+              "line": 129,
               "column": 6
             }
           },
@@ -52465,7 +52493,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
           morphs[1] = dom.createMorphAt(dom.childAt(fragment, [7]), 1, 1);
           return morphs;
         },
-        statements: [["inline", "content-mirror-f", [], ["cdnUrl", ["subexpr", "@mut", [["get", "cdnUrl", ["loc", [null, [90, 19], [90, 25]]]]], [], []], "deploymentId", ["subexpr", "@mut", [["get", "deploymentId", ["loc", [null, [91, 25], [91, 37]]]]], [], []], "MirrorStatus", ["subexpr", "@mut", [["get", "MirrorStatus", ["loc", [null, [92, 25], [92, 37]]]]], [], []], "mirrorStatusUpdate", "mirrorStatusUpdate"], ["loc", [null, [89, 10], [94, 12]]]], ["block", "if", [["get", "hasManifestFile", ["loc", [null, [102, 20], [102, 35]]]]], [], 0, 1, ["loc", [null, [102, 14], [118, 21]]]]],
+        statements: [["inline", "content-mirror-f", [], ["cdnUrl", ["subexpr", "@mut", [["get", "cdnUrl", ["loc", [null, [99, 19], [99, 25]]]]], [], []], "deploymentId", ["subexpr", "@mut", [["get", "deploymentId", ["loc", [null, [100, 25], [100, 37]]]]], [], []], "MirrorStatus", ["subexpr", "@mut", [["get", "MirrorStatus", ["loc", [null, [101, 25], [101, 37]]]]], [], []], "mirrorStatusUpdate", "mirrorStatusUpdate"], ["loc", [null, [98, 10], [103, 12]]]], ["block", "if", [["get", "hasManifestFile", ["loc", [null, [111, 20], [111, 35]]]]], [], 0, 1, ["loc", [null, [111, 14], [127, 21]]]]],
         locals: [],
         templates: [child0, child1]
       };
@@ -52478,11 +52506,11 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
           "loc": {
             "source": null,
             "start": {
-              "line": 126,
+              "line": 135,
               "column": 0
             },
             "end": {
-              "line": 135,
+              "line": 144,
               "column": 0
             }
           },
@@ -52507,7 +52535,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
           morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
           return morphs;
         },
-        statements: [["inline", "cancel-back-next", [], ["backRouteName", ["subexpr", "@mut", [["get", "backRouteFromCredentials", ["loc", [null, [128, 37], [128, 61]]]]], [], []], "disableBack", false, "nextRouteName", "subscriptions.review-subscriptions", "disableNext", ["subexpr", "@mut", [["get", "disableNextDisconnected", ["loc", [null, [131, 35], [131, 58]]]]], [], []], "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [132, 37], [132, 46]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [133, 38], [133, 52]]]]], [], []]], ["loc", [null, [128, 4], [133, 54]]]]],
+        statements: [["inline", "cancel-back-next", [], ["backRouteName", ["subexpr", "@mut", [["get", "backRouteFromCredentials", ["loc", [null, [137, 37], [137, 61]]]]], [], []], "disableBack", false, "nextRouteName", "subscriptions.review-subscriptions", "disableNext", ["subexpr", "@mut", [["get", "disableNextDisconnected", ["loc", [null, [140, 35], [140, 58]]]]], [], []], "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [141, 37], [141, 46]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [142, 38], [142, 52]]]]], [], []]], ["loc", [null, [137, 4], [142, 54]]]]],
         locals: [],
         templates: []
       };
@@ -52522,11 +52550,11 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
               "loc": {
                 "source": null,
                 "start": {
-                  "line": 141,
+                  "line": 150,
                   "column": 8
                 },
                 "end": {
-                  "line": 143,
+                  "line": 152,
                   "column": 8
                 }
               },
@@ -52556,7 +52584,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
               morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
               return morphs;
             },
-            statements: [["content", "nextButtonTitle", ["loc", [null, [142, 12], [142, 31]]]]],
+            statements: [["content", "nextButtonTitle", ["loc", [null, [151, 12], [151, 31]]]]],
             locals: [],
             templates: []
           };
@@ -52568,11 +52596,11 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
             "loc": {
               "source": null,
               "start": {
-                "line": 137,
+                "line": 146,
                 "column": 4
               },
               "end": {
-                "line": 144,
+                "line": 153,
                 "column": 4
               }
             },
@@ -52595,7 +52623,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
             dom.insertBoundary(fragment, null);
             return morphs;
           },
-          statements: [["block", "button-f", [], ["disabled", ["subexpr", "@mut", [["get", "disableCredentialsNext", ["loc", [null, [141, 29], [141, 51]]]]], [], []], "action", ["subexpr", "@mut", [["get", "actionCredentialsNext", ["loc", [null, [141, 59], [141, 80]]]]], [], []]], 0, null, ["loc", [null, [141, 8], [143, 21]]]]],
+          statements: [["block", "button-f", [], ["disabled", ["subexpr", "@mut", [["get", "disableCredentialsNext", ["loc", [null, [150, 29], [150, 51]]]]], [], []], "action", ["subexpr", "@mut", [["get", "actionCredentialsNext", ["loc", [null, [150, 59], [150, 80]]]]], [], []]], 0, null, ["loc", [null, [150, 8], [152, 21]]]]],
           locals: [],
           templates: [child0]
         };
@@ -52607,11 +52635,11 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
           "loc": {
             "source": null,
             "start": {
-              "line": 135,
+              "line": 144,
               "column": 0
             },
             "end": {
-              "line": 146,
+              "line": 155,
               "column": 0
             }
           },
@@ -52636,7 +52664,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
           morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
           return morphs;
         },
-        statements: [["block", "cancel-back-next", [], ["backRouteName", ["subexpr", "@mut", [["get", "backRouteFromCredentials", ["loc", [null, [137, 38], [137, 62]]]]], [], []], "disableBack", false, "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [139, 38], [139, 47]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [140, 39], [140, 53]]]]], [], []]], 0, null, ["loc", [null, [137, 4], [144, 25]]]]],
+        statements: [["block", "cancel-back-next", [], ["backRouteName", ["subexpr", "@mut", [["get", "backRouteFromCredentials", ["loc", [null, [146, 38], [146, 62]]]]], [], []], "disableBack", false, "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [148, 38], [148, 47]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [149, 39], [149, 53]]]]], [], []]], 0, null, ["loc", [null, [146, 4], [153, 25]]]]],
         locals: [],
         templates: [child0]
       };
@@ -52655,7 +52683,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
             "column": 0
           },
           "end": {
-            "line": 147,
+            "line": 156,
             "column": 0
           }
         },
@@ -52740,7 +52768,7 @@ define("fusor-ember-cli/templates/subscriptions/credentials", ["exports"], funct
         dom.insertBoundary(fragment, null);
         return morphs;
       },
-      statements: [["block", "if", [["get", "showErrorMessage", ["loc", [null, [1, 6], [1, 22]]]]], [], 0, null, ["loc", [null, [1, 0], [11, 7]]]], ["block", "radio-button", [], ["value", "redhat_cdn", "groupValue", ["subexpr", "@mut", [["get", "contentProviderType", ["loc", [null, [20, 33], [20, 52]]]]], [], []], "changed", "providerTypeChanged", "id", "redhat_cdn", "dataQci", "redhat_cdn", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [24, 31], [24, 40]]]]], [], []]], 1, null, ["loc", [null, [19, 6], [28, 23]]]], ["block", "unless", [["get", "isDisconnected", ["loc", [null, [30, 16], [30, 30]]]]], [], 2, null, ["loc", [null, [30, 6], [68, 17]]]], ["block", "radio-button", [], ["value", "disconnected", "groupValue", ["subexpr", "@mut", [["get", "contentProviderType", ["loc", [null, [74, 33], [74, 52]]]]], [], []], "changed", "providerTypeChanged", "id", "disconnected", "dataQci", "disconnected", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [78, 31], [78, 40]]]]], [], []]], 3, null, ["loc", [null, [73, 6], [82, 23]]]], ["block", "if", [["get", "isDisconnected", ["loc", [null, [84, 12], [84, 26]]]]], [], 4, null, ["loc", [null, [84, 6], [120, 13]]]], ["block", "if", [["get", "isDisconnected", ["loc", [null, [126, 6], [126, 20]]]]], [], 5, 6, ["loc", [null, [126, 0], [146, 7]]]]],
+      statements: [["block", "if", [["get", "showErrorMessage", ["loc", [null, [1, 6], [1, 22]]]]], [], 0, null, ["loc", [null, [1, 0], [11, 7]]]], ["block", "radio-button", [], ["value", "redhat_cdn", "groupValue", ["subexpr", "@mut", [["get", "contentProviderType", ["loc", [null, [20, 33], [20, 52]]]]], [], []], "changed", "providerTypeChanged", "id", "redhat_cdn", "dataQci", "redhat_cdn", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [24, 31], [24, 40]]]]], [], []]], 1, null, ["loc", [null, [19, 6], [28, 23]]]], ["block", "unless", [["get", "isDisconnected", ["loc", [null, [30, 16], [30, 30]]]]], [], 2, null, ["loc", [null, [30, 6], [77, 17]]]], ["block", "radio-button", [], ["value", "disconnected", "groupValue", ["subexpr", "@mut", [["get", "contentProviderType", ["loc", [null, [83, 33], [83, 52]]]]], [], []], "changed", "providerTypeChanged", "id", "disconnected", "dataQci", "disconnected", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [87, 31], [87, 40]]]]], [], []]], 3, null, ["loc", [null, [82, 6], [91, 23]]]], ["block", "if", [["get", "isDisconnected", ["loc", [null, [93, 12], [93, 26]]]]], [], 4, null, ["loc", [null, [93, 6], [129, 13]]]], ["block", "if", [["get", "isDisconnected", ["loc", [null, [135, 6], [135, 20]]]]], [], 5, 6, ["loc", [null, [135, 0], [155, 7]]]]],
       locals: [],
       templates: [child0, child1, child2, child3, child4, child5, child6]
     };
@@ -53886,69 +53914,6 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
     var child2 = (function () {
       var child0 = (function () {
         var child0 = (function () {
-          return {
-            meta: {
-              "fragmentReason": false,
-              "revision": "Ember@2.4.6",
-              "loc": {
-                "source": null,
-                "start": {
-                  "line": 30,
-                  "column": 8
-                },
-                "end": {
-                  "line": 38,
-                  "column": 8
-                }
-              },
-              "moduleName": "fusor-ember-cli/templates/subscriptions/select-subscriptions.hbs"
-            },
-            isEmpty: false,
-            arity: 0,
-            cachedFragment: null,
-            hasRendered: false,
-            buildFragment: function buildFragment(dom) {
-              var el0 = dom.createDocumentFragment();
-              var el1 = dom.createTextNode("          ");
-              dom.appendChild(el0, el1);
-              var el1 = dom.createElement("div");
-              dom.setAttribute(el1, "class", "row");
-              var el2 = dom.createTextNode("\n            ");
-              dom.appendChild(el1, el2);
-              var el2 = dom.createElement("div");
-              dom.setAttribute(el2, "class", "col-md-9");
-              var el3 = dom.createTextNode("\n              ");
-              dom.appendChild(el2, el3);
-              var el3 = dom.createElement("div");
-              dom.setAttribute(el3, "class", "alert alert-danger rhci-alert");
-              var el4 = dom.createTextNode("\n                  You previously selected subscriptions (Contract Number ");
-              dom.appendChild(el3, el4);
-              var el4 = dom.createComment("");
-              dom.appendChild(el3, el4);
-              var el4 = dom.createTextNode(") that are no longer available to be selected in the pool.\n              ");
-              dom.appendChild(el3, el4);
-              dom.appendChild(el2, el3);
-              var el3 = dom.createTextNode("\n            ");
-              dom.appendChild(el2, el3);
-              dom.appendChild(el1, el2);
-              var el2 = dom.createTextNode("\n          ");
-              dom.appendChild(el1, el2);
-              dom.appendChild(el0, el1);
-              var el1 = dom.createTextNode("\n");
-              dom.appendChild(el0, el1);
-              return el0;
-            },
-            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-              var morphs = new Array(1);
-              morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1, 1, 1]), 1, 1);
-              return morphs;
-            },
-            statements: [["content", "contractNumbersInModelNotInPool", ["loc", [null, [34, 73], [34, 108]]]]],
-            locals: [],
-            templates: []
-          };
-        })();
-        var child1 = (function () {
           var child0 = (function () {
             return {
               meta: {
@@ -53957,11 +53922,11 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
                 "loc": {
                   "source": null,
                   "start": {
-                    "line": 57,
+                    "line": 47,
                     "column": 12
                   },
                   "end": {
-                    "line": 62,
+                    "line": 52,
                     "column": 12
                   }
                 },
@@ -53986,7 +53951,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
                 morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
                 return morphs;
               },
-              statements: [["inline", "tr-subscription", [], ["subscription", ["subexpr", "@mut", [["get", "subscription", ["loc", [null, [58, 45], [58, 57]]]]], [], []], "numSubscriptionsRequired", ["subexpr", "@mut", [["get", "numSubscriptionsRequired", ["loc", [null, [59, 57], [59, 81]]]]], [], []], "model", ["subexpr", "@mut", [["get", "model", ["loc", [null, [60, 38], [60, 43]]]]], [], []], "saveSubscription", "saveSubscription"], ["loc", [null, [58, 14], [61, 69]]]]],
+              statements: [["inline", "tr-subscription", [], ["subscription", ["subexpr", "@mut", [["get", "subscription", ["loc", [null, [48, 45], [48, 57]]]]], [], []], "numSubscriptionsRequired", ["subexpr", "@mut", [["get", "numSubscriptionsRequired", ["loc", [null, [49, 57], [49, 81]]]]], [], []], "model", ["subexpr", "@mut", [["get", "model", ["loc", [null, [50, 38], [50, 43]]]]], [], []], "saveSubscription", "saveSubscription"], ["loc", [null, [48, 14], [51, 69]]]]],
               locals: ["subscription"],
               templates: []
             };
@@ -53999,11 +53964,11 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
                 "loc": {
                   "source": null,
                   "start": {
-                    "line": 62,
+                    "line": 52,
                     "column": 12
                   },
                   "end": {
-                    "line": 70,
+                    "line": 60,
                     "column": 12
                   }
                 },
@@ -54062,11 +54027,11 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
               "loc": {
                 "source": null,
                 "start": {
-                  "line": 40,
+                  "line": 30,
                   "column": 8
                 },
                 "end": {
-                  "line": 75,
+                  "line": 65,
                   "column": 8
                 }
               },
@@ -54170,12 +54135,12 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
               morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1, 3]), 1, 1);
               return morphs;
             },
-            statements: [["block", "each", [["get", "subscriptionPools", ["loc", [null, [57, 20], [57, 37]]]]], [], 0, 1, ["loc", [null, [57, 12], [70, 21]]]]],
+            statements: [["block", "each", [["get", "subscriptionPools", ["loc", [null, [47, 20], [47, 37]]]]], [], 0, 1, ["loc", [null, [47, 12], [60, 21]]]]],
             locals: [],
             templates: [child0, child1]
           };
         })();
-        var child2 = (function () {
+        var child1 = (function () {
           var child0 = (function () {
             var child0 = (function () {
               return {
@@ -54185,11 +54150,11 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
                   "loc": {
                     "source": null,
                     "start": {
-                      "line": 100,
+                      "line": 90,
                       "column": 20
                     },
                     "end": {
-                      "line": 102,
+                      "line": 92,
                       "column": 20
                     }
                   },
@@ -54214,7 +54179,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
                   morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
                   return morphs;
                 },
-                statements: [["inline", "tr-subscription-saved", [], ["subscription", ["subexpr", "@mut", [["get", "sub", ["loc", [null, [101, 59], [101, 62]]]]], [], []]], ["loc", [null, [101, 22], [101, 64]]]]],
+                statements: [["inline", "tr-subscription-saved", [], ["subscription", ["subexpr", "@mut", [["get", "sub", ["loc", [null, [91, 59], [91, 62]]]]], [], []]], ["loc", [null, [91, 22], [91, 64]]]]],
                 locals: ["sub"],
                 templates: []
               };
@@ -54226,11 +54191,11 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
                 "loc": {
                   "source": null,
                   "start": {
-                    "line": 84,
+                    "line": 74,
                     "column": 12
                   },
                   "end": {
-                    "line": 105,
+                    "line": 95,
                     "column": 12
                   }
                 },
@@ -54311,7 +54276,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
                 morphs[0] = dom.createMorphAt(dom.childAt(fragment, [3, 3]), 1, 1);
                 return morphs;
               },
-              statements: [["block", "each", [["get", "model", ["loc", [null, [100, 28], [100, 33]]]]], [], 0, null, ["loc", [null, [100, 20], [102, 29]]]]],
+              statements: [["block", "each", [["get", "model", ["loc", [null, [90, 28], [90, 33]]]]], [], 0, null, ["loc", [null, [90, 20], [92, 29]]]]],
               locals: [],
               templates: [child0]
             };
@@ -54323,11 +54288,11 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
               "loc": {
                 "source": null,
                 "start": {
-                  "line": 75,
+                  "line": 65,
                   "column": 8
                 },
                 "end": {
-                  "line": 107,
+                  "line": 97,
                   "column": 8
                 }
               },
@@ -54374,7 +54339,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
               morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 3, 3);
               return morphs;
             },
-            statements: [["block", "if", [["get", "hasSubscriptionSavedInModel", ["loc", [null, [84, 18], [84, 45]]]]], [], 0, null, ["loc", [null, [84, 12], [105, 19]]]]],
+            statements: [["block", "if", [["get", "hasSubscriptionSavedInModel", ["loc", [null, [74, 18], [74, 45]]]]], [], 0, null, ["loc", [null, [74, 12], [95, 19]]]]],
             locals: [],
             templates: [child0]
           };
@@ -54390,7 +54355,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
                 "column": 4
               },
               "end": {
-                "line": 109,
+                "line": 99,
                 "column": 4
               }
             },
@@ -54408,21 +54373,16 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
             dom.appendChild(el0, el1);
             var el1 = dom.createTextNode("\n");
             dom.appendChild(el0, el1);
-            var el1 = dom.createComment("");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("\n");
-            dom.appendChild(el0, el1);
             return el0;
           },
           buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-            var morphs = new Array(2);
+            var morphs = new Array(1);
             morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
-            morphs[1] = dom.createMorphAt(fragment, 3, 3, contextualElement);
             return morphs;
           },
-          statements: [["block", "if", [["get", "hasContractNumbersInModelNotInPool", ["loc", [null, [30, 14], [30, 48]]]]], [], 0, null, ["loc", [null, [30, 8], [38, 15]]]], ["block", "if", [["get", "hasSubscriptionPools", ["loc", [null, [40, 14], [40, 34]]]]], [], 1, 2, ["loc", [null, [40, 8], [107, 15]]]]],
+          statements: [["block", "if", [["get", "hasSubscriptionPools", ["loc", [null, [30, 14], [30, 34]]]]], [], 0, 1, ["loc", [null, [30, 8], [97, 15]]]]],
           locals: [],
-          templates: [child0, child1, child2]
+          templates: [child0, child1]
         };
       })();
       var child1 = (function () {
@@ -54434,11 +54394,11 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
               "loc": {
                 "source": null,
                 "start": {
-                  "line": 122,
+                  "line": 112,
                   "column": 14
                 },
                 "end": {
-                  "line": 124,
+                  "line": 114,
                   "column": 14
                 }
               },
@@ -54463,7 +54423,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
               morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
               return morphs;
             },
-            statements: [["inline", "tr-subscription-saved", [], ["subscription", ["subexpr", "@mut", [["get", "sub", ["loc", [null, [123, 53], [123, 56]]]]], [], []]], ["loc", [null, [123, 16], [123, 58]]]]],
+            statements: [["inline", "tr-subscription-saved", [], ["subscription", ["subexpr", "@mut", [["get", "sub", ["loc", [null, [113, 53], [113, 56]]]]], [], []]], ["loc", [null, [113, 16], [113, 58]]]]],
             locals: ["sub"],
             templates: []
           };
@@ -54476,11 +54436,11 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
               "loc": {
                 "source": null,
                 "start": {
-                  "line": 124,
+                  "line": 114,
                   "column": 14
                 },
                 "end": {
-                  "line": 130,
+                  "line": 120,
                   "column": 14
                 }
               },
@@ -54524,11 +54484,11 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
             "loc": {
               "source": null,
               "start": {
-                "line": 109,
+                "line": 99,
                 "column": 4
               },
               "end": {
-                "line": 134,
+                "line": 124,
                 "column": 4
               }
             },
@@ -54602,7 +54562,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
             morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1, 3]), 1, 1);
             return morphs;
           },
-          statements: [["block", "each", [["get", "model", ["loc", [null, [122, 22], [122, 27]]]]], [], 0, 1, ["loc", [null, [122, 14], [130, 23]]]]],
+          statements: [["block", "each", [["get", "model", ["loc", [null, [112, 22], [112, 27]]]]], [], 0, 1, ["loc", [null, [112, 14], [120, 23]]]]],
           locals: [],
           templates: [child0, child1]
         };
@@ -54618,7 +54578,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
               "column": 0
             },
             "end": {
-              "line": 144,
+              "line": 134,
               "column": 0
             }
           },
@@ -54690,7 +54650,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
           morphs[2] = dom.createMorphAt(fragment, 2, 2, contextualElement);
           return morphs;
         },
-        statements: [["content", "deploymentController.model.upstream_consumer_name", ["loc", [null, [23, 100], [23, 153]]]], ["block", "unless", [["get", "isStarted", ["loc", [null, [28, 14], [28, 23]]]]], [], 0, 1, ["loc", [null, [28, 4], [134, 15]]]], ["inline", "cancel-back-next", [], ["backRouteName", "subscriptions.management-application", "disableBack", false, "nextRouteName", "subscriptions.review-subscriptions", "disableNext", false, "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [142, 33], [142, 42]]]]], [], []]], ["loc", [null, [138, 0], [142, 44]]]]],
+        statements: [["content", "deploymentController.model.upstream_consumer_name", ["loc", [null, [23, 100], [23, 153]]]], ["block", "unless", [["get", "isStarted", ["loc", [null, [28, 14], [28, 23]]]]], [], 0, 1, ["loc", [null, [28, 4], [124, 15]]]], ["inline", "cancel-back-next", [], ["backRouteName", "subscriptions.management-application", "disableBack", false, "nextRouteName", "subscriptions.review-subscriptions", "disableNext", false, "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [132, 33], [132, 42]]]]], [], []]], ["loc", [null, [128, 0], [132, 44]]]]],
         locals: [],
         templates: [child0, child1]
       };
@@ -54709,7 +54669,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
             "column": 0
           },
           "end": {
-            "line": 145,
+            "line": 135,
             "column": 0
           }
         },
@@ -54737,7 +54697,7 @@ define("fusor-ember-cli/templates/subscriptions/select-subscriptions", ["exports
         dom.insertBoundary(fragment, null);
         return morphs;
       },
-      statements: [["block", "if", [["get", "showErrorMessage", ["loc", [null, [1, 6], [1, 22]]]]], [], 0, null, ["loc", [null, [1, 0], [11, 7]]]], ["block", "if", [["get", "isLoading", ["loc", [null, [13, 6], [13, 15]]]]], [], 1, 2, ["loc", [null, [13, 0], [144, 7]]]]],
+      statements: [["block", "if", [["get", "showErrorMessage", ["loc", [null, [1, 6], [1, 22]]]]], [], 0, null, ["loc", [null, [1, 0], [11, 7]]]], ["block", "if", [["get", "isLoading", ["loc", [null, [13, 6], [13, 15]]]]], [], 1, 2, ["loc", [null, [13, 0], [134, 7]]]]],
       locals: [],
       templates: [child0, child1, child2]
     };
@@ -56012,7 +55972,7 @@ define('fusor-ember-cli/views/application', ['exports', 'ember'], function (expo
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","rootURL":"/r/","locationType":"history","EmberENV":{"FEATURES":{},"_ENABLE_LEGACY_VIEW_SUPPORT":true},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+c7123efa"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":["'none'"],"script-src":["'self'"],"font-src":["'self'"],"connect-src":["'self'"],"img-src":["'self'"],"style-src":["'self'"],"media-src":["'self'"]},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","rootURL":"/r/","locationType":"history","EmberENV":{"FEATURES":{},"_ENABLE_LEGACY_VIEW_SUPPORT":true},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+091c9d80"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":["'none'"],"script-src":["'self'"],"font-src":["'self'"],"connect-src":["'self'"],"img-src":["'self'"],"style-src":["'self'"],"media-src":["'self'"]},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 /* jshint ignore:end */
@@ -56020,7 +55980,7 @@ define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
 /* jshint ignore:start */
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+c7123efa"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+091c9d80"});
 }
 
 /* jshint ignore:end */
