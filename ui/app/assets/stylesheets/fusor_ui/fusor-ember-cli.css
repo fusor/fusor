@@ -640,8 +640,7 @@ table.fusor-table {
 
 .help-block {
   font-style: italic;
-  display: inline-block;
-  margin-left: -20px; }
+  display: inline-block; }
 
 .osp-autogeneric-label {
   font-weight: normal !important;
