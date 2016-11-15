@@ -19,6 +19,8 @@ module Utils
 
       def kvm(params)
         begin
+          deployment = ::Fusor::Deployment.find(@params[:deployment_id])
+          ::Utils::Fusor::SSHKeyUtils.new(deployment).copy_pub_key_to_auth_keys(params[:hostname], params[:username], params[:password])
           client = ::Utils::Fusor::SSHConnection.new(params[:hostname], params[:username], params[:password])
           io = StringIO.new
           client.execute('virsh list --all --name', io)

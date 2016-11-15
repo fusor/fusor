@@ -171,7 +171,6 @@ module Fusor
             [
               'driver_info\[:ssh_address\]:',
               'driver_info\[:ssh_username\]:',
-              'driver_info\[:ssh_password\]:',
               'driver_info\[:ssh_virt_type\]:',
               'driver_info\[:deploy_kernel\]:',
               'driver_info\[:deploy_ramdisk\]:'
@@ -280,6 +279,88 @@ module Fusor
           end
         end
 
+        test 'return nil if discovery type is not recognized' do
+          discovery = Utils::Fusor::DiscoverMacs.new(:driver => 'abc')
+          assert_equal discovery.discover, nil
+        end
+
+        test 'return empty array if SSHConnection returns no hosts' do
+          Utils::Fusor::SSHConnection.any_instance
+            .expects(:execute)
+            .once
+            .returns(nil)
+          Utils::Fusor::SSHKeyUtils.any_instance
+            .expects(:copy_pub_key_to_auth_keys)
+            .once
+            .returns(nil)
+          params = {}
+          params[:driver] = 'pxe_ssh'
+          deployment = ::Fusor::Deployment.find_by_name('osp')
+          params[:deployment_id] = deployment.id
+          discovery = Utils::Fusor::DiscoverMacs.new(params)
+          assert_empty discovery.discover
+        end
+
+        test 'return mac if SSHConnection returns a host' do
+          xml = "<domain type='kvm'>\n  <name>osp_node</name>\n  <devices>\n    "\
+                "<interface type='network'>\n      <mac address='52:54:00:37:ec:7f'/>\n    "\
+                "</interface>\n  </devices>\n</domain>"
+          Utils::Fusor::SSHConnection.any_instance
+            .expects(:execute)
+            .twice
+            .returns(nil)
+          StringIO.any_instance
+            .expects(:string)
+            .twice
+            .returns("osp_node", xml)
+          Utils::Fusor::SSHKeyUtils.any_instance
+            .expects(:copy_pub_key_to_auth_keys)
+            .once
+            .returns(nil)
+          params = {}
+          params[:driver] = 'pxe_ssh'
+          deployment = ::Fusor::Deployment.find_by_name('osp')
+          params[:deployment_id] = deployment.id
+          discovery = Utils::Fusor::DiscoverMacs.new(params)
+          assert_equal [{:hostname => "osp_node", :mac_addresses => ["52:54:00:37:ec:7f"]}], discovery.discover
+        end
+
+        test 'return nil if ipmitool returns no macs' do
+          params = {}
+          params[:driver] = 'pxe_ipmitool'
+          params[:vendor] = 'dell'
+          gmacs = Struct.new(:a) do
+            def lines
+              return a
+            end
+          end
+          conn = gmacs.new(['abc'])
+          Utils::Fusor::MacDiscovery::Dell.any_instance
+            .expects(:getmacs)
+            .once
+            .returns(conn)
+          discovery = Utils::Fusor::DiscoverMacs.new(params)
+          assert_equal discovery.discover, nil
+        end
+
+        test 'return host if ipmitool returns macs' do
+          params = {}
+          params[:driver] = 'pxe_ipmitool'
+          params[:vendor] = 'dell'
+          gmacs = Struct.new(:a) do
+            def lines
+              return a
+            end
+          end
+          conn = gmacs.new(['0 00:00:00:00:00:01'])
+          Utils::Fusor::MacDiscovery::Dell.any_instance
+            .expects(:getmacs)
+            .once
+            .returns(conn)
+          discovery = Utils::Fusor::DiscoverMacs.new(params)
+          assert_equal discovery.discover, [{:hostname => "host0", :mac_addresses => ["00:00:00:00:00:01"]}]
+        end
+
         test 'discover_macs request should return an array of MAC addresses' do
           mock_hosts = [
             MockHost.new({hostname: 'osp8_node_1', mac_addresses: %w(52:54:00:99:0c:e8 52:54:00:2e:01:39)}),
@@ -306,7 +387,6 @@ module Fusor
             assert host_found, "Host #{mock_host.hostname} not found."
           end
         end
-
       end
     end
   end

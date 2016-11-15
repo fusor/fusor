@@ -47,6 +47,7 @@ module Fusor
         api :POST, '/nodes', 'Register OpenStack node'
         param :deployment_id, Integer, desc: 'ID of the deployment'
         def create
+          params["node"]["driver_info"]["ssh_password"] = @deployment.ssh_private_key if params["node"]["driver"] == "pxe_ssh"
           handle = undercloud_handle
           node_param_errors = validate_node_param(params[:node])
           unless node_param_errors.empty?

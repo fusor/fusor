@@ -180,6 +180,8 @@ osp:
   cfme_root_password: redhat1234
   cfme_install_loc: OpenStack
   openstack_deployment: osp
+  ssh_public_key: public
+  ssh_private_key: private
 
 osp_ceph:
   name: osp_ceph

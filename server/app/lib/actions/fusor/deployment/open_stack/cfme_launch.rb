@@ -74,7 +74,7 @@ module Actions
             ComputeAttribute.create({"compute_profile_id" => cp.id,
                                      "compute_resource_id" => ComputeResource.find_by_name("#{deployment.label}-RHOS")['id'],
                                      "vm_attrs" => {
-                                       "flavor_ref" => "4",
+                                       "flavor_ref" => "1",
                                        "network" => "#{deployment.label}-float-net",
                                        "image_ref" => Image.find_by_name("#{deployment.label}-osp-cfme").uuid,
                                        "security_groups" => "#{deployment.label}-sec-group",

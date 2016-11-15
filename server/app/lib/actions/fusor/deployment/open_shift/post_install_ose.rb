@@ -58,7 +58,7 @@ module Actions
             opts[:nodes] = workers
 
             opts[:username] = deployment.openshift_username
-            opts[:ssh_key] = deployment.ose_private_key_path
+            opts[:ssh_key] = ::Utils::Fusor::SSHKeyUtils.new(deployment).get_ssh_private_key_path
 
             opts[:docker_registry_host] = deployment.openshift_storage_host
             opts[:docker_registry_path] = deployment.openshift_export_path

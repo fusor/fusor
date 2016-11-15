@@ -30,23 +30,26 @@ module Actions
 
           def run
             ::Fusor.log.debug '====== Openstack Compute Resource run method ======'
-            deployment = ::Fusor::Deployment.find(input[:deployment_id])
-            cr = { "name" => "#{deployment.label}-RHOS",
-                   "location_ids" => ["", Location.where(:name => "Default Location").first.id],
-                   "url" => "https://#{deployment.openstack_deployment.overcloud_hostname}:13000/v2.0/tokens",
-                   "provider" => "Foreman::Model::Openstack", "user" => 'admin',
-                   "password" => deployment.openstack_deployment.overcloud_password,
-                   "organization_ids" => [deployment.organization_id], "tenant" => deployment.label }
-            ::Foreman::Model::Openstack.create(cr)
+            retries = 5
+            begin
+              deployment = ::Fusor::Deployment.find(input[:deployment_id])
+              cr = { "name" => "#{deployment.label}-RHOS",
+                     "location_ids" => ["", Location.where(:name => "Default Location").first.id],
+                     "url" => "https://#{deployment.openstack_deployment.overcloud_hostname}:13000/v2.0/tokens",
+                     "provider" => "Foreman::Model::Openstack", "user" => 'admin',
+                     "password" => deployment.openstack_deployment.overcloud_password,
+                     "organization_ids" => [deployment.organization_id], "tenant" => deployment.label }
+              ::Foreman::Model::Openstack.create(cr)
+            rescue
+              if retries > 0
+                retries -= 1
+                sleep 30
+                retry
+              else
+                raise
+              end
+            end
             ::Fusor.log.debug '=== Leaving Openstack Compute Resource run method ==='
-          end
-
-          def create_cr_completed
-            ::Fusor.log.info 'Compute Resource Created'
-          end
-
-          def create_cr_failed
-            fail _('Compute Resource Creation failed')
           end
         end
       end
