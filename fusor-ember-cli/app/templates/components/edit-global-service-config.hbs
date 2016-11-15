@@ -11,7 +11,7 @@
               {{#if planParameter.isBoolean}}
                 {{check-f label=planParameter.label checked=planParameter.newValue labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=planParameter.description cssId=planParameter.key}}
               {{else}}
-                {{text-f label=planParameter.label value=planParameter.newValue type=planParameter.type labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=planParameter.description cssId=planParameter.key}}
+                {{text-f label=planParameter.label value=planParameter.newValue type=planParameter.type canShowPassword=planParameter.canShowPassword labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=planParameter.description cssId=planParameter.key}}
               {{/if}}
             {{/each}}
           </div>

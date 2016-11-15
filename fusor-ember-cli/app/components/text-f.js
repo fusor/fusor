@@ -7,9 +7,9 @@ export default Ember.Component.extend(ValidatedInput, {
     return (this.get('type') ? this.get('type') : 'text');
   }),
 
-  cssFormClass: Ember.computed('preText', 'postText', function () {
+  cssFormClass: Ember.computed('preText', 'postText', 'canShowPassword', function () {
     if (Ember.isEmpty(this.get('preText')) && Ember.isEmpty(this.get('postText'))) {
-      return 'form-control';
+      return this.get('canShowPassword') ? 'form-control can-show-password' : 'form-control';
     }
   }),
 

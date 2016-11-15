@@ -53,7 +53,7 @@
                     {{#if roleParameter.isBoolean}}
                       {{check-f label=roleParameter.label checked=roleParameter.newValue labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description cssId=roleParameter.key}}
                     {{else}}
-                      {{text-f label=roleParameter.label value=roleParameter.newValue type=roleParameter.type labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description cssId=roleParameter.key}}
+                      {{text-f label=roleParameter.label value=roleParameter.newValue type=roleParameter.type canShowPassword=roleParameter.canShowPassword labelSize='col-md-6' inputSize='col-md-5' isRequired=false helpText=roleParameter.description cssId=roleParameter.key}}
                     {{/if}}
                   {{/each}}
                 </div>
