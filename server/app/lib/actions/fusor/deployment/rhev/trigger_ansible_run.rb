@@ -112,7 +112,7 @@ module Actions
               "satellite_fqdn" => ::SmartProxy.first.hostname,
               "config_dir" => "/etc/qci/",
               "storageDatacenterName" => "hosted_storage",
-              "storage_type" => deployment.rhev_storage_type.downcase,
+              "storage_type" => deployment.rhev_storage_type.downcase
             }
           end
 
