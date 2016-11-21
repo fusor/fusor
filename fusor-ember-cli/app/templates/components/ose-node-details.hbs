@@ -1,0 +1,70 @@
+<div class='row'>
+  <div class='col-xs-12 ose-node-details-title'>
+    {{title}}
+    {{#if editable}}
+      {{#if isEditMode}}
+        <div class='pull-right'>
+          <button {{action "cancelOseNodeDetails"}} class='btn btn-default btn-sm'>
+            Cancel
+          </button>
+          <button {{action "saveOseNodeDetails"}} class='btn btn-primary btn-sm'>
+            Save
+          </button>
+        </div>
+      {{else}}
+        <div class='pull-right'>
+          <button {{action "editOseNodeDetails"}} class='btn btn-default btn-sm'>
+            Edit
+          </button>
+        </div>
+      {{/if}}
+    {{/if}}
+  </div>
+</div>
+
+<div class='row'>
+  <div class='col-xs-12 ose-node-details-body'>
+    <div class='row'>
+      <div class='col-xs-6 ose-node-details-col'>
+        {{ose-node-details-block numNodes=numLeftNodes
+                                 valueVcpu=leftVcpu
+                                 valueRam=leftRam
+                                 valueDisk=leftDisk
+                                 typeNode=leftTypeNode
+                                 validator=validator
+                                 isEditMode=isEditMode
+                                 storageSize=leftStorageSize}}
+      </div>
+
+      <div class='col-xs-6'>
+        {{ose-node-details-block numNodes=numRightNodes
+                                 valueVcpu=rightVcpu
+                                 valueRam=rightRam
+                                 valueDisk=rightDisk
+                                 typeNode=rightTypeNode
+                                 validator=validator
+                                 isEditMode=isEditMode
+                                 storageSize=rightStorageSize}}
+      </div>
+    </div>
+  </div>
+</div>
+
+{{#if showNodeRatio}}
+  <div class="row">
+    <div class='col-xs-offset-2 ose-xs-10'>
+      <form class="form-inline ose-node-ratio-form">
+        <div class="form-group">
+          <label for="nodeRatioMastersInput">Node Ratio</label>
+          {{#x-select value=selectedNodeRatio action="nodeRatioChanged" id=selectedNodeRatioId class="form-control ose-node-ratio-select"}}
+            {{#each nodeRatioOptions as |opt| }}
+              {{#x-option value=opt.value}}{{opt.label}}{{/x-option}}
+            {{/each}}
+          {{/x-select}}
+        </div>
+      </form>
+    </div>
+  </div>
+{{/if}}
+
+

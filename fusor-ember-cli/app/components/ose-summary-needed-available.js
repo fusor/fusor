@@ -3,7 +3,7 @@ import Ember from 'ember';
 export default Ember.Component.extend({
 
   tagName: 'div',
-  classNames: ['row env-summary-needed-available'],
+  classNames: ['row ose-env-summary-needed-available'],
 
   percentProgress: Ember.computed('needed', 'available', function() {
     const needed = parseInt(this.get('needed'));

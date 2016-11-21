@@ -4,6 +4,7 @@ import OpenshiftMixin from "../../mixins/openshift-mixin";
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
 
+  nodeRatioOptions: [],
   openshiftController: Ember.inject.controller('openshift'),
 
   // similar code to CFME where-install.js. Possible to DRY into mixin
@@ -32,6 +33,10 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     return (this.get('disableOpenStack') || this.get('isStarted'));
   }),
 
+  haSelected: Ember.computed('oseDeploymentType', function() {
+    return this.get('oseDeploymentType') === 'highly_available';
+  }),
+
   backRouteName: Ember.computed('isOpenStack', 'isRhev', function() {
     if (this.get('isOpenStack')) {
       return 'openstack.overcloud';
@@ -42,126 +47,89 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     }
   }),
 
-  showEnvironmentSummary: Ember.computed('numNodes', 'storageSize', function() {
-    return (Ember.isPresent(this.get('numNodes')) && Ember.isPresent(this.get('storageSize')));
+  onOseDeploymentTypeEdited: Ember.observer('oseDeploymentType', function () {
+    Ember.run.once(this, () => {
+      this.calculateNodeRatioOptions();
+      this.calculateAutoNodeRatio();
+    });
   }),
 
-  actions: {
-    openshiftLocationChanged() {},
+  onNumTotalNodesEdited: Ember.observer('numTotalNodes', function () {
+    Ember.run.once(this, () => {
+      let numTotalNodes = this.get('numTotalNodes');
+      let nonNumberInput = numTotalNodes % 1 !== 0;
+      let invalidHaNodeValues = this.get('oseDeploymentType') === 'highly_available' && numTotalNodes < 8;
+      let invalidSingleNodeValues = numTotalNodes < 2;
+      if (nonNumberInput || invalidHaNodeValues || invalidSingleNodeValues) {
+        this.invalidateNodeInput();
+      } else {
+        this.calculateNodeRatioOptions();
+        this.calculateAutoNodeRatio();
+      }
+    });
+  }),
 
-    numMasterNodesChanged(numNodes) {
-      this.set('isCustomNumMasterNodes', false);
-      this.set('numMasterNodes', numNodes);
-    },
+  invalidateNodeInput() {
+    this.set('nodeRatioOptions', []);
+    this.set('numMasterNodes', null);
+    this.set('numWorkerNodes', null);
+  },
 
-    numWorkerNodesChanged(numNodes) {
-      this.set('isCustomNumWorkerNodes', false);
-      this.set('numWorkerNodes', numNodes);
-    },
+  calculateAutoNodeRatio() {
+    let oseDeploymentType = this.get('oseDeploymentType');
+    let numTotalNodes = this.get('numTotalNodes');
+    numTotalNodes = Ember.isPresent(numTotalNodes) ? numTotalNodes : 0;
 
-    storageSizeChanged(storageSize) {
-      this.set('isCustomStorageSize', false);
-      this.set('model.openshift_storage_size', storageSize);
-    },
+    let numMasterNodes = this.get('numMasterNodes');
+    let numWorkerNodes = this.get('numWorkerNodes');
 
-    showCustomNumWorkerNodes() {
-      this.set('isCustomNumWorkerNodes', true);
-    },
+    if (this.get('oseDeploymentType') === 'single_node') {
+      numTotalNodes = Math.max(numTotalNodes, 2);
+      numMasterNodes = 1;
+      numWorkerNodes = numTotalNodes - numMasterNodes;
+    } else if (this.get('oseDeploymentType') === 'highly_available') {
+      numTotalNodes = Math.max(numTotalNodes, 8);
+      let numConfigurableNodes = numTotalNodes - this.get('numHaLoadBalancers') - this.get('numHaInfraNodes');
+      let maxMasterNodes = Math.floor(numConfigurableNodes / 2) * 2 -1;
+      numMasterNodes = Math.min(numMasterNodes, maxMasterNodes);
+      numMasterNodes = Math.max(numMasterNodes, 3);
+      numWorkerNodes = numConfigurableNodes - numMasterNodes;
+    }
 
-    showCustomStorageSize() {
-      this.set('isCustomStorageSize', true);
+    if (this.get('numTotalNodes') !== numTotalNodes) {
+      this.set('numTotalNodes', numTotalNodes);
+    }
+
+    if (this.get('numMasterNodes') !== numMasterNodes) {
+      this.set('numMasterNodes', numMasterNodes);
+    }
+
+    if (this.get('numWorkerNodes') !== numWorkerNodes) {
+      this.set('numWorkerNodes', numWorkerNodes);
     }
   },
 
-  _initWorkerNodes(count) {
-    const _workerNodes = Ember.A([]);
-    const _workerNodesMinusFirst = Ember.A([]);
+  calculateNodeRatioOptions() {
+    let options = [];
+    let numTotalNodes = this.get('numTotalNodes');
 
-    for(let nodeOrdinal = 1; nodeOrdinal <= count; ++nodeOrdinal) {
-      const _node = this._createWorkerNode(nodeOrdinal);
-      _workerNodes.push(_node);
-
-      if(nodeOrdinal === 1) {
-        this.set('_firstWorkerNode', _node);
-      } else {
-        _workerNodesMinusFirst.push(_node);
+    if (this.get('oseDeploymentType') === 'highly_available' && numTotalNodes) {
+      let configurableNodes = numTotalNodes - this.get('numHaLoadBalancers') - this.get('numHaInfraNodes');
+      let minMasterNodes = 3;
+      let maxMasterNodes = configurableNodes - 1;  //1 workers minimum
+      for (let numMasters = minMasterNodes; numMasters <= maxMasterNodes; numMasters += 2) {
+        let numWorkerNodes = configurableNodes - numMasters;
+        options.push(Ember.Object.create({label: `${numMasters} masters / ${numWorkerNodes} workers`, value: numMasters}));
       }
     }
 
-    this.set('_workerNodes', _workerNodes);
-    this.set('_workerNodesMinusFirst', _workerNodesMinusFirst);
+    this.set('nodeRatioOptions', options);
   },
 
-  _createWorkerNode(ordinal) {
-    const WorkerNode = Ember.Object.extend({
-      numMasterNodes: Ember.computed.alias('controller.numMasterNodes'),
-
-      perMasterVcpu: Ember.computed.alias('controller.masterVcpu'),
-      perMasterRam: Ember.computed.alias('controller.masterRam'),
-      perMasterDisk: Ember.computed.alias('controller.masterDisk'),
-      perWorkerVcpu: Ember.computed.alias('controller.model.openshift_node_vcpu'),
-      perWorkerRam: Ember.computed.alias('controller.model.openshift_node_ram'),
-      perWorkerDisk: Ember.computed.alias('controller.storageSize'),
-
-      vcpuAvailable: Ember.computed.alias('controller.vcpuAvailable'),
-      ramAvailable: Ember.computed.alias('controller.ramAvailable'),
-      diskAvailable: Ember.computed.alias('controller.diskAvailable'),
-
-      vcpuNeeded: Ember.computed(
-        'ordinal',
-        'numMasterNodes',
-        'perMasterVcpu',
-        'perWorkerVcpu',
-        function() {
-          const totalWorkerCpu = this.get('ordinal') * this.get('perWorkerCpu');
-          const totalMasterCpu = this.get('numMasterNodes') * this.get('perMasterVcpu');
-          return totalWorkerCpu + totalMasterCpu;
-        }
-      ),
-
-      ramNeeded: Ember.computed(
-        'ordinal',
-        'numMasterNodes',
-        'perMasterRam',
-        'perWorkerRam',
-        function() {
-          const totalWorkerRam = this.get('ordinal') * this.get('perWorkerRam');
-          const totalMasterRam = this.get('numMasterNodes') * this.get('perMasterRam');
-          return totalWorkerRam + totalMasterRam;
-        }
-      ),
-
-      diskNeeded: Ember.computed(
-        'ordinal',
-        'numMasterNodes',
-        'perMasterDisk',
-        'perWorkerDisk',
-        function() {
-          const totalWorkerDisk = this.get('ordinal') * this.get('perWorkerDisk');
-          const totalMasterDisk = this.get('numMasterNodes') * this.get('perMasterDisk');
-          return totalWorkerDisk + totalMasterDisk;
-        }
-      ),
-
-      isOverCapacity: Ember.computed(
-        'vcpuNeeded',
-        'vcpuAvailable',
-        'ramNeeded',
-        'ramAvailable',
-        'diskNeeded',
-        'diskAvailable',
-        function() {
-          const vcpuOver = this.get('vcpuNeeded') > this.get('vcpuAvailable');
-          const ramOver = this.get('ramNeeded') > this.get('ramAvailable');
-          const diskOver = this.get('diskNeeded') > this.get('diskAvailable');
-          return vcpuOver || ramOver || diskOver;
-        }
-      )
-    });
-
-    return WorkerNode.create({
-      controller: this,
-      ordinal: ordinal
-    });
+  actions: {
+    nodeRatioChanged(numMasterNodes) {
+      this.set('numMasterNodes', numMasterNodes);
+      this.calculateAutoNodeRatio();
+    }
   }
 });

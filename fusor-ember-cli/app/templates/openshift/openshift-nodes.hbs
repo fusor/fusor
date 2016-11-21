@@ -16,12 +16,14 @@
           <p>
             Current Configuration Requirements
             {{#if isCloudForms}}
-              {{tool-tip faIcon='fa-info-circle'
-              title=cfmeTooltipError.cpu}}
+              {{tool-tip  faIcon='fa-info-circle' title=cfmeTooltipError.cpu}}
             {{/if}}
           </p>
           <p>Master CPUs: {{totalMasterCpus}}</p>
           <p>Worker CPUs: {{totalWorkerCpus}}</p>
+          {{#if isHA}}
+            <p>HA Reserved CPUs: {{totalInfraCpus}}</p>
+          {{/if}}
           <p><strong>Total CPUs required: {{vcpuNeeded}}</strong></p>
           <p><strong>Total CPUs available: {{vcpuAvailable}}</strong></p>
         </div>
@@ -36,12 +38,14 @@
           <p>
             Current Configuration Requirements
             {{#if isCloudForms}}
-              {{tool-tip faIcon='fa-info-circle'
-              title=cfmeTooltipError.ram}}
+              {{tool-tip  faIcon='fa-info-circle' title=cfmeTooltipError.ram}}
             {{/if}}
           </p>
           <p>Master RAM: {{totalMasterRam}} GB</p>
           <p>Worker RAM: {{totalWorkerRam}} GB</p>
+          {{#if isHA}}
+            <p>HA Reserved RAM: {{totalInfraRam}}</p>
+          {{/if}}
           <p><strong>Total RAM required: {{ramNeeded}} GB</strong></p>
           <p><strong>Total RAM available: {{ramAvailable}} GB</strong></p>
         </div>
@@ -56,12 +60,14 @@
           <p>
             Current Configuration Requirements
             {{#if isCloudForms}}
-              {{tool-tip faIcon='fa-info-circle'
-              title=cfmeTooltipError.disk}}
+              {{tool-tip  faIcon='fa-info-circle' title=cfmeTooltipError.disk}}
             {{/if}}
           </p>
           <p>Master Disk: {{totalMasterDisk}} GB</p>
           <p>Worker Disk + Storage: {{totalWorkerDiskPlusStorage}} GB</p>
+          {{#if isHA}}
+            <p>HA Reserved Disk: {{totalInfraDisk}}</p>
+          {{/if}}
           <p><strong>Total Disk required: {{diskNeeded}} GB</strong></p>
           <p><strong>Total Disk available: {{diskAvailable}} GB</strong></p>
         </div>
@@ -70,185 +76,101 @@
   {{/if}}
 {{/if}}
 
-<div class='row'>
-  <div class='col-md-9'>
+<div class="ose-select-dest-provider">
+  <p>
+    Select where to provision the OpenShift Container Platform nodes.
+  </p>
 
-
-    <p>
-      Select where to provision the OpenShift Container Platform nodes.
-    </p>
-
-    <div class='ident-radio'>
-      {{#radio-button value="RHEV" groupValue=openshiftInstallLoc changed="openshiftLocationChanged" id="install_on_rhev" disabled=disableRHEVradio dataQci="rhevOspInstallLoc"}}
-        <span class="{{if disableRHEV 'disabled'}}">
-          {{fullnameRhev}}
-        </span>
-      {{/radio-button}}
-    </div>
-
-    {{!--
-    ------------------------------------------------------------
-    TODO: Should allow for more product selection when more than one provider is
-    supported post GA
-    ------------------------------------------------------------
-    <div class='ident-radio'>
-      {{#radio-button value="OpenStack" groupValue=openshiftInstallLoc changed="openshiftLocationChanged" id="install_on_openstack" disabled=disableOpenstackradio dataQci="openstackOspInstallLoc"}}
-        <span class="inline-block {{if disableOpenStack 'disabled'}}">
-          {{fullnameOpenStack}}
-        </span>
-      {{/radio-button}}
-    </div>
-    --}}
-
-    {{#if openshiftInstallLoc}}
-    <p>
-      Select how many virtual machines should be created as nodes for the OpenShift environment.
-      {{tool-tip faIcon='fa-info-circle'
-                 title="The environment consists of worker nodes and master nodes, which orchestrates tasks across the other nodes. Master and worker nodes are provisioned with different specifications, as seen in Node Details."}}
-
-    </p>
-    {{/if}}
-
-{{#if openshiftInstallLoc}}
-<div class='row'>
-  <div class='col-xs-12 col-sm-12 col-md-9 col-lg-7 ose-number-node-buttons'>
-
-    <div class='ose-number-buttons-block'>
-      <span class='ose-node-label'>Master Nodes</span>
-
-      {{button-selection
-        label=1
-        value=1
-        groupValue=numMasterNodes
-        buttonType='master'
-        disabled=false}}
-
-      {{tool-tip faIcon='fa-info-circle'
-                 title="OpenShift deployments currently only support one Master Node"}}
-    </div>
-
-    <div class='ose-number-buttons-block'>
-      <span class='ose-node-label worker-nodes-label'>Worker Nodes</span>
-
-      {{
-        button-selection
-        label=_firstWorkerNode.ordinal
-        value=_firstWorkerNode.ordinal
-        groupValue=numWorkerNodes
-        buttonType='worker'
-        customFocused=isCustomNumWorkerNodes
-        changed="numWorkerNodesChanged"
-      }}
-
-      {{#each _workerNodesMinusFirst as |_node|}}
-        {{
-          button-selection
-          label=_node.ordinal
-          value=_node.ordinal
-          buttonType='worker'
-          groupValue=numWorkerNodes
-          changed="numWorkerNodesChanged"
-          customFocused=isCustomNumWorkerNodes
-          disabled=_node.isOverCapacity
-        }}
-      {{/each}}
-
-      {{#if isCustomNumWorkerNodes}}
-        {{simple-text-f value=numWorkerNodes
-                        class='ose-custom-field'
-                        disabled=deploymentController.isStarted
-                        validator=positiveIntegerValidator
-                        cssId='custom-worker-nodes'
-                        placeholder='Enter'}}
-      {{else}}
-        <a data-qci='show-custom-worker-nodes'{{action 'showCustomNumWorkerNodes'}}>custom</a>
-      {{/if}}
-
-    </div>
-    </div>
-  </div>
-
-    <br />
-    <p>
-      Select how much additional storage is needed for Docker containers on each worker node.
-    </p>
-
-    {{button-selection label='15 GB'
-                       value=15
-                       groupValue=model.openshift_storage_size
-                       buttonType='storageSize'
-                       customFocused=isCustomStorageSize
-                       changed="storageSizeChanged"}}
-    {{button-selection label='20 GB'
-                       value=20
-                       groupValue=model.openshift_storage_size
-                       buttonType='storageSize'
-                       customFocused=isCustomStorageSize
-                       changed="storageSizeChanged"}}
-    {{button-selection label='25 GB'
-                       value=25
-                       groupValue=model.openshift_storage_size
-                       buttonType='storageSize'
-                       customFocused=isCustomStorageSize
-                       changed="storageSizeChanged"}}
-    {{button-selection label='30 GB'
-                       value=30
-                       groupValue=model.openshift_storage_size
-                       buttonType='storageSize'
-                       customFocused=isCustomStorageSize
-                       changed="storageSizeChanged"}}
-    {{#if isCustomStorageSize}}
-      {{simple-text-f value=model.openshift_storage_size
-                      class='ose-custom-field'
-                      disabled=deploymentController.isStarted
-                      validator=positiveIntegerValidator
-                      cssId='custom-storage-size'
-                      placeholder='Enter'
-                      suffix='GB'}}
-    {{else}}
-      <a data-qci='show-custom-storage-size'{{action 'showCustomStorageSize'}}>custom</a>
-    {{/if}}
-
-    {{#if showEnvironmentSummary}}
-        {{ose-env-summary numNodesDisplay=numNodesDisplay
-                          positiveIntegerValidator=positiveIntegerValidator
-                          numMasterNodes=numMasterNodes
-                          numWorkerNodes=numWorkerNodes
-                          storageSize=storageSize
-                          masterVcpu=masterVcpu
-                          masterRam=masterRam
-                          masterDisk=masterDisk
-                          workerVcpu=workerVcpu
-                          workerRam=workerRam
-                          workerDisk=workerDisk
-                          vcpuNeeded=vcpuNeeded
-                          ramNeeded=ramNeeded
-                          diskNeeded=diskNeeded
-                          vcpuAvailable=vcpuAvailable
-                          ramAvailable=ramAvailable
-                          diskAvailable=diskAvailable
-                          isCloudForms=isCloudForms
-                          substractCfme=substractCfme
-                          cfmeDisk=cfmeDisk
-                          cfmeRam=cfmeRam
-                          cfmeVcpu=cfmeVcpu}}
-
-        {{node-details numNodesDisplay=numNodesDisplay
-                       numMasterNodes=numMasterNodes
-                       numWorkerNodes=numWorkerNodes
-                       storageSize=storageSize
-                       validator=positiveIntegerValidator
-                       masterVcpu=masterVcpu
-                       masterRam=masterRam
-                       masterDisk=masterDisk
-                       workerVcpu=workerVcpu
-                       workerRam=workerRam
-                       workerDisk=workerDisk}}
-    {{/if}}
-
-{{/if}}
+  <div class='ident-radio'>
+    {{#radio-button value="RHEV" groupValue=openshiftInstallLoc changed="oseLocationChanged" id="install_on_rhev" disabled=disableRHEVradio dataQci="rhevOspInstallLoc"}}
+      <span class="{{if disableRHEV 'disabled'}}">
+        {{fullnameRhev}}
+      </span>
+    {{/radio-button}}
   </div>
 </div>
+
+{{!--
+------------------------------------------------------------
+TODO: Should allow for more product selection when more than one provider is supported post GA
+------------------------------------------------------------
+<div class='ident-radio'>
+  {{#radio-button value="OpenStack" groupValue=openshiftInstallLoc changed="oseLocationChanged" id="install_on_openstack" disabled=disableOpenstackradio dataQci="openstackOspInstallLoc"}}
+    <span class="inline-block {{if disableOpenStack 'disabled'}}">
+      {{fullnameOpenStack}}
+    </span>
+  {{/radio-button}}
+</div>
+--}}
+
+{{#if openshiftInstallLoc}}
+  <p>
+    Select how many nodes should be created as nodes for the OpenShift environment.
+    {{tool-tip faIcon='fa-info-circle'
+               title="The environment consists of worker nodes and master nodes, which orchestrates tasks across the other nodes. Master and worker nodes are provisioned with different specifications, as seen in Node Details."}}
+
+  </p>
+{{/if}}
+
+{{#if openshiftInstallLoc}}
+  {{ose-env-summary positiveIntegerValidator=positiveIntegerValidator
+                    oseDeploymentType=oseDeploymentType
+                    numTotalNodes=numTotalNodes
+                    storageSize=storageSize
+                    vcpuNeeded=vcpuNeeded
+                    ramNeeded=ramNeeded
+                    diskNeeded=diskNeeded
+                    vcpuAvailable=vcpuAvailable
+                    ramAvailable=ramAvailable
+                    diskAvailable=diskAvailable
+                    isCloudForms=isCloudForms
+                    substractCfme=substractCfme
+                    cfmeDisk=cfmeDisk
+                    cfmeRam=cfmeRam
+                    cfmeVcpu=cfmeVcpu}}
+
+  {{#if oseDeploymentType}}
+  <div class="row ose-node-details-container">
+    {{ose-node-details  title="Configurable Nodes"
+                        editable=true
+                        oseDeploymentType=oseDeploymentType
+                        numTotalNodes=numTotalNodes
+                        numLeftNodes=numMasterNodes
+                        nodeRatioOptions=nodeRatioOptions
+                        numRightNodes=numWorkerNodes
+                        validator=positiveIntegerValidator
+                        leftTypeNode="Master nodes"
+                        leftVcpu=masterVcpu
+                        leftRam=masterRam
+                        leftDisk=masterDisk
+                        leftDiskImages=masterDiskImages
+                        leftStorageSize=storageSize
+                        rightTypeNode="Worker nodes"
+                        rightVcpu=workerVcpu
+                        rightRam=workerRam
+                        rightDisk=workerDisk
+                        rightStorageSize=storageSize
+                        nodeRatioChanged='nodeRatioChanged'}}
+
+    {{#if haSelected}}
+      {{ose-node-details  title="Required HA Nodes"
+                          editable=false
+                          numLeftNodes=numHaLoadBalancers
+                          numRightNodes=numHaInfraNodes
+                          validator=positiveIntegerValidator
+                          leftTypeNode=haLoadBalancerResources.type
+                          leftVcpu=haLoadBalancerResources.vCPU
+                          leftRam=haLoadBalancerResources.ram
+                          leftDisk=haLoadBalancerResources.disk
+                          rightTypeNode=haInfraNodesResources.type
+                          rightVcpu=haInfraNodesResources.vCPU
+                          rightRam=haInfraNodesResources.ram
+                          rightDisk=workerDisk
+                          rightStorageSize=storageSize}}
+    {{/if}}
+  </div>
+  {{/if}}
+{{/if}}
 
 {{cancel-back-next backRouteName=backRouteName
                    disableBack=false

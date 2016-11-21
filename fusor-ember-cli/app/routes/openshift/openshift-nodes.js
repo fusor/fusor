@@ -26,7 +26,6 @@ export default Ember.Route.extend(UsesOseDefaults, {
     const deployment = model.deployment;
     const maxRes = model.maxResources;
     controller.set('model', model.deployment);
-    controller._initWorkerNodes(5);
 
     // TODO: Disabling provider selection until OpenStack is supported post-GA
     deployment.set('openshift_install_loc', 'RHEV');
@@ -66,6 +65,13 @@ export default Ember.Route.extend(UsesOseDefaults, {
       deployment.set('openshift_available_disk', result['diskAvailable']);
     }
 
+    let oseDeploymentType = deployment.get('openshift_number_master_nodes') > 1 ? 'highly_available' : 'single_node';
+    controller.set('oseDeploymentType', oseDeploymentType);
+    let numTotalNodes = deployment.get('openshift_number_master_nodes') + deployment.get('openshift_number_worker_nodes');
+    if (oseDeploymentType === 'highly_available') {
+      numTotalNodes += 4;
+    }
+    controller.set('numTotalNodes', numTotalNodes);
   },
 
   loadMaxResources(deployment) {
