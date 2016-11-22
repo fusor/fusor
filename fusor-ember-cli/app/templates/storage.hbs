@@ -50,7 +50,7 @@
   {{#if isLocal}}
     {{text-f label="Storage Path" value=model.rhev_local_storage_path placeholder='Ex. /rhev/data_storage' isRequired=true cssId='rhev_local_storage_path' help-inline='This path will be created and given appropriate permissions - chown 36:36; chmod 0755, etc' disabled=isStarted}}
   {{else}}
-    {{text-f label="Data Domain Name" value=model.rhev_storage_name isRequired=true cssId='rhev_storage_name' disabled=isStarted validator=computerNameValidator}}
+    {{text-f label="Data Domain Name" value=model.rhev_storage_name maxlength=50 isRequired=true cssId='rhev_storage_name' disabled=isStarted validator=computerNameValidator}}
     {{text-f label="Storage Address" value=model.rhev_storage_address isRequired=true cssId='rhev_storage_address' disabled=isStarted validator=hostnameValidator}}
     {{text-f label="Share Path" value=model.rhev_share_path isRequired=true cssId='rhev_share_path' disabled=isStarted validator=sharePathValidator}}
 
