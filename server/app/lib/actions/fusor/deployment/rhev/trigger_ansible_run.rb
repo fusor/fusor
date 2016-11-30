@@ -21,9 +21,8 @@ module Actions
             inventory = generate_inventory(deployment)
             vars = generate_vars(deployment)
             config_dir = "#{Rails.root}/tmp/ansible-ovirt/#{deployment.label}"
-            private_key = generate_private_key(deployment, "#{config_dir}/.ssh")
-            environment = get_environment(deployment, config_dir, private_key)
-
+            environment = get_environment(deployment, config_dir)
+            distrubute_public_key(deployment)
             unless Dir.exist?(config_dir)
               FileUtils.mkdir_p(config_dir)
             end
@@ -112,24 +111,21 @@ module Actions
             }
           end
 
-          def get_environment(deployment, config_dir, private_key)
+          def get_environment(deployment, config_dir)
             {
               'ANSIBLE_HOST_KEY_CHECKING' => 'False',
               'ANSIBLE_LOG_PATH' => "#{::Fusor.log_file_dir(deployment.label, deployment.id)}/ansible.log",
               'ANSIBLE_RETRY_FILES_ENABLED' => "False",
               'ANSIBLE_SSH_CONTROL_PATH' => "/tmp/%%h-%%r",
               'ANSIBLE_ASK_SUDO_PASS' => "False",
-              'ANSIBLE_PRIVATE_KEY_FILE' => private_key,
+              'ANSIBLE_PRIVATE_KEY_FILE' => ::Utils::Fusor::SSHKeyUtils.new(deployment).get_ssh_private_key_path,
               'ANSIBLE_CONFIG' => config_dir,
               'HOME' => config_dir
             }
           end
 
-          def generate_private_key(deployment, key_path)
-            keyutils = Utils::Fusor::SSHKeyUtils.new(deployment, 'rsa', key_path)
-
-            keyutils.generate_ssh_keys
-
+          def distrubute_public_key(deployment)
+            keyutils = Utils::Fusor::SSHKeyUtils.new(deployment)
 
             if !deployment.rhev_is_self_hosted
               distribute_key_to_host keyutils, deployment.rhev_engine_host.name, deployment.rhev_root_password
@@ -138,8 +134,6 @@ module Actions
             deployment.discovered_hosts.each do |host|
               distribute_key_to_host keyutils, host.name, deployment.rhev_root_password
             end
-
-            keyutils.get_ssh_private_key_path
           end
 
 

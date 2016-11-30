@@ -29,15 +29,7 @@ module Actions
           def run
             ::Fusor.log.debug "================ Copy SSH Key run method ===================="
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
-            key_type = input[:key_type]
-            key_path = File.join(Rails.root, '.ssh', 'openshift', "#{deployment.label}-#{deployment.id}")
-            keyutils = Utils::Fusor::SSHKeyUtils.new(deployment, key_type, key_path)
-
-            # Generate SSH Keys
-            keyutils.generate_ssh_keys
-            deployment.ose_private_key_path = "#{keyutils.get_ssh_private_key_path}"
-            deployment.ose_public_key_path = "#{keyutils.get_ssh_private_key_path}.pub"
-            deployment.save!
+            keyutils = ::Utils::Fusor::SSHKeyUtils.new(deployment)
 
             # Distribute the key to each Master Nodes
             deployment.ose_master_hosts.each do |host|
@@ -48,10 +40,6 @@ module Actions
             deployment.ose_worker_hosts.each do |host|
               keyutils.copy_keys_to_user(host.name, deployment.openshift_username, deployment.openshift_root_password)
             end
-            ::Fusor.log.debug "SSH Keys have been copied:"
-            ::Fusor.log.debug "  deployment.ose_private_key_path = #{deployment.ose_private_key_path}"
-            ::Fusor.log.debug "  deployment.ose_public_key_path  = #{deployment.ose_public_key_path}"
-
             ::Fusor.log.debug "================ Leaving Copy SSH Key run method ===================="
           end
         end

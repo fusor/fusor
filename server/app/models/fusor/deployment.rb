@@ -56,7 +56,7 @@ module Fusor
     belongs_to :foreman_task, :class_name => "::ForemanTasks::Task", :foreign_key => :foreman_task_uuid
 
     after_initialize :setup_warnings
-    before_validation :update_label, :ensure_openstack_deployment, on: :create  # we validate on create, so we need to do it before those validations
+    before_validation :update_label, :ensure_openstack_deployment, :ensure_ssh_keys, on: :create  # we validate on create, so we need to do it before those validations
     before_save :update_label, :ensure_openstack_deployment, on: :update        # but we don't validate on update, so we need to call before_save
 
     scoped_search :on => [:id, :name, :updated_at], :complete_value => true
@@ -97,6 +97,14 @@ module Fusor
         self.openstack_deployment.destroy if openstack_deployment
       end
       true
+    end
+
+    def ensure_ssh_keys
+      if self.ssh_private_key.nil? || self.ssh_private_key.empty?
+        keys = ::Utils::Fusor::SSHKeyUtils.new(self).generate_ssh_keys
+        self.ssh_private_key = keys[:private_key]
+        self.ssh_public_key = keys[:public_key]
+      end
     end
   end
 end

@@ -124,30 +124,32 @@ module Fusor
       end
 
       def build_get_plan_environments(ceph_enabled)
-        {
-          'root_environment' => 'overcloud-resource-registry-puppet.yaml',
-          'root_template' => 'overcloud.yaml',
-          'topics' => [
+        [
+          [
+            "Storage",
             {
-              'environment_groups' => [
+              "environment_groups" => [
                 {
-                  'description' => 'Enable the use of an externally managed Ceph cluster\n',
-                  'environments' => [
+                  "description" => "Enable the use of an externally managed Ceph cluster\n",
+                  "environments" => [
                     {
-                      'description' => nil,
-                      'enabled' => ceph_enabled,
-                      'file' => 'environments/puppet-ceph-external.yaml',
-                      'requires' => ['overcloud-resource-registry-puppet.yaml'],
-                      'title' => 'Externally managed Ceph'
+                      "enabled" => ceph_enabled,
+                      "requires" => [
+                        "overcloud-resource-registry-puppet.yaml"
+                      ],
+                      "description" => nil,
+                      "file" => "environments/puppet-ceph-external.yaml",
+                      "title" => "Externally managed Ceph"
                     }
                   ],
-                  'title' => 'Externally managed Ceph'
+                  "title" => "Externally managed Ceph"
                 }
               ],
-              'title' => 'Storage'
+              "description" => nil,
+              "title" => "Storage"
             }
           ]
-        }
+        ]
       end
 
       def setup

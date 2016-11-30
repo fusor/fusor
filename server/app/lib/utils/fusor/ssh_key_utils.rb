@@ -2,57 +2,61 @@
 module Utils
   module Fusor
     class SSHKeyUtils
-      def initialize(deployment, key_type, path)
+      def initialize(deployment)
         @deployment = deployment
-        @key_type = key_type
-        @key_from_path = path
-        @key_to_path   = ".ssh"
-        @key_base_name = "id_#{@key_type}"
-      end
-
-      def get_ssh_private_key_path
-        return "#{@key_from_path}/#{@key_base_name}"
       end
 
       def generate_ssh_keys
-        if File.directory?(@key_from_path)
-          ::Fusor.log.debug "====== ssh keys folder '#{@key_from_path}' already exists! skipping key generation"
-        else
-          Utils::Fusor::CommandUtils.run_command("mkdir -p #{@key_from_path}")
-          Utils::Fusor::CommandUtils.run_command("ssh-keygen -f #{@key_from_path}/#{@key_base_name} -N '' -t #{@key_type}")
-          ::Fusor.log.debug "====== ssh keys have been generated"
-        end
+        key = OpenSSL::PKey::RSA.new 2048
+        private_key = key.to_s
+        public_key = "#{key.ssh_type} #{[key.to_blob].pack('m0')}\n"
+        FileUtils.mkdir_p("#{Rails.root}/.ssh/")
+
+        key = File.open(get_ssh_private_key_path, "w", 0600)
+        key.write(private_key)
+        key.close
+
+        key = File.open("#{get_ssh_private_key_path}.pub", "w", 0600)
+        key.write(public_key)
+        key.close
+
+        { :private_key => private_key, :public_key => public_key }
+      end
+
+      def get_ssh_private_key_path
+        "#{Rails.root}/.ssh/id_rsa-#{@deployment.label}"
       end
 
       def copy_keys_to_user(hostname, username, password)
         copy_keys_to_root(hostname, password)
         client = Utils::Fusor::SSHConnection.new(hostname, 'root', password)
         client.execute("useradd #{username}")
-        client.execute("echo '#{username}        ALL=(ALL)       NOPASSWD: ALL' >> /etc/sudoers")
-        client.execute("runuser -l #{username} -c 'mkdir ~/#{@key_to_path} && chmod 700 ~/#{@key_to_path}'")
-        client.execute("cp ~/#{@key_to_path}/#{@key_base_name}.pub /home/#{username}/#{@key_to_path}/")
-        client.execute("chown #{username}:#{username} /home/#{username}/#{@key_to_path}/#{@key_base_name}.pub")
-        client.execute("cp ~/#{@key_to_path}/#{@key_base_name} /home/#{username}/#{@key_to_path}/")
-        client.execute("chown #{username}:#{username} /home/#{username}/#{@key_to_path}/#{@key_base_name}")
-        client.execute("runuser -l #{username} -c 'cat ~/#{@key_to_path}/#{@key_base_name}.pub >> ~/#{@key_to_path}/authorized_keys'")
-        client.execute("runuser -l #{username} -c 'chmod 644 ~/#{@key_to_path}/#{@key_base_name}.pub'")
-        client.execute("runuser -l #{username} -c 'chmod 600 ~/#{@key_to_path}/#{@key_base_name}'")
-        client.execute("runuser -l #{username} -c 'chmod 644 ~/#{@key_to_path}/authorized_keys'")
+        client.execute("echo '#{username}        ALL=(ALL)       NOPASSWD: ALL' > /etc/sudoers.d/#{username}")
+        ssh_dir = "/home/#{username}/.ssh"
+        client.execute("install -o #{username} -g #{username} -m 700 -d #{ssh_dir}")
+        client.execute("install -o #{username} -g #{username} -m 600 ~/.ssh/id_rsa.pub #{ssh_dir}")
+        client.execute("install -o #{username} -g #{username} -m 600 ~/.ssh/id_rsa     #{ssh_dir}")
+        client.execute("install -o #{username} -g #{username} -m 600 #{ssh_dir}/id_rsa.pub #{ssh_dir}/authorized_keys")
       end
 
       def copy_keys_to_root(hostname, password)
         client = Utils::Fusor::SSHConnection.new(hostname, 'root', password)
-        client.execute("mkdir -p ~/#{@key_to_path} && chmod 700 ~/#{@key_to_path}")
-        ssh_keys = ["#{@key_base_name}", "#{@key_base_name}.pub"]
-        ssh_keys.each { |key|
-          from_path = "#{@key_from_path}/#{key}"
-          to_path   = "/root/#{@key_to_path}/#{key}"
-          Net::SCP.start(hostname, "root", :password => password, :paranoid => false) do |scp|
-            scp.upload!(from_path, to_path)
-          end
-        }
-        client.execute("cat ~/#{@key_to_path}/#{@key_base_name}.pub > ~/#{@key_to_path}/authorized_keys")
-        client.execute("chmod 644 ~/#{@key_to_path}/authorized_keys")
+        client.execute("install -o root -g root -m 700 -d ~/.ssh")
+        Net::SCP.start(hostname, "root", :password => password, :paranoid => false) do |scp|
+          scp.upload!(StringIO.new(@deployment.ssh_private_key), ".ssh/id_rsa")
+          scp.upload!(StringIO.new(@deployment.ssh_public_key), ".ssh/id_rsa.pub")
+        end
+        client.execute("chmod 600 ~/.ssh/id_rsa*")
+        copy_pub_key_to_auth_keys(hostname, 'root', password)
+      end
+
+      def copy_pub_key_to_auth_keys(hostname, username, password)
+        ENV['SSHPASS'] = password
+        oldhome = ENV['HOME']
+        ENV['HOME'] = "#{Rails.root}" #FIXME: Why is HOME getting set under "/tmp/#{deployment.label}"
+        system("sshpass -e ssh-copy-id -i #{get_ssh_private_key_path} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no #{username}@#{hostname}")
+        ENV['SSHPASS'] = nil
+        ENV['HOME'] = oldhome
       end
     end
   end

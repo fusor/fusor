@@ -156,6 +156,9 @@ module Fusor
       errors = {}
       attr_param_hash = Fusor::OpenstackDeployment::OVERCLOUD_ATTR_PARAM_HASH
       attr_param_hash = attr_param_hash.merge(Fusor::OpenstackDeployment::CEPH_ATTR_PARAM_HASH) if @openstack_deployment.external_ceph_storage
+      attr_param_hash = attr_param_hash.except(:overcloud_ceph_storage_flavor) unless @openstack_deployment.overcloud_ceph_storage_count > 0
+      attr_param_hash = attr_param_hash.except(:overcloud_block_storage_flavor) unless @openstack_deployment.overcloud_block_storage_count > 0
+      attr_param_hash = attr_param_hash.except(:overcloud_object_storage_flavor) unless @openstack_deployment.overcloud_object_storage_count > 0
 
       attr_param_hash.each do |attr_name, param_name|
         attr_value = @openstack_deployment.send(attr_name)
@@ -185,9 +188,7 @@ module Fusor
 
     def get_env_ceph_external_setting
       envs = undercloud_handle.get_plan_environments('overcloud')
-      topics = envs['topics']
-      return nil unless topics
-      environment_groups = topics.find { |topic| topic['title'] == 'Storage' }.try(:[], 'environment_groups')
+      environment_groups = envs.find { |topic| topic[1]['title'] == 'Storage' }[1].try(:[], 'environment_groups')
       return nil unless environment_groups
       environments = environment_groups.find { |g| g['title'] == 'Externally managed Ceph' }.try(:[], 'environments')
       environments.try(:[], 0).try(:[], 'enabled')

@@ -50,13 +50,13 @@ module Actions
           private
 
           def upload_cfme_image(overcloud, name, cfme_image)
-            glance = Fog::Image::OpenStack::V1.new(overcloud)
+            glance = Fog::Image::OpenStack::V2.new(overcloud)
             # This has at times proven unreliable
 
             tries = 25
             begin
-              glance.images.create :name => name, :size => File.size(cfme_image), :disk_format => 'qcow2',
-                                   :container_format => 'bare', :location => cfme_image, :is_public => true
+              image_handle = glance.images.create :name => name, :disk_format => 'qcow2', :container_format => 'bare', :is_public => 'true'
+              image_handle.upload_data File.binread(cfme_image)
             rescue
               tries -= 1
               if tries > 0

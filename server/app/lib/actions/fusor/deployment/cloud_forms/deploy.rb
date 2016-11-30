@@ -61,6 +61,7 @@ module Actions
                             file_repositories(repositories).first,
                             image_file_name(SETTINGS[:fusor][:content][:cloudforms], :rhos_image_file_name))
                 plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeSecgroup, deployment)
+                plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeFlavor, deployment)
                 plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeLaunch, deployment)
               end
               plan_action(::Actions::Fusor::Deployment::CloudForms::UpdateRootPassword,

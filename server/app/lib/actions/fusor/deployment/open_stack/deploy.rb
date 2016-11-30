@@ -59,9 +59,17 @@ module Actions::Fusor::Deployment::OpenStack
     def poll_external_task
       deployment = ::Fusor::Deployment.find(input[:deployment_id])
       stack = undercloud_handle(deployment).get_stack_by_name('overcloud')
-      if stack.nil?
-        fail "ERROR: deployment not found on undercloud."
+
+      retries = 6
+      while stack.nil? && retries > 0
+        if retries > 0
+          sleep 30
+        else
+          fail "ERROR: deployment not found on undercloud."
+        end
+        retries -= 1
       end
+
       if stack.stack_status == 'CREATE_COMPLETE'
         @progress = 1
         return true # done!
