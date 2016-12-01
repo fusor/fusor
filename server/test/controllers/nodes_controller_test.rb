@@ -289,10 +289,6 @@ module Fusor
             .expects(:execute)
             .once
             .returns(nil)
-          Utils::Fusor::SSHKeyUtils.any_instance
-            .expects(:copy_pub_key_to_auth_keys)
-            .once
-            .returns(nil)
           params = {}
           params[:driver] = 'pxe_ssh'
           deployment = ::Fusor::Deployment.find_by_name('osp')
@@ -313,10 +309,6 @@ module Fusor
             .expects(:string)
             .twice
             .returns("osp_node", xml)
-          Utils::Fusor::SSHKeyUtils.any_instance
-            .expects(:copy_pub_key_to_auth_keys)
-            .once
-            .returns(nil)
           params = {}
           params[:driver] = 'pxe_ssh'
           deployment = ::Fusor::Deployment.find_by_name('osp')
