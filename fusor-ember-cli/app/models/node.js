@@ -35,6 +35,19 @@ export default DS.Model.extend({
     return introspectionTask ? foremanTasks.findBy('id', introspectionTask.get('task_id')) : null;
   },
 
+  matchesAddress(addressStr, ports) {
+    if (Ember.isEmpty(addressStr)) {
+      return false;
+    }
+
+    let nodeAddress =  this.getMacAddress(ports);
+    if (Ember.isEmpty(nodeAddress)) {
+      return false;
+    }
+
+    return addressStr.toLowerCase().replace(/\W/g, '') === nodeAddress.toLowerCase().replace(/\W/g, '');
+  },
+
   matchesProfile(profile) {
     let nodeMemory = this.get('properties.memory_mb');
     let nodeCPUs = this.get('properties.cpus');

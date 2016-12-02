@@ -9,6 +9,7 @@ export default Ember.Route.extend(PollingPromise, {
   setupController(controller, model) {
     controller.set('model', model);
     controller.set('nodeManagers', []);
+    controller.set('nodeRequests', []);
     controller.set('introspectionTasks', []);
     controller.set('errorMsg', null);
 
@@ -36,6 +37,12 @@ export default Ember.Route.extend(PollingPromise, {
       this.set('deleteNode', node);
       this.set('openDeleteNodeConfirmation', true);
       this.set('closeDeleteNodeConfirmation', false);
+    },
+
+    updateNodeManagers() {
+      this.organizeNodes();
+      this.organizeNodeRequests();
+      this.removeEmptyNodeManagers();
     },
 
     restartPolling() {
@@ -70,8 +77,10 @@ export default Ember.Route.extend(PollingPromise, {
       this.loadPorts(),
       this.loadIntrospectionTasks()
     ]).then(() => {
-      this.organizeNodes();
       this.loadForemanTasks();
+    }).then(() => {
+      this.organizeNodes();
+      this.organizeNodeRequests();
     }).then(() => {
       this.send('resetLoadError');
     }).catch(error => {
@@ -115,16 +124,12 @@ export default Ember.Route.extend(PollingPromise, {
   },
 
   organizeNodes() {
-    let nodes = this.get('controller.nodes');
+    let nodes = this.get('controller.nodes') || [];
     let nodeManagers = this.get('controller.nodeManagers');
     let processedNodeIds = {};
     let nodeCount = 0;
 
-    if (!nodes) {
-      return;
-    }
-
-    nodes.forEach((node) => {
+    nodes.forEach(node => {
       processedNodeIds[node.get('id')] = true;
 
       if (node.get('ready')) {
@@ -142,12 +147,52 @@ export default Ember.Route.extend(PollingPromise, {
       manager.putNode(node);
     });
 
-    nodeManagers.forEach((manager) => {
+    nodeManagers.forEach(manager => {
       let notDeleted = manager.get('nodes').filter(node => processedNodeIds[node.get('id')]);
       manager.set('nodes', notDeleted);
     });
 
     this.set('controller.openstackDeployment.overcloud_node_count', nodeCount);
+  },
+
+  organizeNodeRequests() {
+    let nodes = this.get('controller.nodes') || [];
+    let ports = this.get('controller.ports') || [];
+    let nodeRequests = this.get('controller.nodeRequests');
+    let nodeManagers = this.get('controller.nodeManagers');
+    let processedAddresses = {};
+
+    nodeRequests = nodeRequests.reject(nodeRequest => {
+      return nodes.any(node => {
+        return node.get('id') === nodeRequest.get('id') ||
+          node.matchesAddress(nodeRequest.get('address'), ports);
+      });
+    });
+    this.set('controller.nodeRequests', nodeRequests);
+
+    nodeRequests.forEach(nodeRequest => {
+      processedAddresses[nodeRequest.get('address')] = true;
+
+      let manager = nodeManagers.find(mgr => mgr.driverMatchesNode(nodeRequest));
+
+      if (!manager) {
+        manager = OspNodeManager.create({});
+        manager.setDriverInfoFromNode(nodeRequest);
+        nodeManagers.unshiftObject(manager);
+      }
+
+      manager.putNodeRequest(nodeRequest);
+    });
+
+    nodeManagers.forEach(manager => {
+      let notDeleted = manager.get('nodeRequests').filter(nr => processedAddresses[nr.get('address')]);
+      manager.set('nodeRequests', notDeleted);
+    });
+  },
+
+  removeEmptyNodeManagers() {
+    let nodeManagers = this.get('controller.nodeManagers');
+    this.set('nodeManagers', nodeManagers.reject(manager => manager.get('nodes').length === 0 && manager.get('nodeRequests').length));
   },
 
   loadForemanTasks() {

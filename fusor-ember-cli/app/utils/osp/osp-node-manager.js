@@ -4,6 +4,7 @@ export default Ember.Object.extend({
   init() {
     if (!this.get('nodes')) {
       this.set('nodes', []);
+      this.set('nodeRequests', []);
     }
   },
 
@@ -50,6 +51,23 @@ export default Ember.Object.extend({
 
     if (!found) {
       this.get('nodes').pushObject(newNode);
+    }
+  },
+
+  putNodeRequest(newNodeRequest) {
+    let found = false;
+    let nodeRequests = this.get('nodeRequests');
+
+    for (let i = 0; i < nodeRequests.length; i++) {
+      let node = nodeRequests[i];
+      if (node.get('address') === newNodeRequest.get('address')) {
+        nodeRequests[i] = newNodeRequest;
+        found = true;
+      }
+    }
+
+    if (!found) {
+      this.get('nodeRequests').pushObject(newNodeRequest);
     }
   },
 

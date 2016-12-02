@@ -37,6 +37,10 @@
               {{osp-node node=node ports=ports introspectionTasks=introspectionTasks foremanTasks=foremanTasks deleteNode="deleteNode" disabled=disabled}}
             {{/each}}
 
+            {{#each nodeManager.nodeRequests as |nodeRequest|}}
+              {{osp-node-request nodeRequest=nodeRequest}}
+            {{/each}}
+
           </div>
 
         </div>
