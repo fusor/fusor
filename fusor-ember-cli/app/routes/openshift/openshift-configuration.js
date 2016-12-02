@@ -1,6 +1,7 @@
 import Ember from 'ember';
+import ResetsVerticalScroll from '../../mixins/resets-vertical-scroll';
 
-export default Ember.Route.extend({
+export default Ember.Route.extend(ResetsVerticalScroll, {
 
   setupController(controller, model) {
     controller.set('model', model);

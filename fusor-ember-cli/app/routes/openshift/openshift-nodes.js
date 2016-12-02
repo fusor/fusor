@@ -1,9 +1,10 @@
 import Ember from 'ember';
 import request from 'ic-ajax';
 import UsesOseDefaults from '../../mixins/uses-ose-defaults';
+import ResetsVerticalScroll from '../../mixins/resets-vertical-scroll';
 import Humanize from '../../utils/humanize';
 
-export default Ember.Route.extend(UsesOseDefaults, {
+export default Ember.Route.extend(UsesOseDefaults, ResetsVerticalScroll, {
 
   beforeModel() {
     // Ensure the deployment has been persisted so the server is capable
