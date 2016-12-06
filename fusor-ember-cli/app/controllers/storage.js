@@ -23,7 +23,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
       const storageParams = {
         path: this.get('model.rhev_share_path'),
         address: this.get('model.rhev_storage_address'),
-        type: this.get('model.rhev_storage_type')
+        type: this.get('model.rhev_storage_type'),
+        unique_suffix: 'rhv'
       };
 
       const validationPromises = {
@@ -34,7 +35,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
         const exportParams = {
           path: this.get('model.rhev_export_domain_path'),
           address: this.get('model.rhev_export_domain_address'),
-          type: this.get('model.rhev_storage_type')
+          type: this.get('model.rhev_storage_type'),
+          unique_suffix: 'export'
         };
 
         validationPromises.export = this.fetchMountValidation(
@@ -47,7 +49,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
         const hostedParams = {
           path: this.get('model.hosted_storage_path'),
           address: this.get('model.hosted_storage_address'),
-          type: this.get('model.rhev_storage_type')
+          type: this.get('model.rhev_storage_type'),
+          unique_suffix: 'selfhosted'
         };
 
         validationPromises.hosted = this.fetchMountValidation(
@@ -252,4 +255,3 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
   validRhevStorage: Ember.computed.not('disableNextStorage')
 
 });
-
