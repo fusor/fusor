@@ -1960,6 +1960,11 @@ define('fusor-ember-cli/components/osp-node-manager', ['exports', 'ember'], func
 
   });
 });
+define('fusor-ember-cli/components/osp-node-request', ['exports', 'ember'], function (exports, _ember) {
+  exports['default'] = _ember['default'].Component.extend({
+    classNames: ['row osp-node-row']
+  });
+});
 define('fusor-ember-cli/components/osp-node', ['exports', 'ember'], function (exports, _ember) {
   exports['default'] = _ember['default'].Component.extend({
 
@@ -4715,6 +4720,7 @@ define('fusor-ember-cli/controllers/openstack/register-nodes', ['exports', 'embe
         return mgr.get('nodes.length') > 0;
       }));
       this.set('nodes', nodes.without(node));
+      this.send('updateNodeManagers');
     },
 
     registerNodes: function registerNodes(nodeInfo) {
@@ -4735,8 +4741,13 @@ define('fusor-ember-cli/controllers/openstack/register-nodes', ['exports', 'embe
 
       var nodeParam = this.createNodeHash(nodeDriverInfo, macAddress);
       var url = '/fusor/api/openstack/deployments/' + this.get('deployment.id') + '/nodes';
+      var nodeRequestObject = _ember['default'].Object.create(nodeParam);
+      nodeRequestObject.set('driver_info', _ember['default'].Object.create(nodeRequestObject.get('driver_info')));
+      nodeRequestObject.set('properties', _ember['default'].Object.create(nodeRequestObject.get('properties')));
 
       this.send('resetError');
+      this.get('nodeRequests').pushObject(nodeRequestObject);
+      this.send('updateNodeManagers');
       return (0, _icAjax['default'])({
         url: url,
         type: 'POST',
@@ -4747,9 +4758,18 @@ define('fusor-ember-cli/controllers/openstack/register-nodes', ['exports', 'embe
         },
         data: JSON.stringify({ node: nodeParam })
       }).then(function (result) {
+        if (result && result.input && result.input.node_id) {
+          nodeRequestObject.set('id', result.input.node_id);
+          nodeRequestObject.set('uuid', result.input.node_id);
+        }
+        _this4.send('updateNodeManagers');
         _this4.get('savedInfo').unshiftObject(nodeDriverInfo);
         _this4.send('restartPolling');
       })['catch'](function (error) {
+        _this4.set('ERROR nodeRequests', _this4.get('nodeRequests').filter(function (nr) {
+          return nr.get('address') === nodeRequestObject.get('address');
+        }));
+        _this4.send('updateNodeManagers');
         _this4.send('error', error, 'Unable to register node. POST ' + url + '.');
       });
     },
@@ -12603,6 +12623,19 @@ define('fusor-ember-cli/models/node', ['exports', 'ember', 'ember-data'], functi
       return introspectionTask ? foremanTasks.findBy('id', introspectionTask.get('task_id')) : null;
     },
 
+    matchesAddress: function matchesAddress(addressStr, ports) {
+      if (_ember['default'].isEmpty(addressStr)) {
+        return false;
+      }
+
+      var nodeAddress = this.getMacAddress(ports);
+      if (_ember['default'].isEmpty(nodeAddress)) {
+        return false;
+      }
+
+      return addressStr.toLowerCase().replace(/\W/g, '') === nodeAddress.toLowerCase().replace(/\W/g, '');
+    },
+
     matchesProfile: function matchesProfile(profile) {
       var nodeMemory = this.get('properties.memory_mb');
       var nodeCPUs = this.get('properties.cpus');
@@ -13589,8 +13622,8 @@ define('fusor-ember-cli/routes/openshift/index', ['exports', 'ember'], function 
     }
   });
 });
-define('fusor-ember-cli/routes/openshift/openshift-configuration', ['exports', 'ember'], function (exports, _ember) {
-  exports['default'] = _ember['default'].Route.extend({
+define('fusor-ember-cli/routes/openshift/openshift-configuration', ['exports', 'ember', 'fusor-ember-cli/mixins/resets-vertical-scroll'], function (exports, _ember, _fusorEmberCliMixinsResetsVerticalScroll) {
+  exports['default'] = _ember['default'].Route.extend(_fusorEmberCliMixinsResetsVerticalScroll['default'], {
 
     setupController: function setupController(controller, model) {
       controller.set('model', model);
@@ -13618,8 +13651,8 @@ define('fusor-ember-cli/routes/openshift/openshift-configuration', ['exports', '
 
   });
 });
-define('fusor-ember-cli/routes/openshift/openshift-nodes', ['exports', 'ember', 'ic-ajax', 'fusor-ember-cli/mixins/uses-ose-defaults', 'fusor-ember-cli/utils/humanize'], function (exports, _ember, _icAjax, _fusorEmberCliMixinsUsesOseDefaults, _fusorEmberCliUtilsHumanize) {
-  exports['default'] = _ember['default'].Route.extend(_fusorEmberCliMixinsUsesOseDefaults['default'], {
+define('fusor-ember-cli/routes/openshift/openshift-nodes', ['exports', 'ember', 'ic-ajax', 'fusor-ember-cli/mixins/uses-ose-defaults', 'fusor-ember-cli/mixins/resets-vertical-scroll', 'fusor-ember-cli/utils/humanize'], function (exports, _ember, _icAjax, _fusorEmberCliMixinsUsesOseDefaults, _fusorEmberCliMixinsResetsVerticalScroll, _fusorEmberCliUtilsHumanize) {
+  exports['default'] = _ember['default'].Route.extend(_fusorEmberCliMixinsUsesOseDefaults['default'], _fusorEmberCliMixinsResetsVerticalScroll['default'], {
 
     beforeModel: function beforeModel() {
       // Ensure the deployment has been persisted so the server is capable
@@ -14056,6 +14089,7 @@ define('fusor-ember-cli/routes/openstack/register-nodes', ['exports', 'ember', '
     setupController: function setupController(controller, model) {
       controller.set('model', model);
       controller.set('nodeManagers', []);
+      controller.set('nodeRequests', []);
       controller.set('introspectionTasks', []);
       controller.set('errorMsg', null);
 
@@ -14085,6 +14119,12 @@ define('fusor-ember-cli/routes/openstack/register-nodes', ['exports', 'ember', '
         this.set('deleteNode', node);
         this.set('openDeleteNodeConfirmation', true);
         this.set('closeDeleteNodeConfirmation', false);
+      },
+
+      updateNodeManagers: function updateNodeManagers() {
+        this.organizeNodes();
+        this.organizeNodeRequests();
+        this.removeEmptyNodeManagers();
       },
 
       restartPolling: function restartPolling() {
@@ -14119,8 +14159,10 @@ define('fusor-ember-cli/routes/openstack/register-nodes', ['exports', 'ember', '
       var _this2 = this;
 
       return _ember['default'].RSVP.Promise.all([this.loadNodes(), this.loadPorts(), this.loadIntrospectionTasks()]).then(function () {
-        _this2.organizeNodes();
         _this2.loadForemanTasks();
+      }).then(function () {
+        _this2.organizeNodes();
+        _this2.organizeNodeRequests();
       }).then(function () {
         _this2.send('resetLoadError');
       })['catch'](function (error) {
@@ -14164,14 +14206,10 @@ define('fusor-ember-cli/routes/openstack/register-nodes', ['exports', 'ember', '
     },
 
     organizeNodes: function organizeNodes() {
-      var nodes = this.get('controller.nodes');
+      var nodes = this.get('controller.nodes') || [];
       var nodeManagers = this.get('controller.nodeManagers');
       var processedNodeIds = {};
       var nodeCount = 0;
-
-      if (!nodes) {
-        return;
-      }
 
       nodes.forEach(function (node) {
         processedNodeIds[node.get('id')] = true;
@@ -14201,6 +14239,51 @@ define('fusor-ember-cli/routes/openstack/register-nodes', ['exports', 'ember', '
       });
 
       this.set('controller.openstackDeployment.overcloud_node_count', nodeCount);
+    },
+
+    organizeNodeRequests: function organizeNodeRequests() {
+      var nodes = this.get('controller.nodes') || [];
+      var ports = this.get('controller.ports') || [];
+      var nodeRequests = this.get('controller.nodeRequests');
+      var nodeManagers = this.get('controller.nodeManagers');
+      var processedAddresses = {};
+
+      nodeRequests = nodeRequests.reject(function (nodeRequest) {
+        return nodes.any(function (node) {
+          return node.get('id') === nodeRequest.get('id') || node.matchesAddress(nodeRequest.get('address'), ports);
+        });
+      });
+      this.set('controller.nodeRequests', nodeRequests);
+
+      nodeRequests.forEach(function (nodeRequest) {
+        processedAddresses[nodeRequest.get('address')] = true;
+
+        var manager = nodeManagers.find(function (mgr) {
+          return mgr.driverMatchesNode(nodeRequest);
+        });
+
+        if (!manager) {
+          manager = _fusorEmberCliUtilsOspOspNodeManager['default'].create({});
+          manager.setDriverInfoFromNode(nodeRequest);
+          nodeManagers.unshiftObject(manager);
+        }
+
+        manager.putNodeRequest(nodeRequest);
+      });
+
+      nodeManagers.forEach(function (manager) {
+        var notDeleted = manager.get('nodeRequests').filter(function (nr) {
+          return processedAddresses[nr.get('address')];
+        });
+        manager.set('nodeRequests', notDeleted);
+      });
+    },
+
+    removeEmptyNodeManagers: function removeEmptyNodeManagers() {
+      var nodeManagers = this.get('controller.nodeManagers');
+      this.set('nodeManagers', nodeManagers.reject(function (manager) {
+        return manager.get('nodes').length === 0 && manager.get('nodeRequests').length;
+      }));
     },
 
     loadForemanTasks: function loadForemanTasks() {
@@ -26021,6 +26104,48 @@ define("fusor-ember-cli/templates/components/osp-node-manager", ["exports"], fun
         templates: []
       };
     })();
+    var child1 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 40,
+              "column": 12
+            },
+            "end": {
+              "line": 42,
+              "column": 12
+            }
+          },
+          "moduleName": "fusor-ember-cli/templates/components/osp-node-manager.hbs"
+        },
+        isEmpty: false,
+        arity: 1,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("              ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+          return morphs;
+        },
+        statements: [["inline", "osp-node-request", [], ["nodeRequest", ["subexpr", "@mut", [["get", "nodeRequest", ["loc", [null, [41, 45], [41, 56]]]]], [], []]], ["loc", [null, [41, 14], [41, 58]]]]],
+        locals: ["nodeRequest"],
+        templates: []
+      };
+    })();
     return {
       meta: {
         "fragmentReason": {
@@ -26034,7 +26159,7 @@ define("fusor-ember-cli/templates/components/osp-node-manager", ["exports"], fun
             "column": 0
           },
           "end": {
-            "line": 47,
+            "line": 51,
             "column": 6
           }
         },
@@ -26200,6 +26325,10 @@ define("fusor-ember-cli/templates/components/osp-node-manager", ["exports"], fun
         dom.appendChild(el6, el7);
         var el7 = dom.createComment("");
         dom.appendChild(el6, el7);
+        var el7 = dom.createTextNode("\n");
+        dom.appendChild(el6, el7);
+        var el7 = dom.createComment("");
+        dom.appendChild(el6, el7);
         var el7 = dom.createTextNode("\n          ");
         dom.appendChild(el6, el7);
         dom.appendChild(el5, el6);
@@ -26226,7 +26355,8 @@ define("fusor-ember-cli/templates/components/osp-node-manager", ["exports"], fun
         var element2 = dom.childAt(element1, [2]);
         var element3 = dom.childAt(element0, [3, 1]);
         var element4 = dom.childAt(element3, [3, 3, 3]);
-        var morphs = new Array(9);
+        var element5 = dom.childAt(element3, [5]);
+        var morphs = new Array(10);
         morphs[0] = dom.createMorphAt(element1, 0, 0);
         morphs[1] = dom.createAttrMorph(element2, 'id');
         morphs[2] = dom.createAttrMorph(element2, 'disabled');
@@ -26235,12 +26365,108 @@ define("fusor-ember-cli/templates/components/osp-node-manager", ["exports"], fun
         morphs[5] = dom.createMorphAt(dom.childAt(element4, [1]), 0, 0);
         morphs[6] = dom.createMorphAt(dom.childAt(element4, [3]), 0, 0);
         morphs[7] = dom.createMorphAt(dom.childAt(element4, [5]), 0, 0);
-        morphs[8] = dom.createMorphAt(dom.childAt(element3, [5]), 3, 3);
+        morphs[8] = dom.createMorphAt(element5, 3, 3);
+        morphs[9] = dom.createMorphAt(element5, 5, 5);
         return morphs;
       },
-      statements: [["content", "nodeManager.address", ["loc", [null, [4, 64], [4, 87]]]], ["attribute", "id", ["concat", ["managerAddNodeButton", ["get", "safeLabel", ["loc", [null, [5, 56], [5, 65]]]]]]], ["attribute", "disabled", ["get", "disabled", ["loc", [null, [6, 44], [6, 52]]]]], ["element", "action", ["onAddNode"], [], ["loc", [null, [6, 10], [6, 32]]]], ["content", "nodeCount", ["loc", [null, [12, 59], [12, 72]]]], ["content", "cpuRange", ["loc", [null, [23, 37], [23, 49]]]], ["content", "memRange", ["loc", [null, [24, 37], [24, 49]]]], ["content", "storageRange", ["loc", [null, [25, 37], [25, 53]]]], ["block", "each", [["get", "nodeManager.nodes", ["loc", [null, [36, 20], [36, 37]]]]], [], 0, null, ["loc", [null, [36, 12], [38, 21]]]]],
+      statements: [["content", "nodeManager.address", ["loc", [null, [4, 64], [4, 87]]]], ["attribute", "id", ["concat", ["managerAddNodeButton", ["get", "safeLabel", ["loc", [null, [5, 56], [5, 65]]]]]]], ["attribute", "disabled", ["get", "disabled", ["loc", [null, [6, 44], [6, 52]]]]], ["element", "action", ["onAddNode"], [], ["loc", [null, [6, 10], [6, 32]]]], ["content", "nodeCount", ["loc", [null, [12, 59], [12, 72]]]], ["content", "cpuRange", ["loc", [null, [23, 37], [23, 49]]]], ["content", "memRange", ["loc", [null, [24, 37], [24, 49]]]], ["content", "storageRange", ["loc", [null, [25, 37], [25, 53]]]], ["block", "each", [["get", "nodeManager.nodes", ["loc", [null, [36, 20], [36, 37]]]]], [], 0, null, ["loc", [null, [36, 12], [38, 21]]]], ["block", "each", [["get", "nodeManager.nodeRequests", ["loc", [null, [40, 20], [40, 44]]]]], [], 1, null, ["loc", [null, [40, 12], [42, 21]]]]],
       locals: [],
-      templates: [child0]
+      templates: [child0, child1]
+    };
+  })());
+});
+define("fusor-ember-cli/templates/components/osp-node-request", ["exports"], function (exports) {
+  exports["default"] = Ember.HTMLBars.template((function () {
+    return {
+      meta: {
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.4.6",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 14,
+            "column": 0
+          }
+        },
+        "moduleName": "fusor-ember-cli/templates/components/osp-node-request.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1, "class", "col-xs-1 osp-node-status-column");
+        var el2 = dom.createTextNode("\n  ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("span");
+        dom.setAttribute(el2, "class", "spinner spinner-xs spinner-inline");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1, "class", "col-xs-9 osp-node-progress-column");
+        var el2 = dom.createTextNode("\n  ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2, "class", "progress osp-node-progress");
+        var el3 = dom.createTextNode("\n    ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3, "class", "progress-bar osp-node-progress-bar");
+        dom.setAttribute(el3, "role", "progressbar");
+        dom.setAttribute(el3, "aria-valuenow", "50");
+        dom.setAttribute(el3, "aria-valuemin", "0");
+        dom.setAttribute(el3, "aria-valuemax", "100");
+        dom.setAttribute(el3, "style", "width: 0%");
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("span");
+        dom.setAttribute(el4, "class", "osp-node-progress-bar-label");
+        var el5 = dom.createComment("");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n    ");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n  ");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1, "class", "col-xs-2 osp-node-action-column ");
+        var el2 = dom.createTextNode("\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+        var morphs = new Array(1);
+        morphs[0] = dom.createMorphAt(dom.childAt(fragment, [3, 1, 1, 1]), 0, 0);
+        return morphs;
+      },
+      statements: [["content", "nodeRequest.address", ["loc", [null, [8, 48], [8, 71]]]]],
+      locals: [],
+      templates: []
     };
   })());
 });
@@ -51111,7 +51337,7 @@ define("fusor-ember-cli/templates/storage", ["exports"], function (exports) {
           dom.insertBoundary(fragment, null);
           return morphs;
         },
-        statements: [["inline", "text-f", [], ["label", "Data Domain Name", "value", ["subexpr", "@mut", [["get", "model.rhev_storage_name", ["loc", [null, [53, 44], [53, 67]]]]], [], []], "isRequired", true, "cssId", "rhev_storage_name", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [53, 119], [53, 128]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "computerNameValidator", ["loc", [null, [53, 139], [53, 160]]]]], [], []]], ["loc", [null, [53, 4], [53, 162]]]], ["inline", "text-f", [], ["label", "Storage Address", "value", ["subexpr", "@mut", [["get", "model.rhev_storage_address", ["loc", [null, [54, 43], [54, 69]]]]], [], []], "isRequired", true, "cssId", "rhev_storage_address", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [54, 124], [54, 133]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "hostnameValidator", ["loc", [null, [54, 144], [54, 161]]]]], [], []]], ["loc", [null, [54, 4], [54, 163]]]], ["inline", "text-f", [], ["label", "Share Path", "value", ["subexpr", "@mut", [["get", "model.rhev_share_path", ["loc", [null, [55, 38], [55, 59]]]]], [], []], "isRequired", true, "cssId", "rhev_share_path", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [55, 109], [55, 118]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "sharePathValidator", ["loc", [null, [55, 129], [55, 147]]]]], [], []]], ["loc", [null, [55, 4], [55, 149]]]], ["block", "if", [["get", "isCloudForms", ["loc", [null, [57, 10], [57, 22]]]]], [], 0, null, ["loc", [null, [57, 4], [62, 11]]]], ["block", "if", [["get", "rhevIsSelfHosted", ["loc", [null, [64, 10], [64, 26]]]]], [], 1, null, ["loc", [null, [64, 4], [69, 11]]]]],
+        statements: [["inline", "text-f", [], ["label", "Data Domain Name", "value", ["subexpr", "@mut", [["get", "model.rhev_storage_name", ["loc", [null, [53, 44], [53, 67]]]]], [], []], "maxlength", 50, "isRequired", true, "cssId", "rhev_storage_name", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [53, 132], [53, 141]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "computerNameValidator", ["loc", [null, [53, 152], [53, 173]]]]], [], []]], ["loc", [null, [53, 4], [53, 175]]]], ["inline", "text-f", [], ["label", "Storage Address", "value", ["subexpr", "@mut", [["get", "model.rhev_storage_address", ["loc", [null, [54, 43], [54, 69]]]]], [], []], "isRequired", true, "cssId", "rhev_storage_address", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [54, 124], [54, 133]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "hostnameValidator", ["loc", [null, [54, 144], [54, 161]]]]], [], []]], ["loc", [null, [54, 4], [54, 163]]]], ["inline", "text-f", [], ["label", "Share Path", "value", ["subexpr", "@mut", [["get", "model.rhev_share_path", ["loc", [null, [55, 38], [55, 59]]]]], [], []], "isRequired", true, "cssId", "rhev_share_path", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [55, 109], [55, 118]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "sharePathValidator", ["loc", [null, [55, 129], [55, 147]]]]], [], []]], ["loc", [null, [55, 4], [55, 149]]]], ["block", "if", [["get", "isCloudForms", ["loc", [null, [57, 10], [57, 22]]]]], [], 0, null, ["loc", [null, [57, 4], [62, 11]]]], ["block", "if", [["get", "rhevIsSelfHosted", ["loc", [null, [64, 10], [64, 26]]]]], [], 1, null, ["loc", [null, [64, 4], [69, 11]]]]],
         locals: [],
         templates: [child0, child1]
       };
@@ -55471,6 +55697,7 @@ define('fusor-ember-cli/utils/osp/osp-node-manager', ['exports', 'ember'], funct
     init: function init() {
       if (!this.get('nodes')) {
         this.set('nodes', []);
+        this.set('nodeRequests', []);
       }
     },
 
@@ -55515,6 +55742,23 @@ define('fusor-ember-cli/utils/osp/osp-node-manager', ['exports', 'ember'], funct
 
       if (!found) {
         this.get('nodes').pushObject(newNode);
+      }
+    },
+
+    putNodeRequest: function putNodeRequest(newNodeRequest) {
+      var found = false;
+      var nodeRequests = this.get('nodeRequests');
+
+      for (var i = 0; i < nodeRequests.length; i++) {
+        var node = nodeRequests[i];
+        if (node.get('address') === newNodeRequest.get('address')) {
+          nodeRequests[i] = newNodeRequest;
+          found = true;
+        }
+      }
+
+      if (!found) {
+        this.get('nodeRequests').pushObject(newNodeRequest);
       }
     },
 
@@ -55972,7 +56216,7 @@ define('fusor-ember-cli/views/application', ['exports', 'ember'], function (expo
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","rootURL":"/r/","locationType":"history","EmberENV":{"FEATURES":{},"_ENABLE_LEGACY_VIEW_SUPPORT":true},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+091c9d80"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":["'none'"],"script-src":["'self'"],"font-src":["'self'"],"connect-src":["'self'"],"img-src":["'self'"],"style-src":["'self'"],"media-src":["'self'"]},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","rootURL":"/r/","locationType":"history","EmberENV":{"FEATURES":{},"_ENABLE_LEGACY_VIEW_SUPPORT":true},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+21915c99"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":["'none'"],"script-src":["'self'"],"font-src":["'self'"],"connect-src":["'self'"],"img-src":["'self'"],"style-src":["'self'"],"media-src":["'self'"]},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 /* jshint ignore:end */
@@ -55980,7 +56224,7 @@ define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
 /* jshint ignore:start */
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+091c9d80"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+21915c99"});
 }
 
 /* jshint ignore:end */
