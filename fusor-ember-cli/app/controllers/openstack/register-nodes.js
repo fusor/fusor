@@ -109,12 +109,13 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
   removeNode(node) {
     let nodes = this.get('nodes');
     let nodeManagers = this.get('nodeManagers');
-    nodeManagers.forEach((mgr) => {
+    nodeManagers.forEach(mgr => {
       mgr.removeNode(node);
     });
 
-    this.set('nodeManagers', nodeManagers.filter((mgr) => mgr.get('nodes.length') > 0));
+    this.set('nodeManagers', nodeManagers.filter(mgr => mgr.get('nodes.length') > 0));
     this.set('nodes', nodes.without(node));
+    this.send('updateNodeManagers');
   },
 
   registerNodes(nodeInfo) {
@@ -131,8 +132,13 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
 
     let nodeParam = this.createNodeHash(nodeDriverInfo, macAddress);
     let url = `/fusor/api/openstack/deployments/${this.get('deployment.id')}/nodes`;
+    let nodeRequestObject = Ember.Object.create(nodeParam);
+    nodeRequestObject.set('driver_info', Ember.Object.create(nodeRequestObject.get('driver_info')));
+    nodeRequestObject.set('properties', Ember.Object.create(nodeRequestObject.get('properties')));
 
     this.send('resetError');
+    this.get('nodeRequests').pushObject(nodeRequestObject);
+    this.send('updateNodeManagers');
     return request({
       url: url,
       type: 'POST',
@@ -143,9 +149,16 @@ const RegisterNodesController = Ember.Controller.extend(NeedsDeploymentMixin, {
       },
       data: JSON.stringify({node: nodeParam})
     }).then(result => {
+      if (result && result.input && result.input.node_id) {
+        nodeRequestObject.set('id', result.input.node_id);
+        nodeRequestObject.set('uuid', result.input.node_id);
+      }
+      this.send('updateNodeManagers');
       this.get('savedInfo').unshiftObject(nodeDriverInfo);
       this.send('restartPolling');
     }).catch(error => {
+      this.set('ERROR nodeRequests', this.get('nodeRequests').filter(nr => nr.get('address') === nodeRequestObject.get('address')));
+      this.send('updateNodeManagers');
       this.send('error', error, `Unable to register node. POST ${url}.`);
     });
   },
