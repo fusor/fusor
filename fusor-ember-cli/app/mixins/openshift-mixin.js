@@ -52,6 +52,10 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
   workerDisk: Ember.computed.alias("deployment.openshift_node_disk"),
   cfmeDisk: Ember.computed.alias("deployment.cfmeDisk"),
 
+  isHA: Ember.computed('numMasterNodes', function() {
+    return this.get('numMasterNodes') > 1;
+  }),
+
   totalMasterCpus: Ember.computed('numMasterNodes', 'masterVcpu', function() {
     return this.get('numMasterNodes') * this.get('masterVcpu');
   }),
@@ -72,6 +76,10 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
     return this.get('numMasterNodes') * this.get('masterDisk');
   }),
 
+  totalMasterStorage: Ember.computed('numMasterNodes', 'storageSize', function() {
+    return this.get('numMasterNodes') * this.get('storageSize');
+  }),
+
   totalWorkerDisk: Ember.computed('numWorkerNodes', 'workerDisk', function() {
     return this.get('numWorkerNodes') * this.get('workerDisk');
   }),
@@ -80,13 +88,66 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
     return this.get('numWorkerNodes') * this.get('storageSize');
   }),
 
-  totalWorkerDiskPlusStorage: Ember.computed(
-    'totalWorkerDisk',
-    'totalWorkerStorage',
-    function() {
-      return this.get('totalWorkerDisk') + this.get('totalWorkerStorage');
+  numHaLoadBalancers: 2,
+  haLoadBalancerResources: {
+    type: 'Load balancers',
+    vCPU: 1,
+    ram: 8,
+    disk: 15
+  },
+
+  numHaInfraNodes: 2,
+  haInfraNodesResources: Ember.computed('workerVcpu', 'workerRam', 'workerDisk', function () {
+    return {
+      type: 'Infrastructure nodes',
+      vCPU: this.get('workerVcpu'),
+      ram: this.get('workerRam'),
+      disk: this.get('workerDisk')
+    };
+  }),
+
+  totalInfraCpus: Ember.computed('isHA', 'haInfraNodesResources', function() {
+    if (this.get('isHA') ) {
+      return this.get('numHaLoadBalancers') * this.get('haLoadBalancerResources.vCPU') +
+        this.get('numHaInfraNodes') * this.get('haInfraNodesResources.vCPU');
     }
-  ),
+    return 0;
+  }),
+
+  totalInfraRam: Ember.computed('isHA', 'haInfraNodesResources', function() {
+    if (this.get('isHA') ) {
+      return this.get('numHaLoadBalancers') * this.get('haLoadBalancerResources.ram') +
+        this.get('numHaInfraNodes') * this.get('haInfraNodesResources.ram');
+    }
+    return 0;
+  }),
+
+  totalInfraDisk: Ember.computed('isHA', 'haInfraNodesResources', function() {
+    if (this.get('isHA')) {
+      return this.get('numHaLoadBalancers') * this.get('haLoadBalancerResources.disk') +
+        this.get('numHaInfraNodes') * this.get('haInfraNodesResources.disk');
+    }
+    return 0;
+  }),
+
+  totalInfraStorage: Ember.computed('isHA', 'storageSize', function() {
+    if (this.get('isHA')) {
+      return this.get('numHaInfraNodes') * this.get('storageSize');
+    }
+    return 0;
+  }),
+
+  totalMasterDiskPlusStorage: Ember.computed('totalMasterDisk', 'totalMasterStorage', function () {
+    return this.get('totalMasterDisk') + this.get('totalMasterStorage');
+  }),
+
+  totalWorkerDiskPlusStorage: Ember.computed('totalWorkerDisk', 'totalWorkerStorage', function () {
+    return this.get('totalWorkerDisk') + this.get('totalWorkerStorage');
+  }),
+
+  totalInfraDiskPlusStorage: Ember.computed('totalInfraDisk', 'totalInfraStorage', function () {
+    return this.get('totalInfraDisk') + this.get('totalInfraStorage');
+  }),
 
   ignoreCfme: Ember.computed(
     "isCloudForms",
@@ -170,10 +231,11 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
     'workerVcpu',
     'totalMasterCpus',
     'totalWorkerCpus',
+    'totalInfraCpus',
     function() {
       if ((this.get('numMasterNodes') > 0) && (this.get('masterVcpu') > 0) &&
           (this.get('numWorkerNodes') >= 0) && (this.get('workerVcpu') > 0) ) {
-        return this.get('totalMasterCpus') + this.get('totalWorkerCpus');
+        return this.get('totalMasterCpus') + this.get('totalWorkerCpus') + this.get('totalInfraCpus');
       } else {
         return 0;
       }
@@ -187,10 +249,11 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
     'workerRam',
     'totalMasterRam',
     'totalWorkerRam',
+    'totalInfraRam',
     function() {
       if ((this.get('numMasterNodes') > 0) && (this.get('masterRam') > 0) &&
           (this.get('numWorkerNodes') >= 0) && (this.get('workerRam') > 0) ) {
-        return this.get('totalMasterRam') + this.get('totalWorkerRam');
+        return this.get('totalMasterRam') + this.get('totalWorkerRam') + this.get('totalInfraRam');
       } else {
         return 0;
       }
@@ -198,23 +261,11 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
   ),
 
   diskNeeded: Ember.computed(
-    'numMasterNodes',
-    'masterDisk',
-    'numWorkerNodes',
-    'workerDisk',
-    'storageSize',
-    'totalMasterDisk',
+    'totalMasterDiskPlusStorage',
     'totalWorkerDiskPlusStorage',
+    'totalInfraDiskPlusStorage',
     function() {
-      const hasMasterDisk = this.get('numMasterNodes') > 0 && this.get('masterDisk') > 0;
-      const hasWorkerDiskPlusStorage =
-        this.get('numWorkerNodes') >= 0 &&
-        this.get('workerDisk') > 0 &&
-        this.get('storageSize') > 0;
-      const shouldPerformDiskCalc = hasMasterDisk && hasWorkerDiskPlusStorage;
-
-      return shouldPerformDiskCalc ?
-        this.get('totalMasterDisk') + this.get('totalWorkerDiskPlusStorage') : 0;
+      return this.get('totalMasterDiskPlusStorage') + this.get('totalWorkerDiskPlusStorage') + this.get('totalInfraDiskPlusStorage');
     }
   ),
 

@@ -1,29 +1,64 @@
-<div class='row'>
-  <div class='col-xs-10 col-sm-10 col-md-10 col-lg-7 env-summary-title'>
-    Environment Summary
-    <div class='pull-right'>
-      Node Count: {{numNodesDisplay}}
+<div class="row ose-deployment-details-container">
+  <div class="col-xs-4 ose-deployment-details">
+    <div class='row'>
+      <div class='col-xs-12 ose-deployment-details-title'>
+        Deployment Details
+      </div>
+    </div>
+
+    <div class='row'>
+      <div class='col-xs-12 ose-deployment-details-body'>
+        <form class="ose-deployment-details-form">
+          <label for="oseDeploymentType">Type</label>
+          <div class="form-group">
+            {{#x-select value=oseDeploymentType id="oseDeploymentType" class="form-control ose-deployment-type-select"}}
+              {{#x-option value='single_node'}}Single Node{{/x-option}}
+              {{#x-option value='highly_available'}}Highly Available{{/x-option}}
+            {{/x-select}}
+          </div>
+          <div class="form-group {{if nodeInputHasError 'has-error'}}">
+            {{input type="number" class="form-control ose-short-input" id="oseNumNodesInput"
+                    value=numTotalNodes min=minTotalNodes}} nodes
+          </div>
+          <label for="oseStoragePoolSizeInput">Image Storage Pool</label>
+          <div class="form-group {{if imageStorageInputHasError 'has-error'}}">
+            {{input type="number" class="form-control ose-short-input" id="oseStoragePoolSizeInput"
+                    value=storageSize min="1"}} GB on each node
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="row">
+
     </div>
   </div>
 
-</div>
-<div class='row'>
-  <div class='col-xs-10 col-sm-10 col-md-10 col-lg-7 env-summary-body'>
-    Resources needed:
-    <div class='pull-right'>
-      Resources available:
-      {{#if isCloudForms}}
-        {{tool-tip faIcon='fa-info-circle'
-                    title=resourcesAvailableToolTip}}
-      {{/if}}
+  <div class="col-xs-6 ose-env-summary">
+    <div class='row'>
+      <div class='col-xs-12 ose-env-summary-title'>
+        Environment Summary
+      </div>
     </div>
-  </div>
-</div>
 
-<div class='row'>
-  <div class='col-xs-10 col-sm-10 col-md-10 col-lg-7 env-summary-progressbars'>
-      {{ose-summary-needed-available label='vCPU' needed=vcpuNeeded available=vcpuAvailable storageSize=storageSize}}
-      {{ose-summary-needed-available label='RAM' needed=ramNeeded available=ramAvailable suffix='GB' storageSize=storageSize}}
-      {{ose-summary-needed-available label='Disk' needed=diskNeeded available=diskAvailable suffix='GB' storageSize=storageSize}}
+    <div class='row'>
+      <div class='col-xs-12 ose-env-summary-body'>
+        Resources needed:
+        <div class='pull-right'>
+          Resources available:
+          {{#if isCloudForms}}
+            {{tool-tip faIcon='fa-info-circle' title=resourcesAvailableToolTip}}
+          {{/if}}
+        </div>
+      </div>
+    </div>
+
+    <div class='row'>
+      <div class='col-xs-12 ose-env-summary-progressbars'>
+        {{ose-summary-needed-available label='vCPU' needed=vcpuNeeded available=vcpuAvailable}}
+        {{ose-summary-needed-available label='RAM' needed=ramNeeded available=ramAvailable suffix='GB'}}
+        {{ose-summary-needed-available label='Disk' needed=diskNeeded available=diskAvailable suffix='GB'}}
+      </div>
+    </div>
   </div>
 </div>
