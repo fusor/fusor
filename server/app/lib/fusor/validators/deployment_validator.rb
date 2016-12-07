@@ -268,6 +268,7 @@ module Fusor
         return error
       end
 
+      # rubocop:disable Metrics/ParameterLists
       def validate_storage_share(deployment, type, address, path, uid, unique_suffix)
         # validate that the NFS server exists
         # don't proceed if it doesn't
@@ -276,6 +277,7 @@ module Fusor
         # validate that the NFS share exists and is clean
         validate_storage_mount(deployment, type, address, path, uid, unique_suffix)
       end
+      # rubocop:enable Metrics/ParameterLists
 
       def validate_storage_server(deployment, address)
         cmd = "showmount #{address}"
@@ -291,6 +293,7 @@ module Fusor
         return true
       end
 
+      # rubocop:disable Metrics/ParameterLists
       def validate_storage_mount(deployment, storage_type, address, path, uid, unique_suffix)
         if storage_type == "NFS"
           type = "nfs"
@@ -322,6 +325,7 @@ module Fusor
                      )
         end
       end
+      # rubocop:enable Metrics/ParameterLists
 
       def validate_storage_credentials(deployment, uid, gid, unique_suffix)
         if File.stat("/tmp/fusor-test-mount-#{deployment.id}-#{unique_suffix}").uid != uid

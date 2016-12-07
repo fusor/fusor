@@ -364,9 +364,10 @@ module Fusor
       address = @deployment.rhev_storage_address
       path = @deployment.rhev_share_path
       storage_type = @deployment.rhev_storage_type
+      unique_suffix = 'ocp'
 
       begin
-        mount_response = mount_storage(address, path, storage_type)
+        mount_response = mount_storage(address, path, storage_type, unique_suffix)
         render json: { :openshift_disk_space => mount_response[:mb_available]}, status: 200
       rescue Exception => error
         message = 'Unable to retrieve Openshift disk space'
