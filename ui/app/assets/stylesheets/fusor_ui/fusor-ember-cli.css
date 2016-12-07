@@ -694,52 +694,6 @@ table.fusor-table {
   background-color: #000 !important;
   color: #fff; }
 
-.input-ose {
-  width: 25px;
-  text-align: center; }
-
-.ose-env-summary {
-  margin-top: 30px;
-  margin-left: 20px; }
-
-.node-details {
-  margin-top: 30px;
-  margin-left: 20px; }
-
-.env-summary-title {
-  background-color: #eee;
-  margin-left: 0px;
-  padding: 10px 10px;
-  border: solid 1px #000; }
-
-.env-summary-body {
-  margin-left: 0px;
-  padding: 10px 10px 0px 10px;
-  border-left: solid 1px #000;
-  border-right: solid 1px #000; }
-
-.env-summary-progressbars {
-  margin-left: 0px;
-  padding: 10px 30px 10px 20px;
-  border-left: solid 1px #000;
-  border-right: solid 1px #000;
-  border-bottom: solid 1px #000; }
-
-.node-details-body {
-  margin-left: 0px;
-  padding: 10px 30px 10px 20px;
-  border-left: solid 1px #000;
-  border-right: solid 1px #000;
-  border-bottom: solid 1px #000; }
-
-.ose-help-msg {
-  padding-left: 30px;
-  font-style: italic; }
-
-.env-summary-needed-available {
-  padding-bottom: 8px;
-  padding-right: -15px; }
-
 .amt-needed {
   position: absolute;
   top: 0px;
@@ -780,19 +734,6 @@ table.fusor-table {
 
 .node-details-col {
   padding-left: 10px; }
-
-h1.num-ose-node {
-  padding: 0px;
-  margin: 0px;
-  font-weight: bold;
-  font-size: 36px; }
-
-.node-details-block {
-  padding-left: 40px; }
-
-.ose-node-line {
-  padding-top: 5px;
-  min-height: 20px; }
 
 .btn-icon {
   color: #333;
@@ -871,40 +812,8 @@ span.hanging-indent {
   font-size: 16px;
   padding-left: 5px; }
 
-.ose-sample-apps .rhci-popover-button, .new-node-form-specify .rhci-popover-button {
-  margin-left: 5px; }
-
-.ose-sample-apps .popover, .new-node-form-specify .popover {
-  width: 200px; }
-
 .undercloud-deploy-form .popover {
   width: 100%; }
-
-.ose-number-node-buttons {
-  padding: 10px;
-  margin-left: 20px; }
-
-.ose-custom-input {
-  padding: 2px 0px;
-  width: 45px;
-  height: 32px;
-  text-align: center;
-  color: #000;
-  border: solid 2px #0099d3;
-  display: inline-block; }
-
-.ose-node-label {
-  font-weight: bold;
-  padding-right: 8px; }
-
-.worker-nodes-label {
-  padding-right: 6px !important; }
-
-.ose-number-buttons-block {
-  padding: 8px 0px; }
-
-.ose-custom-field {
-  display: inline; }
 
 .simple-text-error {
   display: inline-block;
@@ -1936,6 +1845,123 @@ span.registered-node-count {
     font-size: 12px;
     margin-left: 7px;
     color: #969696; }
+
+.ose-select-dest-provider {
+  margin-bottom: 24px; }
+
+.ose-deployment-details {
+  margin-bottom: 30px;
+  border-top: solid 1px #000;
+  border-left: solid 1px #000;
+  border-bottom: solid 1px #000;
+  height: 240px; }
+
+.ose-deployment-details-title {
+  background-color: #eee;
+  margin-left: 0;
+  padding: 10px 10px;
+  border-bottom: solid 1px #000; }
+
+.ose-deployment-details-form {
+  margin-top: 6px; }
+
+.ose-short-input {
+  width: 60px;
+  margin-right: 4px; }
+
+.ose-deployment-type-select {
+  width: auto; }
+
+.ose-env-summary {
+  margin-bottom: 30px;
+  border: solid 1px #000;
+  height: 240px; }
+
+.ose-env-summary-title {
+  background-color: #eee;
+  margin-left: 0;
+  padding: 10px 10px;
+  border-bottom: solid 1px #000; }
+
+.ose-env-summary-body {
+  margin-left: 0;
+  padding: 24px 10px 0 10px; }
+
+.ose-env-summary-progressbars {
+  margin-left: 0;
+  padding: 10px 30px 10px 20px; }
+
+.ose-deployment-details-container, .ose-node-details-container {
+  margin-top: 20px;
+  padding-left: 20px; }
+
+.ose-node-details {
+  margin-bottom: 30px;
+  margin-right: 20px;
+  padding-bottom: 20px;
+  border: solid 1px #000;
+  min-height: 230px; }
+
+.ose-node-details-title {
+  background-color: #eee;
+  margin-left: 0;
+  padding: 10px 10px;
+  height: 43px;
+  border-bottom: solid 1px #000; }
+
+.ose-node-details-body {
+  margin-left: 0;
+  padding: 10px 30px 10px 20px; }
+
+.ose-help-msg {
+  padding-left: 30px;
+  font-style: italic; }
+
+.ose-env-summary-needed-available {
+  padding-bottom: 8px;
+  padding-right: -15px; }
+
+h1.num-ose-node {
+  padding: 0;
+  margin: 0;
+  font-weight: bold;
+  font-size: 36px; }
+
+.ose-node-details-block {
+  padding-left: 40px; }
+
+.ose-node-line {
+  padding-top: 5px;
+  min-height: 20px; }
+
+.ose-sample-apps .rhci-popover-button, .new-node-form-specify .rhci-popover-button {
+  margin-left: 5px; }
+
+.ose-sample-apps .popover, .new-node-form-specify .popover {
+  width: 200px; }
+
+.ose-number-node-buttons {
+  padding: 10px;
+  margin-left: 20px; }
+
+.ose-custom-input {
+  padding: 2px 0;
+  width: 45px;
+  height: 32px;
+  text-align: center;
+  color: #000;
+  border: solid 2px #0099d3;
+  display: inline-block; }
+
+.ose-node-label {
+  font-weight: bold;
+  padding-right: 8px; }
+
+.ose-number-buttons-block {
+  padding: 8px 0; }
+
+.ose-custom-field {
+  display: inline; }
 
 .ember-basic-dropdown {
   position: relative; }
