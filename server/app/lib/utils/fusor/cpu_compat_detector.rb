@@ -65,7 +65,7 @@ module Utils
         cpu_fams = [
           # Intel processor families
           { brand: 'intel', keywords: ['intel'], position: -1 }, #intel wildcard
-          { brand: 'intel', keywords: ['haswell'], position: 6 },
+          { brand: 'intel', keywords: ['haswell'], position: 5 }, # always select noTSX for haswell
           { brand: 'intel', keywords: ['haswell', 'no', 'tsx'], position: 5 },
           { brand: 'intel', keywords: ['sandy', 'bridge'], position: 4 },
           { brand: 'intel', keywords: ['westmere'], position: 3 },
