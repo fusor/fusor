@@ -58,7 +58,7 @@ export default Ember.Mixin.create({
   }),
 
   fullnameCloudForms: Ember.computed('isUpstream', function() {
-    if (this.get('isUpstream')) { return "ManageIQ"; } else { return "Red Hat Cloud Forms Management Engine"; }
+    if (this.get('isUpstream')) { return "ManageIQ"; } else { return "Red Hat CloudForms"; }
   }),
 
   fullnameOpenShift: "OpenShift Container Platform",
