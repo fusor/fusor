@@ -300,13 +300,15 @@ module Fusor
     param :address, String, required: true, desc: 'Address of the file server'
     param :path, String, required: true, desc: 'Path of the shared file system'
     param :type, String, required: true, desc: 'Type of file share (NFS/glusterfs)'
+    param :unique_suffix, String, required: true, desc: 'Unique suffix allowing async mount validation'
     def check_mount_point
       mount_address = params['address']
       mount_path = params['path']
       mount_type = params['type']
+      mount_unique_suffix = params['unique_suffix']
 
       begin
-        mount_result = mount_storage(mount_address, mount_path, mount_type)
+        mount_result = mount_storage(mount_address, mount_path, mount_type, mount_unique_suffix)
         render json: { :mounted => true, :is_empty => mount_result[:is_empty] }, status: 200
       rescue
         render json: { :mounted => false, :is_empty => false }, status: 200
@@ -314,7 +316,7 @@ module Fusor
     end
 
     # mount_storage will return in megabytes the amount of free space left on the storage mount
-    def mount_storage(address, path, type)
+    def mount_storage(address, path, type, unique_suffix)
       deployment_id = @deployment.id
       if type == "GFS"
         type = "glusterfs"
@@ -322,17 +324,17 @@ module Fusor
         type = "nfs"
       end
 
-      cmd = "sudo safe-mount.sh '#{deployment_id}' '#{address}' '#{path}' '#{type}'"
+      cmd = "sudo safe-mount.sh '#{deployment_id}' '#{unique_suffix}' '#{address}' '#{path}' '#{type}'"
       status, _output = Utils::Fusor::CommandUtils.run_command(cmd)
 
       raise 'Unable to mount NFS share at specified mount point' unless status == 0
 
-      files = Dir["/tmp/fusor-test-mount-#{deployment_id}/*"]
+      files = Dir["/tmp/fusor-test-mount-#{deployment_id}-#{unique_suffix}/*"]
 
-      stats = Sys::Filesystem.stat("/tmp/fusor-test-mount-#{deployment_id}")
+      stats = Sys::Filesystem.stat("/tmp/fusor-test-mount-#{deployment_id}-#{unique_suffix}")
       mb_available = stats.block_size * stats.blocks_available / 1024 / 1024
 
-      Utils::Fusor::CommandUtils.run_command("sudo safe-umount.sh #{deployment_id}")
+      Utils::Fusor::CommandUtils.run_command("sudo safe-umount.sh #{deployment_id} #{unique_suffix}")
       return {
         :mb_available => mb_available,
         :is_empty => files.size == 0
@@ -362,9 +364,10 @@ module Fusor
       address = @deployment.rhev_storage_address
       path = @deployment.rhev_share_path
       storage_type = @deployment.rhev_storage_type
+      unique_suffix = 'ocp'
 
       begin
-        mount_response = mount_storage(address, path, storage_type)
+        mount_response = mount_storage(address, path, storage_type, unique_suffix)
         render json: { :openshift_disk_space => mount_response[:mb_available]}, status: 200
       rescue Exception => error
         message = 'Unable to retrieve Openshift disk space'

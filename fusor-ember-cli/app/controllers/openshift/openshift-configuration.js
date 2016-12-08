@@ -83,7 +83,8 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
       const params = {
         path: deployment.get('openshift_export_path'),
         address: deployment.get('openshift_storage_host'),
-        type: deployment.get('openshift_storage_type')
+        type: deployment.get('openshift_storage_type'),
+        unique_suffix: 'ocp'
       };
 
       this.set('showLoadingSpinner', true);

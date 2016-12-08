@@ -82,7 +82,7 @@ module Fusor
             elsif deployment.rhev_storage_address.empty?
               deployment.errors[:rhev_storage_address] << _('RHV storage specified but missing address to the share')
             else
-              validate_storage_share(deployment, deployment.rhev_storage_type, deployment.rhev_storage_address, deployment.rhev_share_path, 36)
+              validate_storage_share(deployment, deployment.rhev_storage_type, deployment.rhev_storage_address, deployment.rhev_share_path, 36, 'rhv')
             end
           end
         end
@@ -115,7 +115,7 @@ module Fusor
             elsif deployment.hosted_storage_address.empty?
               deployment.errors[:hosted_storage_address] << _('RHV self hosted deployments must specify hosted storage address')
             else
-              validate_storage_share(deployment, deployment.rhev_storage_type, deployment.hosted_storage_address, deployment.hosted_storage_path, 36)
+              validate_storage_share(deployment, deployment.rhev_storage_type, deployment.hosted_storage_address, deployment.hosted_storage_path, 36, 'selfhosted')
             end
           end
         end
@@ -163,7 +163,7 @@ module Fusor
               deployment.errors[:rhev_export_domain_path] << _(error)
             end
 
-            validate_storage_share(deployment, deployment.rhev_storage_type, deployment.rhev_export_domain_address, deployment.rhev_export_domain_path, 36)
+            validate_storage_share(deployment, deployment.rhev_storage_type, deployment.rhev_export_domain_address, deployment.rhev_export_domain_path, 36, 'export')
           end
         end
       end
@@ -230,7 +230,7 @@ module Fusor
           if error
             deployment.errors[:openshift_export_path] << _(error)
           else
-            validate_storage_share(deployment, deployment.openshift_storage_type, deployment.openshift_storage_host, deployment.openshift_export_path, -1)
+            validate_storage_share(deployment, deployment.openshift_storage_type, deployment.openshift_storage_host, deployment.openshift_export_path, -1, 'ocp')
           end
         end
       end
@@ -268,14 +268,16 @@ module Fusor
         return error
       end
 
-      def validate_storage_share(deployment, type, address, path, uid)
+      # rubocop:disable Metrics/ParameterLists
+      def validate_storage_share(deployment, type, address, path, uid, unique_suffix)
         # validate that the NFS server exists
         # don't proceed if it doesn't
         return unless validate_storage_server(deployment, address)
 
         # validate that the NFS share exists and is clean
-        validate_storage_mount(deployment, type, address, path, uid)
+        validate_storage_mount(deployment, type, address, path, uid, unique_suffix)
       end
+      # rubocop:enable Metrics/ParameterLists
 
       def validate_storage_server(deployment, address)
         cmd = "showmount #{address}"
@@ -291,13 +293,14 @@ module Fusor
         return true
       end
 
-      def validate_storage_mount(deployment, storage_type, address, path, uid)
+      # rubocop:disable Metrics/ParameterLists
+      def validate_storage_mount(deployment, storage_type, address, path, uid, unique_suffix)
         if storage_type == "NFS"
           type = "nfs"
         else
           type = "glusterfs"
         end
-        cmd = "sudo safe-mount.sh '#{deployment.id}' '#{address}' '#{path}' '#{type}'"
+        cmd = "sudo safe-mount.sh '#{deployment.id}' '#{unique_suffix}' '#{address}' '#{path}' '#{type}'"
         status, output = Utils::Fusor::CommandUtils.run_command(cmd)
 
         if status != 0
@@ -310,11 +313,11 @@ module Fusor
         # Check if we want to verify NFS mount credentials as well
         # If specified UID is -1, do not check
         if uid != -1
-          validate_storage_credentials(deployment, uid, uid)
+          validate_storage_credentials(deployment, uid, uid, unique_suffix)
         end
 
-        files = Dir["/tmp/fusor-test-mount-#{deployment.id}/*"] # this may return [] if it can't read the share
-        Utils::Fusor::CommandUtils.run_command("sudo safe-umount.sh #{deployment.id}")
+        files = Dir["/tmp/fusor-test-mount-#{deployment.id}-#{unique_suffix}/*"] # this may return [] if it can't read the share
+        Utils::Fusor::CommandUtils.run_command("sudo safe-umount.sh #{deployment.id} #{unique_suffix}")
 
         if files.length > 0
           add_warning(deployment, _("NFS file share '%s' is not empty. This could cause deployment problems.") %
@@ -322,15 +325,16 @@ module Fusor
                      )
         end
       end
+      # rubocop:enable Metrics/ParameterLists
 
-      def validate_storage_credentials(deployment, uid, gid)
-        if File.stat("/tmp/fusor-test-mount-#{deployment.id}").uid != uid
+      def validate_storage_credentials(deployment, uid, gid, unique_suffix)
+        if File.stat("/tmp/fusor-test-mount-#{deployment.id}-#{unique_suffix}").uid != uid
           add_warning(deployment, _("NFS share has an invalid UID. The expected UID is '%s'. " \
                                     "Please check NFS share permissions.") % "#{uid}")
           return
         end
 
-        if File.stat("/tmp/fusor-test-mount-#{deployment.id}").gid != gid
+        if File.stat("/tmp/fusor-test-mount-#{deployment.id}-#{unique_suffix}").gid != gid
           add_warning(deployment, _("NFS share has an invalid GID. The expected GID is '%s'. " \
                                     "Please check NFS share permissions.") % "#{gid}")
           return
