@@ -50,7 +50,15 @@ module Actions
           products = SETTINGS[:fusor][:content][product_name].map { |p| p[:product_id] }.uniq
           products.each do |p|
             ::Fusor.log.info "Adding product id #{p.to_i} as custom product to key #{key.id}"
-            key.send(:add_custom_product, p.to_i)
+            begin
+              key.send(:add_custom_product, p.to_i)
+            rescue RestClient::BadRequest => e
+              if e.response.include?("already been registered")
+                ::Fusor.log.info "Product id #{p.to_i} is already registered with activation key #{key.id}"
+              else
+                raise e
+              end
+            end
           end
         end
 
