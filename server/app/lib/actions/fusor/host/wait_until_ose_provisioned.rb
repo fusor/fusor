@@ -32,7 +32,7 @@ module Actions
           deployment = ::Fusor::Deployment.find(input[:deployment_id])
           fail _('====== Deployment is null! Cannot wait for host! ====== ') unless deployment
 
-          watched_hosts = deployment.ose_master_hosts + deployment.ose_worker_hosts
+          watched_hosts = deployment.ose_master_hosts + deployment.ose_worker_hosts + deployment.ose_ha_hosts
           watched_hosts.each do |host|
             fail _("Failed to provision host '%s'.") % host.name if !host.errors.full_messages.empty?
           end

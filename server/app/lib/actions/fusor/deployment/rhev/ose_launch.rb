@@ -26,6 +26,8 @@ module Actions
             plan_self(deployment_id: deployment.id)
           end
 
+          # rubocop:disable MethodLength
+          # rubocop:disable AbcSize
           def run
             ::Fusor.log.info '====== OSE Launch run method ======'
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
@@ -102,6 +104,42 @@ module Actions
                 fail _("====== Launch OSE Worker #{i} VM FAILED! ======")
               else
                 deployment.ose_worker_hosts << host
+                ::Fusor.log.debug "====== OSE Launched VM Name : #{host.name} ======"
+                ::Fusor.log.debug "====== OSE Launched VM IP   : #{host.ip}   ======"
+              end
+            end
+
+            # launch infra nodes
+            for i in 1 + deployment.openshift_number_worker_nodes..deployment.openshift_number_infra_nodes + deployment.openshift_number_worker_nodes do
+              vmlauncher = Utils::Fusor::VMLauncher.new(vm_init_params)
+              fail _("====== vmlauncher is nil for Infra #{i}! ======") unless vmlauncher
+
+              vmlauncher.set_hostname("#{deployment.label.tr('_', '-')}-ose-node#{i}")
+              host = vmlauncher.launch_openshift_vm(worker_vm_launch_params)
+              if host.nil?
+                fail _("====== Launch OSE Infra #{i} VM FAILED! ======")
+              else
+                deployment.ose_worker_hosts << host
+                ::Fusor.log.debug "====== OSE Launched VM Name : #{host.name} ======"
+                ::Fusor.log.debug "====== OSE Launched VM IP   : #{host.ip}   ======"
+              end
+            end
+
+            # launch ha nodes
+            ha_vm_launch_params = {:cpu => deployment.openshift_node_vcpu,
+                                   :ram => deployment.openshift_node_ram,
+                                   :vda_size => deployment.openshift_node_disk,
+                                   :other_disks => [deployment.openshift_storage_size]}
+            for i in 1..deployment.openshift_number_ha_nodes do
+              vmlauncher = Utils::Fusor::VMLauncher.new(vm_init_params)
+              fail _("====== vmlauncher is nil for HA #{i}! ======") unless vmlauncher
+
+              vmlauncher.set_hostname("#{deployment.label.tr('_', '-')}-ose-ha#{i}")
+              host = vmlauncher.launch_openshift_vm(ha_vm_launch_params)
+              if host.nil?
+                fail _("====== Launch OSE HA #{i} VM FAILED! ======")
+              else
+                deployment.ose_ha_hosts << host
                 ::Fusor.log.debug "====== OSE Launched VM Name : #{host.name} ======"
                 ::Fusor.log.debug "====== OSE Launched VM IP   : #{host.ip}   ======"
               end

@@ -18,6 +18,7 @@ require 'ostruct'
 require 'logger'
 
 module OSEInstaller
+  # rubocop:disable ClassLength
   class Launch
     attr_accessor :output_dir, :logger
 
@@ -91,6 +92,24 @@ module OSEInstaller
 
       nodes_list = opts[:nodes].join("\n")
       template = template.gsub(/<worker_nodes>/, nodes_list)
+
+      #ha_list = opts[:ha_nodes].join("\n")
+      # split it by two
+      ha_list = opts[:ha_nodes].each_slice(2).to_a
+      ha_master_list = ha_list.first.join("\n")
+      ha_infra_list = ha_list.last.join("\n")
+
+      template = template.gsub(/<ha_master_nodes>/, ha_master_list)
+      template = template.gsub(/<ha_infra_nodes>/, ha_infra_list)
+
+      if opts[:masters].length > 1
+        template = template.gsub(/<primary_master>/, opts[:masters].first)
+
+        if opts[:nodes].length > 2 # this should always happen for HA setup
+          infra_node_list = opts[:nodes][1..2].join("\n")
+          template = template.gsub(/<infra_nodes>/, infra_node_list)
+        end
+      end
 
       # docker storage specifics
       template = template.gsub(/<docker_storage>/, opts[:docker_storage])
@@ -168,7 +187,8 @@ module OSEInstaller
           ip = stdout.split("\n").first.split(" ").first
         end
 
-        entry = "- connect_to: #{m}\n    hostname: #{m}\n    ip: #{ip}\n    master: true\n    node: true\n    public_hostname: #{m}\n    public_ip: #{ip}"
+        entry = "- connect_to: #{m}\n    hostname: #{m}\n    ip: #{ip}\n    master: true\n    node: true\n    public_hostname: #{m}\n    " +
+                "public_ip: #{ip}\n    roles:\n     - node\n     - master\n     - etcd\n  "
         if master_entries.nil?
           master_entries = entry
         else
@@ -177,6 +197,26 @@ module OSEInstaller
       end
 
       template = template.gsub(/<master_entries>/, master_entries) if !master_entries.nil?
+
+      ha_node_entries = nil
+      if opts[:ha_nodes].first
+        n = opts[:ha_nodes].first
+        stdout = `getent hosts #{n}`
+        if stdout.empty?
+          @logger.info "Cannot resolve ip for #{n}, skipping"
+        else
+          ip = stdout.split("\n").first.split(" ").first
+        end
+
+        entry = "- connect_to: #{n}\n    hostname: #{n}\n    ip: #{ip}\n    master_lb: true\n    public_hostname: #{n}\n    preconfigured: true\n    roles:\n    - master_lb\n  "
+        if ha_node_entries.nil?
+          ha_node_entries = entry
+        else
+          ha_node_entries += entry
+        end
+      end
+
+      template = template.gsub(/<ha_node_entries>/, ha_node_entries) if !ha_node_entries.nil?
 
       unless Dir.exist?(@output_dir)
         FileUtils.mkdir_p(@output_dir)
@@ -224,6 +264,60 @@ module OSEInstaller
       @logger.info "Docker configuration file saved at: #{@output_dir}/#{docker_config_file}"
     end
 
+    def update_ha_master_config(opts)
+      if opts[:ha_nodes].length > 0
+        @logger.info "Updating HA master configuration files."
+        template = File.read("#{@ansible_playbooks_root}/templates/haproxy_masters.cfg.template")
+        ha_config_file = "haproxy_master.cfg"
+
+        entries = nil
+        counter = 1
+        opts[:masters].each do |m|
+          entry = "    server master#{counter} #{m}:8443\n"
+          counter += 1
+
+          if entries.nil?
+            entries = entry
+          else
+            entries += entry
+          end
+        end
+
+        template = template.gsub(/<master_mirrors>/, entries) if !entries.nil?
+        File.open("#{@output_dir}/#{ha_config_file}", 'w') { |file| file.puts template }
+        @logger.info "Master HAProxy configuration file saved at: #{@output_dir}/#{ha_config_file}"
+      end
+    end
+
+    def update_ha_infra_config(opts)
+      if opts[:ha_nodes].length > 0
+        @logger.info "Updating HA configuration files."
+        template = File.read("#{@ansible_playbooks_root}/templates/haproxy_infras.cfg.template")
+        ha_config_file = "haproxy_infra.cfg"
+
+        entries = nil
+        counter = 1
+        opts[:nodes].each do |n|
+          if counter > 2 # we only want the first 2
+            break
+          else
+            entry = "    server infra#{counter} #{n}:443\n    server infra#{counter} #{n}:80\n"
+            counter += 1
+
+            if entries.nil?
+              entries = entry
+            else
+              entries += entry
+            end
+          end
+        end
+
+        template = template.gsub(/<infras_mirrors>/, entries) if !entries.nil?
+        File.open("#{@output_dir}/#{ha_config_file}", 'w') { |file| file.puts template }
+        @logger.info "Infra HAProxy configuration file saved at: #{@output_dir}/#{ha_config_file}"
+      end
+    end
+
     def prep_run_environment
       #ENV['ANSIBLE_CONFIG'] = "#{@output_dir}/ansible.cfg"
       ENV['ANSIBLE_HOST_KEY_CHECKING'] = "False"
@@ -268,12 +362,47 @@ module OSEInstaller
       spawn_process("ansible-playbook #{flags} #{playbook} -i #{inventory}")
     end
 
+    def ha_setup(inventory, verbose = false, playbook = "#{@ansible_playbooks_root}/playbooks/ha/setup.yml")
+      flags = ""
+      if verbose
+        flags = "-v"
+      end
+
+      prep_run_environment
+      @logger.info "ansible: executing #{playbook} with #{inventory}"
+      spawn_process("ansible-playbook #{flags} #{playbook} -i #{inventory}")
+    end
+
+    def ha_install(inventory, verbose = false, playbook = "#{@ansible_playbooks_root}/playbooks/ha/install.yml")
+      flags = ""
+      if verbose
+        flags = "-v"
+      end
+
+      prep_run_environment
+      @logger.info "ansible: executing #{playbook} with #{inventory}"
+      spawn_process("ansible-playbook #{flags} #{playbook} -i #{inventory}")
+    end
+
+    def ha_post_install(inventory, verbose = false, playbook = "#{@ansible_playbooks_root}/playbooks/ha/post_install.yml")
+      flags = ""
+      if verbose
+        flags = "-v"
+      end
+
+      prep_run_environment
+      @logger.info "ansible: executing #{playbook} with #{inventory}"
+      spawn_process("ansible-playbook #{flags} #{playbook} -i #{inventory}")
+    end
+
     def prepare(opts)
       inventory = write_inventory(opts)
       write_atomic_installer_answer_file(opts)
       create_ansible_config
       update_docker_storage_setup(opts)
       update_docker_config(opts)
+      update_ha_master_config(opts)
+      update_ha_infra_config(opts)
       return inventory
     end
 

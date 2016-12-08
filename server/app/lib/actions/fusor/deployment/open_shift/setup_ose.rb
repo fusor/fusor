@@ -32,7 +32,12 @@ module Actions
             ::Fusor.log.info "Setting ansible log path to - #{::Fusor.log_file_dir(deployment.label, deployment.id)}"
             launcher = OSEInstaller::Launch.new("#{Rails.root}/tmp/#{deployment.label}", ::Fusor.log_file_dir(deployment.label, deployment.id), ::Fusor.log)
             inventory = launcher.prepare(opts)
-            exit_code = launcher.setup(inventory, true)
+
+            if deployment.ose_master_hosts.length > 1
+              exit_code = launcher.ha_setup(inventory, true)
+            else
+              exit_code = launcher.setup(inventory, true)
+            end
             if exit_code > 0
               # Something went wrong w/ the setup
               fail _("ansible-playbook returned a non-zero exit code during setup. Please refer to the log"\
@@ -55,8 +60,14 @@ module Actions
               workers << w.name
             end
 
+            ha_nodes = Array.new
+            deployment.ose_ha_hosts.each do |ha|
+              ha_nodes << ha.name
+            end
+
             opts[:masters] = masters
             opts[:nodes] = workers
+            opts[:ha_nodes] = ha_nodes
 
             opts[:username] = deployment.openshift_username
             opts[:ssh_key] = ::Utils::Fusor::SSHKeyUtils.new(deployment).get_ssh_private_key_path

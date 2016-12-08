@@ -47,6 +47,8 @@ module Fusor
     has_many :ose_master_hosts, :through => :ose_deployment_master_hosts, :class_name => "::Host::Base", :source => :discovered_host
     has_many :ose_deployment_worker_hosts, -> { where(:deployment_host_type => 'ose_worker') }, :class_name => "Fusor::DeploymentHost"
     has_many :ose_worker_hosts, :through => :ose_deployment_worker_hosts, :class_name => "::Host::Base", :source => :discovered_host
+    has_many :ose_deployment_ha_hosts, -> { where(:deployment_host_type => 'ose_ha') }, :class_name => "Fusor::DeploymentHost"
+    has_many :ose_ha_hosts, :through => :ose_deployment_ha_hosts, :class_name => "::Host::Base", :source => :discovered_host
     alias_attribute :discovered_host_id, :rhev_engine_host_id
     attr_accessor :foreman_task_id
 
@@ -82,6 +84,14 @@ module Fusor
 
     def is_started?
       foreman_task_uuid.present?
+    end
+
+    def openshift_number_ha_nodes
+      self.openshift_number_master_nodes > 1 ? 2 : 0
+    end
+
+    def openshift_number_infra_nodes
+      self.openshift_number_master_nodes > 1 ? 2 : 0
     end
 
     protected
