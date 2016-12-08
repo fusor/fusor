@@ -34,7 +34,11 @@ module Actions
             # Workaround for https://trello.com/c/4T7e9IFr
             success = false
             3.times do |i|
-              exit_code = launcher.install(inventory, true)
+              if deployment.ose_master_hosts.length > 1
+                exit_code = launcher.ha_install(inventory, true)
+              else
+                exit_code = launcher.install(inventory, true)
+              end
               if exit_code > 0
                 ::Fusor.log.info("ansible-playbook returned a non-zero exit code on attempt #{i + 1}/3.")
               else
@@ -66,8 +70,14 @@ module Actions
               workers << w.name
             end
 
+            ha_nodes = Array.new
+            deployment.ose_ha_hosts.each do |ha|
+              ha_nodes << ha.name
+            end
+
             opts[:masters] = masters
             opts[:nodes] = workers
+            opts[:ha_nodes] = ha_nodes
 
             opts[:username] = deployment.openshift_username
             opts[:ssh_key] = ::Utils::Fusor::SSHKeyUtils.new(deployment).get_ssh_private_key_path

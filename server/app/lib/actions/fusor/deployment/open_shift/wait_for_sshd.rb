@@ -44,6 +44,12 @@ module Actions
               status = wait_for_sshd_on_host(host.name, username, password)
               fail _("====== Could not ssh into #{host.name}!") unless status.eql?(true)
             end
+
+            # wait for all the ha nodes to fully boot with sshd available
+            deployment.ose_ha_hosts.each do |host|
+              status = wait_for_sshd_on_host(host.name, username, password)
+              fail _("====== Could not ssh into #{host.name}!") unless status.eql?(true)
+            end
           end
 
           private

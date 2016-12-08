@@ -26,12 +26,15 @@ module Actions
 
           def run
             ::Fusor.log.info "================ OpenShift PostInstallOSE run method ===================="
-
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             opts = parse_deployment(deployment)
             launcher = OSEInstaller::Launch.new("#{Rails.root}/tmp/#{deployment.label}", ::Fusor.log_file_dir(deployment.label, deployment.id), ::Fusor.log)
             inventory = launcher.prepare(opts)
-            exit_code = launcher.post_install(inventory, true)
+            if deployment.ose_master_hosts.length > 1
+              exit_code = launcher.ha_post_install(inventory, true)
+            else
+              exit_code = launcher.post_install(inventory, true)
+            end
             if exit_code > 0
               # Something went wrong w/ the post-installation
               fail _("ansible-playbook returned a non-zero exit code during post-installation. Please refer to the log"\
@@ -54,8 +57,14 @@ module Actions
               workers << w.name
             end
 
+            ha_nodes = Array.new
+            deployment.ose_ha_hosts.each do |ha|
+              ha_nodes << ha.name
+            end
+
             opts[:masters] = masters
             opts[:nodes] = workers
+            opts[:ha_nodes] = ha_nodes
 
             opts[:username] = deployment.openshift_username
             opts[:ssh_key] = ::Utils::Fusor::SSHKeyUtils.new(deployment).get_ssh_private_key_path
