@@ -22,7 +22,7 @@ module Actions
             vars = generate_vars(deployment)
             config_dir = "#{Rails.root}/tmp/ansible-ovirt/#{deployment.label}"
             environment = get_environment(deployment, config_dir)
-            distrubute_public_key(deployment)
+            distribute_public_key(deployment)
             unless Dir.exist?(config_dir)
               FileUtils.mkdir_p(config_dir)
             end
@@ -124,7 +124,7 @@ module Actions
             }
           end
 
-          def distrubute_public_key(deployment)
+          def distribute_public_key(deployment)
             keyutils = Utils::Fusor::SSHKeyUtils.new(deployment)
 
             if !deployment.rhev_is_self_hosted
