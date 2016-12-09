@@ -93,11 +93,15 @@ module OSEInstaller
       nodes_list = opts[:nodes].join("\n")
       template = template.gsub(/<worker_nodes>/, nodes_list)
 
-      #ha_list = opts[:ha_nodes].join("\n")
-      # split it by two
-      ha_list = opts[:ha_nodes].each_slice(2).to_a
-      ha_master_list = ha_list.first.join("\n")
-      ha_infra_list = ha_list.last.join("\n")
+      if !opts[:ha_nodes].nil? and opts[:ha_nodes].length > 1
+        # split it by two
+        ha_list = opts[:ha_nodes].each_slice(2).to_a
+        ha_master_list = ha_list.first.join("\n")
+        ha_infra_list = ha_list.last.join("\n")
+      end
+
+      ha_master_list ||= ""
+      ha_infra_list ||= ""
 
       template = template.gsub(/<ha_master_nodes>/, ha_master_list)
       template = template.gsub(/<ha_infra_nodes>/, ha_infra_list)
@@ -109,6 +113,9 @@ module OSEInstaller
           infra_node_list = opts[:nodes][1..2].join("\n")
           template = template.gsub(/<infra_nodes>/, infra_node_list)
         end
+      else
+        template = template.gsub(/<primary_master>/, "")
+        template = template.gsub(/<infra_nodes>/, "")
       end
 
       # docker storage specifics
@@ -214,6 +221,8 @@ module OSEInstaller
         else
           ha_node_entries += entry
         end
+      else
+        ha_node_entries = ""
       end
 
       template = template.gsub(/<ha_node_entries>/, ha_node_entries) if !ha_node_entries.nil?
