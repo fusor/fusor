@@ -56,14 +56,14 @@
 
     {{#if isCloudForms}}
       <h4> Export Domain </h4>
-        {{text-f label="Export Domain Name" value=model.rhev_export_domain_name cssId='rhev_export_domain_name' isRequired=true disabled=deploymentController.isStarted validator=computerNameValidator}}
+        {{text-f label="Export Domain Name" value=model.rhev_export_domain_name maxlength=50 cssId='rhev_export_domain_name' isRequired=true disabled=deploymentController.isStarted validator=computerNameValidator}}
         {{text-f label="Storage Address" value=model.rhev_export_domain_address cssId='rhev_export_domain_address' isRequired=true disabled=deploymentController.isStarted validator=hostnameValidator}}
         {{text-f label="Share Path" value=model.rhev_export_domain_path cssId='rhev_export_domain_path' isRequired=true disabled=deploymentController.isStarted validator=sharePathValidator}}
     {{/if}}
 
     {{#if rhevIsSelfHosted}}
       <h4> Self-hosted RHV Engine Storage Domain </h4>
-        {{text-f label="Hosted Engine Storage Domain Name" value=model.hosted_storage_name cssId='hosted_storage_name' isRequired=true disabled=deploymentController.isStarted validator=computerNameValidator}}
+        {{text-f label="Hosted Engine Storage Domain Name" value=model.hosted_storage_name maxlength=50 cssId='hosted_storage_name' isRequired=true disabled=deploymentController.isStarted validator=computerNameValidator}}
         {{text-f label="Storage Address" value=model.hosted_storage_address cssId='hosted_storage_address' isRequired=true disabled=deploymentController.isStarted validator=hostnameValidator}}
         {{text-f label="Share Path" value=model.hosted_storage_path cssId='hosted_storage_path' isRequired=true disabled=deploymentController.isStarted validator=sharePathValidator}}
     {{/if}}
