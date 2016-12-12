@@ -154,6 +154,10 @@ module OSEInstaller
       @logger.info "Parsing options to create answers file."
       @logger.debug opts
 
+      if opts[:masters].length > 1
+        template_file_name = "templates/atomic-openshift-installer_ha.answers.cfg.yml.template"
+      end
+
       template = File.read("#{@ansible_playbooks_root}/#{template_file_name}")
 
       # if user is not root, we need to enable ansible_sudo flag
@@ -221,11 +225,9 @@ module OSEInstaller
         else
           ha_node_entries += entry
         end
-      else
-        ha_node_entries = ""
-      end
 
-      template = template.gsub(/<ha_node_entries>/, ha_node_entries) if !ha_node_entries.nil?
+        template = template.gsub(/<ha_node_entries>/, ha_node_entries) if !ha_node_entries.nil?
+      end
 
       unless Dir.exist?(@output_dir)
         FileUtils.mkdir_p(@output_dir)
