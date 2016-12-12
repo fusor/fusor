@@ -44,7 +44,8 @@ Red Hat OpenStack Platform
 ==================
 Red Hat CloudForms
 ==================
-NFS/GlusterFS share. For export domain: IP address and shared path (if CFME on RHV)
+- Hypervisor host requires at least an ADDITIONAL 8 GB RAM and 4 CPUs
+- NFS/GlusterFS share. For export domain: IP address and shared path
 
 
 
