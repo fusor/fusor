@@ -86,8 +86,8 @@ Requires: fusor_ovirt
 Requires: fusor-utils
 Requires: ansible-ovirt
 Requires: ansible-ocp
-
 Requires: ansible >= 1.9.0
+Requires: rhel-guest-image-7 >= 7.3
 
 %description
 Fusor Plugin
