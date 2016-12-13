@@ -45,7 +45,11 @@ module Actions
                 client.on_complete(lambda { update_root_password_completed })
                 client.on_failure(lambda { update_root_password_failed })
                 cmd = "echo \"#{deployment.cfme_root_password}\" | passwd --stdin #{ssh_user}"
-                client.execute(cmd, @io)
+                begin
+                  client.execute(cmd, @io)
+                rescue RuntimeError => e
+                  ::Fusor.log.info "Password Update Failed, error message: #{e.message}"
+                end
 
                 # close the stringio at the end
                 @io.close unless @io.closed?
