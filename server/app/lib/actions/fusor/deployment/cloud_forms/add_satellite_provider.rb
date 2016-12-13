@@ -28,7 +28,6 @@ module Actions
             ::Fusor.log.debug "================ AddSatelliteProvider run method ===================="
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
-            sat_host = ::Host.where(environment_id: 1).first
             settings = YAML.load(File.open('/etc/fusor-installer/fusor-installer.answers.yaml'))
             sat_pwd = settings["fusor"]["foreman_admin_password"] ? settings["fusor"]["foreman_admin_password"] : "changeme"
             cfme_address = deployment.cfme_rhv_address || deployment.cfme_osp_address
