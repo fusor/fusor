@@ -17,7 +17,7 @@ require 'rest_client'
 module Utils
   module CloudForms
     class AddProvider
-      def self.add(cfme_ip, provider_params, deployment)
+      def self.add(cfme_ip, provider_params, deployment, url_params = "")
         ::Fusor.log.debug "Adding the provider at #{provider_params[:ip]} to the CloudForms VM at #{cfme_ip}"
 
         data = {
@@ -25,7 +25,7 @@ module Utils
           :resources => [provider_params]
         }
 
-        request_url = "https://admin:#{deployment.cfme_admin_password}@#{cfme_ip}/api/providers"
+        request_url = "https://admin:#{deployment.cfme_admin_password}@#{cfme_ip}/api/providers#{url_params}"
         client = RestClient::Resource.new(request_url, :verify_ssl => OpenSSL::SSL::VERIFY_NONE)
 
         begin

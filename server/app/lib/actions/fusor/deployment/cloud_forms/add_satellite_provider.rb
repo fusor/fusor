@@ -35,18 +35,19 @@ module Actions
 
             provider = {
               :name => "#{deployment.label}-Satellite",
-              :type => "ManageIQ::Providers::Foreman::ConfigurationManager",
-              :hostname => fqdn,
-              :port => "443",
+              :type => "ManageIQ::Providers::Foreman::Provider",
+              :url => fqdn,
               :credentials => [{
                 :userid => "admin",
                 :password => sat_pwd
               }]
             }
 
+            url_params = "?provider_class=provider"
+
             ::Fusor.log.info "Adding Satellite provider #{provider[:name]} to CFME."
 
-            Utils::CloudForms::AddProvider.add(cfme_address, provider, deployment)
+            Utils::CloudForms::AddProvider.add(cfme_address, provider, deployment, url_params)
             Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)
 
             ::Fusor.log.debug "================ Leaving AddSatelliteProvider run method ===================="
