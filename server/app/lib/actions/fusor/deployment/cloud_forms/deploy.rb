@@ -79,6 +79,9 @@ module Actions
               plan_action(::Actions::Fusor::Deployment::CloudForms::UpdateHosts,
                           deployment)
 
+              plan_action(::Actions::Fusor::Deployment::CloudForms::AddSatelliteProvider,
+                          deployment)
+
               plan_action(::Actions::Fusor::Deployment::CloudForms::AddRhevProvider,
                           deployment) if deployment.deploy_rhev
 
