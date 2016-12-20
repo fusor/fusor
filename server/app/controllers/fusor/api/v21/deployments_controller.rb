@@ -318,7 +318,7 @@ module Fusor
     # mount_storage will return in megabytes the amount of free space left on the storage mount
     def mount_storage(address, path, type, unique_suffix)
       deployment_id = @deployment.id
-      if type == "GFS"
+      if type.downcase.include?('gfs') || type.downcase.include?('glusterfs')
         type = "glusterfs"
       else
         type = "nfs"
