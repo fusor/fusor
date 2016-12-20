@@ -444,7 +444,8 @@ module Fusor
 
         response = JSON.parse(get(
           :check_mount_point,
-          :id => @deployment.id).body)
+          :id => @deployment.id,
+          :type => 'NFS').body)
 
         assert_response 200
         assert_equal response['mounted'], true
@@ -466,7 +467,8 @@ module Fusor
 
         response = JSON.parse(get(
           :check_mount_point,
-          :id => @deployment.id).body)
+          :id => @deployment.id).body,
+          :type => 'glusterfs')
 
         assert_response 200
         assert_equal response['mounted'], false
@@ -488,7 +490,8 @@ module Fusor
         Utils::Fusor::CommandUtils.stubs(:run_command).returns(0, :foo)
         response = JSON.parse(get(
           :check_mount_point,
-          :id => @deployment.id).body)
+          :id => @deployment.id,
+          :type => 'nfs').body)
         assert_response 200
         assert_equal true, response['is_empty']
       end
@@ -509,7 +512,8 @@ module Fusor
         Utils::Fusor::CommandUtils.stubs(:run_command).returns(0, :foo)
         response = JSON.parse(get(
           :check_mount_point,
-          :id => @deployment.id).body)
+          :id => @deployment.id,
+          :type => 'GFS').body)
         assert_response 200
         assert_equal false, response['is_empty']
       end
