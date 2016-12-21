@@ -7,6 +7,13 @@ class DeploymentTest < ActiveSupport::TestCase
     before do
       # skip nfs mount validation as it calls commands from the command line
       Fusor::Validators::DeploymentValidator.any_instance.stubs(:validate_storage_share)
+      # skip checking DNS records for conflicts
+      Net::DNS::ARecord.any_instance.stubs(:conflicts).returns([])
+    end
+
+    test "should save deployment with valid fields for all products" do
+      deployment = fusor_deployments(:all_products)
+      assert deployment.save, "unable to save valid deployment"
     end
 
     test "should not save without name" do
@@ -180,6 +187,18 @@ class DeploymentTest < ActiveSupport::TestCase
         rhev = fusor_deployments(:rhev)
         rhev.rhev_storage_type = 'asdf'
         assert_not rhev.save, "Saved rhev deployment with a nonsense storage type"
+      end
+
+      test "should not save rhev deployment if it is missing rhev storage name" do
+        rhev = fusor_deployments(:rhev)
+        rhev.rhev_storage_name = nil
+        assert_not rhev.save, "Saved rhev deployment that had no rhev storage name"
+      end
+
+      test "should not save rhev deployment if it is missing hosted storage name" do
+        rhev = fusor_deployments(:rhev_self_hosted)
+        rhev.hosted_storage_name = nil
+        assert_not rhev.save, "Saved rhev deployment that had no hosted storage name"
       end
 
       test "should not save rhev deployment if storage type is nfs and missing address" do
@@ -368,6 +387,12 @@ class DeploymentTest < ActiveSupport::TestCase
         assert_not cfme.save, "Saved cfme deployment with empty export storage address"
       end
 
+      test "should not save rhev deployment with CFME if it is missing export storage name" do
+        rhev = fusor_deployments(:rhev_and_cfme)
+        rhev.rhev_export_domain_name = rhev.rhev_storage_name
+        assert_not rhev.save, "Saved rhev deployment with CFME that had no export storage name"
+      end
+
       test "cfme deployments should not save if export storage path is empty" do
         cfme = fusor_deployments(:rhev_and_cfme)
         cfme.rhev_export_domain_path = nil
@@ -386,6 +411,81 @@ class DeploymentTest < ActiveSupport::TestCase
         cfme.rhev_storage_type = 'glusterfs'
         cfme.rhev_export_domain_path = "/gv0"
         assert_not cfme.save, "Saved cfme deployment with gluster storage path beginning in a slash"
+      end
+    end
+
+    describe "deployment with multiple product interaction" do
+      test "should not save deployment if rhev storage name is the same as export name" do
+        deployment = fusor_deployments(:all_products)
+        deployment.rhev_export_domain_name = deployment.rhev_storage_name
+        assert_not deployment.save, "Validated deployment while rhev storage name is the same as export domain name "
+      end
+
+      test "should not save deployment if rhev storage name is the same as self hosted storage name" do
+        deployment = fusor_deployments(:all_products)
+        deployment.hosted_storage_name = deployment.rhev_storage_name
+        assert_not deployment.save, "Saved deployment while rhev storage name is the same as self hosted storage name "
+      end
+
+      test "should not save deployment if rhev export domain name is the same as self hosted storage name" do
+        deployment = fusor_deployments(:all_products)
+        deployment.hosted_storage_name = deployment.rhev_export_domain_name
+        assert_not deployment.save, "Saved deployment while rhev export name is the same as self hosted storage name"
+      end
+
+      test "should not save deployment if rhev storage location is the same as export location" do
+        deployment = fusor_deployments(:all_products)
+        deployment.rhev_export_domain_address = deployment.rhev_storage_address
+        deployment.rhev_export_domain_path = deployment.rhev_share_path
+        assert_not deployment.save, "Saved deployment while rhev storage location is the same as export domain location"
+      end
+
+      test "should not save deployment if rhev storage location is the same as self hosted storage location" do
+        deployment = fusor_deployments(:all_products)
+        deployment.hosted_storage_address = deployment.rhev_storage_address
+        deployment.hosted_storage_path = deployment.rhev_share_path
+        assert_not deployment.save, "Saved deployment while rhev storage location is the same as self hosted storage location"
+      end
+
+      test "should not save deployment if rhev storage location is the same as openshift storage location" do
+        deployment = fusor_deployments(:all_products)
+        deployment.openshift_storage_host = deployment.rhev_storage_address
+        deployment.openshift_export_path = deployment.rhev_share_path
+        # binding.pry
+        assert_not deployment.save, "Saved deployment while rhev export location is the same as self hosted storage path "
+      end
+
+      test "should not save deployment if export storage location is the same as self hosted storage location" do
+        deployment = fusor_deployments(:all_products)
+        deployment.rhev_export_domain_address = deployment.hosted_storage_address
+        deployment.rhev_export_domain_path = deployment.hosted_storage_path
+        assert_not deployment.save, "Saved deployment while rhev export location is the same as self hosted storage location "
+      end
+
+      test "should not save deployment if export storage location is the same as openshift storage location" do
+        deployment = fusor_deployments(:all_products)
+        deployment.rhev_export_domain_address = deployment.openshift_storage_host
+        deployment.rhev_export_domain_path = deployment.openshift_export_path
+        assert_not deployment.save, "Saved deployment while rhev export locatiqon is the same as self hosted storage location "
+      end
+
+      test "should not save deployment if openshift storage location is the same as self hosted storage location" do
+        deployment = fusor_deployments(:all_products)
+        deployment.openshift_storage_host = deployment.hosted_storage_address
+        deployment.openshift_export_path = deployment.hosted_storage_path
+        assert_not deployment.save, "Saved deployment while rhev export location is the same as self hosted storage location "
+      end
+
+      test "should save deployment if storage paths are the same but on different hosts" do
+        deployment = fusor_deployments(:all_products)
+        deployment.rhev_storage_address = '10.13.129.106'
+        deployment.rhev_export_domain_address = '10.13.129.107'
+        deployment.hosted_storage_address = '10.13.129.108'
+        deployment.openshift_storage_host = '10.13.129.109'
+        deployment.rhev_export_domain_path = deployment.rhev_share_path
+        deployment.hosted_storage_path = deployment.rhev_share_path
+        deployment.openshift_export_path = deployment.rhev_share_path
+        assert deployment.save, "Failed to save deployment using different storage servers but identical paths"
       end
     end
   end

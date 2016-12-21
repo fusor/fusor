@@ -25,3 +25,7 @@ deployment_host6:
 deployment_host7:
   discovered_host: host7
   deployment: rhev_self_hosted
+
+deployment_host8:
+  discovered_host: host8
+  deployment: all_products

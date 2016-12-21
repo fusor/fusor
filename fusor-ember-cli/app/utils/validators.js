@@ -66,8 +66,6 @@ const PresenceValidator = Validator.extend({
 // expects values to be set during construction:
 // equals;
 const EqualityValidator = Validator.extend({
-  message: 'This value does not match.',
-
   isValid(value) {
     let equals = this.get('equals');
     let doesNotEqual = this.get('doesNotEqual');
@@ -81,11 +79,19 @@ const EqualityValidator = Validator.extend({
     let doesNotEqual = this.get('doesNotEqual');
 
     if (Ember.isPresent(equals) && value !== equals) {
-      return ['This value does not match.'];
+      if (this.get('message')) {
+        return [this.get('message')];
+      } else {
+        return ['This value does not match.'];
+      }
     }
 
     if (Ember.isPresent(doesNotEqual) && value === doesNotEqual) {
-      return [`must not equal ${doesNotEqual}`];
+      if (this.get('message')) {
+        return [this.get('message')];
+      } else {
+        return [`This field must not equal ${doesNotEqual}`];
+      }
     }
 
     return [];

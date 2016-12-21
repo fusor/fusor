@@ -15,6 +15,12 @@ require 'test_plugin_helper'
 class OpenstackDeploymentTest < ActiveSupport::TestCase
 
   describe 'openstack deployment' do
+    before do
+      # skip nfs mount validation as it calls commands from the command line
+      Fusor::Validators::DeploymentValidator.any_instance.stubs(:validate_storage_share)
+      # skip checking DNS records for conflicts
+      Net::DNS::ARecord.any_instance.stubs(:conflicts).returns([])
+    end
 
     describe 'validate overcloud' do
       test 'openstack deployments validates true when all fields are valid' do
