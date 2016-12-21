@@ -323,7 +323,7 @@ all_products:
   lifecycle_environment: library
   upstream_consumer_uuid: 1
   organization_id: 1
-  openstack_deployment: osp
+  openstack_deployment: osp_all_products
   openshift_install_loc: RHEV
   openshift_storage_size: 30
   openshift_username: cloudsuite-install
