@@ -8,7 +8,6 @@ import {
 
 export default Ember.Mixin.create(NeedsDeploymentMixin, {
 
-  deployment: Ember.computed.alias('deploymentController.model'),
   openshiftInstallLoc: Ember.computed.alias("deployment.openshift_install_loc"),
   cfmeInstallLoc: Ember.computed.alias("deployment.cfme_install_loc"),
   isRhev: Ember.computed.alias("deployment.deploy_rhev"),
