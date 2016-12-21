@@ -15,6 +15,7 @@ export default Ember.Mixin.create({
   // Consolidates these and makes them available for free to any mixee
   // Prevents littering leaf controllers with duplicated aliases
   ////////////////////////////////////////////////////////////
+  deployment: Ember.computed.alias('deploymentController.model'),
   deploymentId: Ember.computed.alias("deploymentController.model.id"),
   deploymentName: Ember.computed.alias("deploymentController.model.name"),
   upstreamConsumerUuid: Ember.computed.alias(

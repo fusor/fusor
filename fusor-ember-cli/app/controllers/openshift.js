@@ -91,31 +91,31 @@ export default Ember.Controller.extend(OpenshiftMixin, {
   }),
 
   exportPathValidator: Ember.computed(
-    'model.openshift_storage_type',
-    'model.openshift_storage_host',
-    'model.rhev_storage_type',
-    'model.deploy_rhev',
-    'model.rhev_storage_address',
-    'model.rhev_share_path',
-    'model.deploy_cfme',
-    'model.rhev_export_domain_address',
-    'model.rhev_export_domain_path',
-    'model.rhev_is_self_hosted',
-    'model.hosted_storage_address',
-    'model.hosted_storage_path',
+    'deployment.openshift_storage_type',
+    'deployment.openshift_storage_host',
+    'deployment.rhev_storage_type',
+    'deployment.deploy_rhev',
+    'deployment.rhev_storage_address',
+    'deployment.rhev_share_path',
+    'deployment.deploy_cfme',
+    'deployment.rhev_export_domain_address',
+    'deployment.rhev_export_domain_path',
+    'deployment.rhev_is_self_hosted',
+    'deployment.hosted_storage_address',
+    'deployment.hosted_storage_path',
     function () {
-      let openshiftStorageType = this.get('model.openshift_storage_type');
-      let openshiftStorageHost = this.get('model.openshift_storage_host');
-      let rhevStorageType = this.get('model.rhev_storage_type');
-      let deployRhev = this.get('model.deploy_rhev');
-      let rhevStorageAddress = this.get('model.rhev_storage_address');
-      let rhevSharePath = this.get('model.rhev_share_path');
-      let deployCfme = this.get('model.deploy_cfme');
-      let rhevExportDomainAddress = this.get('model.rhev_export_domain_address');
-      let rhevExportDomainPath = this.get('model.rhev_export_domain_path');
-      let rhevIsSelfHosted = this.get('model.rhev_is_self_hosted');
-      let hostedStorageAddress = this.get('model.hosted_storage_address');
-      let hostedStoragePath = this.get('model.hosted_storage_path');
+      let openshiftStorageType = this.get('deployment.openshift_storage_type');
+      let openshiftStorageHost = this.get('deployment.openshift_storage_host');
+      let rhevStorageType = this.get('deployment.rhev_storage_type');
+      let deployRhev = this.get('deployment.deploy_rhev');
+      let rhevStorageAddress = this.get('deployment.rhev_storage_address');
+      let rhevSharePath = this.get('deployment.rhev_share_path');
+      let deployCfme = this.get('deployment.deploy_cfme');
+      let rhevExportDomainAddress = this.get('deployment.rhev_export_domain_address');
+      let rhevExportDomainPath = this.get('deployment.rhev_export_domain_path');
+      let rhevIsSelfHosted = this.get('deployment.rhev_is_self_hosted');
+      let hostedStorageAddress = this.get('deployment.hosted_storage_address');
+      let hostedStoragePath = this.get('deployment.hosted_storage_path');
 
       let validators = [];
 

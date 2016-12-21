@@ -15,13 +15,6 @@ require 'test_plugin_helper'
 class OpenstackDeploymentTest < ActiveSupport::TestCase
 
   describe 'openstack deployment' do
-    before do
-      # skip nfs mount validation as it calls commands from the command line
-      Fusor::Validators::DeploymentValidator.any_instance.stubs(:validate_storage_share)
-      # skip checking DNS records for conflicts
-      Net::DNS::ARecord.any_instance.stubs(:conflicts).returns([])
-    end
-
     describe 'validate overcloud' do
       test 'openstack deployments validates true when all fields are valid' do
         osp = fusor_openstack_deployments(:osp)
@@ -246,8 +239,7 @@ class OpenstackDeploymentTest < ActiveSupport::TestCase
         Nic::Base.create({host: hosts(:managed_host1), ip: '192.168.152.2', primary: true})
         Nic::Base.create({host: hosts(:managed_host2), ip: '192.168.153.2', primary: true})
         osp = fusor_openstack_deployments(:osp)
-        osp.deployment.deploy_cfme = false
-        osp.deployment.save
+        osp.deployment.update_attribute(:deploy_cfme, false)
         osp.overcloud_float_net = '192.168.153.0/24'
         osp.save
         assert_empty osp.warnings
@@ -257,8 +249,7 @@ class OpenstackDeploymentTest < ActiveSupport::TestCase
         Nic::Base.create({host: hosts(:managed_host1), ip: '192.168.152.2', primary: true})
         Nic::Base.create({host: hosts(:managed_host2), ip: '192.168.153.2', primary: true})
         osp = fusor_openstack_deployments(:osp)
-        osp.deployment.cfme_install_loc = 'RHEV'
-        osp.deployment.save
+        osp.deployment.update_attribute(:cfme_install_loc, 'RHEV')
         osp.overcloud_float_net = '192.168.153.0/24'
         osp.save
         assert_empty osp.warnings

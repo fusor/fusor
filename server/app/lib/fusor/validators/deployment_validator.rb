@@ -58,9 +58,6 @@ module Fusor
           deployment.errors[:rhev_engine_admin_password] << _('RHV deployments must specify an admin password for the RHV Engine')
         end
 
-        validate_rhev_storage deployment
-        validate_rhev_self_hosted_parameters deployment
-
         if deployment.rhev_engine_host_id.nil? and !deployment.rhev_is_self_hosted
           deployment.errors[:rhev_engine_host_id] << _('RHV deployments must have an RHV Engine Host')
         end
@@ -71,6 +68,8 @@ module Fusor
 
         validate_hostname(deployment)
         validate_storage_addresses(deployment)
+        validate_rhev_storage(deployment)
+        validate_rhev_self_hosted_parameters(deployment) if deployment.rhev_is_self_hosted
       end
 
       def validate_rhev_storage(deployment)
@@ -128,8 +127,6 @@ module Fusor
       end
 
       def validate_rhev_self_hosted_parameters(deployment)
-        return unless deployment.rhev_is_self_hosted
-
         if deployment.rhev_self_hosted_engine_hostname.empty?
           deployment.errors[:rhev_self_hosted_engine_hostname] << _('RHV self hosted deployments must have an engine hostname')
         end

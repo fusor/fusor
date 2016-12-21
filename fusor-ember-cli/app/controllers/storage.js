@@ -13,8 +13,6 @@ import {
 } from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
-  deploymentId: Ember.computed.alias('model.id'),
-  deployment: Ember.computed.alias('model'),
   step3RouteName: Ember.computed.alias("deploymentController.step3RouteName"),
   isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
   errorMsg: null,
