@@ -4,6 +4,8 @@ import ValidatesMounts from '../mixins/validates-mounts';
 import {
   AllValidator,
   PresenceValidator,
+  EqualityValidator,
+  UniquenessValidator,
   AlphaNumericDashUnderscoreValidator,
   HostnameValidator,
   NfsPathValidator,
@@ -11,9 +13,16 @@ import {
 } from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
+  deploymentId: Ember.computed.alias('model.id'),
+  deployment: Ember.computed.alias('model'),
+  step3RouteName: Ember.computed.alias("deploymentController.step3RouteName"),
+  isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
+  errorMsg: null,
+  storageNotEmptyError: null,
+
   actions: {
     testMountPoint() {
-      var deployment = this.get('model');
+      var deployment = this.get('deployment');
       deployment.trimFieldsForSave();
       this.set('errorMsg', null);
       this.set('storageNotEmptyError', null);
@@ -21,9 +30,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
       const checkHosted = this.get('rhevIsSelfHosted');
 
       const storageParams = {
-        path: this.get('model.rhev_share_path'),
-        address: this.get('model.rhev_storage_address'),
-        type: this.get('model.rhev_storage_type'),
+        path: this.get('deployment.rhev_share_path'),
+        address: this.get('deployment.rhev_storage_address'),
+        type: this.get('deployment.rhev_storage_type'),
         unique_suffix: 'rhv'
       };
 
@@ -33,9 +42,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
 
       if(checkExport) {
         const exportParams = {
-          path: this.get('model.rhev_export_domain_path'),
-          address: this.get('model.rhev_export_domain_address'),
-          type: this.get('model.rhev_storage_type'),
+          path: this.get('deployment.rhev_export_domain_path'),
+          address: this.get('deployment.rhev_export_domain_address'),
+          type: this.get('deployment.rhev_storage_type'),
           unique_suffix: 'export'
         };
 
@@ -47,9 +56,9 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
 
       if(checkHosted) {
         const hostedParams = {
-          path: this.get('model.hosted_storage_path'),
-          address: this.get('model.hosted_storage_address'),
-          type: this.get('model.rhev_storage_type'),
+          path: this.get('deployment.hosted_storage_path'),
+          address: this.get('deployment.hosted_storage_address'),
+          type: this.get('deployment.rhev_storage_type'),
           unique_suffix: 'selfhosted'
         };
 
@@ -94,13 +103,13 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
           let failedDomainName;
           switch(failedDomain) {
           case 'storage':
-            failedDomainName = this.get('deploymentController.model.rhev_storage_name');
+            failedDomainName = this.get('deployment.rhev_storage_name');
             break;
           case 'self-hosted':
-            failedDomainName = this.get('deploymentController.model.hosted_storage_name');
+            failedDomainName = this.get('deployment.hosted_storage_name');
             break;
           case 'export':
-            failedDomainName = this.get('deploymentController.model.rhev_export_domain_name');
+            failedDomainName = this.get('deployment.rhev_export_domain_name');
             break;
           default:
             failedDomainName = '';
@@ -135,29 +144,16 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
     }
   },
 
-  deploymentId: Ember.computed.alias('deploymentController.model.id'),
-  step3RouteName: Ember.computed.alias("deploymentController.step3RouteName"),
-  isCloudForms: Ember.computed.alias("deploymentController.isCloudForms"),
-  errorMsg: null,
-  storageNotEmptyError: null,
-
-  isNFS: Ember.computed('deploymentController.model.rhev_storage_type', function() {
-    return (this.get('deploymentController.model.rhev_storage_type') === 'NFS');
+  isNFS: Ember.computed('deployment.rhev_storage_type', function() {
+    return (this.get('deployment.rhev_storage_type') === 'NFS');
   }),
 
-  isLocal: Ember.computed('deploymentController.model.rhev_storage_type', function() {
-    return (this.get('deploymentController.model.rhev_storage_type') === 'Local');
+  isLocal: Ember.computed('deployment.rhev_storage_type', function() {
+    return (this.get('deployment.rhev_storage_type') === 'Local');
   }),
 
-  isGluster: Ember.computed('deploymentController.model.rhev_storage_type', function() {
-    return (this.get('deploymentController.model.rhev_storage_type') === 'glusterfs');
-  }),
-
-  computerNameValidator: AllValidator.create({
-    validators: [
-      PresenceValidator.create({}),
-      AlphaNumericDashUnderscoreValidator.create({})
-    ]
+  isGluster: Ember.computed('deployment.rhev_storage_type', function() {
+    return (this.get('deployment.rhev_storage_type') === 'glusterfs');
   }),
 
   hostnameValidator: AllValidator.create({
@@ -167,62 +163,221 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
     ]
   }),
 
-  nfsPathValidator: AllValidator.create({
-    validators: [
-      PresenceValidator.create({}),
-      NfsPathValidator.create({})
-    ]
+  storageNames: Ember.computed(
+    'deployment.deploy_rhev',
+    'deployment.deploy_cfme',
+    'deployment.rhev_is_self_hosted',
+    'deployment.rhev_storage_name',
+    'deployment.rhev_export_domain_name',
+    'deployment.hosted_storage_name',
+    function () {
+      let storageNames = [];
+
+      if (this.get('deployment.deploy_rhev') && Ember.isPresent('deployment.rhev_storage_name')) {
+        storageNames.push(this.get('deployment.rhev_storage_name'));
+      }
+
+      if (this.get('deployment.deploy_cfme') && Ember.isPresent('deployment.rhev_export_domain_name')) {
+        storageNames.push(this.get('deployment.rhev_export_domain_name'));
+      }
+
+      if (this.get('deployment.rhev_is_self_hosted') && Ember.isPresent('deployment.hosted_storage_name')) {
+        storageNames.push(this.get('deployment.hosted_storage_name'));
+      }
+
+      return storageNames;
+    }),
+
+  storageNameValidator: Ember.computed('storageNames', function () {
+    return AllValidator.create({
+      validators: [
+        PresenceValidator.create({}),
+        AlphaNumericDashUnderscoreValidator.create({}),
+        UniquenessValidator.create({selfIncluded: true, existingValues: this.get('storageNames')})
+      ]
+    });
   }),
 
-  glusterPathValidator: AllValidator.create({
-    validators: [
-      PresenceValidator.create({}),
-      GlusterPathValidator.create({})
-    ]
+  rhvPathValidator: Ember.computed(
+    'deployment.rhev_storage_type',
+    'deployment.rhev_storage_address',
+    'deployment.deploy_cfme',
+    'deployment.rhev_export_domain_address',
+    'deployment.rhev_export_domain_path',
+    'deployment.rhev_is_self_hosted',
+    'deployment.hosted_storage_address',
+    'deployment.hosted_storage_path',
+    function () {
+      let rhevStorageAddress = this.get('deployment.rhev_storage_address');
+      let deployCfme = this.get('deployment.deploy_cfme');
+      let rhevExportDomainAddress = this.get('deployment.rhev_export_domain_address');
+      let rhevExportDomainPath = this.get('deployment.rhev_export_domain_path');
+      let rhevIsSelfHosted = this.get('deployment.rhev_is_self_hosted');
+      let hostedStorageAddress = this.get('deployment.hosted_storage_address');
+      let hostedStoragePath = this.get('deployment.hosted_storage_path');
+
+      let validators = [];
+
+      validators.push(PresenceValidator.create({}));
+
+      if (this.get('deployment.rhev_storage_type') === 'NFS') {
+        validators.push(NfsPathValidator.create({}));
+      } else {
+        validators.push(GlusterPathValidator.create({}));
+      }
+
+      if (Ember.isPresent(rhevStorageAddress)) {
+        rhevStorageAddress = rhevStorageAddress.trim();
+
+        if (deployCfme && Ember.isPresent(rhevExportDomainAddress) && Ember.isPresent(rhevExportDomainPath)) {
+          if (rhevStorageAddress === rhevExportDomainAddress.trim()) {
+            validators.push(EqualityValidator.create({doesNotEqual: rhevExportDomainPath, message: 'This field must not equal RHV Export Domain Share Path'}));
+          }
+        }
+
+        if (rhevIsSelfHosted && Ember.isPresent(hostedStorageAddress) && Ember.isPresent(hostedStoragePath)) {
+          if (rhevStorageAddress === hostedStorageAddress) {
+            validators.push(EqualityValidator.create({doesNotEqual: hostedStoragePath, message: 'This field must not equal RHV Self-Hosted Share Path'}));
+          }
+        }
+      }
+
+      return AllValidator.create({
+        validators: validators
+      });
+    }),
+
+  exportPathValidator: Ember.computed(
+    'deployment.rhev_storage_type',
+    'deployment.rhev_export_domain_address',
+    'deployment.deploy_rhev',
+    'deployment.rhev_storage_address',
+    'deployment.rhev_share_path',
+    'deployment.rhev_is_self_hosted',
+    'deployment.hosted_storage_address',
+    'deployment.hosted_storage_path',
+    function () {
+      let rhevExportDomainAddress = this.get('deployment.rhev_export_domain_address');
+      let deployRhev = this.get('deployment.deploy_rhev');
+      let rhevStorageAddress = this.get('deployment.rhev_storage_address');
+      let rhevSharePath = this.get('deployment.rhev_share_path');
+      let rhevIsSelfHosted = this.get('deployment.rhev_is_self_hosted');
+      let hostedStorageAddress = this.get('deployment.hosted_storage_address');
+      let hostedStoragePath = this.get('deployment.hosted_storage_path');
+      let validators = [];
+
+      validators.push(PresenceValidator.create({}));
+
+      if (this.get('deployment.rhev_storage_type') === 'NFS') {
+        validators.push(NfsPathValidator.create({}));
+      } else {
+        validators.push(GlusterPathValidator.create({}));
+      }
+
+      if (Ember.isPresent(rhevExportDomainAddress)) {
+        rhevExportDomainAddress = rhevExportDomainAddress.trim();
+
+        if (deployRhev && Ember.isPresent(rhevStorageAddress) && Ember.isPresent(rhevSharePath)) {
+          if (rhevExportDomainAddress === rhevStorageAddress.trim()) {
+            validators.push(EqualityValidator.create({doesNotEqual: rhevSharePath, message: 'This field must not equal RHV Data Domain Share Path'}));
+          }
+        }
+
+        if (rhevIsSelfHosted && Ember.isPresent(hostedStorageAddress) && Ember.isPresent(hostedStoragePath)) {
+          if (rhevExportDomainAddress === hostedStorageAddress) {
+            validators.push(EqualityValidator.create({doesNotEqual: hostedStoragePath, message: 'This field must not equal RHV Self-Hosted Share Path'}));
+          }
+        }
+      }
+
+      return AllValidator.create({
+        validators: validators
+      });
+    }),
+
+  hostedPathValidator: Ember.computed(
+    'deployment.rhev_storage_type',
+    'deployment.hosted_storage_address',
+    'deployment.deploy_rhev',
+    'deployment.rhev_storage_address',
+    'deployment.rhev_share_path',
+    'deployment.deploy_cfme',
+    'deployment.rhev_export_domain_address',
+    'deployment.rhev_export_domain_path',
+    function () {
+      let hostedStorageAddress = this.get('deployment.hosted_storage_address');
+      let deployRhev = this.get('deployment.deploy_rhev');
+      let rhevStorageAddress = this.get('deployment.rhev_storage_address');
+      let rhevSharePath = this.get('deployment.rhev_share_path');
+      let deployCfme = this.get('deployment.deploy_cfme');
+      let rhevExportDomainAddress = this.get('deployment.rhev_export_domain_address');
+      let rhevExportDomainPath = this.get('deployment.rhev_export_domain_path');
+
+      let validators = [];
+
+      validators.push(PresenceValidator.create({}));
+
+      if (this.get('deployment.rhev_storage_type') === 'NFS') {
+        validators.push(NfsPathValidator.create({}));
+      } else {
+        validators.push(GlusterPathValidator.create({}));
+      }
+
+      if (Ember.isPresent(hostedStorageAddress)) {
+        hostedStorageAddress = hostedStorageAddress.trim();
+
+        if (deployRhev && Ember.isPresent(rhevStorageAddress) && Ember.isPresent(rhevSharePath)) {
+          if (hostedStorageAddress === rhevStorageAddress.trim()) {
+            validators.push(EqualityValidator.create({doesNotEqual: rhevSharePath, message: 'This field must not equal RHV Data Domain Share Path'}));
+          }
+        }
+
+        if (deployCfme && Ember.isPresent(rhevExportDomainAddress) && Ember.isPresent(rhevExportDomainPath)) {
+          if (hostedStorageAddress === rhevExportDomainAddress) {
+            validators.push(EqualityValidator.create({doesNotEqual: rhevExportDomainPath, message: 'This field must not equal RHV Export Domain Share Path'}));
+          }
+        }
+      }
+
+      return AllValidator.create({
+        validators: validators
+      });
+    }),
+
+  invalidStorageName: Ember.computed('storageNameValidator', 'deployment.rhev_storage_name', function() {
+    return this.get('storageNameValidator').isInvalid(this.get('deployment.rhev_storage_name'));
   }),
 
-  sharePathValidator: Ember.computed('deploymentController.model.rhev_storage_type', function() {
-    if (this.get('deploymentController.model.rhev_storage_type') === 'NFS') {
-      return this.get('nfsPathValidator');
-    }
-
-    return this.get('glusterPathValidator');
+  invalidStorageAddress: Ember.computed('deployment.rhev_storage_address', function() {
+    return this.get('hostnameValidator').isInvalid(this.get('deployment.rhev_storage_address'));
   }),
 
-  invalidStorageName: Ember.computed('deploymentController.model.rhev_storage_name', function() {
-    return this.get('computerNameValidator').isInvalid(this.get('deploymentController.model.rhev_storage_name'));
+  invalidSharePath: Ember.computed('deployment.rhev_share_path', 'rhvPathValidator', function () {
+    return this.get('rhvPathValidator').isInvalid(this.get('deployment.rhev_share_path'));
   }),
 
-  invalidStorageAddress: Ember.computed('deploymentController.model.rhev_storage_address', function() {
-    return this.get('hostnameValidator').isInvalid(this.get('deploymentController.model.rhev_storage_address'));
+  invalidExportDomainName: Ember.computed('storageNameValidator', 'deployment.rhev_export_domain_name', function() {
+    return this.get('storageNameValidator').isInvalid(this.get('deployment.rhev_export_domain_name'));
   }),
 
-  invalidSharePath: Ember.computed('deploymentController.model.rhev_share_path', 'sharePathValidator', function () {
-    return this.get('sharePathValidator').isInvalid(this.get('deploymentController.model.rhev_share_path'));
+  invalidExportAddress: Ember.computed('deployment.rhev_export_domain_address', function() {
+    return this.get('hostnameValidator').isInvalid(this.get('deployment.rhev_export_domain_address'));
   }),
 
-  invalidExportDomainName: Ember.computed('deploymentController.model.rhev_export_domain_name', function() {
-    return this.get('computerNameValidator').isInvalid(this.get('deploymentController.model.rhev_export_domain_name'));
+  invalidExportPath: Ember.computed('deployment.rhev_export_domain_path', 'exportPathValidator', function () {
+    return this.get('exportPathValidator').isInvalid(this.get('deployment.rhev_export_domain_path'));
   }),
 
-  invalidExportAddress: Ember.computed('deploymentController.model.rhev_export_domain_address', function() {
-    return this.get('hostnameValidator').isInvalid(this.get('deploymentController.model.rhev_export_domain_address'));
+  invalidHostedName: Ember.computed('storageNameValidator', 'deployment.hosted_storage_name', function() {
+    return this.get('storageNameValidator').isInvalid(this.get('deployment.hosted_storage_name'));
   }),
 
-  invalidExportPath: Ember.computed('deploymentController.model.rhev_export_domain_path', 'sharePathValidator', function () {
-    return this.get('sharePathValidator').isInvalid(this.get('deploymentController.model.rhev_export_domain_path'));
+  invalidHostedAddress: Ember.computed('deployment.hosted_storage_address', function() {
+    return this.get('hostnameValidator').isInvalid(this.get('deployment.hosted_storage_address'));
   }),
 
-  invalidHostedName: Ember.computed('deploymentController.model.hosted_storage_name', function() {
-    return this.get('computerNameValidator').isInvalid(this.get('deploymentController.model.hosted_storage_name'));
-  }),
-
-  invalidHostedAddress: Ember.computed('deploymentController.model.hosted_storage_address', function() {
-    return this.get('hostnameValidator').isInvalid(this.get('deploymentController.model.hosted_storage_address'));
-  }),
-
-  invalidHostedPath: Ember.computed('deploymentController.model.hosted_storage_path', 'sharePathValidator', function () {
-    return this.get('sharePathValidator').isInvalid(this.get('deploymentController.model.hosted_storage_path'));
+  invalidHostedPath: Ember.computed('deployment.hosted_storage_path', 'hostedPathValidator', function () {
+    return this.get('hostedPathValidator').isInvalid(this.get('deployment.hosted_storage_path'));
   }),
 
   disableNextStorage: Ember.computed(

@@ -4,6 +4,7 @@ rhev:
   rhev_root_password: redhat1234
   rhev_engine_admin_password: redhat1234
   rhev_is_self_hosted: false
+  rhev_storage_name: my_storage
   rhev_share_path: /storage/rhev_storage
   rhev_storage_address: 10.13.129.106
   rhev_storage_type: NFS
@@ -14,6 +15,7 @@ rhev:
   name: rhev
   label: rhev
   organization: empty_organization
+  ssh_private_key: private
   lifecycle_environment: library
   upstream_consumer_uuid: 1
   organization_id: 1
@@ -22,6 +24,7 @@ another_rhev:
   rhev_root_password: redhat1234
   rhev_engine_admin_password: redhat1234
   rhev_is_self_hosted: false
+  rhev_storage_name: my_storage
   rhev_share_path: /storage/rhev_storage
   rhev_storage_address: 10.13.129.106
   rhev_storage_type: NFS
@@ -32,6 +35,7 @@ another_rhev:
   name: another_rhev
   label: another_rhev
   organization: empty_organization
+  ssh_private_key: private
   lifecycle_environment: library
   upstream_consumer_uuid: 1
   organization_id: 1
@@ -40,7 +44,9 @@ rhev_and_cfme:
   rhev_root_password: redhat1234
   rhev_engine_admin_password: redhat1234
   rhev_is_self_hosted: false
+  rhev_storage_name: my_storage
   rhev_share_path: /storage/rhev_storage
+  rhev_export_domain_name: my_export
   rhev_export_domain_path: /storage/export
   rhev_storage_address: 10.13.129.106
   rhev_export_domain_address: 10.13.129.106
@@ -52,6 +58,7 @@ rhev_and_cfme:
   name: rhev_and_cfme
   label: rhev_and_cfme
   organization: empty_organization
+  ssh_private_key: private
   cfme_root_password: redhat1234
   cfme_install_loc: RHEV
   lifecycle_environment: library
@@ -62,6 +69,7 @@ rhev_and_cfme_different_passwords:
   rhev_root_password: redhat1234
   rhev_engine_admin_password: redhat1234
   rhev_is_self_hosted: false
+  rhev_storage_name: my_storage
   rhev_share_path: /storage/rhev_storage
   rhev_storage_address: 10.13.129.106
   rhev_storage_type: NFS
@@ -72,6 +80,7 @@ rhev_and_cfme_different_passwords:
   name: rhev_and_cfme
   label: rhev_and_cfme
   organization: empty_organization
+  ssh_private_key: private
   cfme_root_password: redhat4321
   cfme_db_password: redhat4321
   cfme_admin_password: redhat4321
@@ -88,12 +97,14 @@ rhev_and_ose:
   deploy_rhev: true
   deploy_cfme: false
   deploy_openstack: false
+  ssh_private_key: private
   rhev_engine_host_id: 16
   rhev_data_center_name: Default
   rhev_cluster_name: Default
   rhev_storage_name: my_storage
   rhev_storage_type: NFS
   rhev_storage_address: 10.13.129.106
+  rhev_storage_name: my_storage
   rhev_share_path: /storage/rhev_storage
   description: 
   rhev_is_self_hosted: false
@@ -134,8 +145,10 @@ rhev_self_hosted:
   rhev_self_hosted_engine_hostname: my-rhev-engine
   rhev_data_center_name: Default
   rhev_cluster_name: Default
+  rhev_storage_name: my_storage
   rhev_share_path: /storage/rhev_storage
   rhev_storage_address: 10.13.129.106
+  hosted_storage_name: my_hosted_storage
   hosted_storage_path: /storage/hosted_storage
   hosted_storage_address: 10.13.129.106
   rhev_storage_type: NFS
@@ -145,6 +158,7 @@ rhev_self_hosted:
   name: rhev_self_hosted
   label: rhev_self_hosted
   organization: empty_organization
+  ssh_private_key: private
   lifecycle_environment: library
   upstream_consumer_uuid: 1
   organization_id: 1
@@ -153,6 +167,7 @@ rhev_different_passwords:
   rhev_root_password: redhat1234
   rhev_engine_admin_password: redhat4321
   rhev_is_self_hosted: false
+  rhev_storage_name: my_storage
   rhev_share_path: /storage/rhev_storage
   rhev_storage_address: 10.13.129.106
   rhev_storage_type: NFS
@@ -163,6 +178,7 @@ rhev_different_passwords:
   name: rhev_different_passwords
   label: rhev_different_passwords
   organization: empty_organization
+  ssh_private_key: private
   lifecycle_environment: library
   upstream_consumer_uuid: 1
   organization_id: 1
@@ -201,6 +217,7 @@ sub_val_subsequent_rhev_cfme:
   rhev_root_password: redhat1234
   rhev_engine_admin_password: redhat1234
   rhev_is_self_hosted: false
+  rhev_storage_name: my_storage
   rhev_share_path: /storage/rhev_storage
   rhev_storage_address: 10.13.129.106
   rhev_storage_type: NFS
@@ -221,6 +238,7 @@ sub_val_subsequent_rhev:
   rhev_root_password: redhat1234
   rhev_engine_admin_password: redhat1234
   rhev_is_self_hosted: false
+  rhev_storage_name: my_storage
   rhev_share_path: /storage/rhev_storage
   rhev_storage_address: 10.13.129.106
   rhev_storage_type: NFS
@@ -239,6 +257,7 @@ sub_val_disconnected_rhev:
   rhev_root_password: redhat1234
   rhev_engine_admin_password: redhat1234
   rhev_is_self_hosted: false
+  rhev_storage_name: my_storage
   rhev_share_path: /storage/rhev_storage
   rhev_storage_address: 10.13.129.106
   rhev_storage_type: NFS
@@ -259,6 +278,7 @@ sub_val_connected_rhev:
   rhev_root_password: redhat1234
   rhev_engine_admin_password: redhat1234
   rhev_is_self_hosted: false
+  rhev_storage_name: my_storage
   rhev_share_path: /storage/rhev_storage
   rhev_storage_address: 10.13.129.106
   rhev_storage_type: NFS
@@ -272,3 +292,55 @@ sub_val_connected_rhev:
   lifecycle_environment: library
   upstream_consumer_uuid: 1
   organization_id: 1
+
+all_products:
+  rhev_root_password: redhat1234
+  rhev_engine_admin_password: redhat1234
+  rhev_is_self_hosted: true
+  rhev_storage_name: my_storage
+  rhev_share_path: /storage/rhev_storage
+  rhev_self_hosted_engine_hostname: my-rhev-engine
+  rhev_data_center_name: Default
+  rhev_cluster_name: Default
+  rhev_export_domain_name: my_export
+  rhev_export_domain_path: /storage/export
+  rhev_storage_address: 10.13.129.106
+  rhev_export_domain_address: 10.13.129.106
+  hosted_storage_name: my_hosted_storage
+  hosted_storage_path: /storage/hosted_storage
+  hosted_storage_address: 10.13.129.106
+  rhev_storage_type: NFS
+  deploy_rhev: true
+  deploy_cfme: true
+  deploy_openstack: true
+  deploy_openshift: true
+  name: all_products
+  label: all_products
+  organization: empty_organization
+  ssh_private_key: private
+  cfme_root_password: redhat1234
+  cfme_install_loc: RHEV
+  lifecycle_environment: library
+  upstream_consumer_uuid: 1
+  organization_id: 1
+  openstack_deployment: osp
+  openshift_install_loc: RHEV
+  openshift_storage_size: 30
+  openshift_username: cloudsuite-install
+  openshift_master_vcpu: 2
+  openshift_master_ram: 8
+  openshift_master_disk: 30
+  openshift_node_vcpu: 1
+  openshift_node_ram: 8
+  openshift_node_disk: 15
+  openshift_available_vcpu: 24
+  openshift_available_ram: 31
+  openshift_available_disk: 2344
+  openshift_number_master_nodes: 1
+  openshift_number_worker_nodes: 1
+  openshift_storage_type: NFS
+  openshift_export_path: /storage/ocp_export
+  openshift_subdomain_name: all-products-ocp
+  openshift_user_password: redhat1234
+  openshift_storage_host: 10.13.129.106
+  openshift_sample_helloworld: true

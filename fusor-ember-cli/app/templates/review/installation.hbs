@@ -102,36 +102,36 @@
         {{review-link label='Storage Type' routeName='storage' isRequired=true
                       value=model.rhev_storage_type}}
 
-        {{review-link label='Data Domain Name' routeName='storage' isDefault=true
+        {{review-link label='Data Domain Name' routeName='storage' isRequired=true
                       value=model.rhev_storage_name}}
 
-        {{review-link label='Data Storage Address' routeName='storage' isDefault=true
+        {{review-link label='Data Storage Address' routeName='storage' isRequired=true
                       value=model.rhev_storage_address}}
 
-        {{review-link label='Data Storage Path' routeName='storage' isDefault=true
+        {{review-link label='Data Storage Path' routeName='storage' isRequired=true
                       value=model.rhev_share_path}}
 
         {{#if isCloudForms}}
 
-            {{review-link label='Export Domain Name' routeName='storage' isDefault=true
+            {{review-link label='Export Domain Name' routeName='storage' isRequired=true
                           value=model.rhev_export_domain_name}}
 
-            {{review-link label='Export Storage Address' routeName='storage' isDefault=true
+            {{review-link label='Export Storage Address' routeName='storage' isRequired=true
                           value=model.rhev_export_domain_address}}
 
-            {{review-link label='Export Storage Path' routeName='storage' isDefault=true
+            {{review-link label='Export Storage Path' routeName='storage' isRequired=true
                           value=model.rhev_export_domain_path}}
 
         {{/if}}
         {{#if isSelfHosted}}
 
-            {{review-link label='Hosted Storage Domain Name' routeName='storage' isDefault=true
+            {{review-link label='Hosted Storage Domain Name' routeName='storage' isRequired=true
                           value=model.hosted_storage_name}}
 
-            {{review-link label='Hosted Storage Address' routeName='storage' isDefault=true
+            {{review-link label='Hosted Storage Address' routeName='storage' isRequired=true
                           value=model.hosted_storage_address}}
 
-            {{review-link label='Hosted Storage Path' routeName='storage' isDefault=true
+            {{review-link label='Hosted Storage Path' routeName='storage' isRequired=true
                           value=model.hosted_storage_path}}
 
         {{/if}}
