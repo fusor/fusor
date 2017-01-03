@@ -25,3 +25,8 @@ Red Hat OpenStack Platform
 - All node hardware clocks are synchronized with the hardware clock on the Satellite system
 - Refer to the "Power Management Drivers" appendix in the "Director Installation and Usage" manual for the current list of supported power management interfaces.
 
+==================
+Red Hat CloudForms
+==================
+- Hypervisor host requires at least an ADDITIONAL 8 GB RAM and 4 CPUs
+- NFS/GlusterFS share. For export domain: IP address and shared path
