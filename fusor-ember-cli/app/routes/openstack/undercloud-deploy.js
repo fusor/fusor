@@ -131,7 +131,7 @@ export default Ember.Route.extend(PollingPromise, {
     this.set('controller.deploymentError', null);
 
     this.set('controller.errorMsg', null);
-    this.set('controller.loadingSpinnerText', `Deploying undercloud...`);
+    this.set('controller.loadingSpinnerText', 'Detecting undercloud...');
     this.set('controller.showLoadingSpinner', true);
 
     return request({
