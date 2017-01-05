@@ -1,3 +1,16 @@
+{{#if isHaNestedVirt}}
+  <div class="row">
+    <div class='col-md-9'>
+      <div class='alert alert-warning rhci-alert'>
+        <i class="fa fa-2x fa-exclamation-triangle warningForValidation"></i>
+        &nbsp;
+        Virtual machine hypervisor detected.
+        Highly available deployments are not supported on nested virtualization configurations and the deployment may fail.
+      </div>
+    </div>
+  </div>
+{{/if}}
+
 {{#if isError}}
   <div class="row">
     <div class='col-md-9'>

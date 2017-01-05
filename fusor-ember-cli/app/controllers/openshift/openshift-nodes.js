@@ -37,6 +37,14 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
     return this.get('oseDeploymentType') === 'highly_available';
   }),
 
+  isNestedVirt: Ember.computed('deployment.discovered_hosts.@each.is_virtual', function() {
+    return this.get('deployment.discovered_hosts').any(host => host.get('is_virtual'));
+  }),
+
+  isHaNestedVirt: Ember.computed('haSelected', 'isNestedVirt', function () {
+    return this.get('haSelected') && this.get('isNestedVirt');
+  }),
+
   backRouteName: Ember.computed('isOpenStack', 'isRhev', function() {
     if (this.get('isOpenStack')) {
       return 'openstack.overcloud';
