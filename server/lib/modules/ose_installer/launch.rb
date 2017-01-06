@@ -94,10 +94,19 @@ module OSEInstaller
       template = template.gsub(/<worker_nodes>/, nodes_list)
 
       if !opts[:ha_nodes].nil? and opts[:ha_nodes].length > 1
-        # split it by two
-        ha_list = opts[:ha_nodes].each_slice(2).to_a
-        ha_master_list = ha_list.first.join("\n")
-        ha_infra_list = ha_list.last.join("\n")
+        # split it by two groups
+        if opts[:ha_nodes].length == 2
+          ha_master_list = "#{opts[:ha_nodes].first}\n"
+          ha_infra_list = "#{opts[:ha_nodes].last}\n"
+        else
+          ha_list = opts[:ha_nodes].each_slice(2).to_a
+          ha_list.first.each do |master_ha_node|
+            ha_master_list += "#{master_ha_node}\n"
+          end
+          ha_list.last.each do |infra_ha_node|
+            ha_infra_list += "#{infra_ha_node}\n"
+          end
+        end
       end
 
       ha_master_list ||= ""
