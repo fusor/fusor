@@ -4270,6 +4270,16 @@ define("fusor-ember-cli/controllers/openshift/openshift-nodes", ["exports", "emb
       return this.get('oseDeploymentType') === 'highly_available';
     }),
 
+    isNestedVirt: _ember["default"].computed('deployment.discovered_hosts.@each.is_virtual', function () {
+      return this.get('deployment.discovered_hosts').any(function (host) {
+        return host.get('is_virtual');
+      });
+    }),
+
+    isHaNestedVirt: _ember["default"].computed('haSelected', 'isNestedVirt', function () {
+      return this.get('haSelected') && this.get('isNestedVirt');
+    }),
+
     backRouteName: _ember["default"].computed('isOpenStack', 'isRhev', function () {
       if (this.get('isOpenStack')) {
         return 'openstack.overcloud';
@@ -11463,12 +11473,14 @@ define('fusor-ember-cli/mixins/openshift-mixin', ['exports', 'ember', 'fusor-emb
     }),
 
     numHaLoadBalancers: 2,
-    haLoadBalancerResources: {
-      type: 'Load balancers',
-      vCPU: 1,
-      ram: 8,
-      disk: 15
-    },
+    haLoadBalancerResources: _ember['default'].computed('workerVcpu', 'workerRam', 'workerDisk', function () {
+      return {
+        type: 'Load balancers',
+        vCPU: this.get('workerVcpu'),
+        ram: this.get('workerRam'),
+        disk: this.get('workerDisk')
+      };
+    }),
 
     numHaInfraNodes: 2,
     haInfraNodesResources: _ember['default'].computed('workerVcpu', 'workerRam', 'workerDisk', function () {
@@ -41950,6 +41962,70 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
 define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template((function () {
     var child0 = (function () {
+      return {
+        meta: {
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.4.6",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 1,
+              "column": 0
+            },
+            "end": {
+              "line": 12,
+              "column": 0
+            }
+          },
+          "moduleName": "fusor-ember-cli/templates/openshift/openshift-nodes.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          dom.setAttribute(el1, "class", "row");
+          var el2 = dom.createTextNode("\n    ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("div");
+          dom.setAttribute(el2, "class", "col-md-9");
+          var el3 = dom.createTextNode("\n      ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createElement("div");
+          dom.setAttribute(el3, "class", "alert alert-warning rhci-alert");
+          var el4 = dom.createTextNode("\n        ");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createElement("i");
+          dom.setAttribute(el4, "class", "fa fa-2x fa-exclamation-triangle warningForValidation");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createTextNode("\n         \n        Virtual machine hypervisor detected.\n        Highly available deployments are not supported on nested virtualization configurations and the deployment may fail.\n      ");
+          dom.appendChild(el3, el4);
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n    ");
+          dom.appendChild(el2, el3);
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n  ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes() {
+          return [];
+        },
+        statements: [],
+        locals: [],
+        templates: []
+      };
+    })();
+    var child1 = (function () {
       var child0 = (function () {
         var child0 = (function () {
           return {
@@ -41959,11 +42035,11 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               "loc": {
                 "source": null,
                 "start": {
-                  "line": 18,
+                  "line": 31,
                   "column": 12
                 },
                 "end": {
-                  "line": 20,
+                  "line": 33,
                   "column": 12
                 }
               },
@@ -41988,7 +42064,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
               return morphs;
             },
-            statements: [["inline", "tool-tip", [], ["faIcon", "fa-info-circle", "title", ["subexpr", "@mut", [["get", "cfmeTooltipError.cpu", ["loc", [null, [19, 56], [19, 76]]]]], [], []]], ["loc", [null, [19, 14], [19, 78]]]]],
+            statements: [["inline", "tool-tip", [], ["faIcon", "fa-info-circle", "title", ["subexpr", "@mut", [["get", "cfmeTooltipError.cpu", ["loc", [null, [32, 56], [32, 76]]]]], [], []]], ["loc", [null, [32, 14], [32, 78]]]]],
             locals: [],
             templates: []
           };
@@ -42001,11 +42077,11 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               "loc": {
                 "source": null,
                 "start": {
-                  "line": 24,
+                  "line": 37,
                   "column": 10
                 },
                 "end": {
-                  "line": 26,
+                  "line": 39,
                   "column": 10
                 }
               },
@@ -42034,7 +42110,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 1, 1);
               return morphs;
             },
-            statements: [["content", "totalInfraCpus", ["loc", [null, [25, 33], [25, 51]]]]],
+            statements: [["content", "totalInfraCpus", ["loc", [null, [38, 33], [38, 51]]]]],
             locals: [],
             templates: []
           };
@@ -42046,11 +42122,11 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             "loc": {
               "source": null,
               "start": {
-                "line": 12,
+                "line": 25,
                 "column": 2
               },
               "end": {
-                "line": 32,
+                "line": 45,
                 "column": 2
               }
             },
@@ -42148,7 +42224,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             morphs[5] = dom.createMorphAt(dom.childAt(element4, [11, 0]), 1, 1);
             return morphs;
           },
-          statements: [["block", "if", [["get", "isCloudForms", ["loc", [null, [18, 18], [18, 30]]]]], [], 0, null, ["loc", [null, [18, 12], [20, 19]]]], ["content", "totalMasterCpus", ["loc", [null, [22, 26], [22, 45]]]], ["content", "totalWorkerCpus", ["loc", [null, [23, 26], [23, 45]]]], ["block", "if", [["get", "isHA", ["loc", [null, [24, 16], [24, 20]]]]], [], 1, null, ["loc", [null, [24, 10], [26, 17]]]], ["content", "vcpuNeeded", ["loc", [null, [27, 42], [27, 56]]]], ["content", "vcpuAvailable", ["loc", [null, [28, 43], [28, 60]]]]],
+          statements: [["block", "if", [["get", "isCloudForms", ["loc", [null, [31, 18], [31, 30]]]]], [], 0, null, ["loc", [null, [31, 12], [33, 19]]]], ["content", "totalMasterCpus", ["loc", [null, [35, 26], [35, 45]]]], ["content", "totalWorkerCpus", ["loc", [null, [36, 26], [36, 45]]]], ["block", "if", [["get", "isHA", ["loc", [null, [37, 16], [37, 20]]]]], [], 1, null, ["loc", [null, [37, 10], [39, 17]]]], ["content", "vcpuNeeded", ["loc", [null, [40, 42], [40, 56]]]], ["content", "vcpuAvailable", ["loc", [null, [41, 43], [41, 60]]]]],
           locals: [],
           templates: [child0, child1]
         };
@@ -42162,11 +42238,11 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               "loc": {
                 "source": null,
                 "start": {
-                  "line": 40,
+                  "line": 53,
                   "column": 12
                 },
                 "end": {
-                  "line": 42,
+                  "line": 55,
                   "column": 12
                 }
               },
@@ -42191,7 +42267,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
               return morphs;
             },
-            statements: [["inline", "tool-tip", [], ["faIcon", "fa-info-circle", "title", ["subexpr", "@mut", [["get", "cfmeTooltipError.ram", ["loc", [null, [41, 56], [41, 76]]]]], [], []]], ["loc", [null, [41, 14], [41, 78]]]]],
+            statements: [["inline", "tool-tip", [], ["faIcon", "fa-info-circle", "title", ["subexpr", "@mut", [["get", "cfmeTooltipError.ram", ["loc", [null, [54, 56], [54, 76]]]]], [], []]], ["loc", [null, [54, 14], [54, 78]]]]],
             locals: [],
             templates: []
           };
@@ -42204,11 +42280,11 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               "loc": {
                 "source": null,
                 "start": {
-                  "line": 46,
+                  "line": 59,
                   "column": 10
                 },
                 "end": {
-                  "line": 48,
+                  "line": 61,
                   "column": 10
                 }
               },
@@ -42237,7 +42313,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 1, 1);
               return morphs;
             },
-            statements: [["content", "totalInfraRam", ["loc", [null, [47, 32], [47, 49]]]]],
+            statements: [["content", "totalInfraRam", ["loc", [null, [60, 32], [60, 49]]]]],
             locals: [],
             templates: []
           };
@@ -42249,11 +42325,11 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             "loc": {
               "source": null,
               "start": {
-                "line": 34,
+                "line": 47,
                 "column": 2
               },
               "end": {
-                "line": 54,
+                "line": 67,
                 "column": 2
               }
             },
@@ -42359,7 +42435,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             morphs[5] = dom.createMorphAt(dom.childAt(element3, [11, 0]), 1, 1);
             return morphs;
           },
-          statements: [["block", "if", [["get", "isCloudForms", ["loc", [null, [40, 18], [40, 30]]]]], [], 0, null, ["loc", [null, [40, 12], [42, 19]]]], ["content", "totalMasterRam", ["loc", [null, [44, 25], [44, 43]]]], ["content", "totalWorkerRam", ["loc", [null, [45, 25], [45, 43]]]], ["block", "if", [["get", "isHA", ["loc", [null, [46, 16], [46, 20]]]]], [], 1, null, ["loc", [null, [46, 10], [48, 17]]]], ["content", "ramNeeded", ["loc", [null, [49, 41], [49, 54]]]], ["content", "ramAvailable", ["loc", [null, [50, 42], [50, 58]]]]],
+          statements: [["block", "if", [["get", "isCloudForms", ["loc", [null, [53, 18], [53, 30]]]]], [], 0, null, ["loc", [null, [53, 12], [55, 19]]]], ["content", "totalMasterRam", ["loc", [null, [57, 25], [57, 43]]]], ["content", "totalWorkerRam", ["loc", [null, [58, 25], [58, 43]]]], ["block", "if", [["get", "isHA", ["loc", [null, [59, 16], [59, 20]]]]], [], 1, null, ["loc", [null, [59, 10], [61, 17]]]], ["content", "ramNeeded", ["loc", [null, [62, 41], [62, 54]]]], ["content", "ramAvailable", ["loc", [null, [63, 42], [63, 58]]]]],
           locals: [],
           templates: [child0, child1]
         };
@@ -42373,11 +42449,11 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               "loc": {
                 "source": null,
                 "start": {
-                  "line": 62,
+                  "line": 75,
                   "column": 12
                 },
                 "end": {
-                  "line": 64,
+                  "line": 77,
                   "column": 12
                 }
               },
@@ -42402,7 +42478,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
               return morphs;
             },
-            statements: [["inline", "tool-tip", [], ["faIcon", "fa-info-circle", "title", ["subexpr", "@mut", [["get", "cfmeTooltipError.disk", ["loc", [null, [63, 56], [63, 77]]]]], [], []]], ["loc", [null, [63, 14], [63, 79]]]]],
+            statements: [["inline", "tool-tip", [], ["faIcon", "fa-info-circle", "title", ["subexpr", "@mut", [["get", "cfmeTooltipError.disk", ["loc", [null, [76, 56], [76, 77]]]]], [], []]], ["loc", [null, [76, 14], [76, 79]]]]],
             locals: [],
             templates: []
           };
@@ -42415,11 +42491,11 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               "loc": {
                 "source": null,
                 "start": {
-                  "line": 68,
+                  "line": 81,
                   "column": 10
                 },
                 "end": {
-                  "line": 70,
+                  "line": 83,
                   "column": 10
                 }
               },
@@ -42448,7 +42524,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 1, 1);
               return morphs;
             },
-            statements: [["content", "totalInfraDisk", ["loc", [null, [69, 33], [69, 51]]]]],
+            statements: [["content", "totalInfraDisk", ["loc", [null, [82, 33], [82, 51]]]]],
             locals: [],
             templates: []
           };
@@ -42460,11 +42536,11 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             "loc": {
               "source": null,
               "start": {
-                "line": 56,
+                "line": 69,
                 "column": 2
               },
               "end": {
-                "line": 76,
+                "line": 89,
                 "column": 2
               }
             },
@@ -42570,26 +42646,23 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             morphs[5] = dom.createMorphAt(dom.childAt(element2, [11, 0]), 1, 1);
             return morphs;
           },
-          statements: [["block", "if", [["get", "isCloudForms", ["loc", [null, [62, 18], [62, 30]]]]], [], 0, null, ["loc", [null, [62, 12], [64, 19]]]], ["content", "totalMasterDisk", ["loc", [null, [66, 26], [66, 45]]]], ["content", "totalWorkerDiskPlusStorage", ["loc", [null, [67, 36], [67, 66]]]], ["block", "if", [["get", "isHA", ["loc", [null, [68, 16], [68, 20]]]]], [], 1, null, ["loc", [null, [68, 10], [70, 17]]]], ["content", "diskNeeded", ["loc", [null, [71, 42], [71, 56]]]], ["content", "diskAvailable", ["loc", [null, [72, 43], [72, 60]]]]],
+          statements: [["block", "if", [["get", "isCloudForms", ["loc", [null, [75, 18], [75, 30]]]]], [], 0, null, ["loc", [null, [75, 12], [77, 19]]]], ["content", "totalMasterDisk", ["loc", [null, [79, 26], [79, 45]]]], ["content", "totalWorkerDiskPlusStorage", ["loc", [null, [80, 36], [80, 66]]]], ["block", "if", [["get", "isHA", ["loc", [null, [81, 16], [81, 20]]]]], [], 1, null, ["loc", [null, [81, 10], [83, 17]]]], ["content", "diskNeeded", ["loc", [null, [84, 42], [84, 56]]]], ["content", "diskAvailable", ["loc", [null, [85, 43], [85, 60]]]]],
           locals: [],
           templates: [child0, child1]
         };
       })();
       return {
         meta: {
-          "fragmentReason": {
-            "name": "missing-wrapper",
-            "problems": ["multiple-nodes", "wrong-type"]
-          },
+          "fragmentReason": false,
           "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
-              "line": 1,
+              "line": 14,
               "column": 0
             },
             "end": {
-              "line": 77,
+              "line": 90,
               "column": 0
             }
           },
@@ -42660,12 +42733,12 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
           dom.insertBoundary(fragment, null);
           return morphs;
         },
-        statements: [["content", "errorTypes", ["loc", [null, [7, 8], [7, 22]]]], ["content", "errorTypes", ["loc", [null, [7, 74], [7, 88]]]], ["block", "if", [["get", "isOverCapacityVcpu", ["loc", [null, [12, 8], [12, 26]]]]], [], 0, null, ["loc", [null, [12, 2], [32, 9]]]], ["block", "if", [["get", "isOverCapacityRam", ["loc", [null, [34, 8], [34, 25]]]]], [], 1, null, ["loc", [null, [34, 2], [54, 9]]]], ["block", "if", [["get", "isOverCapacityDisk", ["loc", [null, [56, 8], [56, 26]]]]], [], 2, null, ["loc", [null, [56, 2], [76, 9]]]]],
+        statements: [["content", "errorTypes", ["loc", [null, [20, 8], [20, 22]]]], ["content", "errorTypes", ["loc", [null, [20, 74], [20, 88]]]], ["block", "if", [["get", "isOverCapacityVcpu", ["loc", [null, [25, 8], [25, 26]]]]], [], 0, null, ["loc", [null, [25, 2], [45, 9]]]], ["block", "if", [["get", "isOverCapacityRam", ["loc", [null, [47, 8], [47, 25]]]]], [], 1, null, ["loc", [null, [47, 2], [67, 9]]]], ["block", "if", [["get", "isOverCapacityDisk", ["loc", [null, [69, 8], [69, 26]]]]], [], 2, null, ["loc", [null, [69, 2], [89, 9]]]]],
         locals: [],
         templates: [child0, child1, child2]
       };
     })();
-    var child1 = (function () {
+    var child2 = (function () {
       return {
         meta: {
           "fragmentReason": false,
@@ -42673,11 +42746,11 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
           "loc": {
             "source": null,
             "start": {
-              "line": 85,
+              "line": 98,
               "column": 4
             },
             "end": {
-              "line": 89,
+              "line": 102,
               "column": 4
             }
           },
@@ -42710,12 +42783,12 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
           morphs[1] = dom.createMorphAt(element1, 1, 1);
           return morphs;
         },
-        statements: [["attribute", "class", ["concat", [["subexpr", "if", [["get", "disableRHEV", ["loc", [null, [86, 24], [86, 35]]]], "disabled"], [], ["loc", [null, [86, 19], [86, 48]]]]]]], ["content", "fullnameRhev", ["loc", [null, [87, 8], [87, 24]]]]],
+        statements: [["attribute", "class", ["concat", [["subexpr", "if", [["get", "disableRHEV", ["loc", [null, [99, 24], [99, 35]]]], "disabled"], [], ["loc", [null, [99, 19], [99, 48]]]]]]], ["content", "fullnameRhev", ["loc", [null, [100, 8], [100, 24]]]]],
         locals: [],
         templates: []
       };
     })();
-    var child2 = (function () {
+    var child3 = (function () {
       return {
         meta: {
           "fragmentReason": false,
@@ -42723,11 +42796,11 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
           "loc": {
             "source": null,
             "start": {
-              "line": 106,
+              "line": 119,
               "column": 0
             },
             "end": {
-              "line": 113,
+              "line": 126,
               "column": 0
             }
           },
@@ -42758,12 +42831,12 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
           morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 1, 1);
           return morphs;
         },
-        statements: [["inline", "tool-tip", [], ["faIcon", "fa-info-circle", "title", "The environment consists of worker nodes and master nodes, which orchestrates tasks across the other nodes. Master and worker nodes are provisioned with different specifications, as seen in Node Details."], ["loc", [null, [109, 4], [110, 228]]]]],
+        statements: [["inline", "tool-tip", [], ["faIcon", "fa-info-circle", "title", "The environment consists of worker nodes and master nodes, which orchestrates tasks across the other nodes. Master and worker nodes are provisioned with different specifications, as seen in Node Details."], ["loc", [null, [122, 4], [123, 228]]]]],
         locals: [],
         templates: []
       };
     })();
-    var child3 = (function () {
+    var child4 = (function () {
       var child0 = (function () {
         var child0 = (function () {
           return {
@@ -42773,11 +42846,11 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               "loc": {
                 "source": null,
                 "start": {
-                  "line": 155,
+                  "line": 168,
                   "column": 4
                 },
                 "end": {
-                  "line": 170,
+                  "line": 183,
                   "column": 4
                 }
               },
@@ -42802,7 +42875,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
               return morphs;
             },
-            statements: [["inline", "ose-node-details", [], ["title", "Required HA Nodes", "editable", false, "numLeftNodes", ["subexpr", "@mut", [["get", "numHaLoadBalancers", ["loc", [null, [158, 39], [158, 57]]]]], [], []], "numRightNodes", ["subexpr", "@mut", [["get", "numHaInfraNodes", ["loc", [null, [159, 40], [159, 55]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "positiveIntegerValidator", ["loc", [null, [160, 36], [160, 60]]]]], [], []], "leftTypeNode", ["subexpr", "@mut", [["get", "haLoadBalancerResources.type", ["loc", [null, [161, 39], [161, 67]]]]], [], []], "leftVcpu", ["subexpr", "@mut", [["get", "haLoadBalancerResources.vCPU", ["loc", [null, [162, 35], [162, 63]]]]], [], []], "leftRam", ["subexpr", "@mut", [["get", "haLoadBalancerResources.ram", ["loc", [null, [163, 34], [163, 61]]]]], [], []], "leftDisk", ["subexpr", "@mut", [["get", "haLoadBalancerResources.disk", ["loc", [null, [164, 35], [164, 63]]]]], [], []], "rightTypeNode", ["subexpr", "@mut", [["get", "haInfraNodesResources.type", ["loc", [null, [165, 40], [165, 66]]]]], [], []], "rightVcpu", ["subexpr", "@mut", [["get", "haInfraNodesResources.vCPU", ["loc", [null, [166, 36], [166, 62]]]]], [], []], "rightRam", ["subexpr", "@mut", [["get", "haInfraNodesResources.ram", ["loc", [null, [167, 35], [167, 60]]]]], [], []], "rightDisk", ["subexpr", "@mut", [["get", "workerDisk", ["loc", [null, [168, 36], [168, 46]]]]], [], []], "rightStorageSize", ["subexpr", "@mut", [["get", "storageSize", ["loc", [null, [169, 43], [169, 54]]]]], [], []]], ["loc", [null, [156, 6], [169, 56]]]]],
+            statements: [["inline", "ose-node-details", [], ["title", "Required HA Nodes", "editable", false, "numLeftNodes", ["subexpr", "@mut", [["get", "numHaLoadBalancers", ["loc", [null, [171, 39], [171, 57]]]]], [], []], "numRightNodes", ["subexpr", "@mut", [["get", "numHaInfraNodes", ["loc", [null, [172, 40], [172, 55]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "positiveIntegerValidator", ["loc", [null, [173, 36], [173, 60]]]]], [], []], "leftTypeNode", ["subexpr", "@mut", [["get", "haLoadBalancerResources.type", ["loc", [null, [174, 39], [174, 67]]]]], [], []], "leftVcpu", ["subexpr", "@mut", [["get", "haLoadBalancerResources.vCPU", ["loc", [null, [175, 35], [175, 63]]]]], [], []], "leftRam", ["subexpr", "@mut", [["get", "haLoadBalancerResources.ram", ["loc", [null, [176, 34], [176, 61]]]]], [], []], "leftDisk", ["subexpr", "@mut", [["get", "haLoadBalancerResources.disk", ["loc", [null, [177, 35], [177, 63]]]]], [], []], "rightTypeNode", ["subexpr", "@mut", [["get", "haInfraNodesResources.type", ["loc", [null, [178, 40], [178, 66]]]]], [], []], "rightVcpu", ["subexpr", "@mut", [["get", "haInfraNodesResources.vCPU", ["loc", [null, [179, 36], [179, 62]]]]], [], []], "rightRam", ["subexpr", "@mut", [["get", "haInfraNodesResources.ram", ["loc", [null, [180, 35], [180, 60]]]]], [], []], "rightDisk", ["subexpr", "@mut", [["get", "workerDisk", ["loc", [null, [181, 36], [181, 46]]]]], [], []], "rightStorageSize", ["subexpr", "@mut", [["get", "storageSize", ["loc", [null, [182, 43], [182, 54]]]]], [], []]], ["loc", [null, [169, 6], [182, 56]]]]],
             locals: [],
             templates: []
           };
@@ -42814,11 +42887,11 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             "loc": {
               "source": null,
               "start": {
-                "line": 132,
+                "line": 145,
                 "column": 2
               },
               "end": {
-                "line": 172,
+                "line": 185,
                 "column": 2
               }
             },
@@ -42856,7 +42929,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             morphs[1] = dom.createMorphAt(element0, 3, 3);
             return morphs;
           },
-          statements: [["inline", "ose-node-details", [], ["title", "Configurable Nodes", "editable", true, "oseDeploymentType", ["subexpr", "@mut", [["get", "oseDeploymentType", ["loc", [null, [136, 42], [136, 59]]]]], [], []], "numTotalNodes", ["subexpr", "@mut", [["get", "numTotalNodes", ["loc", [null, [137, 38], [137, 51]]]]], [], []], "numLeftNodes", ["subexpr", "@mut", [["get", "numMasterNodes", ["loc", [null, [138, 37], [138, 51]]]]], [], []], "nodeRatioOptions", ["subexpr", "@mut", [["get", "nodeRatioOptions", ["loc", [null, [139, 41], [139, 57]]]]], [], []], "numRightNodes", ["subexpr", "@mut", [["get", "numWorkerNodes", ["loc", [null, [140, 38], [140, 52]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "positiveIntegerValidator", ["loc", [null, [141, 34], [141, 58]]]]], [], []], "leftTypeNode", "Master nodes", "leftVcpu", ["subexpr", "@mut", [["get", "masterVcpu", ["loc", [null, [143, 33], [143, 43]]]]], [], []], "leftRam", ["subexpr", "@mut", [["get", "masterRam", ["loc", [null, [144, 32], [144, 41]]]]], [], []], "leftDisk", ["subexpr", "@mut", [["get", "masterDisk", ["loc", [null, [145, 33], [145, 43]]]]], [], []], "leftDiskImages", ["subexpr", "@mut", [["get", "masterDiskImages", ["loc", [null, [146, 39], [146, 55]]]]], [], []], "leftStorageSize", ["subexpr", "@mut", [["get", "storageSize", ["loc", [null, [147, 40], [147, 51]]]]], [], []], "rightTypeNode", "Worker nodes", "rightVcpu", ["subexpr", "@mut", [["get", "workerVcpu", ["loc", [null, [149, 34], [149, 44]]]]], [], []], "rightRam", ["subexpr", "@mut", [["get", "workerRam", ["loc", [null, [150, 33], [150, 42]]]]], [], []], "rightDisk", ["subexpr", "@mut", [["get", "workerDisk", ["loc", [null, [151, 34], [151, 44]]]]], [], []], "rightStorageSize", ["subexpr", "@mut", [["get", "storageSize", ["loc", [null, [152, 41], [152, 52]]]]], [], []], "nodeRatioChanged", "nodeRatioChanged"], ["loc", [null, [134, 4], [153, 61]]]], ["block", "if", [["get", "haSelected", ["loc", [null, [155, 10], [155, 20]]]]], [], 0, null, ["loc", [null, [155, 4], [170, 11]]]]],
+          statements: [["inline", "ose-node-details", [], ["title", "Configurable Nodes", "editable", true, "oseDeploymentType", ["subexpr", "@mut", [["get", "oseDeploymentType", ["loc", [null, [149, 42], [149, 59]]]]], [], []], "numTotalNodes", ["subexpr", "@mut", [["get", "numTotalNodes", ["loc", [null, [150, 38], [150, 51]]]]], [], []], "numLeftNodes", ["subexpr", "@mut", [["get", "numMasterNodes", ["loc", [null, [151, 37], [151, 51]]]]], [], []], "nodeRatioOptions", ["subexpr", "@mut", [["get", "nodeRatioOptions", ["loc", [null, [152, 41], [152, 57]]]]], [], []], "numRightNodes", ["subexpr", "@mut", [["get", "numWorkerNodes", ["loc", [null, [153, 38], [153, 52]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "positiveIntegerValidator", ["loc", [null, [154, 34], [154, 58]]]]], [], []], "leftTypeNode", "Master nodes", "leftVcpu", ["subexpr", "@mut", [["get", "masterVcpu", ["loc", [null, [156, 33], [156, 43]]]]], [], []], "leftRam", ["subexpr", "@mut", [["get", "masterRam", ["loc", [null, [157, 32], [157, 41]]]]], [], []], "leftDisk", ["subexpr", "@mut", [["get", "masterDisk", ["loc", [null, [158, 33], [158, 43]]]]], [], []], "leftDiskImages", ["subexpr", "@mut", [["get", "masterDiskImages", ["loc", [null, [159, 39], [159, 55]]]]], [], []], "leftStorageSize", ["subexpr", "@mut", [["get", "storageSize", ["loc", [null, [160, 40], [160, 51]]]]], [], []], "rightTypeNode", "Worker nodes", "rightVcpu", ["subexpr", "@mut", [["get", "workerVcpu", ["loc", [null, [162, 34], [162, 44]]]]], [], []], "rightRam", ["subexpr", "@mut", [["get", "workerRam", ["loc", [null, [163, 33], [163, 42]]]]], [], []], "rightDisk", ["subexpr", "@mut", [["get", "workerDisk", ["loc", [null, [164, 34], [164, 44]]]]], [], []], "rightStorageSize", ["subexpr", "@mut", [["get", "storageSize", ["loc", [null, [165, 41], [165, 52]]]]], [], []], "nodeRatioChanged", "nodeRatioChanged"], ["loc", [null, [147, 4], [166, 61]]]], ["block", "if", [["get", "haSelected", ["loc", [null, [168, 10], [168, 20]]]]], [], 0, null, ["loc", [null, [168, 4], [183, 11]]]]],
           locals: [],
           templates: [child0]
         };
@@ -42868,11 +42941,11 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
           "loc": {
             "source": null,
             "start": {
-              "line": 115,
+              "line": 128,
               "column": 0
             },
             "end": {
-              "line": 173,
+              "line": 186,
               "column": 0
             }
           },
@@ -42901,7 +42974,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
           dom.insertBoundary(fragment, null);
           return morphs;
         },
-        statements: [["inline", "ose-env-summary", [], ["positiveIntegerValidator", ["subexpr", "@mut", [["get", "positiveIntegerValidator", ["loc", [null, [116, 45], [116, 69]]]]], [], []], "oseDeploymentType", ["subexpr", "@mut", [["get", "oseDeploymentType", ["loc", [null, [117, 38], [117, 55]]]]], [], []], "numTotalNodes", ["subexpr", "@mut", [["get", "numTotalNodes", ["loc", [null, [118, 34], [118, 47]]]]], [], []], "storageSize", ["subexpr", "@mut", [["get", "storageSize", ["loc", [null, [119, 32], [119, 43]]]]], [], []], "vcpuNeeded", ["subexpr", "@mut", [["get", "vcpuNeeded", ["loc", [null, [120, 31], [120, 41]]]]], [], []], "ramNeeded", ["subexpr", "@mut", [["get", "ramNeeded", ["loc", [null, [121, 30], [121, 39]]]]], [], []], "diskNeeded", ["subexpr", "@mut", [["get", "diskNeeded", ["loc", [null, [122, 31], [122, 41]]]]], [], []], "vcpuAvailable", ["subexpr", "@mut", [["get", "vcpuAvailable", ["loc", [null, [123, 34], [123, 47]]]]], [], []], "ramAvailable", ["subexpr", "@mut", [["get", "ramAvailable", ["loc", [null, [124, 33], [124, 45]]]]], [], []], "diskAvailable", ["subexpr", "@mut", [["get", "diskAvailable", ["loc", [null, [125, 34], [125, 47]]]]], [], []], "isCloudForms", ["subexpr", "@mut", [["get", "isCloudForms", ["loc", [null, [126, 33], [126, 45]]]]], [], []], "substractCfme", ["subexpr", "@mut", [["get", "substractCfme", ["loc", [null, [127, 34], [127, 47]]]]], [], []], "cfmeDisk", ["subexpr", "@mut", [["get", "cfmeDisk", ["loc", [null, [128, 29], [128, 37]]]]], [], []], "cfmeRam", ["subexpr", "@mut", [["get", "cfmeRam", ["loc", [null, [129, 28], [129, 35]]]]], [], []], "cfmeVcpu", ["subexpr", "@mut", [["get", "cfmeVcpu", ["loc", [null, [130, 29], [130, 37]]]]], [], []]], ["loc", [null, [116, 2], [130, 39]]]], ["block", "if", [["get", "oseDeploymentType", ["loc", [null, [132, 8], [132, 25]]]]], [], 0, null, ["loc", [null, [132, 2], [172, 9]]]]],
+        statements: [["inline", "ose-env-summary", [], ["positiveIntegerValidator", ["subexpr", "@mut", [["get", "positiveIntegerValidator", ["loc", [null, [129, 45], [129, 69]]]]], [], []], "oseDeploymentType", ["subexpr", "@mut", [["get", "oseDeploymentType", ["loc", [null, [130, 38], [130, 55]]]]], [], []], "numTotalNodes", ["subexpr", "@mut", [["get", "numTotalNodes", ["loc", [null, [131, 34], [131, 47]]]]], [], []], "storageSize", ["subexpr", "@mut", [["get", "storageSize", ["loc", [null, [132, 32], [132, 43]]]]], [], []], "vcpuNeeded", ["subexpr", "@mut", [["get", "vcpuNeeded", ["loc", [null, [133, 31], [133, 41]]]]], [], []], "ramNeeded", ["subexpr", "@mut", [["get", "ramNeeded", ["loc", [null, [134, 30], [134, 39]]]]], [], []], "diskNeeded", ["subexpr", "@mut", [["get", "diskNeeded", ["loc", [null, [135, 31], [135, 41]]]]], [], []], "vcpuAvailable", ["subexpr", "@mut", [["get", "vcpuAvailable", ["loc", [null, [136, 34], [136, 47]]]]], [], []], "ramAvailable", ["subexpr", "@mut", [["get", "ramAvailable", ["loc", [null, [137, 33], [137, 45]]]]], [], []], "diskAvailable", ["subexpr", "@mut", [["get", "diskAvailable", ["loc", [null, [138, 34], [138, 47]]]]], [], []], "isCloudForms", ["subexpr", "@mut", [["get", "isCloudForms", ["loc", [null, [139, 33], [139, 45]]]]], [], []], "substractCfme", ["subexpr", "@mut", [["get", "substractCfme", ["loc", [null, [140, 34], [140, 47]]]]], [], []], "cfmeDisk", ["subexpr", "@mut", [["get", "cfmeDisk", ["loc", [null, [141, 29], [141, 37]]]]], [], []], "cfmeRam", ["subexpr", "@mut", [["get", "cfmeRam", ["loc", [null, [142, 28], [142, 35]]]]], [], []], "cfmeVcpu", ["subexpr", "@mut", [["get", "cfmeVcpu", ["loc", [null, [143, 29], [143, 37]]]]], [], []]], ["loc", [null, [129, 2], [143, 39]]]], ["block", "if", [["get", "oseDeploymentType", ["loc", [null, [145, 8], [145, 25]]]]], [], 0, null, ["loc", [null, [145, 2], [185, 9]]]]],
         locals: [],
         templates: [child0]
       };
@@ -42920,7 +42993,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             "column": 0
           },
           "end": {
-            "line": 181,
+            "line": 194,
             "column": 0
           }
         },
@@ -42932,6 +43005,10 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
       hasRendered: false,
       buildFragment: function buildFragment(dom) {
         var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
         var el1 = dom.createComment("");
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n");
@@ -42977,18 +43054,19 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
         return el0;
       },
       buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-        var morphs = new Array(5);
+        var morphs = new Array(6);
         morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
-        morphs[1] = dom.createMorphAt(dom.childAt(fragment, [2, 3]), 1, 1);
-        morphs[2] = dom.createMorphAt(fragment, 5, 5, contextualElement);
+        morphs[1] = dom.createMorphAt(fragment, 2, 2, contextualElement);
+        morphs[2] = dom.createMorphAt(dom.childAt(fragment, [4, 3]), 1, 1);
         morphs[3] = dom.createMorphAt(fragment, 7, 7, contextualElement);
         morphs[4] = dom.createMorphAt(fragment, 9, 9, contextualElement);
+        morphs[5] = dom.createMorphAt(fragment, 11, 11, contextualElement);
         dom.insertBoundary(fragment, 0);
         return morphs;
       },
-      statements: [["block", "if", [["get", "isError", ["loc", [null, [1, 6], [1, 13]]]]], [], 0, null, ["loc", [null, [1, 0], [77, 7]]]], ["block", "radio-button", [], ["value", "RHEV", "groupValue", ["subexpr", "@mut", [["get", "openshiftInstallLoc", ["loc", [null, [85, 44], [85, 63]]]]], [], []], "changed", "oseLocationChanged", "id", "install_on_rhev", "disabled", ["subexpr", "@mut", [["get", "disableRHEVradio", ["loc", [null, [85, 123], [85, 139]]]]], [], []], "dataQci", "rhevOspInstallLoc"], 1, null, ["loc", [null, [85, 4], [89, 21]]]], ["block", "if", [["get", "openshiftInstallLoc", ["loc", [null, [106, 6], [106, 25]]]]], [], 2, null, ["loc", [null, [106, 0], [113, 7]]]], ["block", "if", [["get", "openshiftInstallLoc", ["loc", [null, [115, 6], [115, 25]]]]], [], 3, null, ["loc", [null, [115, 0], [173, 7]]]], ["inline", "cancel-back-next", [], ["backRouteName", ["subexpr", "@mut", [["get", "backRouteName", ["loc", [null, [175, 33], [175, 46]]]]], [], []], "disableBack", false, "nextRouteName", "openshift.openshift-configuration", "disableNext", ["subexpr", "@mut", [["get", "isInvalidOpenshiftNodes", ["loc", [null, [178, 31], [178, 54]]]]], [], []], "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [179, 33], [179, 42]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [180, 34], [180, 48]]]]], [], []]], ["loc", [null, [175, 0], [180, 50]]]]],
+      statements: [["block", "if", [["get", "isHaNestedVirt", ["loc", [null, [1, 6], [1, 20]]]]], [], 0, null, ["loc", [null, [1, 0], [12, 7]]]], ["block", "if", [["get", "isError", ["loc", [null, [14, 6], [14, 13]]]]], [], 1, null, ["loc", [null, [14, 0], [90, 7]]]], ["block", "radio-button", [], ["value", "RHEV", "groupValue", ["subexpr", "@mut", [["get", "openshiftInstallLoc", ["loc", [null, [98, 44], [98, 63]]]]], [], []], "changed", "oseLocationChanged", "id", "install_on_rhev", "disabled", ["subexpr", "@mut", [["get", "disableRHEVradio", ["loc", [null, [98, 123], [98, 139]]]]], [], []], "dataQci", "rhevOspInstallLoc"], 2, null, ["loc", [null, [98, 4], [102, 21]]]], ["block", "if", [["get", "openshiftInstallLoc", ["loc", [null, [119, 6], [119, 25]]]]], [], 3, null, ["loc", [null, [119, 0], [126, 7]]]], ["block", "if", [["get", "openshiftInstallLoc", ["loc", [null, [128, 6], [128, 25]]]]], [], 4, null, ["loc", [null, [128, 0], [186, 7]]]], ["inline", "cancel-back-next", [], ["backRouteName", ["subexpr", "@mut", [["get", "backRouteName", ["loc", [null, [188, 33], [188, 46]]]]], [], []], "disableBack", false, "nextRouteName", "openshift.openshift-configuration", "disableNext", ["subexpr", "@mut", [["get", "isInvalidOpenshiftNodes", ["loc", [null, [191, 31], [191, 54]]]]], [], []], "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [192, 33], [192, 42]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [193, 34], [193, 48]]]]], [], []]], ["loc", [null, [188, 0], [193, 50]]]]],
       locals: [],
-      templates: [child0, child1, child2, child3]
+      templates: [child0, child1, child2, child3, child4]
     };
   })());
 });
@@ -56935,7 +57013,7 @@ define('fusor-ember-cli/views/application', ['exports', 'ember'], function (expo
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","rootURL":"/r/","locationType":"history","EmberENV":{"FEATURES":{},"_ENABLE_LEGACY_VIEW_SUPPORT":true},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+1b64dc13"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":["'none'"],"script-src":["'self'"],"font-src":["'self'"],"connect-src":["'self'"],"img-src":["'self'"],"style-src":["'self'"],"media-src":["'self'"]},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","rootURL":"/r/","locationType":"history","EmberENV":{"FEATURES":{},"_ENABLE_LEGACY_VIEW_SUPPORT":true},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+7f39a952"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":["'none'"],"script-src":["'self'"],"font-src":["'self'"],"connect-src":["'self'"],"img-src":["'self'"],"style-src":["'self'"],"media-src":["'self'"]},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 /* jshint ignore:end */
@@ -56943,7 +57021,7 @@ define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
 /* jshint ignore:start */
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+1b64dc13"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+7f39a952"});
 }
 
 /* jshint ignore:end */

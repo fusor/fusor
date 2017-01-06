@@ -270,6 +270,11 @@ module Fusor
           end
         end
 
+        if deployment.openshift_install_loc == "RHEV" && deployment.openshift_ha? && deployment.rhev_nested_virt?
+          add_warning(deployment, _("Highly available OpenShift deployments are not supported "\
+                                    "on nested virtualization configurations and the deployment may fail."))
+        end
+
         if deployment.openshift_username.empty?
           deployment.errors[:openshift_username] << _("OpenShift deployments must specify an OSE user to be created")
         end
@@ -291,38 +296,7 @@ module Fusor
           validate_openshift_subdomain(deployment, subdomain)
         end
 
-        if deployment.openshift_storage_size <= 0
-          deployment.errors[:openshift_storage_size] << _("OpenShift deployments must have a storage size greater than zero")
-        end
-
-        if deployment.openshift_storage_host.empty?
-          deployment.errors[:openshift_storage_host] << _("OpenShift deployments must have a storage host address specified")
-        end
-
-        if deployment.openshift_export_path.empty?
-          deployment.errors[:openshift_export_path] << _("OpenShift deployments must have a storage path specified")
-        elsif deployment.deploy_rhev &&
-          deployment.openshift_storage_host == deployment.rhev_storage_address &&
-          deployment.openshift_export_path == deployment.rhev_share_path
-          deployment.errors[:openshift_export_path] << _('OpenShift export location matches the rhev storage location')
-        elsif deployment.rhev_is_self_hosted &&
-          deployment.openshift_storage_host == deployment.hosted_storage_address &&
-          deployment.openshift_export_path == deployment.hosted_storage_path
-          deployment.errors[:openshift_export_path] << _('OpenShift export location matches rhv self hosted storage location')
-        elsif deployment.deploy_cfme &&
-          deployment.openshift_storage_host == deployment.rhev_export_domain_address &&
-          deployment.openshift_export_path == deployment.rhev_export_domain_path
-          deployment.errors[:openshift_export_path] << _('OpenShift export location matches OpenShift export location')
-        end
-
-        if deployment.openshift_storage_host && deployment.openshift_export_path
-          error = validate_storage_path(deployment.openshift_export_path, deployment.openshift_storage_type)
-          if error
-            deployment.errors[:openshift_export_path] << _(error)
-          else
-            validate_storage_share(deployment, deployment.openshift_storage_type, deployment.openshift_storage_host, deployment.openshift_export_path, -1, 'ocp')
-          end
-        end
+        validate_openshift_storage(deployment)
       end
 
       private
@@ -444,6 +418,41 @@ module Fusor
                                       "Please specify a different subdomain name or the wildcard region will not be created."))
           else
             conflicting_subdomain_entry.destroy
+          end
+        end
+      end
+
+      def validate_openshift_storage(deployment)
+        if deployment.openshift_storage_size <= 0
+          deployment.errors[:openshift_storage_size] << _("OpenShift deployments must have a storage size greater than zero")
+        end
+
+        if deployment.openshift_storage_host.empty?
+          deployment.errors[:openshift_storage_host] << _("OpenShift deployments must have a storage host address specified")
+        end
+
+        if deployment.openshift_export_path.empty?
+          deployment.errors[:openshift_export_path] << _("OpenShift deployments must have a storage path specified")
+        elsif deployment.deploy_rhev &&
+          deployment.openshift_storage_host == deployment.rhev_storage_address &&
+          deployment.openshift_export_path == deployment.rhev_share_path
+          deployment.errors[:openshift_export_path] << _('OpenShift export location matches the rhev storage location')
+        elsif deployment.rhev_is_self_hosted &&
+          deployment.openshift_storage_host == deployment.hosted_storage_address &&
+          deployment.openshift_export_path == deployment.hosted_storage_path
+          deployment.errors[:openshift_export_path] << _('OpenShift export location matches rhv self hosted storage location')
+        elsif deployment.deploy_cfme &&
+          deployment.openshift_storage_host == deployment.rhev_export_domain_address &&
+          deployment.openshift_export_path == deployment.rhev_export_domain_path
+          deployment.errors[:openshift_export_path] << _('OpenShift export location matches OpenShift export location')
+        end
+
+        if deployment.openshift_storage_host && deployment.openshift_export_path
+          error = validate_storage_path(deployment.openshift_export_path, deployment.openshift_storage_type)
+          if error
+            deployment.errors[:openshift_export_path] << _(error)
+          else
+            validate_storage_share(deployment, deployment.openshift_storage_type, deployment.openshift_storage_host, deployment.openshift_export_path, -1, 'ocp')
           end
         end
       end
