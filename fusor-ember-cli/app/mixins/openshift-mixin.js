@@ -88,12 +88,14 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
   }),
 
   numHaLoadBalancers: 2,
-  haLoadBalancerResources: {
-    type: 'Load balancers',
-    vCPU: 1,
-    ram: 8,
-    disk: 15
-  },
+  haLoadBalancerResources: Ember.computed('workerVcpu', 'workerRam', 'workerDisk', function () {
+    return {
+      type: 'Load balancers',
+      vCPU: this.get('workerVcpu'),
+      ram: this.get('workerRam'),
+      disk: this.get('workerDisk')
+    };
+  }),
 
   numHaInfraNodes: 2,
   haInfraNodesResources: Ember.computed('workerVcpu', 'workerRam', 'workerDisk', function () {
