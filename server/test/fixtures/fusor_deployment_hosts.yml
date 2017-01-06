@@ -29,3 +29,7 @@ deployment_host7:
 deployment_host8:
   discovered_host: host8
   deployment: all_products
+
+deployment_host9:
+  discovered_host: host9
+  deployment: rhev_and_ose

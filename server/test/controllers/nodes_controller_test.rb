@@ -107,6 +107,8 @@ module Fusor
               },
               address:     '52:54:00:99:0c:e8'
             }
+
+            ::Utils::Fusor::SSHKeyUtils.any_instance.stubs(:copy_pub_key_to_auth_keys)
           end
 
           test 'create request respond with success for a valid ssh node request' do

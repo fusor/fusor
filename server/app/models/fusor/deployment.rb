@@ -86,12 +86,20 @@ module Fusor
       foreman_task_uuid.present?
     end
 
+    def openshift_ha?
+      openshift_number_master_nodes > 1
+    end
+
     def openshift_number_ha_nodes
-      self.openshift_number_master_nodes > 1 ? 2 : 0
+      openshift_ha? ? 2 : 0
     end
 
     def openshift_number_infra_nodes
-      self.openshift_number_master_nodes > 1 ? 2 : 0
+      openshift_ha? ? 2 : 0
+    end
+
+    def rhev_nested_virt?
+      rhev_hypervisor_hosts.any? { |host| host.facts.try(:[], "is_virtual") == 'true' }
     end
 
     protected

@@ -351,6 +351,30 @@ class DeploymentTest < ActiveSupport::TestCase
         ose_d.openshift_storage_host = nil
         assert_not ose_d.save, "Saved ose deployment with empty storage host"
       end
+
+      test "should not set warning if HA OCP deployment on baremetal" do
+        ::Host::Base.any_instance.stubs(:facts).returns({'is_virtual' => "false"})
+        ose_d = fusor_deployments(:rhev_and_ose)
+        ose_d.openshift_number_master_nodes = 3
+        assert ose_d.valid?, "HA OCP deployment on baremetal was invalid"
+        assert_empty ose_d.warnings, "HA OCP deployment on baremetal had warnings"
+      end
+
+      test "should set warning if HA OCP deployment on nested virt" do
+        ::Host::Base.any_instance.stubs(:facts).returns({'is_virtual' => "true"})
+        ose_d = fusor_deployments(:rhev_and_ose)
+        ose_d.openshift_number_master_nodes = 3
+        assert ose_d.valid?, "HA OCP deployment on nested virt was invalid"
+        assert_match /not supported on nested virtualization/, ose_d.warnings.first, "HA OCP deployment on nested virt did not warn"
+      end
+
+      test "should not set warning if single node OCP deployment on nested virt" do
+        ::Host::Base.any_instance.stubs(:facts).returns({'is_virtual' => "false"})
+        ose_d = fusor_deployments(:rhev_and_ose)
+        ose_d.openshift_number_master_nodes = 1
+        assert ose_d.valid?, "single node OCP deployment on baremetal was invalid"
+        assert_empty ose_d.warnings, "single node OCP deployment on nested virt had warnings"
+      end
     end
 
     describe "cfme deployment" do
