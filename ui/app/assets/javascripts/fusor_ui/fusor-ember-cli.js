@@ -46342,6 +46342,12 @@ define("fusor-ember-cli/templates/req-openshift", ["exports"], function (exports
         var el3 = dom.createTextNode("\n    ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("li");
+        var el4 = dom.createTextNode("High Availability is only supported on installations where RHV Hypervisors are bare metal (i.e. nested-virt installations are not supported for HA)");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n    ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("li");
         var el4 = dom.createTextNode("Note: Requirements will change depending upon OpenShift configuration of master and worker nodes");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
