@@ -202,47 +202,50 @@ module Fusor
           deployment.errors[:cfme_root_password] << _('CloudForms deployments must specify a root password for the CloudForms machines')
         end
 
-        if deployment.rhev_export_domain_name.empty?
-          deployment.errors[:rhev_export_domain_name] << _('CloudForms deployments must specify a RHV export domain name')
-        elsif (deployment.deploy_rhev && deployment.rhev_export_domain_name == deployment.rhev_storage_name) ||
-          (deployment.rhev_is_self_hosted && deployment.rhev_export_domain_name == deployment.hosted_storage_name)
-          deployment.errors[:rhev_export_domain_name] << _('RHV export data domain name is not unique')
-        end
-
-        if deployment.rhev_export_domain_path.empty?
-          deployment.errors[:rhev_export_domain_path] << _('CloudForms deployments must specify a RHV export domain name')
-        else
-          if deployment.deploy_rhev &&
-            deployment.rhev_export_domain_address == deployment.rhev_storage_address &&
-            deployment.rhev_export_domain_path == deployment.rhev_share_path
-            deployment.errors[:rhev_export_domain_path] << _('RHV export domain storage location matches rhv storage location')
-          end
-          if deployment.rhev_is_self_hosted &&
-            deployment.rhev_export_domain_address == deployment.hosted_storage_address &&
-            deployment.rhev_export_domain_path == deployment.hosted_storage_path
-            deployment.errors[:rhev_export_domain_path] << _('RHV export domain storage location matches rhv self hosted storage location')
-          end
-          if deployment.deploy_openshift &&
-            deployment.rhev_export_domain_address == deployment.openshift_storage_host &&
-            deployment.rhev_export_domain_path == deployment.openshift_export_path
-            deployment.errors[:rhev_export_domain_path] << _('RHV export domain storage location matches OpenShift export location')
-          end
-        end
-        if deployment.rhev_export_domain_address.empty?
-          deployment.errors[:rhev_export_domain_address] << _('NFS share specified but missing address of NFS server')
-        end
-
-        if deployment.rhev_export_domain_path.empty?
-          deployment.errors[:rhev_export_domain_path] << _('NFS share specified but missing path to the share')
-        end
-
-        if deployment.rhev_export_domain_path && deployment.rhev_export_domain_address
-          error = validate_storage_path(deployment.rhev_export_domain_path, deployment.rhev_storage_type)
-          if error
-            deployment.errors[:rhev_export_domain_path] << _(error)
+        if deployment.cfme_install_loc == 'RHEV'
+          if deployment.rhev_export_domain_name.empty?
+            deployment.errors[:rhev_export_domain_name] << _('CloudForms deployments must specify a RHV export domain name')
+          elsif (deployment.deploy_rhev && deployment.rhev_export_domain_name == deployment.rhev_storage_name) ||
+            (deployment.rhev_is_self_hosted && deployment.rhev_export_domain_name == deployment.hosted_storage_name)
+            deployment.errors[:rhev_export_domain_name] << _('RHV export data domain name is not unique')
           end
 
-          validate_storage_share(deployment, deployment.rhev_storage_type, deployment.rhev_export_domain_address, deployment.rhev_export_domain_path, 36, 'export')
+          if deployment.rhev_export_domain_path.empty?
+            deployment.errors[:rhev_export_domain_path] << _('CloudForms deployments must specify a RHV export domain name')
+          else
+            if deployment.deploy_rhev &&
+              deployment.rhev_export_domain_address == deployment.rhev_storage_address &&
+              deployment.rhev_export_domain_path == deployment.rhev_share_path
+              deployment.errors[:rhev_export_domain_path] << _('RHV export domain storage location matches rhv storage location')
+            end
+            if deployment.rhev_is_self_hosted &&
+              deployment.rhev_export_domain_address == deployment.hosted_storage_address &&
+              deployment.rhev_export_domain_path == deployment.hosted_storage_path
+              deployment.errors[:rhev_export_domain_path] << _('RHV export domain storage location matches rhv self hosted storage location')
+            end
+            if deployment.deploy_openshift &&
+              deployment.rhev_export_domain_address == deployment.openshift_storage_host &&
+              deployment.rhev_export_domain_path == deployment.openshift_export_path
+              deployment.errors[:rhev_export_domain_path] << _('RHV export domain storage location matches OpenShift export location')
+            end
+          end
+
+          if deployment.rhev_export_domain_address.empty?
+            deployment.errors[:rhev_export_domain_address] << _('NFS share specified but missing address of NFS server')
+          end
+
+          if deployment.rhev_export_domain_path.empty?
+            deployment.errors[:rhev_export_domain_path] << _('NFS share specified but missing path to the share')
+          end
+
+          if deployment.rhev_export_domain_path && deployment.rhev_export_domain_address
+            error = validate_storage_path(deployment.rhev_export_domain_path, deployment.rhev_storage_type)
+            if error
+              deployment.errors[:rhev_export_domain_path] << _(error)
+            end
+
+            validate_storage_share(deployment, deployment.rhev_storage_type, deployment.rhev_export_domain_address, deployment.rhev_export_domain_path, 36, 'export')
+          end
         end
       end
 
