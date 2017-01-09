@@ -11,9 +11,29 @@ class DeploymentTest < ActiveSupport::TestCase
       Net::DNS::ARecord.any_instance.stubs(:conflicts).returns([])
     end
 
+    test "should save deployment with valid fields for rhv and cfme" do
+      deployment = fusor_deployments(:rhev_and_cfme)
+      assert deployment.save, "unable to save valid deployment with rhv and cfme"
+    end
+
+    test "should save deployment with valid fields for rhv and openshift" do
+      deployment = fusor_deployments(:rhev_and_ose)
+      assert deployment.save, "unable to save valid deployment with rhv and openshift"
+    end
+
+    test "should save deployment with valid fields for rhv self hosted" do
+      deployment = fusor_deployments(:rhev_self_hosted)
+      assert deployment.save, "unable to save valid deployment with rhv self hosted"
+    end
+
+    test "should save deployment with valid fields for osp and cfme" do
+      deployment = fusor_deployments(:osp)
+      assert deployment.save, "unable to save valid deployment with osp and cfme"
+    end
+
     test "should save deployment with valid fields for all products" do
       deployment = fusor_deployments(:all_products)
-      assert deployment.save, "unable to save valid deployment"
+      assert deployment.save, "unable to save valid deployment with all products"
     end
 
     test "should not save without name" do
@@ -413,7 +433,7 @@ class DeploymentTest < ActiveSupport::TestCase
 
       test "should not save rhev deployment with CFME if it is missing export storage name" do
         rhev = fusor_deployments(:rhev_and_cfme)
-        rhev.rhev_export_domain_name = rhev.rhev_storage_name
+        rhev.rhev_export_domain_name = nil
         assert_not rhev.save, "Saved rhev deployment with CFME that had no export storage name"
       end
 

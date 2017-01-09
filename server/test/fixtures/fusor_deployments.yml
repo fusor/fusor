@@ -77,8 +77,8 @@ rhev_and_cfme_different_passwords:
   deploy_openstack: false
   deploy_cfme: true
   deploy_rhev: true
-  name: rhev_and_cfme
-  label: rhev_and_cfme
+  name: rhev_and_cfme_pass
+  label: rhev_and_cfme_pass
   organization: empty_organization
   ssh_private_key: private
   cfme_root_password: redhat4321
