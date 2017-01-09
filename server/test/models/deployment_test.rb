@@ -433,7 +433,7 @@ class DeploymentTest < ActiveSupport::TestCase
 
       test "should not save rhev deployment with CFME if it is missing export storage name" do
         rhev = fusor_deployments(:rhev_and_cfme)
-        rhev.rhev_export_domain_name = rhev.rhev_storage_name
+        rhev.rhev_export_domain_name = nil
         assert_not rhev.save, "Saved rhev deployment with CFME that had no export storage name"
       end
 
