@@ -253,7 +253,7 @@ module Actions
                   :disk_tag => vm_tag
               }
 
-              ocp_vm = create_ocp_vm_definition(deployment, vm_params, i)
+              ocp_vm = create_ocp_vm_definition(vm_params)
               ocp_vms_to_create << ocp_vm
             end
 
@@ -281,7 +281,7 @@ module Actions
                   :disk_tag => vm_tag
               }
 
-              ocp_vm = create_ocp_vm_definition(deployment, vm_params, i)
+              ocp_vm = create_ocp_vm_definition(vm_params)
               ocp_vms_to_create << ocp_vm
             end
 
@@ -309,7 +309,7 @@ module Actions
                   :disk_tag => vm_tag
               }
 
-              ocp_vm = create_ocp_vm_definition(deployment, vm_params, i)
+              ocp_vm = create_ocp_vm_definition(vm_params)
               ocp_vms_to_create << ocp_vm
             end
 
