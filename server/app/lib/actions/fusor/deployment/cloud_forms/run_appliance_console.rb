@@ -87,8 +87,18 @@ module Actions
           private
 
           def run_command(cmd)
+            max_try = 30
+            retries = 0
+            status = 1
+
             ::Fusor.log.info "Running: #{cmd}"
-            status, output = Utils::Fusor::CommandUtils.run_command(cmd)
+            while (status != 0) && (retries < max_try)
+              status, output = Utils::Fusor::CommandUtils.run_command(cmd)
+              retries += 1
+              ::Fusor.log.warn "Attempt [#{retries} of #{max_try}] of the above command FAILED!... Retrying..." unless status == 0
+              sleep 30 unless status == 0
+            end
+
             ::Fusor.log.debug "Status: #{status}, output: #{output}"
             return status, output
           end
