@@ -45,4 +45,5 @@ OpenShift Container Platform
 - All host hardware clocks are synchronized with the hardware clock on the Satellite system
 - Hypervisor host requires at least an ADDITIONAL 16 GB RAM and 4 CPUs
 - Data domain NFS/GlusterFS share must have at least 75 GB free space
+- High Availability is only supported on installations where RHV Hypervisors are bare metal (i.e. nested-virt installations are not supported for HA)
 - Note: Requirements will change depending upon OpenShift configuration of master and worker nodes
