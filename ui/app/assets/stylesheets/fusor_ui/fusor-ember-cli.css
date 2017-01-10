@@ -575,6 +575,9 @@ table.fusor-table {
 .accordion-item-title {
   cursor: pointer; }
 
+input.form-control.can-show-password {
+  padding-right: 30px; }
+
 .invalid-input {
   border: 2px solid red; }
 
