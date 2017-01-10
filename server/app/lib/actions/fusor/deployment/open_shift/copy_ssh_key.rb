@@ -33,17 +33,17 @@ module Actions
 
             # Distribute the key to each Master Nodes
             deployment.ose_master_hosts.each do |host|
-              keyutils.copy_keys_to_user(host.name, deployment.openshift_username, deployment.openshift_root_password)
+              keyutils.copy_keys_to_user(host.name, deployment.openshift_username)
             end
 
             # Distribute the key to each worker Nodes
             deployment.ose_worker_hosts.each do |host|
-              keyutils.copy_keys_to_user(host.name, deployment.openshift_username, deployment.openshift_root_password)
+              keyutils.copy_keys_to_user(host.name, deployment.openshift_username)
             end
 
             # Distribute the key to each HA Nodes
             deployment.ose_ha_hosts.each do |host|
-              keyutils.copy_keys_to_user(host.name, deployment.openshift_username, deployment.openshift_root_password)
+              keyutils.copy_keys_to_user(host.name, deployment.openshift_username)
             end
             ::Fusor.log.debug "SSH Keys have been copied:"
             ::Fusor.log.debug "  deployment.ose_private_key_path = #{deployment.ose_private_key_path}"

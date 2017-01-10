@@ -38,29 +38,6 @@ module Utils
         launch_vm
       end
 
-      def launch_openshift_vm(params)
-        cpu = params[:cpu] ||= 2
-        ram = params[:ram] ||= 2
-        disk_size_gb = params[:vda_size] ||= 10
-        disks = params[:other_disks] ||= nil
-
-        set_openshift_attrs(cpu, ram, disk_size_gb)
-
-        if !disks.nil?
-          disks.each { |size| add_vm_disk(size) }
-        end
-
-        compute_attrs = create_compute_attribute(@rhev_attrs)
-        return nil unless compute_attrs
-
-        set_rhev_host_attrs(compute_attrs.vm_attrs)
-
-        # update host attributes
-        @host_attrs["build"] = "1"
-
-        launch_vm
-      end
-
       def launch_osp_vm
         set_osp_attrs
 
@@ -141,58 +118,6 @@ module Utils
                        }.with_indifferent_access
         rescue Exception => e
           ::Fusor.log.error "Failed to set RHV attributes!"
-          ::Fusor.log.error "#{e.message} \n #{e.backtrace}"
-          return nil
-        end
-      end
-
-      def set_openshift_attrs(cpu, ram, disk_size_gb)
-        begin
-          cl_id  = @cr.clusters.find { |c| c.name == @deployment.rhev_cluster_name }.id
-          net_id = @cr.available_networks(cl_id).first.id
-          @storage_id = @cr.available_storage_domains(cl_id).first.id
-
-          mem_size = ram * (1024**3) # convert to gigabytes
-
-          @rhev_attrs = {"compute_profile_id" => @cp.id,
-                         "compute_resource_id" => @cr.id,
-                         "vm_attrs" => {
-                           "cluster" => cl_id,
-                           "cores" => cpu,
-                           "memory" => mem_size,
-                           "interfaces_attributes" => {
-                             "new_interfaces" => {
-                               "name" => "",
-                               "network" => net_id,
-                               "delete" => ""
-                             }.with_indifferent_access,
-                             "0" => {
-                               "name" => "eth0",
-                               "network" => net_id,
-                               "delete" => ""
-                             }.with_indifferent_access
-                           }.with_indifferent_access,
-                           "volumes_attributes" => {
-                             "new_volumes" => {
-                               "size_gb" => "",
-                               "storage_domain" => @storage_id,
-                               "_delete" => "",
-                               "id" => "",
-                               "preallocate" => "0"
-                             }.with_indifferent_access,
-                             @vol_attr_id.to_s => {
-                               "size_gb" => disk_size_gb,
-                               "storage_domain" => @storage_id,
-                               "_delete" => "",
-                               "id" => "",
-                               "bootable" => "1",
-                               "preallocate" => "0"
-                             }.with_indifferent_access
-                           }.with_indifferent_access
-                         }.with_indifferent_access
-                       }.with_indifferent_access
-        rescue Exception => e
-          ::Fusor.log.error "Failed to set OpenShift attributes!"
           ::Fusor.log.error "#{e.message} \n #{e.backtrace}"
           return nil
         end

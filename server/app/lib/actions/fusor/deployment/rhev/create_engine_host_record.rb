@@ -33,7 +33,7 @@ module Actions
             ::Fusor.log.debug "Found deployment with label #{deployment.name}"
             hostgroup = find_hostgroup(deployment, input[:hostgroup_name])
             ::Fusor.log.debug "Found hostgroup with name #{deployment.name}"
-            mac_address = Utils::Fusor::MacAddresses.generate_mac_address
+            mac_address = Utils::Fusor::MacAddresses.generate_unique_mac_address
             ::Fusor.log.debug "Generated mac address: #{mac_address}"
 
             deployment.rhev_engine_host = create_host(deployment, hostgroup, mac_address)

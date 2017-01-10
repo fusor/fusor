@@ -27,9 +27,10 @@ module Utils
         "#{Rails.root}/.ssh/id_rsa-#{@deployment.label}"
       end
 
-      def copy_keys_to_user(hostname, username, password)
+      def copy_keys_to_user(hostname, username, password = nil)
         copy_keys_to_root(hostname, password)
-        client = Utils::Fusor::SSHConnection.new(hostname, 'root', password)
+        client = Utils::Fusor::SSHConnection.new(hostname, 'root', password, get_ssh_private_key_path)
+
         client.execute("useradd #{username}")
         client.execute("echo '#{username}        ALL=(ALL)       NOPASSWD: ALL' > /etc/sudoers.d/#{username}")
         ssh_dir = "/home/#{username}/.ssh"
@@ -39,10 +40,11 @@ module Utils
         client.execute("install -o #{username} -g #{username} -m 600 #{ssh_dir}/id_rsa.pub #{ssh_dir}/authorized_keys")
       end
 
-      def copy_keys_to_root(hostname, password)
-        client = Utils::Fusor::SSHConnection.new(hostname, 'root', password)
+      def copy_keys_to_root(hostname, password = nil)
+        client = Utils::Fusor::SSHConnection.new(hostname, 'root', password, get_ssh_private_key_path)
+
         client.execute("install -o root -g root -m 700 -d ~/.ssh")
-        Net::SCP.start(hostname, "root", :password => password, :paranoid => false) do |scp|
+        Net::SCP.start(hostname, "root", {:password => password, :keys => [get_ssh_private_key_path], :paranoid => false}) do |scp|
           scp.upload!(StringIO.new(@deployment.ssh_private_key), ".ssh/id_rsa")
           scp.upload!(StringIO.new(@deployment.ssh_public_key), ".ssh/id_rsa.pub")
         end

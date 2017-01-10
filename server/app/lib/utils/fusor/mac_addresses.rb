@@ -11,6 +11,13 @@ module Utils
         l.join(':')
       end
 
+      def self.generate_unique_mac_address
+        loop do
+          random_mac = generate_mac_address.downcase
+          return random_mac unless ::Nic::Interface.where(mac: random_mac).count > 0
+        end
+      end
+
     end
   end
 end

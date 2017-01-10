@@ -42,6 +42,7 @@ module Actions
             end
 
             ::Fusor.log.info "================ Leaving OpenShift PostInstallOSE run method ===================="
+            ::Fusor.log.info "================ Finished OpenShift Deployment ===================="
           end
 
           def parse_deployment(deployment)
