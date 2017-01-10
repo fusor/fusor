@@ -16,7 +16,7 @@ module Actions
       module CloudForms
         class AddRhevProvider < Actions::Fusor::FusorBaseAction
           def humanized_name
-            _("Add RHEV Provider")
+            _("Add RHV Provider")
           end
 
           def plan(deployment)
@@ -31,7 +31,7 @@ module Actions
             cfme_addresses = [deployment.cfme_rhv_address, deployment.cfme_osp_address].compact
 
             provider = {
-              :name => "#{deployment.label}-RHEV",
+              :name => "#{deployment.label}-RHV",
               :type => "ManageIQ::Providers::Redhat::InfraManager",
               :hostname => deployment.rhev_engine_host.name,
               :port => "443",

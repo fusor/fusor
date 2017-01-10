@@ -57,7 +57,7 @@ module Actions
                 "-e #{export_domain_name} "\
                 "-v -m upload #{image_path}"
 
-            # RHEV-host username password
+            # RHV-host username password
             client = Utils::Fusor::SSHConnection.new(ssh_host, ssh_username, deployment.rhev_root_password)
             client.on_complete(lambda { upload_image_completed })
             client.on_failure(lambda { upload_image_failed })

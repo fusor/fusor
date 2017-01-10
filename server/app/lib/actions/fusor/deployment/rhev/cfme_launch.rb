@@ -51,7 +51,7 @@ module Actions
 
           def create_compute_profile(deployment)
             cp = ComputeProfile.create("name" => "#{deployment.label}-rhv-cfme")
-            cr = ComputeResource.find_by_name("#{deployment.label}-RHEV")
+            cr = ComputeResource.find_by_name("#{deployment.label}-RHV")
             cl_id = cr.clusters.find { |c| c.name == deployment.rhev_cluster_name }.id
             net_id = cr.available_networks(cl_id).first.id
             storage_id = cr.available_storage_domains(cl_id).first.id
@@ -97,7 +97,7 @@ module Actions
           end
 
           def create_host(deployment, compute_attrs)
-            cr = ComputeResource.find_by_name("#{deployment.label}-RHEV")
+            cr = ComputeResource.find_by_name("#{deployment.label}-RHV")
             cl_id = cr.clusters.find { |c| c.name == deployment.rhev_cluster_name }.id
             net_id = cr.available_networks(cl_id).first.id
 
@@ -105,7 +105,7 @@ module Actions
                     "location_id" => Location.find_by_name('Default Location').id,
                     "environment_id" => Environment.where(:name => "production").first.id,
                     "organization_id" => deployment["organization_id"],
-                    "compute_resource_id" => ComputeResource.find_by_name("#{deployment.label}-RHEV").id,
+                    "compute_resource_id" => ComputeResource.find_by_name("#{deployment.label}-RHV").id,
                     "enabled" => "1",
                     "managed" => "1",
                     "architecture_id" => Architecture.find_by_name('x86_64')['id'],
