@@ -161,8 +161,18 @@ module Actions
               extra_args = '-vvvv '
             end
 
+            max_try = 30
+            retries = 0
+            status = 1
+
             cmd = "ansible-playbook #{playbook} -i #{config_dir}/inventory -e '#{vars.to_json}' #{extra_args}"
-            status, output = ::Utils::Fusor::CommandUtils.run_command(cmd, true, environment)
+            ::Fusor.log.info "Running: #{cmd}"
+            while (status != 0) && (retries < max_try)
+              status, output = ::Utils::Fusor::CommandUtils.run_command(cmd, true, environment)
+              retries += 1
+              ::Fusor.log.warn "Attempt [#{retries} of #{max_try}] of the above command FAILED!... Retrying..." unless status == 0
+              sleep 60 unless status == 0
+            end
 
             if status != 0
               fail _("ansible-ovirt returned a non-zero return code\n#{output.gsub('\n', "\n")}")
