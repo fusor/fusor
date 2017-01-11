@@ -17,7 +17,7 @@ export default Ember.Component.extend({
   }),
   // Internal
   _infoObj: Ember.computed('oseHost', function() {
-    const extractionRegex = /ose-(master|node)(\d+)\./;
+    const extractionRegex = /ocp-(master|node)(\d+)\./;
     const hostName = this.get('oseHost.name');
     const match = hostName.match(extractionRegex);
 
