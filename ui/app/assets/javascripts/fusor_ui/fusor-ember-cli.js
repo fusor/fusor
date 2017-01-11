@@ -2606,9 +2606,9 @@ define('fusor-ember-cli/components/text-f', ['exports', 'ember', 'fusor-ember-cl
       return this.get('type') ? this.get('type') : 'text';
     }),
 
-    cssFormClass: _ember['default'].computed('preText', 'postText', function () {
+    cssFormClass: _ember['default'].computed('preText', 'postText', 'canShowPassword', function () {
       if (_ember['default'].isEmpty(this.get('preText')) && _ember['default'].isEmpty(this.get('postText'))) {
-        return 'form-control';
+        return this.get('canShowPassword') ? 'form-control can-show-password' : 'form-control';
       }
     }),
 
@@ -6392,6 +6392,20 @@ define('fusor-ember-cli/helpers/is-array', ['exports', 'ember', 'ember-truth-hel
 
   exports['default'] = forExport;
 });
+define('fusor-ember-cli/helpers/is-equal', ['exports', 'ember-truth-helpers/helpers/is-equal'], function (exports, _emberTruthHelpersHelpersIsEqual) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberTruthHelpersHelpersIsEqual['default'];
+    }
+  });
+  Object.defineProperty(exports, 'isEqual', {
+    enumerable: true,
+    get: function get() {
+      return _emberTruthHelpersHelpersIsEqual.isEqual;
+    }
+  });
+});
 define("fusor-ember-cli/helpers/log", ["exports"], function (exports) {
   exports["default"] = function () {
     //console.debug(str);
@@ -6661,6 +6675,18 @@ define('fusor-ember-cli/initializers/export-application-global', ['exports', 'em
   function initialize() {
     var application = arguments[1] || arguments[0];
     if (_fusorEmberCliConfigEnvironment['default'].exportApplicationGlobal !== false) {
+      var theGlobal;
+      if (typeof window !== 'undefined') {
+        theGlobal = window;
+      } else if (typeof global !== 'undefined') {
+        theGlobal = global;
+      } else if (typeof self !== 'undefined') {
+        theGlobal = self;
+      } else {
+        // no reasonable global, just bail
+        return;
+      }
+
       var value = _fusorEmberCliConfigEnvironment['default'].exportApplicationGlobal;
       var globalName;
 
@@ -6670,13 +6696,13 @@ define('fusor-ember-cli/initializers/export-application-global', ['exports', 'em
         globalName = _ember['default'].String.classify(_fusorEmberCliConfigEnvironment['default'].modulePrefix);
       }
 
-      if (!window[globalName]) {
-        window[globalName] = application;
+      if (!theGlobal[globalName]) {
+        theGlobal[globalName] = application;
 
         application.reopen({
           willDestroy: function willDestroy() {
             this._super.apply(this, arguments);
-            delete window[globalName];
+            delete theGlobal[globalName];
           }
         });
       }
@@ -13537,18 +13563,26 @@ define('fusor-ember-cli/routes/openstack/assign-nodes', ['exports', 'ember', 'ic
       for (var paramKey in params) {
         if (params.hasOwnProperty(paramKey)) {
           var param = params[paramKey];
+          var paramType = 'text';
 
           if (uneditableParams[paramKey] || param['Type'] === 'Json') {
             continue;
+          }
+
+          if (param['Label'].match(/(Password|Key|Secret)$/)) {
+            paramType = 'password';
+          } else if (param['Type'] === 'Number') {
+            paramType = 'number';
           }
 
           var paramObject = _ember['default'].Object.create({
             key: paramKey,
             label: param['Label'],
             isBoolean: param['Type'] === 'Boolean',
+            canShowPassword: paramType === 'password',
             'default': param['Default'],
             value: param['Default'],
-            type: param['Type'] === 'Number' ? 'number' : 'text',
+            type: paramType,
             description: param['Description']
           });
 
@@ -20633,7 +20667,7 @@ define("fusor-ember-cli/templates/components/edit-deployment-role", ["exports"],
                 morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
                 return morphs;
               },
-              statements: [["inline", "text-f", [], ["label", ["subexpr", "@mut", [["get", "roleParameter.label", ["loc", [null, [56, 37], [56, 56]]]]], [], []], "value", ["subexpr", "@mut", [["get", "roleParameter.newValue", ["loc", [null, [56, 63], [56, 85]]]]], [], []], "type", ["subexpr", "@mut", [["get", "roleParameter.type", ["loc", [null, [56, 91], [56, 109]]]]], [], []], "labelSize", "col-md-6", "inputSize", "col-md-5", "isRequired", false, "helpText", ["subexpr", "@mut", [["get", "roleParameter.description", ["loc", [null, [56, 178], [56, 203]]]]], [], []], "cssId", ["subexpr", "@mut", [["get", "roleParameter.key", ["loc", [null, [56, 210], [56, 227]]]]], [], []]], ["loc", [null, [56, 22], [56, 229]]]]],
+              statements: [["inline", "text-f", [], ["label", ["subexpr", "@mut", [["get", "roleParameter.label", ["loc", [null, [56, 37], [56, 56]]]]], [], []], "value", ["subexpr", "@mut", [["get", "roleParameter.newValue", ["loc", [null, [56, 63], [56, 85]]]]], [], []], "type", ["subexpr", "@mut", [["get", "roleParameter.type", ["loc", [null, [56, 91], [56, 109]]]]], [], []], "canShowPassword", ["subexpr", "@mut", [["get", "roleParameter.canShowPassword", ["loc", [null, [56, 126], [56, 155]]]]], [], []], "labelSize", "col-md-6", "inputSize", "col-md-5", "isRequired", false, "helpText", ["subexpr", "@mut", [["get", "roleParameter.description", ["loc", [null, [56, 224], [56, 249]]]]], [], []], "cssId", ["subexpr", "@mut", [["get", "roleParameter.key", ["loc", [null, [56, 256], [56, 273]]]]], [], []]], ["loc", [null, [56, 22], [56, 275]]]]],
               locals: [],
               templates: []
             };
@@ -21155,7 +21189,7 @@ define("fusor-ember-cli/templates/components/edit-global-service-config", ["expo
                 morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
                 return morphs;
               },
-              statements: [["inline", "text-f", [], ["label", ["subexpr", "@mut", [["get", "planParameter.label", ["loc", [null, [14, 31], [14, 50]]]]], [], []], "value", ["subexpr", "@mut", [["get", "planParameter.newValue", ["loc", [null, [14, 57], [14, 79]]]]], [], []], "type", ["subexpr", "@mut", [["get", "planParameter.type", ["loc", [null, [14, 85], [14, 103]]]]], [], []], "labelSize", "col-md-6", "inputSize", "col-md-5", "isRequired", false, "helpText", ["subexpr", "@mut", [["get", "planParameter.description", ["loc", [null, [14, 172], [14, 197]]]]], [], []], "cssId", ["subexpr", "@mut", [["get", "planParameter.key", ["loc", [null, [14, 204], [14, 221]]]]], [], []]], ["loc", [null, [14, 16], [14, 223]]]]],
+              statements: [["inline", "text-f", [], ["label", ["subexpr", "@mut", [["get", "planParameter.label", ["loc", [null, [14, 31], [14, 50]]]]], [], []], "value", ["subexpr", "@mut", [["get", "planParameter.newValue", ["loc", [null, [14, 57], [14, 79]]]]], [], []], "type", ["subexpr", "@mut", [["get", "planParameter.type", ["loc", [null, [14, 85], [14, 103]]]]], [], []], "canShowPassword", ["subexpr", "@mut", [["get", "planParameter.canShowPassword", ["loc", [null, [14, 120], [14, 149]]]]], [], []], "labelSize", "col-md-6", "inputSize", "col-md-5", "isRequired", false, "helpText", ["subexpr", "@mut", [["get", "planParameter.description", ["loc", [null, [14, 218], [14, 243]]]]], [], []], "cssId", ["subexpr", "@mut", [["get", "planParameter.key", ["loc", [null, [14, 250], [14, 267]]]]], [], []]], ["loc", [null, [14, 16], [14, 269]]]]],
               locals: [],
               templates: []
             };
@@ -55277,11 +55311,11 @@ define('fusor-ember-cli/views/application', ['exports', 'ember'], function (expo
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+2237e816"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","locationType":"hash","EmberENV":{"FEATURES":{}},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+f99568e3"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+2237e816"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+f99568e3"});
 }
 
 /* jshint ignore:end */

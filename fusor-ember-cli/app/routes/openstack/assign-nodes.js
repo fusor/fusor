@@ -104,18 +104,26 @@ export default Ember.Route.extend({
     for (let paramKey in params) {
       if (params.hasOwnProperty(paramKey)) {
         let param = params[paramKey];
+        let paramType = 'text';
 
         if (uneditableParams[paramKey] || param['Type'] === 'Json') {
           continue;
+        }
+
+        if (param['Label'].match(/(Password|Key|Secret)$/)) {
+          paramType = 'password';
+        } else if (param['Type'] === 'Number') {
+          paramType = 'number';
         }
 
         let paramObject = Ember.Object.create({
           key: paramKey,
           label: param['Label'],
           isBoolean: param['Type'] === 'Boolean',
+          canShowPassword: paramType === 'password',
           default: param['Default'],
           value: param['Default'],
-          type: param['Type'] === 'Number' ? 'number' : 'text',
+          type: paramType,
           description: param['Description']
         });
 
