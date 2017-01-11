@@ -96,13 +96,13 @@ export default DS.Model.extend(UsesOseDefaults, {
 
   openshift_hosts: DS.hasMany('openshift-host', {async: true}),
   openshift_master_hosts: Ember.computed('openshift_hosts', function() {
-    const regexFilter = /ose-master\d+\./;
+    const regexFilter = /ocp-master\d+\./;
     return this.get('openshift_hosts')
       .filter(host => regexFilter.test(host.get('name')));
   }),
 
   openshift_worker_hosts: Ember.computed('openshift_hosts', function() {
-    const regexFilter = /ose-node\d+\./;
+    const regexFilter = /ocp-node\d+\./;
     return this.get('openshift_hosts')
       .filter(host => regexFilter.test(host.get('name')));
   }),
@@ -310,4 +310,3 @@ export default DS.Model.extend(UsesOseDefaults, {
     });
   }
 });
-
