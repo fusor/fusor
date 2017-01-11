@@ -223,6 +223,7 @@ module Actions
 
           def get_ocp_vms(deployment)
             hostgroup = find_hostgroup(deployment, 'OpenShift')
+            parent_domain = Domain.find(1)
             ocp_vms_to_create = []
 
             # Reset OCP host records attached to Deployment
@@ -244,7 +245,7 @@ module Actions
 
               # Arrange parameters so that Ansible can create OCP VM's
               vm_params = {
-                  :hostname => hostname,
+                  :hostname => "#{hostname}.#{parent_domain}",
                   :mac => mac,
                   :memory => deployment.openshift_master_ram,
                   :cpus => deployment.openshift_master_vcpu,
@@ -272,7 +273,7 @@ module Actions
 
               # Arrange parameters so that Ansible can create OCP VM's
               vm_params = {
-                  :hostname => hostname,
+                  :hostname => "#{hostname}.#{parent_domain}",
                   :mac => mac,
                   :memory => deployment.openshift_node_ram,
                   :cpus => deployment.openshift_node_vcpu,
@@ -299,7 +300,7 @@ module Actions
 
               # Arrange parameters so that Ansible can create OCP VM's
               vm_params = {
-                  :hostname => hostname,
+                  :hostname => "#{hostname}.#{parent_domain}",
                   :mac => mac,
                   :memory => deployment.openshift_node_ram,
                   :cpus => deployment.openshift_node_vcpu,
