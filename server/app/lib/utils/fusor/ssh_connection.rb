@@ -23,13 +23,20 @@ module Utils
       def port_open?(port, stringio = nil, local_ip = "127.0.0.1", remote_ip = "192.0.2.1", seconds = 1)
         t = Thread.new {
           begin
+            keys = []
+            auth_methods = ["password"]
+            if @keyfile
+              keys << @keyfile
+              auth_methods << "publickey"
+            end
+            # :timeout => how long to wait for the initial connection to be made
             Net::SSH.start(@host, @user, :password => @password, :timeout => seconds, :host_key => 'ssh_rsa',
-                           :auth_methods => ["publickey", "password"], :keys => [@keyfile],
+                           :auth_methods => auth_methods, :keys => keys,
                            :number_of_password_prompts => 0) do |session|
-            puts "Forwarding #{port} #{remote_ip} #{port}"
-            session.forward.local(port, remote_ip, port)
-            session.loop { true }
-          end
+              puts "Forwarding #{port} #{remote_ip} #{port}"
+              session.forward.local(port, remote_ip, port)
+              session.loop { true }
+            end
           rescue => e
             stringio_write(stringio, e.message)
           end
@@ -71,9 +78,15 @@ module Utils
 
       def execute(commands, stringio = nil)
         begin
+          keys = []
+          auth_methods = ["password"]
+          if @keyfile
+            keys << @keyfile
+            auth_methods << "publickey"
+          end
           # :timeout => how long to wait for the initial connection to be made
           Net::SSH.start(@host, @user, :password => @password, :timeout => 2, :host_key => 'ssh_rsa',
-                         :auth_methods => ["publickey", "password"], :keys => [@keyfile],
+                         :auth_methods => auth_methods, :keys => keys,
                          :number_of_password_prompts => 0, :paranoid => false) do |ssh|
             # open a new channel and configure a minimal set of callbacks, then run
             # the event loop until the channel finishes (closes)
