@@ -17,10 +17,10 @@ module Actions
   module Fusor
     module Deployment
       module Rhev
-        # Create the RHEV Compute Resource in Foreman
+        # Create the RHV Compute Resource in Foreman
         class CreateCr < Actions::Fusor::FusorBaseAction
           def humanized_name
-            _('Create the RHEV Compute Resource in Foreman')
+            _('Create the RHV Compute Resource in Foreman')
           end
 
           def plan(deployment)
@@ -35,7 +35,7 @@ module Actions
             api_url = "https://#{rhevm}/ovirt-engine/api/v3"
             ca_url = "http://#{rhevm}/ovirt-engine/services/pki-resource?resource=ca-certificate&format=X509-PEM-CA"
             ca_cert = "#{Net::HTTP.get(URI.parse(ca_url))}"
-            rhev = { "name" => "#{deployment.label}-RHEV",
+            rhev = { "name" => "#{deployment.label}-RHV",
                      "location_ids" => ["", Location.where(:name => "Default Location").first.id],
                      "url" => api_url,
                      "provider" => "Foreman::Model::Ovirt", "user" => 'admin@internal',

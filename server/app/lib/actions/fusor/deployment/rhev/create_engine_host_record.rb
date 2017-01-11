@@ -16,10 +16,10 @@ module Actions
   module Fusor
     module Deployment
       module Rhev
-        # Create a RHEV Engine Host Record
+        # Create a RHV Engine Host Record
         class CreateEngineHostRecord < Actions::Fusor::FusorBaseAction
           def humanized_name
-            _('Create Host Record for RHEV Engine for self-hosted')
+            _('Create Host Record for RHV Engine for self-hosted')
           end
 
           def plan(deployment, hostgroup_name)

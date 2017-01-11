@@ -51,7 +51,7 @@ module Utils
           client = Utils::Fusor::SSHConnection.new(cfme_ip, ssh_username, ssh_password)
 
           # run the script
-          cmd = "ruby #{scp_to_path}/#{script_name} #{deployment.label}-RHEV #{host_username} #{host_password} #{csv_file_name}"
+          cmd = "ruby #{scp_to_path}/#{script_name} #{deployment.label}-RHV #{host_username} #{host_password} #{csv_file_name}"
           client.execute(cmd, @io)
 
           # close the stringio at the end
