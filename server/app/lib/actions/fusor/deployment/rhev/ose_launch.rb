@@ -63,14 +63,13 @@ module Actions
 
           def create_openshift_subdomain(deployment, parent_domain_id)
             parent_domain = Domain.find(parent_domain_id)
-            master_node_hostname = "#{create_hostname(deployment, 'ocp-master', 1)}.#{parent_domain}"
-            master_node_host = ::Host.find_by_name(master_node_hostname)
+            subdomain_host = deployment.ose_ha_hosts.try(:last) || deployment.ose_master_hosts.first
 
             # Create subdomain DNS record
             subdomain = Net::DNS::ARecord.new({
-              :ip => master_node_host.ip,
+              :ip => subdomain_host.ip,
               :hostname => "*.#{deployment.openshift_subdomain_name}.#{parent_domain}",
-              :proxy => Domain.find(master_node_host.domain_id).proxy
+              :proxy => Domain.find(subdomain_host.domain_id).proxy
             })
             # subdomain.valid? returns true if the subdomain already exists
             if subdomain.valid?
