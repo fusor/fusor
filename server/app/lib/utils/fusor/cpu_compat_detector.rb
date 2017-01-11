@@ -45,7 +45,9 @@ module Utils
             'Intel Westmere Family',
             'Intel SandyBridge Family',
             'Intel Haswell-noTSX Family',
-            'Intel Haswell Family'
+            'Intel Haswell Family',
+            'Intel Broadwell-noTSX Family',
+            'Intel Broadwell Family'
           ],
           'amd': [
             'AMD Opteron G1',
@@ -65,6 +67,8 @@ module Utils
         cpu_fams = [
           # Intel processor families
           { brand: 'intel', keywords: ['intel'], position: -1 }, #intel wildcard
+          { brand: 'intel', keywords: ['broadwell'], position: 7 }, # always select noTSX for broadwell
+          { brand: 'intel', keywords: ['broadwell', 'no', 'tsx'], position: 7 },
           { brand: 'intel', keywords: ['haswell'], position: 5 }, # always select noTSX for haswell
           { brand: 'intel', keywords: ['haswell', 'no', 'tsx'], position: 5 },
           { brand: 'intel', keywords: ['sandy', 'bridge'], position: 4 },
