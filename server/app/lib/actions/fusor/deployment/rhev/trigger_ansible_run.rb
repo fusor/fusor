@@ -83,6 +83,7 @@ module Actions
               "admin_password" => deployment.rhev_engine_admin_password,
               "cluster_name" => deployment.rhev_cluster_name,
               "dc_name" => deployment.rhev_data_center_name,
+              "compatibility_version": "4.0",
               "cpu_model" => get_cpu_model(cpu_type),
               "cpu_type" => cpu_type,
               "hosted_storage_address" => deployment.hosted_storage_address,
