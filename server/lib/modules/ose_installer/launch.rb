@@ -119,7 +119,7 @@ module OSEInstaller
         template = template.gsub(/<primary_master>/, opts[:masters].first)
 
         if opts[:nodes].length > 2 # this should always happen for HA setup
-          infra_node_list = opts[:nodes][1..2].join("\n")
+          infra_node_list = opts[:nodes][0..1].join("\n")
           template = template.gsub(/<infra_nodes>/, infra_node_list)
         end
       else
