@@ -25,7 +25,7 @@ module Utils
         begin
           io = StringIO.new
           client.execute('ruby -e "require \'resolv\'; puts Resolv::DNS::Config.new.lazy_initialize.nameserver_port.first.first"', io)
-          dns = io.string.chomp
+          dns = io.string.strip
         ensure
           io.close if io && !io.closed?
         end
