@@ -105,7 +105,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, {
   disableNextRhevOptions: Ember.computed.not('validRhevOptions'),
 
   isDCConfigDisabled: Ember.computed('rhevIsSelfHosted', 'isStarted', function(){
-    return this.get('isStarted') || this.get('rhevIsSelfHosted');
+    // Temporarily disable custom data center configuration for QCI v1.1 release (BZ 1413194)
+    // Will need to revert this change for QCI v1.2 (BZ 1413189)
+    //
+    // return this.get('isStarted') || this.get('rhevIsSelfHosted');
+    return true;
   }),
 
   actions: {
