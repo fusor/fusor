@@ -316,12 +316,15 @@ module OSEInstaller
         ha_config_file = "haproxy_infra.cfg"
 
         entries = nil
+        ssl_entries = nil
+
         counter = 1
         opts[:nodes].each do |n|
           if counter > 2 # we only want the first 2
             break
           else
-            entry = "    server infra#{counter} #{n}:443\n    server infra#{counter} #{n}:80\n"
+            entry = "    server infra#{counter} #{n}:80\n"
+            ssl_entry = "    server infra_ssl#{counter} #{n}:443\n"
             counter += 1
 
             if entries.nil?
@@ -329,10 +332,17 @@ module OSEInstaller
             else
               entries += entry
             end
+
+            if ssl_entries.nil?
+              ssl_entries = ssl_entry
+            else
+              ssl_entries += ssl_entry
+            end
           end
         end
 
         template = template.gsub(/<infras_mirrors>/, entries) if !entries.nil?
+        template = template.gsub(/<ssl_infras_mirrors>/, ssl_entries) if !ssl_entries.nil?
         File.open("#{@output_dir}/#{ha_config_file}", 'w') { |file| file.puts template }
         @logger.info "Infra HAProxy configuration file saved at: #{@output_dir}/#{ha_config_file}"
       end
