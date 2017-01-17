@@ -41,15 +41,12 @@ module Actions
               @io = StringIO.new
 
               cfme_addresses.each do |cfme_address|
+                @io = StringIO.new if @io.closed?
                 client = Utils::Fusor::SSHConnection.new(cfme_address, ssh_user, ssh_password)
                 client.on_complete(lambda { update_root_password_completed })
                 client.on_failure(lambda { update_root_password_failed })
                 cmd = "echo \"#{deployment.cfme_root_password}\" | passwd --stdin #{ssh_user}"
-                begin
-                  client.execute(cmd, @io)
-                rescue RuntimeError => e
-                  ::Fusor.log.info "Password Update Failed, error message: #{e.message}"
-                end
+                client.execute(cmd, @io)
 
                 # close the stringio at the end
                 @io.close unless @io.closed?
