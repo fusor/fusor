@@ -54,6 +54,7 @@ module Actions
                             deployment, upload_action.output[:template_name])
 
                 plan_action(::Actions::Fusor::Deployment::Rhev::CfmeLaunch, deployment)
+
               end
 
               if deployment.deploy_openstack
@@ -78,6 +79,10 @@ module Actions
 
               plan_action(::Actions::Fusor::Deployment::CloudForms::UpdateHosts,
                           deployment)
+
+              plan_action(::Actions::Fusor::Deployment::CloudForms::TransferConsumerRpm, deployment)
+
+              plan_action(::Actions::Fusor::Deployment::CloudForms::SshCommand, deployment, "sudo yum -y localinstall /tmp/katello-ca-consumer-latest.noarch.rpm")
 
               plan_action(::Actions::Fusor::Deployment::CloudForms::AddSatelliteProvider,
                           deployment)
