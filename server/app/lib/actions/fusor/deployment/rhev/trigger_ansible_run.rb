@@ -127,6 +127,7 @@ module Actions
 
           def distribute_public_key(deployment)
             keyutils = Utils::Fusor::SSHKeyUtils.new(deployment)
+            fail _("keyutils is NIL!") if keyutils.nil?
 
             if !deployment.rhev_is_self_hosted
               distribute_key_to_host keyutils, deployment.rhev_engine_host.name, deployment.rhev_root_password
@@ -142,7 +143,7 @@ module Actions
             time_to_sleep = 30
             tries ||= 10
             keyutils.copy_keys_to_root host, password
-          rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Net::SCP::Error
+          rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Errno::ETIMEDOUT, Net::SCP::Error
             ::Fusor.log.debug "======= SSH is not yet available on host #{host}, #{tries - 1} retries remaining ======"
             if (tries -= 1) > 0
               ::Fusor.log.debug "====== Sleeping for #{time_to_sleep} seconds"
