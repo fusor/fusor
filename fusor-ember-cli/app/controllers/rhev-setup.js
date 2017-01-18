@@ -10,7 +10,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, NeedsDiscoveredHost
   }),
 
   rhevSetupTitle: Ember.computed('rhevIsSelfHosted', function() {
-    return (this.get('rhevIsSelfHosted') ? "Self Hosted" : "Host + Engine");
+    return (this.get('rhevIsSelfHosted') ? "Self Hosted" : "Hypervisor + Engine");
   }),
 
   actions: {
