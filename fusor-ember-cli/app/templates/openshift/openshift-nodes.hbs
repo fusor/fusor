@@ -32,13 +32,13 @@
               {{tool-tip  faIcon='fa-info-circle' title=cfmeTooltipError.cpu}}
             {{/if}}
           </p>
-          <p>Master CPUs: {{totalMasterCpus}}</p>
-          <p>Worker CPUs: {{totalWorkerCpus}}</p>
+          <p>Master vCPUs: {{totalMasterCpus}}</p>
+          <p>Worker vCPUs: {{totalWorkerCpus}}</p>
           {{#if isHA}}
-            <p>HA Reserved CPUs: {{totalInfraCpus}}</p>
+            <p>HA Reserved vCPUs: {{totalInfraCpus}}</p>
           {{/if}}
-          <p><strong>Total CPUs required: {{vcpuNeeded}}</strong></p>
-          <p><strong>Total CPUs available: {{vcpuAvailable}}</strong></p>
+          <p><strong>Total vCPUs required: {{vcpuNeeded}}</strong></p>
+          <p><strong>Total vCPUs available: {{vcpuAvailable}}</strong></p>
         </div>
       </div>
     </div>
@@ -118,9 +118,9 @@ TODO: Should allow for more product selection when more than one provider is sup
 
 {{#if openshiftInstallLoc}}
   <p>
-    Select how many nodes should be created as nodes for the OpenShift environment.
+    Select how many nodes should be created for the OpenShift environment.
     {{tool-tip faIcon='fa-info-circle'
-               title="The environment consists of worker nodes and master nodes, which orchestrates tasks across the other nodes. Master and worker nodes are provisioned with different specifications, as seen in Node Details."}}
+               title="Single Master environments must have a master node and at least one worker node. Highly Available environments need at least three master nodes, at least one worker node, and require four additional nodes for routing and load distribution."}}
 
   </p>
 {{/if}}

@@ -3,7 +3,7 @@ import Ember from 'ember';
 export default Ember.Component.extend({
 
   resourcesAvailableToolTip: Ember.computed('cfmeVcpu', 'cfmeRam', 'cfmeDisk', function() {
-    return `${this.get('cfmeVcpu')} vCPUs, ${this.get('cfmeRam')}GB RAM, ${this.get('cfmeDisk')}GB Disk reserved for CloudForms`;
+    return `${this.get('cfmeVcpu')} vCPUs, ${this.get('cfmeRam')} GB RAM, ${this.get('cfmeDisk')} GB Disk reserved for CloudForms`;
   }),
 
   minTotalNodes: Ember.computed('oseDeploymentType', function() {
