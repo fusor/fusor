@@ -283,7 +283,7 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
   errorTypes: Ember.computed('isOverCapacityVcpu','isOverCapacityRam', 'isOverCapacityDisk', function() {
     let errorTypes = [];
     if (this.get('isOverCapacityVcpu')) {
-      errorTypes.push('CPU');
+      errorTypes.push('vCPU');
     }
     if (this.get('isOverCapacityRam')) {
       errorTypes.push('RAM');
@@ -304,10 +304,10 @@ export default Ember.Mixin.create(NeedsDeploymentMixin, {
     'cfmeDisk',
     function() {
       const ramErrorMsg =
-        `CloudForms has reserved ${this.get('cfmeRam')}GB. The hypervisor requires 4GB of overhead.`;
+        `CloudForms has reserved ${this.get('cfmeRam')} GB. The hypervisor requires 4 GB of overhead.`;
 
       return Ember.Object.create({
-        cpu: `CloudForms has ${this.get('cfmeVcpu')} reserved cpus`,
+        cpu: `CloudForms has ${this.get('cfmeVcpu')} reserved vCPUs`,
         ram: ramErrorMsg,
         disk: `CloudForms has reserved ${this.get('cfmeDisk')} GB of disk`
       });
