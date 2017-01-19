@@ -337,24 +337,9 @@ const LeadingSlashValidator = Validator.extend({
   }
 });
 
-const NoLeadingSlashValidator = Validator.extend({
-  message: 'This field must not have a leading slash.',
-  isValid(value) {
-    return value.charAt(0) !== '/';
-  }
-});
-
-const NfsPathValidator = AllValidator.extend({
+const StoragePathValidator = AllValidator.extend({
   validators: [
     LeadingSlashValidator.create({}),
-    NoTrailingSlashValidator.create({}),
-    NoSpacesValidator.create({})
-  ]
-});
-
-const GlusterPathValidator = AllValidator.extend({
-  validators: [
-    NoLeadingSlashValidator.create({}),
     NoTrailingSlashValidator.create({}),
     NoSpacesValidator.create({})
   ]
@@ -387,7 +372,6 @@ export {
   HostAddressValidator,
   MacAddressValidator,
   HostnameValidator,
-  NfsPathValidator,
-  GlusterPathValidator,
+  StoragePathValidator,
   validateZipper
 };
