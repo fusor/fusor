@@ -57,6 +57,11 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, OpenshiftMixin, {
 
   onOseDeploymentTypeEdited: Ember.observer('oseDeploymentType', function () {
     Ember.run.once(this, () => {
+      if (this.get('oseDeploymentType') === 'single_node') {
+        this.set('numTotalNodes', 2);
+      } else if (this.get('oseDeploymentType') === 'highly_available') {
+        this.set('numTotalNodes', 8);
+      }
       this.calculateNodeRatioOptions();
       this.calculateAutoNodeRatio();
     });
