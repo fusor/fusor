@@ -1684,7 +1684,7 @@ define('fusor-ember-cli/components/ose-env-summary', ['exports', 'ember'], funct
   exports['default'] = _ember['default'].Component.extend({
 
     resourcesAvailableToolTip: _ember['default'].computed('cfmeVcpu', 'cfmeRam', 'cfmeDisk', function () {
-      return this.get('cfmeVcpu') + ' vCPUs, ' + this.get('cfmeRam') + 'GB RAM, ' + this.get('cfmeDisk') + 'GB Disk reserved for CloudForms';
+      return this.get('cfmeVcpu') + ' vCPUs, ' + this.get('cfmeRam') + ' GB RAM, ' + this.get('cfmeDisk') + ' GB Disk reserved for CloudForms';
     }),
 
     minTotalNodes: _ember['default'].computed('oseDeploymentType', function () {
@@ -5691,7 +5691,11 @@ define('fusor-ember-cli/controllers/rhev-options', ['exports', 'ember', 'fusor-e
     disableNextRhevOptions: _ember['default'].computed.not('validRhevOptions'),
 
     isDCConfigDisabled: _ember['default'].computed('rhevIsSelfHosted', 'isStarted', function () {
-      return this.get('isStarted') || this.get('rhevIsSelfHosted');
+      // Temporarily disable custom data center configuration for QCI v1.1 release (BZ 1413194)
+      // Will need to revert this change for QCI v1.2 (BZ 1413189)
+      //
+      // return this.get('isStarted') || this.get('rhevIsSelfHosted');
+      return true;
     }),
 
     actions: {
@@ -5709,7 +5713,7 @@ define('fusor-ember-cli/controllers/rhev-setup', ['exports', 'ember', 'fusor-emb
     }),
 
     rhevSetupTitle: _ember['default'].computed('rhevIsSelfHosted', function () {
-      return this.get('rhevIsSelfHosted') ? "Self Hosted" : "Host + Engine";
+      return this.get('rhevIsSelfHosted') ? "Self Hosted" : "Hypervisor + Engine";
     }),
 
     actions: {
@@ -11629,7 +11633,7 @@ define('fusor-ember-cli/mixins/openshift-mixin', ['exports', 'ember', 'fusor-emb
     errorTypes: _ember['default'].computed('isOverCapacityVcpu', 'isOverCapacityRam', 'isOverCapacityDisk', function () {
       var errorTypes = [];
       if (this.get('isOverCapacityVcpu')) {
-        errorTypes.push('CPU');
+        errorTypes.push('vCPU');
       }
       if (this.get('isOverCapacityRam')) {
         errorTypes.push('RAM');
@@ -11645,10 +11649,10 @@ define('fusor-ember-cli/mixins/openshift-mixin', ['exports', 'ember', 'fusor-emb
     }),
 
     cfmeTooltipError: _ember['default'].computed('cfmeVcpu', 'cfmeRam', 'cfmeDisk', function () {
-      var ramErrorMsg = 'CloudForms has reserved ' + this.get('cfmeRam') + 'GB. The hypervisor requires 4GB of overhead.';
+      var ramErrorMsg = 'CloudForms has reserved ' + this.get('cfmeRam') + ' GB. The hypervisor requires 4 GB of overhead.';
 
       return _ember['default'].Object.create({
-        cpu: 'CloudForms has ' + this.get('cfmeVcpu') + ' reserved cpus',
+        cpu: 'CloudForms has ' + this.get('cfmeVcpu') + ' reserved vCPUs',
         ram: ramErrorMsg,
         disk: 'CloudForms has reserved ' + this.get('cfmeDisk') + ' GB of disk'
       });
@@ -25518,7 +25522,7 @@ define("fusor-ember-cli/templates/components/ose-env-summary", ["exports"], func
               },
               "end": {
                 "line": 15,
-                "column": 58
+                "column": 60
               }
             },
             "moduleName": "fusor-ember-cli/templates/components/ose-env-summary.hbs"
@@ -25529,7 +25533,7 @@ define("fusor-ember-cli/templates/components/ose-env-summary", ["exports"], func
           hasRendered: false,
           buildFragment: function buildFragment(dom) {
             var el0 = dom.createDocumentFragment();
-            var el1 = dom.createTextNode("Single Node");
+            var el1 = dom.createTextNode("Single Master");
             dom.appendChild(el0, el1);
             return el0;
           },
@@ -25618,7 +25622,7 @@ define("fusor-ember-cli/templates/components/ose-env-summary", ["exports"], func
           morphs[1] = dom.createMorphAt(fragment, 3, 3, contextualElement);
           return morphs;
         },
-        statements: [["block", "x-option", [], ["value", "single_node"], 0, null, ["loc", [null, [15, 14], [15, 71]]]], ["block", "x-option", [], ["value", "highly_available"], 1, null, ["loc", [null, [16, 14], [16, 81]]]]],
+        statements: [["block", "x-option", [], ["value", "single_node"], 0, null, ["loc", [null, [15, 14], [15, 73]]]], ["block", "x-option", [], ["value", "highly_available"], 1, null, ["loc", [null, [16, 14], [16, 81]]]]],
         locals: [],
         templates: [child0, child1]
       };
@@ -25660,7 +25664,7 @@ define("fusor-ember-cli/templates/components/ose-env-summary", ["exports"], func
           morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
           return morphs;
         },
-        statements: [["inline", "tool-tip", [], ["faIcon", "fa-info-circle", "title", ["subexpr", "@mut", [["get", "resourcesAvailableToolTip", ["loc", [null, [50, 53], [50, 78]]]]], [], []]], ["loc", [null, [50, 12], [50, 80]]]]],
+        statements: [["inline", "tool-tip", [], ["faIcon", "fa-info-circle", "data-original-title", ["subexpr", "@mut", [["get", "resourcesAvailableToolTip", ["loc", [null, [50, 67], [50, 92]]]]], [], []]], ["loc", [null, [50, 12], [50, 94]]]]],
         locals: [],
         templates: []
       };
@@ -42118,7 +42122,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               var el1 = dom.createTextNode("            ");
               dom.appendChild(el0, el1);
               var el1 = dom.createElement("p");
-              var el2 = dom.createTextNode("HA Reserved CPUs: ");
+              var el2 = dom.createTextNode("HA Reserved vCPUs: ");
               dom.appendChild(el1, el2);
               var el2 = dom.createComment("");
               dom.appendChild(el1, el2);
@@ -42132,7 +42136,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
               morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 1, 1);
               return morphs;
             },
-            statements: [["content", "totalInfraCpus", ["loc", [null, [38, 33], [38, 51]]]]],
+            statements: [["content", "totalInfraCpus", ["loc", [null, [38, 34], [38, 52]]]]],
             locals: [],
             templates: []
           };
@@ -42185,7 +42189,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             var el4 = dom.createTextNode("\n          ");
             dom.appendChild(el3, el4);
             var el4 = dom.createElement("p");
-            var el5 = dom.createTextNode("Master CPUs: ");
+            var el5 = dom.createTextNode("Master vCPUs: ");
             dom.appendChild(el4, el5);
             var el5 = dom.createComment("");
             dom.appendChild(el4, el5);
@@ -42193,7 +42197,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             var el4 = dom.createTextNode("\n          ");
             dom.appendChild(el3, el4);
             var el4 = dom.createElement("p");
-            var el5 = dom.createTextNode("Worker CPUs: ");
+            var el5 = dom.createTextNode("Worker vCPUs: ");
             dom.appendChild(el4, el5);
             var el5 = dom.createComment("");
             dom.appendChild(el4, el5);
@@ -42206,7 +42210,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             dom.appendChild(el3, el4);
             var el4 = dom.createElement("p");
             var el5 = dom.createElement("strong");
-            var el6 = dom.createTextNode("Total CPUs required: ");
+            var el6 = dom.createTextNode("Total vCPUs required: ");
             dom.appendChild(el5, el6);
             var el6 = dom.createComment("");
             dom.appendChild(el5, el6);
@@ -42216,7 +42220,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             dom.appendChild(el3, el4);
             var el4 = dom.createElement("p");
             var el5 = dom.createElement("strong");
-            var el6 = dom.createTextNode("Total CPUs available: ");
+            var el6 = dom.createTextNode("Total vCPUs available: ");
             dom.appendChild(el5, el6);
             var el6 = dom.createComment("");
             dom.appendChild(el5, el6);
@@ -42246,7 +42250,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             morphs[5] = dom.createMorphAt(dom.childAt(element4, [11, 0]), 1, 1);
             return morphs;
           },
-          statements: [["block", "if", [["get", "isCloudForms", ["loc", [null, [31, 18], [31, 30]]]]], [], 0, null, ["loc", [null, [31, 12], [33, 19]]]], ["content", "totalMasterCpus", ["loc", [null, [35, 26], [35, 45]]]], ["content", "totalWorkerCpus", ["loc", [null, [36, 26], [36, 45]]]], ["block", "if", [["get", "isHA", ["loc", [null, [37, 16], [37, 20]]]]], [], 1, null, ["loc", [null, [37, 10], [39, 17]]]], ["content", "vcpuNeeded", ["loc", [null, [40, 42], [40, 56]]]], ["content", "vcpuAvailable", ["loc", [null, [41, 43], [41, 60]]]]],
+          statements: [["block", "if", [["get", "isCloudForms", ["loc", [null, [31, 18], [31, 30]]]]], [], 0, null, ["loc", [null, [31, 12], [33, 19]]]], ["content", "totalMasterCpus", ["loc", [null, [35, 27], [35, 46]]]], ["content", "totalWorkerCpus", ["loc", [null, [36, 27], [36, 46]]]], ["block", "if", [["get", "isHA", ["loc", [null, [37, 16], [37, 20]]]]], [], 1, null, ["loc", [null, [37, 10], [39, 17]]]], ["content", "vcpuNeeded", ["loc", [null, [40, 43], [40, 57]]]], ["content", "vcpuAvailable", ["loc", [null, [41, 44], [41, 61]]]]],
           locals: [],
           templates: [child0, child1]
         };
@@ -42837,7 +42841,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
           var el1 = dom.createTextNode("  ");
           dom.appendChild(el0, el1);
           var el1 = dom.createElement("p");
-          var el2 = dom.createTextNode("\n    Select how many nodes should be created as nodes for the OpenShift environment.\n    ");
+          var el2 = dom.createTextNode("\n    Select how many nodes should be created for the OpenShift environment.\n    ");
           dom.appendChild(el1, el2);
           var el2 = dom.createComment("");
           dom.appendChild(el1, el2);
@@ -42853,7 +42857,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
           morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 1, 1);
           return morphs;
         },
-        statements: [["inline", "tool-tip", [], ["faIcon", "fa-info-circle", "title", "The environment consists of worker nodes and master nodes, which orchestrates tasks across the other nodes. Master and worker nodes are provisioned with different specifications, as seen in Node Details."], ["loc", [null, [122, 4], [123, 228]]]]],
+        statements: [["inline", "tool-tip", [], ["faIcon", "fa-info-circle", "title", "Single Master environments must have a master node and at least one worker node. Highly Available environments need at least three master nodes, at least one worker node, and require four additional nodes for routing and load distribution."], ["loc", [null, [122, 4], [123, 264]]]]],
         locals: [],
         templates: []
       };
@@ -45645,7 +45649,7 @@ define("fusor-ember-cli/templates/openstack/undercloud-deploy", ["exports"], fun
                 var el6 = dom.createTextNode("here");
                 dom.appendChild(el5, el6);
                 dom.appendChild(el4, el5);
-                var el5 = dom.createTextNode(" update OpenStack DNS addresses to match Satellite");
+                var el5 = dom.createTextNode(" to update OpenStack DNS addresses to match Satellite");
                 dom.appendChild(el4, el5);
                 dom.appendChild(el3, el4);
                 var el4 = dom.createTextNode("\n        ");
@@ -51270,7 +51274,7 @@ define("fusor-ember-cli/templates/satellite/index", ["exports"], function (expor
             var el1 = dom.createTextNode("              ");
             dom.appendChild(el0, el1);
             var el1 = dom.createElement("li");
-            var el2 = dom.createTextNode("CloudForms root and admin and DB");
+            var el2 = dom.createTextNode("CloudForms root, admin, and DB");
             dom.appendChild(el1, el2);
             dom.appendChild(el0, el1);
             var el1 = dom.createTextNode("\n");
@@ -57041,7 +57045,7 @@ define('fusor-ember-cli/views/application', ['exports', 'ember'], function (expo
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","rootURL":"/r/","locationType":"history","EmberENV":{"FEATURES":{},"_ENABLE_LEGACY_VIEW_SUPPORT":true},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+22b176b1"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":["'none'"],"script-src":["'self'"],"font-src":["'self'"],"connect-src":["'self'"],"img-src":["'self'"],"style-src":["'self'"],"media-src":["'self'"]},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","rootURL":"/r/","locationType":"history","EmberENV":{"FEATURES":{},"_ENABLE_LEGACY_VIEW_SUPPORT":true},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+e60eb3c7"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":["'none'"],"script-src":["'self'"],"font-src":["'self'"],"connect-src":["'self'"],"img-src":["'self'"],"style-src":["'self'"],"media-src":["'self'"]},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 /* jshint ignore:end */
@@ -57049,7 +57053,7 @@ define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
 /* jshint ignore:start */
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+22b176b1"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+e60eb3c7"});
 }
 
 /* jshint ignore:end */
