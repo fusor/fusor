@@ -49,8 +49,8 @@ module Actions
             ::Fusor.log.info "Adding RHV provider #{provider[:name]} to CFME."
 
             cfme_addresses.each do |cfme_address|
-              Utils::CloudForms::AddProvider.add(cfme_address, provider, deployment)
-              Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)
+              ::Utils::CloudForms::AddProvider.add(cfme_address, provider, deployment)
+              ::Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)
             end
 
             ::Fusor.log.debug "================ Leaving AddRhvProvider run method ===================="

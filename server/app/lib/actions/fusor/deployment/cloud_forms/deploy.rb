@@ -41,32 +41,36 @@ module Actions
             sequence do
               repositories = retrieve_deployment_repositories(deployment.organization,
                                                               SETTINGS[:fusor][:content][:cloudforms])
+              concurrence do
+                if deployment.deploy_rhev
+                  sequence do
+                    transfer_action = plan_action(::Actions::Fusor::Deployment::Rhev::TransferImage,
+                                                  deployment, file_repositories(repositories).first,
+                                                  image_file_name(SETTINGS[:fusor][:content][:cloudforms], :rhev_image_file_name))
 
-              if deployment.deploy_rhev
-                transfer_action = plan_action(::Actions::Fusor::Deployment::Rhev::TransferImage,
-                                              deployment, file_repositories(repositories).first,
-                                              image_file_name(SETTINGS[:fusor][:content][:cloudforms], :rhev_image_file_name))
+                    upload_action = plan_action(::Actions::Fusor::Deployment::Rhev::UploadImage,
+                                                deployment, transfer_action.output[:image_file_name], "cfme")
 
-                upload_action = plan_action(::Actions::Fusor::Deployment::Rhev::UploadImage,
-                                            deployment, transfer_action.output[:image_file_name], "cfme")
+                    plan_action(::Actions::Fusor::Deployment::Rhev::ImportTemplate,
+                                deployment, upload_action.output[:template_name])
 
-                plan_action(::Actions::Fusor::Deployment::Rhev::ImportTemplate,
-                            deployment, upload_action.output[:template_name])
+                    plan_action(::Actions::Fusor::Deployment::Rhev::CfmeLaunch, deployment)
+                    plan_action(::Actions::Fusor::Deployment::CloudForms::UpdateRootPassword, deployment, "rhv")
+                  end
+                end
 
-                plan_action(::Actions::Fusor::Deployment::Rhev::CfmeLaunch, deployment)
-
+                if deployment.deploy_openstack
+                  sequence do
+                    plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeUpload, deployment,
+                                file_repositories(repositories).first,
+                                image_file_name(SETTINGS[:fusor][:content][:cloudforms], :rhos_image_file_name))
+                    plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeSecgroup, deployment)
+                    plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeFlavor, deployment)
+                    plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeLaunch, deployment)
+                    plan_action(::Actions::Fusor::Deployment::CloudForms::UpdateRootPassword, deployment, "osp")
+                  end
+                end
               end
-
-              if deployment.deploy_openstack
-                plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeUpload, deployment,
-                            file_repositories(repositories).first,
-                            image_file_name(SETTINGS[:fusor][:content][:cloudforms], :rhos_image_file_name))
-                plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeSecgroup, deployment)
-                plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeFlavor, deployment)
-                plan_action(::Actions::Fusor::Deployment::OpenStack::CfmeLaunch, deployment)
-              end
-              plan_action(::Actions::Fusor::Deployment::CloudForms::UpdateRootPassword,
-                          deployment)
 
               plan_action(::Actions::Fusor::Deployment::CloudForms::RunApplianceConsole,
                           deployment, deployment.cfme_install_loc)

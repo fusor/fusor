@@ -36,7 +36,7 @@ module Actions
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             repository = ::Katello::Repository.find(input[:repository_id])
-            image_full_path, _image_file_name = Utils::CloudForms::ImageLookup.find_image_details(repository, input[:image_file_name], 'cfme-rhos')
+            image_full_path, _image_file_name = ::Utils::CloudForms::ImageLookup.find_image_details(repository, input[:image_file_name], 'cfme-rhos')
 
             overcloud = { :openstack_auth_url  => "https://#{deployment.openstack_deployment.overcloud_hostname}:13000/v2.0/tokens",
                           :openstack_username  => 'admin', :openstack_tenant => 'admin',
