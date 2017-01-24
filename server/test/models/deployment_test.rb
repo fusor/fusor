@@ -254,7 +254,7 @@ class DeploymentTest < ActiveSupport::TestCase
         rhev.rhev_storage_type = 'NFS'
         rhev.rhev_share_path = 'test/this/out'
         assert rhev.invalid?
-        assert_equal 'NFS path specified does not start with a "/", which is invalid',
+        assert_equal 'Storage path specified does not start with a "/", which is invalid',
                      rhev.errors[:rhev_share_path].first
       end
 
@@ -293,11 +293,13 @@ class DeploymentTest < ActiveSupport::TestCase
         assert_not rhev.save, "Saved rhev deployment who's glusterfs path ended in a slash"
       end
 
-      test "should not save rhev deployment if glusterfs path starts in slash" do
+      test "should invalidate rhev deployment if glusterfs path does not have a leading slash" do
         rhev = fusor_deployments(:rhev)
         rhev.rhev_storage_type = 'glusterfs'
-        rhev.rhev_share_path = '/gv0'
-        assert_not rhev.save, "Saved rhev deployment who's glusterfs path ended in a slash"
+        rhev.rhev_share_path = 'test/this/out'
+        assert rhev.invalid?
+        assert_equal 'Storage path specified does not start with a "/", which is invalid',
+                     rhev.errors[:rhev_share_path].first
       end
 
       test "should not save rhev deployment if self hosted and storage is empty" do
@@ -319,11 +321,13 @@ class DeploymentTest < ActiveSupport::TestCase
         assert_not rhev.save, "Saved self hosted rhev deployment who's hosted gluster storage path ends in a slash"
       end
 
-      test "should not save rhev deployment if self hosted and gluster path begins with a slash" do
+      test "should invalidate rhev deployment if self hosted and glusterfs path does not have a leading slash" do
         rhev = fusor_deployments(:rhev_self_hosted)
         rhev.rhev_storage_type = 'glusterfs'
-        rhev.hosted_storage_path = '/gv0'
-        assert_not rhev.save, "Saved self hosted rhev deployment who's hosted gluster storage path begins with a slash"
+        rhev.hosted_storage_path = 'test/this/out'
+        assert rhev.invalid?
+        assert_equal 'Storage path specified does not start with a "/", which is invalid',
+                     rhev.errors[:hosted_storage_path].first
       end
 
       test "should not save rhev self hosted deployment if hosted nfs storage path ends in slash" do
@@ -338,7 +342,7 @@ class DeploymentTest < ActiveSupport::TestCase
         rhev.rhev_storage_type = 'NFS'
         rhev.hosted_storage_path = 'test/this/out'
         assert rhev.invalid?
-        assert_equal 'NFS path specified does not start with a "/", which is invalid',
+        assert_equal 'Storage path specified does not start with a "/", which is invalid',
                      rhev.errors[:hosted_storage_path].first
       end
 
@@ -450,11 +454,13 @@ class DeploymentTest < ActiveSupport::TestCase
         assert_not cfme.save, "Saved cfme deployment with gluster storage path that ends in a slash"
       end
 
-      test "cfme deployments should not save if export gluster storage path begins with a slash" do
+      test "should invalidate cfme deployment if export gluster storage path does not have a leading slash" do
         cfme = fusor_deployments(:rhev_and_cfme)
         cfme.rhev_storage_type = 'glusterfs'
-        cfme.rhev_export_domain_path = "/gv0"
-        assert_not cfme.save, "Saved cfme deployment with gluster storage path beginning in a slash"
+        cfme.rhev_export_domain_path = 'test/this/out'
+        assert cfme.invalid?
+        assert_equal 'Storage path specified does not start with a "/", which is invalid',
+                     cfme.errors[:rhev_export_domain_path].first
       end
     end
 
@@ -495,7 +501,6 @@ class DeploymentTest < ActiveSupport::TestCase
         deployment = fusor_deployments(:all_products)
         deployment.openshift_storage_host = deployment.rhev_storage_address
         deployment.openshift_export_path = deployment.rhev_share_path
-        # binding.pry
         assert_not deployment.save, "Saved deployment while rhev export location is the same as self hosted storage path "
       end
 

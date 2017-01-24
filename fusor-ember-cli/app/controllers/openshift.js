@@ -5,8 +5,7 @@ import {
   AllValidator,
   PresenceValidator,
   EqualityValidator,
-  NfsPathValidator,
-  GlusterPathValidator,
+  StoragePathValidator,
   AlphaNumericDashUnderscoreValidator,
   HostnameValidator,
   HostAddressValidator,
@@ -120,12 +119,7 @@ export default Ember.Controller.extend(OpenshiftMixin, {
       let validators = [];
 
       validators.push(PresenceValidator.create({}));
-
-      if (openshiftStorageType === 'NFS') {
-        validators.push(NfsPathValidator.create({}));
-      } else {
-        validators.push(GlusterPathValidator.create({}));
-      }
+      validators.push(StoragePathValidator.create({}));
 
       if (openshiftStorageType === rhevStorageType && Ember.isPresent(openshiftStorageHost)) {
         openshiftStorageHost = openshiftStorageHost.trim();

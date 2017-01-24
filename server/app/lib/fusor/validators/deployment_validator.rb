@@ -114,7 +114,7 @@ module Fusor
           end
 
           if deployment.rhev_storage_address && deployment.rhev_share_path
-            error = validate_storage_path(deployment.rhev_share_path, deployment.rhev_storage_type)
+            error = validate_storage_path(deployment.rhev_share_path)
             if error
               deployment.errors[:rhev_share_path] << _(error)
             elsif deployment.rhev_storage_address.empty?
@@ -175,7 +175,7 @@ module Fusor
         end
 
         if deployment.hosted_storage_address && deployment.hosted_storage_path
-          error = validate_storage_path(deployment.hosted_storage_path, deployment.rhev_storage_type)
+          error = validate_storage_path(deployment.hosted_storage_path)
           if error
             deployment.errors[:hosted_storage_path] << _(error)
           elsif deployment.hosted_storage_address.empty?
@@ -239,7 +239,7 @@ module Fusor
           end
 
           if deployment.rhev_export_domain_path && deployment.rhev_export_domain_address
-            error = validate_storage_path(deployment.rhev_export_domain_path, deployment.rhev_storage_type)
+            error = validate_storage_path(deployment.rhev_export_domain_path)
             if error
               deployment.errors[:rhev_export_domain_path] << _(error)
             end
@@ -304,35 +304,19 @@ module Fusor
 
       private
 
-      def validate_storage_path(path, type)
-        error = nil
-        if type == 'NFS'
-          # See https://tools.ietf.org/html/rfc2224#section-1
-          # NFS paths cannot end in slash or contain non-ascii chars
-          if path.end_with?("/") && path.length > 1
-            error = 'NFS path specified ends in a "/", which is invalid'
-          end
-          # NFS paths must start with a slash
-          if !path.start_with?("/")
-            error = 'NFS path specified does not start with a "/", which is invalid'
-          end
-          if !path.ascii_only?
-            error = 'NFS path specified contains non-ascii characters, which is invalid'
-          end
-        elsif type == 'glusterfs'
-          if path.end_with?("/") && path.length > 1
-            error = 'Gluster path specified ends in a "/", which is invalid'
-          end
-
-          if path.start_with?("/")
-            error = 'Gluster path specified starts with a "/", which is invalid'
-          end
-
-          if !path.ascii_only?
-            error = 'Gluster path specified contains non-ascii characters, which is invalid'
-          end
+      def validate_storage_path(path)
+        # See https://tools.ietf.org/html/rfc2224#section-1
+        # paths cannot end in slash or contain non-ascii chars
+        if path.end_with?("/") && path.length > 1
+          return 'Storage path specified ends in a "/", which is invalid'
         end
-        return error
+        unless path.start_with?("/")
+          return 'Storage path specified does not start with a "/", which is invalid'
+        end
+        unless path.ascii_only?
+          return 'Storage path specified contains non-ascii characters, which is invalid'
+        end
+        nil
       end
 
       # rubocop:disable Metrics/ParameterLists
@@ -352,7 +336,7 @@ module Fusor
 
         if status != 0
           message = _("Could not connect to address '%s'. " \
-                      "Make sure the NFS server exists and is up.") % "#{address}"
+                      "Make sure the storage server exists and is up.") % "#{address}"
           add_warning(deployment, message, output)
           return false
         end
@@ -371,8 +355,8 @@ module Fusor
         status, output = Utils::Fusor::CommandUtils.run_command(cmd)
 
         if status != 0
-          add_warning(deployment, _("Could not mount the NFS share '%s' in order to inspect it. " \
-                                    "Please check that the NFS share exists.") % "#{address}:#{path}",
+          add_warning(deployment, _("Could not mount the storage share '%s' in order to inspect it. " \
+                                    "Please check that the storage share exists.") % "#{address}:#{path}",
                       output)
           return
         end
@@ -451,7 +435,7 @@ module Fusor
         end
 
         if deployment.openshift_storage_host && deployment.openshift_export_path
-          error = validate_storage_path(deployment.openshift_export_path, deployment.openshift_storage_type)
+          error = validate_storage_path(deployment.openshift_export_path)
           if error
             deployment.errors[:openshift_export_path] << _(error)
           else

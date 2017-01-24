@@ -8,8 +8,7 @@ import {
   UniquenessValidator,
   AlphaNumericDashUnderscoreValidator,
   HostnameValidator,
-  NfsPathValidator,
-  GlusterPathValidator
+  StoragePathValidator
 } from '../utils/validators';
 
 export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
@@ -217,12 +216,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
       let validators = [];
 
       validators.push(PresenceValidator.create({}));
-
-      if (this.get('deployment.rhev_storage_type') === 'NFS') {
-        validators.push(NfsPathValidator.create({}));
-      } else {
-        validators.push(GlusterPathValidator.create({}));
-      }
+      validators.push(StoragePathValidator.create({}));
 
       if (Ember.isPresent(rhevStorageAddress)) {
         rhevStorageAddress = rhevStorageAddress.trim();
@@ -265,12 +259,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
       let validators = [];
 
       validators.push(PresenceValidator.create({}));
-
-      if (this.get('deployment.rhev_storage_type') === 'NFS') {
-        validators.push(NfsPathValidator.create({}));
-      } else {
-        validators.push(GlusterPathValidator.create({}));
-      }
+      validators.push(StoragePathValidator.create({}));
 
       if (Ember.isPresent(rhevExportDomainAddress)) {
         rhevExportDomainAddress = rhevExportDomainAddress.trim();
@@ -314,12 +303,7 @@ export default Ember.Controller.extend(NeedsDeploymentMixin, ValidatesMounts, {
       let validators = [];
 
       validators.push(PresenceValidator.create({}));
-
-      if (this.get('deployment.rhev_storage_type') === 'NFS') {
-        validators.push(NfsPathValidator.create({}));
-      } else {
-        validators.push(GlusterPathValidator.create({}));
-      }
+      validators.push(StoragePathValidator.create({}));
 
       if (Ember.isPresent(hostedStorageAddress)) {
         hostedStorageAddress = hostedStorageAddress.trim();
