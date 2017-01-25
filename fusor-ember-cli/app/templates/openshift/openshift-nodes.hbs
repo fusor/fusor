@@ -76,10 +76,10 @@
               {{tool-tip  faIcon='fa-info-circle' title=cfmeTooltipError.disk}}
             {{/if}}
           </p>
-          <p>Master Disk: {{totalMasterDisk}} GB</p>
+          <p>Master Disk: {{totalMasterDiskPlusStorage}} GB</p>
           <p>Worker Disk + Storage: {{totalWorkerDiskPlusStorage}} GB</p>
           {{#if isHA}}
-            <p>Required HA Disk: {{totalInfraDisk}} GB</p>
+            <p>Required HA Disk: {{totalInfraDiskPlusStorage}} GB</p>
           {{/if}}
           <p><strong>Total Disk required: {{diskNeeded}} GB</strong></p>
           <p><strong>Total Disk available: {{diskAvailable}} GB</strong></p>
