@@ -46434,7 +46434,7 @@ define("fusor-ember-cli/templates/req-openstack", ["exports"], function (exports
         var el3 = dom.createTextNode("\n    ");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("li");
-        var el4 = dom.createTextNode("2 overcloud nodes (1 controller node with 100GB disk space, 32GB RAM, 4CPUs and 1 compute node with 100GB disk space, 16GB RAM, 4CPUs)");
+        var el4 = dom.createTextNode("2 overcloud nodes (1 controller node with 100GB disk space, 32GB RAM, 4CPUs and 1 compute node with 100GB disk space, 20GB RAM, 4CPUs)");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n    ");
