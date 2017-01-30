@@ -46,15 +46,22 @@ module Actions
 
           def generate_self_hosted_inventory(deployment)
             first_host, *hypervisors = *deployment.discovered_hosts
+            hostgroup = deployment.rhev_engine_host.hostgroup
             ["[self_hosted_first_host]",
              "#{first_host.fqdn} mac_address=#{first_host.mac}",
              "[self_hosted_additional_hosts]",
              "#{hypervisors.map.with_index { |h, i| "#{h.fqdn} host_id=#{i + 2} mac_address=#{h.mac}" }.join("\n")}",
-             "[self_hosted:children]",
+             "[self_hosted_hypervisors:children]",
              "self_hosted_first_host",
              "self_hosted_additional_hosts",
-             "[self_hosted:vars]",
-             "repositories=#{repositories_for(:rhevh)}"].join("\n")
+             "[self_hosted_hypervisors:vars]",
+             "repositories=#{repositories_for(:rhevh)}",
+             "[self_hosted_engine]",
+             "#{deployment.rhev_engine_host.name}",
+             "[self_hosted_engine:vars]",
+             "register_to_satellite=true",
+             "activation_key=#{hostgroup.group_parameters.where(:name => 'kt_activation_keys').try(:first).try(:value)}",
+             "repositories=#{repositories_for(:rhevm)}"].join("\n")
           end
 
           def generate_engine_hypervisor_inventory(deployment)
@@ -77,7 +84,6 @@ module Actions
           end
 
           def generate_vars(deployment)
-            hostgroup = deployment.rhev_engine_host.hostgroup
             cpu_type = deployment.rhev_cpu_type || 'Intel Nehalem Family'
             {
               "admin_password" => deployment.rhev_engine_admin_password,
@@ -96,7 +102,6 @@ module Actions
               "export_storage_address" => deployment.rhev_export_domain_address,
               "export_storage_name" => deployment.rhev_export_domain_name,
               "export_storage_path" => deployment.rhev_export_domain_path,
-              "engine_activation_key" => hostgroup.group_parameters.where(:name => 'kt_activation_keys').try(:first).try(:value),
               "engine_db_password" => deployment.rhev_engine_admin_password,
               "engine_fqdn" => deployment.rhev_engine_host.name,
               "engine_mac_address" => deployment.rhev_engine_host.mac,
@@ -107,8 +112,7 @@ module Actions
               "satellite_fqdn" => ::SmartProxy.first.hostname,
               "config_dir" => "/etc/qci/",
               "storageDatacenterName" => "hosted_storage",
-              "storage_type" => deployment.rhev_storage_type.downcase,
-              "engine_repositories": repositories_for(:rhevm)
+              "storage_type" => deployment.rhev_storage_type.downcase
             }
           end
 
