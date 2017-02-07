@@ -42592,7 +42592,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             var el4 = dom.createTextNode("\n          ");
             dom.appendChild(el3, el4);
             var el4 = dom.createElement("p");
-            var el5 = dom.createTextNode("Master Disk: ");
+            var el5 = dom.createTextNode("Master Disk + Storage: ");
             dom.appendChild(el4, el5);
             var el5 = dom.createComment("");
             dom.appendChild(el4, el5);
@@ -42661,7 +42661,7 @@ define("fusor-ember-cli/templates/openshift/openshift-nodes", ["exports"], funct
             morphs[5] = dom.createMorphAt(dom.childAt(element2, [11, 0]), 1, 1);
             return morphs;
           },
-          statements: [["block", "if", [["get", "isCloudForms", ["loc", [null, [75, 18], [75, 30]]]]], [], 0, null, ["loc", [null, [75, 12], [77, 19]]]], ["content", "totalMasterDiskPlusStorage", ["loc", [null, [79, 26], [79, 56]]]], ["content", "totalWorkerDiskPlusStorage", ["loc", [null, [80, 36], [80, 66]]]], ["block", "if", [["get", "isHA", ["loc", [null, [81, 16], [81, 20]]]]], [], 1, null, ["loc", [null, [81, 10], [83, 17]]]], ["content", "diskNeeded", ["loc", [null, [84, 42], [84, 56]]]], ["content", "diskAvailable", ["loc", [null, [85, 43], [85, 60]]]]],
+          statements: [["block", "if", [["get", "isCloudForms", ["loc", [null, [75, 18], [75, 30]]]]], [], 0, null, ["loc", [null, [75, 12], [77, 19]]]], ["content", "totalMasterDiskPlusStorage", ["loc", [null, [79, 36], [79, 66]]]], ["content", "totalWorkerDiskPlusStorage", ["loc", [null, [80, 36], [80, 66]]]], ["block", "if", [["get", "isHA", ["loc", [null, [81, 16], [81, 20]]]]], [], 1, null, ["loc", [null, [81, 10], [83, 17]]]], ["content", "diskNeeded", ["loc", [null, [84, 42], [84, 56]]]], ["content", "diskAvailable", ["loc", [null, [85, 43], [85, 60]]]]],
           locals: [],
           templates: [child0, child1]
         };
@@ -57031,7 +57031,7 @@ define('fusor-ember-cli/views/application', ['exports', 'ember'], function (expo
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","rootURL":"/r/","locationType":"history","EmberENV":{"FEATURES":{},"_ENABLE_LEGACY_VIEW_SUPPORT":true},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+faef1194"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":["'none'"],"script-src":["'self'"],"font-src":["'self'"],"connect-src":["'self'"],"img-src":["'self'"],"style-src":["'self'"],"media-src":["'self'"]},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","rootURL":"/r/","locationType":"history","EmberENV":{"FEATURES":{},"_ENABLE_LEGACY_VIEW_SUPPORT":true},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+15e3682c"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":["'none'"],"script-src":["'self'"],"font-src":["'self'"],"connect-src":["'self'"],"img-src":["'self'"],"style-src":["'self'"],"media-src":["'self'"]},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 /* jshint ignore:end */
@@ -57039,7 +57039,7 @@ define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
 /* jshint ignore:start */
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+faef1194"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+15e3682c"});
 }
 
 /* jshint ignore:end */
