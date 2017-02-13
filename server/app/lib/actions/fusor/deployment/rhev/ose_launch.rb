@@ -105,7 +105,7 @@ module Actions
               :admin_password => deployment.rhev_engine_admin_password,
               :satellite_fqdn => ::SmartProxy.first.hostname,
               :register_to_satellite => true,
-              :packages => ['http://download.eng.bos.redhat.com/brewroot/packages/rhel-guest-image/7.3/32.el7/noarch/rhel-guest-image-7-7.3-32.el7.noarch.rpm'],
+              :packages => ['rhel-guest-image-7'],
               :repositories => SETTINGS[:fusor][:content][:openshift].map { |p| p[:repository_set_label] if p[:repository_set_label] =~ /rpms$/ }.compact,
               :username => deployment.openshift_username,
               :root_password => deployment.openshift_user_password,
