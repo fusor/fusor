@@ -169,8 +169,6 @@ module Actions
           end
 
           def create_ocp_vm_definition(vm_params)
-            bootable_image_path = '/usr/share/rhel-guest-image-7/rhel-guest-image-7.3-32.x86_64.qcow2'
-
             ocp_vm = {
               :name => vm_params[:hostname],
               :memory => vm_params[:memory].to_s + "GiB",
@@ -179,7 +177,6 @@ module Actions
                 {
                   :name => "#{vm_params[:hostname]}-disk1",
                   :size => vm_params[:bootable_size],
-                  :image_path => bootable_image_path,
                   :bootable => "True"
                 }
               ],
