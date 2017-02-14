@@ -358,7 +358,7 @@ module Actions
             hostname = deployment.rhev_engine_host.name
             password = deployment.rhev_root_password
 
-            ::Fusor.log.info "Transfering RHEL guest image from #{image_file} to #{hostname}:#{image_destination_path}."
+            ::Fusor.log.info "Transferring RHEL guest image from #{image_file} to #{hostname}:#{image_destination_path}."
             Net::SCP.start(hostname, "root", :password => password, :paranoid => false) do |scp|
               scp.upload!(image_file, image_destination_path)
             end
