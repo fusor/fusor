@@ -471,4 +471,5 @@
         - "foreman-tasks/dynflow"
         - "foreman-tasks/action"
 
+  :rhel_guest_image: "/usr/share/rhel-guest-image-7/rhel-guest-image-7.3-32.x86_64.qcow2"
   :puppet_module:

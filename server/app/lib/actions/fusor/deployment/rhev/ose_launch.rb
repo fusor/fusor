@@ -10,6 +10,7 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 require 'securerandom'
+require 'net/scp'
 
 module Actions
   module Fusor
@@ -34,12 +35,18 @@ module Actions
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             config_dir = "#{Rails.root}/tmp/ansible-ovirt/launch_vms/#{deployment.label}"
 
+            guest_image_source_path = SETTINGS[:fusor][:rhel_guest_image]
+            guest_image_destination_path = "/tmp/#{File.basename(guest_image_source_path)}"
+
             generate_ocp_root_password(deployment)
-            vars = get_ansible_vars(deployment)
+            vars = get_ansible_vars(deployment, guest_image_destination_path)
             environment = get_ansible_environment(deployment, config_dir)
 
             # Ensure SSH key is copied to engine.
             ::Utils::Fusor::SSHKeyUtils.new(deployment).copy_keys_to_root(deployment.rhev_engine_host.name, deployment.rhev_root_password)
+
+            # Copy RHEL guest image to engine.
+            scp_guest_image_to_engine(deployment, guest_image_source_path, guest_image_destination_path)
 
             create_initial_host_inventory(deployment, config_dir)
             trigger_ansible_run(playbook, vars, config_dir, environment)
@@ -95,7 +102,7 @@ module Actions
             }
           end
 
-          def get_ansible_vars(deployment)
+          def get_ansible_vars(deployment, guest_image_path)
             ::Fusor.log.debug '====== Populating variables for OpenShift Launch VMs playbook ======'
             hostgroup = find_hostgroup(deployment, 'OpenShift')
             return {
@@ -105,7 +112,7 @@ module Actions
               :admin_password => deployment.rhev_engine_admin_password,
               :satellite_fqdn => ::SmartProxy.first.hostname,
               :register_to_satellite => true,
-              :packages => ['rhel-guest-image-7'],
+              :image_path => guest_image_path,
               :repositories => SETTINGS[:fusor][:content][:openshift].map { |p| p[:repository_set_label] if p[:repository_set_label] =~ /rpms$/ }.compact,
               :username => deployment.openshift_username,
               :root_password => deployment.openshift_user_password,
@@ -345,6 +352,16 @@ module Actions
             ::Fusor.log.info '====== Generating password for OpenShift root access ======'
             deployment.openshift_root_password = SecureRandom.hex(10)
             deployment.save!
+          end
+
+          def scp_guest_image_to_engine(deployment, image_file, image_destination_path)
+            hostname = deployment.rhev_engine_host.name
+            password = deployment.rhev_root_password
+
+            ::Fusor.log.info "Transfering RHEL guest image from #{image_file} to #{hostname}:#{image_destination_path}."
+            Net::SCP.start(hostname, "root", :password => password, :paranoid => false) do |scp|
+              scp.upload!(image_file, image_destination_path)
+            end
           end
 
         end
