@@ -29,27 +29,34 @@ module Actions
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             cfme_addresses = [deployment.cfme_rhv_address, deployment.cfme_osp_address].compact
-            deployment.ose_master_hosts.each_with_index do |master, index|
-              token = File.read("#{Rails.root}/tmp/#{deployment.label}/#{master}.token")
-              provider = {
-                :name => "#{deployment.label}-OSE-#{index}",
-                :type => "ManageIQ::Providers::Openshift::ContainerManager",
-                :hostname => master.ip,
-                :port => "8443",
-                :credentials => {
-                  :auth_type => "bearer",
-                  :auth_key => token
-                }
-              }
 
-              ::Fusor.log.info "Adding OSE provider #{provider[:name]} to CFME."
+            token = File.read("#{Rails.root}/tmp/#{deployment.label}/ocp_master.token")
 
-              cfme_addresses.each do |cfme_address|
-                Utils::CloudForms::AddProvider.add(cfme_address, provider, deployment)
-                Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)
-              end
+            if deployment.ose_master_hosts.length > 1
+              # point at master load balancer for OCP HA
+              master = deployment.ose_ha_hosts.first
+            else
+              # point directly at master for regular OCP
+              master = deployment.ose_master_hosts.first
             end
 
+            provider = {
+              :name => "#{deployment.label}-OCP",
+              :type => "ManageIQ::Providers::Openshift::ContainerManager",
+              :hostname => master.ip,
+              :port => "8443",
+              :credentials => {
+                :auth_type => "bearer",
+                :auth_key => token
+              }
+            }
+
+            ::Fusor.log.info "Adding OCP provider #{provider[:name]} to CFME."
+
+            cfme_addresses.each do |cfme_address|
+              Utils::CloudForms::AddProvider.add(cfme_address, provider, deployment)
+              Utils::CloudForms::AddCredentialsForHosts.add(cfme_address, deployment)
+            end
 
             ::Fusor.log.debug "================ Leaving AddOseProvider run method ===================="
           end
