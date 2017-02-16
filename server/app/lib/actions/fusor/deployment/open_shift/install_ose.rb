@@ -28,6 +28,12 @@ module Actions
             ::Fusor.log.info "================ OpenShift InstallOSE run method ===================="
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
             opts = parse_deployment(deployment)
+
+            if opts[:ha_nodes].length > 1
+              deployment.ose_lb_master_hosts = [deployment.ose_ha_hosts.find_by_name(opts[:ha_lb_master])]
+              deployment.save!
+            end
+
             launcher = OSEInstaller::Launch.new("#{Rails.root}/tmp/#{deployment.label}", ::Fusor.log_file_dir(deployment.label, deployment.id), ::Fusor.log)
             inventory = launcher.prepare(opts)
 
@@ -78,6 +84,11 @@ module Actions
             opts[:masters] = masters
             opts[:nodes] = workers
             opts[:ha_nodes] = ha_nodes
+
+            if opts[:ha_nodes].length > 1
+              opts[:ha_lb_master] = ha_nodes.first
+              opts[:ha_lb_infra] = ha_nodes.last
+            end
 
             opts[:username] = deployment.openshift_username
             opts[:ssh_key] = ::Utils::Fusor::SSHKeyUtils.new(deployment).get_ssh_private_key_path

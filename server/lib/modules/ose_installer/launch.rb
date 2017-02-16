@@ -96,8 +96,8 @@ module OSEInstaller
       if !opts[:ha_nodes].nil? and opts[:ha_nodes].length > 1
         # split it by two groups
         if opts[:ha_nodes].length == 2
-          ha_master_list = "#{opts[:ha_nodes].first}\n"
-          ha_infra_list = "#{opts[:ha_nodes].last}\n"
+          ha_master_list = "#{opts[:ha_lb_master]}\n"
+          ha_infra_list = "#{opts[:ha_lb_infra]}\n"
         else
           ha_list = opts[:ha_nodes].each_slice(2).to_a
           ha_list.first.each do |master_ha_node|
