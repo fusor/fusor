@@ -88,15 +88,17 @@
   <br />
 
   <p>
-    Select OpenShift sample applications
+    Select OpenShift sample applications.
   </p>
 
   <div class="ose-sample-apps">
-    {{check-f label='Hello World'
+    {{#check-f label='Hello World'
       checked=model.openshift_sample_helloworld
       cssId='openshift_hello_world'
       isRequired=false
       helpText='A Hello World sample HTML application'}}
+      <span class="checkbox-help-label">Requires external network access.</span>
+    {{/check-f}}
   </div>
 
 </form>
