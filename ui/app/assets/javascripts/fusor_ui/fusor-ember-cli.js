@@ -19397,7 +19397,7 @@ define("fusor-ember-cli/templates/components/check-f", ["exports"], function (ex
         meta: {
           "fragmentReason": {
             "name": "missing-wrapper",
-            "problems": ["wrong-type"]
+            "problems": ["wrong-type", "multiple-nodes"]
           },
           "revision": "Ember@2.4.6",
           "loc": {
@@ -19423,16 +19423,21 @@ define("fusor-ember-cli/templates/components/check-f", ["exports"], function (ex
           dom.appendChild(el0, el1);
           var el1 = dom.createComment("");
           dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n\n");
+          var el1 = dom.createTextNode("\n  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
           dom.appendChild(el0, el1);
           return el0;
         },
         buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-          var morphs = new Array(1);
+          var morphs = new Array(2);
           morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+          morphs[1] = dom.createMorphAt(fragment, 3, 3, contextualElement);
           return morphs;
         },
-        statements: [["inline", "input", [], ["type", "checkbox", "checked", ["subexpr", "@mut", [["get", "checked", ["loc", [null, [4, 18], [4, 25]]]]], [], []], "id", ["subexpr", "@mut", [["get", "cssId", ["loc", [null, [5, 13], [5, 18]]]]], [], []], "data-qci", ["subexpr", "@mut", [["get", "cssId", ["loc", [null, [6, 19], [6, 24]]]]], [], []]], ["loc", [null, [3, 2], [6, 26]]]]],
+        statements: [["inline", "input", [], ["type", "checkbox", "checked", ["subexpr", "@mut", [["get", "checked", ["loc", [null, [4, 18], [4, 25]]]]], [], []], "id", ["subexpr", "@mut", [["get", "cssId", ["loc", [null, [5, 13], [5, 18]]]]], [], []], "data-qci", ["subexpr", "@mut", [["get", "cssId", ["loc", [null, [6, 19], [6, 24]]]]], [], []]], ["loc", [null, [3, 2], [6, 26]]]], ["content", "yield", ["loc", [null, [7, 2], [7, 11]]]]],
         locals: [],
         templates: []
       };
@@ -41751,6 +41756,49 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
       };
     })();
     var child3 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.4.6",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 95,
+              "column": 4
+            },
+            "end": {
+              "line": 101,
+              "column": 4
+            }
+          },
+          "moduleName": "fusor-ember-cli/templates/openshift/openshift-configuration.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("      ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("span");
+          dom.setAttribute(el1, "class", "checkbox-help-label");
+          var el2 = dom.createTextNode("Requires external network access.");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes() {
+          return [];
+        },
+        statements: [],
+        locals: [],
+        templates: []
+      };
+    })();
+    var child4 = (function () {
       var child0 = (function () {
         return {
           meta: {
@@ -41759,11 +41807,11 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
             "loc": {
               "source": null,
               "start": {
-                "line": 108,
+                "line": 110,
                 "column": 2
               },
               "end": {
-                "line": 110,
+                "line": 112,
                 "column": 2
               }
             },
@@ -41799,11 +41847,11 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
           "loc": {
             "source": null,
             "start": {
-              "line": 104,
+              "line": 106,
               "column": 0
             },
             "end": {
-              "line": 111,
+              "line": 113,
               "column": 0
             }
           },
@@ -41826,7 +41874,7 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
           dom.insertBoundary(fragment, null);
           return morphs;
         },
-        statements: [["block", "button-f", [], ["disabled", ["subexpr", "@mut", [["get", "disableNextOpenshiftConfig", ["loc", [null, [108, 23], [108, 49]]]]], [], []], "action", "testStorageMount"], 0, null, ["loc", [null, [108, 2], [110, 15]]]]],
+        statements: [["block", "button-f", [], ["disabled", ["subexpr", "@mut", [["get", "disableNextOpenshiftConfig", ["loc", [null, [110, 23], [110, 49]]]]], [], []], "action", "testStorageMount"], 0, null, ["loc", [null, [110, 2], [112, 15]]]]],
         locals: [],
         templates: [child0]
       };
@@ -41845,7 +41893,7 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
             "column": 0
           },
           "end": {
-            "line": 112,
+            "line": 114,
             "column": 0
           }
         },
@@ -41924,18 +41972,18 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
         var el2 = dom.createTextNode("\n\n  ");
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("p");
-        var el3 = dom.createTextNode("\n    Select OpenShift sample applications\n  ");
+        var el3 = dom.createTextNode("\n    Select OpenShift sample applications.\n  ");
         dom.appendChild(el2, el3);
         dom.appendChild(el1, el2);
         var el2 = dom.createTextNode("\n\n  ");
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("div");
         dom.setAttribute(el2, "class", "ose-sample-apps");
-        var el3 = dom.createTextNode("\n    ");
+        var el3 = dom.createTextNode("\n");
         dom.appendChild(el2, el3);
         var el3 = dom.createComment("");
         dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("\n  ");
+        var el3 = dom.createTextNode("  ");
         dom.appendChild(el2, el3);
         dom.appendChild(el1, el2);
         var el2 = dom.createTextNode("\n\n");
@@ -41964,9 +42012,9 @@ define("fusor-ember-cli/templates/openshift/openshift-configuration", ["exports"
         dom.insertBoundary(fragment, null);
         return morphs;
       },
-      statements: [["block", "if", [["get", "errorMsg", ["loc", [null, [1, 6], [1, 14]]]]], [], 0, 1, ["loc", [null, [1, 0], [16, 7]]]], ["block", "base-f", [], ["label", "Storage Type", "isRequired", true], 2, null, ["loc", [null, [24, 2], [38, 13]]]], ["inline", "text-f", [], ["label", "Host", "value", ["subexpr", "@mut", [["get", "model.openshift_storage_host", ["loc", [null, [41, 10], [41, 38]]]]], [], []], "isRequired", true, "cssId", "openshift_storage_host", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [43, 13], [43, 22]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "storageHostValidator", ["loc", [null, [44, 14], [44, 34]]]]], [], []]], ["loc", [null, [40, 2], [45, 4]]]], ["inline", "text-f", [], ["label", "Export Path", "value", ["subexpr", "@mut", [["get", "model.openshift_export_path", ["loc", [null, [48, 10], [48, 37]]]]], [], []], "isRequired", true, "cssId", "openshift_export_path", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [50, 13], [50, 22]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "exportPathValidator", ["loc", [null, [51, 14], [51, 33]]]]], [], []]], ["loc", [null, [47, 2], [52, 4]]]], ["inline", "text-f", [], ["label", "Username", "value", ["subexpr", "@mut", [["get", "model.openshift_username", ["loc", [null, [60, 34], [60, 58]]]]], [], []], "isRequired", true, "cssId", "openshift_username", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [61, 56], [61, 65]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "usernameValidator", ["loc", [null, [62, 14], [62, 31]]]]], [], []]], ["loc", [null, [60, 2], [63, 4]]]], ["inline", "text-f", [], ["label", "Password", "type", "password", "value", ["subexpr", "@mut", [["get", "userPassword", ["loc", [null, [66, 10], [66, 22]]]]], [], []], "cssId", "openshift_password", "isRequired", true, "placeholder", "Must be 8 or more characters", "validator", ["subexpr", "@mut", [["get", "passwordValidator", ["loc", [null, [68, 14], [68, 31]]]]], [], []]], ["loc", [null, [65, 2], [69, 4]]]], ["inline", "text-f", [], ["label", "Confirm Password", "type", "password", "value", ["subexpr", "@mut", [["get", "confirmUserPassword", ["loc", [null, [72, 10], [72, 29]]]]], [], []], "cssId", "confirm_openshift_password", "isRequired", true, "placeholder", "Must match user password", "validator", ["subexpr", "@mut", [["get", "confirmUserPasswordValidator", ["loc", [null, [74, 14], [74, 42]]]]], [], []]], ["loc", [null, [71, 2], [75, 4]]]], ["inline", "text-f", [], ["label", "Subdomain", "value", ["subexpr", "@mut", [["get", "model.openshift_subdomain_name", ["loc", [null, [84, 8], [84, 38]]]]], [], []], "isRequired", true, "cssId", "openshift_subdomain_name", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [85, 11], [85, 20]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "subdomainValidator", ["loc", [null, [85, 31], [85, 49]]]]], [], []], "preText", "*.", "postText", ["subexpr", "@mut", [["get", "postTextDomainName", ["loc", [null, [86, 24], [86, 42]]]]], [], []]], ["loc", [null, [83, 2], [86, 44]]]], ["inline", "check-f", [], ["label", "Hello World", "checked", ["subexpr", "@mut", [["get", "model.openshift_sample_helloworld", ["loc", [null, [96, 14], [96, 47]]]]], [], []], "cssId", "openshift_hello_world", "isRequired", false, "helpText", "A Hello World sample HTML application"], ["loc", [null, [95, 4], [99, 56]]]], ["block", "cancel-back-next", [], ["backRouteName", "openshift.openshift-nodes", "disableBack", false, "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [106, 33], [106, 42]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [107, 34], [107, 48]]]]], [], []]], 3, null, ["loc", [null, [104, 0], [111, 21]]]]],
+      statements: [["block", "if", [["get", "errorMsg", ["loc", [null, [1, 6], [1, 14]]]]], [], 0, 1, ["loc", [null, [1, 0], [16, 7]]]], ["block", "base-f", [], ["label", "Storage Type", "isRequired", true], 2, null, ["loc", [null, [24, 2], [38, 13]]]], ["inline", "text-f", [], ["label", "Host", "value", ["subexpr", "@mut", [["get", "model.openshift_storage_host", ["loc", [null, [41, 10], [41, 38]]]]], [], []], "isRequired", true, "cssId", "openshift_storage_host", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [43, 13], [43, 22]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "storageHostValidator", ["loc", [null, [44, 14], [44, 34]]]]], [], []]], ["loc", [null, [40, 2], [45, 4]]]], ["inline", "text-f", [], ["label", "Export Path", "value", ["subexpr", "@mut", [["get", "model.openshift_export_path", ["loc", [null, [48, 10], [48, 37]]]]], [], []], "isRequired", true, "cssId", "openshift_export_path", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [50, 13], [50, 22]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "exportPathValidator", ["loc", [null, [51, 14], [51, 33]]]]], [], []]], ["loc", [null, [47, 2], [52, 4]]]], ["inline", "text-f", [], ["label", "Username", "value", ["subexpr", "@mut", [["get", "model.openshift_username", ["loc", [null, [60, 34], [60, 58]]]]], [], []], "isRequired", true, "cssId", "openshift_username", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [61, 56], [61, 65]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "usernameValidator", ["loc", [null, [62, 14], [62, 31]]]]], [], []]], ["loc", [null, [60, 2], [63, 4]]]], ["inline", "text-f", [], ["label", "Password", "type", "password", "value", ["subexpr", "@mut", [["get", "userPassword", ["loc", [null, [66, 10], [66, 22]]]]], [], []], "cssId", "openshift_password", "isRequired", true, "placeholder", "Must be 8 or more characters", "validator", ["subexpr", "@mut", [["get", "passwordValidator", ["loc", [null, [68, 14], [68, 31]]]]], [], []]], ["loc", [null, [65, 2], [69, 4]]]], ["inline", "text-f", [], ["label", "Confirm Password", "type", "password", "value", ["subexpr", "@mut", [["get", "confirmUserPassword", ["loc", [null, [72, 10], [72, 29]]]]], [], []], "cssId", "confirm_openshift_password", "isRequired", true, "placeholder", "Must match user password", "validator", ["subexpr", "@mut", [["get", "confirmUserPasswordValidator", ["loc", [null, [74, 14], [74, 42]]]]], [], []]], ["loc", [null, [71, 2], [75, 4]]]], ["inline", "text-f", [], ["label", "Subdomain", "value", ["subexpr", "@mut", [["get", "model.openshift_subdomain_name", ["loc", [null, [84, 8], [84, 38]]]]], [], []], "isRequired", true, "cssId", "openshift_subdomain_name", "disabled", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [85, 11], [85, 20]]]]], [], []], "validator", ["subexpr", "@mut", [["get", "subdomainValidator", ["loc", [null, [85, 31], [85, 49]]]]], [], []], "preText", "*.", "postText", ["subexpr", "@mut", [["get", "postTextDomainName", ["loc", [null, [86, 24], [86, 42]]]]], [], []]], ["loc", [null, [83, 2], [86, 44]]]], ["block", "check-f", [], ["label", "Hello World", "checked", ["subexpr", "@mut", [["get", "model.openshift_sample_helloworld", ["loc", [null, [96, 14], [96, 47]]]]], [], []], "cssId", "openshift_hello_world", "isRequired", false, "helpText", "A Hello World sample HTML application"], 3, null, ["loc", [null, [95, 4], [101, 16]]]], ["block", "cancel-back-next", [], ["backRouteName", "openshift.openshift-nodes", "disableBack", false, "disableCancel", ["subexpr", "@mut", [["get", "isStarted", ["loc", [null, [108, 33], [108, 42]]]]], [], []], "deploymentName", ["subexpr", "@mut", [["get", "deploymentName", ["loc", [null, [109, 34], [109, 48]]]]], [], []]], 4, null, ["loc", [null, [106, 0], [113, 21]]]]],
       locals: [],
-      templates: [child0, child1, child2, child3]
+      templates: [child0, child1, child2, child3, child4]
     };
   })());
 });
@@ -57031,7 +57079,7 @@ define('fusor-ember-cli/views/application', ['exports', 'ember'], function (expo
 /* jshint ignore:start */
 
 define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","rootURL":"/r/","locationType":"history","EmberENV":{"FEATURES":{},"_ENABLE_LEGACY_VIEW_SUPPORT":true},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+15e3682c"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":["'none'"],"script-src":["'self'"],"font-src":["'self'"],"connect-src":["'self'"],"img-src":["'self'"],"style-src":["'self'"],"media-src":["'self'"]},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
+  return { 'default': {"modulePrefix":"fusor-ember-cli","environment":"development","baseURL":"/","rootURL":"/r/","locationType":"history","EmberENV":{"FEATURES":{},"_ENABLE_LEGACY_VIEW_SUPPORT":true},"contentSecurityPolicyHeader":"Disabled-Content-Security-Policy","emberDevTools":{"global":true},"APP":{"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+9e89da77"},"ember-cli-mirage":{"enabled":false,"usingProxy":false},"contentSecurityPolicy":{"default-src":["'none'"],"script-src":["'self'"],"font-src":["'self'"],"connect-src":["'self'"],"img-src":["'self'"],"style-src":["'self'"],"media-src":["'self'"]},"ember-devtools":{"enabled":true,"global":false},"exportApplicationGlobal":true}};
 });
 
 /* jshint ignore:end */
@@ -57039,7 +57087,7 @@ define('fusor-ember-cli/config/environment', ['ember'], function(Ember) {
 /* jshint ignore:start */
 
 if (!runningTests) {
-  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+15e3682c"});
+  require("fusor-ember-cli/app")["default"].create({"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_VIEW_LOOKUPS":true,"rootElement":"#ember-app","name":"fusor-ember-cli","version":"0.0.0+9e89da77"});
 }
 
 /* jshint ignore:end */

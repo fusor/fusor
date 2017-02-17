@@ -399,6 +399,39 @@ class DeploymentTest < ActiveSupport::TestCase
         assert ose_d.valid?, "single node OCP deployment on baremetal was invalid"
         assert_empty ose_d.warnings, "single node OCP deployment on nested virt had warnings"
       end
+
+      test "should set warning if disconnected and deploying sample app" do
+        ose_d = fusor_deployments(:rhev_and_ose)
+        ose_d.is_disconnected = true
+        ose_d.openshift_sample_helloworld = true
+        assert ose_d.valid?, "Deploying sample app on disconnected was invalid"
+        assert_match /sample application during a disconnected deployment/, ose_d.warnings.first, "Deploying sample app on disconnected did not warn"
+      end
+
+      test "should not set warning if disconnected and not deploying sample app" do
+        ose_d = fusor_deployments(:rhev_and_ose)
+        ose_d.is_disconnected = true
+        ose_d.openshift_sample_helloworld = false
+        assert ose_d.valid?, "Deploying sample app on connected deployment was invalid"
+        assert_empty ose_d.warnings, "Deploying sample app on connected deployment had warnings"
+      end
+
+      test "should not set warning if connected and deploying sample app" do
+        ose_d = fusor_deployments(:rhev_and_ose)
+        ose_d.is_disconnected = false
+        ose_d.openshift_sample_helloworld = true
+        assert ose_d.valid?, "Connected deployment with no sample app was invalid"
+        assert_empty ose_d.warnings, "Connected deployment with no sample app had warnings"
+      end
+
+      test "should not set warning if not deploying OpenShift" do
+        ose_d = fusor_deployments(:rhev_and_ose)
+        ose_d.is_disconnected = true
+        ose_d.openshift_sample_helloworld = true
+        ose_d.deploy_openshift = false
+        assert ose_d.valid?, "Deployment without OpenShift app was invalid"
+        assert_empty ose_d.warnings, "Deployment without OpenShift had warnings for sample app"
+      end
     end
 
     describe "cfme deployment" do

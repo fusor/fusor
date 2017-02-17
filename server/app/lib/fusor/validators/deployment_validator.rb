@@ -299,6 +299,12 @@ module Fusor
           validate_openshift_subdomain(deployment, subdomain)
         end
 
+        if deployment.openshift_sample_helloworld && deployment.is_disconnected
+          add_warning(deployment,
+                      _("You have chosen to deploy an OpenShift sample application during a disconnected deployment.  " \
+                        "The sample application requires external network access."))
+        end
+
         validate_openshift_storage(deployment)
       end
 
