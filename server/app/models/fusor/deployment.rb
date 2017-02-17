@@ -49,6 +49,9 @@ module Fusor
     has_many :ose_worker_hosts, :through => :ose_deployment_worker_hosts, :class_name => "::Host::Base", :source => :discovered_host
     has_many :ose_deployment_ha_hosts, -> { where(:deployment_host_type => 'ose_ha') }, :class_name => "Fusor::DeploymentHost"
     has_many :ose_ha_hosts, :through => :ose_deployment_ha_hosts, :class_name => "::Host::Base", :source => :discovered_host
+    has_many :ose_deployment_lb_master_hosts, -> { where(:deployment_host_type => 'ose_lb_master') }, :class_name => "Fusor::DeploymentHost"
+    has_many :ose_lb_master_hosts, :through => :ose_deployment_lb_master_hosts, :class_name => "::Host::Base", :source => :discovered_host
+
     alias_attribute :discovered_host_id, :rhev_engine_host_id
     attr_accessor :foreman_task_id
 

@@ -32,9 +32,9 @@ module Actions
 
             token = File.read("#{Rails.root}/tmp/#{deployment.label}/ocp_master.token")
 
-            if deployment.ose_master_hosts.length > 1
+            if deployment.ose_lb_master_hosts.length > 0
               # point at master load balancer for OCP HA
-              master = deployment.ose_ha_hosts.first
+              master = deployment.ose_lb_master_hosts.first
             else
               # point directly at master for regular OCP
               master = deployment.ose_master_hosts.first
