@@ -28,7 +28,14 @@ module Actions
             ::Fusor.log.info "================ OpenShift SetupOSE run method ===================="
 
             deployment = ::Fusor::Deployment.find(input[:deployment_id])
-            opts = parse_deployment(deployment)
+            opts = Utils::Fusor::OcpUtils.parse_deployment(deployment)
+
+            # Record master load-balancer on deployment object if running OCP HA deploy
+            if opts[:ha_nodes].length > 1
+              deployment.ose_lb_master_hosts = [deployment.ose_ha_hosts.find_by_name(opts[:ha_lb_master])]
+              deployment.save!
+            end
+
             ::Fusor.log.info "Setting ansible log path to - #{::Fusor.log_file_dir(deployment.label, deployment.id)}"
             launcher = OSEInstaller::Launch.new("#{Rails.root}/tmp/#{deployment.label}", ::Fusor.log_file_dir(deployment.label, deployment.id), ::Fusor.log)
             inventory = launcher.prepare(opts)
@@ -38,6 +45,7 @@ module Actions
             else
               exit_code = launcher.setup(inventory, true)
             end
+
             if exit_code > 0
               # Something went wrong w/ the setup
               fail _("ansible-playbook returned a non-zero exit code during setup. Please refer to the log"\
@@ -45,50 +53,6 @@ module Actions
             end
 
             ::Fusor.log.info "================ Leaving OpenShift SetupOSE run method ===================="
-          end
-
-          def parse_deployment(deployment)
-            opts = Hash.new
-
-            masters = Array.new
-            deployment.ose_master_hosts.each do |m|
-              masters << m.name
-            end
-
-            workers = Array.new
-            deployment.ose_worker_hosts.each do |w|
-              workers << w.name
-            end
-
-            ha_nodes = Array.new
-            deployment.ose_ha_hosts.each do |ha|
-              ha_nodes << ha.name
-            end
-
-            opts[:masters] = masters
-            opts[:nodes] = workers
-            opts[:ha_nodes] = ha_nodes
-
-            opts[:username] = deployment.openshift_username
-            opts[:ssh_key] = ::Utils::Fusor::SSHKeyUtils.new(deployment).get_ssh_private_key_path
-
-            opts[:docker_registry_host] = deployment.openshift_storage_host
-            opts[:docker_registry_path] = deployment.openshift_export_path
-
-            opts[:docker_storage] = "/dev/vdb"
-            opts[:docker_volume] = "docker-vg"
-            opts[:storage_type] = deployment.openshift_storage_type
-
-            opts[:ose_user] = deployment.openshift_username
-            opts[:ose_password] = deployment.openshift_user_password
-
-            opts[:subdomain_name] = deployment.openshift_subdomain_name + '.' + Domain.find(Hostgroup.find_by_name('Fusor Base').domain_id).name
-            opts[:helloworld_sample_app] = deployment.openshift_sample_helloworld
-
-            opts[:org_label] = Organization.find(deployment.organization_id).label.downcase
-            opts[:satellite_hostname] = `/usr/bin/hostname`.chomp
-
-            opts
           end
         end
       end
