@@ -10,6 +10,8 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+require 'fusor/password_filter'
+
 module Actions
   module Fusor
     module Deployment
@@ -61,7 +63,7 @@ module Actions
             client = Utils::Fusor::SSHConnection.new(ssh_host, ssh_username, deployment.rhev_root_password)
             client.on_complete(lambda { upload_image_completed })
             client.on_failure(lambda { upload_image_failed })
-            ::Fusor.log.debug "Running command: #{cmd}"
+            ::Fusor.log.debug "Running command: #{PasswordFilter.filter_passwords(cmd.clone)}"
             client.execute(cmd)
 
             output[:template_name] = imported_template_name

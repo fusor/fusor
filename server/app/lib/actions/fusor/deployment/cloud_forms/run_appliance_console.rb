@@ -10,6 +10,8 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+require 'fusor/password_filter'
+
 module Actions
   module Fusor
     module Deployment
@@ -91,7 +93,7 @@ module Actions
             retries = 0
             status = 1
 
-            ::Fusor.log.info "Running: #{cmd}"
+            ::Fusor.log.info "Running: #{PasswordFilter.filter_passwords(cmd.clone)}"
             while (status != 0) && (retries < max_try)
               status, output = Utils::Fusor::CommandUtils.run_command(cmd)
               retries += 1
