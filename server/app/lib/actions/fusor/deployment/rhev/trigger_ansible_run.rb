@@ -1,3 +1,5 @@
+require 'fusor/password_filter'
+
 module Actions
   module Fusor
     module Deployment
@@ -172,7 +174,7 @@ module Actions
             status = 1
 
             cmd = "ansible-playbook #{playbook} -i #{config_dir}/inventory -e '#{vars.to_json}' #{extra_args}"
-            ::Fusor.log.info "Running: #{cmd}"
+            ::Fusor.log.info "Running: #{PasswordFilter.filter_passwords(cmd.clone)}"
             while (status != 0) && (retries < max_try)
               status, output = ::Utils::Fusor::CommandUtils.run_command(cmd, true, environment)
               retries += 1
