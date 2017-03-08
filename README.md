@@ -2,7 +2,7 @@
 
 Our issue tracker is located at http://bugzilla.redhat.com
 
-Fusor API documentation is located [here](https://htmlpreview.github.io/?https://github.com/fusor/fusor/blob/apipie/doc/apidoc.html) (or [here](https://htmlpreview.github.io/?https://github.com/fusor/fusor/blob/apipie/doc/apidoc-onepage.html) for single-page).
+Fusor API documentation is located [here](https://htmlpreview.github.io/?https://github.com/fusor/fusor/blob/master/doc/apidoc.html) (or [here](https://htmlpreview.github.io/?https://github.com/fusor/fusor/blob/master/doc/apidoc-onepage.html) for single-page).
 
 To file bugs or enhancement requests, use https://bugzilla.redhat.com/enter_bug.cgi?product=Red%20Hat%20Quickstart%20Cloud%20Installer (will require an account).
 
